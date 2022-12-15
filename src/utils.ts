@@ -339,7 +339,7 @@ export function isNullOrBlank(value: unknown): boolean {
 }
 
 export function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
+  if (isObject(obj)) {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       excludeUndefined

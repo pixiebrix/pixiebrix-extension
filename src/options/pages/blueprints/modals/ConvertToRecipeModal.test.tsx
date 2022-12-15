@@ -170,12 +170,8 @@ describe("it renders", () => {
       );
 
       expect(modalState[contextToBeEmpty]).toBeNull();
-      expect(
-        (modalState[sharingContext] as ShareContext).extensionId
-      ).toBeUndefined();
-      expect(
-        (modalState[sharingContext] as ShareContext).blueprintId
-      ).not.toBeUndefined();
+      expect(modalState[sharingContext].extensionId).toBeUndefined();
+      expect(modalState[sharingContext].blueprintId).not.toBeUndefined();
     }
   );
 

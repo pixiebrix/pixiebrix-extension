@@ -60,18 +60,18 @@ function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
 
 export function parseDefinitionList(list: HTMLDListElement): ParsedTable {
   // Lists are monodimensional, there can only be one record
-  const record: TableRecord = {};
+  const record = new Map<string, string>();
 
   for (const { terms, definitions } of flattenListContent(list)) {
     for (const term of terms) {
-      // TODO: Possible injection with `<dt>__proto__</dt>`
-      record[term] = definitions.join("\n");
+      record.set(term, definitions.join("\n"));
     }
   }
 
   return {
     fieldNames: Object.keys(record),
-    records: [record],
+    // `fromEntries` saves us from __proto__ https://stackoverflow.com/a/63455731/288906
+    records: [Object.fromEntries(record)],
   };
 }
 
