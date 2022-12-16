@@ -134,7 +134,12 @@ export function getToggleOptions({
   }
 
   if (isKeyStringField(fieldSchema)) {
-    pushOptions(textOption);
+    //pushOptions(textOption);
+    pushOptions({
+      label: "Secret",
+      value: "secret",
+      Widget: widgetsRegistry.PasswordWidget,
+    });
     handleOptionalValue();
     return options;
   }
