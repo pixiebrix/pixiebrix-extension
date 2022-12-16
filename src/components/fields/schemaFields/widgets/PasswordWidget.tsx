@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef } from "react";
-import { Form, type FormControlProps } from "react-bootstrap";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Button,
+  Form,
+  type FormControlProps,
+  InputGroup,
+} from "react-bootstrap";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
@@ -33,6 +40,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   ...restProps
 }) => {
   const [{ value }, , { setValue }] = useField<string>(name);
+  const [show, setShow] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>();
 
@@ -57,13 +65,24 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   );
 
   return (
-    <Form.Control
-      {...restProps}
-      type="password"
-      value={value}
-      onChange={onChange}
-      ref={inputRef}
-    />
+    <InputGroup>
+      <Form.Control
+        {...restProps}
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={onChange}
+        ref={inputRef}
+      />
+      <InputGroup.Append>
+        <Button
+          variant="default"
+          onClick={() => setShow(!show)}
+          className="px-2 bg-white"
+        >
+          <FontAwesomeIcon fixedWidth icon={show ? faEye : faEyeSlash} />
+        </Button>
+      </InputGroup.Append>
+    </InputGroup>
   );
 };
 
