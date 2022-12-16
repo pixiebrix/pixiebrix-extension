@@ -138,7 +138,7 @@ export function getToggleOptions({
     pushOptions({
       label: "Secret",
       value: "string",
-      symbol: <OptionIcon icon="text" />,
+      symbol: <OptionIcon icon="key" />,
       interpretValue(oldValue: unknown) {
         let newValue =
           typeof fieldSchema.default === "string" ? fieldSchema.default : "";
