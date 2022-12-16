@@ -4766,7 +4766,7 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
         </div>
         <div
           className="dropdown dropdown"
-          data-test-selected="Secret"
+          data-test-selected="Key"
           data-testid="toggle-topObj.parentObj.testField"
         >
           <button

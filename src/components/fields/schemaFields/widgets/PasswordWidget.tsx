@@ -17,7 +17,7 @@
 
 import React, { useCallback, useEffect, useRef } from "react";
 import { Form, type FormControlProps } from "react-bootstrap";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 
 const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
