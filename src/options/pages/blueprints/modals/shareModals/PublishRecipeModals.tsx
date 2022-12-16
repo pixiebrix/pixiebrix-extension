@@ -27,10 +27,11 @@ import { useRecipe } from "@/recipes/recipesHooks";
 import ActivationLink from "./ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 import EditPublishContent from "./EditPublishContent";
+import CancelPublishContent from "./CancelPublishContent";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
-  const blueprintId = showPublishContext.blueprintId;
+  const { blueprintId, cancelingPublish } = showPublishContext;
   const { data: listings, isLoading: areListingsLoading } =
     useGetMarketplaceListingsQuery();
   const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(blueprintId);
@@ -49,11 +50,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
 
   const marketplaceListing = listings[recipe.metadata.id];
   if (marketplaceListing == null) {
-    return showPublishContext.cancelingPublish ? (
-      <div>Canceling publish...</div>
-    ) : (
-      <EditPublishContent />
-    );
+    return cancelingPublish ? <CancelPublishContent /> : <EditPublishContent />;
   }
 
   return (

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRecipe } from "@/recipes/recipesHooks";
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,18 +30,15 @@ const EditPublishContent: React.FunctionComponent = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
 
-  const confirmCancelPublish = () => {
+  const cancelPublish = () => {
     dispatch(blueprintModalsSlice.actions.setCancelingPublish());
   };
 
   const { blueprintId } = useSelector(selectShowPublishContext);
-  const { data: recipe } = useRecipe(blueprintId);
 
   return (
     <PublishContentLayout title="Edit Pending Publish">
       <Modal.Body>
-        <h3>{recipe.metadata.name}</h3>
-
         <p>
           The{" "}
           <a
@@ -66,7 +62,7 @@ const EditPublishContent: React.FunctionComponent = () => {
         <ActivationLink blueprintId={blueprintId} />
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="danger" onClick={confirmCancelPublish}>
+        <Button variant="danger" onClick={cancelPublish}>
           Cancel Publish
         </Button>
         <Button variant="info" onClick={closeModal}>

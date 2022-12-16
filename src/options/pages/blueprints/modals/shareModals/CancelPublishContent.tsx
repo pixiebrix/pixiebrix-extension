@@ -16,44 +16,44 @@
  */
 
 import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import { useRecipe } from "@/recipes/recipesHooks";
+import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import PublishContentLayout from "./PublishContentLayout";
+import { produce } from "immer";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
 import notify from "@/utils/notify";
-import { produce } from "immer";
-import ActivationLink from "./ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useRecipe } from "@/recipes/recipesHooks";
-import PublishContentLayout from "./PublishContentLayout";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
-const PublishRecipeContent: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
+const CancelPublishContent: React.FunctionComponent = () => {
+  const [isCancelling, setCancelling] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
   const { blueprintId } = useSelector(selectShowPublishContext);
-  const [updateRecipe] = useUpdateRecipeMutation();
+  const { data: recipe, refetch: refetchRecipes } = useRecipe(blueprintId);
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const { data: recipe, refetch: refetchRecipes } = useRecipe(blueprintId);
 
-  const [isPublishing, setPublishing] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [updateRecipe] = useUpdateRecipeMutation();
+  const dispatch = useDispatch();
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
 
-  const publish = async () => {
-    setPublishing(true);
+  const confirmCancelPublish = async () => {
+    setCancelling(true);
     setError(null);
 
     try {
       const newRecipe = produce(recipe, (draft) => {
-        draft.sharing.public = true;
+        draft.sharing.public = false;
       });
 
       const packageId = editablePackages.find(
@@ -65,7 +65,8 @@ const PublishRecipeContent: React.FunctionComponent = () => {
         recipe: newRecipe,
       }).unwrap();
 
-      notify.success("Shared brick");
+      notify.success("Cancelled publish");
+
       closeModal();
       refetchRecipes();
     } catch (error) {
@@ -84,49 +85,36 @@ const PublishRecipeContent: React.FunctionComponent = () => {
         });
       }
 
-      setPublishing(false);
+      setCancelling(false);
     }
   };
 
-  const disableButtons = isPublishing || isFetchingEditablePackages;
+  const disableButtons = isCancelling || isFetchingEditablePackages;
 
   return (
-    <PublishContentLayout title="Publish to Marketplace">
+    <PublishContentLayout title="Edit Pending Publish">
       <Modal.Body>
         {error && <div className="text-danger p-3">{error}</div>}
 
-        <h3>{recipe.metadata.name}</h3>
-
         <p>
-          On Submit, the public link to this blueprint will be shared with the{" "}
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            target="blank"
-            rel="noreferrer noopener"
-          >
-            PixieBrix Marketplace
-          </a>{" "}
-          admin team, who will review your submission and publish your
-          blueprint.
+          Your marketplace submission will not be published and the public link
+          to your blueprint will no longer work.
         </p>
-        <p>
-          As soon as you Submit, the public link below will work for anyone, so
-          you can start sharing right away!
-        </p>
-
-        <p className="mb-1">Public link to share:</p>
-        <ActivationLink blueprintId={blueprintId} />
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="link" disabled={disableButtons} onClick={closeModal}>
-          Cancel
+        <Button variant="info" disabled={disableButtons} onClick={closeModal}>
+          Never mind
         </Button>
-        <Button variant="primary" disabled={disableButtons} onClick={publish}>
-          Submit
+        <Button
+          variant="danger"
+          disabled={disableButtons}
+          onClick={confirmCancelPublish}
+        >
+          Yes, Cancel Publish
         </Button>
       </Modal.Footer>
     </PublishContentLayout>
   );
 };
 
-export default PublishRecipeContent;
+export default CancelPublishContent;
