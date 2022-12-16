@@ -81,8 +81,6 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     return genericOptionsFactory(service.schema);
   }, [service]);
 
-  console.log(service.schema);
-
   const schemaPromise = useMemo(
     async () =>
       dereference({

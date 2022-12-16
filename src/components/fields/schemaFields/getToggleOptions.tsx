@@ -134,7 +134,6 @@ export function getToggleOptions({
   }
 
   if (isKeyStringField(fieldSchema)) {
-    //pushOptions(textOption);
     pushOptions({
       label: "Secret",
       value: "string",
