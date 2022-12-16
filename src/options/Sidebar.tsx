@@ -48,7 +48,7 @@ const Sidebar: React.FunctionComponent = () => {
             title="Blueprints"
             icon={faCubes}
             isActive={(match, location) =>
-              match ||
+              Boolean(match) ||
               location.pathname === "/" ||
               location.pathname.startsWith("/extensions/")
             }

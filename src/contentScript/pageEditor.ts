@@ -50,6 +50,7 @@ import { uuidv4 } from "@/types/helpers";
 import { type PanelPayload } from "@/sidebar/types";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
+import { stopInspectingNativeHandler } from "./nativeEditor/elementPicker";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -280,6 +281,7 @@ export async function readSelected() {
 }
 
 export async function resetTab(): Promise<void> {
+  stopInspectingNativeHandler();
   await clearDynamicElements({});
   await reactivateTab();
 }

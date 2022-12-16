@@ -67,7 +67,7 @@ export const getPackageId = (installable: Installable): RegistryId =>
 
 export const getUpdatedAt = (installable: Installable): string =>
   isExtension(installable)
-    ? // @ts-expect-error -- need to figure out why updateTimestamp isn't included on IExtension here
+    ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on IExtension here
       installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 

@@ -53,9 +53,7 @@ export function hideOverlay(): void {
 }
 
 export function stopInspectingNativeHandler(): void {
-  if (stopInspectingNative) {
-    stopInspectingNative();
-  }
+  stopInspectingNative?.();
 }
 
 let _cancelSelect: () => void = null;

@@ -66,7 +66,6 @@ import { runBrick } from "@/contentScript/executor";
 import {
   cancelSelect,
   selectElement,
-  stopInspectingNativeHandler,
 } from "@/contentScript/nativeEditor/elementPicker";
 import {
   runEffectPipeline,
@@ -124,7 +123,6 @@ declare global {
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
-    STOP_INSPECTING_NATIVE: typeof stopInspectingNativeHandler;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
@@ -185,7 +183,6 @@ export default function registerMessenger(): void {
     RUN_BRICK: runBrick,
     CANCEL_SELECT_ELEMENT: cancelSelect,
     SELECT_ELEMENT: selectElement,
-    STOP_INSPECTING_NATIVE: stopInspectingNativeHandler,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_EFFECT_PIPELINE: runEffectPipeline,
