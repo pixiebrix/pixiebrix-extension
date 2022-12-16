@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  FocusEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { Form, type FormControlProps } from "react-bootstrap";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
@@ -38,9 +32,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   inputRef: inputRefProp,
   ...restProps
 }) => {
-  const [{ value: formValue }, , { setValue: setFormValue }] =
-    useField<string>(name);
-  const [value, setValue] = useState<string>(String(formValue));
+  const [{ value }, , { setValue }] = useField<string>(name);
 
   const inputRef = useRef<HTMLInputElement>();
 
@@ -64,18 +56,12 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     []
   );
 
-  const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
-    setFormValue(value);
-    setValue(value);
-  }, [setFormValue, value]);
-
   return (
     <Form.Control
       {...restProps}
       type="password"
       value={value}
       onChange={onChange}
-      onBlur={onBlur}
       ref={inputRef}
     />
   );

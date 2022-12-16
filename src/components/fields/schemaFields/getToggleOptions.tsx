@@ -135,11 +135,11 @@ export function getToggleOptions({
 
   if (isKeyStringField(fieldSchema)) {
     pushOptions({
-      label: "Secret",
+      label: "Key",
       value: "string",
       symbol: <OptionIcon icon="key" />,
       interpretValue(oldValue: unknown) {
-        let newValue =
+        const newValue =
           typeof fieldSchema.default === "string" ? fieldSchema.default : "";
 
         return String(newValue);
