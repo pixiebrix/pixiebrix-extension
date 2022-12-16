@@ -17,95 +17,40 @@
 
 import React, { type ReactElement } from "react";
 import { type UUID } from "@/core";
-import { Button, Modal } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { Modal } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { sortBy } from "lodash";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import {
-  useGetEditablePackagesQuery,
-  useUpdateRecipeMutation,
-} from "@/services/api";
-import notify from "@/utils/notify";
 import { getScopeAndId } from "@/utils";
-import { produce } from "immer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInfoCircle,
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import ActivationLink from "./ActivationLink";
 import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
-import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
+import { RequireScope } from "@/auth/RequireScope";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
 const sortOrganizations = (organizations: Organization[]) =>
   sortBy(organizations, (organization) => organization.name);
 
-const PublishRecipeModalBody: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
+type PublishModalLayoutProps = React.PropsWithChildren<{
+  title: string;
+}>;
+
+const PublishModalLayout: React.FunctionComponent<PublishModalLayoutProps> = ({
+  title,
+  children,
+}) => {
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { scope: userScope, organizations: userOrganizations } =
     useSelector(selectAuth);
-  const [updateRecipe] = useUpdateRecipeMutation();
-  const { data: editablePackages, isFetching: isFetchingEditablePackages } =
-    useGetEditablePackagesQuery();
-  const { data: recipe, refetch: refetchRecipes } = useRecipe(blueprintId);
-
-  const [isPublishing, setPublishing] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
-  };
-
-  const publish = async () => {
-    setPublishing(true);
-    setError(null);
-
-    try {
-      const newRecipe = produce(recipe, (draft) => {
-        draft.sharing.public = true;
-      });
-
-      const packageId = editablePackages.find(
-        (x) => x.name === newRecipe.metadata.id
-      )?.id;
-
-      await updateRecipe({
-        packageId,
-        recipe: newRecipe,
-      }).unwrap();
-
-      notify.success("Shared brick");
-      closeModal();
-      refetchRecipes();
-    } catch (error) {
-      if (
-        isSingleObjectBadRequestError(error) &&
-        error.response.data.config?.length > 0
-      ) {
-        setError(error.response.data.config.join(" "));
-        return;
-      }
-
-      const message = getErrorMessage(error);
-      setError(message);
-
-      notify.error({
-        message,
-        error,
-      });
-    } finally {
-      setPublishing(false);
-    }
-  };
+  const { data: recipe } = useRecipe(blueprintId);
 
   // Sorting returns new array, so it safe to mutate it
   const sortedOrganizations = sortOrganizations(userOrganizations);
@@ -145,48 +90,12 @@ const PublishRecipeModalBody: React.FunctionComponent = () => {
     }
   }
 
-  return hasEditPermissions ? (
-    <>
-      <Modal.Body>
-        {error && <div className="text-danger p-3">{error}</div>}
-
-        <h3>{recipe.metadata.name}</h3>
-
-        <p>
-          On Submit, the public link to this blueprint will be shared with the{" "}
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            target="blank"
-            rel="noreferrer noopener"
-          >
-            PixieBrix Marketplace
-          </a>{" "}
-          admin team, who will review your submission and publish your
-          blueprint.
-        </p>
-        <p>
-          As soon as you Submit, the public link below will work for anyone, so
-          you can start sharing right away!
-        </p>
-
-        <p className="mb-1">Public link to share:</p>
-        <ActivationLink blueprintId={blueprintId} />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="link" onClick={closeModal}>
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          disabled={isPublishing || isFetchingEditablePackages}
-          onClick={publish}
-        >
-          Submit
-        </Button>
-      </Modal.Footer>
-    </>
+  const body = hasEditPermissions ? (
+    children
   ) : (
     <Modal.Body>
+      <h3>{recipe.metadata.name}</h3>
+
       <div className="text-info my-3">
         <FontAwesomeIcon icon={faInfoCircle} /> You don&apos;t have permissions
         to change sharing
@@ -206,6 +115,16 @@ const PublishRecipeModalBody: React.FunctionComponent = () => {
         ))}
     </Modal.Body>
   );
+  return (
+    <>
+      <Modal.Header closeButton>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <RequireScope scopeSettingsDescription="To publish a blueprint, you must first set an account alias for your PixieBrix account">
+        {body}
+      </RequireScope>
+    </>
+  );
 };
 
-export default PublishRecipeModalBody;
+export default PublishModalLayout;

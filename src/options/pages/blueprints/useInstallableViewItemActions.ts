@@ -260,9 +260,8 @@ function useInstallableViewItemActions(
   return {
     // TODO: hide publish for Published blueprints (public && !in marketplaceListings)
     viewPublish:
-      isDeployment || (isInstallableBlueprint && installable.sharing.public)
-        ? null
-        : viewPublish,
+      // isDeployment || (isInstallableBlueprint && installable.sharing.public)
+      isDeployment ? null : viewPublish,
     // Deployment sharing is controlled via the Admin Console
     viewShare: isDeployment ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,

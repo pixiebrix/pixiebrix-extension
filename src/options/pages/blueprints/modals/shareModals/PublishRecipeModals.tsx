@@ -19,16 +19,15 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { RequireScope } from "@/auth/RequireScope";
-import ModalLayout from "@/options/pages/blueprints/modals/ModalLayout";
-import PublishRecipeModalBody from "./PublishRecipeModalBody";
+import PublishRecipeModalContent from "./PublishRecipeModalContent";
 import { Modal } from "react-bootstrap";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
 import { useRecipe } from "@/recipes/recipesHooks";
 import ActivationLink from "./ActivationLink";
+import PublishModalLayout from "./PublishModalLayout";
 
-const ModalContent: React.FunctionComponent = () => {
+const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
   const blueprintId = showPublishContext?.blueprintId;
   const { data: listings, isLoading: areListingsLoading } =
@@ -44,70 +43,48 @@ const ModalContent: React.FunctionComponent = () => {
   }
 
   if (!recipe.sharing.public) {
-    return (
-      <>
-        <Modal.Header closeButton>
-          <Modal.Title>Publish to Marketplace</Modal.Title>
-        </Modal.Header>
-        <RequireScope scopeSettingsDescription="To publish a blueprint, you must first set an account alias for your PixieBrix account">
-          <PublishRecipeModalBody />
-        </RequireScope>
-      </>
-    );
+    return <PublishRecipeModalContent />;
   }
 
   const marketplaceListing = listings[recipe.metadata.id];
   if (marketplaceListing == null) {
     return (
-      <>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Pending Publish</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Publish pending</Modal.Body>
-      </>
+      <PublishModalLayout title="Edit Pending Publish">
+        <Modal.Body>
+          <h3>{recipe.metadata.name}</h3>
+          <p>Publish pending</p>
+        </Modal.Body>
+      </PublishModalLayout>
     );
   }
 
   return (
-    <>
-      <Modal.Header closeButton>
-        <Modal.Title>Published</Modal.Title>
-      </Modal.Header>
+    <PublishModalLayout title="Published">
       <Modal.Body>
         <h3>{recipe.metadata.name}</h3>
-        <p>Your blueprint has been published to the Marketplace.</p>
+
+        <p>The blueprint has been published to the Marketplace.</p>
         <p className="mb-1">Public link to share:</p>
         <ActivationLink blueprintId={blueprintId} />
       </Modal.Body>
-    </>
+    </PublishModalLayout>
   );
 };
 
-const PublishRecipeModal: React.FunctionComponent = () => {
+const PublishRecipeModals: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
 
   const showPublishContext = useSelector(selectShowPublishContext);
+  const showPublishRecipeModal = showPublishContext?.blueprintId != null;
 
   return (
-    <Modal show={showPublishContext?.blueprintId != null} onHide={closeModal}>
-      <ModalContent />
+    <Modal show={showPublishRecipeModal} onHide={closeModal}>
+      {showPublishRecipeModal && <ModalContentSwitch />}
     </Modal>
-  );
-
-  return (
-    <ModalLayout
-      show={showPublishContext?.blueprintId != null}
-      title="Publish to Marketplace"
-      onHide={closeModal}
-    >
-      <RequireScope scopeSettingsDescription="To publish a blueprint, you must first set an account alias for your PixieBrix account">
-        <PublishRecipeModalBody />
-      </RequireScope>
-    </ModalLayout>
   );
 };
 
-export default PublishRecipeModal;
+export default PublishRecipeModals;

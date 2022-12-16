@@ -18,7 +18,7 @@
 import React from "react";
 import ConvertToRecipeModal from "./convertToRecipeModal/ConvertToRecipeModal";
 import ExtensionLogsModal from "./extensionLogsModal/ExtensionLogsModal";
-import PublishRecipeModal from "./shareModals/PublishRecipeModal";
+import PublishRecipeModals from "./shareModals/PublishRecipeModals";
 import ShareRecipeModal from "./shareModals/ShareRecipeModal";
 
 const Modals: React.FunctionComponent = () => (
@@ -26,7 +26,7 @@ const Modals: React.FunctionComponent = () => (
     <ExtensionLogsModal />
     <ConvertToRecipeModal />
     <ShareRecipeModal />
-    <PublishRecipeModal />
+    <PublishRecipeModals />
   </>
 );
 

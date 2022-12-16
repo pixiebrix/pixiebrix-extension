@@ -18,7 +18,7 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 
-type ModalLayoutProps = {
+type ModalLayoutProps = React.PropsWithChildren<{
   title: string;
   show: boolean;
   onHide: () => void;
@@ -26,11 +26,9 @@ type ModalLayoutProps = {
   className?: string;
   dialogClassName?: string;
   contentClassName?: string;
-};
+}>;
 
-const ModalLayout: React.FunctionComponent<
-  React.PropsWithChildren<ModalLayoutProps>
-> = ({
+const ModalLayout: React.FunctionComponent<ModalLayoutProps> = ({
   title,
   show,
   onHide,
