@@ -2991,7 +2991,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               className="caret"
             />
             <td>
-              12/4/22, 12:12 AM
+              12/3/22, 4:12 PM
             </td>
             <td
               className="level"
@@ -3034,7 +3034,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/4/22, 12:12 AM
+              12/3/22, 4:12 PM
             </td>
             <td
               className="level"
@@ -3077,7 +3077,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/4/22, 12:12 AM
+              12/3/22, 4:12 PM
             </td>
             <td
               className="level"
@@ -3120,7 +3120,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/4/22, 12:12 AM
+              12/3/22, 4:12 PM
             </td>
             <td
               className="level"
@@ -4718,6 +4718,80 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
           </button>
         </div>
       </div>
+    </div>
+  </div>
+  <button
+    className="btn btn-primary"
+    disabled={false}
+    type="submit"
+  >
+    Submit
+  </button>
+</form>
+`;
+
+exports[`Storyshots Fields/SchemaField Password 1`] = `
+<form
+  action="#"
+  onReset={[Function]}
+  onSubmit={[Function]}
+>
+  <div
+    className="formGroup form-group row"
+  >
+    <label
+      className="label form-label col-form-label col-xl-2 col-lg-3"
+      htmlFor="topObj.parentObj.testField"
+    >
+      Enter a secret
+    </label>
+    <div
+      className="col-xl-10 col-lg-9"
+    >
+      <div
+        className="root"
+      >
+        <div
+          className="field"
+        >
+          <input
+            className="form-control"
+            defaultValue=""
+            id="topObj.parentObj.testField"
+            onBlur={[Function]}
+            onChange={[Function]}
+            type="password"
+            value=""
+          />
+        </div>
+        <div
+          className="dropdown dropdown"
+          data-test-selected="Secret"
+          data-testid="toggle-topObj.parentObj.testField"
+        >
+          <button
+            aria-expanded={false}
+            aria-haspopup={true}
+            className="dropdown-toggle btn btn-link"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              className="symbol"
+            >
+              <test-file-stub
+                className="root"
+              />
+            </span>
+          </button>
+        </div>
+      </div>
+      <small
+        className="text-muted form-text"
+      >
+        A secret field
+      </small>
     </div>
   </div>
   <button

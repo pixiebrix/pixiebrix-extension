@@ -111,16 +111,16 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
                 <div
                   class="field"
                 >
-                  <textarea
+                  <input
                     class="form-control"
                     id="config.apiToken"
-                    name="config.apiToken"
-                    rows="1"
+                    type="password"
+                    value=""
                   />
                 </div>
                 <div
                   class="dropdown dropdown"
-                  data-test-selected="Text"
+                  data-test-selected="Secret"
                   data-testid="toggle-config.apiToken"
                 >
                   <button
