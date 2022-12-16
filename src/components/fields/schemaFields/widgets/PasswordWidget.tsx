@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "./PasswordWidget.module.scss";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -77,7 +78,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
         <Button
           variant="default"
           onClick={() => setShow(!show)}
-          className="px-2 bg-white"
+          className={styles.showHideButton}
         >
           <FontAwesomeIcon fixedWidth icon={show ? faEye : faEyeSlash} />
         </Button>
