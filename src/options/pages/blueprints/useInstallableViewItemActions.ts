@@ -20,6 +20,7 @@ import {
   getPackageId,
   isExtension,
   isExtensionFromRecipe,
+  isRecipePendingPublish,
   selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { type InstallableViewItem } from "./blueprintsTypes";
@@ -31,13 +32,16 @@ import {
 } from "@/background/messenger/api";
 import {
   blueprintModalsSlice,
-  PublishContext,
-  ShareContext,
+  type PublishContext,
+  type ShareContext,
 } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
-import { useDeleteCloudExtensionMutation } from "@/services/api";
+import {
+  useDeleteCloudExtensionMutation,
+  useGetMarketplaceListingsQuery,
+} from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
@@ -66,6 +70,7 @@ export type InstallableViewItemActions = {
   exportBlueprint: ActionCallback;
 };
 
+// eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
@@ -105,6 +110,8 @@ function useInstallableViewItemActions(
   const { hasPermissions, requestPermissions } = useInstallablePermissions(
     extensionsFromInstallable
   );
+
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
   const reinstall = () => {
     if (hasBlueprint) {
@@ -257,11 +264,17 @@ function useInstallableViewItemActions(
     [installable, extensionsFromInstallable]
   );
 
+  const showPublishAction =
+    // Deployment sharing is controlled via the Admin Console
+    !isDeployment &&
+    // Only blueprints can be published
+    isInstallableBlueprint &&
+    // Skip if the blueprint is already published
+    (!installable.sharing.public ||
+      isRecipePendingPublish(installable, listings));
+
   return {
-    // TODO: hide publish for Published blueprints (public && !in marketplaceListings)
-    viewPublish:
-      // isDeployment || (isInstallableBlueprint && installable.sharing.public)
-      isDeployment ? null : viewPublish,
+    viewPublish: showPublishAction ? viewPublish : null,
     // Deployment sharing is controlled via the Admin Console
     viewShare: isDeployment ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,

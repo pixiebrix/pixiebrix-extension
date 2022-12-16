@@ -24,7 +24,7 @@ import {
   type UUID,
 } from "@/core";
 import * as semver from "semver";
-import { type Organization } from "@/types/contract";
+import { MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Installable,
   type SharingSource,
@@ -135,6 +135,14 @@ export const isDeployment = (
       installedExtension?._deployment
   );
 };
+
+/**
+ * Checks if a Blueprint has been made public but is not yet published to the Marketplace.
+ */
+export const isRecipePendingPublish = (
+  recipe: RecipeDefinition,
+  marketplaceListings: Record<RegistryId, MarketplaceListing>
+) => recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
 
 export const getSharingType = ({
   installable,

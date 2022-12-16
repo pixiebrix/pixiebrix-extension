@@ -28,6 +28,7 @@ import ActivationLink from "./ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
+import { isRecipePendingPublish } from "@/options/pages/blueprints/utils/installableUtils";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
@@ -48,8 +49,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
     return <PublishRecipeContent />;
   }
 
-  const marketplaceListing = listings[recipe.metadata.id];
-  if (marketplaceListing == null) {
+  if (isRecipePendingPublish(recipe, listings)) {
     return cancelingPublish ? <CancelPublishContent /> : <EditPublishContent />;
   }
 
