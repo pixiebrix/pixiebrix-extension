@@ -19,17 +19,18 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import PublishRecipeModalContent from "./PublishRecipeModalContent";
+import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
 import { useRecipe } from "@/recipes/recipesHooks";
 import ActivationLink from "./ActivationLink";
-import PublishModalLayout from "./PublishModalLayout";
+import PublishContentLayout from "./PublishContentLayout";
+import EditPublishContent from "./EditPublishContent";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
-  const blueprintId = showPublishContext?.blueprintId;
+  const blueprintId = showPublishContext.blueprintId;
   const { data: listings, isLoading: areListingsLoading } =
     useGetMarketplaceListingsQuery();
   const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(blueprintId);
@@ -43,23 +44,20 @@ const ModalContentSwitch: React.FunctionComponent = () => {
   }
 
   if (!recipe.sharing.public) {
-    return <PublishRecipeModalContent />;
+    return <PublishRecipeContent />;
   }
 
   const marketplaceListing = listings[recipe.metadata.id];
   if (marketplaceListing == null) {
-    return (
-      <PublishModalLayout title="Edit Pending Publish">
-        <Modal.Body>
-          <h3>{recipe.metadata.name}</h3>
-          <p>Publish pending</p>
-        </Modal.Body>
-      </PublishModalLayout>
+    return showPublishContext.cancelingPublish ? (
+      <div>Canceling publish...</div>
+    ) : (
+      <EditPublishContent />
     );
   }
 
   return (
-    <PublishModalLayout title="Published">
+    <PublishContentLayout title="Published">
       <Modal.Body>
         <h3>{recipe.metadata.name}</h3>
 
@@ -67,7 +65,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
         <p className="mb-1">Public link to share:</p>
         <ActivationLink blueprintId={blueprintId} />
       </Modal.Body>
-    </PublishModalLayout>
+    </PublishContentLayout>
   );
 };
 

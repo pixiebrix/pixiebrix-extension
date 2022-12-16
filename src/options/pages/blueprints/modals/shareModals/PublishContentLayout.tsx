@@ -43,10 +43,9 @@ type PublishModalLayoutProps = React.PropsWithChildren<{
   title: string;
 }>;
 
-const PublishModalLayout: React.FunctionComponent<PublishModalLayoutProps> = ({
-  title,
-  children,
-}) => {
+const PublishContentLayout: React.FunctionComponent<
+  PublishModalLayoutProps
+> = ({ title, children }) => {
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { scope: userScope, organizations: userOrganizations } =
     useSelector(selectAuth);
@@ -127,4 +126,4 @@ const PublishModalLayout: React.FunctionComponent<PublishModalLayoutProps> = ({
   );
 };
 
-export default PublishModalLayout;
+export default PublishContentLayout;

@@ -28,10 +28,14 @@ export type ShareContext = {
   extensionId?: UUID;
 };
 
+export type PublishContext = ShareContext & {
+  cancelingPublish?: boolean;
+};
+
 export type BlueprintModalsState = {
   showLogsContext: LogsContext;
   showShareContext: ShareContext;
-  showPublishContext: ShareContext;
+  showPublishContext: PublishContext;
 };
 
 const initialState: BlueprintModalsState = Object.freeze<BlueprintModalsState>({
@@ -54,10 +58,13 @@ export const blueprintModalsSlice = createSlice({
       state.showLogsContext = null;
       state.showPublishContext = null;
     },
-    setPublishContext(state, action: PayloadAction<ShareContext | null>) {
+    setPublishContext(state, action: PayloadAction<PublishContext | null>) {
       state.showPublishContext = action.payload;
       state.showLogsContext = null;
       state.showShareContext = null;
+    },
+    setCancelingPublish(state) {
+      state.showPublishContext.cancelingPublish = true;
     },
     closeModal() {
       return initialState;

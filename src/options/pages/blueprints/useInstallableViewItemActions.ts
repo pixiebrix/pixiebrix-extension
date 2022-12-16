@@ -29,7 +29,11 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
+import {
+  blueprintModalsSlice,
+  PublishContext,
+  ShareContext,
+} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
@@ -135,7 +139,7 @@ function useInstallableViewItemActions(
   };
 
   const viewPublish = () => {
-    const shareContext = isInstallableBlueprint
+    const publishContext: PublishContext = isInstallableBlueprint
       ? {
           blueprintId: getPackageId(installable),
         }
@@ -143,21 +147,17 @@ function useInstallableViewItemActions(
           extensionId: installable.id,
         };
 
-    dispatch(blueprintModalsSlice.actions.setPublishContext(shareContext));
+    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
   };
 
   const viewShare = () => {
-    let shareContext = null;
-
-    if (isInstallableBlueprint) {
-      shareContext = {
-        blueprintId: getPackageId(installable),
-      };
-    } else {
-      shareContext = {
-        extensionId: installable.id,
-      };
-    }
+    const shareContext: ShareContext = isInstallableBlueprint
+      ? {
+          blueprintId: getPackageId(installable),
+        }
+      : {
+          extensionId: installable.id,
+        };
 
     dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };

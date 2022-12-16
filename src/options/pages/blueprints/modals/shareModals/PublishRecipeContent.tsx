@@ -30,9 +30,9 @@ import { produce } from "immer";
 import ActivationLink from "./ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
-import PublishModalLayout from "./PublishModalLayout";
+import PublishContentLayout from "./PublishContentLayout";
 
-const PublishRecipeModalContent: React.FunctionComponent = () => {
+const PublishRecipeContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId } = useSelector(selectShowPublishContext);
   const [updateRecipe] = useUpdateRecipeMutation();
@@ -90,7 +90,7 @@ const PublishRecipeModalContent: React.FunctionComponent = () => {
   };
 
   return (
-    <PublishModalLayout title="Publish to Marketplace">
+    <PublishContentLayout title="Publish to Marketplace">
       <Modal.Body>
         {error && <div className="text-danger p-3">{error}</div>}
 
@@ -132,8 +132,8 @@ const PublishRecipeModalContent: React.FunctionComponent = () => {
           Submit
         </Button>
       </Modal.Footer>
-    </PublishModalLayout>
+    </PublishContentLayout>
   );
 };
 
-export default PublishRecipeModalContent;
+export default PublishRecipeContent;
