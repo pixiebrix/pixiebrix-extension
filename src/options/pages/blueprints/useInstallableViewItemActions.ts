@@ -258,6 +258,7 @@ function useInstallableViewItemActions(
   );
 
   return {
+    // TODO: hide publish for Published blueprints (public && !in marketplaceListings)
     viewPublish:
       isDeployment || (isInstallableBlueprint && installable.sharing.public)
         ? null

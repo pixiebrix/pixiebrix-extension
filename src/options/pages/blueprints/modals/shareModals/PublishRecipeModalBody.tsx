@@ -42,7 +42,6 @@ import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
-import Loader from "@/components/Loader";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
@@ -57,11 +56,7 @@ const PublishRecipeModalBody: React.FunctionComponent = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
-  const {
-    data: recipe,
-    isFetching: isFetchingRecipe,
-    refetch: refetchRecipes,
-  } = useRecipe(blueprintId);
+  const { data: recipe, refetch: refetchRecipes } = useRecipe(blueprintId);
 
   const [isPublishing, setPublishing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -69,15 +64,6 @@ const PublishRecipeModalBody: React.FunctionComponent = () => {
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
-
-  // If an extension was just converted to a blueprint, the API request is likely be in progress and recipe will be null
-  if (isFetchingRecipe) {
-    return (
-      <Modal.Body>
-        <Loader />
-      </Modal.Body>
-    );
-  }
 
   const publish = async () => {
     setPublishing(true);
