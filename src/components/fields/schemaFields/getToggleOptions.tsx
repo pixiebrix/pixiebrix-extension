@@ -137,7 +137,12 @@ export function getToggleOptions({
     //pushOptions(textOption);
     pushOptions({
       label: "Secret",
-      value: "secret",
+      value: "string",
+      symbol: <OptionIcon icon="text" />,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
       Widget: widgetsRegistry.PasswordWidget,
     });
     handleOptionalValue();
