@@ -62,7 +62,6 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
@@ -75,6 +74,7 @@ import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
+import Loader from "@/components/Loader";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -338,11 +338,6 @@ const CreateRecipeModal: React.FC = () => {
     activeElement,
   });
 
-  // Loading state -- could consider refactoring into two components: 1) modal with loading state, 2) form
-  if (activeRecipeId && isRecipeFetching) {
-    return <LoadingDataModal show={show} onClose={hideModal} />;
-  }
-
   const onSubmit: OnSubmit<RecipeMetadataFormState> = async (
     values,
     helpers
@@ -427,15 +422,19 @@ const CreateRecipeModal: React.FC = () => {
         <Modal.Title>Create new blueprint</Modal.Title>
       </Modal.Header>
       <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
-        <Form
-          validationSchema={formSchema}
-          showUntouchedErrors
-          validateOnMount
-          initialValues={initialFormState}
-          onSubmit={onSubmit}
-          renderBody={renderBody}
-          renderSubmit={renderSubmit}
-        />
+        {isRecipeFetching ? (
+          <Loader />
+        ) : (
+          <Form
+            validationSchema={formSchema}
+            showUntouchedErrors
+            validateOnMount
+            initialValues={initialFormState}
+            onSubmit={onSubmit}
+            renderBody={renderBody}
+            renderSubmit={renderSubmit}
+          />
+        )}
       </RequireScope>
     </Modal>
   );

@@ -23,7 +23,6 @@ import {
   selectActiveRecipeId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
-import LoadingDataModal from "@/pageEditor/panes/save/LoadingDataModal";
 import { useRecipe } from "@/recipes/recipesHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
@@ -45,10 +44,6 @@ const SaveAsNewRecipeModal: React.FC = () => {
     // Don't keep the old recipe active
     dispatch(actions.showCreateRecipeModal({ keepLocalCopy: false }));
   };
-
-  if (isFetching && show) {
-    return <LoadingDataModal show={show} onClose={hideModal} />;
-  }
 
   return (
     <Modal show={show} onHide={hideModal}>
