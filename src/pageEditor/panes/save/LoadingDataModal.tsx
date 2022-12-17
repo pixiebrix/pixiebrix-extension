@@ -21,10 +21,11 @@ import Loader from "@/components/Loader";
 
 type OwnProps = {
   onClose: () => void;
+  show: boolean;
 };
 
-const LoadingDataModal: React.FC<OwnProps> = ({ onClose }) => (
-  <Modal show onHide={onClose} backdrop="static" keyboard={false}>
+const LoadingDataModal: React.FC<OwnProps> = ({ show, onClose }) => (
+  <Modal show={show} onHide={onClose} backdrop="static" keyboard={false}>
     <Modal.Header closeButton>
       <Modal.Title>Loading data...</Modal.Title>
     </Modal.Header>

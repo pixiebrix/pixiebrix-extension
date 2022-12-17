@@ -47,7 +47,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
   };
 
   if (isFetching && show) {
-    return <LoadingDataModal onClose={hideModal} />;
+    return <LoadingDataModal show={show} onClose={hideModal} />;
   }
 
   return (
