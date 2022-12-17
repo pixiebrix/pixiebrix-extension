@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/themes/colors";
+@use "@/themes/colors";
 
 .label {
-  color: $N400;
+  color: colors.$N400;
 }
