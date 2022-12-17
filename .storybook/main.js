@@ -64,8 +64,10 @@ module.exports = {
                 loader: "sass-loader",
                 options: {
                   sourceMap: true,
-                  // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-                  implementation: require("node-sass"),
+                  sassOptions: {
+                    // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                    quietDeps: true,
+                  },
                 },
               },
             ],
