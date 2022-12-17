@@ -77,7 +77,9 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       <InputGroup.Append>
         <Button
           variant="default"
-          onClick={() => setShow(!show)}
+          onClick={() => {
+            setShow(!show);
+          }}
           className={styles.showHideButton}
         >
           <FontAwesomeIcon fixedWidth icon={show ? faEye : faEyeSlash} />
