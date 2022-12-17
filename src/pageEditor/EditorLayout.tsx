@@ -27,12 +27,27 @@ import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane from "@/pageEditor/panes/insert/InsertPane";
 import { selectIsStaleSession } from "@/pageEditor/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
+import useCurrentUrl from "./hooks/useCurrentUrl";
+import CantModifyPane from "./panes/CantModifyPane";
+import { isScriptableUrl } from "@/utils/permissions";
+import Loader from "@/components/Loader";
 
 const EditorLayout: React.FunctionComponent = () => {
   const inserting = useSelector(selectInserting);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
   const isStaleSession = useSelector(selectIsStaleSession);
+
+  const url = useCurrentUrl();
+
+  if (!url) {
+    // Nearly immediate, likely never shown
+    return <Loader />;
+  }
+
+  if (!isScriptableUrl(url)) {
+    return <CantModifyPane url={url} />;
+  }
 
   return (
     <>
