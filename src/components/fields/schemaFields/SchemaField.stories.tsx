@@ -153,6 +153,17 @@ TextArea.args = {
   },
 };
 
+export const Password = Template.bind({});
+Password.args = {
+  name: "topObj.parentObj.testField",
+  label: "Enter a secret",
+  defaultValue: "",
+  schema: {
+    $ref: "https://app.pixiebrix.com/schemas/key#",
+    description: "A secret field",
+  },
+};
+
 export const ArrayItems = Template.bind({});
 ArrayItems.args = {
   name: "topObj.parentObj.testField",
