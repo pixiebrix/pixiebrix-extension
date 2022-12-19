@@ -138,12 +138,7 @@ export function getToggleOptions({
       label: "Key",
       value: "string",
       symbol: <OptionIcon icon="key" />,
-      interpretValue(oldValue: unknown) {
-        const newValue =
-          typeof fieldSchema.default === "string" ? fieldSchema.default : "";
-
-        return String(newValue);
-      },
+      interpretValue: (value: unknown) => (value ? String(value) : ""),
       Widget: widgetsRegistry.PasswordWidget,
     });
     handleOptionalValue();
