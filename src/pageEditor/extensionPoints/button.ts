@@ -33,16 +33,16 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
   type MenuDefinition,
-  type MenuItemExtensionConfig,
-  MenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
+  type ButtonExtensionConfig,
+  ButtonExtensionPoint,
+} from "@/extensionPoints/buttonExtension";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
+import ButtonConfiguration from "@/pageEditor/tabs/button/ButtonConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {
   type ButtonDefinition,
@@ -108,9 +108,9 @@ function selectExtensionPoint(
 function selectExtension(
   state: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<MenuItemExtensionConfig> {
+): IExtension<ButtonExtensionConfig> {
   const { extension } = state;
-  const config: MenuItemExtensionConfig = {
+  const config: ButtonExtensionConfig = {
     caption: extension.caption,
     icon: extension.icon,
     action: options.includeInstanceIds
@@ -174,11 +174,11 @@ async function fromExtensionPoint(
 }
 
 async function fromExtension(
-  config: IExtension<MenuItemExtensionConfig>
+  config: IExtension<ButtonExtensionConfig>
 ): Promise<ActionFormState> {
   const extensionPoint = await lookupExtensionPoint<
     MenuDefinition,
-    MenuItemExtensionConfig,
+    ButtonExtensionConfig,
     "menuItem"
   >(config, "menuItem");
 
@@ -220,8 +220,8 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   elementType: "menuItem",
   label: "Button",
   icon: faMousePointer,
-  baseClass: MenuItemExtensionPoint,
-  EditorNode: MenuItemConfiguration,
+  baseClass: ButtonExtensionPoint,
+  EditorNode: ButtonConfiguration,
   selectNativeElement: insertButton,
   fromExtensionPoint,
   fromNativeElement,

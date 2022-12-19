@@ -26,7 +26,7 @@ import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
 import {
   formStateFactory,
-  menuItemFormStateFactory,
+  buttonFormStateFactory,
   recipeMetadataFactory,
   recipeFactory,
   installedRecipeMetadataFactory,
@@ -40,7 +40,7 @@ import {
 } from "@/services/api";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import button from "@/pageEditor/extensionPoints/button";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -183,7 +183,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     const extensionLabel = recipe.extensionPoints[0].label;
-    const element = menuItemFormStateFactory({
+    const element = buttonFormStateFactory({
       label: extensionLabel,
       recipe: {
         ...recipe.metadata,
@@ -192,7 +192,7 @@ describe("saving a Recipe Extension", () => {
       },
       optionsDefinition: recipeOptions,
     });
-    const extension = menuItem.selectExtension(element);
+    const extension = button.selectExtension(element);
     extension._recipe = element.recipe;
     const store = createStore({
       options: {

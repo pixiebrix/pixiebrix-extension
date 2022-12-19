@@ -21,7 +21,7 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
+import { buttonFormStateFactory as buttonFormStateFactory } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/core";
 import { checkAvailable } from "@/contentScript/messenger/api";
@@ -54,7 +54,7 @@ describe("checkActiveElementAvailability", () => {
       },
     });
 
-    const availableDynamicExtension = menuItemFormStateFactory({
+    const availableDynamicExtension = buttonFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/available-button"),
@@ -72,7 +72,7 @@ describe("checkActiveElementAvailability", () => {
       },
     });
 
-    const unavailableDynamicExtension = menuItemFormStateFactory({
+    const unavailableDynamicExtension = buttonFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),

@@ -23,7 +23,7 @@ import {
   formStateFactory,
   triggerFormStateFactory,
   quickbarFormStateFactory,
-  menuItemFormStateFactory,
+  buttonFormStateFactory as buttonFormStateFactory,
   contextMenuFormStateFactory,
   sidebarPanelFormStateFactory,
 } from "@/testUtils/factories";
@@ -100,7 +100,7 @@ describe("shows root mode", () => {
     ["quickBar", quickbarFormStateFactory],
     ["contextMenu", contextMenuFormStateFactory],
     // `menuItem` must show root mode because root mode is used if the location matches multiple elements on the page
-    ["menuItem", menuItemFormStateFactory],
+    ["menuItem", buttonFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
     const block = echoBlock;
     blockRegistry.register(block);

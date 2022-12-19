@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
+import { buttonFormStateFactory } from "@/testUtils/factories";
 import { type IService, type OutputKey } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@/options/testHelpers";
@@ -53,7 +53,7 @@ jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
+  const baseFormState = buttonFormStateFactory();
   baseFormState.services = [
     {
       id: CONTROL_ROOM_SERVICE_ID,

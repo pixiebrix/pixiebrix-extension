@@ -90,7 +90,7 @@ export const DATA_ATTR = "data-pb-uuid";
 
 const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
 
-export type MenuItemExtensionConfig = {
+export type ButtonExtensionConfig = {
   /**
    * The button caption to supply to the `caption` in the extension point template.
    * If `dynamicCaption` is true, can include template expressions.
@@ -159,7 +159,7 @@ export async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
   return rejectOnCancelled(promise, isNavigationCancelled);
 }
 
-export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
+export abstract class ButtonExtensionPoint extends ExtensionPoint<ButtonExtensionConfig> {
   /**
    * Mapping of menu container UUID to the DOM element for the menu container
    * @protected
@@ -259,7 +259,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private cancelAllPending(): void {
     console.debug(
-      `Cancelling ${this.cancelPending.size} menuItemExtension observers`
+      `Cancelling ${this.cancelPending.size} buttonExtension observers`
     );
     for (const cancelObserver of this.cancelPending) {
       try {
@@ -279,7 +279,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   removeExtensions(extensionIds: string[]): void {
     console.debug(
-      "Remove extensionIds for menuItem extension point: %s",
+      "Remove extensionIds for button extension point: %s",
       this.id,
       { extensionIds }
     );
@@ -305,7 +305,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     if (extensions.length === 0) {
       console.warn(
-        `uninstall called on menu extension point with no extensions: ${this.id}`
+        `uninstall called on button extension point with no extensions: ${this.id}`
       );
     }
 
@@ -345,21 +345,21 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   getTemplate(): string {
     if (this.template) return this.template;
-    throw new Error("MenuItemExtensionPoint.getTemplate not implemented");
+    throw new Error("ButtonExtensionPoint.getTemplate not implemented");
   }
 
   getContainerSelector(): string | string[] {
     throw new Error(
-      "MenuItemExtensionPoint.getContainerSelector not implemented"
+      "ButtonExtensionPoint.getContainerSelector not implemented"
     );
   }
 
-  addMenuItem($menu: JQuery, $menuItem: JQuery): void {
-    $menu.append($menuItem);
+  addButton($menu: JQuery, $button: JQuery): void {
+    $menu.append($button);
   }
 
   async getBlocks(
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<ButtonExtensionConfig>
   ): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
@@ -454,13 +454,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   protected abstract makeItem(
     html: string,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<ButtonExtensionConfig>
   ): JQuery;
 
   private async runExtension(
     menu: HTMLElement,
     ctxtPromise: Promise<ReaderOutput>,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<ButtonExtensionConfig>
   ) {
     if (!extension.id) {
       this.logger.error(`Refusing to run extension without id for ${this.id}`);
@@ -505,7 +505,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const input = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
-      console.debug("Checking menuItem precondition", {
+      console.debug("Checking button precondition", {
         input,
         serviceContext,
       });
@@ -552,9 +552,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       })) as string;
     }
 
-    const $menuItem = this.makeItem(html, extension);
+    const $button = this.makeItem(html, extension);
 
-    $menuItem.on("click", async (event) => {
+    $button.on("click", async (event) => {
       let runningElements: WeakSet<HTMLElement> =
         this.runningExtensionElements.get(extension.id);
       if (runningElements == null) {
@@ -628,16 +628,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if ($existingItem.length > 0) {
       // We don't need to unbind any click handlers because we're replacing the element completely.
       console.debug(`Replacing existing menu item for ${extension.id}`);
-      $existingItem.replaceWith($menuItem);
+      $existingItem.replaceWith($button);
     } else {
       console.debug(`Adding new menu item ${extension.id}`);
-      this.addMenuItem($menu, $menuItem);
+      this.addButton($menu, $button);
     }
 
     this.watchDependencies(extension);
 
     if (process.env.DEBUG) {
-      const cancelObserver = onNodeRemoved($menuItem.get(0), () => {
+      const cancelObserver = onNodeRemoved($button.get(0), () => {
         // Don't re-install here. We're reinstalling the entire menu
         console.debug(`Menu item for ${extension.id} was removed from the DOM`);
       });
@@ -645,9 +645,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  watchDependencies(
-    extension: ResolvedExtension<MenuItemExtensionConfig>
-  ): void {
+  watchDependencies(extension: ResolvedExtension<ButtonExtensionConfig>): void {
     const { dependencies = [] } = extension.config;
 
     // Clean up old observers
@@ -770,7 +768,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } catch (error) {
           if (error instanceof PromiseCancelled) {
             console.debug(
-              `menuItemExtension run promise cancelled for extension: ${extension.id}`
+              `buttonExtension run promise cancelled for extension: ${extension.id}`
             );
           } else {
             errors.push(error);
@@ -821,7 +819,7 @@ export interface MenuDefinition extends ExtensionPointDefinition {
   shadowDOM?: ShadowDOM;
 }
 
-export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
+export class RemoteButtonExtensionPoint extends ButtonExtensionPoint {
   private readonly _definition: MenuDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -852,7 +850,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     };
   }
 
-  override addMenuItem($menu: JQuery, $menuItem: JQuery): void {
+  override addButton($menu: JQuery, $button: JQuery): void {
     const { position = "append" } = this._definition;
 
     if (typeof position === "object") {
@@ -865,14 +863,14 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         }
 
         if ($sibling.length === 1) {
-          $sibling.before($menuItem);
+          $sibling.before($button);
         } else {
           // Didn't find the sibling, so just try inserting it at the end
-          $menu.append($menuItem);
+          $menu.append($button);
         }
       } else {
         // No element to insert the item before, so insert it at the end.
-        $menu.append($menuItem);
+        $menu.append($button);
       }
     } else {
       switch (position) {
@@ -880,7 +878,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         case "append": {
           // Safe because we're checking the value in the case statements
           // eslint-disable-next-line security/detect-object-injection
-          $menu[position]($menuItem);
+          $menu[position]($button);
           break;
         }
 
@@ -933,7 +931,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   protected makeItem(
     unsanitizedHTML: string,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<ButtonExtensionConfig>
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 
@@ -967,5 +965,5 @@ export function fromJS(
     throw new Error(`Expected type=menuItem, got ${type as string}`);
   }
 
-  return new RemoteMenuItemExtensionPoint(config);
+  return new RemoteButtonExtensionPoint(config);
 }

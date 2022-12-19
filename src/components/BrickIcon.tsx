@@ -32,7 +32,7 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
-import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
+import { ButtonExtensionPoint } from "@/extensionPoints/buttonExtension";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
@@ -77,7 +77,7 @@ export function getDefaultBrickIcon(
     return faBolt;
   }
 
-  if (brick instanceof MenuItemExtensionPoint) {
+  if (brick instanceof ButtonExtensionPoint) {
     return faMousePointer;
   }
 

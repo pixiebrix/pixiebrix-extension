@@ -18,7 +18,7 @@
 import {
   extensionFactory,
   installedRecipeMetadataFactory,
-  menuItemFormStateFactory,
+  buttonFormStateFactory,
   recipeDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
@@ -56,7 +56,7 @@ const installedFooA: IExtension = extensionFactory({
 });
 
 const ID_FOO_B = uuidv4();
-const dynamicFooB: ActionFormState = menuItemFormStateFactory({
+const dynamicFooB: ActionFormState = buttonFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
   recipe: installedRecipeMetadataFactory({
@@ -65,7 +65,7 @@ const dynamicFooB: ActionFormState = menuItemFormStateFactory({
 });
 
 const ID_ORPHAN_C = uuidv4();
-const dynamicOrphanC: ActionFormState = menuItemFormStateFactory({
+const dynamicOrphanC: ActionFormState = buttonFormStateFactory({
   uuid: ID_ORPHAN_C,
   label: "C",
 });
@@ -80,7 +80,7 @@ const installedBarD: IExtension = extensionFactory({
 });
 
 const ID_BAR_E = uuidv4();
-const dynamicBarE: ActionFormState = menuItemFormStateFactory({
+const dynamicBarE: ActionFormState = buttonFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
   recipe: installedRecipeMetadataFactory({
@@ -109,7 +109,7 @@ const installedOrphanH: IExtension = extensionFactory({
   label: "H",
 });
 
-const dynamicOrphanH: ActionFormState = menuItemFormStateFactory({
+const dynamicOrphanH: ActionFormState = buttonFormStateFactory({
   uuid: ID_ORPHAN_H,
   label: "H",
 });

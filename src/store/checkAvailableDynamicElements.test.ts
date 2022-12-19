@@ -18,7 +18,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
+import { buttonFormStateFactory } from "@/testUtils/factories";
 import { type RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
@@ -53,7 +53,7 @@ describe("checkAvailableDynamicElements", () => {
       },
     });
 
-    const availableDynamicExtension = menuItemFormStateFactory({
+    const availableDynamicExtension = buttonFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/available-button"),
@@ -71,7 +71,7 @@ describe("checkAvailableDynamicElements", () => {
       },
     });
 
-    const unavailableDynamicExtension = menuItemFormStateFactory({
+    const unavailableDynamicExtension = buttonFormStateFactory({
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),

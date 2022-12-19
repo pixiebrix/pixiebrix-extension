@@ -51,7 +51,7 @@ import {
 } from "@/types/helpers";
 import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import menuItem from "@/pageEditor/extensionPoints/button";
 import {
   type ActionFormState,
   type ContextMenuFormState,
@@ -677,7 +677,7 @@ export const quickbarFormStateFactory = (
   ) as QuickBarFormState;
 };
 
-export const menuItemFormStateFactory = (
+export const buttonFormStateFactory = (
   override?: FactoryConfig<ActionFormState>,
   pipelineOverride?: BlockPipeline
 ) => {

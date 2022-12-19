@@ -29,8 +29,8 @@ import {
 } from "@/extensionPoints/panelExtension";
 import {
   type MenuDefinition,
-  type MenuItemExtensionConfig,
-} from "@/extensionPoints/menuItemExtension";
+  type ButtonExtensionConfig,
+} from "@/extensionPoints/buttonExtension";
 
 export interface ElementInfo {
   selectors: string[];
@@ -62,11 +62,11 @@ export type PanelSelectionResult = {
 };
 export type ButtonDefinition = DynamicDefinition<
   MenuDefinition,
-  MenuItemExtensionConfig
+  ButtonExtensionConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
   menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
-  item: Pick<MenuItemExtensionConfig, "caption">;
+  item: Pick<ButtonExtensionConfig, "caption">;
   containerInfo: ElementInfo;
 };

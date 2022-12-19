@@ -23,9 +23,9 @@ import {
   type MenuDefaultOptions as ContextMenuDefaultOptions,
 } from "@/extensionPoints/contextMenu";
 import {
-  type MenuItemExtensionConfig,
+  type ButtonExtensionConfig,
   type MenuPosition,
-} from "@/extensionPoints/menuItemExtension";
+} from "@/extensionPoints/buttonExtension";
 import { type PanelConfig } from "@/extensionPoints/panelExtension";
 import {
   type QuickBarConfig,
@@ -58,7 +58,7 @@ import {
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
-  Except<MenuItemExtensionConfig, "action">;
+  Except<ButtonExtensionConfig, "action">;
 type ActionExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;

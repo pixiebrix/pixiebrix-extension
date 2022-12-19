@@ -32,7 +32,7 @@ import {
   extensionFactory,
   typedBlockFactory,
 } from "@/testUtils/factories";
-import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
+import buttonExtensionAdapter from "@/pageEditor/extensionPoints/button";
 import { type UnknownObject } from "@/types";
 import {
   internalExtensionPointMetaFactory,
@@ -43,7 +43,7 @@ import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
 import { type InnerDefinitionRef, type UnresolvedExtension } from "@/core";
-import { type MenuDefinition } from "@/extensionPoints/menuItemExtension";
+import { type MenuDefinition } from "@/extensionPoints/buttonExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   getMinimalSchema,
@@ -117,7 +117,7 @@ describe("replaceRecipeExtension round trip", () => {
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const element = await buttonExtensionAdapter.fromExtension(
       state.extensions[0]
     );
     element.label = "New Label";
@@ -161,7 +161,7 @@ describe("replaceRecipeExtension round trip", () => {
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const element = await buttonExtensionAdapter.fromExtension(
       state.extensions[0]
     );
     element.label = "New Label";
@@ -204,7 +204,7 @@ describe("replaceRecipeExtension round trip", () => {
       },
     });
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const element = await buttonExtensionAdapter.fromExtension(
       state.extensions[0]
     );
 
@@ -254,7 +254,7 @@ describe("replaceRecipeExtension round trip", () => {
       },
     });
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const element = await buttonExtensionAdapter.fromExtension(
       state.extensions[0]
     );
 
@@ -314,7 +314,7 @@ describe("replaceRecipeExtension round trip", () => {
       },
     });
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const element = await buttonExtensionAdapter.fromExtension(
       state.extensions[0]
     );
 
@@ -363,7 +363,7 @@ describe("replaceRecipeExtension round trip", () => {
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
-    const element = await menuItemExtensionAdapter.fromExtension({
+    const element = await buttonExtensionAdapter.fromExtension({
       ...state.extensions[0],
       apiVersion: "v3",
     });
@@ -412,7 +412,7 @@ describe("replaceRecipeExtension round trip", () => {
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
-    const element = await menuItemExtensionAdapter.fromExtension({
+    const element = await buttonExtensionAdapter.fromExtension({
       ...state.extensions[0],
       apiVersion: "v3",
     });
@@ -448,7 +448,7 @@ describe("blueprint options", () => {
       })
     );
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const element = await buttonExtensionAdapter.fromExtension(
       state.extensions[0]
     );
 

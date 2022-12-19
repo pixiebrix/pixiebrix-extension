@@ -18,12 +18,12 @@
 import styles from "@/pageEditor/panes/Pane.module.scss";
 
 import React from "react";
-import config from "@/pageEditor/extensionPoints/menuItem";
+import config from "@/pageEditor/extensionPoints/button";
 import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import {
   type MenuDefinition,
-  MenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
+  ButtonExtensionPoint,
+} from "@/extensionPoints/buttonExtension";
 import Centered from "@/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,18 +38,17 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
 import useFlags from "@/hooks/useFlags";
 
-type MenuItemWithConfig = MenuItemExtensionPoint & {
+type ButtonWithConfig = ButtonExtensionPoint & {
   rawConfig: ExtensionPointConfig<MenuDefinition>;
 };
 
-const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
+const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
   cancel,
 }) => {
   const { flagOn } = useFlags();
 
-  const menuItemExtensionPoints = useAvailableExtensionPoints(
-    MenuItemExtensionPoint
-  );
+  const buttonExtensionPoints =
+    useAvailableExtensionPoints(ButtonExtensionPoint);
 
   const addExisting = useAddExisting(config, cancel);
 
@@ -76,18 +75,18 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
       <div>
         {flagOn("page-editor-extension-point-marketplace") && (
           <BrickModal
-            bricks={menuItemExtensionPoints ?? []}
+            bricks={buttonExtensionPoints ?? []}
             caption="Select button foundation"
             renderButton={(onClick) => (
               <Button
                 variant="info"
                 onClick={onClick}
-                disabled={!menuItemExtensionPoints?.length}
+                disabled={!buttonExtensionPoints?.length}
               >
                 <FontAwesomeIcon icon={faSearch} /> Search Marketplace
               </Button>
             )}
-            onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
+            onSelect={async (block) => addExisting(block as ButtonWithConfig)}
           />
         )}
 
@@ -99,4 +98,4 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   );
 };
 
-export default InsertMenuItemPane;
+export default InsertButtonPane;

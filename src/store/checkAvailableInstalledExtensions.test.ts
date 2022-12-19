@@ -31,8 +31,8 @@ import { getCurrentURL } from "@/pageEditor/utils";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
-  RemoteMenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
+  RemoteButtonExtensionPoint,
+} from "@/extensionPoints/buttonExtension";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/core";
 import {
@@ -92,7 +92,7 @@ describe("checkAvailableInstalledExtensions", () => {
         },
       }
     ) as ExtensionPointConfig<MenuDefinition>;
-    const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
+    const availableButtonExtensionPoint = new RemoteButtonExtensionPoint(
       availableButtonExtensionPointConfig
     );
 

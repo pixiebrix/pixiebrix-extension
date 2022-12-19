@@ -16,7 +16,7 @@
  */
 
 import { fromJS as deserializePanel } from "@/extensionPoints/panelExtension";
-import { fromJS as deserializeMenuItem } from "@/extensionPoints/menuItemExtension";
+import { fromJS as deserializeButton } from "@/extensionPoints/buttonExtension";
 import { fromJS as deserializeTrigger } from "@/extensionPoints/triggerExtension";
 import { fromJS as deserializeContextMenu } from "@/extensionPoints/contextMenu";
 import { fromJS as deserializeSidebar } from "@/extensionPoints/sidebarExtension";
@@ -26,7 +26,7 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 
 const TYPE_MAP = {
   panel: deserializePanel,
-  menuItem: deserializeMenuItem,
+  menuItem: deserializeButton,
   trigger: deserializeTrigger,
   contextMenu: deserializeContextMenu,
   actionPanel: deserializeSidebar,

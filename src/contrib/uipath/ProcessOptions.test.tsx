@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/options/testHelpers";
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
+import { buttonFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
@@ -78,7 +78,7 @@ jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
 const serviceId = validateRegistryId("@uipath/cloud");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
+  const baseFormState = buttonFormStateFactory();
   baseFormState.services = [
     { id: serviceId, outputKey: "uipath" as OutputKey },
   ];

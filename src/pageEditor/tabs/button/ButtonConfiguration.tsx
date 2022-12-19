@@ -45,7 +45,7 @@ const positionOptions: Option[] = [
   { value: "prepend", label: "Start" },
 ];
 
-const MenuItemConfiguration: React.FC<{
+const ButtonConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
   const [{ value: onSuccess }] = useField("extension.onSuccess");
@@ -124,4 +124,4 @@ const MenuItemConfiguration: React.FC<{
   );
 };
 
-export default MenuItemConfiguration;
+export default ButtonConfiguration;

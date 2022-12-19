@@ -667,7 +667,7 @@ export enum RunReason {
   /**
    * Experimental: a declared dependency of the extension point changed.
    *
-   * See MenuItemExtensionPoint
+   * See ButtonExtensionPoint
    */
   DEPENDENCY_CHANGED = 4,
   /**

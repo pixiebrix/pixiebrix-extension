@@ -17,7 +17,7 @@
 
 import React, { useCallback } from "react";
 import { type ExtensionPointType } from "@/extensionPoints/types";
-import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
+import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import GenericInsertPane from "@/pageEditor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -42,7 +42,7 @@ const InsertPane: React.FC<{ inserting: ExtensionPointType }> = ({
 
   switch (inserting) {
     case "menuItem": {
-      return <InsertMenuItemPane cancel={cancelInsert} />;
+      return <InsertButtonPane cancel={cancelInsert} />;
     }
 
     case "panel": {

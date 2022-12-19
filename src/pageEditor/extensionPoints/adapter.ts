@@ -21,7 +21,7 @@ import {
   type ExtensionPointConfig,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
-import menuItemExtension from "@/pageEditor/extensionPoints/menuItem";
+import buttonExtension from "@/pageEditor/extensionPoints/button";
 import quickBarExtension from "@/pageEditor/extensionPoints/quickBar";
 import triggerExtension from "@/pageEditor/extensionPoints/trigger";
 import panelExtension from "@/pageEditor/extensionPoints/panel";
@@ -36,7 +36,7 @@ export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["panel", panelExtension],
   ["contextMenu", contextMenuExtension],
   ["actionPanel", sidebarExtension],
-  ["menuItem", menuItemExtension],
+  ["menuItem", buttonExtension],
   ["quickBar", quickBarExtension],
 ]);
 
