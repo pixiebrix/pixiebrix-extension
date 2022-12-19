@@ -267,10 +267,10 @@ function useInstallableViewItemActions(
   const showPublishAction =
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
-    // Only blueprints can be published
-    isInstallableBlueprint &&
-    // Skip if the blueprint is already published
-    (!installable.sharing.public ||
+    // Extensions can be published
+    (isInstallableExtension ||
+      // In case of blueprint, skip if it is already published
+      !installable.sharing.public ||
       isRecipePendingPublish(installable, listings));
 
   return {

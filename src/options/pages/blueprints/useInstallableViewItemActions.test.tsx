@@ -19,7 +19,11 @@
 /// <reference types="jest-extended" />
 
 import { renderHook } from "@testing-library/react-hooks";
-import { extensionFactory, recipeFactory } from "@/testUtils/factories";
+import {
+  extensionFactory,
+  marketplaceListingFactory,
+  recipeFactory,
+} from "@/testUtils/factories";
 import useInstallableViewItemActions, {
   type InstallableViewItemActions,
 } from "@/options/pages/blueprints/useInstallableViewItemActions";
@@ -30,8 +34,12 @@ import {
   type SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import { useDeleteCloudExtensionMutation } from "@/services/api";
+import {
+  useDeleteCloudExtensionMutation,
+  useGetMarketplaceListingsQuery,
+} from "@/services/api";
 import { uniq } from "lodash";
+import { RecipeDefinition } from "@/types/definitions";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -44,6 +52,7 @@ jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
 );
 jest.mock("@/services/api", () => ({
   useDeleteCloudExtensionMutation: jest.fn(),
+  useGetMarketplaceListingsQuery: jest.fn(),
 }));
 
 const expectActions = (
@@ -80,6 +89,10 @@ const mockHooks = ({
   (useDeleteCloudExtensionMutation as jest.Mock).mockImplementation(() => [
     jest.fn(),
   ]);
+
+  (useGetMarketplaceListingsQuery as jest.Mock).mockImplementation(() => ({
+    data: {},
+  }));
 };
 
 const installableItemFactory = ({
@@ -100,6 +113,10 @@ const installableItemFactory = ({
     },
     status,
   } as InstallableViewItem);
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe("useInstallableViewItemActions", () => {
   test("cloud extension", () => {
@@ -333,26 +350,57 @@ describe("useInstallableViewItemActions", () => {
     expectActions(["viewLogs"], actions);
   });
 
-  test("public blueprint is not publishable", () => {
-    mockHooks();
-    const blueprintItem = {
-      installable: recipeFactory({
-        sharing: { public: true, organizations: [] },
-      }),
-      sharing: {
-        source: {
-          type: "Personal",
-        },
-      },
-      status: "Active",
-    } as InstallableViewItem;
+  describe("public blueprint", () => {
+    let blueprintItem: InstallableViewItem;
+    beforeEach(() => {
+      mockHooks();
 
-    const {
-      result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-    expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
-      actions
-    );
+      blueprintItem = {
+        installable: recipeFactory({
+          sharing: { public: true, organizations: [] },
+        }),
+        sharing: {
+          source: {
+            type: "Personal",
+          },
+        },
+        status: "Active",
+      } as InstallableViewItem;
+    });
+
+    test("pending publish", () => {
+      const {
+        result: { current: actions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      expectActions(
+        [
+          "viewPublish",
+          "viewShare",
+          "uninstall",
+          "viewLogs",
+          "exportBlueprint",
+          "reinstall",
+        ],
+        actions
+      );
+    });
+
+    test("published", () => {
+      (useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
+        data: {
+          [(blueprintItem.installable as RecipeDefinition).metadata.id]:
+            // id and name do not matter in this test
+            marketplaceListingFactory(),
+        },
+      });
+
+      const {
+        result: { current: actions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      expectActions(
+        ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+        actions
+      );
+    });
   });
 });
