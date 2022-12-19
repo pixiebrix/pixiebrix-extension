@@ -25,6 +25,7 @@ import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
 import { getTargetState } from "@/contentScript/ready";
+import { memoizeUntilSettled } from "@/utils";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -68,36 +69,35 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   }
 }
 
-// TODO: Use https://github.com/sindresorhus/p-memoize/issues/20 to avoid multiple concurrent calls for every target
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
  * - If it's not expected to be injected automatically, it also injects it into the page.
  * - If it's been injected, it will resolve once the content script is ready.
  */
-export async function ensureContentScript(
-  target: Target,
-  timeoutMillis = 4000
-): Promise<void> {
-  expectContext("background");
+export const ensureContentScript = memoizeUntilSettled(
+  async (target: Target, timeoutMillis = 4000): Promise<void> => {
+    expectContext("background");
 
-  const controller = new AbortController();
-  const { signal } = controller;
+    const controller = new AbortController();
+    const { signal } = controller;
 
-  try {
-    console.debug("ensureContentScript: requested", target);
+    try {
+      console.debug("ensureContentScript: requested", target);
 
-    // TODO: Simplify after https://github.com/sindresorhus/p-timeout/issues/31
-    await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
-      signal,
-      milliseconds: timeoutMillis,
-      message: `contentScript not ready in ${timeoutMillis}ms`,
-    });
+      // TODO: Simplify after https://github.com/sindresorhus/p-timeout/issues/31
+      await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
+        signal,
+        milliseconds: timeoutMillis,
+        message: `contentScript not ready in ${timeoutMillis}ms`,
+      });
 
-    console.debug("ensureContentScript: ready", target);
-  } finally {
-    controller.abort();
-  }
-}
+      console.debug("ensureContentScript: ready", target);
+    } finally {
+      controller.abort();
+    }
+  },
+  { cacheKey: JSON.stringify }
+);
 
 async function ensureContentScriptWithoutTimeout(
   target: Target,

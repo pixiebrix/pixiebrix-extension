@@ -18,6 +18,7 @@
 import { render } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import getErrorDetails from "./getErrorDetails";
+import { type JsonArray } from "type-fest";
 
 test("Template render error", () => {
   const error = {
@@ -112,10 +113,8 @@ test("Network error", async () => {
           forcedJSONParsing: true,
           clarifyTimeoutError: false,
         },
-        // @ts-expect-error -- the value actually received from HTTP GET brick
-        transformRequest: [],
-        // @ts-expect-error -- the value actually received from HTTP GET brick
-        transformResponse: [],
+        transformRequest: [] as JsonArray,
+        transformResponse: [] as JsonArray,
         timeout: 0,
         xsrfCookieName: "XSRF-TOKEN",
         xsrfHeaderName: "X-XSRF-TOKEN",

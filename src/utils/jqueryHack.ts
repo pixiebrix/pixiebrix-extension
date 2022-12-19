@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-reflect-apply,prefer-rest-params -- copied code from maintainer */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -22,7 +21,6 @@
 const originalDocumentQSA = document.querySelectorAll;
 const originalElementQSA = Element.prototype.querySelectorAll;
 
-// @ts-expect-error -- $.find types missing
 const originalFind = $.find;
 
 function patchedDocumentQSA(this: Document, selectors: string) {
@@ -43,16 +41,14 @@ function patchedElementQSA(this: Element, selectors: string) {
   return originalElementQSA.call(this, selectors);
 }
 
-// @ts-expect-error -- $.find types missing
-$.find = Object.assign(function () {
+$.find = Object.assign(function (this: JQuery, ...args: unknown[]) {
   document.querySelectorAll = patchedDocumentQSA;
   Element.prototype.querySelectorAll = patchedElementQSA;
 
   let result;
 
   try {
-    // @ts-expect-error -- $.find types missing
-    result = originalFind.apply(this, arguments);
+    result = originalFind.apply(this, args);
   } finally {
     document.querySelectorAll = originalDocumentQSA;
     Element.prototype.querySelectorAll = originalElementQSA;

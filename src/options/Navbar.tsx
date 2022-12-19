@@ -42,7 +42,7 @@ function useAdminConsoleUrl(): string {
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
   const [serviceURL, _serviceUrlPending, _serviceUrlError, refreshServiceUrl] =
     useAsyncState<string>(async () => {
-      const baseURL = (await getBaseURL()) ?? DEFAULT_SERVICE_URL;
+      const baseURL = await getBaseURL();
       const partnerAuth = await readPartnerAuthData();
       const url = partnerAuth?.token
         ? new URL("partner-auth", baseURL)
@@ -118,12 +118,12 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
         </div>
 
         <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
-          {serviceURL && (
+          {
             <Nav.Link className="px-3" target="_blank" href={serviceURL}>
               <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
               Open Admin Console
             </Nav.Link>
-          )}
+          }
           {connected && email && <div className="text-black">{email}</div>}
         </ul>
       </div>

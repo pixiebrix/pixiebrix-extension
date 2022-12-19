@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { isBrowserSidebar } from "@/chrome";
 import {
   isBackground,
   isContentScript,
@@ -49,12 +50,14 @@ const contexts = [
   "background",
   "contentScript",
   "devTools",
+  "sidebar",
 ] as const;
 const contextMap = new Map<typeof contexts[number], () => boolean>([
   ["web", isWebPage],
   ["extension", isExtensionContext],
   ["background", isBackground],
   ["contentScript", isContentScript],
+  ["sidebar", isBrowserSidebar],
   ["devTools", () => "devtools" in chrome],
 ]);
 

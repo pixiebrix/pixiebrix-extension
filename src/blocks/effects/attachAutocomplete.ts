@@ -21,7 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type AutocompleteItem } from "autocompleter";
 
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
-import { attachStylesheet } from "@/blocks/util";
+import injectStylesheet from "@/utils/injectStylesheet";
 import { $safeFind } from "@/helpers";
 
 export class AttachAutocomplete extends Effect {
@@ -67,7 +67,7 @@ export class AttachAutocomplete extends Effect {
       /* webpackChunkName: "autocompleter" */ "autocompleter"
     );
     // TODO: adjust style to hard-code font color so it works on dark themes that have a light font color by default
-    await attachStylesheet(autocompleterStyleUrl);
+    await injectStylesheet(autocompleterStyleUrl);
 
     if (inputs.length === 0) {
       logger.warn("No input elements found for selector");

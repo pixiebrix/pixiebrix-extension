@@ -214,7 +214,6 @@ export function sortBySelector<Item = string>(
  * @see sortBySelector
  */
 export function getSelectorPreference(selector: string): number {
-  // @ts-expect-error: TS compiler can't find the propery find in $
   const tokenized = $.find.tokenize(selector);
   if (tokenized.length > 1) {
     throw new TypeError(

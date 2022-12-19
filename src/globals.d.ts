@@ -87,6 +87,7 @@ declare module "marked";
 
 // No types available
 declare module "jq-web";
+declare module "canvas-confetti";
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
 declare module "page-metadata-parser" {
@@ -119,6 +120,13 @@ declare module "@/vendors/initialize" {
   ) => MutationObserver;
 
   export default initialize;
+}
+
+interface JQueryStatic {
+  find: (() => JQuery) & {
+    /** Partial type for `$.find.tokenize */
+    tokenize: (selector: string) => string[];
+  };
 }
 
 // `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
