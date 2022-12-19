@@ -112,7 +112,7 @@ const ActivationOptionsContent: React.FC = () => {
 
   const renderBody: RenderBody = ({ values }) => (
     <>
-      <Effect values={values} onChange={updateRedux} delayMillis={100} />
+      <Effect values={values} onChange={updateRedux} delayMillis={300} />
       <Card>
         <Card.Header>Blueprint input options</Card.Header>
         <Card.Body>
