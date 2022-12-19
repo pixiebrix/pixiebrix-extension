@@ -61,7 +61,7 @@ const PermissionsToolbar: React.FunctionComponent<{
     reloadPermissions,
   ] = useAsyncState<PermissionsState>(async () => {
     const adapter = ADAPTERS.get(debouncedElement.type);
-    const { extension, extensionPoint: extensionPointConfig } =
+    const { extension, extensionPointConfig } =
       adapter.asDynamicElement(debouncedElement);
     const extensionPoint = extensionPointFactory(extensionPointConfig);
 

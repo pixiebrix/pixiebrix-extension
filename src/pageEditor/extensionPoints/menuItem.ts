@@ -85,7 +85,7 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: ActionFormState
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
@@ -211,7 +211,7 @@ function asDynamicElement(element: ActionFormState): ButtonDefinition {
   return {
     type: "menuItem",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -226,7 +226,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
 };

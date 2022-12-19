@@ -85,7 +85,7 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: ContextMenuFormState
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
@@ -219,7 +219,7 @@ function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -234,7 +234,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   fromNativeElement,
   fromExtensionPoint,
   asDynamicElement,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
   InsertModeHelpText: () => (

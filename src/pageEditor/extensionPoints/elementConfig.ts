@@ -223,7 +223,9 @@ export interface ElementConfig<
   /**
    * Returns the extension point configuration corresponding to the FormState.
    */
-  readonly selectExtensionPoint: (element: TState) => ExtensionPointConfig;
+  readonly selectExtensionPointConfig: (
+    element: TState
+  ) => ExtensionPointConfig;
 
   /**
    * Returns the extension configuration corresponding to the FormState.

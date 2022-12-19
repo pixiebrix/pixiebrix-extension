@@ -83,7 +83,7 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: TriggerFormState
 ): ExtensionPointConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
@@ -141,7 +141,7 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -265,7 +265,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   icon: faBolt,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
   fromExtensionPoint,

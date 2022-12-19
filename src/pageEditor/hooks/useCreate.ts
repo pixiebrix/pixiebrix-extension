@@ -73,8 +73,7 @@ function selectErrorMessage(error: unknown): string {
 async function ensurePermissions(element: FormState) {
   const adapter = ADAPTERS.get(element.type);
 
-  const { extension, extensionPoint: extensionPointConfig } =
-    adapter.asDynamicElement(element);
+  const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
@@ -160,7 +159,8 @@ function useCreate(): CreateCallback {
 
         if (!isLocked) {
           try {
-            const extensionPointConfig = adapter.selectExtensionPoint(element);
+            const extensionPointConfig =
+              adapter.selectExtensionPointConfig(element);
             const packageId = element.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
@@ -187,7 +187,8 @@ function useCreate(): CreateCallback {
       try {
         const rawExtension = adapter.selectExtension(element);
         if (hasInnerExtensionPoint) {
-          const extensionPointConfig = adapter.selectExtensionPoint(element);
+          const extensionPointConfig =
+            adapter.selectExtensionPointConfig(element);
           dispatch(
             saveExtension({
               extension: extensionWithInnerDefinitions(

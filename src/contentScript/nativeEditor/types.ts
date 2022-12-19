@@ -46,7 +46,7 @@ export interface DynamicDefinition<
   TExtension extends EmptyConfig = EmptyConfig
 > {
   type: ExtensionPointType;
-  extensionPoint: ExtensionPointConfig<TExtensionPoint>;
+  extensionPointConfig: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
 }
 
