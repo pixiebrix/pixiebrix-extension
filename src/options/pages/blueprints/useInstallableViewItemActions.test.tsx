@@ -39,7 +39,7 @@ import {
   useGetMarketplaceListingsQuery,
 } from "@/services/api";
 import { uniq } from "lodash";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -389,7 +389,7 @@ describe("useInstallableViewItemActions", () => {
       (useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
         data: {
           [(blueprintItem.installable as RecipeDefinition).metadata.id]:
-            // id and name do not matter in this test
+            // Id and name do not matter in this test
             marketplaceListingFactory(),
         },
       });
