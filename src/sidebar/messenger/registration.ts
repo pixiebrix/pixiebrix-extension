@@ -25,13 +25,10 @@ import {
   showForm,
   showTemporaryPanel,
 } from "@/sidebar/protocol";
-import { isBrowserSidebar } from "@/chrome";
+import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
 
-// TODO: Use `expectContext("sidebar")` when it’s supported
-if (!isBrowserSidebar()) {
-  throw new Error('This code can only run in the "sidebar" context');
-}
+expectContext("sidebar");
 
 declare global {
   interface MessengerMethods {

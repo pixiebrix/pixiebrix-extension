@@ -16,23 +16,23 @@
  */
 
 import React from "react";
-import { Modal } from "react-bootstrap";
-import Loader from "@/components/Loader";
+import NonScriptablePage from "@/pageEditor/NonScriptablePage";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { waitFor } from "@testing-library/react";
 
-type OwnProps = {
-  onClose: () => void;
-};
+describe("NonScriptablePage", () => {
+  test("it renders", () => {
+    const rendered = render(<NonScriptablePage url="https://test.url" />);
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
 
-const LoadingDataModal: React.FC<OwnProps> = ({ onClose }) => (
-  <Modal show onHide={onClose} backdrop="static" keyboard={false}>
-    <Modal.Header closeButton>
-      <Modal.Title>Loading data...</Modal.Title>
-    </Modal.Header>
+  test("it renders right copy when the URL is HTTP", async () => {
+    render(<NonScriptablePage url="http://example.com" />);
 
-    <Modal.Body>
-      <Loader />
-    </Modal.Body>
-  </Modal>
-);
-
-export default LoadingDataModal;
+    await waitFor(() => {
+      expect(
+        screen.getByText("PixieBrix cannot modify insecure HTTP pages")
+      ).not.toBeNull();
+    });
+  });
+});

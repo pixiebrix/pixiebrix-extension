@@ -22,10 +22,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { authStateFactory, cloudExtensionFactory } from "@/testUtils/factories";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import {
-  blueprintModalsSlice,
-  type ShareContext,
-} from "./blueprintModalsSlice";
+import { blueprintModalsSlice } from "./blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
 import * as api from "@/services/api";
 import {
@@ -124,7 +121,7 @@ describe("it renders", () => {
       contextToBeEmpty: "showShareContext",
       sharingContext: "showPublishContext",
     },
-  ])(
+  ] as const)(
     "opens $name modal after converting extension to blueprint",
     async ({ sharingAction, contextToBeEmpty, sharingContext }) => {
       (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
@@ -169,16 +166,9 @@ describe("it renders", () => {
         rendered.getReduxStore().getState() as RootState
       );
 
-      // @ts-expect-error -- use dynamic key to access state property
       expect(modalState[contextToBeEmpty]).toBeNull();
-      expect(
-        // @ts-expect-error -- use dynamic key to access state property
-        (modalState[sharingContext] as ShareContext).extensionId
-      ).toBeUndefined();
-      expect(
-        // @ts-expect-error -- use dynamic key to access state property
-        (modalState[sharingContext] as ShareContext).blueprintId
-      ).not.toBeUndefined();
+      expect(modalState[sharingContext].extensionId).toBeUndefined();
+      expect(modalState[sharingContext].blueprintId).not.toBeUndefined();
     }
   );
 

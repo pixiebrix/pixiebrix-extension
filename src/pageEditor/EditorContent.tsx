@@ -39,8 +39,6 @@ import {
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/tabState/tabStateSelectors";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
-import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
-import { isScriptableUrl } from "@/utils/permissions";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import Alert from "@/components/Alert";
 import styles from "./EditorContent.module.scss";
@@ -105,15 +103,6 @@ const EditorContent: React.FC = () => {
         <Alert variant="danger">{getErrorMessage(editorError)}</Alert>
       </div>
     );
-  }
-
-  if (!url) {
-    // Don't show anything while it's loading the URL, nearly immediate
-    return null;
-  }
-
-  if (!isScriptableUrl(url)) {
-    return <CantModifyPane url={url} />;
   }
 
   if (!tabHasPermissions && !isConnectingToContentScript) {

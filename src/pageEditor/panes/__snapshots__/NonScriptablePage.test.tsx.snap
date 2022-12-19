@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CantModifyPane it renders 1`] = `
+exports[`NonScriptablePage it renders 1`] = `
 <DocumentFragment>
   <div
     class="root container-fluid"

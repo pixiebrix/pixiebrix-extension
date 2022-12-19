@@ -453,7 +453,7 @@ export function calculateNextSpacing(
 
   if (isTemplate) {
     return {
-      __type__: (previousValue as Expression).__type__ as TemplateEngine,
+      __type__: (previousValue as Expression).__type__,
       __value__: nextValue,
     };
   }

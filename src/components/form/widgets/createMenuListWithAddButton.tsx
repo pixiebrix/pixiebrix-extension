@@ -54,6 +54,7 @@ const MenuListWithAddButton = <
   return (
     <div
       // @ts-expect-error TS2322 Maybe there's a mismatch in types
+      // TODO: https://github.com/JedWatson/react-select/issues/5297
       style={getStyles("menuList", props)}
       className={cx(
         {
