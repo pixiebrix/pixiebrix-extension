@@ -21,7 +21,7 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { buttonFormStateFactory as buttonFormStateFactory } from "@/testUtils/factories";
+import { buttonFormStateFactory } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/core";
 import { checkAvailable } from "@/contentScript/messenger/api";

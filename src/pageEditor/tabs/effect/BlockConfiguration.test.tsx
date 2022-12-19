@@ -23,7 +23,7 @@ import {
   formStateFactory,
   triggerFormStateFactory,
   quickbarFormStateFactory,
-  buttonFormStateFactory as buttonFormStateFactory,
+  buttonFormStateFactory,
   contextMenuFormStateFactory,
   sidebarPanelFormStateFactory,
 } from "@/testUtils/factories";
