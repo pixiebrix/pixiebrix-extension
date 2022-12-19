@@ -28,7 +28,7 @@ import InsertPane from "@/pageEditor/panes/insert/InsertPane";
 import { selectIsStaleSession } from "@/pageEditor/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 import useCurrentUrl from "./hooks/useCurrentUrl";
-import CantModifyPane from "./panes/CantModifyPane";
+import NonScriptablePage from "./NonScriptablePage";
 import { isScriptableUrl } from "@/utils/permissions";
 import Loader from "@/components/Loader";
 
@@ -46,7 +46,7 @@ const EditorLayout: React.FunctionComponent = () => {
   }
 
   if (!isScriptableUrl(url)) {
-    return <CantModifyPane url={url} />;
+    return <NonScriptablePage url={url} />;
   }
 
   return (

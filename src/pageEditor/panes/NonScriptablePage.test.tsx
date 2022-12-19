@@ -16,18 +16,18 @@
  */
 
 import React from "react";
-import CantModifyPane from "@/pageEditor/panes/CantModifyPane";
+import NonScriptablePage from "@/pageEditor/NonScriptablePage";
 import { render, screen } from "@/pageEditor/testHelpers";
 import { waitFor } from "@testing-library/react";
 
-describe("CantModifyPane", () => {
+describe("NonScriptablePage", () => {
   test("it renders", () => {
-    const rendered = render(<CantModifyPane url="https://test.url" />);
+    const rendered = render(<NonScriptablePage url="https://test.url" />);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("it renders right copy when the URL is HTTP", async () => {
-    render(<CantModifyPane url="http://example.com" />);
+    render(<NonScriptablePage url="http://example.com" />);
 
     await waitFor(() => {
       expect(
