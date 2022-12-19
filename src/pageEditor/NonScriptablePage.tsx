@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./CantModifyPane.module.scss";
+import styles from "./NonScriptablePage.module.scss";
 
 import React from "react";
 import { Col, Row, Container } from "react-bootstrap";
@@ -69,7 +69,9 @@ const NeedHelp: React.FunctionComponent = () => (
   </div>
 );
 
-const CantModifyPane: React.FunctionComponent<{ url: string }> = ({ url }) => (
+const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
+  url,
+}) => (
   <Container fluid className={styles.root}>
     <div className="my-auto">
       <Row className={styles.paneRow}>
@@ -104,4 +106,4 @@ const CantModifyPane: React.FunctionComponent<{ url: string }> = ({ url }) => (
   </Container>
 );
 
-export default CantModifyPane;
+export default NonScriptablePage;
