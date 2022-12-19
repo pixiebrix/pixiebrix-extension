@@ -24,7 +24,7 @@ import {
   type UUID,
 } from "@/core";
 import * as semver from "semver";
-import { MarketplaceListing, type Organization } from "@/types/contract";
+import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Installable,
   type SharingSource,
