@@ -37,8 +37,10 @@ const CancelPublishContent: React.FunctionComponent = () => {
 
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { data: recipe, refetch: refetchRecipes } = useRecipe(blueprintId);
-  const { data: editablePackages, isFetching: isFetchingEditablePackages } =
-    useGetEditablePackagesQuery();
+  const a = useGetEditablePackagesQuery();
+  const { data: editablePackages, isFetching: isFetchingEditablePackages } = a;
+  // const { data: editablePackages, isFetching: isFetchingEditablePackages } =
+  //   useGetEditablePackagesQuery();
 
   const [updateRecipe] = useUpdateRecipeMutation();
   const dispatch = useDispatch();
@@ -92,7 +94,7 @@ const CancelPublishContent: React.FunctionComponent = () => {
   const disableButtons = isCancelling || isFetchingEditablePackages;
 
   return (
-    <PublishContentLayout title="Edit Pending Publish">
+    <PublishContentLayout title="Cancel Publish?">
       <Modal.Body>
         {error && <div className="text-danger p-3">{error}</div>}
 
