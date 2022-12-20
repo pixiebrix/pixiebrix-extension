@@ -24,11 +24,10 @@ import { Modal } from "react-bootstrap";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
 import { useRecipe } from "@/recipes/recipesHooks";
-import ActivationLink from "./ActivationLink";
-import PublishContentLayout from "./PublishContentLayout";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
 import { isRecipePendingPublish } from "@/options/pages/blueprints/utils/installableUtils";
+import PublishedContent from "./PublishedContent";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
@@ -53,17 +52,8 @@ const ModalContentSwitch: React.FunctionComponent = () => {
     return cancelingPublish ? <CancelPublishContent /> : <EditPublishContent />;
   }
 
-  return (
-    <PublishContentLayout title="Published">
-      <Modal.Body>
-        <h3>{recipe.metadata.name}</h3>
-
-        <p>The blueprint has been published to the Marketplace.</p>
-        <p className="mb-1">Public link to share:</p>
-        <ActivationLink blueprintId={blueprintId} />
-      </Modal.Body>
-    </PublishContentLayout>
-  );
+  // Normally we shouldn't get here, because the Publish action is not displayed for a published blueprint
+  return <PublishedContent />;
 };
 
 const PublishRecipeModals: React.FunctionComponent = () => {

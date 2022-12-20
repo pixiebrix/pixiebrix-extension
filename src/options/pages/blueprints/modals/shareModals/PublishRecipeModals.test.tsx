@@ -26,7 +26,6 @@ import {
   recipeMetadataFactory,
 } from "@/testUtils/factories";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
 import { AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
