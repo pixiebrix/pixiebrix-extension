@@ -19,15 +19,15 @@ import React from "react";
 import { render } from "@/options/testHelpers";
 import PublishRecipeModals from "./PublishRecipeModals";
 import { authSlice } from "@/auth/authSlice";
-import { blueprintModalsSlice } from "../blueprintModalsSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import {
   authStateFactory,
   recipeFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { RecipeDefinition } from "@/types/definitions";
-import { AuthState } from "@/auth/authTypes";
+import { type RecipeDefinition } from "@/types/definitions";
+import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
 
 jest.mock("@/recipes/recipesHooks", () => ({
@@ -67,7 +67,7 @@ test("renders publish modal", () => {
   mockHooks();
 
   const rendered = render(<PublishRecipeModals />, {
-    setupRedux: (dispatch) => {
+    setupRedux(dispatch) {
       dispatch(authSlice.actions.setAuth(auth));
 
       dispatch(
@@ -86,7 +86,7 @@ test("renders edit publish modal", () => {
   mockHooks();
 
   const rendered = render(<PublishRecipeModals />, {
-    setupRedux: (dispatch) => {
+    setupRedux(dispatch) {
       dispatch(authSlice.actions.setAuth(auth));
 
       dispatch(
@@ -105,7 +105,7 @@ test("renders cancel publish modal", () => {
   mockHooks();
 
   const rendered = render(<PublishRecipeModals />, {
-    setupRedux: (dispatch) => {
+    setupRedux(dispatch) {
       dispatch(authSlice.actions.setAuth(auth));
 
       dispatch(

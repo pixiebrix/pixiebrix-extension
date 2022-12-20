@@ -19,7 +19,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { selectShowPublishContext } from "../blueprintModalsSelectors";
+import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import ActivationLink from "./ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 
