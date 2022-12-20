@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@use "sass:math";
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
-$headerOffsetX: $pipeLineOffset / 2;
+$headerOffsetX: math.div($pipeLineOffset, 2);
 $headerOffsetY: 0.5rem;
 $headerPipeLineHeight: 4px;
 
