@@ -117,6 +117,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
                     <input
                       class="form-control"
                       id="config.apiToken"
+                      name="config.apiToken"
                       type="password"
                       value=""
                     />
