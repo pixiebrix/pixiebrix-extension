@@ -16,7 +16,7 @@
  */
 import styles from "./PasswordWidget.module.scss";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useState } from "react";
 import {
   Button,
   Form,
@@ -28,31 +28,30 @@ import { useField } from "formik";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useAutoFocus from "@/hooks/useAutoFocus";
+import useForwardedRef from "@/hooks/useForwardedRef";
 
-const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
-  name,
-  schema,
-  isRequired,
-  uiSchema,
-  hideLabel,
-  isObjectProperty,
-  isArrayItem,
-  focusInput,
-  inputRef: inputRefProp,
-  ...restProps
-}) => {
+const PasswordWidget: React.ForwardRefRenderFunction<
+  HTMLInputElement,
+  SchemaFieldProps & FormControlProps
+> = (
+  {
+    name,
+    schema,
+    isRequired,
+    uiSchema,
+    hideLabel,
+    isObjectProperty,
+    isArrayItem,
+    focusInput,
+    ...restProps
+  },
+  forwardedRef
+) => {
   const [{ value }, , { setValue }] = useField<string>(name);
   const [show, setShow] = useState<boolean>(false);
+  const inputRef = useForwardedRef(forwardedRef);
 
-  const inputRef = useRef<HTMLInputElement>();
   useAutoFocus(inputRef, focusInput);
-
-  useEffect(() => {
-    // Sync the ref values
-    if (inputRefProp) {
-      inputRefProp.current = inputRef.current;
-    }
-  }, [inputRef.current]);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     ({ target }) => {
@@ -85,4 +84,4 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   );
 };
 
-export default PasswordWidget;
+export default forwardRef(PasswordWidget);

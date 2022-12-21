@@ -105,9 +105,4 @@ export interface SchemaFieldProps {
    * E.g. if the field was omitted and then added
    */
   defaultType?: FieldInputMode;
-
-  /**
-   * Reference to the input DOM element. Used for instance by the Variable autosuggest popup
-   */
-  inputRef?: React.MutableRefObject<HTMLElement>;
 }

@@ -15,21 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Form, type FormControlProps } from "react-bootstrap";
-import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import {
+  useRef,
+  useImperativeHandle,
+  type ForwardedRef,
+  type MutableRefObject,
+} from "react";
 
-const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
-  schema,
-  isRequired,
-  uiSchema,
-  hideLabel,
-  isObjectProperty,
-  isArrayItem,
-  focusInput,
-  ...restProps
-  // `readyOnly` is like `disabled` except it allows mouse events
-  // and `focus`, which swaps `OmitFieldWidget` out
-}) => <Form.Control {...restProps} readOnly />;
-
-export default OmitFieldWidget;
+/**
+ * Extracts an immediately-usable ref from a forwarded ref
+ *
+ * @example
+ *   React.forwardRef((props, forwardedRef) => {
+ *     const ref = useForwardedRef(forwardedRef);
+ *     useEffect(() => {
+ *       // You can't use `forwardedRef` here directly
+ *       ref.current.focus();
+ *     }, [])
+ *     return <div ref={ref}>
+ *   })
+ */
+export default function useForwardedRef<Ref>(
+  forwardedRef: ForwardedRef<Ref>
+): MutableRefObject<Ref> {
+  const ref = useRef<Ref>();
+  useImperativeHandle(forwardedRef, () => ref.current);
+  return ref;
+}

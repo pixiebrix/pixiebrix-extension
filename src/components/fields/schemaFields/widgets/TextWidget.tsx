@@ -21,7 +21,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
+  forwardRef,
 } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
@@ -39,6 +39,7 @@ import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
+import useForwardedRef from "@/hooks/useForwardedRef";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -58,39 +59,39 @@ function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
 }
 
-const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
-  name,
-  schema,
-  validationSchema,
-  isRequired,
-  label,
-  description,
-  uiSchema,
-  hideLabel,
-  isObjectProperty,
-  isArrayItem,
-  focusInput,
-  inputRef,
-  ...formControlProps
-}) => {
+const TextWidget: React.ForwardRefRenderFunction<
+  HTMLTextAreaElement,
+  SchemaFieldProps & FormControlProps
+> = (
+  {
+    name,
+    schema,
+    validationSchema,
+    isRequired,
+    label,
+    description,
+    uiSchema,
+    hideLabel,
+    isObjectProperty,
+    isArrayItem,
+    focusInput,
+    ...formControlProps
+  },
+  forwardRef
+) => {
   const [{ value, ...restInputProps }, , { setValue }] = useField(name);
 
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
-  const textAreaRef = useRef<HTMLTextAreaElement>();
+  const textAreaRef = useForwardedRef(forwardRef);
 
   useEffect(() => {
     if (textAreaRef.current) {
       fitTextarea.watch(textAreaRef.current);
     }
-
-    // Sync the ref values
-    if (inputRef) {
-      inputRef.current = textAreaRef.current;
-    }
-  }, [textAreaRef.current]);
+  }, [textAreaRef]);
 
   useEffect(() => {
     if (focusInput) {
@@ -209,4 +210,4 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   );
 };
 
-export default TextWidget;
+export default forwardRef(TextWidget);

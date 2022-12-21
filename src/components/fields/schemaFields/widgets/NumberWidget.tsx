@@ -27,44 +27,41 @@ import { useField } from "formik";
 import { round } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useAutoFocus from "@/hooks/useAutoFocus";
+import useForwardedRef from "@/hooks/useForwardedRef";
 
 /**
  * A basic input widget for numbers
  *
  * @see: IntegerWidget
  */
-const NumberWidget: React.VFC<
+const NumberWidget: React.ForwardRefRenderFunction<
+  HTMLInputElement,
   SchemaFieldProps &
     FormControlProps & {
       step?: number;
     }
-> = ({
-  name,
-  schema,
-  isRequired,
-  uiSchema,
-  hideLabel,
-  isObjectProperty,
-  isArrayItem,
-  focusInput,
-  step,
-  inputRef: inputRefProp,
-  ...restProps
-}) => {
+> = (
+  {
+    name,
+    schema,
+    isRequired,
+    uiSchema,
+    hideLabel,
+    isObjectProperty,
+    isArrayItem,
+    focusInput,
+    step,
+    ...restProps
+  },
+  forwardRef
+) => {
   const [{ value: formValue }, , { setValue: setFormValue }] =
     useField<number>(name);
   const [value, setValue] = useState<string>(String(formValue));
 
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useForwardedRef(forwardRef);
 
   useAutoFocus(inputRef, focusInput);
-
-  useEffect(() => {
-    // Sync the ref values
-    if (inputRefProp) {
-      inputRefProp.current = inputRef.current;
-    }
-  }, [inputRef.current]);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     ({ target }) => {
