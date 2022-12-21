@@ -28,10 +28,12 @@ function useMilestones(): MilestoneHelpers {
   const milestones = useSelector(selectMilestones);
 
   return useMemo(() => {
-    const userMilestoneKeys = new Set((milestones ?? []).map((x) => x.key));
+    const milestonesByKey = Object.fromEntries(
+      (milestones ?? []).map((milestone) => [milestone.key, milestone])
+    );
 
     const hasMilestone = (milestoneKey: string) =>
-      userMilestoneKeys.has(milestoneKey);
+      milestoneKey in milestonesByKey;
 
     const hasEveryMilestone = (milestoneKeys: string[]) =>
       milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
