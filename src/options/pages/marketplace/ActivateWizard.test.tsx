@@ -55,6 +55,7 @@ jest.mock("@/services/api", () => ({
   })),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
+  useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
 }));
 
 jest.mock("@/recipes/recipesHooks", () => ({

@@ -403,7 +403,10 @@ export const appApi = createApi({
         { type: "StarterBlueprints", id: "LIST" },
       ],
     }),
-    createMilestone: builder.mutation<Milestone, { key: string }>({
+    createMilestone: builder.mutation<
+      Milestone,
+      { key: string; value?: string }
+    >({
       query: (data) => ({
         url: "/api/me/milestones/",
         method: "post",
