@@ -56,7 +56,7 @@ const expectActions = (
     allActions.map((action) => [
       action,
       expectedActions.includes(action)
-        ? expect.toBeFunction()
+        ? expect.not.toBeNil()
         : expect.toBeNil(),
     ])
   );
@@ -379,7 +379,7 @@ describe("useInstallableViewItemActions", () => {
         result: { current: actions },
       } = renderHook(() => useInstallableViewItemActions(blueprintItem));
       expectActions(
-        ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+        ["viewInMarketplaceHref", "viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
         actions
       );
     });
