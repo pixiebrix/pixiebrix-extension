@@ -90,19 +90,17 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     [inputMode, inputModeOptions, setValue, value, onOmitField]
   );
 
-  const onClick =
-    inputMode === "omit" &&
-    (() => {
-      if (defaultType != null) {
-        onModeChange(defaultType);
-      } else if (inputModeOptions.some((option) => option.value === "string")) {
-        onModeChange("string");
-      } else if (inputModeOptions.some((option) => option.value === "number")) {
-        onModeChange("number");
-      } else if (inputModeOptions.some((option) => option.value === "var")) {
-        onModeChange("var");
-      }
-    });
+  const onClick = () => {
+    if (defaultType != null) {
+      onModeChange(defaultType);
+    } else if (inputModeOptions.some((option) => option.value === "string")) {
+      onModeChange("string");
+    } else if (inputModeOptions.some((option) => option.value === "number")) {
+      onModeChange("number");
+    } else if (inputModeOptions.some((option) => option.value === "var")) {
+      onModeChange("var");
+    }
+  };
 
   const stringValue = isTemplateExpression(value) ? value.__value__ : "";
   const setNewValueFromString = (newValue: string) => {
@@ -119,7 +117,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         <Widget
           ref={inputRef}
           focusInput={focusInput}
-          onClick={onClick}
+          onClick={inputMode === "omit" ? onClick : null}
           {...schemaFieldProps}
         />
         <VarPopup

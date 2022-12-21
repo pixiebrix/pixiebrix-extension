@@ -20,16 +20,9 @@ import { useField } from "formik";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
 const BooleanWidget: React.VFC<{ name: string }> = ({ name }) => {
-  const [{ value }, , { setValue }] = useField<boolean>(name);
+  const [field] = useField<boolean>(name);
 
-  return (
-    <BootstrapSwitchButton
-      onlabel=" "
-      offlabel=" "
-      checked={value}
-      onChange={setValue}
-    />
-  );
+  return <BootstrapSwitchButton onlabel=" " offlabel=" " {...field} />;
 };
 
 export default BooleanWidget;

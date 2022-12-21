@@ -47,26 +47,18 @@ const PasswordWidget: React.ForwardRefRenderFunction<
   },
   forwardedRef
 ) => {
-  const [{ value }, , { setValue }] = useField<string>(name);
+  const [field] = useField<string>(name);
   const [show, setShow] = useState<boolean>(false);
   const inputRef = useForwardedRef(forwardedRef);
 
   useAutoFocus(inputRef, focusInput);
 
-  const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    ({ target }) => {
-      setValue(target.value);
-    },
-    []
-  );
-
   return (
     <InputGroup>
       <Form.Control
         {...restProps}
+        {...field}
         type={show ? "text" : "password"}
-        value={value}
-        onChange={onChange}
         ref={inputRef}
       />
       <InputGroup.Append>

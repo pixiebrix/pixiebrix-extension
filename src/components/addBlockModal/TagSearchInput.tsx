@@ -42,20 +42,19 @@ const TagSearchInput: React.VFC<{
   focusInput?: boolean;
   className?: string;
 }> = ({
-  name,
   value,
   onValueChange,
   tag,
   onClearTag,
-  placeholder,
   focusInput,
   className,
+  ...otherProps
 }) => {
   const inputRef = useRef<HTMLInputElement>();
   useAutoFocus(inputRef, focusInput);
 
   const [internalValue, setInternalValue] = useState(value);
-  const handleChangeDebounced = useDebouncedCallback(onValueChange, 150);
+  const handleChangeDebounced = useDebouncedCallback(onValueChange, 500);
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const nextValue = event.target.value;
@@ -65,18 +64,10 @@ const TagSearchInput: React.VFC<{
 
   return (
     <div className={cx(styles.root, className)}>
-      {tag && (
-        <TagBadge
-          tag={tag}
-          onClear={() => {
-            onClearTag();
-          }}
-        />
-      )}
+      {tag && <TagBadge tag={tag} onClear={onClearTag} />}
       <input
-        name={name}
+        {...otherProps}
         ref={inputRef}
-        placeholder={placeholder}
         value={internalValue}
         onChange={handleChange}
         className={styles.input}

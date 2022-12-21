@@ -15,16 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  type FocusEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { type FocusEventHandler, useCallback, forwardRef } from "react";
 import { Form, type FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
-import { round } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useAutoFocus from "@/hooks/useAutoFocus";
 import useForwardedRef from "@/hooks/useForwardedRef";
@@ -55,40 +48,28 @@ const NumberWidget: React.ForwardRefRenderFunction<
   },
   forwardRef
 ) => {
-  const [{ value: formValue }, , { setValue: setFormValue }] =
-    useField<number>(name);
-  const [value, setValue] = useState<string>(String(formValue));
+  const [field, , { setValue }] = useField<number>(name);
 
   const inputRef = useForwardedRef(forwardRef);
-
   useAutoFocus(inputRef, focusInput);
 
-  const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    ({ target }) => {
-      setValue(target.value);
-    },
-    []
-  );
-
-  const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
-    const numberValue = Number(value);
-    const newValue = step ? round(numberValue / step) * step : numberValue;
-    setFormValue(newValue);
-    setValue(String(newValue));
-  }, [setFormValue, step, value]);
+  const fitToStep: FocusEventHandler<HTMLInputElement> = useCallback(() => {
+    const numberValue = Number(field.value);
+    const newValue = Math.round(numberValue / step) * step;
+    setValue(newValue);
+  }, [setValue, field.value, step]);
 
   return (
     // Spread the input props first so that we override the explicit ones below
     <Form.Control
       {...restProps}
+      {...field}
       type="number"
-      value={value}
-      onChange={onChange}
-      onBlur={onBlur}
-      step={step ? String(step) : ""}
+      onBlur={step ? fitToStep : null}
+      step={step}
       ref={inputRef}
     />
   );
 };
 
-export default NumberWidget;
+export default forwardRef(NumberWidget);

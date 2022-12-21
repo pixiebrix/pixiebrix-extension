@@ -258,7 +258,7 @@ export async function userSelectElement({
     }
 
     function escape(event: KeyboardEvent) {
-      if (event.type === "keyup" && event.key === "Escape") {
+      if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
         cancel();
