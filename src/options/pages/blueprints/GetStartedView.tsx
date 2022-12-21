@@ -19,12 +19,7 @@ import styles from "./GetStartedView.module.scss";
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCube,
-  faCubes,
-  faExternalLinkAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import blueprintsNavItemScreenshot from "@img/blueprints-nav-item-screenshot.png";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 
@@ -52,47 +47,6 @@ const GetStartedView: React.VoidFunctionComponent<{
     style={{ height: `${height}px`, width: `${width}px` }}
     className={styles.root}
   >
-    <Row className={styles.infoRow}>
-      <Col>
-        <p className={styles.termDefinition}>
-          <img
-            src={blueprintsNavItemScreenshot}
-            alt="Screenshot of the Blueprints tab in the sidebar"
-            height={70}
-            className={styles.inlineFigure}
-          />
-          On this Blueprints tab, you can manage the Blueprints you have access
-          to.
-        </p>
-        <p className={styles.termDefinition}>
-          <FontAwesomeIcon
-            icon={faCubes}
-            size="2x"
-            className={styles.inlineFigure}
-          />
-          <span>
-            A <strong>Blueprint</strong> is like a folder or container for a
-            group of Extensions.
-          </span>
-        </p>
-        <p className={styles.termDefinition}>
-          <FontAwesomeIcon
-            icon={faCube}
-            size="2x"
-            className={styles.inlineFigure}
-          />
-          <span>
-            An <strong>Extension</strong> is a workflow that allows you to
-            automate, customize, or change things on a webpage in your browser.
-          </span>
-        </p>
-        <p>
-          You can manage the Blueprints that you&apos;ve created, Blueprints
-          from a team you&apos;re a member of, and Blueprints you activate from
-          the Marketplace.
-        </p>
-      </Col>
-    </Row>
     <Row className={styles.infoRow}>
       <Col>
         <h4>Want to create a new Blueprint?</h4>
