@@ -18,8 +18,10 @@
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
+import { Milestone } from "@/types/contract";
 
 export type MilestoneHelpers = {
+  getMilestone: (milestoneKey: string) => Milestone;
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
 };
@@ -32,6 +34,9 @@ function useMilestones(): MilestoneHelpers {
       (milestones ?? []).map((milestone) => [milestone.key, milestone])
     );
 
+    const getMilestone = (milestoneKey: string) =>
+      milestonesByKey[milestoneKey];
+
     const hasMilestone = (milestoneKey: string) =>
       milestoneKey in milestonesByKey;
 
@@ -39,6 +44,7 @@ function useMilestones(): MilestoneHelpers {
       milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
 
     return {
+      getMilestone,
       hasMilestone,
       hasEveryMilestone,
     };
