@@ -22,6 +22,7 @@ import {
   faDownload,
   faList,
   faShare,
+  faStore,
   faSyncAlt,
   faTimes,
   faTrash,
@@ -49,6 +50,15 @@ const BlueprintActions: React.FunctionComponent<{
         ),
         action: actions.viewPublish,
         hide: !actions.viewPublish,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faStore} /> View in Marketplace
+          </>
+        ),
+        href: actions.viewInMarketplaceHref,
+        hide: !actions.viewInMarketplaceHref
       },
       {
         title: (

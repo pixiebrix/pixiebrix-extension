@@ -139,10 +139,10 @@ export const isDeployment = (
 /**
  * Checks if a Blueprint has been made public but is not yet published to the Marketplace.
  */
-export const isRecipePendingPublish = (
+export const isRecipePublished = (
   recipe: RecipeDefinition,
   marketplaceListings: Record<RegistryId, MarketplaceListing>
-) => recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
+) => recipe.sharing.public && Boolean(marketplaceListings[recipe.metadata.id]);
 
 export const getSharingType = ({
   installable,

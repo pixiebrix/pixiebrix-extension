@@ -31,7 +31,12 @@ export type EllipsisMenuItem = {
   /**
    * The "on select" action for the item
    */
-  action: () => void;
+  action?: () => void;
+
+  /**
+   * The href for the item, if it's a link
+   */
+  href?: string;
 
   className?: string;
   hide?: boolean;
@@ -130,11 +135,14 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
           .map((item, index) => (
             <Dropdown.Item
               key={index}
-              onClick={() => {
-                item.action();
-              }}
+              onClick={item.action}
+              href={item.href}
               className={item.className}
               disabled={item.disabled}
+              // There's a bug: the link stays active after clicking it
+              active={item.href ? false : undefined}
+              target={item.href ? "_blank" : undefined}
+              rel={item.href ? "noopener noreferrer" : undefined}
             >
               {item.title}
             </Dropdown.Item>
