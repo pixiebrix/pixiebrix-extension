@@ -15,40 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  border-radius: 4px;
-  border: 1px solid gray;
-  display: flex;
-  padding: 4px;
-}
+import { useEffect } from "react";
 
-.root:has(.input:focus) {
-  border: 1px solid #3e66fb !important;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.input {
-  width: 100%;
-  padding: 0.25rem 0.5rem;
-  font-weight: 400;
-  line-height: 120%;
-  border-radius: 4px;
-  border: none;
-  outline: none;
-  :focus {
-    border: none !important;
-    outline: none !important;
-  }
-}
-
-.badge {
-  background: lightgray;
-  display: flex;
-  gap: 0.25rem;
-  align-items: center;
-  padding-left: 0.5rem;
-  padding-right: 0.25rem;
-  border-radius: 1rem;
-  white-space: nowrap;
-  cursor: pointer;
+export default function useAutoFocus(
+  elementRef: React.MutableRefObject<HTMLElement>,
+  focus = true
+) {
+  useEffect(() => {
+    if (focus) {
+      elementRef.current?.focus();
+    }
+  }, [elementRef, focus]);
 }

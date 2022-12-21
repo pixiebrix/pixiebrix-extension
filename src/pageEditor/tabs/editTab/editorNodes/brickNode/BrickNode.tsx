@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
 import MoveBrickControl from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
@@ -28,6 +28,7 @@ import {
   type BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
+import useAutoFocus from "@/hooks/useAutoFocus";
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
@@ -49,11 +50,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (active) {
-      nodeRef.current?.focus();
-    }
-  }, [active]);
+  useAutoFocus(nodeRef, active);
 
   return (
     <>
