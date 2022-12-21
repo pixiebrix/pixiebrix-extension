@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import styles from "./TagSearchInput.module.scss";
 import { useDebouncedCallback } from "use-debounce";
+import useAutoFocus from "@/hooks/useAutoFocus";
 
 const TagBadge: React.VFC<{
   tag: string;
@@ -50,19 +51,11 @@ const TagSearchInput: React.VFC<{
   focusInput,
   className,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
+  useAutoFocus(inputRef, focusInput);
 
   const [internalValue, setInternalValue] = useState(value);
   const handleChangeDebounced = useDebouncedCallback(onValueChange, 150);
-
-  useEffect(() => {
-    if (focusInput) {
-      inputRef.current?.focus();
-      setIsFocused(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run this once
-  }, []);
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const nextValue = event.target.value;
@@ -70,20 +63,8 @@ const TagSearchInput: React.VFC<{
     handleChangeDebounced(nextValue);
   };
 
-  const handleFocus: React.FocusEventHandler<HTMLInputElement> = () => {
-    setIsFocused(true);
-  };
-
-  const handleBlur: React.FocusEventHandler<HTMLInputElement> = () => {
-    setIsFocused(false);
-  };
-
   return (
-    <div
-      className={cx(styles.root, className, {
-        [styles.rootFocused]: isFocused,
-      })}
-    >
+    <div className={cx(styles.root, className)}>
       {tag && (
         <TagBadge
           tag={tag}
@@ -98,8 +79,6 @@ const TagSearchInput: React.VFC<{
         placeholder={placeholder}
         value={internalValue}
         onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
         className={styles.input}
         onKeyDown={(event) => {
           if (event.key === "Backspace" && internalValue === "") {

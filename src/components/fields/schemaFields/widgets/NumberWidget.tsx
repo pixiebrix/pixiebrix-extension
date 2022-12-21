@@ -26,6 +26,7 @@ import { Form, type FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import useAutoFocus from "@/hooks/useAutoFocus";
 
 /**
  * A basic input widget for numbers
@@ -56,11 +57,7 @@ const NumberWidget: React.VFC<
 
   const inputRef = useRef<HTMLInputElement>();
 
-  useEffect(() => {
-    if (focusInput) {
-      inputRef.current?.focus();
-    }
-  }, [focusInput]);
+  useAutoFocus(inputRef, focusInput);
 
   useEffect(() => {
     // Sync the ref values
