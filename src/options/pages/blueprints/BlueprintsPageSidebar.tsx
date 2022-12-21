@@ -71,11 +71,13 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
     key: "Get Started",
     tabTitle: "Welcome to the PixieBrix Extension Console",
     filters: [],
+    hideToolbar: true,
   },
   botGames: {
     key: "Bot Games",
     tabTitle: "Bot Games 2022",
     filters: [],
+    hideToolbar: true,
   },
 };
 
