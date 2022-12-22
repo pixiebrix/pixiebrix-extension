@@ -119,8 +119,8 @@ const GetStartedView: React.VoidFunctionComponent<{
               you want to modify.
             </li>
             <li>
-              Go to the PixieBrix tab via the <strong>Chrome DevTools</strong>{" "}
-              using{" "}
+              Open the Page Editor by selecting the PixieBrix tab via the{" "}
+              <strong>Chrome DevTools</strong> using{" "}
               {isMac() ? (
                 <kbd>Cmd + Option + C</kbd>
               ) : (
