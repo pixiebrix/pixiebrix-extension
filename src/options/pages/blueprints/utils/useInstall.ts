@@ -110,7 +110,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         reportEvent("InstallBlueprint");
 
         if (!hasMilestone("first_time_public_blueprint_install")) {
-          createMilestone({
+          void createMilestone({
             key: "first_time_public_blueprint_install",
             value: recipe.metadata.id,
           });
