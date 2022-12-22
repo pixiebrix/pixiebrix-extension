@@ -270,7 +270,8 @@ function useInstallableViewItemActions(
   const viewInMarketplaceHref =
     isDeployment || showPublishAction
       ? null
-      : `https://pixiebrix.com/marketplace/${
+      : // If showPublishAction is false, then the listing for the recipe is defined
+        `https://pixiebrix.com/marketplace/${
           listings[(installable as RecipeDefinition).metadata.id].id
         }`;
 

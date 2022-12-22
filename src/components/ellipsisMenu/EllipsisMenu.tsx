@@ -30,11 +30,13 @@ export type EllipsisMenuItem = {
 
   /**
    * The "on select" action for the item
+   * You should provide either this or href, but not both
    */
   action?: () => void;
 
   /**
    * The href for the item, if it's a link
+   * You should provide either this or action, but not both
    */
   href?: string;
 
