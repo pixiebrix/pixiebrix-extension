@@ -95,8 +95,6 @@ const PublishRecipeContent: React.FunctionComponent = () => {
       <Modal.Body>
         {error && <div className="text-danger p-3">{error}</div>}
 
-        <h3>{recipe.metadata.name}</h3>
-
         <p>
           On Submit, the public link to this blueprint will be shared with the{" "}
           <a

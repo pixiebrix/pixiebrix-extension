@@ -18,20 +18,16 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { useRecipe } from "@/recipes/recipesHooks";
 import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import ActivationLink from "./ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 
 const PublishedContent: React.FunctionComponent = (props) => {
   const { blueprintId } = useSelector(selectShowPublishContext);
-  const { data: recipe } = useRecipe(blueprintId);
 
   return (
     <PublishContentLayout title="Published">
       <Modal.Body>
-        <h3>{recipe?.metadata.name}</h3>
-
         <p>The blueprint has been published to the Marketplace.</p>
         <p className="mb-1">Public link to share:</p>
         <ActivationLink blueprintId={blueprintId} />

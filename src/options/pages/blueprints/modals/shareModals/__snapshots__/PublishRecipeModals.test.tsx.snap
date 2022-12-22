@@ -232,9 +232,6 @@ exports[`renders publish modal 1`] = `
       <div
         class="modal-body"
       >
-        <h3>
-          Recipe 1
-        </h3>
         <p>
           On Submit, the public link to this blueprint will be shared with the
            

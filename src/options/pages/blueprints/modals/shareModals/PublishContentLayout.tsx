@@ -93,8 +93,6 @@ const PublishContentLayout: React.FunctionComponent<
     children
   ) : (
     <Modal.Body>
-      <h3>{recipe.metadata.name}</h3>
-
       <div className="text-info my-3">
         <FontAwesomeIcon icon={faInfoCircle} /> You don&apos;t have permissions
         to change sharing

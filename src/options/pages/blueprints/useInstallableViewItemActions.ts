@@ -66,7 +66,6 @@ export type InstallableViewItemActions = {
   exportBlueprint: ActionCallback;
 };
 
-// eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
