@@ -46,7 +46,6 @@ import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
-import { type RecipeDefinition } from "@/types/definitions";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const { removeExtension } = extensionsSlice.actions;
@@ -69,6 +68,7 @@ export type InstallableViewItemActions = {
   exportBlueprint: ActionCallback;
 };
 
+// eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
@@ -266,15 +266,13 @@ function useInstallableViewItemActions(
     // Extensions can be published
     (isInstallableExtension ||
       // In case of blueprint, skip if it is already published
-      !sharing.isPublished);
+      sharing.listingId == null);
 
   const viewInMarketplaceHref =
     isDeployment || showPublishAction
       ? null
       : // If showPublishAction is false, then the listing for the recipe is defined
-        `${MARKETPLACE_URL}/${
-          listings[(installable as RecipeDefinition).metadata.id].id
-        }`;
+        `${MARKETPLACE_URL}/${sharing.listingId}`;
 
   return {
     viewPublish: showPublishAction ? viewPublish : null,

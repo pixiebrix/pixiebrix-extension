@@ -32,6 +32,7 @@ import {
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -373,7 +374,7 @@ describe("useInstallableViewItemActions", () => {
     });
 
     test("published", () => {
-      blueprintItem.sharing.isPublished = true;
+      blueprintItem.sharing.listingId = uuidv4();
 
       const {
         result: { current: actions },
