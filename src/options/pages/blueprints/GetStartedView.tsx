@@ -49,17 +49,11 @@ const GetStartedView: React.VoidFunctionComponent<{
   height: number;
 }> = ({ width, height }) => {
   const { homepage_url: homepageUrl } = browser.runtime.getManifest();
-  const { hasEveryMilestone, getMilestone, isFetching } = useMilestones();
+  const { getMilestone, isFetching } = useMilestones();
 
-  const onboardingBlueprintId =
-    !isFetching &&
-    hasEveryMilestone([
-      "account_setup_via_activate_marketplace_blueprint",
-      "first_time_public_blueprint_install",
-    ])
-      ? (getMilestone("first_time_public_blueprint_install")
-          ?.value as RegistryId)
-      : null;
+  const onboardingBlueprintId = !isFetching
+    ? (getMilestone("first_time_public_blueprint_install")?.value as RegistryId)
+    : null;
 
   const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(
     onboardingBlueprintId
