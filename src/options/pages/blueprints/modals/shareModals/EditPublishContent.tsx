@@ -22,6 +22,7 @@ import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blue
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import ActivationLink from "./ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const EditPublishContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -41,11 +42,7 @@ const EditPublishContent: React.FunctionComponent = () => {
       <Modal.Body>
         <p>
           The{" "}
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            target="blank"
-            rel="noreferrer noopener"
-          >
+          <a href={MARKETPLACE_URL} target="blank" rel="noreferrer noopener">
             PixieBrix Marketplace
           </a>{" "}
           admin team is working on publishing your blueprint. You&apos;ll

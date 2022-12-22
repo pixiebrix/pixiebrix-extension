@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace";
+
 export const FieldDescriptions = {
   BLUEPRINT_ID: "A unique id for the blueprint",
   BLUEPRINT_NAME: "A display name for the blueprint",

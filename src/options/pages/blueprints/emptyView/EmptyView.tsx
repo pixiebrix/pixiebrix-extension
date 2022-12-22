@@ -23,6 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card } from "react-bootstrap";
 import workshopImage from "@img/workshop.svg";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const EmptyView: React.VoidFunctionComponent<{
   tableInstance: TableInstance<InstallableViewItem>;
@@ -54,9 +55,7 @@ const EmptyView: React.VoidFunctionComponent<{
             <div>
               Try different search terms or search in the{" "}
               <a
-                href={`https://pixiebrix.com/marketplace/search/?q=${encodeURI(
-                  globalFilter
-                )}`}
+                href={`${MARKETPLACE_URL}/search/?q=${encodeURI(globalFilter)}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -27,6 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { type RegistryId } from "@/core";
 import { pull, remove } from "lodash";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
@@ -47,7 +48,7 @@ const defaultActions: Action[] = [
     icon: <FontAwesomeIcon icon={faStore} fixedWidth />,
     section: PIXIEBRIX_SECTION,
     perform() {
-      window.location.href = "https://www.pixiebrix.com/marketplace/";
+      window.location.href = MARKETPLACE_URL;
     },
   },
   {

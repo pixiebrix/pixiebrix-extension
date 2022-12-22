@@ -83,7 +83,7 @@ exports[`SidebarApp renders 1`] = `
             <p>
               Visit the 
               <a
-                href="https://www.pixiebrix.com/marketplace/"
+                href="https://www.pixiebrix.com/marketplace"
                 rel="noopener noreferrer"
                 target="_blank"
               >

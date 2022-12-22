@@ -47,6 +47,7 @@ import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { type RecipeDefinition } from "@/types/definitions";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -271,7 +272,7 @@ function useInstallableViewItemActions(
     isDeployment || showPublishAction
       ? null
       : // If showPublishAction is false, then the listing for the recipe is defined
-        `https://pixiebrix.com/marketplace/${
+        `${MARKETPLACE_URL}/${
           listings[(installable as RecipeDefinition).metadata.id].id
         }`;
 

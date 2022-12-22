@@ -34,6 +34,7 @@ import { type ReferenceEntry } from "@/options/pages/brickEditor/brickEditorType
 import { type Schema } from "@/core";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -106,7 +107,7 @@ const BrickDetail: React.FunctionComponent<{
         {listing && (
           <div className="ml-4">
             <Button
-              href={`https://pixiebrix.com/marketplace/${listing.id}`}
+              href={`${MARKETPLACE_URL}/${listing.id}`}
               size="sm"
               variant="link"
               target="_blank"
