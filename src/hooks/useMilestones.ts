@@ -18,7 +18,7 @@
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
-import { Milestone } from "@/types/contract";
+import { type Milestone } from "@/types/contract";
 import { useGetMeQuery } from "@/services/api";
 
 export type MilestoneHelpers = {

@@ -17,9 +17,7 @@
 
 import { type AuthRootState } from "./authTypes";
 
-export const selectAuth = (state: AuthRootState) => {
-  return state.auth;
-};
+export const selectAuth = (state: AuthRootState) => state.auth;
 export const selectIsLoggedIn = (state: AuthRootState) =>
   selectAuth(state).isLoggedIn;
 export const selectScope = (state: AuthRootState) => selectAuth(state).scope;

@@ -17,14 +17,14 @@
 
 import styles from "./GetStartedView.module.scss";
 
-import React, { ReactNode } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 import { useRecipe } from "@/recipes/recipesHooks";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 
@@ -51,9 +51,10 @@ const GetStartedView: React.VoidFunctionComponent<{
   const { homepage_url: homepageUrl } = browser.runtime.getManifest();
   const { getMilestone, isFetching } = useMilestones();
 
-  const onboardingBlueprintId = !isFetching
-    ? (getMilestone("first_time_public_blueprint_install")?.value as RegistryId)
-    : null;
+  const onboardingBlueprintId = isFetching
+    ? null
+    : (getMilestone("first_time_public_blueprint_install")
+        ?.value as RegistryId);
 
   const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(
     onboardingBlueprintId
@@ -97,7 +98,7 @@ const GetStartedView: React.VoidFunctionComponent<{
                 webpage this Blueprint enhances to see it in action.
               </li>
               <li>
-                Check out the "How to Use" section for{" "}
+                Check out the &quot;How to Use&quot; section for{" "}
                 <ExternalLink
                   linkText={`${onboardingBlueprintListing.package.verbose_name}`}
                   url={marketplaceUrl}

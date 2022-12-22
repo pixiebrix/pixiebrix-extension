@@ -27,7 +27,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
 import { useInstallBotGamesBlueprint } from "@/options/pages/blueprints/BotGamesView";
-import { RegistryId } from "@/core";
+import { type RegistryId } from "@/core";
 
 type BlueprintsPageSidebarProps = {
   teamFilters: string[];
