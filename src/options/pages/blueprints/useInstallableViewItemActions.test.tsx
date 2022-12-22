@@ -379,7 +379,14 @@ describe("useInstallableViewItemActions", () => {
         result: { current: actions },
       } = renderHook(() => useInstallableViewItemActions(blueprintItem));
       expectActions(
-        ["viewInMarketplaceHref", "viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+        [
+          "viewInMarketplaceHref",
+          "viewShare",
+          "uninstall",
+          "viewLogs",
+          "exportBlueprint",
+          "reinstall",
+        ],
         actions
       );
     });

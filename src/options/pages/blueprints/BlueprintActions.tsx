@@ -58,7 +58,7 @@ const BlueprintActions: React.FunctionComponent<{
           </>
         ),
         href: actions.viewInMarketplaceHref,
-        hide: !actions.viewInMarketplaceHref
+        hide: !actions.viewInMarketplaceHref,
       },
       {
         title: (
