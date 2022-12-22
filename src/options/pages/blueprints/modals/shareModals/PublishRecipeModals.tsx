@@ -21,7 +21,7 @@ import { selectShowPublishContext } from "@/options/pages/blueprints/modals/blue
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import Loader from "@/components/Loader";
 import { useRecipe } from "@/recipes/recipesHooks";
 import EditPublishContent from "./EditPublishContent";
@@ -33,7 +33,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
   const { blueprintId, cancelingPublish } = showPublishContext;
   const { data: listings, isLoading: areListingsLoading } =
-    useGetMarketplaceListingsQuery();
+    appApi.endpoints.getMarketplaceListings.useQueryState();
   const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(blueprintId);
 
   if (isFetchingRecipe || areListingsLoading) {

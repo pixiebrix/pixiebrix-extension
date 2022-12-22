@@ -34,7 +34,13 @@ jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
 }));
 jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: jest.fn().mockReturnValue({ data: {} }),
+  appApi: {
+    endpoints: {
+      getMarketplaceListings: {
+        useQueryState: jest.fn().mockReturnValue({ data: {} }),
+      },
+    },
+  },
   useGetEditablePackagesQuery: jest
     .fn()
     .mockReturnValue({ data: [], isFetching: false }),
