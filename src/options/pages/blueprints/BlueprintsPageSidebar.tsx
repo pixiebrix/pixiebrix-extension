@@ -27,6 +27,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
 import { useInstallBotGamesBlueprint } from "@/options/pages/blueprints/BotGamesView";
+import { RegistryId } from "@/core";
 
 type BlueprintsPageSidebarProps = {
   teamFilters: string[];
@@ -109,6 +110,14 @@ const useOnboardingTabs = (
   const { hasMilestone } = useMilestones();
   const { flagOn } = useFlags();
   const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
+  const { hasEveryMilestone, getMilestone } = useMilestones();
+
+  const onboardingBlueprintId = hasEveryMilestone([
+    "account_setup_via_activate_marketplace_blueprint",
+    "first_time_public_blueprint_install",
+  ])
+    ? (getMilestone("first_time_public_blueprint_install")?.value as RegistryId)
+    : null;
 
   const isFreemiumUser = !me?.organization;
 
@@ -118,12 +127,16 @@ const useOnboardingTabs = (
         return true;
       }
 
-      const isNotStarterBlueprint = starterBlueprints?.some(
+      if (onboardingBlueprintId === installableViewItem.sharing.packageId) {
+        return false;
+      }
+
+      const isStarterBlueprint = starterBlueprints?.some(
         (starterBlueprint) =>
-          installableViewItem.sharing.packageId !== starterBlueprint.metadata.id
+          installableViewItem.sharing.packageId === starterBlueprint.metadata.id
       );
 
-      return installableViewItem.status === "Active" && isNotStarterBlueprint;
+      return installableViewItem.status === "Active" && !isStarterBlueprint;
     }
   );
 
