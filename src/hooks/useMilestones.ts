@@ -19,15 +19,21 @@ import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
 import { Milestone } from "@/types/contract";
+import { useGetMeQuery } from "@/services/api";
 
 export type MilestoneHelpers = {
   getMilestone: (milestoneKey: string) => Milestone;
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
+  isFetching: boolean;
+  isLoading: boolean;
+  refetch: () => void;
 };
 
 function useMilestones(): MilestoneHelpers {
-  const milestones = useSelector(selectMilestones);
+  const cachedMilestones = useSelector(selectMilestones);
+  const { data: me, isFetching, isLoading, refetch } = useGetMeQuery();
+  const milestones = me ? me.milestones : cachedMilestones;
 
   return useMemo(() => {
     const milestonesByKey = Object.fromEntries(
@@ -47,6 +53,9 @@ function useMilestones(): MilestoneHelpers {
       getMilestone,
       hasMilestone,
       hasEveryMilestone,
+      isFetching,
+      isLoading,
+      refetch,
     };
   }, [milestones]);
 }

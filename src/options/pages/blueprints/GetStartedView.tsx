@@ -29,7 +29,7 @@ import { useRecipe } from "@/recipes/recipesHooks";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 
 const ExternalLink: React.VoidFunctionComponent<{
-  linkText: string | ReactNode;
+  linkText: string;
   url: string;
 }> = ({ linkText, url }) => (
   <span>
@@ -49,16 +49,19 @@ const GetStartedView: React.VoidFunctionComponent<{
   height: number;
 }> = ({ width, height }) => {
   const { homepage_url: homepageUrl } = browser.runtime.getManifest();
-  const { hasEveryMilestone, getMilestone } = useMilestones();
+  const { hasEveryMilestone, getMilestone, isFetching } = useMilestones();
 
-  const onboardingBlueprintId = hasEveryMilestone([
-    "account_setup_via_activate_marketplace_blueprint",
-    "first_time_public_blueprint_install",
-  ])
-    ? (getMilestone("first_time_public_blueprint_install")?.value as RegistryId)
-    : null;
+  const onboardingBlueprintId =
+    !isFetching &&
+    hasEveryMilestone([
+      "account_setup_via_activate_marketplace_blueprint",
+      "first_time_public_blueprint_install",
+    ])
+      ? (getMilestone("first_time_public_blueprint_install")
+          ?.value as RegistryId)
+      : null;
 
-  const { data: recipe, isLoading: isRecipeLoading } = useRecipe(
+  const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(
     onboardingBlueprintId
   );
 
@@ -83,25 +86,21 @@ const GetStartedView: React.VoidFunctionComponent<{
           <Col>
             <h4>
               Success!{" "}
+              <InstallableIcon
+                installable={recipe}
+                listing={onboardingBlueprintListing}
+                isLoading={isLoading && isFetchingRecipe}
+              />{" "}
               <ExternalLink
-                linkText={
-                  <>
-                    <InstallableIcon
-                      installable={recipe}
-                      listing={onboardingBlueprintListing}
-                      isLoading={isLoading && isRecipeLoading}
-                    />{" "}
-                    {onboardingBlueprintListing.package.verbose_name}
-                  </>
-                }
+                linkText={onboardingBlueprintListing.package.verbose_name}
                 url={marketplaceUrl}
               />{" "}
               is ready to use.
             </h4>
             <ul>
               <li>
-                Time to try this Blueprint in the wild! Navigate to a webpage
-                this Blueprint enhances to see it in action.
+                Time to try this Blueprint in the wild! You can navigate to a
+                webpage this Blueprint enhances to see it in action.
               </li>
               <li>
                 Check out the "How to Use" section for{" "}
@@ -121,8 +120,8 @@ const GetStartedView: React.VoidFunctionComponent<{
           <h4>Want to create a new Blueprint?</h4>
           <ul>
             <li>
-              Start by opening a new browser tab navigating to the webpage
-              you&apos;d like to modify.
+              Start by opening a new browser tab and navigating to the webpage
+              you want to modify.
             </li>
             <li>
               Go to the PixieBrix tab via the <strong>Chrome DevTools</strong>{" "}
@@ -135,8 +134,8 @@ const GetStartedView: React.VoidFunctionComponent<{
               or <kbd>F12</kbd> and start editing your page.
             </li>
             <li>
-              Save your Blueprint in the Page Editor and you&apos;ll see it show
-              up here as a personal Blueprint.
+              Save your Blueprint in the Page Editor, and you&apos;ll see it
+              here as a personal Blueprint.
             </li>
           </ul>
         </Col>

@@ -34,6 +34,8 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import extensionsSlice from "@/store/extensionsSlice";
 import useMilestones from "@/hooks/useMilestones";
 import { useCreateMilestoneMutation } from "@/services/api";
+import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
+import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
 
 const { installRecipe } = extensionsSlice.actions;
 
@@ -45,7 +47,8 @@ type InstallRecipe = (
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
   const [createMilestone] = useCreateMilestoneMutation();
-  const { hasMilestone } = useMilestones();
+  const { hasMilestone, refetch: refetchMilestones } = useMilestones();
+  const { setActiveTab } = blueprintsSlice.actions;
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -111,6 +114,13 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
             key: "first_time_public_blueprint_install",
             value: recipe.metadata.id,
           });
+
+          dispatch(setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted));
+
+          // The cache invalidation caused by createMilestone doesn't
+          // trigger a refetch soon enough after redirecting back
+          // to the Blueprints page; this prevents that race condition
+          refetchMilestones();
         }
 
         setSubmitting(false);

@@ -106,18 +106,15 @@ const useOnboardingTabs = (
     blueprintsSlice.actions.setActiveTab
   );
   const { data: installableViewItems } = tableInstance;
-  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+  const { data: me, isLoading: isMeLoading, isFetching } = useGetMeQuery();
   const { hasMilestone } = useMilestones();
   const { flagOn } = useFlags();
   const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
-  const { hasEveryMilestone, getMilestone } = useMilestones();
+  const { getMilestone } = useMilestones();
 
-  const onboardingBlueprintId = hasEveryMilestone([
-    "account_setup_via_activate_marketplace_blueprint",
-    "first_time_public_blueprint_install",
-  ])
-    ? (getMilestone("first_time_public_blueprint_install")?.value as RegistryId)
-    : null;
+  const onboardingBlueprintId = getMilestone(
+    "first_time_public_blueprint_install"
+  )?.value as RegistryId;
 
   const isFreemiumUser = !me?.organization;
 
@@ -145,7 +142,7 @@ const useOnboardingTabs = (
     flagOn("bot-games-event-in-progress");
 
   const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isMeLoading
+    !isStarterBlueprintsLoading && !isMeLoading && !isFetching
       ? isFreemiumUser && !hasSomeBlueprintEngagement && !showBotGamesTab
       : false;
 
@@ -157,7 +154,7 @@ const useOnboardingTabs = (
   }, []);
 
   useEffect(() => {
-    if (isStarterBlueprintsLoading || isMeLoading) {
+    if (isStarterBlueprintsLoading || isMeLoading || isFetching) {
       return;
     }
 

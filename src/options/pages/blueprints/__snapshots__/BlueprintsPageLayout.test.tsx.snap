@@ -234,7 +234,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
               </h4>
               <ul>
                 <li>
-                  Start by opening a new browser tab navigating to the webpage you'd like to modify.
+                  Start by opening a new browser tab and navigating to the webpage you want to modify.
                 </li>
                 <li>
                   Go to the PixieBrix tab via the 
@@ -252,7 +252,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
                    and start editing your page.
                 </li>
                 <li>
-                  Save your Blueprint in the Page Editor and you'll see it show up here as a personal Blueprint.
+                  Save your Blueprint in the Page Editor, and you'll see it here as a personal Blueprint.
                 </li>
               </ul>
             </div>

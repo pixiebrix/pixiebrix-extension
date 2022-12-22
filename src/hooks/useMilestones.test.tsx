@@ -22,6 +22,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import React from "react";
+import { useGetMeQuery } from "@/services/api";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -32,7 +33,15 @@ function optionsStore(initialState?: any) {
   });
 }
 
+jest.mock("@/services/api", () => ({
+  useGetMeQuery: jest.fn(),
+}));
+
 const renderUseMilestones = (initialState?: any) => {
+  (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    milestones: initialState?.milestones ?? [],
+  }));
+
   return renderHook(() => useMilestones(), {
     wrapper: ({ children }) => (
       <Provider store={optionsStore(initialState)}>{children}</Provider>
