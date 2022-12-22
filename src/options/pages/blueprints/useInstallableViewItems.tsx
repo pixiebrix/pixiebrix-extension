@@ -118,33 +118,44 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const installableViewItems = useMemo(
     () =>
-      installables.map((installable) => ({
-        name: getLabel(installable),
-        description: getDescription(installable),
-        sharing: {
-          packageId: getPackageId(installable),
-          source: getSharingType({
+      installables.map(
+        (installable) =>
+          ({
+            name: getLabel(installable),
+            description: getDescription(installable),
+            sharing: {
+              packageId: getPackageId(installable),
+              source: getSharingType({
+                installable,
+                organizations,
+                scope,
+                installedExtensions,
+              }),
+              isPublished: Boolean(
+                listingsQuery.data[getPackageId(installable)]
+              ),
+            },
+            updatedAt: getUpdatedAt(installable),
+            status: getStatus(installable),
+            hasUpdate: updateAvailable(
+              recipes,
+              installedExtensions,
+              installable
+            ),
+            installedVersionNumber: getInstalledVersionNumber(
+              installedExtensions,
+              installable
+            ),
+            icon: installableIcon(installable),
             installable,
-            organizations,
-            scope,
-            installedExtensions,
-          }),
-        },
-        updatedAt: getUpdatedAt(installable),
-        status: getStatus(installable),
-        hasUpdate: updateAvailable(recipes, installedExtensions, installable),
-        installedVersionNumber: getInstalledVersionNumber(
-          installedExtensions,
-          installable
-        ),
-        icon: installableIcon(installable),
-        installable,
-      })),
+          } satisfies InstallableViewItem)
+      ),
     [
       getStatus,
       installableIcon,
       installables,
       installedExtensions,
+      listingsQuery.data,
       organizations,
       recipes,
       scope,

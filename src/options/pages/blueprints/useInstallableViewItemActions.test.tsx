@@ -19,11 +19,7 @@
 /// <reference types="jest-extended" />
 
 import { renderHook } from "@testing-library/react-hooks";
-import {
-  extensionFactory,
-  marketplaceListingFactory,
-  recipeFactory,
-} from "@/testUtils/factories";
+import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import useInstallableViewItemActions, {
   type InstallableViewItemActions,
 } from "@/options/pages/blueprints/useInstallableViewItemActions";
@@ -34,12 +30,8 @@ import {
   type SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import {
-  useDeleteCloudExtensionMutation,
-  useGetMarketplaceListingsQuery,
-} from "@/services/api";
+import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
-import { type RecipeDefinition } from "@/types/definitions";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -52,7 +44,6 @@ jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
 );
 jest.mock("@/services/api", () => ({
   useDeleteCloudExtensionMutation: jest.fn(),
-  useGetMarketplaceListingsQuery: jest.fn(),
 }));
 
 const expectActions = (
@@ -89,10 +80,6 @@ const mockHooks = ({
   (useDeleteCloudExtensionMutation as jest.Mock).mockImplementation(() => [
     jest.fn(),
   ]);
-
-  (useGetMarketplaceListingsQuery as jest.Mock).mockImplementation(() => ({
-    data: {},
-  }));
 };
 
 const installableItemFactory = ({
@@ -386,13 +373,7 @@ describe("useInstallableViewItemActions", () => {
     });
 
     test("published", () => {
-      (useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
-        data: {
-          [(blueprintItem.installable as RecipeDefinition).metadata.id]:
-            // Id and name do not matter in this test
-            marketplaceListingFactory(),
-        },
-      });
+      blueprintItem.sharing.isPublished = true;
 
       const {
         result: { current: actions },

@@ -20,7 +20,6 @@ import {
   getPackageId,
   isExtension,
   isExtensionFromRecipe,
-  isRecipePendingPublish,
   selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { type InstallableViewItem } from "./blueprintsTypes";
@@ -38,10 +37,7 @@ import {
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
-import {
-  useDeleteCloudExtensionMutation,
-  useGetMarketplaceListingsQuery,
-} from "@/services/api";
+import { useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
@@ -110,8 +106,6 @@ function useInstallableViewItemActions(
   const { hasPermissions, requestPermissions } = useInstallablePermissions(
     extensionsFromInstallable
   );
-
-  const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
   const reinstall = () => {
     if (hasBlueprint) {
@@ -270,8 +264,7 @@ function useInstallableViewItemActions(
     // Extensions can be published
     (isInstallableExtension ||
       // In case of blueprint, skip if it is already published
-      !installable.sharing.public ||
-      isRecipePendingPublish(installable, listings));
+      !sharing.isPublished);
 
   return {
     viewPublish: showPublishAction ? viewPublish : null,
