@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/themes/colors";
+
 .root {
   li,
   p {
@@ -22,24 +24,24 @@
   }
 
   kbd {
-    color: #170637;
-    background: white;
+    color: $N900;
+    background: $N0;
     border-radius: 4px;
     padding: 4.5px 6px;
     margin: 0 12px;
   }
 
   a {
-    color: #170637;
+    color: $N900;
     font-weight: 500;
     padding-bottom: 1px;
-    border-bottom: 2px solid #5a19da;
+    border-bottom: 2px solid $P500;
     text-decoration: none;
   }
 
   .externalLinkIcon {
     margin-left: 4px;
-    color: #b395ee;
+    color: $P200;
   }
 }
 
