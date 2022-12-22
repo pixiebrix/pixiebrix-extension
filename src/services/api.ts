@@ -228,13 +228,14 @@ export const appApi = createApi({
     }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
-      void
+      { package__name?: RegistryId } | void
     >({
-      query: () => ({
+      query: (params) => ({
         url: "/api/marketplace/listings/",
         method: "get",
         // Returns public marketplace
         requireLinked: false,
+        params,
       }),
       providesTags: ["MarketplaceListings"],
       transformResponse(

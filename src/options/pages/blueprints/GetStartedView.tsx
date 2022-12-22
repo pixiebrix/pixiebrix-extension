@@ -17,15 +17,19 @@
 
 import styles from "./GetStartedView.module.scss";
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { RegistryId } from "@/core";
+import { useRecipe } from "@/recipes/recipesHooks";
+import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 
 const ExternalLink: React.VoidFunctionComponent<{
-  linkText: string;
+  linkText: string | ReactNode;
   url: string;
 }> = ({ linkText, url }) => (
   <span>
@@ -44,22 +48,74 @@ const GetStartedView: React.VoidFunctionComponent<{
   width: number;
   height: number;
 }> = ({ width, height }) => {
+  const { homepage_url: homepageUrl } = browser.runtime.getManifest();
   const { hasEveryMilestone, getMilestone } = useMilestones();
 
   const onboardingBlueprintId = hasEveryMilestone([
     "account_setup_via_activate_marketplace_blueprint",
     "first_time_public_blueprint_install",
   ])
-    ? getMilestone("first_time_public_blueprint_install")
+    ? (getMilestone("first_time_public_blueprint_install")?.value as RegistryId)
     : null;
 
-  console.log("onboardingBlueprintId", onboardingBlueprintId);
+  const { data: recipe, isLoading: isRecipeLoading } = useRecipe(
+    onboardingBlueprintId
+  );
+
+  const { data: listings, isLoading } = useGetMarketplaceListingsQuery(
+    { package__name: onboardingBlueprintId },
+    { skip: !onboardingBlueprintId }
+  );
+
+  const onboardingBlueprintListing = listings
+    ? listings[onboardingBlueprintId]
+    : null;
+
+  const marketplaceUrl = `${homepageUrl}/marketplace/${onboardingBlueprintListing?.id}/`;
 
   return (
     <div
       style={{ height: `${height}px`, width: `${width}px` }}
       className={styles.root}
     >
+      {onboardingBlueprintListing && (
+        <Row className={styles.infoRow}>
+          <Col>
+            <h4>
+              Success!{" "}
+              <ExternalLink
+                linkText={
+                  <>
+                    <InstallableIcon
+                      installable={recipe}
+                      listing={onboardingBlueprintListing}
+                      isLoading={isLoading && isRecipeLoading}
+                    />{" "}
+                    {onboardingBlueprintListing.package.verbose_name}
+                  </>
+                }
+                url={marketplaceUrl}
+              />{" "}
+              is ready to use.
+            </h4>
+            <ul>
+              <li>
+                Time to try this Blueprint in the wild! Navigate to a webpage
+                this Blueprint enhances to see it in action.
+              </li>
+              <li>
+                Check out the "How to Use" section for{" "}
+                <ExternalLink
+                  linkText={`${onboardingBlueprintListing.package.verbose_name}`}
+                  url={marketplaceUrl}
+                />{" "}
+                in the Marketplace for more details about how to use this
+                Blueprint.
+              </li>
+            </ul>
+          </Col>
+        </Row>
+      )}
       <Row className={styles.infoRow}>
         <Col>
           <h4>Want to create a new Blueprint?</h4>
