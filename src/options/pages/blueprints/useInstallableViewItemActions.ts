@@ -272,7 +272,7 @@ function useInstallableViewItemActions(
     isDeployment || showPublishAction
       ? null
       : // If showPublishAction is false, then the listing for the recipe is defined
-        `${MARKETPLACE_URL}/${sharing.listingId}`;
+        `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
     viewPublish: showPublishAction ? viewPublish : null,

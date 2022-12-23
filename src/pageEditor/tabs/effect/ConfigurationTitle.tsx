@@ -139,7 +139,7 @@ const ConfigurationTitle: React.FunctionComponent = () => {
     <div className={styles.root}>
       {title}
       <a
-        href={`${MARKETPLACE_URL}/${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+        href={`${MARKETPLACE_URL}${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
         target="_blank"
         rel="noreferrer"
         className={styles.documentationLink}

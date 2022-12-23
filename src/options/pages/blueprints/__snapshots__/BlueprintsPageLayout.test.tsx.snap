@@ -175,9 +175,9 @@ exports[`BlueprintsPageLayout renders 1`] = `
         </h5>
         <a
           class="media nav-link"
-          data-rb-event-key="https://www.pixiebrix.com/marketplace"
+          data-rb-event-key="https://www.pixiebrix.com/marketplace/"
           data-testid="open-public-marketplace-blueprint-tab"
-          href="https://www.pixiebrix.com/marketplace"
+          href="https://www.pixiebrix.com/marketplace/"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -594,7 +594,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
                  Visit the 
                 <span>
                   <a
-                    href="https://www.pixiebrix.com/marketplace"
+                    href="https://www.pixiebrix.com/marketplace/"
                     rel="noopener noreferrer"
                     target="_blank"
                   >

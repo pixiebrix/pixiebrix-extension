@@ -111,7 +111,7 @@ exports[`renders edit publish modal 1`] = `
           The
            
           <a
-            href="https://www.pixiebrix.com/marketplace"
+            href="https://www.pixiebrix.com/marketplace/"
             rel="noreferrer noopener"
             target="blank"
           >
@@ -236,7 +236,7 @@ exports[`renders publish modal 1`] = `
           On Submit, the public link to this blueprint will be shared with the
            
           <a
-            href="https://www.pixiebrix.com/marketplace"
+            href="https://www.pixiebrix.com/marketplace/"
             rel="noreferrer noopener"
             target="blank"
           >

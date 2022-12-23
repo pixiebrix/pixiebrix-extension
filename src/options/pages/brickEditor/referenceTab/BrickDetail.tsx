@@ -107,7 +107,7 @@ const BrickDetail: React.FunctionComponent<{
         {listing && (
           <div className="ml-4">
             <Button
-              href={`${MARKETPLACE_URL}/${listing.id}`}
+              href={`${MARKETPLACE_URL}${listing.id}/`}
               size="sm"
               variant="link"
               target="_blank"

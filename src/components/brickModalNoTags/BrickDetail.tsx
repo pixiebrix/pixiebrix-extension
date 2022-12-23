@@ -24,7 +24,7 @@ const BrickDetail: React.FunctionComponent<{
         <p>{brick.description}</p>
         {listing && (
           <a
-            href={`${MARKETPLACE_URL}/${listing.id}`}
+            href={`${MARKETPLACE_URL}${listing.id}/`}
             className="text-info mr-2"
             target="_blank"
             rel="noopener noreferrer"

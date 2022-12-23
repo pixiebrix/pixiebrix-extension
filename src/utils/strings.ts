@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace";
+/**
+ * Link to the marketplace with trailing slash
+ */
+export const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 
 export const FieldDescriptions = {
   BLUEPRINT_ID: "A unique id for the blueprint",
