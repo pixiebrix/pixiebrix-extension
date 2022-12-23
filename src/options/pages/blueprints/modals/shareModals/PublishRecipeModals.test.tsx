@@ -25,13 +25,18 @@ import {
   recipeFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
-import { useRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/definitions";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
 
+let blueprint: RecipeDefinition;
+let auth: AuthState;
+
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useRecipe: jest.fn().mockImplementation(() => ({
+    data: blueprint,
+    isFetching: false,
+  })),
 }));
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -47,8 +52,6 @@ jest.mock("@/services/api", () => ({
   useUpdateRecipeMutation: jest.fn().mockReturnValue([jest.fn()]),
 }));
 
-let blueprint: RecipeDefinition;
-let auth: AuthState;
 beforeEach(() => {
   auth = authStateFactory();
   blueprint = recipeFactory({
@@ -62,16 +65,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-function mockHooks() {
-  (useRecipe as jest.Mock).mockReturnValue({
-    data: blueprint,
-    isFetching: false,
-  });
-}
-
 test("renders publish modal", () => {
-  mockHooks();
-
   const rendered = render(<PublishRecipeModals />, {
     setupRedux(dispatch) {
       dispatch(authSlice.actions.setAuth(auth));
@@ -89,7 +83,6 @@ test("renders publish modal", () => {
 
 test("renders edit publish modal", () => {
   blueprint.sharing.public = true;
-  mockHooks();
 
   const rendered = render(<PublishRecipeModals />, {
     setupRedux(dispatch) {
@@ -108,7 +101,6 @@ test("renders edit publish modal", () => {
 
 test("renders cancel publish modal", () => {
   blueprint.sharing.public = true;
-  mockHooks();
 
   const rendered = render(<PublishRecipeModals />, {
     setupRedux(dispatch) {

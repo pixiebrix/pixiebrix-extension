@@ -39,12 +39,12 @@ const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 const sortOrganizations = (organizations: Organization[]) =>
   sortBy(organizations, (organization) => organization.name);
 
-type PublishModalLayoutProps = React.PropsWithChildren<{
+type PublishContentLayoutProps = React.PropsWithChildren<{
   title: string;
 }>;
 
 const PublishContentLayout: React.FunctionComponent<
-  PublishModalLayoutProps
+  PublishContentLayoutProps
 > = ({ title, children }) => {
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { scope: userScope, organizations: userOrganizations } =

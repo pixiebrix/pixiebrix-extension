@@ -88,8 +88,6 @@ const PublishRecipeContent: React.FunctionComponent = () => {
     }
   };
 
-  const disableButtons = isPublishing || isFetchingEditablePackages;
-
   return (
     <PublishContentLayout title="Publish to Marketplace">
       <Modal.Body>
@@ -116,10 +114,14 @@ const PublishRecipeContent: React.FunctionComponent = () => {
         <ActivationLink blueprintId={blueprintId} />
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="link" disabled={disableButtons} onClick={closeModal}>
+        <Button variant="link" disabled={isPublishing} onClick={closeModal}>
           Cancel
         </Button>
-        <Button variant="primary" disabled={disableButtons} onClick={publish}>
+        <Button
+          variant="primary"
+          disabled={isPublishing || isFetchingEditablePackages}
+          onClick={publish}
+        >
           Submit
         </Button>
       </Modal.Footer>

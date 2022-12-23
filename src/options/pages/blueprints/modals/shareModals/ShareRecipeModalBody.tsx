@@ -121,8 +121,11 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
       closeModal();
       refetchRecipes();
     } catch (error) {
-      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
-        helpers.setStatus(error.response.data.config);
+      if (
+        isSingleObjectBadRequestError(error) &&
+        error.response.data.config?.length > 0
+      ) {
+        helpers.setStatus(error.response.data.config.join(" "));
         return;
       }
 
