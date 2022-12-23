@@ -68,7 +68,7 @@ import reportError from "@/telemetry/reportError";
 import {
   activateElement,
   editRecipeMetadata,
-  editRecipeOptions,
+  editRecipeOptionsDefinitions,
   ensureElementUIState,
   removeElement,
   selectRecipeId,
@@ -539,9 +539,12 @@ export const editorSlice = createSlice({
     hideV3UpgradeMessage(state) {
       state.showV3UpgradeMessageByElement[state.activeElementId] = false;
     },
-    editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
+    editRecipeOptionsDefinitions(
+      state,
+      action: PayloadAction<OptionsDefinition>
+    ) {
       const { payload: options } = action;
-      editRecipeOptions(state, options);
+      editRecipeOptionsDefinitions(state, options);
     },
     editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
       const { payload: metadata } = action;
@@ -710,7 +713,7 @@ export const editorSlice = createSlice({
 
       // Set the metadata and options
       editRecipeMetadata(state, metadata);
-      editRecipeOptions(state, options);
+      editRecipeOptionsDefinitions(state, options);
 
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
@@ -818,7 +821,7 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    editRecipeOptionValues(state, action: PayloadAction<UserOptions>) {
+    editRecipeOptionsValues(state, action: PayloadAction<UserOptions>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {
         return;

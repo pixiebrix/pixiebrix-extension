@@ -86,7 +86,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
   const dispatch = useDispatch();
   const updateRedux = useCallback(
     (options: OptionsDefinition) => {
-      dispatch(actions.editRecipeOptions(options));
+      dispatch(actions.editRecipeOptionsDefinitions(options));
     },
     [dispatch]
   );

@@ -153,7 +153,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     matcher: isAnyOf(
       editorActions.editElement,
-      editorActions.editRecipeOptionValues
+      editorActions.editRecipeOptionsDefinitions
     ),
   },
   {

@@ -95,7 +95,7 @@ const ActivationOptionsContent: React.FC = () => {
 
   const updateRedux = useCallback(
     (options: UserOptions) => {
-      dispatch(actions.editRecipeOptionValues(options));
+      dispatch(actions.editRecipeOptionsValues(options));
     },
     [dispatch]
   );

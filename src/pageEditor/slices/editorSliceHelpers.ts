@@ -147,7 +147,7 @@ export function editRecipeMetadata(
   state.dirtyRecipeMetadataById[recipeId] = metadata;
 }
 
-export function editRecipeOptions(
+export function editRecipeOptionsDefinitions(
   state: WritableDraft<EditorState>,
   options: OptionsDefinition
 ) {
