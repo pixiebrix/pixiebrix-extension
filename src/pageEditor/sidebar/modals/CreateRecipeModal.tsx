@@ -75,6 +75,7 @@ import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
+import ModalLayout from "@/components/ModalLayout";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -312,12 +313,9 @@ function useFormSchema() {
   });
 }
 
-const CreateRecipeModal: React.FC = () => {
+const CreateRecipeModalBody: React.FC = () => {
   const dispatch = useDispatch();
 
-  const { isCreateRecipeModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
-  );
   const activeElement = useSelector(selectActiveElement);
 
   // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
@@ -417,26 +415,38 @@ const CreateRecipeModal: React.FC = () => {
   );
 
   return (
-    <Modal show={show} onHide={hideModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Create new blueprint</Modal.Title>
-      </Modal.Header>
-      <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
-        {isRecipeFetching ? (
-          <Loader />
-        ) : (
-          <Form
-            validationSchema={formSchema}
-            showUntouchedErrors
-            validateOnMount
-            initialValues={initialFormState}
-            onSubmit={onSubmit}
-            renderBody={renderBody}
-            renderSubmit={renderSubmit}
-          />
-        )}
-      </RequireScope>
-    </Modal>
+    <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
+      {isRecipeFetching ? (
+        <Loader />
+      ) : (
+        <Form
+          validationSchema={formSchema}
+          showUntouchedErrors
+          validateOnMount
+          initialValues={initialFormState}
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      )}
+    </RequireScope>
+  );
+};
+
+const CreateRecipeModal: React.FunctionComponent = () => {
+  const { isCreateRecipeModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
+
+  const dispatch = useDispatch();
+  const hideModal = useCallback(() => {
+    dispatch(editorActions.hideModal());
+  }, [dispatch]);
+
+  return (
+    <ModalLayout title="Create new blueprint" show={show} onHide={hideModal}>
+      <CreateRecipeModalBody />
+    </ModalLayout>
   );
 };
 

@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LogCard from "@/components/logViewer/LogCard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import ModalLayout from "@/options/pages/blueprints/modals/ModalLayout";
+import ModalLayout from "@/components/ModalLayout";
 import { selectShowLogsContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 
 const ExtensionLogsModal: React.FunctionComponent = () => {

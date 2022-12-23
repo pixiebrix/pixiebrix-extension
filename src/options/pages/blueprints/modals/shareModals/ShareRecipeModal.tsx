@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { RequireScope } from "@/auth/RequireScope";
-import ModalLayout from "@/options/pages/blueprints/modals/ModalLayout";
+import ModalLayout from "@/components/ModalLayout";
 import ShareRecipeModalBody from "./ShareRecipeModalBody";
 
 const ShareRecipeModal: React.FunctionComponent = () => {
