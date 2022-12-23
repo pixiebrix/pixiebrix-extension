@@ -16,7 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import EllipsisMenu, {
+  type EllipsisMenuItem,
+} from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDownload,
@@ -39,7 +41,7 @@ const BlueprintActions: React.FunctionComponent<{
   const { hasUpdate } = installableViewItem;
 
   const actionItems = useMemo(
-    () => [
+    (): EllipsisMenuItem[] => [
       {
         title: (
           <>

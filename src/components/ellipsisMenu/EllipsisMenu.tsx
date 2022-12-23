@@ -20,9 +20,10 @@ import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import type { RequireExactlyOne } from "type-fest";
 import styles from "./EllipsisMenu.module.scss";
 
-export type EllipsisMenuItem = {
+type EllipsisMenuItemInternal = {
   /**
    * User-visible display for the item, generally text of some sort
    */
@@ -32,18 +33,23 @@ export type EllipsisMenuItem = {
    * The "on select" action for the item
    * You should provide either this or href, but not both
    */
-  action?: () => void;
+  action: () => void;
 
   /**
    * The href for the item, if it's a link
    * You should provide either this or action, but not both
    */
-  href?: string;
+  href: string;
 
   className?: string;
   hide?: boolean;
   disabled?: boolean;
 };
+
+export type EllipsisMenuItem = RequireExactlyOne<
+  EllipsisMenuItemInternal,
+  "action" | "href"
+>;
 
 type EllipsisMenuProps = {
   className?: string;
