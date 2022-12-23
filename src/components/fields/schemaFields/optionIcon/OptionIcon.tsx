@@ -22,6 +22,7 @@ import ObjectIcon from "./icons/object.svg?loadAsComponent";
 import ToggleIcon from "./icons/toggle.svg?loadAsComponent";
 import SelectIcon from "./icons/select.svg?loadAsComponent";
 import TextIcon from "./icons/text.svg?loadAsComponent";
+import KeyIcon from "./icons/key.svg?loadAsComponent";
 import NumberIcon from "./icons/number.svg?loadAsComponent";
 import ExcludeIcon from "./icons/exclude.svg?loadAsComponent";
 import QuerySelector from "./icons/querySelector.svg?loadAsComponent";
@@ -34,6 +35,7 @@ const components = {
   toggle: ToggleIcon,
   select: SelectIcon,
   text: TextIcon,
+  key: KeyIcon,
   number: NumberIcon,
   exclude: ExcludeIcon,
   querySelector: QuerySelector,

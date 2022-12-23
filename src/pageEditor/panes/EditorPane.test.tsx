@@ -698,6 +698,9 @@ describe("validation", () => {
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization
+    // First one runs the Effect (debounce #1) that triggers Redux state update
+    await runPendingTimers();
+    // Second one runs the Redux state update (debounce #2)
     await runPendingTimers();
 
     expectEditorError(

@@ -42,6 +42,7 @@ type Widgets = {
   SelectorMatchWidget: React.VFC<SchemaFieldProps>;
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
   DatabaseWidget: React.VFC<{ name: string }>;
+  PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
 };
 
 function unsetWidgetFactory(label: string): React.VFC {
@@ -76,6 +77,7 @@ const widgetsRegistry: Widgets = {
   SelectorMatchWidget: unsetWidgetFactory("SelectorMatchWidget"),
   WorkshopMessageWidget: unsetWidgetFactory("WorkshopMessageWidget"),
   DatabaseWidget: unsetWidgetFactory("DatabaseWidget"),
+  PasswordWidget: unsetWidgetFactory("PasswordWidget"),
 };
 
 export default widgetsRegistry;

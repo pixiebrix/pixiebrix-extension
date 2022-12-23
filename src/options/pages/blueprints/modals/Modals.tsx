@@ -16,31 +16,18 @@
  */
 
 import React from "react";
-import { useDispatch } from "react-redux";
-import Loader from "@/components/Loader";
-import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { Modal } from "react-bootstrap";
+import ConvertToRecipeModal from "./convertToRecipeModal/ConvertToRecipeModal";
+import ExtensionLogsModal from "./extensionLogsModal/ExtensionLogsModal";
+import PublishRecipeModals from "./shareModals/PublishRecipeModals";
+import ShareRecipeModal from "./shareModals/ShareRecipeModal";
 
-type LoadingProps = {
-  title: string;
-};
+const Modals: React.FunctionComponent = () => (
+  <>
+    <ExtensionLogsModal />
+    <ConvertToRecipeModal />
+    <ShareRecipeModal />
+    <PublishRecipeModals />
+  </>
+);
 
-const Loading: React.FunctionComponent<LoadingProps> = ({ title }) => {
-  const dispatch = useDispatch();
-  const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
-  };
-
-  return (
-    <Modal show onHide={closeModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>{title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Loader />
-      </Modal.Body>
-    </Modal>
-  );
-};
-
-export default Loading;
+export default Modals;

@@ -70,7 +70,14 @@ async function ensurePermissions(elements: FormState[]) {
     elements.map(async (element) => getPermissions(element))
   );
   const permissions = mergePermissions(permissionsGroups);
-  return requestPermissions(permissions);
+
+  const hasPermissions = await requestPermissions(permissions);
+
+  if (!hasPermissions) {
+    notify.warning(
+      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
+    );
+  }
 }
 
 function useSaveRecipe(): RecipeSaver {

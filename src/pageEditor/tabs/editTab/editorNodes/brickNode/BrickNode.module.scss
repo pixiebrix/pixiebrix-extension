@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@use "sass:math";
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
 $closedHandleHeight: 28px;
@@ -50,7 +51,7 @@ $openHandleHeight: 20px;
   left: calc(#{$pipeLineOffset} - #{$pipeLineBorderWidth});
   width: $closedHandleWidth;
   height: $closedHandleHeight;
-  border-radius: 0 0 0 $closedHandleWidth/2;
+  border-radius: 0 0 0 math.div($closedHandleWidth, 2);
   border-left: $pipeLineBorderWidth solid black;
   border-bottom: $pipeLineBorderWidth solid black;
 
