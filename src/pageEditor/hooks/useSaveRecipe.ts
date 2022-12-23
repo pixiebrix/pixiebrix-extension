@@ -41,6 +41,12 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
 import { type RegistryId } from "@/core";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type Permissions } from "webextension-polyfill";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
+import { extensionPermissions } from "@/permissions";
+import { mergePermissions, requestPermissions } from "@/utils/permissions";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -48,6 +54,31 @@ type RecipeSaver = {
   save: (recipeId: RegistryId) => Promise<void>;
   isSaving: boolean;
 };
+
+async function getPermissions(
+  element: FormState
+): Promise<Permissions.Permissions> {
+  const { extension, extensionPoint: extensionPointConfig } = ADAPTERS.get(
+    element.type
+  ).asDynamicElement(element);
+  const extensionPoint = extensionPointFactory(extensionPointConfig);
+  return extensionPermissions(extension, { extensionPoint });
+}
+
+async function ensurePermissions(elements: FormState[]) {
+  const permissionsGroups = await Promise.all(
+    elements.map(async (element) => getPermissions(element))
+  );
+  const permissions = mergePermissions(permissionsGroups);
+
+  const hasPermissions = await requestPermissions(permissions);
+
+  if (!hasPermissions) {
+    notify.warning(
+      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
+    );
+  }
+}
 
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
@@ -83,27 +114,6 @@ function useSaveRecipe(): RecipeSaver {
       return false;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- recipeId
-    const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
-    const deletedElementIds = new Set(deletedElements.map(({ uuid }) => uuid));
-
-    const dirtyRecipeElements = editorFormElements.filter(
-      (element) =>
-        element.recipe?.id === recipeId &&
-        isDirtyByElementId[element.uuid] &&
-        !deletedElementIds.has(element.uuid)
-    );
-    const cleanRecipeExtensions = installedExtensions.filter(
-      (extension) =>
-        extension._recipe?.id === recipeId &&
-        !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
-        !deletedElementIds.has(extension.id)
-    );
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newOptions = dirtyRecipeOptions[recipeId];
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newMetadata = dirtyRecipeMetadata[recipeId];
-
     const confirm = await showConfirmation({
       title: "Save Blueprint?",
       message: "All changes to the blueprint and its extensions will be saved",
@@ -114,6 +124,40 @@ function useSaveRecipe(): RecipeSaver {
     if (!confirm) {
       return false;
     }
+
+    // eslint-disable-next-line security/detect-object-injection -- recipeId
+    const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
+    const deletedElementIds = new Set(deletedElements.map(({ uuid }) => uuid));
+
+    const dirtyRecipeElements = editorFormElements.filter(
+      (element) =>
+        element.recipe?.id === recipeId &&
+        isDirtyByElementId[element.uuid] &&
+        !deletedElementIds.has(element.uuid)
+    );
+
+    // Check permissions as early as possible
+    // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
+    void ensurePermissions(dirtyRecipeElements).catch((error) => {
+      console.error("Error checking/enabling permissions", { error });
+      notify.warning({
+        message:
+          "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+        error,
+        reportError: true,
+      });
+    });
+
+    const cleanRecipeExtensions = installedExtensions.filter(
+      (extension) =>
+        extension._recipe?.id === recipeId &&
+        !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
+        !deletedElementIds.has(extension.id)
+    );
+    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+    const newOptions = dirtyRecipeOptions[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+    const newMetadata = dirtyRecipeMetadata[recipeId];
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
@@ -138,7 +182,8 @@ function useSaveRecipe(): RecipeSaver {
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
       dirtyRecipeElements.map(async (element) =>
-        create({ element, pushToCloud: false })
+        // Permissions were already checked earlier in the save function here
+        create({ element, pushToCloud: false, checkPermissions: false })
       )
     );
 
