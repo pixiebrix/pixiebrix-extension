@@ -40,7 +40,7 @@ export type InstallableViewItem = {
   sharing: {
     packageId: RegistryId;
     source: SharingSource;
-    isPublished: boolean;
+    listingId: string | null;
   };
   updatedAt: string;
   status: InstallableStatus;

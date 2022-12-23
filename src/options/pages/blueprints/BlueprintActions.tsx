@@ -16,12 +16,15 @@
  */
 
 import React, { useMemo } from "react";
-import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import EllipsisMenu, {
+  type EllipsisMenuItem,
+} from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDownload,
   faList,
   faShare,
+  faStore,
   faSyncAlt,
   faTimes,
   faTrash,
@@ -38,7 +41,7 @@ const BlueprintActions: React.FunctionComponent<{
   const { hasUpdate } = installableViewItem;
 
   const actionItems = useMemo(
-    () => [
+    (): EllipsisMenuItem[] => [
       {
         title: (
           <>
@@ -49,6 +52,15 @@ const BlueprintActions: React.FunctionComponent<{
         ),
         action: actions.viewPublish,
         hide: !actions.viewPublish,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faStore} /> View in Marketplace
+          </>
+        ),
+        href: actions.viewInMarketplaceHref,
+        hide: !actions.viewInMarketplaceHref,
       },
       {
         title: (

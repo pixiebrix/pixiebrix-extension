@@ -31,6 +31,7 @@ import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
 import { useGetMeQuery } from "@/services/api";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 
@@ -76,7 +77,7 @@ const Sidebar: React.FunctionComponent = () => {
           {permit("marketplace") && (
             <li className="nav-item">
               <a
-                href="https://www.pixiebrix.com/marketplace"
+                href={MARKETPLACE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="nav-link"

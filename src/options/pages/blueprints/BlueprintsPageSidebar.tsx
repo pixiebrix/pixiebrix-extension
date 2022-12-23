@@ -27,6 +27,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
 import { useInstallBotGamesBlueprint } from "@/options/pages/blueprints/BotGamesView";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 type BlueprintsPageSidebarProps = {
   teamFilters: string[];
@@ -328,7 +329,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
         <ListItem
           icon={faExternalLinkAlt}
           label="Open Public Marketplace"
-          href="https://www.pixiebrix.com/marketplace"
+          href={MARKETPLACE_URL}
           target="_blank"
           rel="noopener noreferrer"
         />

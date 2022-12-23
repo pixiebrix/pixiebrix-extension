@@ -46,6 +46,7 @@ import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -55,6 +56,7 @@ export type InstallableViewItemActions = {
   reinstall: ActionCallback | null;
   activate: ActionCallback | null;
   viewPublish: ActionCallback | null;
+  viewInMarketplaceHref: string | null;
   viewShare: ActionCallback | null;
   deleteExtension: ActionCallback | null;
   uninstall: ActionCallback | null;
@@ -66,6 +68,7 @@ export type InstallableViewItemActions = {
   exportBlueprint: ActionCallback;
 };
 
+// eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
@@ -263,10 +266,17 @@ function useInstallableViewItemActions(
     // Extensions can be published
     (isInstallableExtension ||
       // In case of blueprint, skip if it is already published
-      !sharing.isPublished);
+      sharing.listingId == null);
+
+  const viewInMarketplaceHref =
+    isDeployment || showPublishAction
+      ? null
+      : // If showPublishAction is false, then the listing for the recipe is defined
+        `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
     viewPublish: showPublishAction ? viewPublish : null,
+    viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
     viewShare: isDeployment ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
