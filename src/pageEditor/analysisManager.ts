@@ -151,10 +151,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
-    matcher: isAnyOf(
-      editorActions.editElement,
-      editorActions.editRecipeOptionsDefinitions
-    ),
+    actionCreator: editorActions.editElement,
   },
   {
     postAnalysisAction(analysis, extensionId, listenerApi) {
