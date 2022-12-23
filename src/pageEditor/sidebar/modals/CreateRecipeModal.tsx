@@ -55,7 +55,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useCreate, { checkPermissions } from "@/pageEditor/hooks/useCreate";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -105,33 +105,43 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   const createRecipeFromElement = useCallback(
-    async (element: FormState, metadata: RecipeMetadataFormState) => {
-      let recipeElement = produce(activeElement, (draft) => {
-        draft.uuid = uuidv4();
-      });
-      const newRecipe = buildRecipe({
-        cleanRecipeExtensions: [],
-        dirtyRecipeElements: [recipeElement],
-        metadata,
-      });
-      const response = await createRecipe({
-        recipe: newRecipe,
-        organizations: [],
-        public: false,
-      }).unwrap();
-      recipeElement = produce(recipeElement, (draft) => {
-        draft.recipe = selectRecipeMetadata(newRecipe, response);
-      });
-      dispatch(editorActions.addElement(recipeElement));
-      // Don't push to cloud since we're saving it with the recipe
-      await createExtension({ element: recipeElement, pushToCloud: false });
-      if (!keepLocalCopy) {
-        await removeExtension({
-          extensionId: activeElement.uuid,
-          shouldShowConfirmation: false,
+    async (element: FormState, metadata: RecipeMetadataFormState) =>
+      // eslint-disable-next-line promise/prefer-await-to-then -- `async-await` breaks the call chain of the user action and results in browser error
+      checkPermissions(element).then(async (hasPermissions) => {
+        if (!hasPermissions) {
+          return;
+        }
+
+        let recipeElement = produce(activeElement, (draft) => {
+          draft.uuid = uuidv4();
         });
-      }
-    },
+        const newRecipe = buildRecipe({
+          cleanRecipeExtensions: [],
+          dirtyRecipeElements: [recipeElement],
+          metadata,
+        });
+        const response = await createRecipe({
+          recipe: newRecipe,
+          organizations: [],
+          public: false,
+        }).unwrap();
+        recipeElement = produce(recipeElement, (draft) => {
+          draft.recipe = selectRecipeMetadata(newRecipe, response);
+        });
+        dispatch(editorActions.addElement(recipeElement));
+        // Don't push to cloud since we're saving it with the recipe
+        await createExtension({
+          element: recipeElement,
+          pushToCloud: false,
+          checkPermissions: false,
+        });
+        if (!keepLocalCopy) {
+          await removeExtension({
+            extensionId: activeElement.uuid,
+            shouldShowConfirmation: false,
+          });
+        }
+      }),
     [
       activeElement,
       createExtension,

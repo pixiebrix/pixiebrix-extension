@@ -97,6 +97,23 @@ async function ensurePermissions(element: FormState) {
       "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
     );
   }
+
+  return hasPermissions;
+}
+
+export async function checkPermissions(element: FormState): Promise<boolean> {
+  // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
+  return ensurePermissions(element).catch((error) => {
+    console.error("Error checking/enabling permissions", { error });
+    notify.warning({
+      message:
+        "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+      error,
+      reportError: true,
+    });
+
+    return false;
+  });
 }
 
 /**
@@ -134,19 +151,10 @@ function useCreate(): CreateCallback {
     async (
       element: FormState,
       pushToCloud: boolean,
-      checkPermissions = true
+      shouldCheckPermissions = true
     ): Promise<string | null> => {
-      if (checkPermissions) {
-        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
-        void ensurePermissions(element).catch((error) => {
-          console.error("Error checking/enabling permissions", { error });
-          notify.warning({
-            message:
-              "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
-            error,
-            reportError: true,
-          });
-        });
+      if (shouldCheckPermissions) {
+        void checkPermissions(element);
       }
 
       const adapter = ADAPTERS.get(element.type);
