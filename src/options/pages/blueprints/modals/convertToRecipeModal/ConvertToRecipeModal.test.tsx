@@ -22,13 +22,13 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { authStateFactory, cloudExtensionFactory } from "@/testUtils/factories";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { blueprintModalsSlice } from "./blueprintModalsSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
 import * as api from "@/services/api";
 import {
   selectModalsContext,
   selectShowShareContext,
-} from "./blueprintModalsSelectors";
+} from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { type RootState } from "@/store/optionsStore";
 
 jest.mock("@/recipes/recipesHooks", () => ({

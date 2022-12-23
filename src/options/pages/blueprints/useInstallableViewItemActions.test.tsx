@@ -101,6 +101,10 @@ const installableItemFactory = ({
     status,
   } as InstallableViewItem);
 
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
 describe("useInstallableViewItemActions", () => {
   test("cloud extension", () => {
     mockHooks();
@@ -333,26 +337,51 @@ describe("useInstallableViewItemActions", () => {
     expectActions(["viewLogs"], actions);
   });
 
-  test("public blueprint is not publishable", () => {
-    mockHooks();
-    const blueprintItem = {
-      installable: recipeFactory({
-        sharing: { public: true, organizations: [] },
-      }),
-      sharing: {
-        source: {
-          type: "Personal",
-        },
-      },
-      status: "Active",
-    } as InstallableViewItem;
+  describe("public blueprint", () => {
+    let blueprintItem: InstallableViewItem;
+    beforeEach(() => {
+      mockHooks();
 
-    const {
-      result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-    expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
-      actions
-    );
+      blueprintItem = {
+        installable: recipeFactory({
+          sharing: { public: true, organizations: [] },
+        }),
+        sharing: {
+          source: {
+            type: "Personal",
+          },
+        },
+        status: "Active",
+      } as InstallableViewItem;
+    });
+
+    test("pending publish", () => {
+      const {
+        result: { current: actions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      expectActions(
+        [
+          "viewPublish",
+          "viewShare",
+          "uninstall",
+          "viewLogs",
+          "exportBlueprint",
+          "reinstall",
+        ],
+        actions
+      );
+    });
+
+    test("published", () => {
+      blueprintItem.sharing.isPublished = true;
+
+      const {
+        result: { current: actions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      expectActions(
+        ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+        actions
+      );
+    });
   });
 });

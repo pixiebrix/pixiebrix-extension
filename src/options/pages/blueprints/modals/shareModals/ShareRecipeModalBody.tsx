@@ -40,17 +40,16 @@ import {
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { RequireScope } from "@/auth/RequireScope";
 import ReactSelect from "react-select";
-import styles from "./ShareRecipeModal.module.scss";
+import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
-import Loading from "./Loading";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
 import ActivationLink from "./ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";
+import Loader from "@/components/Loader";
 
 type ShareInstallableFormState = {
   organizations: UUID[];
@@ -69,7 +68,7 @@ const AddATeamMenuList = createMenuListWithAddButton(
   "https://app.pixiebrix.com/teams/create"
 );
 
-const ShareRecipeModal: React.FunctionComponent = () => {
+const ShareRecipeModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId } = useSelector(selectShowShareContext);
   const { scope: userScope, organizations: userOrganizations } =
@@ -87,9 +86,13 @@ const ShareRecipeModal: React.FunctionComponent = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());
   };
 
-  // If the was just converted to a blueprint, the API request is likely be in progress and recipe will be null
+  // If an extension was just converted to a blueprint, the API request is likely be in progress and recipe will be null
   if (isFetchingRecipe) {
-    return <Loading title="Share with Teams" />;
+    return (
+      <Modal.Body>
+        <Loader />
+      </Modal.Body>
+    );
   }
 
   const initialValues: ShareInstallableFormState = {
@@ -118,8 +121,11 @@ const ShareRecipeModal: React.FunctionComponent = () => {
       closeModal();
       refetchRecipes();
     } catch (error) {
-      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
-        helpers.setStatus(error.response.data.config);
+      if (
+        isSingleObjectBadRequestError(error) &&
+        error.response.data.config?.length > 0
+      ) {
+        helpers.setStatus(error.response.data.config.join(" "));
         return;
       }
 
@@ -174,124 +180,117 @@ const ShareRecipeModal: React.FunctionComponent = () => {
   }
 
   return (
-    <Modal show onHide={closeModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Share with Teams</Modal.Title>
-      </Modal.Header>
-      <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
-        {hasEditPermissions ? (
-          <Form
-            validationSchema={validationSchema}
-            initialValues={initialValues}
-            onSubmit={saveSharing}
-            renderStatus={({ status }) => (
-              <div className="text-danger p-3">{status}</div>
-            )}
-            renderBody={({ values, setFieldValue }) => (
-              <>
-                <Modal.Body>
-                  <ReactSelect
-                    options={organizationsForSelect
-                      .filter((x) => !values.organizations.includes(x.id))
-                      .map(
-                        (x) =>
-                          ({
-                            label: x.name,
-                            value: x.id,
-                          } satisfies Option)
-                      )}
-                    onChange={(selected: Option) => {
-                      setFieldValue("organizations", [
-                        ...values.organizations,
-                        selected.value,
-                      ]);
-                    }}
-                    value={null}
-                    placeholder="Add a team"
-                    components={{
-                      MenuList: AddATeamMenuList,
-                    }}
-                  />
+    <>
+      {hasEditPermissions ? (
+        <Form
+          validationSchema={validationSchema}
+          initialValues={initialValues}
+          onSubmit={saveSharing}
+          renderStatus={({ status }) => (
+            <div className="text-danger p-3">{status}</div>
+          )}
+          renderBody={({ values, setFieldValue }) => (
+            <>
+              <Modal.Body>
+                <ReactSelect
+                  options={organizationsForSelect
+                    .filter((x) => !values.organizations.includes(x.id))
+                    .map(
+                      (x) =>
+                        ({
+                          label: x.name,
+                          value: x.id,
+                        } satisfies Option)
+                    )}
+                  onChange={(selected: Option) => {
+                    setFieldValue("organizations", [
+                      ...values.organizations,
+                      selected.value,
+                    ]);
+                  }}
+                  value={null}
+                  placeholder="Add a team"
+                  components={{
+                    MenuList: AddATeamMenuList,
+                  }}
+                />
 
-                  <div className={styles.row}>
-                    {ownerLabel}
-                    <span className="text-muted">Owner</span>
-                  </div>
-
-                  {organizationsForSelect
-                    .filter((x) => values.organizations.includes(x.id))
-                    .map((organization) => (
-                      <div className={styles.row} key={organization.id}>
-                        <span>
-                          <FontAwesomeIcon icon={faUsers} /> {organization.name}
-                        </span>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => {
-                            const next = values.organizations.filter(
-                              (x: string) => x !== organization.id
-                            );
-                            setFieldValue("organizations", next);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faTimes} />
-                        </Button>
-                      </div>
-                    ))}
-                </Modal.Body>
-              </>
-            )}
-            renderSubmit={({ isValid, isSubmitting }) => (
-              <Modal.Footer>
-                <Button variant="link" onClick={closeModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={
-                    !isValid || isSubmitting || isFetchingEditablePackages
-                  }
-                >
-                  Save and Close
-                </Button>
-              </Modal.Footer>
-            )}
-          />
-        ) : (
-          <Modal.Body>
-            <div className="text-info my-3">
-              <FontAwesomeIcon icon={faInfoCircle} /> You don&apos;t have
-              permissions to change sharing
-            </div>
-            <div className={styles.row}>
-              {ownerLabel}
-              <span className="text-muted">Owner</span>
-            </div>
-            {organizationsForSelect
-              .filter((x) =>
-                recipe.sharing.organizations.includes(x.id as UUID)
-              )
-              .map((organization) => (
-                <div className={styles.row} key={organization.id}>
-                  <span>
-                    <FontAwesomeIcon icon={faUsers} /> {organization.name}
-                  </span>
+                <div className={styles.row}>
+                  {ownerLabel}
+                  <span className="text-muted">Owner</span>
                 </div>
-              ))}
-          </Modal.Body>
-        )}
+
+                {organizationsForSelect
+                  .filter((x) => values.organizations.includes(x.id))
+                  .map((organization) => (
+                    <div className={styles.row} key={organization.id}>
+                      <span>
+                        <FontAwesomeIcon icon={faUsers} /> {organization.name}
+                      </span>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => {
+                          const next = values.organizations.filter(
+                            (x: string) => x !== organization.id
+                          );
+                          setFieldValue("organizations", next);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </Button>
+                    </div>
+                  ))}
+              </Modal.Body>
+            </>
+          )}
+          renderSubmit={({ isValid, isSubmitting }) => (
+            <Modal.Footer>
+              <Button variant="link" onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={
+                  !isValid || isSubmitting || isFetchingEditablePackages
+                }
+              >
+                Save and Close
+              </Button>
+            </Modal.Footer>
+          )}
+        />
+      ) : (
         <Modal.Body>
-          <h4>Link to share:</h4>
-          <p className="mb-1">
-            People with access can activate the blueprint with this link
-          </p>
-          <ActivationLink blueprintId={blueprintId} />
+          <div className="text-info my-3">
+            <FontAwesomeIcon icon={faInfoCircle} /> You don&apos;t have
+            permissions to change sharing
+          </div>
+          <div className={styles.row}>
+            {ownerLabel}
+            <span className="text-muted">Owner</span>
+          </div>
+          {organizationsForSelect
+            .filter((x) => recipe.sharing.organizations.includes(x.id as UUID))
+            .map((organization) => (
+              <div className={styles.row} key={organization.id}>
+                <span>
+                  <FontAwesomeIcon icon={faUsers} /> {organization.name}
+                </span>
+              </div>
+            ))}
         </Modal.Body>
-      </RequireScope>
-    </Modal>
+      )}
+      <Modal.Body>
+        <h4>Link to share:</h4>
+        <p className="mb-1">
+          People with access can activate the blueprint with this link
+        </p>
+        <ActivationLink blueprintId={blueprintId} />
+      </Modal.Body>
+    </>
   );
 };
 
-export default ShareRecipeModal;
+export default ShareRecipeModalBody;

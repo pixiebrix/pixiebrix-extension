@@ -17,6 +17,9 @@
 
 import { type RootState } from "@/store/optionsStore";
 
+export const selectShowLogsContext = ({ blueprintModals }: RootState) =>
+  blueprintModals.showLogsContext;
+
 export const selectShowShareContext = ({ blueprintModals }: RootState) =>
   blueprintModals.showShareContext;
 
