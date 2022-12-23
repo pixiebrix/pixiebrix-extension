@@ -67,6 +67,20 @@ describe("ReplaceTextEffect", () => {
     expect(document.body.innerHTML).toBe("<div>barbar</div>");
   });
 
+  test("is case case-sensitive", async () => {
+    const document = getDocument("<div>FOO</div>");
+    const brick = new ReplaceTextEffect();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foo",
+        replacement: "bar",
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    expect(document.body.innerHTML).toBe("<div>FOO</div>");
+  });
+
   test("replace text recursively in document", async () => {
     const document = getDocument("<div>foo <span>foo</span></div>");
     await brick.run(
