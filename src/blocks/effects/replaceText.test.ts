@@ -138,6 +138,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
         replacement: "###-###-####",
+        isRegex: true,
       }),
       { logger, root: document } as BlockOptions
     );
@@ -150,6 +151,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "(?<numbers>[0-9]+)[a-z]+",
         replacement: "$<numbers>",
+        isRegex: true,
       }),
       { logger, root: document } as BlockOptions
     );
@@ -162,7 +164,6 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
         replacement: "###-###-####",
-        isRegex: false,
       }),
       { logger, root: document } as BlockOptions
     );

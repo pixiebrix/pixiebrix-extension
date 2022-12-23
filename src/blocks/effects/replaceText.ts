@@ -75,7 +75,7 @@ class ReplaceTextEffect extends Effect {
       isRegex: {
         type: "boolean",
         description: "Whether the pattern is a regular expression",
-        default: true,
+        default: false,
       },
       selector: {
         type: "string",
@@ -96,7 +96,7 @@ class ReplaceTextEffect extends Effect {
       pattern,
       replacement,
       selector,
-      isRegex = true,
+      isRegex = false,
     }: BlockArg<{
       pattern: string;
       replacement: string;
