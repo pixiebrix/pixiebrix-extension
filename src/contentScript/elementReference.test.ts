@@ -21,7 +21,7 @@ import {
 } from "@/contentScript/elementReference";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { ElementReference } from "@/core";
+import { type ElementReference } from "@/core";
 
 describe("elementReference", () => {
   test("get reference for element", () => {
