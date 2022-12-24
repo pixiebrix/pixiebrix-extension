@@ -974,6 +974,10 @@ export type SafeHTML = string & {
   _safeHTMLBrand: never;
 };
 
+export type ElementReference = UUID & {
+  _elementReferenceBrand: never;
+};
+
 export type ComponentRef = {
   Component: React.ComponentType;
   props: Record<string, unknown>;

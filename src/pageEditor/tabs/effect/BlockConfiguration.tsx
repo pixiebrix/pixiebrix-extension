@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { type RegistryId } from "@/core";
-import { getIn, useFormikContext } from "formik";
+import { getIn, useField, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
@@ -30,7 +30,7 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BlockWindow } from "@/blocks/types";
+import { type BlockConfig, type BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
@@ -44,6 +44,7 @@ import ConfigurationTitle from "./ConfigurationTitle";
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
   { label: "Document", value: "document" },
+  { label: "Element", value: "element" },
 ];
 
 const targetOptions: Array<Option<BlockWindow>> = [
@@ -52,8 +53,6 @@ const targetOptions: Array<Option<BlockWindow>> = [
   { label: "Target Tab (target)", value: "target" },
   { label: "Top-level Frame (top)", value: "top" },
   { label: "All Tabs (broadcast)", value: "broadcast" },
-  // Not currently generally available
-  // { label: "Server (remote)", value: "remote" },
 ];
 
 const BlockConfiguration: React.FunctionComponent<{
@@ -63,6 +62,10 @@ const BlockConfiguration: React.FunctionComponent<{
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
+  const [config] = useField<BlockConfig>(name);
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BlockConfig>(
+    configName("root")
+  );
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
@@ -75,6 +78,27 @@ const BlockConfiguration: React.FunctionComponent<{
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
+
+  useEffect(
+    () => {
+      if (config.value.rootMode !== "element") {
+        rootFieldHelpers.setValue(null);
+      }
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps -- rootFieldHelpers changes reference every render
+    [config.value.rootMode]
+  );
+
+  const rootElementSchema: SchemaFieldProps = useMemo(
+    () => ({
+      name: configName("root"),
+      label: "Element",
+      description: "The target element for the brick",
+      schema: {
+        $ref: "https://app.pixiebrix.com/schemas/element#",
+      },
+    }),
+    [configName]
+  );
 
   const ifSchemaProps: SchemaFieldProps = useMemo(
     () => ({
@@ -139,6 +163,10 @@ const BlockConfiguration: React.FunctionComponent<{
               blankValue="inherit"
               description="The root mode controls which page element PixieBrix provides as the implicit element"
             />
+          )}
+
+          {config.value.rootMode === "element" && (
+            <SchemaField {...rootElementSchema} omitIfEmpty />
           )}
 
           {showIfAndTarget && (

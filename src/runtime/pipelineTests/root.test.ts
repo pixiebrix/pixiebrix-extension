@@ -21,6 +21,7 @@ import {
   type ApiVersion,
   type BlockArg,
   type BlockOptions,
+  type Expression,
   type ReaderRoot,
 } from "@/core";
 import blockRegistry from "@/blocks/registry";
@@ -30,6 +31,7 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -139,7 +141,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     });
 
     test.each([rootBlock.id, rootReader.id])(
-      "custom root for: %s",
+      "custom root via selector for: %s",
       async (blockId) => {
         const element = document.createElement("IMG");
         document.body.append(element);
@@ -209,5 +211,47 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         ).rejects.toThrow(/No roots found/);
       }
     );
+
+    test.each([rootBlock.id])("pass hard-coded root reference", async () => {
+      const div = document.createElement("DIV");
+      document.body.append(div);
+
+      const ref = getReferenceForElement(div);
+
+      await expect(
+        reducePipeline(
+          // Force document as starting point for the selector
+          { id: rootBlock.id, config: {}, rootMode: "element", root: ref },
+          { ...simpleInput({}), optionsArgs: {}, root: document },
+          testOptions(apiVersion)
+        )
+      ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
+    });
   }
 );
+
+describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
+  test.each([rootBlock.id])("pass templated root reference", async () => {
+    const div = document.createElement("DIV");
+    document.body.append(div);
+
+    const ref = getReferenceForElement(div);
+
+    await expect(
+      reducePipeline(
+        // Force document as starting point for the selector
+        {
+          id: rootBlock.id,
+          config: {},
+          rootMode: "element",
+          root: {
+            __type__: "var",
+            __value__: "@options.element",
+          } as Expression,
+        },
+        { ...simpleInput({}), optionsArgs: { element: ref }, root: document },
+        testOptions(apiVersion)
+      )
+    ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
+  });
+});
