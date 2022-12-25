@@ -20,6 +20,7 @@ updates:
     assigned:
       - fregante
     ignore:
+      # Update it manually instead https://github.com/pixiebrix/pixiebrix-extension/issues/4436
       - dependency-name: "@storybook/*"
   - package-ecosystem: github-actions
     directory: /
