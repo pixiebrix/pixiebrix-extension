@@ -48,7 +48,6 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
-import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
@@ -158,27 +157,11 @@ const BlockPreview: React.FunctionComponent<{
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
 
-  // FIXME: this logic is wrong because For-Each Element can switch the root element
-  const shouldUseExtensionPointRoot =
-    blockInfo?.isRootAware &&
-    blockRootMode === "inherit" &&
-    isTriggerExtensionPoint(extensionPoint);
-
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
 
-      // If the block is configured to inherit the root element
-      // and the extension point is a trigger,
-      // try to get the root element from the extension point
-      // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
-      // in this case a special message will be shown instead of the brick output (see the code later in the component)
-      const rootSelector =
-        shouldUseExtensionPointRoot &&
-        extensionPoint.definition.targetMode === "root"
-          ? extensionPoint.definition.rootSelector
-          : undefined;
       try {
         const output = await runBlock(thisTab, {
           apiVersion,
@@ -187,7 +170,7 @@ const BlockPreview: React.FunctionComponent<{
             if: undefined,
           },
           context: { ...context, ...(await makeServiceContext(services)) },
-          rootSelector,
+          rootSelector: undefined,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {
@@ -217,10 +200,20 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  if (blockConfig?.rootMode === "element") {
+  if (blockRootMode === "element") {
     return (
       <div className="text-muted">
-        Output Preview is not currently supported for Element Root Mode
+        Output Preview is not currently supported when brick is configured with
+        &ldquo;Element&rdquo; Target Root Mode
+      </div>
+    );
+  }
+
+  if (blockRootMode === "inherit") {
+    return (
+      <div className="text-muted">
+        Output Preview is not currently supported when brick is configured with
+        &ldquo;Inherit&rdquo; Target Root Mode
       </div>
     );
   }
@@ -230,20 +223,6 @@ const BlockPreview: React.FunctionComponent<{
       <div>
         {showTraceWarning && traceWarning}
         <Loader />
-      </div>
-    );
-  }
-
-  // Can't use the root element from extension point because it is not static.
-  if (
-    shouldUseExtensionPointRoot &&
-    extensionPoint.definition.targetMode !== "root"
-  ) {
-    return (
-      <div className="text-muted">
-        Output Preview is not supported because this brick&apos;s Root Mode is
-        &quot;Inherit&quot; and the Trigger&apos;s Target Mode is &quot;Event
-        Target&quot;. Run the Trigger to see the output on the Output tab.
       </div>
     );
   }

@@ -167,6 +167,8 @@ export type BlockConfig = {
    * (Optional) whether the block should inherit the current root element, or if it should use the document
    * (default=`inherit`)
    *
+   * `element` rootMode added in 1.7.16
+   *
    * @see root
    * @since 1.4.0
    */
