@@ -60,7 +60,7 @@
     "css-selector-generator": "^3.6.0",
     "date-fns": "^2.28.0",
     "dompurify": "^2.4.1",
-    "exifreader": "^4.8.1",
+    "exifreader": "^4.9.1",
     "export-to-csv": "^0.2.1",
     "file-saver": "^2.0.5",
     "filenamify": "^5.1.0",
