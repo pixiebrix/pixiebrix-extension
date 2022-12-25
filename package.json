@@ -161,7 +161,7 @@
     "@fortawesome/fontawesome-common-types": "^0.2.36",
     "@sindresorhus/tsconfig": "^3.0.1",
     "@storybook/addon-actions": "^6.5.14",
-    "@storybook/addon-essentials": "^6.5.14",
+    "@storybook/addon-essentials": "^6.5.15",
     "@storybook/addon-links": "^6.5.14",
     "@storybook/addon-storyshots": "^6.5.14",
     "@storybook/builder-webpack5": "^6.5.14",
