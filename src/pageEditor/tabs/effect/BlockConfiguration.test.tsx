@@ -117,7 +117,7 @@ describe("shows root mode", () => {
 
     await waitForEffect();
 
-    const rootModeSelect = screen.getByLabelText("Root Mode");
+    const rootModeSelect = screen.getByLabelText("Target Root Mode");
 
     expect(rootModeSelect).not.toBeNull();
   });
@@ -138,7 +138,7 @@ describe("shows root mode", () => {
 
     await waitForEffect();
 
-    const rootModeSelect = screen.queryByLabelText("Root Mode");
+    const rootModeSelect = screen.queryByLabelText("Target Root Mode");
 
     expect(rootModeSelect).toBeNull();
   });
@@ -177,7 +177,7 @@ test.each`
     await waitForEffect();
 
     const conditionInput = screen.queryByLabelText("Condition");
-    const targetInput = screen.queryByLabelText("Target");
+    const targetInput = screen.queryByLabelText("Target Tab/Frame");
 
     if (expected) {
       expect(conditionInput).not.toBeNull();

@@ -81,6 +81,8 @@ const BlockConfiguration: React.FunctionComponent<{
 
   useEffect(
     () => {
+      // Effect to clear out unused `root` field. Technically, `root` could contain a selector when used with `document`
+      // or `inherit` mode, but we don't want to support that in the Page Editor because it's legacy behavior.
       if (config.value.rootMode !== "element") {
         rootFieldHelpers.setValue(null);
       }
@@ -91,10 +93,16 @@ const BlockConfiguration: React.FunctionComponent<{
   const rootElementSchema: SchemaFieldProps = useMemo(
     () => ({
       name: configName("root"),
-      label: "Element",
-      description: "The target element for the brick",
+      label: "Target Element",
+      description:
+        "The target element for the brick. Provide an element reference generated with the Element Reader, For Each Element, or Traverse Elements brick",
+      // If the field is visible, it's required
+      isRequired: true,
       schema: {
-        $ref: "https://app.pixiebrix.com/schemas/element#",
+        // The type is https://app.pixiebrix.com/schemas/element#, but schema field doesn't support that
+        // XXX: this should really restrict to "variable" entry. Text values will also be interpreted properly, it's
+        //  there's just no use-case for hard coded element uuids or text template expressions
+        type: "string",
       },
     }),
     [configName]
@@ -154,14 +162,16 @@ const BlockConfiguration: React.FunctionComponent<{
         </FieldSection>
 
         <FieldSection title="Advanced Options" bodyRef={advancedOptionsRef}>
+          {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
+
           {showRootMode && (
             <ConnectedFieldTemplate
               name={configName("rootMode")}
-              label="Root Mode"
+              label="Target Root Mode"
               as={SelectWidget}
               options={rootModeOptions}
               blankValue="inherit"
-              description="The root mode controls which page element PixieBrix provides as the implicit element"
+              description="The Root Mode controls which page element the brick targets. PixieBrix evaluates selectors relative to the root document/element"
             />
           )}
 
@@ -170,18 +180,14 @@ const BlockConfiguration: React.FunctionComponent<{
           )}
 
           {showIfAndTarget && (
-            <>
-              <SchemaField {...ifSchemaProps} omitIfEmpty />
-
-              <ConnectedFieldTemplate
-                name={configName("window")}
-                label="Target"
-                as={SelectWidget}
-                options={targetOptions}
-                blankValue={DEFAULT_WINDOW_VALUE}
-                description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
-              />
-            </>
+            <ConnectedFieldTemplate
+              name={configName("window")}
+              label="Target Tab/Frame"
+              as={SelectWidget}
+              options={targetOptions}
+              blankValue={DEFAULT_WINDOW_VALUE}
+              description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
+            />
           )}
 
           {noAdvancedOptions && (
