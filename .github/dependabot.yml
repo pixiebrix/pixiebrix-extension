@@ -17,6 +17,10 @@ updates:
     open-pull-requests-limit: 30
     reviewers:
       - fregante
+    assigned:
+      - fregante
+    ignore:
+      - dependency-name: "@storybook/*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -26,4 +30,6 @@ updates:
       timezone: Etc/UTC
     open-pull-requests-limit: 30
     reviewers:
+      - fregante
+    assigned:
       - fregante
