@@ -157,6 +157,8 @@ const BlockPreview: React.FunctionComponent<{
 
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
+
+  // FIXME: this logic is wrong because For-Each Element can switch the root element
   const shouldUseExtensionPointRoot =
     blockInfo?.isRootAware &&
     blockRootMode === "inherit" &&
@@ -211,6 +213,14 @@ const BlockPreview: React.FunctionComponent<{
     return (
       <div className="text-muted">
         Output previews are not currently supported for renderers
+      </div>
+    );
+  }
+
+  if (blockConfig?.rootMode === "element") {
+    return (
+      <div className="text-muted">
+        Output Preview is not currently supported for Element Root Mode
       </div>
     );
   }

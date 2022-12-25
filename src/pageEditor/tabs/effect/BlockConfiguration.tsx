@@ -42,9 +42,9 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
 
 const rootModeOptions = [
-  { label: "Inherit", value: "inherit" },
   { label: "Document", value: "document" },
   { label: "Element", value: "element" },
+  { label: "Inherit", value: "inherit" },
 ];
 
 const targetOptions: Array<Option<BlockWindow>> = [
@@ -94,8 +94,13 @@ const BlockConfiguration: React.FunctionComponent<{
     () => ({
       name: configName("root"),
       label: "Target Element",
-      description:
-        "The target element for the brick. Provide an element reference generated with the Element Reader, For Each Element, or Traverse Elements brick",
+      description: (
+        <span>
+          The target element for the brick. Provide element reference{" "}
+          <code>@input.element.ref</code>, or a reference generated with the
+          Element Reader, For-Each Element, or Traverse Elements brick
+        </span>
+      ),
       // If the field is visible, it's required
       isRequired: true,
       schema: {
@@ -171,7 +176,7 @@ const BlockConfiguration: React.FunctionComponent<{
               as={SelectWidget}
               options={rootModeOptions}
               blankValue="inherit"
-              description="The Root Mode controls which page element the brick targets. PixieBrix evaluates selectors relative to the root document/element"
+              description="The Root Mode controls the page element the brick targets. PixieBrix evaluates selectors relative to the root document/element"
             />
           )}
 
