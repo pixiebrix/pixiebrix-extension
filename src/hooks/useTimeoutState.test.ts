@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useState } from "react";
+import { sleep } from "@/utils";
+import { renderHook, act } from "@testing-library/react-hooks";
+import useTimeoutState from "./useTimeoutState";
 
-export default function useTimeoutState(millis: number): boolean {
-  const [state, setState] = useState(false);
+test("useTimeoutState", async () => {
+  const { result } = renderHook(() => useTimeoutState(200));
 
-  useEffect(() => {
-    const timer = setTimeout(setState, millis, true);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [millis]);
-
-  return state;
-}
+  expect(result.current).toEqual(false);
+  await act(async () => sleep(30));
+  expect(result.current).toEqual(false);
+  await act(async () => sleep(300));
+  expect(result.current).toEqual(true);
+});
