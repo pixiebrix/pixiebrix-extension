@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ElementInfo } from "@/contentScript/pageEditor/types";
+import { type ElementInfo } from "@/pageScript/frameworks";
 import { getSuggestionsForElement } from "./SelectorSelectorWidget";
 
 test("getSuggestionsForElement", () => {

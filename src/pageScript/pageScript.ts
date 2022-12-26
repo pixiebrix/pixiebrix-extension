@@ -53,7 +53,7 @@ import {
   traverse,
   type WriteableComponentAdapter,
 } from "@/pageScript/frameworks/component";
-import { elementInfo } from "@/contentScript/pageEditor/frameworks";
+import { elementInfo } from "@/pageScript/frameworks";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,
