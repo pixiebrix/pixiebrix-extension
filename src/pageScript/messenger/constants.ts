@@ -42,7 +42,3 @@ export interface FrameworkMeta {
   id: Framework;
   version: string | UNKNOWN_VERSION;
 }
-
-/** Communicates readiness to `ensureContentScript` */
-export const ENSURE_CONTENT_SCRIPT_READY =
-  "@@pixiebrix/script/ENSURE_CONTENT_SCRIPT_READY";

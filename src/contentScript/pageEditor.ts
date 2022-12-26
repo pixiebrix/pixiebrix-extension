@@ -18,7 +18,7 @@
 import { deserializeError, serializeError } from "serialize-error";
 import { makeRead, type ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/pageScript/frameworks/adapters";
-import { getComponentData } from "@/pageScript/protocol";
+import { getComponentData } from "@/pageScript/messenger/api";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
 import {
@@ -39,7 +39,7 @@ import { isNullOrBlank, resolveObj } from "@/utils";
 import { type BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type SerializableResponse } from "@/messaging/protocol";
+import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";

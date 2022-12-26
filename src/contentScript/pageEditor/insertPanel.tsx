@@ -19,7 +19,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { userSelectElement } from "./elementPicker";
-import * as pageScript from "@/pageScript/protocol";
+import * as pageScript from "@/pageScript/messenger/api";
 import { findContainer } from "@/utils/inference/selectorInference";
 import { html as beautifyHTML } from "js-beautify";
 import { type PanelSelectionResult } from "@/contentScript/pageEditor/types";

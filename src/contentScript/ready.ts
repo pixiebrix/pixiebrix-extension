@@ -46,6 +46,10 @@ export const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
 );
 export const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
 
+/** Communicates readiness to `ensureContentScript` */
+export const ENSURE_CONTENT_SCRIPT_READY =
+  "@@pixiebrix/script/ENSURE_CONTENT_SCRIPT_READY";
+
 declare global {
   interface Window {
     [CONTENT_SCRIPT_INJECTED_SYMBOL]?: true;

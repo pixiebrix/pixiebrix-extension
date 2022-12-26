@@ -3,7 +3,10 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { useField } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { type Framework, type FrameworkMeta } from "@/messaging/constants";
+import {
+  type Framework,
+  type FrameworkMeta,
+} from "@/pageScript/messenger/constants";
 import { isNullOrBlank, joinName } from "@/utils";
 import { type Schema } from "@/core";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";

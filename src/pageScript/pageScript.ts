@@ -34,7 +34,7 @@ import {
   SCRIPT_LOADED,
   SEARCH_WINDOW,
   SET_COMPONENT_DATA,
-} from "@/messaging/constants";
+} from "@/pageScript/messenger/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
@@ -43,8 +43,7 @@ import {
   type PathSpec,
   type ReadOptions,
   type WritePayload,
-  initialize,
-} from "@/pageScript/protocol";
+} from "@/pageScript/messenger/api";
 import { awaitValue, TimeoutError } from "@/utils";
 import {
   type ReadableComponentAdapter,
@@ -59,6 +58,7 @@ import {
   type ReadProxy,
 } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
+import { initialize, type SerializableResponse } from "./messenger/pigeon";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -85,7 +85,7 @@ const MAX_READ_DEPTH = 5;
 
 const attachListener = initialize();
 
-attachListener(SEARCH_WINDOW, ({ query }) => {
+attachListener(SEARCH_WINDOW, async ({ query }) => {
   console.debug("Searching window for query: %s", query);
   return {
     results: globalSearch(window, query),
@@ -134,16 +134,19 @@ function readPathSpec(
   return values;
 }
 
-attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
-  const factory = () => {
-    const values = readPathSpec(window, pathSpec);
-    return Object.values(values).every((value) => isEmpty(value))
-      ? undefined
-      : values;
-  };
+attachListener(
+  READ_WINDOW,
+  async ({ pathSpec, waitMillis }): Promise<SerializableResponse> => {
+    const factory = () => {
+      const values = readPathSpec(window, pathSpec);
+      return Object.values(values).every((value) => isEmpty(value))
+        ? undefined
+        : values;
+    };
 
-  return awaitValue(factory, { waitMillis });
-});
+    return awaitValue(factory, { waitMillis }) as SerializableResponse;
+  }
+);
 
 async function read<TComponent>(
   adapter: ReadableComponentAdapter<TComponent>,
@@ -220,7 +223,11 @@ async function read<TComponent>(
 
 attachListener(
   GET_COMPONENT_DATA,
-  async ({ framework, selector, ...options }: ReadPayload) => {
+  async ({
+    framework,
+    selector,
+    ...options
+  }: ReadPayload): Promise<SerializableResponse> => {
     if (isEmpty(selector)) {
       // Just warn here, as there's no harm in returning blank data value (e.g., when a load trigger is first
       // added via the page editor)
@@ -233,13 +240,13 @@ attachListener(
       throw new Error(`No read adapter available for framework: ${framework}`);
     }
 
-    return read(adapter, selector, options);
+    return read(adapter, selector, options) as SerializableResponse;
   }
 );
 
 attachListener(
   SET_COMPONENT_DATA,
-  ({ framework, selector, valueMap }: WritePayload) => {
+  async ({ framework, selector, valueMap }: WritePayload): Promise<void> => {
     if (isEmpty(selector)) {
       // Throw error since this likely indicates a bug in a brick
       throw new Error("No selector provided");

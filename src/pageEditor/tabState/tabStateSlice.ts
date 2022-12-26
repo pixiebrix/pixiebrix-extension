@@ -16,7 +16,7 @@
  */
 
 import pTimeout from "p-timeout";
-import { type FrameworkMeta } from "@/messaging/constants";
+import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { detectFrameworks } from "@/contentScript/messenger/api";

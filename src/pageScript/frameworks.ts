@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Framework } from "@/messaging/constants";
+import { type Framework } from "@/pageScript/messenger/constants";
 import adapters from "@/pageScript/frameworks/adapters";
 import { isEmpty, uniq } from "lodash";
 import { inferSelectorsIncludingStableAncestors } from "@/utils/inference/selectorInference";

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setComponentData } from "@/pageScript/protocol";
+import { setComponentData } from "@/pageScript/messenger/api";
 
 import { Effect } from "@/types";
 import { type BlockArg, type Schema } from "@/core";
