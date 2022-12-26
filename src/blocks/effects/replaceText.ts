@@ -33,21 +33,24 @@ export function replaceText({
   replacement: string;
   visited: WeakSet<Node>;
 }) {
-  if (visited.has(node)) {
-    // Avoid running replaceText on same node twice if selector passed to brick matches multiple nodes
-    // in the same subtree
-    return;
-  }
+  // `ownerDocument` is null for documents
+  const nodeDocument = node.ownerDocument ?? (node as Document);
+  const walker = nodeDocument.createTreeWalker(node, NodeFilter.SHOW_TEXT);
 
-  visited.add(node);
+  let currentNode: Node | null;
 
-  if (node.nodeType === Node.TEXT_NODE) {
-    node.textContent = node.textContent.replaceAll(pattern, replacement);
-    return;
-  }
+  while ((currentNode = walker.nextNode())) {
+    if (visited.has(currentNode)) {
+      // Avoid running replaceText on same node twice if selector passed to brick matches multiple nodes
+      // in the same subtree
+      continue;
+    }
 
-  for (const childNode of node.childNodes) {
-    replaceText({ node: childNode, pattern, replacement, visited });
+    visited.add(currentNode);
+    currentNode.textContent = currentNode.textContent.replaceAll(
+      pattern,
+      replacement
+    );
   }
 }
 
