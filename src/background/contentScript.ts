@@ -114,10 +114,20 @@ async function ensureContentScriptWithoutTimeout(
     return;
   }
 
-  if (result.installed || (await isContentScriptRegistered(result.url))) {
+  if (result.installed) {
+    console.debug(
+      "ensureContentScript: already exists but isn't ready",
+      target
+    );
+
+    await readyNotificationPromise;
+    return;
+  }
+
+  if (await isContentScriptRegistered(result.url)) {
     // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
     console.debug(
-      "ensureContentScript: already exists or will be injected automatically",
+      "ensureContentScript: will be injected automatically by the manifest or webext-dynamic-content-script",
       target
     );
 
