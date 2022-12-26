@@ -47,7 +47,7 @@ import {
   type WritePayload,
   initialize,
 } from "@/pageScript/protocol";
-import { awaitValue, TimeoutError } from "@/utils";
+import { awaitValue } from "@/utils";
 import {
   type ReadableComponentAdapter,
   traverse,
@@ -61,6 +61,7 @@ import {
   type ReadProxy,
 } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
+import { TimeoutError } from "p-timeout";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");

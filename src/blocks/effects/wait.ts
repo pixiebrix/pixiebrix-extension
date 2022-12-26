@@ -18,8 +18,9 @@
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
-import { runInMillis, sleep, TimeoutError } from "@/utils";
+import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
+import pTimeout, { TimeoutError } from "p-timeout";
 
 export class WaitEffect extends Effect {
   constructor() {
@@ -107,7 +108,7 @@ export class WaitElementEffect extends Effect {
     if (maxWaitMillis > 0) {
       const [promise, cancel] = awaitElementOnce(selector);
       try {
-        await runInMillis(async () => promise, maxWaitMillis);
+        await pTimeout(promise, { milliseconds: maxWaitMillis });
       } catch (error) {
         cancel();
 

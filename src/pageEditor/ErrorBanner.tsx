@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { useSelector } from "react-redux";
 import { selectTabStateError } from "@/pageEditor/tabState/tabStateSelectors";
-import { TimeoutError } from "@/utils";
+import { TimeoutError } from "p-timeout";
 
 /**
  * Error banner for Page Editor browser connection errors.

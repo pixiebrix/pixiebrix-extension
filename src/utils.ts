@@ -45,6 +45,7 @@ import { type UnknownObject } from "@/types";
 import { type RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
+import { TimeoutError } from "p-timeout";
 
 const specialCharsRegex = /[\s.[\]]/;
 
@@ -165,10 +166,6 @@ export const sleep = async (milliseconds: number): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
-
-export class TimeoutError extends Error {
-  override name = "TimeoutError";
-}
 
 export async function awaitValue<T>(
   valueFactory: () => T,
@@ -475,23 +472,6 @@ export function getProperty<TResult = unknown>(
     // eslint-disable-next-line security/detect-object-injection
     return obj[property] as TResult;
   }
-}
-
-export async function runInMillis<TResult>(
-  factory: () => Promise<TResult>,
-  maxMillis: number
-): Promise<TResult> {
-  const timeout = Symbol("timeout");
-  const value = await Promise.race([
-    factory(),
-    sleep(maxMillis).then(() => timeout),
-  ]);
-
-  if (value === timeout) {
-    throw new TimeoutError(`Method did not complete in ${maxMillis}ms`);
-  }
-
-  return value as TResult;
 }
 
 /** Loop an iterable with the ability to place `await` in the loop itself */
