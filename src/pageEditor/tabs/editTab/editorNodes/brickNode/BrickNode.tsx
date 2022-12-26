@@ -28,6 +28,7 @@ import {
   type BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
+import useAutoFocus from "@/hooks/useAutoFocus";
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
@@ -48,6 +49,9 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   trailingMessage,
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
+
+  // TODO: This no longer seems to blur the tooltip when addBlockModal is closed
+  useAutoFocus(nodeRef, active);
 
   return (
     <>
