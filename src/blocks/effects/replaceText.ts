@@ -37,11 +37,10 @@ export function replaceText({
   const nodeDocument = node.ownerDocument ?? (node as Document);
   const walker = nodeDocument.createTreeWalker(node, NodeFilter.SHOW_TEXT);
 
-  for (
-    let currentNode = walker.nextNode();
-    currentNode;
-    currentNode = walker.nextNode()
-  ) {
+  let currentNode: Node | null;
+
+  // eslint-disable-next-line no-cond-assign -- a bit cleaner than the for-loop
+  while ((currentNode = walker.nextNode())) {
     if (visited.has(currentNode)) {
       // Avoid running replaceText on same node twice if selector passed to brick matches multiple nodes
       // in the same subtree
