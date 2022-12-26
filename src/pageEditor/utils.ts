@@ -38,7 +38,7 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");

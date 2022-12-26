@@ -18,7 +18,6 @@
 import styles from "./Sidebar.module.scss";
 import React, { type FormEvent, useEffect, useMemo, useState } from "react";
 import { sortBy } from "lodash";
-import { getRecipeById } from "@/pageEditor/utils";
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import hash from "object-hash";
@@ -37,7 +36,11 @@ import {
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import {
+  getRecipeById,
+  getIdForElement,
+  getRecipeIdForElement,
+} from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
