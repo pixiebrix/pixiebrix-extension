@@ -16,7 +16,7 @@
  */
 
 import { type NormalizedAvailability } from "@/blocks/types";
-import { type ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type ElementInfo } from "@/contentScript/pageEditor/types";
 import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,

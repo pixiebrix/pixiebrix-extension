@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  inferButtonHTML,
-  inferPanelHTML,
-} from "@/contentScript/nativeEditor/markupInference";
+import { inferButtonHTML, inferPanelHTML } from "./markupInference";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";

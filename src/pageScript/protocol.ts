@@ -24,7 +24,7 @@ import {
 } from "@/messaging/constants";
 import { type ReaderOutput } from "@/core";
 import { cleanValue } from "@/utils";
-import { type ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type ElementInfo } from "@/contentScript/pageEditor/types";
 
 export type PathSpec =
   | string

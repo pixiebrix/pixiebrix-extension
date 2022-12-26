@@ -21,10 +21,7 @@ import {
   PANEL_FRAME_ID,
   PIXIEBRIX_DATA_ATTR,
 } from "@/common";
-import {
-  BUTTON_TAGS,
-  UNIQUE_ATTRIBUTES,
-} from "@/contentScript/nativeEditor/selectorInference";
+import { BUTTON_TAGS, UNIQUE_ATTRIBUTES } from "./selectorInference";
 import { intersection, unary, uniq } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
