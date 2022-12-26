@@ -1,0 +1,310 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders cancel publish modal 1`] = `
+<div
+  aria-modal="true"
+  class="fade modal show"
+  role="dialog"
+  style="display: block;"
+  tabindex="-1"
+>
+  <div
+    class="modal-dialog"
+  >
+    <div
+      class="modal-content"
+    >
+      <div
+        class="modal-header"
+      >
+        <div
+          class="modal-title h4"
+        >
+          Cancel Publish?
+        </div>
+        <button
+          class="close"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
+          >
+            ×
+          </span>
+          <span
+            class="sr-only"
+          >
+            Close
+          </span>
+        </button>
+      </div>
+      <div
+        class="modal-body"
+      >
+        <p>
+          Your marketplace submission will not be published and the public link to your blueprint will no longer work.
+        </p>
+      </div>
+      <div
+        class="modal-footer"
+      >
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Never mind
+        </button>
+        <button
+          class="btn btn-danger"
+          type="button"
+        >
+          Yes, Cancel Publish
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders edit publish modal 1`] = `
+<div
+  aria-modal="true"
+  class="fade modal show"
+  role="dialog"
+  style="display: block;"
+  tabindex="-1"
+>
+  <div
+    class="modal-dialog"
+  >
+    <div
+      class="modal-content"
+    >
+      <div
+        class="modal-header"
+      >
+        <div
+          class="modal-title h4"
+        >
+          Edit Pending Publish
+        </div>
+        <button
+          class="close"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
+          >
+            ×
+          </span>
+          <span
+            class="sr-only"
+          >
+            Close
+          </span>
+        </button>
+      </div>
+      <div
+        class="modal-body"
+      >
+        <p>
+          The
+           
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            rel="noreferrer noopener"
+            target="blank"
+          >
+            PixieBrix Marketplace
+          </a>
+           
+          admin team is working on publishing your blueprint. You'll receive an email when it is live in the Marketplace. Contact
+           
+          <a
+            href="mailto:support@pixiebrix.com"
+          >
+            support@pixiebrix.com
+          </a>
+           if you need help.
+        </p>
+        <p>
+          While you wait, the public link below will work for anyone, so you can start sharing right away!
+        </p>
+        <p
+          class="mb-1"
+        >
+          Public link to share:
+        </p>
+        <div
+          class="input-group"
+        >
+          <input
+            class="form-control"
+            readonly=""
+            type="text"
+            value="https://app.pixiebrix.com/activate?id=@user2/test"
+          />
+          <div
+            class="input-group-append"
+          >
+            <button
+              class="btn btn-info"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-copy fa-w-14 "
+                data-icon="copy"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-footer"
+      >
+        <button
+          class="btn btn-danger"
+          type="button"
+        >
+          Cancel Publish
+        </button>
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders publish modal 1`] = `
+<div
+  aria-modal="true"
+  class="fade modal show"
+  role="dialog"
+  style="display: block;"
+  tabindex="-1"
+>
+  <div
+    class="modal-dialog"
+  >
+    <div
+      class="modal-content"
+    >
+      <div
+        class="modal-header"
+      >
+        <div
+          class="modal-title h4"
+        >
+          Publish to Marketplace
+        </div>
+        <button
+          class="close"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
+          >
+            ×
+          </span>
+          <span
+            class="sr-only"
+          >
+            Close
+          </span>
+        </button>
+      </div>
+      <div
+        class="modal-body"
+      >
+        <p>
+          On Submit, the public link to this blueprint will be shared with the
+           
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            rel="noreferrer noopener"
+            target="blank"
+          >
+            PixieBrix Marketplace
+          </a>
+           
+          admin team, who will review your submission and publish your blueprint.
+        </p>
+        <p>
+          As soon as you Submit, the public link below will work for anyone, so you can start sharing right away!
+        </p>
+        <p
+          class="mb-1"
+        >
+          Public link to share:
+        </p>
+        <div
+          class="input-group"
+        >
+          <input
+            class="form-control"
+            readonly=""
+            type="text"
+            value="https://app.pixiebrix.com/activate?id=@user1/test"
+          />
+          <div
+            class="input-group-append"
+          >
+            <button
+              class="btn btn-info"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-copy fa-w-14 "
+                data-icon="copy"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-footer"
+      >
+        <button
+          class="btn btn-link"
+          type="button"
+        >
+          Cancel
+        </button>
+        <button
+          class="btn btn-primary"
+          type="button"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

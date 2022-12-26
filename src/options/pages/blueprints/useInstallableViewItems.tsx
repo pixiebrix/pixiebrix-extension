@@ -118,33 +118,40 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const installableViewItems = useMemo(
     () =>
-      installables.map((installable) => ({
-        name: getLabel(installable),
-        description: getDescription(installable),
-        sharing: {
-          packageId: getPackageId(installable),
-          source: getSharingType({
-            installable,
-            organizations,
-            scope,
+      installables.map((installable) => {
+        const packageId = getPackageId(installable);
+
+        return {
+          name: getLabel(installable),
+          description: getDescription(installable),
+          sharing: {
+            packageId,
+            source: getSharingType({
+              installable,
+              organizations,
+              scope,
+              installedExtensions,
+            }),
+            // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
+            listingId: listingsQuery.data?.[packageId]?.id,
+          },
+          updatedAt: getUpdatedAt(installable),
+          status: getStatus(installable),
+          hasUpdate: updateAvailable(recipes, installedExtensions, installable),
+          installedVersionNumber: getInstalledVersionNumber(
             installedExtensions,
-          }),
-        },
-        updatedAt: getUpdatedAt(installable),
-        status: getStatus(installable),
-        hasUpdate: updateAvailable(recipes, installedExtensions, installable),
-        installedVersionNumber: getInstalledVersionNumber(
-          installedExtensions,
-          installable
-        ),
-        icon: installableIcon(installable),
-        installable,
-      })),
+            installable
+          ),
+          icon: installableIcon(installable),
+          installable,
+        } satisfies InstallableViewItem;
+      }),
     [
       getStatus,
       installableIcon,
       installables,
       installedExtensions,
+      listingsQuery,
       organizations,
       recipes,
       scope,

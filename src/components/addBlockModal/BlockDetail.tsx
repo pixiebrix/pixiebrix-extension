@@ -6,6 +6,7 @@ import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const BlockDetail: React.FunctionComponent<{
   block: IBlock;
@@ -23,7 +24,7 @@ const BlockDetail: React.FunctionComponent<{
         <p>{block.description}</p>
         {listing && (
           <a
-            href={`https://pixiebrix.com/marketplace/${listing.id}`}
+            href={`${MARKETPLACE_URL}${listing.id}/`}
             className="text-info mr-2"
             target="_blank"
             rel="noopener noreferrer"

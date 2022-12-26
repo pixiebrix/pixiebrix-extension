@@ -27,7 +27,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 105;
+const EXPECTED_HEADER_COUNT = 106;
 
 registerBuiltinBlocks();
 registerContribBlocks();

@@ -44,7 +44,7 @@ jobs:
           attempt_delay: 15000
           attempt_limit: 40
 
-  build-stage:
+  build:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
@@ -79,10 +79,14 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
+      # The polyfill cannot be used outside the extension context
+      - run: "! grep 'loaded in a browser extension' dist/pageScript.js"
+        name: Detect browser-polyfill in pageScript.js
+
       - uses: actions/upload-artifact@v3
         name: Save report.html
         with:
-          name: staging-build-size
+          name: build-staging-bundle-dependency-report
           path: report.html
           retention-days: 5
           if-no-files-found: error

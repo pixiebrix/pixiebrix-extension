@@ -35,7 +35,7 @@ runs:
         directory: ${{ inputs.directory }}
         exclusions: ${{ inputs.exclusions }}
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.name }}-artifact
         path: ${{ inputs.directory }}/${{ inputs.name }}.zip

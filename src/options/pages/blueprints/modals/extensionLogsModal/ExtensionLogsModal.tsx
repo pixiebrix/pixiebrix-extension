@@ -17,43 +17,45 @@
 
 import styles from "./ExtensionLogsModal.module.scss";
 
-import { type MessageContext } from "@/core";
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LogCard from "@/components/logViewer/LogCard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
+import ModalLayout from "@/options/pages/blueprints/modals/ModalLayout";
+import { selectShowLogsContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 
-const ExtensionLogsModal: React.FC<{
-  title: string;
-  context: MessageContext;
-}> = ({ title, context }) => {
+const ExtensionLogsModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(logActions.setContext(context));
-  }, [context, dispatch]);
 
-  const onClose = () => {
-    dispatch(blueprintModalsSlice.actions.setLogsContext(null));
+  const closeModal = () => {
+    dispatch(blueprintModalsSlice.actions.closeModal());
     dispatch(logActions.setContext(null));
   };
 
+  const showLogsContext = useSelector(selectShowLogsContext);
+  useEffect(() => {
+    if (showLogsContext == null) {
+      return;
+    }
+
+    dispatch(logActions.setContext(showLogsContext.messageContext));
+  }, [showLogsContext, dispatch]);
+
   return (
-    <Modal
-      show
-      onHide={onClose}
+    <ModalLayout
+      show={showLogsContext != null}
+      title={`Logs: ${showLogsContext?.title}`}
+      onHide={closeModal}
       className={styles.root}
       dialogClassName={styles.modalDialog}
       contentClassName={styles.modalContent}
     >
-      <Modal.Header closeButton>
-        <Modal.Title>{`Logs: ${title}`}</Modal.Title>
-      </Modal.Header>
       <Modal.Body className={styles.body}>
         <LogCard />
       </Modal.Body>
-    </Modal>
+    </ModalLayout>
   );
 };
 

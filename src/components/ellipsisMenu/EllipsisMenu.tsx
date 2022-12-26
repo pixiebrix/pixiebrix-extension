@@ -20,9 +20,10 @@ import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import type { RequireExactlyOne } from "type-fest";
 import styles from "./EllipsisMenu.module.scss";
 
-export type EllipsisMenuItem = {
+type EllipsisMenuItemInternal = {
   /**
    * User-visible display for the item, generally text of some sort
    */
@@ -30,13 +31,25 @@ export type EllipsisMenuItem = {
 
   /**
    * The "on select" action for the item
+   * You should provide either this or href, but not both
    */
   action: () => void;
+
+  /**
+   * The href for the item, if it's a link
+   * You should provide either this or action, but not both
+   */
+  href: string;
 
   className?: string;
   hide?: boolean;
   disabled?: boolean;
 };
+
+export type EllipsisMenuItem = RequireExactlyOne<
+  EllipsisMenuItemInternal,
+  "action" | "href"
+>;
 
 type EllipsisMenuProps = {
   className?: string;
@@ -127,18 +140,31 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       <Dropdown.Menu popperConfig={dropdownMenuOptions} alignRight={alignRight}>
         {items
           .filter((x) => !x.hide)
-          .map((item, index) => (
-            <Dropdown.Item
-              key={index}
-              onClick={() => {
-                item.action();
-              }}
-              className={item.className}
-              disabled={item.disabled}
-            >
-              {item.title}
-            </Dropdown.Item>
-          ))}
+          .map((item, index) =>
+            item.href ? (
+              <Dropdown.Item
+                key={index}
+                href={item.href}
+                className={item.className}
+                disabled={item.disabled}
+                // There's a bug: the link stays active after clicking it
+                active={false}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.title}
+              </Dropdown.Item>
+            ) : (
+              <Dropdown.Item
+                key={index}
+                onClick={item.action}
+                className={item.className}
+                disabled={item.disabled}
+              >
+                {item.title}
+              </Dropdown.Item>
+            )
+          )}
       </Dropdown.Menu>
     </Dropdown>
   );
