@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import useTimeoutState from "@/hooks/useTimeoutState";
+import { useEffect, useState } from "react";
 
-type Props = {
-  millis: number;
-};
+export default function useTimeoutState(millis: number): boolean {
+  const [state, setState] = useState(false);
 
-/** Component used to reduce flashing */
-const DelayedRender: React.FC<Props> = ({ children, millis }) => {
-  const isShown = useTimeoutState(millis);
-  return isShown ? <>{children}</> : <div hidden>{children}</div>;
-};
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setState(true);
+    }, millis);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [millis]);
 
-export default DelayedRender;
+  return state;
+}
