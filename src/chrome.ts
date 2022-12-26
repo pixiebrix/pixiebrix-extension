@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isExtensionContext } from "webext-detect-page";
 import { forbidContext } from "@/utils/expectContext";
 import { type JsonValue } from "type-fest";
 import { type UnknownObject } from "@/types";
@@ -39,10 +38,6 @@ export type ManualStorageKey = string & {
 export type ReduxStorageKey = string & {
   _reduxStorageKeyBrand: never;
 };
-
-export function isBrowserSidebar(): boolean {
-  return isExtensionContext() && location.pathname === "/sidebar.html";
-}
 
 export function setChromeExtensionId(extensionId = ""): void {
   forbidContext("extension");

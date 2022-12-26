@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBrowserSidebar } from "@/chrome";
 import {
   isBackground,
   isContentScript,
   isExtensionContext,
   isWebPage,
 } from "webext-detect-page";
+
+export function isBrowserSidebar(): boolean {
+  return isExtensionContext() && location.pathname === "/sidebar.html";
+}
 
 /**
  * Accepts 'This is my error' | new Error('This is my error') | Error;
