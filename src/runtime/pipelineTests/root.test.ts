@@ -179,7 +179,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
     test.each([rootBlock.id, rootReader.id])(
       "throw on multiple custom root matches: %s",
-      async () => {
+      async (blockId) => {
         const div = document.createElement("DIV");
         const element = document.createElement("IMG");
         div.append(element);
@@ -190,7 +190,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         await expect(
           reducePipeline(
             // Force document as starting point for the selector
-            { id: rootBlock.id, config: {}, rootMode: "document", root: "img" },
+            { id: blockId, config: {}, rootMode: "document", root: "img" },
             { ...simpleInput({}), optionsArgs: {}, root: div },
             testOptions(apiVersion)
           )
@@ -200,11 +200,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
     test.each([rootBlock.id, rootReader.id])(
       "throw on no custom root matches: %s",
-      async () => {
+      async (blockId) => {
         await expect(
           reducePipeline(
             // Force document as starting point for the selector
-            { id: rootBlock.id, config: {}, rootMode: "document", root: "a" },
+            { id: blockId, config: {}, rootMode: "document", root: "a" },
             { ...simpleInput({}), optionsArgs: {} },
             testOptions(apiVersion)
           )
@@ -212,7 +212,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       }
     );
 
-    test.each([rootBlock.id])("pass hard-coded root reference", async () => {
+    test("pass hard-coded root reference", async () => {
       const div = document.createElement("DIV");
       document.body.append(div);
 
@@ -231,7 +231,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 );
 
 describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
-  test.each([rootBlock.id])("pass templated root reference", async () => {
+  test("pass templated root reference", async () => {
     const div = document.createElement("DIV");
     document.body.append(div);
 
