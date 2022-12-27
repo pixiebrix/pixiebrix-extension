@@ -1143,7 +1143,10 @@ export interface components {
       is_onboarded?: boolean;
       milestones: {
         key: string;
-        value?: string | null;
+        /** @description Optional additional information to provide context about the Milestone. */
+        metadata?: {
+          [key: string]: unknown | undefined;
+        } | null;
       }[];
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
@@ -1514,7 +1517,10 @@ export interface components {
     };
     Milestone: {
       key: string;
-      value?: string | null;
+      /** @description Optional additional information to provide context about the Milestone. */
+      metadata?: {
+        [key: string]: unknown | undefined;
+      } | null;
     };
     Onboarding: {
       external?: boolean;

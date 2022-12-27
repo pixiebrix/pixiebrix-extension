@@ -53,8 +53,8 @@ const GetStartedView: React.VoidFunctionComponent<{
 
   const onboardingBlueprintId = isFetching
     ? null
-    : (getMilestone("first_time_public_blueprint_install")
-        ?.value as RegistryId);
+    : (getMilestone("first_time_public_blueprint_install")?.metadata
+        ?.blueprintId as RegistryId);
 
   const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(
     onboardingBlueprintId

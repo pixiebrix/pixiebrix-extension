@@ -114,7 +114,7 @@ const useOnboardingTabs = (
 
   const onboardingBlueprintId = getMilestone(
     "first_time_public_blueprint_install"
-  )?.value as RegistryId;
+  )?.metadata?.blueprintId as RegistryId;
 
   const isFreemiumUser = !me?.organization;
 
