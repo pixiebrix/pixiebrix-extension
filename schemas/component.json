@@ -19,6 +19,18 @@
     "inputSchema": {
       "$ref": "http://json-schema.org/draft-07/schema#"
     },
+    "uiSchema": {
+      "type": "object",
+      "description": "An RJSF UI schema for the inputSchema",
+      "properties": {
+        "ui:order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "outputSchema": {
       "$ref": "http://json-schema.org/draft-07/schema#"
     },

@@ -20,7 +20,7 @@ import { useMemo, useState } from "react";
 import genericOptionsFactory, {
   type BlockOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type IBlock, type RegistryId } from "@/core";
+import { type IBlock, isUserDefinedBlock, type RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";
@@ -61,11 +61,17 @@ function useBlockOptions(
     // or the config parameters of the past block will become part of the configuration of the new block.
     if (id === block?.id) {
       const registered = optionsRegistry.get(block.id);
-      return registered ?? genericOptionsFactory(block.inputSchema);
+      return (
+        registered ??
+        genericOptionsFactory(block.inputSchema, block.uiSchema, {
+          // Preserve order for JS-based bricks. We can trust the order because JS literals preserve dictionary order
+          preserveSchemaOrder: !isUserDefinedBlock(block),
+        })
+      );
     }
 
     return null;
-  }, [id, block?.id, block?.inputSchema]);
+  }, [id, block]);
 
   return [{ block, error }, BlockOptions];
 }

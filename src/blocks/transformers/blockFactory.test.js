@@ -19,6 +19,8 @@ import nytimes from "@contrib/blocks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
+import { isUserDefinedBlock } from "../../core";
+import { MappingTransformer } from "./mapping";
 
 test("two plus two is four", () => {
   expect(2 + 2).toBe(4);
@@ -54,4 +56,14 @@ test("reject invalid fixture fixture", async () => {
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidDefinitionError);
   }
+});
+
+describe("isUserDefinedBlock", () => {
+  test("is detected as user-defined block", () => {
+    expect(isUserDefinedBlock(fromJS(nytimes))).toBe(true);
+  });
+
+  test("is detected as built-in block", () => {
+    expect(isUserDefinedBlock(new MappingTransformer())).toBe(false);
+  });
 });
