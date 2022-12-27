@@ -945,6 +945,12 @@ export interface IService<
 > extends Metadata {
   schema: Schema;
 
+  /**
+   * A uiSchema for the service configuration.
+   * @since 1.7.16
+   */
+  uiSchema?: UiSchema;
+
   isOAuth2: boolean;
 
   isAuthorizationGrant: boolean;
