@@ -406,7 +406,7 @@ export const appApi = createApi({
     }),
     createMilestone: builder.mutation<
       Milestone,
-      { key: string; value?: string }
+      { key: string; metadata?: string }
     >({
       query: (data) => ({
         url: "/api/me/milestones/",
