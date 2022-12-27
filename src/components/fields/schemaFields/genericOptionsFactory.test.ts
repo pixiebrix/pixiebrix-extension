@@ -68,7 +68,8 @@ describe("sortedFields", () => {
     ).toStrictEqual(["bbb", "aaa"]);
   });
 
-  test("it sorts by uiSchema order", () => {
+  test("it sorts by uiSchema order with missing entry", () => {
+    // Unlike RFSJ, don't throw an error if an entry is missing. Just throw it at the end
     expect(
       sortedFields(
         {
@@ -87,6 +88,27 @@ describe("sortedFields", () => {
         }
       ).map((x) => x.prop)
     ).toStrictEqual(["bbb", "aaa", "ccc"]);
+  });
+
+  test("it sorts by uiSchema *", () => {
+    expect(
+      sortedFields(
+        {
+          aaa: {
+            type: "string",
+          },
+          ccc: {
+            type: "string",
+          },
+          bbb: {
+            type: "string",
+          },
+        } as Schema,
+        {
+          "ui:order": ["*", "aaa"],
+        }
+      ).map((x) => x.prop)
+    ).toStrictEqual(["bbb", "ccc", "aaa"]);
   });
 
   test("it sorts optional fields", () => {
