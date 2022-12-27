@@ -17,13 +17,37 @@
 
 import { useEffect } from "react";
 
+/** Like setTimeout, except that if the delay is 0 or lower, the function is called synchronously */
+const semiSyncTimeout = (
+  callback: (...args: unknown[]) => void,
+  millis: number,
+  ...args: unknown[]
+) => {
+  if (millis <= 0) {
+    callback(...args);
+    return;
+  }
+
+  const timer = setTimeout(callback, millis, ...args);
+  return () => {
+    clearTimeout(timer);
+  };
+};
+
 export default function useAutoFocus(
   elementRef: React.MutableRefObject<HTMLElement>,
-  focus = true
+  focus = true,
+  delayMillis = 0
 ) {
   useEffect(() => {
-    if (focus) {
-      elementRef.current?.focus();
+    if (!focus) {
+      return;
     }
-  }, [elementRef, focus]);
+
+    const act = () => {
+      elementRef.current?.focus();
+    };
+
+    return semiSyncTimeout(act, delayMillis);
+  }, [elementRef, focus, delayMillis]);
 }
