@@ -19,7 +19,7 @@ import nytimes from "@contrib/blocks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { isUserDefinedBlock } from "../../core";
+import { isUserDefinedBlock } from "@/core";
 import { MappingTransformer } from "./mapping";
 
 test("two plus two is four", () => {

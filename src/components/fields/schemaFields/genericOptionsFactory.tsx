@@ -134,7 +134,7 @@ function genericOptionsFactory(
     return NoOptions;
   }
 
-  const sortedFieldsConfig = sortedFields(optionSchema, uiSchema, {
+  const sortedFieldsConfig = sortedFields(schema, uiSchema, {
     preserveSchemaOrder,
   });
 
