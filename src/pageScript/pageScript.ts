@@ -36,7 +36,7 @@ import {
   SET_COMPONENT_DATA,
 } from "@/messaging/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
-import adapters from "@/frameworks/adapters";
+import adapters from "@/pageScript/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
 import {
   type ReadPayload,
@@ -50,8 +50,8 @@ import {
   type ReadableComponentAdapter,
   traverse,
   type WriteableComponentAdapter,
-} from "@/frameworks/component";
-import { elementInfo } from "@/contentScript/nativeEditor/frameworks";
+} from "@/pageScript/frameworks/component";
+import { elementInfo } from "@/pageScript/frameworks";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,

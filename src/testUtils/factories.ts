@@ -79,7 +79,7 @@ import {
   type Milestone,
   UserRole,
 } from "@/types/contract";
-import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import getType from "@/runtime/getType";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";

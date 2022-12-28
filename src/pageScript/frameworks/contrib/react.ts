@@ -16,13 +16,16 @@
  */
 
 import { pickBy } from "lodash";
-import { ComponentNotFoundError, ignoreNotFound } from "@/frameworks/errors";
-import { type RootInstanceVisitor } from "@/frameworks/scanner";
+import {
+  ComponentNotFoundError,
+  ignoreNotFound,
+} from "@/pageScript/frameworks/errors";
+import { type RootInstanceVisitor } from "@/pageScript/frameworks/scanner";
 import {
   type ReadableComponentAdapter,
   traverse,
-} from "@/frameworks/component";
-import { isNode } from "@/frameworks/dom";
+} from "@/pageScript/frameworks/component";
+import { isNode } from "@/pageScript/frameworks/dom";
 
 // React architecture references:
 // https://github.com/acdlite/react-fiber-architecture

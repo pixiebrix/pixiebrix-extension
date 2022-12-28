@@ -64,7 +64,12 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   useEffect(() => {
     setFocusInput(false);
     setFieldDescription(selectedOption?.description);
-  }, [inputMode, inputModeOptions, setFieldDescription]);
+  }, [
+    inputMode,
+    inputModeOptions,
+    setFieldDescription,
+    selectedOption?.description,
+  ]);
 
   const onModeChange = useCallback(
     (newInputMode: FieldInputMode) => {

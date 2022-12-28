@@ -46,7 +46,7 @@ import {
 } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
-import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { makeEmptyPermissions } from "@/utils/permissions";

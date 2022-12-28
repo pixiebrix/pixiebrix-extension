@@ -38,15 +38,15 @@ import {
   removeExtension as removeSidebar,
   reloadSidebar,
 } from "@/contentScript/sidebarController";
-import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
-import { insertButton } from "@/contentScript/nativeEditor/insertButton";
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
+import { insertButton } from "@/contentScript/pageEditor/insertButton";
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/nativeEditor/dynamic";
+} from "@/contentScript/pageEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import {
   withDetectFrameworkVersions,
@@ -66,7 +66,7 @@ import { runBrick } from "@/contentScript/executor";
 import {
   cancelSelect,
   selectElement,
-} from "@/contentScript/nativeEditor/elementPicker";
+} from "@/contentScript/pageEditor/elementPicker";
 import {
   runEffectPipeline,
   runMapArgs,

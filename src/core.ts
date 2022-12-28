@@ -747,6 +747,15 @@ export interface IBlock extends Metadata {
   /** A JSON schema of the inputs for the block */
   inputSchema: Schema;
 
+  /**
+   * An optional UiSchema for the inputs for the block
+   *
+   * Currently only ui:order is supported.
+   *
+   * @since 1.7.16
+   */
+  uiSchema?: UiSchema;
+
   /** An optional a JSON schema for the output of the block */
   outputSchema?: Schema;
 
@@ -799,6 +808,17 @@ export interface IBlock extends Metadata {
   defaultOutputKey?: string;
 
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
+}
+
+/**
+ * Returns `true` if block is a user-defined block (i.e., defined in YAML not JS).
+ * @param block the block
+ * @see ExternalBlock
+ */
+export function isUserDefinedBlock(block: IBlock): boolean {
+  // YAML-defined blocks have a .component property added by the ExternalBlock class
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- don't want to introduce circular dependency
+  return Boolean((block as any)?.component);
 }
 
 export type ReaderOutput = Record<string, unknown>;
@@ -924,6 +944,12 @@ export interface IService<
   TOAuth extends AuthData = AuthData
 > extends Metadata {
   schema: Schema;
+
+  /**
+   * A uiSchema for the service configuration.
+   * @since 1.7.16
+   */
+  uiSchema?: UiSchema;
 
   isOAuth2: boolean;
 

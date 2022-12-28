@@ -47,7 +47,7 @@ import { insertButton } from "@/contentScript/messenger/api";
 import {
   type ButtonDefinition,
   type ButtonSelectionResult,
-} from "@/contentScript/nativeEditor/types";
+} from "@/contentScript/pageEditor/types";
 import { type ActionFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

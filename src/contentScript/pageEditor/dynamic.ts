@@ -33,7 +33,7 @@ import { $safeFind } from "@/helpers";
 import { type TriggerDefinition } from "@/extensionPoints/triggerExtension";
 import selection from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
-import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
   ensureSidebar,

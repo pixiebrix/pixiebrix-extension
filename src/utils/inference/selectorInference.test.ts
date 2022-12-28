@@ -25,7 +25,7 @@ import {
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
   sortBySelector,
-} from "@/contentScript/nativeEditor/selectorInference";
+} from "./selectorInference";
 import { JSDOM } from "jsdom";
 import { html } from "@/utils";
 import { uniq } from "lodash";
