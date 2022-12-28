@@ -25,6 +25,41 @@ const position: BlockPosition = {
 };
 
 describe("RegexAnalysis", () => {
+  test("ignore expression", () => {
+    const analysis = new RegexAnalysis();
+    analysis.visitBlock(
+      position,
+      {
+        id: validateRegistryId("@pixiebrix/regex"),
+        config: {
+          regex: {
+            __type__: "nunjucks",
+            __value__: "(?<foo>abc {{ @foo }}",
+          },
+        },
+      },
+      {} as VisitBlockExtra
+    );
+
+    expect(analysis.getAnnotations()).toHaveLength(0);
+  });
+
+  test("validate string literal", () => {
+    const analysis = new RegexAnalysis();
+    analysis.visitBlock(
+      position,
+      {
+        id: validateRegistryId("@pixiebrix/regex"),
+        config: {
+          regex: "(?<foo>abc",
+        },
+      },
+      {} as VisitBlockExtra
+    );
+
+    expect(analysis.getAnnotations()).toHaveLength(1);
+  });
+
   test("error on invalid regex", () => {
     const analysis = new RegexAnalysis();
     analysis.visitBlock(
