@@ -24,6 +24,7 @@ import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import {
   type BlockArgContext,
+  type ElementReference,
   type IBlock,
   type IExtension,
   type Logger,
@@ -41,6 +42,8 @@ import { mapArgs } from "@/runtime/mapArgs";
 import { $safeFind } from "@/helpers";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { BusinessError } from "@/errors/businessErrors";
+import { validateUUID } from "@/types/helpers";
+import { getElementForReference } from "@/contentScript/elementReference";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -103,6 +106,33 @@ export async function logIfInvalidOutput(
 }
 
 /**
+ * Helper method to render a top-level field of blockConfig.
+ */
+async function renderConfigOption(
+  blockConfig: BlockConfig,
+  context: BlockArgContext,
+  fieldName: keyof BlockConfig,
+  {
+    explicitRender,
+    autoescape,
+  }: Pick<ApiVersionOptions, "explicitRender" | "autoescape">
+): Promise<unknown> {
+  const render = explicitRender
+    ? null
+    : engineRenderer(
+        blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+        { autoescape }
+      );
+
+  const { value } = (await mapArgs({ value: blockConfig[fieldName] }, context, {
+    implicitRender: render,
+    autoescape,
+  })) as { value: unknown };
+
+  return value;
+}
+
+/**
  * Return true if the stage should be run given the current context
  */
 export async function shouldRunBlock(
@@ -111,18 +141,10 @@ export async function shouldRunBlock(
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
   if (blockConfig.if !== undefined) {
-    const render = explicitRender
-      ? null
-      : engineRenderer(
-          blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-          { autoescape }
-        );
-
-    const { if: condition } = (await mapArgs({ if: blockConfig.if }, context, {
-      implicitRender: render,
+    const condition = await renderConfigOption(blockConfig, context, "if", {
+      explicitRender,
       autoescape,
-    })) as { if: unknown };
-
+    });
     return boolean(condition);
   }
 
@@ -134,40 +156,85 @@ export async function shouldRunBlock(
  * @see BlockConfig.rootMode
  * @see BlockConfig.root
  */
-export function selectBlockRootElement(
+export async function selectBlockRootElement(
   blockConfig: BlockConfig,
-  defaultRoot: ReaderRoot
-): ReaderRoot {
+  defaultRoot: ReaderRoot,
+  context: BlockArgContext,
+  { explicitRender, autoescape }: ApiVersionOptions
+): Promise<ReaderRoot> {
   const rootMode = blockConfig.rootMode ?? "inherit";
 
   let root;
-  if (rootMode === "inherit") {
-    root = defaultRoot;
-  } else if (rootMode === "document") {
-    root = document;
-  } else {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-    throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+
+  switch (rootMode) {
+    case "inherit": {
+      root = defaultRoot;
+      break;
+    }
+
+    case "document": {
+      root = document;
+      break;
+    }
+
+    case "element": {
+      if (blockConfig.root == null) {
+        throw new BusinessError("No element reference provided");
+      }
+
+      const unvalidatedRootReference = await renderConfigOption(
+        blockConfig,
+        context,
+        "root",
+        { explicitRender, autoescape }
+      );
+
+      let ref;
+      try {
+        ref = validateUUID(unvalidatedRootReference);
+      } catch {
+        console.warn(
+          "Invalid element reference provided: %s",
+          blockConfig.root
+        );
+        throw new BusinessError("Invalid element reference provided");
+      }
+
+      root = getElementForReference(ref as ElementReference);
+      break;
+    }
+
+    default: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check
+      throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+    }
   }
 
   const $root = $(root ?? document);
 
-  const $stageRoot = blockConfig.root
-    ? $safeFind(blockConfig.root, $root)
-    : $root;
+  // Passing a selector for root is an old behavior from when the rootModes were just inherit and document
+  if (
+    typeof blockConfig.root === "string" &&
+    blockConfig.rootMode !== "element"
+  ) {
+    const $stageRoot = $safeFind(blockConfig.root, $root);
 
-  if ($stageRoot.length > 1) {
-    throw new BusinessError(`Multiple roots found for ${blockConfig.root}`);
+    if ($stageRoot.length > 1) {
+      throw new BusinessError(`Multiple roots found for ${blockConfig.root}`);
+    }
+
+    if ($stageRoot.length === 0) {
+      const rootDescriptor =
+        (defaultRoot as HTMLElement)?.tagName ?? "document";
+      throw new BusinessError(
+        `No roots found for ${blockConfig.root} (root=${rootDescriptor})`
+      );
+    }
+
+    return $stageRoot.get(0);
   }
 
-  if ($stageRoot.length === 0) {
-    const rootDescriptor = (defaultRoot as HTMLElement)?.tagName ?? "document";
-    throw new BusinessError(
-      `No roots found for ${blockConfig.root} (root=${rootDescriptor})`
-    );
-  }
-
-  return $stageRoot.get(0);
+  return $root.get(0);
 }
 
 export function assertExtensionNotResolved<T extends IExtension>(

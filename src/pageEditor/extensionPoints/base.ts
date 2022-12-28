@@ -408,11 +408,26 @@ export function getImplicitReader(
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),
       validateRegistryId("@pixiebrix/selection"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
     ]);
   }
 
-  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
-  // the contextMenu extension point.
+  if (type === "contextMenu") {
+    // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
+    // the contextMenu extension point.
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
+  if (type === "menuItem") {
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }
 

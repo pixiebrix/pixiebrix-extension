@@ -24,6 +24,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import ForEachElement from "./ForEachElement";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -92,5 +93,68 @@ describe("ForEachElement", () => {
     );
 
     expect(result).toStrictEqual({ message: "This is a message" });
+  });
+
+  test("pass element key if provided", async () => {
+    const pipeline = {
+      id: forEachBlock.id,
+      config: {
+        // The jsdom has one body tag
+        selector: "body",
+        elementKey: "element",
+        body: makePipelineExpression([
+          {
+            id: echoBlock.id,
+            config: {
+              message: {
+                __type__: "nunjucks",
+                __value__: "Got reference: {{@element}}",
+              },
+            },
+          },
+        ]),
+      },
+    };
+
+    const ref = getReferenceForElement(document.body);
+
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({ message: `Got reference: ${ref}` });
+  });
+
+  test("don't pass element key if not provided", async () => {
+    const pipeline = {
+      id: forEachBlock.id,
+      config: {
+        // The jsdom has one body tag
+        selector: "body",
+        // Don't pass elementKey
+        // elementKey: "element",
+        body: makePipelineExpression([
+          {
+            id: echoBlock.id,
+            config: {
+              message: {
+                __type__: "nunjucks",
+                __value__: "Got reference: {{@element}}",
+              },
+            },
+          },
+        ]),
+      },
+    };
+
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({ message: "Got reference: " });
   });
 });
