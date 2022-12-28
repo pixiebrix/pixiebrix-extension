@@ -595,7 +595,12 @@ export async function blockReducer(
   };
 
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
-  const blockRoot = selectBlockRootElement(blockConfig, root);
+  const blockRoot = await selectBlockRootElement(
+    blockConfig,
+    root,
+    context,
+    options
+  );
 
   let renderedArgs: RenderedArgs;
   let renderError: unknown;

@@ -22,8 +22,6 @@
  * See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
  */
 
-// eslint-disable-next-line import/no-unassigned-import -- monkey patching import
-import "@/utils/jqueryHack";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {

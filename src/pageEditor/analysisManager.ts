@@ -34,6 +34,7 @@ import { selectActiveElementTraces } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
 import { selectSettings } from "@/store/settingsSelectors";
+import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -111,6 +112,10 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
   }
 );
+
+pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
+  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+});
 
 const varAnalysisFactory = (
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,

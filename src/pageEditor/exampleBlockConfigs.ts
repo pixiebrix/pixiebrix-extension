@@ -128,6 +128,8 @@ export function createNewBlock(
   return {
     id: blockId,
     instanceId: uuidv4(),
+    // @since 1.7.16 -- use "document" as the default root mode because it's the easiest to understand
+    rootMode: "document",
     config:
       getExampleBlockConfig(blockId) ??
       (blockInputSchema == null ? {} : defaultBlockConfig(blockInputSchema)),

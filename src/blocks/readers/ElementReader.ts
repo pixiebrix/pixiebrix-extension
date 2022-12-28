@@ -18,6 +18,7 @@
 import { Reader } from "@/types";
 import { type ReaderRoot, type Schema } from "@/core";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 
 /**
  * Read attributes, text, etc. from an HTML element.
@@ -40,9 +41,11 @@ export class ElementReader extends Reader {
     const element = isHTMLElement(elementOrDocument)
       ? elementOrDocument
       : document.body;
+
     const $elements = $(element);
 
     return {
+      ref: getReferenceForElement(element),
       tagName: element.tagName,
       attrs: Object.fromEntries(
         Object.values(element.attributes).map((x) => [x.name, x.value])
@@ -60,6 +63,9 @@ export class ElementReader extends Reader {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
+      ref: {
+        $ref: "https://app.pixiebrix.com/schemas/element#",
+      },
       tagName: {
         type: "string",
       },
@@ -77,7 +83,7 @@ export class ElementReader extends Reader {
         additionalProperties: true,
       },
     },
-    required: ["tagName", "attrs", "data", "text"],
+    required: ["tagName", "attrs", "data", "text", "ref"],
     additionalProperties: false,
   };
 

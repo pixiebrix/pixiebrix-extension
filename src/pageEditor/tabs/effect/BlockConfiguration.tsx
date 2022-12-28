@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { type RegistryId } from "@/core";
-import { getIn, useFormikContext } from "formik";
+import { getIn, useField, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
@@ -30,7 +30,7 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BlockWindow } from "@/blocks/types";
+import { type BlockConfig, type BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
@@ -42,8 +42,9 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
 
 const rootModeOptions = [
-  { label: "Inherit", value: "inherit" },
   { label: "Document", value: "document" },
+  { label: "Element", value: "element" },
+  { label: "Inherit", value: "inherit" },
 ];
 
 const targetOptions: Array<Option<BlockWindow>> = [
@@ -52,8 +53,6 @@ const targetOptions: Array<Option<BlockWindow>> = [
   { label: "Target Tab (target)", value: "target" },
   { label: "Top-level Frame (top)", value: "top" },
   { label: "All Tabs (broadcast)", value: "broadcast" },
-  // Not currently generally available
-  // { label: "Server (remote)", value: "remote" },
 ];
 
 const BlockConfiguration: React.FunctionComponent<{
@@ -63,6 +62,10 @@ const BlockConfiguration: React.FunctionComponent<{
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
+  const [config] = useField<BlockConfig>(name);
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BlockConfig>(
+    configName("root")
+  );
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
@@ -75,6 +78,40 @@ const BlockConfiguration: React.FunctionComponent<{
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
+
+  useEffect(
+    () => {
+      // Effect to clear out unused `root` field. Technically, `root` could contain a selector when used with `document`
+      // or `inherit` mode, but we don't want to support that in the Page Editor because it's legacy behavior.
+      if (config.value.rootMode !== "element") {
+        rootFieldHelpers.setValue(null);
+      }
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps -- rootFieldHelpers changes reference every render
+    [config.value.rootMode]
+  );
+
+  const rootElementSchema: SchemaFieldProps = useMemo(
+    () => ({
+      name: configName("root"),
+      label: "Target Element",
+      description: (
+        <span>
+          The target element for the brick. Provide element reference{" "}
+          <code>@input.element.ref</code>, or a reference generated with the
+          Element Reader, For-Each Element, or Traverse Elements brick
+        </span>
+      ),
+      // If the field is visible, it's required
+      isRequired: true,
+      schema: {
+        // The type is https://app.pixiebrix.com/schemas/element#, but schema field doesn't support that
+        // XXX: this should really restrict to "variable" entry. Text values will also be interpreted properly, it's
+        //  there's just no use-case for hard coded element uuids or text template expressions
+        type: "string",
+      },
+    }),
+    [configName]
+  );
 
   const ifSchemaProps: SchemaFieldProps = useMemo(
     () => ({
@@ -130,30 +167,32 @@ const BlockConfiguration: React.FunctionComponent<{
         </FieldSection>
 
         <FieldSection title="Advanced Options" bodyRef={advancedOptionsRef}>
+          {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
+
           {showRootMode && (
             <ConnectedFieldTemplate
               name={configName("rootMode")}
-              label="Root Mode"
+              label="Target Root Mode"
               as={SelectWidget}
               options={rootModeOptions}
               blankValue="inherit"
-              description="The root mode controls which page element PixieBrix provides as the implicit element"
+              description="The Root Mode controls the page element the brick targets. PixieBrix evaluates selectors relative to the root document/element"
             />
           )}
 
-          {showIfAndTarget && (
-            <>
-              <SchemaField {...ifSchemaProps} omitIfEmpty />
+          {config.value.rootMode === "element" && (
+            <SchemaField {...rootElementSchema} omitIfEmpty />
+          )}
 
-              <ConnectedFieldTemplate
-                name={configName("window")}
-                label="Target"
-                as={SelectWidget}
-                options={targetOptions}
-                blankValue={DEFAULT_WINDOW_VALUE}
-                description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
-              />
-            </>
+          {showIfAndTarget && (
+            <ConnectedFieldTemplate
+              name={configName("window")}
+              label="Target Tab/Frame"
+              as={SelectWidget}
+              options={targetOptions}
+              blankValue={DEFAULT_WINDOW_VALUE}
+              description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
+            />
           )}
 
           {noAdvancedOptions && (
