@@ -166,4 +166,22 @@ describe("ReplaceTextEffect", () => {
       '<div><mark style="background-color: yellow;">foo</mark>bar<mark style="background-color: yellow;">foo</mark></div>'
     );
   });
+
+  test("sanitize HTML", async () => {
+    const document = getDocument("<div>foobar</div>");
+    const brick = new HighlightText();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "[fo]+",
+        isRegex: true,
+        color: '"<script>alert("xss")</script>',
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><mark style="background-color:">alert("xss");"&gt;foo</mark>bar</div>'
+    );
+  });
 });

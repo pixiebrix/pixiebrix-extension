@@ -19,6 +19,7 @@ import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { $safeFind } from "@/helpers";
 import { validateRegistryId } from "@/types/helpers";
+import sanitize from "@/utils/sanitize";
 
 const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
 
@@ -69,7 +70,7 @@ export function wrapText({
       continue;
     }
 
-    div.innerHTML = innerHTML;
+    div.innerHTML = sanitize(innerHTML);
     fragment.append(...div.childNodes);
     currentNode.parentNode.replaceChild(fragment, currentNode);
   }
