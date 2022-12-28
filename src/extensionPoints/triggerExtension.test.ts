@@ -33,6 +33,7 @@ import {
   type TriggerConfig,
   type TriggerDefinition,
 } from "@/extensionPoints/triggerExtension";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -115,20 +116,101 @@ describe("triggerExtension", () => {
     }
   );
 
-  it.each([
-    [undefined, false],
-    ["once", false],
-    ["watch", true],
-  ])("attachMode: %s, watches: %s", async (attachMode) => {
+  it.each([[undefined], ["once"], ["watch"]])(
+    "attachMode: %s",
+    async (attachMode) => {
+      document.body.innerHTML = getDocument(
+        "<button>Click Me</button>"
+      ).body.innerHTML;
+
+      const extensionPoint = fromJS(
+        extensionPointFactory({
+          trigger: "click",
+          attachMode,
+          rootSelector: "button",
+        })()
+      );
+
+      extensionPoint.addExtension(
+        extensionFactory({
+          extensionPointId: extensionPoint.id,
+        })
+      );
+
+      await extensionPoint.install();
+      await extensionPoint.run({ reason: RunReason.MANUAL });
+
+      expect(rootReader.readCount).toBe(0);
+
+      document.querySelector("button").click();
+      await tick();
+      expect(rootReader.readCount).toBe(1);
+
+      document.body.innerHTML = "";
+      document.body.innerHTML = getDocument(
+        "<button>Click Me</button>"
+      ).body.innerHTML;
+
+      // Give the mutation observer time to run
+      await tick();
+
+      // Check click handler was not re-attached
+      document.querySelector("button").click();
+      await tick();
+      expect(rootReader.readCount).toBe(attachMode === "watch" ? 2 : 1);
+
+      extensionPoint.uninstall();
+    }
+  );
+
+  it.each([[undefined], ["eventTarget"]])(
+    "targetMode: %s",
+    async (targetMode) => {
+      document.body.innerHTML = getDocument(
+        "<div><button>Click Me</button></div>"
+      ).body.innerHTML;
+
+      const extensionPoint = fromJS(
+        extensionPointFactory({
+          trigger: "click",
+          targetMode,
+          rootSelector: "div",
+        })()
+      );
+
+      extensionPoint.addExtension(
+        extensionFactory({
+          extensionPointId: extensionPoint.id,
+        })
+      );
+
+      await extensionPoint.install();
+      await extensionPoint.run({ reason: RunReason.MANUAL });
+
+      document.querySelector("button").click();
+      await tick();
+
+      const buttonRef = getReferenceForElement(
+        document.querySelector("button")
+      );
+
+      expect(rootReader.readCount).toBe(1);
+      expect(rootReader.ref).toBe(buttonRef);
+
+      extensionPoint.uninstall();
+    }
+  );
+
+  it("targetMode: root", async () => {
     document.body.innerHTML = getDocument(
-      "<button>Click Me</button>"
+      "<div><button>Click Me</button></div>"
     ).body.innerHTML;
 
     const extensionPoint = fromJS(
       extensionPointFactory({
         trigger: "click",
-        attachMode,
-        rootSelector: "button",
+        targetMode: "root",
+        rootSelector: "div",
       })()
     );
 
@@ -141,24 +223,13 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
     await extensionPoint.run({ reason: RunReason.MANUAL });
 
-    expect(rootReader.readCount).toBe(0);
-
     document.querySelector("button").click();
     await tick();
+
+    const divRef = getReferenceForElement(document.querySelector("div"));
+
     expect(rootReader.readCount).toBe(1);
-
-    document.body.innerHTML = "";
-    document.body.innerHTML = getDocument(
-      "<button>Click Me</button>"
-    ).body.innerHTML;
-
-    // Give the mutation observer time to run
-    await tick();
-
-    // Check click handler was not re-attached
-    document.querySelector("button").click();
-    await tick();
-    expect(rootReader.readCount).toBe(attachMode === "watch" ? 2 : 1);
+    expect(rootReader.ref).toBe(divRef);
 
     extensionPoint.uninstall();
   });
