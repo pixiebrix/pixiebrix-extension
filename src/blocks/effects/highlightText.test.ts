@@ -167,6 +167,23 @@ describe("ReplaceTextEffect", () => {
     );
   });
 
+  test("multiple elements", async () => {
+    const document = getDocument("<div><div>foo</div><div>foo</div></div>");
+    const brick = new HighlightText();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "[fo]+",
+        isRegex: true,
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><div><mark style="background-color: yellow;">foo</mark></div><div><mark style="background-color: yellow;">foo</mark></div></div>'
+    );
+  });
+
   test("sanitize HTML", async () => {
     const document = getDocument("<div>foobar</div>");
     const brick = new HighlightText();

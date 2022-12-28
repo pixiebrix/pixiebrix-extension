@@ -43,6 +43,8 @@ export function wrapText({
 
   let currentNode: Node | null;
 
+  const replacements = [];
+
   while ((currentNode = walker.nextNode())) {
     if (visited.has(currentNode)) {
       // Avoid running replaceText on same node twice if selector passed to brick matches multiple nodes
@@ -72,7 +74,18 @@ export function wrapText({
 
     div.innerHTML = sanitize(innerHTML);
     fragment.append(...div.childNodes);
-    currentNode.parentNode.replaceChild(fragment, currentNode);
+
+    // Can't replace in the treeWalker loop
+    replacements.push({
+      parentNode: currentNode.parentNode,
+      currentNode,
+      fragment,
+    });
+  }
+
+  for (const { parentNode, fragment, currentNode } of replacements) {
+    // eslint-disable-next-line unicorn/prefer-modern-dom-apis -- currentNode is text node not element
+    parentNode.replaceChild(fragment, currentNode);
   }
 }
 
