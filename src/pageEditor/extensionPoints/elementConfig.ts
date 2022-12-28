@@ -38,7 +38,7 @@ import {
 } from "@/blocks/types";
 import { type Target } from "@/types";
 import { type OptionsDefinition } from "@/types/definitions";
-import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
 
 /**

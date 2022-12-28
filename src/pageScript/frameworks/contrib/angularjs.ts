@@ -19,8 +19,11 @@
 // angularjs: https://docs.angularjs.org/api/ng/function/angular.element
 
 import { pickBy, isEmpty } from "lodash";
-import { type ReadableComponentAdapter } from "@/frameworks/component";
-import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
+import { type ReadableComponentAdapter } from "@/pageScript/frameworks/component";
+import {
+  FrameworkNotFound,
+  ignoreNotFound,
+} from "@/pageScript/frameworks/errors";
 
 declare global {
   interface Window {

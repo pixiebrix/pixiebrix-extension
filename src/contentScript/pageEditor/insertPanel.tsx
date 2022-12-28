@@ -20,10 +20,10 @@
 import { uuidv4 } from "@/types/helpers";
 import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/protocol";
-import { findContainer } from "./selectorInference";
+import { findContainer } from "@/utils/inference/selectorInference";
 import { html as beautifyHTML } from "js-beautify";
-import { type PanelSelectionResult } from "@/contentScript/nativeEditor/types";
-import { inferPanelHTML } from "@/contentScript/nativeEditor/markupInference";
+import { type PanelSelectionResult } from "@/contentScript/pageEditor/types";
+import { inferPanelHTML } from "@/utils/inference/markupInference";
 
 const DEFAULT_PANEL_HEADING = "PixieBrix Panel";
 

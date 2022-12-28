@@ -19,7 +19,7 @@ import { groupBy, lowerCase, sortBy } from "lodash";
 import { type IExtension, type RegistryId, type UUID } from "@/core";
 import { type RecipeDefinition } from "@/types/definitions";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { getRecipeById } from "@/utils";
+import { getRecipeById } from "@/pageEditor/utils";
 import { isExtension } from "@/pageEditor/sidebar/common";
 
 type ArrangeElementsArgs = {

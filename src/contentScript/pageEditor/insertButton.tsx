@@ -20,11 +20,11 @@
 import { uuidv4 } from "@/types/helpers";
 import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/protocol";
-import { findContainer } from "./selectorInference";
+import { findContainer } from "@/utils/inference/selectorInference";
 import { html as beautifyHTML } from "js-beautify";
 import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
-import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
-import { inferButtonHTML } from "@/contentScript/nativeEditor/markupInference";
+import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
+import { inferButtonHTML } from "@/utils/inference/markupInference";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 

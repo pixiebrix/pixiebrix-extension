@@ -16,11 +16,18 @@
  */
 
 import { type Framework } from "@/messaging/constants";
-import adapters from "@/frameworks/adapters";
+import adapters from "@/pageScript/frameworks/adapters";
 import { isEmpty, uniq } from "lodash";
-import { inferSelectorsIncludingStableAncestors } from "@/contentScript/nativeEditor/selectorInference";
-import { type ElementInfo } from "@/contentScript/nativeEditor/types";
+import { inferSelectorsIncludingStableAncestors } from "@/utils/inference/selectorInference";
 
+export interface ElementInfo {
+  selectors: string[];
+  framework: Framework;
+  tagName: string;
+  hasData: boolean;
+  parent?: ElementInfo;
+  isMulti?: boolean;
+}
 export async function elementInfo(
   element: HTMLElement,
   componentFramework?: Framework,

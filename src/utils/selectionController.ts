@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getCommonAncestor } from "@/contentScript/nativeEditor/selectorInference";
+import { getCommonAncestor } from "@/utils/inference/selectorInference";
 
 /**
  * Get the HTMLElement corresponding to the current selection.
