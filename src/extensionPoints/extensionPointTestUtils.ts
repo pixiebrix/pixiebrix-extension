@@ -17,16 +17,18 @@
 
 import { JSDOM } from "jsdom";
 import { Reader } from "@/types";
-import { ElementReference, ReaderOutput, Schema } from "@/core";
+import { type ElementReference, type ReaderOutput, type Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 
-// Helper function returns a promise that resolves after all other promise mocks,
-// even if they are chained like Promise.resolve().then(...)
-// Technically: this is designed to resolve on the next macrotask
-// https://stackoverflow.com/questions/37408834/testing-with-reacts-jest-and-enzyme-when-simulated-clicks-call-a-function-that
-
+/**
+ * Helper function returns a promise that resolves after all other promise mocks, even if they are chained
+ * like Promise.resolve().then(...).
+ *
+ * (Technically: this is designed to resolve on the next macrotask)
+ */
 export async function tick(): Promise<void> {
+  // Copied from https://stackoverflow.com/questions/37408834/testing-with-reacts-jest-and-enzyme-when-simulated-clicks-call-a-function-that
   return new Promise((resolve) => {
     setTimeout(resolve, 0);
   });
@@ -36,6 +38,9 @@ export function getDocument(html: string): Document {
   return new JSDOM(html).window.document;
 }
 
+/**
+ * Reader that stores the root element passed to it. Useful for testing target modes.
+ */
 export class RootReader extends Reader {
   ref: ElementReference;
   readCount = 0;
