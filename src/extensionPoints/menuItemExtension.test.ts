@@ -15,26 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSDOM } from "jsdom";
 import {
   fromJS,
   type MenuDefinition,
+  type MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  type ElementReference,
-  type Metadata,
-  type ReaderOutput,
-  type ResolvedExtension,
-  RunReason,
-  type Schema,
-} from "@/core";
+import { type Metadata, type ResolvedExtension, RunReason } from "@/core";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { uuidSequence } from "@/testUtils/factories";
-import { Reader, type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types";
 import blockRegistry from "@/blocks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import {
+  getDocument,
+  RootReader,
+  tick,
+} from "@/extensionPoints/extensionPointTestUtils";
+import { type BlockPipeline } from "@/blocks/types";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -45,20 +44,6 @@ jest.mock("@/telemetry/logging", () => {
     }),
   };
 });
-
-// Helper function returns a promise that resolves after all other promise mocks,
-// even if they are chained like Promise.resolve().then(...)
-// Technically: this is designed to resolve on the next macrotask
-// https://stackoverflow.com/questions/37408834/testing-with-reacts-jest-and-enzyme-when-simulated-clicks-call-a-function-that
-async function tick(): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
-}
-
-function getDocument(html: string): Document {
-  return new JSDOM(html).window.document;
-}
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -71,16 +56,16 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
         id: validateRegistryId(`test/extension-point-${n}`),
         name: "Test Extension Point",
       } as Metadata),
-    definition: {
+    definition: define<MenuDefinition>({
       type: "menuItem",
       template: "<button>{{caption}}</button>",
       containerSelector: "div",
-      isAvailable: Object.freeze({
+      isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      reader: [rootReaderId],
+      reader: () => [rootReaderId],
       ...definitionOverrides,
-    },
+    }),
   });
 
 const extensionFactory = define<ResolvedExtension>({
@@ -91,45 +76,12 @@ const extensionFactory = define<ResolvedExtension>({
     validateRegistryId(`test/extension-point-${n}`),
   _recipe: null,
   label: "Test Extension",
-  config: {
+  config: define<MenuItemExtensionConfig>({
     caption: "Hello World",
-    pipeline: [],
-  },
+    action: () => [] as BlockPipeline,
+    synchronous: false,
+  }),
 });
-
-class RootReader extends Reader {
-  ref: ElementReference;
-  readCount = 0;
-
-  override async isAvailable($elements?: JQuery): Promise<boolean> {
-    return true;
-  }
-
-  override readonly outputSchema: Schema = {
-    type: "object",
-    properties: {
-      readCount: {
-        type: "number",
-      },
-      ref: {
-        type: "string",
-      },
-    },
-  };
-
-  constructor() {
-    super(validateRegistryId("test/root-reader"), "Root Reader");
-  }
-
-  async read(root: HTMLElement | Document): Promise<ReaderOutput> {
-    this.ref = getReferenceForElement(root as HTMLElement);
-    this.readCount++;
-    return {
-      ref: this.ref,
-      readCount: this.readCount,
-    };
-  }
-}
 
 const rootReader = new RootReader();
 
@@ -143,27 +95,34 @@ beforeEach(() => {
 });
 
 describe("menuItemExtension", () => {
-  it("can install menu item", async () => {
-    document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
+  it.each([["append"], [undefined]])(
+    "can append menu item",
+    async (position) => {
+      document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
 
-    const extensionPoint = fromJS(extensionPointFactory()());
+      const extensionPoint = fromJS(
+        extensionPointFactory({
+          position,
+        })()
+      );
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
-    });
+      const extension = extensionFactory({
+        extensionPointId: extensionPoint.id,
+      });
 
-    extensionPoint.addExtension(extension);
+      extensionPoint.addExtension(extension);
 
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.install();
+      await extensionPoint.run({ reason: RunReason.MANUAL });
 
-    expect(document.querySelectorAll("button")).toHaveLength(1);
-    expect(document.body.innerHTML).toEqual(
-      `<div data-pb-extension-point="${extensionPoint.id}">foo<button data-pb-uuid="${extension.id}">Hello World</button></div>`
-    );
+      expect(document.querySelectorAll("button")).toHaveLength(1);
+      expect(document.body.innerHTML).toEqual(
+        `<div data-pb-extension-point="${extensionPoint.id}">foo<button data-pb-uuid="${extension.id}">Hello World</button></div>`
+      );
 
-    extensionPoint.uninstall();
-  });
+      extensionPoint.uninstall();
+    }
+  );
 
   it("can prepend menu item", async () => {
     document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
@@ -252,4 +211,28 @@ describe("menuItemExtension", () => {
       extensionPoint.uninstall();
     }
   );
+
+  it("re-attaches to container", async () => {
+    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+    const extensionPoint = fromJS(extensionPointFactory()());
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    document.body.innerHTML = "";
+    expect(document.querySelectorAll("button")).toHaveLength(0);
+
+    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+    await tick();
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    extensionPoint.uninstall();
+  });
 });
