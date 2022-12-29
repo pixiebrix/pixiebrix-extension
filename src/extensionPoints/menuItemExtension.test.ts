@@ -222,8 +222,8 @@ describe("menuItemExtension", () => {
     await tick();
 
     expect(rootReader.readCount).toEqual(1);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- eslint thinks type is Element
     const outerRef = getReferenceForElement(
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- eslint thinks type is Element
       document.querySelector("#outer") as HTMLElement
     );
     expect(rootReader.ref).toEqual(outerRef);
