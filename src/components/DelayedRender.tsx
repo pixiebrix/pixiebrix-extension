@@ -25,6 +25,8 @@ type Props = {
 /** Component used to reduce flashing */
 const DelayedRender: React.FC<Props> = ({ children, millis }) => {
   const isShown = useTimeoutState(millis);
+  // The hidden element allows us to preload the content (and images) while hidden.
+  // Replacing this with `null` defeats the purpose of this component
   return isShown ? <>{children}</> : <div hidden>{children}</div>;
 };
 
