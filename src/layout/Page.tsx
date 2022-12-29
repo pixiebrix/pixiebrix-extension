@@ -41,6 +41,7 @@ export const PageTitle: React.FunctionComponent<{
 const Page: React.FunctionComponent<{
   icon: IconProp;
   title: string;
+  className?: string;
   description?: React.ReactNode;
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
@@ -56,6 +57,7 @@ const Page: React.FunctionComponent<{
    */
   error?: unknown;
 }> = ({
+  className,
   icon,
   title,
   error,
@@ -80,7 +82,7 @@ const Page: React.FunctionComponent<{
   }, [children, isPending, error]);
 
   return (
-    <div>
+    <div className={className}>
       <div className="d-flex">
         <div className="flex-grow-1">
           <PageTitle icon={icon} title={title} />
