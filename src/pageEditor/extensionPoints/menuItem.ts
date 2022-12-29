@@ -68,6 +68,7 @@ function fromNativeElement(
         type: "menuItem",
         reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
+        targetMode: "document",
       },
       traits: {
         style: {
@@ -90,7 +91,14 @@ function selectExtensionPoint(
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, position, template, reader, containerSelector },
+    definition: {
+      isAvailable,
+      position,
+      template,
+      reader,
+      containerSelector,
+      targetMode,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -99,6 +107,7 @@ function selectExtensionPoint(
       reader,
       isAvailable: pickBy(isAvailable, identity),
       containerSelector,
+      targetMode,
       position,
       template,
     },
