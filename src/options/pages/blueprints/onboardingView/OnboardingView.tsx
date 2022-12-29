@@ -27,6 +27,7 @@ import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
 import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
@@ -38,7 +39,7 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
     <div className="align-self-center">
       <a
         className="btn btn-primary"
-        href="https://pixiebrix.com/marketplace/"
+        href={MARKETPLACE_URL}
         target="_blank"
         rel="noopener noreferrer"
       >

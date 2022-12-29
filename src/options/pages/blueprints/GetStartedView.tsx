@@ -27,6 +27,7 @@ import {
 import blueprintsNavItemScreenshot from "@img/blueprints-nav-item-screenshot.png";
 import { Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;
@@ -139,7 +140,7 @@ const GetStartedView: React.VoidFunctionComponent<{
           Visit the{" "}
           <ExternalLink
             linkText="PixieBrix Marketplace"
-            url="https://www.pixiebrix.com/marketplace/"
+            url={MARKETPLACE_URL}
           />{" "}
           for ideas.
         </p>

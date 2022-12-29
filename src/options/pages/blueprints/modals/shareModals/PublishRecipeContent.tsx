@@ -31,6 +31,7 @@ import ActivationLink from "./ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
 import PublishContentLayout from "./PublishContentLayout";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const PublishRecipeContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -95,11 +96,7 @@ const PublishRecipeContent: React.FunctionComponent = () => {
 
         <p>
           On Submit, the public link to this blueprint will be shared with the{" "}
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            target="blank"
-            rel="noreferrer noopener"
-          >
+          <a href={MARKETPLACE_URL} target="blank" rel="noreferrer noopener">
             PixieBrix Marketplace
           </a>{" "}
           admin team, who will review your submission and publish your

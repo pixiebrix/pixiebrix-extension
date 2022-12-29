@@ -22,8 +22,6 @@
  * See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
  */
 
-// eslint-disable-next-line import/no-unassigned-import -- monkey patching import
-import "@/utils/jqueryHack";
 import { uuidv4 } from "@/types/helpers";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
@@ -38,7 +36,7 @@ import {
   SET_COMPONENT_DATA,
 } from "@/messaging/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
-import adapters from "@/frameworks/adapters";
+import adapters from "@/pageScript/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
 import {
   type ReadPayload,
@@ -52,8 +50,8 @@ import {
   type ReadableComponentAdapter,
   traverse,
   type WriteableComponentAdapter,
-} from "@/frameworks/component";
-import { elementInfo } from "@/contentScript/nativeEditor/frameworks";
+} from "@/pageScript/frameworks/component";
+import { elementInfo } from "@/pageScript/frameworks";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,

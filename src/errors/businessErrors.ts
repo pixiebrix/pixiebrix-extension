@@ -96,6 +96,7 @@ export class InvalidSelectorError extends BusinessError {
 
   /**
    * @param message The error message jQuery creates, example in https://cs.github.com/jquery/jquery/blob/2525cffc42934c0d5c7aa085bc45dd6a8282e840/src/selector.js#L787
+   * @param selector The selector that was invalid
    */
   constructor(message: string, selector: string) {
     // Make the error message more specific than "Syntax error"

@@ -15,24 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import emberAdapter from "./contrib/ember";
-import angularjsAdapter from "@/frameworks/contrib/angularjs";
-import reactAdapter from "./contrib/react";
-import vueAdapter from "./contrib/vue";
-import { type Framework } from "@/messaging/constants";
-import {
-  type ReadableComponentAdapter,
-  type WriteableComponentAdapter,
-} from "@/frameworks/component";
+import { ElementReader } from "@/blocks/readers/ElementReader";
+import { validateUUID } from "@/types/helpers";
 
-const FRAMEWORK_ADAPTERS = new Map<
-  Framework,
-  ReadableComponentAdapter | WriteableComponentAdapter
->([
-  ["react", reactAdapter],
-  ["emberjs", emberAdapter],
-  ["vue", vueAdapter],
-  ["angularjs", angularjsAdapter],
-]);
+const reader = new ElementReader();
 
-export default FRAMEWORK_ADAPTERS;
+describe("ElementReader", () => {
+  test("it produces valid element reference", async () => {
+    const div = document.createElement("div");
+    const { ref } = await reader.read(div);
+    expect(validateUUID(ref)).not.toBeNull();
+  });
+});

@@ -51,7 +51,7 @@ import {
   QuickBarExtensionPoint,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
-import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type QuickBarFormState } from "./formStateTypes";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";

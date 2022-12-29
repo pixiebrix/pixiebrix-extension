@@ -47,7 +47,7 @@ import { insertButton } from "@/contentScript/messenger/api";
 import {
   type ButtonDefinition,
   type ButtonSelectionResult,
-} from "@/contentScript/nativeEditor/types";
+} from "@/contentScript/pageEditor/types";
 import { type ActionFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
@@ -68,6 +68,7 @@ function fromNativeElement(
         type: "menuItem",
         reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
+        targetMode: "document",
       },
       traits: {
         style: {
@@ -90,7 +91,14 @@ function selectExtensionPointConfig(
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, position, template, reader, containerSelector },
+    definition: {
+      isAvailable,
+      position,
+      template,
+      reader,
+      containerSelector,
+      targetMode,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -99,6 +107,7 @@ function selectExtensionPointConfig(
       reader,
       isAvailable: pickBy(isAvailable, identity),
       containerSelector,
+      targetMode,
       position,
       template,
     },

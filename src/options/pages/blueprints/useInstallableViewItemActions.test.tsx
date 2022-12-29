@@ -32,6 +32,7 @@ import {
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -56,7 +57,7 @@ const expectActions = (
     allActions.map((action) => [
       action,
       expectedActions.includes(action)
-        ? expect.toBeFunction()
+        ? expect.not.toBeNil()
         : expect.toBeNil(),
     ])
   );
@@ -373,13 +374,20 @@ describe("useInstallableViewItemActions", () => {
     });
 
     test("published", () => {
-      blueprintItem.sharing.isPublished = true;
+      blueprintItem.sharing.listingId = uuidv4();
 
       const {
         result: { current: actions },
       } = renderHook(() => useInstallableViewItemActions(blueprintItem));
       expectActions(
-        ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
+        [
+          "viewInMarketplaceHref",
+          "viewShare",
+          "uninstall",
+          "viewLogs",
+          "exportBlueprint",
+          "reinstall",
+        ],
         actions
       );
     });

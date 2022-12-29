@@ -78,7 +78,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       return optionsRegistry.get(service.id);
     }
 
-    return genericOptionsFactory(service.schema);
+    return genericOptionsFactory(service.schema, service.uiSchema);
   }, [service]);
 
   const schemaPromise = useMemo(

@@ -47,7 +47,7 @@ import { insertPanel } from "@/contentScript/messenger/api";
 import {
   type DynamicDefinition,
   type PanelSelectionResult,
-} from "@/contentScript/nativeEditor/types";
+} from "@/contentScript/pageEditor/types";
 import { type PanelFormState, type PanelTraits } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

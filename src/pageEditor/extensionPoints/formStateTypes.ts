@@ -16,7 +16,7 @@
  */
 
 import { type NormalizedAvailability } from "@/blocks/types";
-import { type ElementInfo } from "@/contentScript/nativeEditor/types";
+import { type ElementInfo } from "@/pageScript/frameworks";
 import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,
@@ -65,6 +65,10 @@ type ActionExtensionPointState = BaseExtensionPointState & {
     containerSelector: string;
     position?: MenuPosition;
     template: string;
+    /**
+     * @since 1.7.16
+     */
+    targetMode?: "document" | "eventTarget";
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
   };

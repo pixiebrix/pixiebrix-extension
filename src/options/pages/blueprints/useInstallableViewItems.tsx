@@ -132,11 +132,8 @@ function useInstallableViewItems(installables: Installable[]): {
               scope,
               installedExtensions,
             }),
-            isPublished:
-              listingsQuery.data == null
-                ? false
-                : // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
-                  Boolean(listingsQuery.data[packageId]),
+            // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
+            listingId: listingsQuery.data?.[packageId]?.id,
           },
           updatedAt: getUpdatedAt(installable),
           status: getStatus(installable),

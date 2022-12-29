@@ -42,7 +42,6 @@ import {
 import { type JsonObject, type Primitive } from "type-fest";
 import { type ApiVersion, type RegistryId, type SafeString } from "@/core";
 import { type UnknownObject } from "@/types";
-import { type RecipeDefinition } from "@/types/definitions";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
 
@@ -582,13 +581,6 @@ function concatenateTemplateLiteralTag(
 
 export const html = concatenateTemplateLiteralTag;
 export const css = concatenateTemplateLiteralTag;
-
-export function getRecipeById(
-  recipes: RecipeDefinition[],
-  id: RegistryId
-): RecipeDefinition | undefined {
-  return recipes.find((recipe) => recipe.metadata.id === id);
-}
 
 /**
  * Splits a value into a scope and id, based on scope starting with @ and id

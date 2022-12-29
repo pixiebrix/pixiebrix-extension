@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Framework } from "@/messaging/constants";
 import {
   type ExtensionPointConfig,
   type ExtensionPointDefinition,
@@ -31,15 +30,7 @@ import {
   type MenuDefinition,
   type MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
-
-export interface ElementInfo {
-  selectors: string[];
-  framework: Framework;
-  tagName: string;
-  hasData: boolean;
-  parent?: ElementInfo;
-  isMulti?: boolean;
-}
+import { type ElementInfo } from "@/pageScript/frameworks";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
