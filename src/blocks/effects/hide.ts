@@ -49,7 +49,7 @@ export class HideEffect extends Effect {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["selector"]
+    []
   );
 
   async effect(

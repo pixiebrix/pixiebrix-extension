@@ -20,11 +20,17 @@ import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/helpers";
 
+/**
+ * Special prop used to upgrade DOM bricks to be root-aware
+ * @since 1.7.16
+ */
 export const IS_ROOT_AWARE_BRICK_PROPS = {
   isRootAware: {
     description:
       "Whether the brick should run in the context of the target element, or document",
     type: "boolean",
+    // `default: true` only impacts the default the Page Editor supplies. It doesn't impact the
+    // behavior of the runtime/bricks.
     default: true,
   },
 } as const;
@@ -69,5 +75,5 @@ export function $safeFindElementsWithRootMode({
     return $safeFind(selector, root);
   }
 
-  return $safeFind(selector);
+  return $safeFind(selector, document);
 }

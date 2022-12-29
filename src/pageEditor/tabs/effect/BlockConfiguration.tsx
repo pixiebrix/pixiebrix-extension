@@ -40,6 +40,7 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ConfigurationTitle from "./ConfigurationTitle";
+import { inputProperties } from "@/helpers";
 
 const rootModeOptions = [
   { label: "Document", value: "document" },
@@ -75,7 +76,15 @@ const BlockConfiguration: React.FunctionComponent<{
   // If error happens, behavior is undefined.
   const [blockType] = useAsyncState(async () => getType(block), [block]);
 
-  const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
+  const [isRootAware] = useAsyncState(async () => {
+    const inputSchema = inputProperties(block.inputSchema);
+    // Handle DOM bricks that were upgraded to be root-aware
+    if ("isRootAware" in inputSchema) {
+      return Boolean(config.value.config.isRootAware);
+    }
+
+    return block.isRootAware();
+  }, [block, config.value.config.isRootAware]);
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
 
