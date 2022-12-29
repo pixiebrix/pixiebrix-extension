@@ -29,11 +29,9 @@ export const GET_COMPONENT_INFO = "@@pixiebrix/script/GET_COMPONENT_INFO";
 type UNKNOWN_VERSION = null;
 
 export const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
-
-export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];
-
 export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
 
+export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];
 export type Framework = typeof KNOWN_READERS[number];
 
 export interface FrameworkMeta {

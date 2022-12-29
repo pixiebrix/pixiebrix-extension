@@ -134,19 +134,16 @@ function readPathSpec(
   return values;
 }
 
-attachListener(
-  READ_WINDOW,
-  async ({ pathSpec, waitMillis }): Promise<SerializableResponse> => {
-    const factory = () => {
-      const values = readPathSpec(window, pathSpec);
-      return Object.values(values).every((value) => isEmpty(value))
-        ? undefined
-        : values;
-    };
+attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
+  const factory = () => {
+    const values = readPathSpec(window, pathSpec);
+    return Object.values(values).every((value) => isEmpty(value))
+      ? undefined
+      : values;
+  };
 
-    return awaitValue(factory, { waitMillis }) as SerializableResponse;
-  }
-);
+  return awaitValue(factory, { waitMillis }) as SerializableResponse;
+});
 
 async function read<TComponent>(
   adapter: ReadableComponentAdapter<TComponent>,
@@ -223,11 +220,7 @@ async function read<TComponent>(
 
 attachListener(
   GET_COMPONENT_DATA,
-  async ({
-    framework,
-    selector,
-    ...options
-  }: ReadPayload): Promise<SerializableResponse> => {
+  async ({ framework, selector, ...options }: ReadPayload) => {
     if (isEmpty(selector)) {
       // Just warn here, as there's no harm in returning blank data value (e.g., when a load trigger is first
       // added via the page editor)
