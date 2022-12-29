@@ -19,6 +19,8 @@ import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { $safeFind } from "@/helpers";
 import { validateRegistryId } from "@/types/helpers";
+import { getTextNodes } from "@/blocks/effects/replaceText";
+import { escape } from "lodash";
 import sanitize from "@/utils/sanitize";
 
 const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
@@ -27,65 +29,36 @@ const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
  * Recursively wrap text in an element and its children.
  */
 export function wrapText({
-  node,
+  nodes,
   pattern,
   color,
-  visited,
 }: {
-  node: Node;
+  nodes: Node[];
   pattern: string | RegExp;
   color: string;
-  visited: WeakSet<Node>;
 }) {
-  // `ownerDocument` is null for documents
-  const nodeDocument = node.ownerDocument ?? (node as Document);
-  const walker = nodeDocument.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-
-  let currentNode: Node | null;
-
-  const replacements = [];
-
-  while ((currentNode = walker.nextNode())) {
-    if (visited.has(currentNode)) {
-      // Avoid running replaceText on same node twice if selector passed to brick matches multiple nodes
-      // in the same subtree
-      continue;
-    }
-
-    visited.add(currentNode);
-
-    if ((currentNode.parentNode as HTMLElement)?.tagName === "MARK") {
+  for (const textNode of getTextNodes(nodes)) {
+    if ((textNode.parentNode as HTMLElement)?.tagName === "MARK") {
       // Don't highlight text that's already highlighted
       continue;
     }
 
-    const fragment = nodeDocument.createDocumentFragment();
-    const div = nodeDocument.createElement("div");
+    const fragment = textNode.ownerDocument.createDocumentFragment();
+    const div = textNode.ownerDocument.createElement("div");
 
-    const innerHTML = currentNode.textContent.replaceAll(
+    const innerHTML = textNode.textContent.replaceAll(
       pattern,
-      `<mark style="background-color: ${color};">$&</mark>`
+      `<mark style="background-color: ${escape(color)};">$&</mark>`
     );
 
-    if (innerHTML === currentNode.textContent) {
-      // No replacements made, avoid DOM manipulation
+    if (innerHTML === textNode.textContent) {
+      // No replacements made, avoid DOM manipulation for performance
       continue;
     }
 
     div.innerHTML = sanitize(innerHTML);
     fragment.append(...div.childNodes);
-
-    // Can't replace in the treeWalker loop
-    replacements.push({
-      parentNode: currentNode.parentNode,
-      currentNode,
-      fragment,
-    });
-  }
-
-  for (const { parentNode, fragment, currentNode } of replacements) {
-    // eslint-disable-next-line unicorn/prefer-modern-dom-apis -- currentNode is text node not element
-    parentNode.replaceChild(fragment, currentNode);
+    textNode.replaceWith(fragment);
   }
 }
 
@@ -147,17 +120,13 @@ class HighlightText extends Effect {
   ): Promise<void> {
     const $elements = selector ? $safeFind(selector, root) : $(root);
 
-    const visited = new WeakSet<Node>();
     const convertedPattern = isRegex ? new RegExp(pattern, "g") : pattern;
 
-    for (const element of $elements.get()) {
-      wrapText({
-        node: element,
-        pattern: convertedPattern,
-        color,
-        visited,
-      });
-    }
+    wrapText({
+      nodes: $elements.get(),
+      pattern: convertedPattern,
+      color,
+    });
   }
 }
 

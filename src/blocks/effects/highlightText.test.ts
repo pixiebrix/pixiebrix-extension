@@ -184,7 +184,7 @@ describe("ReplaceTextEffect", () => {
     );
   });
 
-  test("sanitize HTML", async () => {
+  test("sanitize color HTML", async () => {
     const document = getDocument("<div>foobar</div>");
     const brick = new HighlightText();
 
@@ -198,7 +198,27 @@ describe("ReplaceTextEffect", () => {
     );
 
     expect(document.body.innerHTML).toEqual(
-      '<div><mark style="background-color:">alert("xss");"&gt;foo</mark>bar</div>'
+      '<div><mark style="background-color: &quot;<script>alert(&quot;xss&quot;)</script>;">foo</mark>bar</div>'
+    );
+  });
+
+  test("sanitize HTML", async () => {
+    const document = getDocument("<div>foobar</div>");
+    document.querySelector("div").textContent = "<script>alert('xss')</script>";
+
+    const brick = new HighlightText();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: ".+",
+        isRegex: true,
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      // The text content was sanitized
+      '<div><mark style="background-color: yellow;"></mark></div>'
     );
   });
 });
