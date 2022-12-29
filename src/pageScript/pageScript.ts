@@ -34,6 +34,7 @@ import {
   SCRIPT_LOADED,
   SEARCH_WINDOW,
   SET_COMPONENT_DATA,
+  type FrameworkAdapter,
 } from "@/pageScript/messenger/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
@@ -48,7 +49,6 @@ import { awaitValue, TimeoutError } from "@/utils";
 import {
   type ReadableComponentAdapter,
   traverse,
-  type WriteableComponentAdapter,
 } from "@/pageScript/frameworks/component";
 import { elementInfo } from "@/pageScript/frameworks";
 import { requireSingleElement } from "@/utils/requireSingleElement";
@@ -235,7 +235,7 @@ attachListener(
       return {};
     }
 
-    const adapter = adapters.get(framework) as ReadableComponentAdapter;
+    const adapter = adapters.get(framework as FrameworkAdapter);
     if (!adapter) {
       throw new Error(`No read adapter available for framework: ${framework}`);
     }
@@ -252,8 +252,8 @@ attachListener(
       throw new Error("No selector provided");
     }
 
-    const adapter = adapters.get(framework) as WriteableComponentAdapter;
-    if (!adapter?.setData) {
+    const adapter = adapters.get(framework as FrameworkAdapter);
+    if (!("setData" in adapter)) {
       throw new Error(`No write adapter available for ${framework}`);
     }
 
