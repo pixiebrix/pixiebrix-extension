@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sleep } from "@/utils";
 import { renderHook } from "@testing-library/react-hooks";
-import { act } from "react-dom/test-utils";
 import useAutoFocus from "./useAutoFocus";
+
+jest.useFakeTimers();
 
 describe("useAutoFocus", () => {
   test("basic usage", async () => {
@@ -46,9 +46,9 @@ describe("useAutoFocus", () => {
     });
 
     expect(ref.current.focus).not.toHaveBeenCalled();
-    await act(async () => sleep(50));
+    jest.advanceTimersByTime(50);
     expect(ref.current.focus).not.toHaveBeenCalled();
-    await act(async () => sleep(100));
+    jest.advanceTimersByTime(100);
     expect(ref.current.focus).toHaveBeenCalled();
   });
 });
