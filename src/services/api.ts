@@ -404,7 +404,7 @@ export const appApi = createApi({
         { type: "StarterBlueprints", id: "LIST" },
       ],
     }),
-    createMilestone: builder.mutation<Milestone, Milestone>({
+    createMilestone: builder.mutation<Milestone, Omit<Milestone, "user">>({
       query: (data) => ({
         url: "/api/me/milestones/",
         method: "post",

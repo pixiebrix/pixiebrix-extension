@@ -106,7 +106,11 @@ const useOnboardingTabs = (
     blueprintsSlice.actions.setActiveTab
   );
   const { data: installableViewItems } = tableInstance;
-  const { data: me, isLoading: isMeLoading, isFetching } = useGetMeQuery();
+  const {
+    data: me,
+    isLoading: isMeLoading,
+    isFetching: isMeFetching,
+  } = useGetMeQuery();
   const { hasMilestone } = useMilestones();
   const { flagOn } = useFlags();
   const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
@@ -142,7 +146,7 @@ const useOnboardingTabs = (
     flagOn("bot-games-event-in-progress");
 
   const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isMeLoading && !isFetching
+    !isStarterBlueprintsLoading && !isMeLoading && !isMeFetching
       ? isFreemiumUser && !hasSomeBlueprintEngagement && !showBotGamesTab
       : false;
 
@@ -154,7 +158,7 @@ const useOnboardingTabs = (
   }, []);
 
   useEffect(() => {
-    if (isStarterBlueprintsLoading || isMeLoading || isFetching) {
+    if (isStarterBlueprintsLoading || isMeLoading || isMeFetching) {
       return;
     }
 
@@ -191,6 +195,7 @@ const useOnboardingTabs = (
     }
   }, [
     isMeLoading,
+    isMeFetching,
     starterBlueprints,
     isStarterBlueprintsLoading,
     activeTab.key,

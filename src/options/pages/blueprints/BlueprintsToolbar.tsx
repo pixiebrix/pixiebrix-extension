@@ -97,7 +97,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
   return (
     <div className="d-flex justify-content-between align-items-center mb-3">
       <h3 className={styles.filterTitle}>{tabContentTitle}</h3>
-      {activeTab.hideToolbar ?? (
+      {!activeTab.hideToolbar && (
         <span className="d-flex align-items-center small">
           <Select
             className="ml-2"
