@@ -24,7 +24,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
