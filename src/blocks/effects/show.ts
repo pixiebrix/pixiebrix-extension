@@ -16,9 +16,12 @@
  */
 
 import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
+import {
+  $safeFindElementsWithRootMode,
+  IS_ROOT_AWARE_BRICK_PROPS,
+} from "@/blocks/rootModeHelpers";
 
 export class ShowEffect extends Effect {
   constructor() {
@@ -35,11 +38,29 @@ export class ShowEffect extends Effect {
         type: "string",
         format: "selector",
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["selector"]
+    []
   );
 
-  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    $safeFind(selector).show();
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  async effect(
+    {
+      selector,
+      isRootAware,
+    }: BlockArg<{ selector?: string; isRootAware?: boolean }>,
+    { root }: BlockOptions
+  ): Promise<void> {
+    const $elements = $safeFindElementsWithRootMode({
+      selector,
+      root,
+      isRootAware,
+      blockId: this.id,
+    });
+
+    $elements.show();
   }
 }

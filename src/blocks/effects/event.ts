@@ -17,7 +17,10 @@
 
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
-import { $safeFind } from "@/helpers";
+import {
+  IS_ROOT_AWARE_BRICK_PROPS,
+  $safeFindElementsWithRootMode,
+} from "@/blocks/rootModeHelpers";
 
 // https://developer.mozilla.org/en-US/docs/Web/Events
 const DOM_EVENTS = [
@@ -67,22 +70,34 @@ export class ElementEvent extends Effect {
         type: "string",
         examples: DOM_EVENTS,
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    required: ["selector", "event"],
+    required: ["event"],
   };
 
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
   async effect(
-    { selector, event }: BlockArg,
-    { logger }: BlockOptions
+    { selector, isRootAware, event }: BlockArg,
+    { logger, root }: BlockOptions
   ): Promise<void> {
-    const $elements = $safeFind(selector);
+    const $elements = $safeFindElementsWithRootMode({
+      selector,
+      isRootAware,
+      root,
+      blockId: this.id,
+    });
 
     if ($elements.length === 0) {
-      logger.debug(`Element not found for selector: ${selector as string}`);
+      logger.debug("No elements found", {
+        selector,
+      });
     } else if ($elements.length > 1) {
-      logger.debug(
-        `Multiple elements found for selector: ${selector as string}`
-      );
+      logger.debug("Multiple elements found", {
+        selector,
+      });
     }
 
     // Trigger the event (without jQuery #1869)
@@ -90,8 +105,12 @@ export class ElementEvent extends Effect {
     // https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
     for (const element of $elements) {
       if (event === "click") {
-        // Trigger a proper MouseEvent on the most common event
-        element.click();
+        if (element instanceof Document) {
+          logger.warn("Cannot call 'click' on document");
+        } else {
+          // Trigger a proper MouseEvent on the most common event
+          element.click();
+        }
       } else {
         element.dispatchEvent(new Event(event, { bubbles: true }));
       }

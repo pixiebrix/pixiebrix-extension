@@ -38,11 +38,9 @@ export class TableReader extends Transformer {
 
   defaultOutputKey = "table";
 
-  required: ["selector"];
-
   inputSchema: Schema = {
     type: "object",
-    required: ["selector"],
+    required: [],
     properties: {
       orientation: {
         type: "string",
@@ -85,15 +83,18 @@ export class TableReader extends Transformer {
     return true;
   }
 
-  async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    const table = requireSingleElement(args.selector, root);
+  async transform(
+    { selector, orientation = "infer" }: BlockArg,
+    { root }: BlockOptions
+  ): Promise<unknown> {
+    const table = selector ? requireSingleElement(selector, root) : root;
 
     if (table instanceof HTMLDListElement) {
       return parseDefinitionList(table);
     }
 
     if (table instanceof HTMLTableElement) {
-      return parseDomTable(table, { orientation: args.orientation });
+      return parseDomTable(table, { orientation });
     }
 
     throw new TypeError(

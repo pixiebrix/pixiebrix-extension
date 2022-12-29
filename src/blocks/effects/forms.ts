@@ -25,7 +25,15 @@ import {
 import { boolean } from "@/utils";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { type RequireExactlyOne } from "type-fest";
-import { BusinessError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
+import {
+  $safeFindElementsWithRootMode,
+  IS_ROOT_AWARE_BRICK_PROPS,
+} from "@/blocks/rootModeHelpers";
 
 type SetValueData = RequireExactlyOne<
   {
@@ -151,6 +159,10 @@ export class SetInputValue extends Effect {
     );
   }
 
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
   inputSchema: Schema = {
     type: "object",
     properties: {
@@ -174,6 +186,7 @@ export class SetInputValue extends Effect {
         },
         minItems: 1,
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
     required: ["inputs"],
   };
@@ -181,11 +194,16 @@ export class SetInputValue extends Effect {
   async effect(
     {
       inputs,
-    }: BlockArg<{ inputs: Array<{ selector: string; value: unknown }> }>,
-    { logger }: BlockOptions
+      isRootAware,
+    }: BlockArg<{
+      inputs: Array<{ selector: string; value: unknown }>;
+      isRootAware?: boolean;
+    }>,
+    { logger, root }: BlockOptions
   ): Promise<void> {
+    const form = isRootAware ? root : document;
     for (const { selector, value } of inputs) {
-      setValue({ selector, value, logger, dispatchEvent: true });
+      setValue({ selector, value, logger, dispatchEvent: true, form });
     }
   }
 }
@@ -220,8 +238,12 @@ export class FormFill extends Effect {
         oneOf: [{ type: "string" }, { type: "boolean" }],
       },
     },
-    required: ["formSelector"],
+    required: [],
   };
+
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
 
   async effect(
     {
@@ -229,10 +251,27 @@ export class FormFill extends Effect {
       fieldNames = {},
       fieldSelectors = {},
       submit = false,
+      isRootAware = false,
     }: BlockArg,
-    { logger }: BlockOptions
+    { logger, root }: BlockOptions
   ): Promise<void> {
-    const $form = $(requireSingleElement(formSelector));
+    const submitRoot = isRootAware ? root : document;
+
+    const $form = $safeFindElementsWithRootMode({
+      selector: formSelector,
+      selectorProp: "formSelector",
+      root,
+      blockId: this.id,
+      isRootAware,
+    });
+
+    if ($form.length === 0) {
+      throw new NoElementsFoundError(formSelector);
+    }
+
+    if ($form.length > 1) {
+      throw new MultipleElementsFoundError(formSelector);
+    }
 
     for (const [name, value] of Object.entries(fieldNames)) {
       setValue({ name, value, logger, dispatchEvent: true });
@@ -245,15 +284,23 @@ export class FormFill extends Effect {
     if (typeof submit === "boolean") {
       if (submit) {
         if (!$form.is("form")) {
+          const form = $form.get(0);
+
+          if (form instanceof Document) {
+            throw new BusinessError(
+              "Can only submit a form element, got document"
+            );
+          }
+
           throw new BusinessError(
-            `Can only submit a form element, got tag ${$form.get(0).tagName}`
+            `Can only submit a form element, got tag ${form.tagName}`
           );
         }
 
         $form.trigger("submit");
       }
     } else if (typeof submit === "string") {
-      const $submit = $(requireSingleElement(submit));
+      const $submit = $(requireSingleElement(submit, submitRoot));
       $submit.trigger("click");
     } else {
       throw new BusinessError("Unexpected argument for property submit");
