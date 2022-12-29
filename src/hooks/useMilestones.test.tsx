@@ -39,7 +39,12 @@ jest.mock("@/services/api", () => ({
 
 const renderUseMilestones = (initialState?: any) => {
   (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-    milestones: initialState?.milestones ?? [],
+    data: {
+      milestones: initialState?.auth?.milestones ?? [],
+    },
+    isFetching: false,
+    isLoading: false,
+    refetch: jest.fn(),
   }));
 
   return renderHook(() => useMilestones(), {

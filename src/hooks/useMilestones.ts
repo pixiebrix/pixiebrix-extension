@@ -57,7 +57,7 @@ function useMilestones(): MilestoneHelpers {
       isLoading,
       refetch,
     };
-  }, [milestones]);
+  }, [milestones, isFetching, isLoading, refetch]);
 }
 
 export default useMilestones;
