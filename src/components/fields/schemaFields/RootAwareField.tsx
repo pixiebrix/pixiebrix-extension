@@ -33,21 +33,22 @@ import { type FormikContextType } from "formik/dist/types";
 const RootAwareField: React.FunctionComponent<
   { formik: FormikContextType<boolean> } & SchemaFieldProps
 > = (props) => {
-  const { name, schema, formik } = props;
+  const { name, formik } = props;
   const value = getIn(formik.values, name);
 
   if (value) {
-    //
+    // Don't show the field if the value is true. (The Page Editor default the value to true)
     return null;
   }
 
+  // The DOM brick is running in legacy mode.
   return (
     <ConnectedFieldTemplate
       disabled
       name={name}
       as={SwitchButtonWidget}
       label={makeLabelForSchemaField(props)}
-      description={schema.description}
+      description="This brick was configured in legacy mode. Selectors will be evaluated over the entire document. Remove and re-add this brick to pass a target element to the brick."
     />
   );
 };
