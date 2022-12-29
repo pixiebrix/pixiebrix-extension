@@ -56,6 +56,7 @@ export function selectUserDataUpdate({
   flags = [],
   partner,
   enforce_update_millis: enforceUpdateMillis,
+  partner_principals: partnerPrincipals = [],
 }: Me): UserDataUpdate {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
@@ -69,6 +70,7 @@ export function selectUserDataUpdate({
     groups,
     partner,
     enforceUpdateMillis,
+    partnerPrincipals,
   };
 }
 

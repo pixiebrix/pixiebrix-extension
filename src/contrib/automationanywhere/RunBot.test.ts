@@ -21,8 +21,15 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories";
 import { type AuthData, type BlockOptions } from "@/core";
-import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
-import { proxyService, getCachedAuthData } from "@/background/messenger/api";
+import {
+  CONTROL_ROOM_OAUTH_SERVICE_ID,
+  CONTROL_ROOM_SERVICE_ID,
+} from "@/services/constants";
+import {
+  proxyService,
+  getCachedAuthData,
+  getUserData,
+} from "@/background/messenger/api";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn().mockResolvedValue({
@@ -31,6 +38,7 @@ jest.mock("@/background/messenger/api", () => ({
     $$proxied: false,
   }),
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
+  getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
 const proxyServiceMock = proxyService as jest.MockedFunction<
@@ -39,6 +47,7 @@ const proxyServiceMock = proxyService as jest.MockedFunction<
 const getCachedAuthDataMock = getCachedAuthData as jest.MockedFunction<
   typeof getCachedAuthData
 >;
+const getUserDataMock = getUserData as jest.MockedFunction<typeof getUserData>;
 
 const brick = new RunBot();
 
@@ -53,14 +62,15 @@ const CE_CONTROL_ROOM_URL =
 const EE_CONTROL_ROOM_URL = "https://custom.dev";
 const FILE_ID = "456";
 const DEVICE_ID = "123";
-const USER_ID = 999;
-const UNATTENDED_USER_ID = 1000;
+const CONTROL_ROOM_USER_ID = 999;
+const UNATTENDED_RUN_AS_USER_ID = 1000;
 const DEPLOYMENT_ID = "789";
 
 describe("Automation Anywhere - RunBot", () => {
   beforeEach(() => {
     proxyServiceMock.mockReset();
     getCachedAuthDataMock.mockReset();
+    getUserDataMock.mockReset();
   });
 
   it("run Community Edition bot", async () => {
@@ -125,7 +135,7 @@ describe("Automation Anywhere - RunBot", () => {
     });
 
     getCachedAuthDataMock.mockResolvedValue({
-      user: { id: USER_ID },
+      user: { id: CONTROL_ROOM_USER_ID },
       _oauthBrand: undefined,
     } as AuthData);
 
@@ -165,7 +175,7 @@ describe("Automation Anywhere - RunBot", () => {
           numOfRunAsUsersToUse: 1,
           overrideDefaultDevice: false,
           poolIds: [],
-          runAsUserIds: [USER_ID],
+          runAsUserIds: [CONTROL_ROOM_USER_ID],
         },
         method: "post",
         url: "/v3/automations/deploy",
@@ -189,7 +199,7 @@ describe("Automation Anywhere - RunBot", () => {
     });
 
     getCachedAuthDataMock.mockResolvedValue({
-      user: { id: USER_ID },
+      user: { id: CONTROL_ROOM_USER_ID },
       _oauthBrand: undefined,
     } as AuthData);
 
@@ -207,7 +217,7 @@ describe("Automation Anywhere - RunBot", () => {
         deviceId: DEVICE_ID,
         fileId: FILE_ID,
         data: {},
-        runAsUserIds: [UNATTENDED_USER_ID],
+        runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
       { logger } as BlockOptions
     );
@@ -228,7 +238,72 @@ describe("Automation Anywhere - RunBot", () => {
           numOfRunAsUsersToUse: 1,
           overrideDefaultDevice: false,
           poolIds: [],
-          runAsUserIds: [UNATTENDED_USER_ID],
+          runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
+        },
+        method: "post",
+        url: "/v3/automations/deploy",
+      }
+    );
+
+    expect(values).toStrictEqual({
+      deploymentId: DEPLOYMENT_ID,
+    });
+  });
+
+  it("runs Enterprise Edition bot in attended mode", async () => {
+    proxyServiceMock.mockResolvedValue({
+      status: 201,
+      statusText: "Created",
+      data: {
+        deploymentId: DEPLOYMENT_ID,
+      },
+      $$proxied: false,
+    });
+
+    getUserDataMock.mockResolvedValue({
+      partnerPrincipals: [
+        {
+          control_room_url: EE_CONTROL_ROOM_URL,
+          control_room_user_id: CONTROL_ROOM_USER_ID,
+        },
+      ],
+    });
+
+    const values = await brick.run(
+      unsafeAssumeValidArg({
+        service: {
+          id: tokenAuthId,
+          proxy: false,
+          serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+          config: {
+            controlRoomUrl: EE_CONTROL_ROOM_URL,
+          },
+        },
+        workspaceType: "public",
+        isAttended: true,
+        fileId: FILE_ID,
+        data: {},
+      }),
+      { logger } as BlockOptions
+    );
+
+    expect(proxyServiceMock).toHaveBeenCalledWith(
+      {
+        config: {
+          controlRoomUrl: EE_CONTROL_ROOM_URL,
+        },
+        id: tokenAuthId,
+        proxy: false,
+        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      },
+      {
+        data: {
+          botInput: {},
+          fileId: FILE_ID,
+          numOfRunAsUsersToUse: 1,
+          overrideDefaultDevice: false,
+          poolIds: [],
+          runAsUserIds: [CONTROL_ROOM_USER_ID],
         },
         method: "post",
         url: "/v3/automations/deploy",
@@ -280,7 +355,7 @@ describe("Automation Anywhere - RunBot", () => {
     });
 
     getCachedAuthDataMock.mockResolvedValue({
-      user: { id: USER_ID },
+      user: { id: CONTROL_ROOM_USER_ID },
       _oauthBrand: undefined,
     } as AuthData);
 
@@ -298,7 +373,7 @@ describe("Automation Anywhere - RunBot", () => {
         deviceId: DEVICE_ID,
         fileId: FILE_ID,
         data: {},
-        runAsUserIds: [UNATTENDED_USER_ID],
+        runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
       { logger } as BlockOptions
@@ -320,7 +395,7 @@ describe("Automation Anywhere - RunBot", () => {
           numOfRunAsUsersToUse: 1,
           overrideDefaultDevice: false,
           poolIds: [],
-          runAsUserIds: [UNATTENDED_USER_ID],
+          runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         },
         method: "post",
         url: "/v3/automations/deploy",

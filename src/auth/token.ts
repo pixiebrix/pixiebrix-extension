@@ -46,6 +46,9 @@ export function removeListener(handler: AuthListener): void {
   remove(listeners, (x) => x === handler);
 }
 
+/**
+ * Read cached PixieBrix authentication data from local storage.
+ */
 export async function readAuthData(): Promise<
   TokenAuthData | Partial<TokenAuthData>
 > {
@@ -137,7 +140,7 @@ export async function isLinked(): Promise<boolean> {
 }
 
 /**
- * Return non-sensitive user profile data.
+ * Return non-sensitive PixieBrix user profile data.
  * @see getExtensionAuth
  */
 export async function getUserData(): Promise<Partial<UserData>> {

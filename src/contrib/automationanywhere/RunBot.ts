@@ -39,8 +39,8 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
-import { isEmpty } from "lodash";
-import { getCachedAuthData } from "@/background/messenger/api";
+import { cloneDeep } from "lodash";
+import { getCachedAuthData, getUserData } from "@/background/messenger/api";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"
@@ -81,6 +81,12 @@ const COMMUNITY_EDITION_PROPERTIES: SchemaProperties = {
 };
 
 export const ENTERPRISE_EDITION_COMMON_PROPERTIES: SchemaProperties = {
+  isAttended: {
+    type: "boolean",
+    description:
+      "Run the bot in attended mode, using the authenticated user's device. Requires an Attended Bot license",
+    default: false,
+  },
   awaitResult: {
     type: "boolean",
     default: false,
@@ -190,26 +196,37 @@ export class RunBot extends Transformer {
       return {};
     }
 
-    const enterpriseBotArgs: EnterpriseBotArgs =
-      args as unknown as EnterpriseBotArgs;
+    const enterpriseBotArgs: EnterpriseBotArgs = cloneDeep(
+      args as unknown as EnterpriseBotArgs
+    );
 
-    let runAsUserIds: number[];
+    let runAsUserIds: number[] = enterpriseBotArgs.runAsUserIds ?? [];
     if (
-      workspaceType === "public" ||
-      !isEmpty(enterpriseBotArgs.runAsUserIds)
-    ) {
-      runAsUserIds = enterpriseBotArgs.runAsUserIds;
-    } else if (
-      workspaceType === "private" &&
+      (enterpriseBotArgs.isAttended || workspaceType === "private") &&
       service.serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID
     ) {
-      throw new PropError(
-        "Running local bots with OAuth2 authentication is not yet supported",
-        this.id,
-        "workspaceType",
-        workspaceType
+      const { partnerPrincipals = [] } = await getUserData();
+
+      const principal = partnerPrincipals.find(
+        (x) => x.control_room_url === service.config.controlRoomUrl
       );
-    } else if (workspaceType === "private" || workspaceType == null) {
+      if (!principal) {
+        throw new PropError(
+          "No OAuth2 principal data found for Control Room",
+          this.id,
+          "isAttended",
+          enterpriseBotArgs.isAttended
+        );
+      }
+
+      runAsUserIds = [principal.control_room_user_id];
+      enterpriseBotArgs.poolIds = [];
+    } else if (
+      (workspaceType === "private" ||
+        workspaceType == null ||
+        enterpriseBotArgs.isAttended) &&
+      service.serviceId === CONTROL_ROOM_SERVICE_ID
+    ) {
       // Get the user id from the cached token data. AA doesn't have any endpoints for retrieving the user id that
       // we could automatically fetch in the Page Editor
       const userData = (await getCachedAuthData(service.id)) as unknown as {
@@ -228,6 +245,7 @@ export class RunBot extends Transformer {
       }
 
       runAsUserIds = [userId];
+      enterpriseBotArgs.poolIds = [];
     }
 
     const deployment = await runEnterpriseBot({
