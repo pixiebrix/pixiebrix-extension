@@ -18,54 +18,56 @@
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { $safeFind } from "@/helpers";
-import { uniq } from "lodash";
+import { validateRegistryId } from "@/types/helpers";
+import { getTextNodes } from "@/blocks/effects/replaceText";
+import { escape } from "lodash";
+import sanitize from "@/utils/sanitize";
 
-// Adapted from https://github.com/refined-github/refined-github/blob/main/source/helpers/get-text-nodes.ts
-export function getTextNodes(roots: Node[]): Text[] {
-  const textNodes: Text[] = [];
-
-  for (const root of roots) {
-    // `ownerDocument` is null for documents
-    const nodeDocument = root.ownerDocument ?? (root as Document);
-    const walker = nodeDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-
-    let node;
-
-    do {
-      node = walker.nextNode();
-
-      if (node) {
-        textNodes.push(node as Text);
-      }
-    } while (node);
-  }
-
-  return uniq(textNodes);
-}
+const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
 
 /**
- * Recursively replace text in an element and its children, without modifying the structure of the document.
+ * Recursively wrap text in an element and its children.
  */
-export function replaceText({
+export function wrapText({
   nodes,
   pattern,
-  replacement,
+  color,
 }: {
   nodes: Node[];
   pattern: string | RegExp;
-  replacement: string;
+  color: string;
 }) {
-  for (const node of getTextNodes(nodes)) {
-    node.textContent = node.textContent.replaceAll(pattern, replacement);
+  for (const textNode of getTextNodes(nodes)) {
+    if ((textNode.parentNode as HTMLElement)?.tagName === "MARK") {
+      // Don't highlight text that's already highlighted
+      continue;
+    }
+
+    const fragment = textNode.ownerDocument.createDocumentFragment();
+    const div = textNode.ownerDocument.createElement("div");
+
+    const innerHTML = textNode.textContent.replaceAll(
+      pattern,
+      `<mark style="background-color: ${escape(color)};">$&</mark>`
+    );
+
+    if (innerHTML === textNode.textContent) {
+      // No replacements made, avoid DOM manipulation for performance
+      continue;
+    }
+
+    div.innerHTML = sanitize(innerHTML);
+    fragment.append(...div.childNodes);
+    textNode.replaceWith(fragment);
   }
 }
 
-class ReplaceTextEffect extends Effect {
+class HighlightText extends Effect {
   constructor() {
     super(
-      "@pixiebrix/html/replace-text",
-      "Replace Text",
-      "Replace text within an HTML document or subtree"
+      highlightId,
+      "Highlight Text",
+      "Highlight text within an HTML document or subtree"
     );
   }
 
@@ -76,10 +78,12 @@ class ReplaceTextEffect extends Effect {
         type: "string",
         description: "A string or regular expression to match",
       },
-      replacement: {
+      color: {
         type: "string",
         description:
-          "A string or replacement pattern: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement",
+          "The highlight color value or hex code: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value",
+        default: "yellow",
+        examples: ["yellow", "red", "green"],
       },
       isRegex: {
         type: "boolean",
@@ -93,7 +97,7 @@ class ReplaceTextEffect extends Effect {
           "An optional JQuery element selector to limit replacement to document subtree(s)",
       },
     },
-    required: ["pattern", "replacement"],
+    required: ["pattern"],
   };
 
   override async isRootAware(): Promise<boolean> {
@@ -103,12 +107,12 @@ class ReplaceTextEffect extends Effect {
   async effect(
     {
       pattern,
-      replacement,
+      color = "yellow",
       selector,
       isRegex = false,
     }: BlockArg<{
       pattern: string;
-      replacement: string;
+      color?: string;
       isRegex?: boolean;
       selector?: string;
     }>,
@@ -118,12 +122,12 @@ class ReplaceTextEffect extends Effect {
 
     const convertedPattern = isRegex ? new RegExp(pattern, "g") : pattern;
 
-    replaceText({
+    wrapText({
       nodes: $elements.get(),
       pattern: convertedPattern,
-      replacement,
+      color,
     });
   }
 }
 
-export default ReplaceTextEffect;
+export default HighlightText;
