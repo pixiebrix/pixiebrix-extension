@@ -36,15 +36,15 @@ function useMilestones(): MilestoneHelpers {
   const milestones = me ? me.milestones : cachedMilestones;
 
   return useMemo(() => {
-    const milestonesByKey = Object.fromEntries(
+    const milestonesByKey = new Map(
       (milestones ?? []).map((milestone) => [milestone.key, milestone])
     );
 
     const getMilestone = (milestoneKey: string) =>
-      milestonesByKey[milestoneKey];
+      milestonesByKey.get(milestoneKey);
 
     const hasMilestone = (milestoneKey: string) =>
-      milestoneKey in milestonesByKey;
+      milestonesByKey.has(milestoneKey);
 
     const hasEveryMilestone = (milestoneKeys: string[]) =>
       milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
