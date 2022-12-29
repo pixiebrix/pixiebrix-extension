@@ -15,16 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sleep } from "@/utils";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useTimeoutState from "./useTimeoutState";
 
-test("useTimeoutState", async () => {
+jest.useFakeTimers();
+
+test("useTimeoutState", () => {
   const { result } = renderHook(() => useTimeoutState(200));
 
   expect(result.current).toEqual(false);
-  await act(async () => sleep(30));
+  jest.advanceTimersByTime(30);
   expect(result.current).toEqual(false);
-  await act(async () => sleep(300));
+  jest.advanceTimersByTime(300);
   expect(result.current).toEqual(true);
 });
