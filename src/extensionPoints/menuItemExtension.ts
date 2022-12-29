@@ -204,6 +204,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return "menuItem";
   }
 
+  public get targetMode(): MenuTargetMode {
+    return "document";
+  }
+
   public override get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
@@ -338,6 +342,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       this.cancelDependencyObservers.delete(extension.id);
     }
+  }
+
+  getPipelineRoot($buttonElement: JQuery): HTMLElement | Document {
+    return document;
   }
 
   getReaderRoot({
@@ -517,6 +525,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         serviceContext,
       });
 
+      // There's no button at this point, so can't use the eventTarget targetMode
+      if (this.targetMode !== "document") {
+        throw new BusinessError(
+          `targetMode ${this.targetMode} not supported for conditional menu items`
+        );
+      }
+
       const initialValues: InitialValues = {
         input,
         serviceContext,
@@ -596,7 +611,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
             ),
             serviceContext: await makeServiceContext(extension.services),
             optionsArgs: extension.optionsArgs,
-            root: document,
+            root: this.getPipelineRoot($menuItem),
           };
 
           await reduceExtensionPipeline(actionConfig, initialValues, {
@@ -828,6 +843,11 @@ export type MenuPosition =
       sibling: string | null;
     };
 
+/**
+ * @since 1.7.16
+ */
+export type MenuTargetMode = "document" | "eventTarget";
+
 export interface MenuDefinition extends ExtensionPointDefinition {
   type: "menuItem";
   template: string;
@@ -844,7 +864,7 @@ export interface MenuDefinition extends ExtensionPointDefinition {
    * @since 1.7.16
    * @see readerSelector
    */
-  targetMode?: "document" | "eventTarget";
+  targetMode?: MenuTargetMode;
 
   defaultOptions?: MenuDefaultOptions;
   shadowDOM?: ShadowDOM;
@@ -925,9 +945,9 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     $buttonElement,
   }: {
     $containerElement: JQuery;
-    $buttonElement: JQuery;
+    $buttonElement: JQuery | null;
   }): HTMLElement | Document {
-    if (this._definition.readerSelector && this._definition.targetMode) {
+    if (this._definition.readerSelector && this.targetMode !== "document") {
       throw new BusinessError(
         "Cannot provide both readerSelector and targetMode"
       );
@@ -957,13 +977,21 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       return $elements.get(0);
     }
 
-    if (this._definition.targetMode === "eventTarget") {
+    if (this.targetMode === "eventTarget") {
       if ($buttonElement == null) {
         throw new BusinessError(
           "eventTarget not supported for buttons with dynamic captions"
         );
       }
 
+      return $buttonElement.get()[0];
+    }
+
+    return document;
+  }
+
+  override getPipelineRoot($buttonElement: JQuery): HTMLElement | Document {
+    if (this.targetMode === "eventTarget") {
       return $buttonElement.get()[0];
     }
 
@@ -980,6 +1008,10 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   override getTemplate(): string {
     return this._definition.template;
+  }
+
+  override get targetMode(): MenuTargetMode {
+    return this._definition.targetMode ?? "document";
   }
 
   protected makeItem(

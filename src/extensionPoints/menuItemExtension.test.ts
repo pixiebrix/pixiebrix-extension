@@ -34,6 +34,11 @@ import {
   tick,
 } from "@/extensionPoints/extensionPointTestUtils";
 import { type BlockPipeline } from "@/blocks/types";
+import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
+
+jest.mock("@/runtime/reducePipeline", () => ({
+  reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),
+}));
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -44,6 +49,8 @@ jest.mock("@/telemetry/logging", () => {
     }),
   };
 });
+
+const reduceExtensionPipelineMock = reduceExtensionPipeline as jest.Mock;
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -86,6 +93,7 @@ const extensionFactory = define<ResolvedExtension>({
 const rootReader = new RootReader();
 
 beforeEach(() => {
+  reduceExtensionPipelineMock.mockClear();
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   blockRegistry.clear();
@@ -96,7 +104,7 @@ beforeEach(() => {
 
 describe("menuItemExtension", () => {
   it.each([["append"], [undefined]])(
-    "can append menu item",
+    "can add menu item with position: %s",
     async (position) => {
       document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
 
@@ -176,6 +184,59 @@ describe("menuItemExtension", () => {
     const buttonRef = getReferenceForElement(document.querySelector("button"));
     expect(rootReader.ref).toEqual(buttonRef);
 
+    expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        root: document.querySelector("button"),
+      }),
+      expect.toBeObject()
+    );
+
+    extensionPoint.uninstall();
+  });
+
+  it("can user reader selector", async () => {
+    document.body.innerHTML = getDocument(
+      '<div id="outer"><div id="toolbar"></div></div>'
+    ).body.innerHTML;
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        readerSelector: "div",
+        containerSelector: "#toolbar",
+      })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    document.querySelector("button").click();
+
+    await tick();
+
+    expect(rootReader.readCount).toEqual(1);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- eslint thinks type is Element
+    const outerRef = getReferenceForElement(
+      document.querySelector("#outer") as HTMLElement
+    );
+    expect(rootReader.ref).toEqual(outerRef);
+
+    expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        // Reader selector only impacts the reader context, not the pipeline context
+        root: document,
+      }),
+      expect.toBeObject()
+    );
+
     extensionPoint.uninstall();
   });
 
@@ -200,13 +261,22 @@ describe("menuItemExtension", () => {
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
 
-      document.querySelector("button").click();
+      expect(reduceExtensionPipelineMock).not.toHaveBeenCalled();
 
+      document.querySelector("button").click();
       await tick();
 
       expect(rootReader.readCount).toEqual(1);
       const documentRef = getReferenceForElement(document);
       expect(rootReader.ref).toEqual(documentRef);
+
+      expect(reduceExtensionPipelineMock).toHaveBeenCalledWith(
+        [],
+        expect.objectContaining({
+          root: document,
+        }),
+        expect.toBeObject()
+      );
 
       extensionPoint.uninstall();
     }

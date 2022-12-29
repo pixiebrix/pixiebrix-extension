@@ -19,22 +19,21 @@ import { uuidv4 } from "@/types/helpers";
 import { type ElementReference } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 
+type ElementOrDocument = HTMLElement | Document;
+
 // Reference cache to ensure same reference is returned across calls for element
 const knownElementReferences = new WeakMap<
-  HTMLElement | Document,
+  ElementOrDocument,
   ElementReference
 >();
-const elementLookup = new Map<
-  ElementReference,
-  WeakRef<HTMLElement | Document>
->();
+const elementLookup = new Map<ElementReference, WeakRef<ElementOrDocument>>();
 
 /**
  * Returns a reference uuid for element. If a reference already exists, it is returned.
  * @param element the element to generate a reference for
  */
 export function getReferenceForElement(
-  element: HTMLElement | Document
+  element: ElementOrDocument
 ): ElementReference {
   let id = knownElementReferences.get(element);
   if (id == null) {
@@ -52,7 +51,7 @@ export function getReferenceForElement(
  */
 export function getElementForReference(
   id: ElementReference
-): HTMLElement | Document {
+): ElementOrDocument {
   const elementReference = elementLookup.get(id);
 
   if (elementReference == null) {
