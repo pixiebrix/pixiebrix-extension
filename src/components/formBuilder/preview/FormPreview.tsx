@@ -18,7 +18,9 @@
 /* eslint-disable security/detect-object-injection */
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { type FieldProps, type IChangeEvent } from "@rjsf/core";
+import validator from "@rjsf/validator-ajv6";
+import { type FieldProps } from "@rjsf/utils";
+import { type IChangeEvent } from "@rjsf/core";
 import {
   type RJSFSchema,
   type SetActiveField,
@@ -163,7 +165,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       schema={previewSchema}
       uiSchema={previewUiSchema}
       onChange={onDataChanged}
-      FieldTemplate={FieldTemplate}
+      validator={validator}
+      templates={{ FieldTemplate }}
     >
       <div>
         {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}

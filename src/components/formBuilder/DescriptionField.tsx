@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type Field } from "@rjsf/core";
+import { type Field } from "@rjsf/utils";
 import cx from "classnames";
 import MarkdownLazy from "@/components/MarkdownLazy";
 

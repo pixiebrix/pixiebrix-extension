@@ -17,6 +17,7 @@
 
 import React, { useEffect } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
+import validator from "@rjsf/validator-ajv6";
 import { useAsyncState } from "@/hooks/common";
 import {
   getFormDefinition,
@@ -118,7 +119,8 @@ const EphemeralForm: React.FC = () => {
           uiSchema={definition.uiSchema}
           fields={fields}
           widgets={uiWidgets}
-          FieldTemplate={FieldTemplate}
+          validator={validator}
+          templates={{ FieldTemplate }}
           onSubmit={({ formData: values }) => {
             void resolveForm(target, nonce, values);
           }}

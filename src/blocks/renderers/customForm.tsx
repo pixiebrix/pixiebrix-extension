@@ -28,6 +28,7 @@ import {
   type UUID,
 } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
+import validator from "@rjsf/validator-ajv6";
 import { type JsonObject } from "type-fest";
 import { dataStore, proxyService } from "@/background/messenger/api";
 import notify from "@/utils/notify";
@@ -83,7 +84,8 @@ const CustomFormComponent: React.FunctionComponent<{
           formData={formData}
           fields={fields}
           widgets={uiWidgets}
-          FieldTemplate={FieldTemplate}
+          validator={validator}
+          templates={{ FieldTemplate }}
           onSubmit={async ({ formData }) => {
             await onSubmit(formData);
           }}

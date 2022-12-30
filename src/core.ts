@@ -20,7 +20,7 @@ import type {
   JSONSchema7Definition,
   JSONSchema7TypeName,
 } from "json-schema";
-import type { UiSchema as StandardUiSchema } from "@rjsf/core";
+import type { UiSchema as StandardUiSchema } from "@rjsf/utils";
 import type { AxiosRequestConfig } from "axios";
 import type { Except, Primitive } from "type-fest";
 import type { ErrorObject } from "serialize-error";

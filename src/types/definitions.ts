@@ -30,7 +30,7 @@ import {
   type UUID,
 } from "@/core";
 import { type Permissions } from "webextension-polyfill";
-import { type UiSchema } from "@rjsf/core";
+import { type UiSchema } from "@rjsf/utils";
 import { pick } from "lodash";
 
 export type EditablePackage = {

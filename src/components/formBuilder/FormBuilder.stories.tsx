@@ -23,7 +23,7 @@ import { action } from "@storybook/addon-actions";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import { type UiSchema } from "@rjsf/core";
+import { type UiSchema } from "@rjsf/utils";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 

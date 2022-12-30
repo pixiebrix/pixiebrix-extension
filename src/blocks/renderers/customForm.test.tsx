@@ -22,6 +22,7 @@ import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
+import validator from "@rjsf/validator-ajv6";
 import {
   normalizeIncomingFormData,
   normalizeOutgoingFormData,
@@ -172,7 +173,8 @@ describe("form data normalization", () => {
         formData={normalizedData}
         fields={fields}
         widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
+        validator={validator}
+        templates={{ FieldTemplate }}
       />
     );
 

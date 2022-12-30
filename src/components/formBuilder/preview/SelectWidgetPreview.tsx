@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WidgetProps } from "@rjsf/core";
+import { type WidgetProps } from "@rjsf/utils";
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
 import { type Schema } from "@/core";
