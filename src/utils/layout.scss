@@ -15,6 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.max-550 {
+  max-width: 550px;
+}
+
+.max-750 {
+  max-width: 750px;
+}
+
+.max-950 {
+  max-width: 950px;
+}
+
 /**
  * App-like layout component that to define scrollable areas in a specific viewport,
  * without relying on hardcoded heights. Not yet compatible with layouts that have
@@ -32,7 +44,6 @@
  *   </div>
  * <body>
  */
-
 .full-height {
   display: flex;
   flex-direction: column;
