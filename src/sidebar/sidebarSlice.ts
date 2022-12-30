@@ -53,6 +53,16 @@ export const emptySidebarState: SidebarState = {
   pendingActivePanel: null,
 };
 
+function eventKeyExists(state: SidebarState, query: string): boolean {
+  return (
+    state.forms.some((x) => mapTabEventKey("form", x) === query) ||
+    state.temporaryPanels.some(
+      (x) => mapTabEventKey("temporaryPanel", x) === query
+    ) ||
+    state.panels.some((x) => mapTabEventKey("panel", x) === query)
+  );
+}
+
 function findNextActiveKey(
   state: SidebarState,
   { extensionId, blueprintId, panelHeading }: ActivatePanelOptions
@@ -125,7 +135,14 @@ const sidebarSlice = createSlice({
   name: "sidebar",
   reducers: {
     selectTab(state, action: PayloadAction<string>) {
-      state.activeKey = action.payload;
+      // We were seeing some automatic calls to selectTab with a stale event key...
+      if (eventKeyExists(state, action.payload)) {
+        state.activeKey = action.payload;
+        // User manually selected a panel, so cancel any pending automatic panel activation
+        state.pendingActivePanel = null;
+      }
+
+      state.activeKey = defaultEventKey(state);
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
     },

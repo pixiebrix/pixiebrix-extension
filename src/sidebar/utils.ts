@@ -20,13 +20,15 @@ import { type UUID } from "@/core";
 
 export function mapTabEventKey(
   entryType: EntryType,
-  entry: { extensionId: UUID } | null
+  // Permanent panels don't have a nonce
+  entry: { nonce?: UUID; extensionId: UUID } | null
 ): string | null {
   if (entry == null) {
     return null;
   }
 
-  return `${entryType}-${entry.extensionId}`;
+  // Prefer nonce so there's unique eventKey for forms and temporary panels from an extension
+  return `${entryType}-${entry.nonce ?? entry.extensionId}`;
 }
 
 /**

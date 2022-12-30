@@ -16,12 +16,10 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { type SidebarEntries, type PanelEntry } from "@/sidebar/types";
+import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
 import { mapTabEventKey } from "@/sidebar/utils";
-import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { type UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
-import { selectEventData } from "@/telemetry/deployments";
 import { Card, CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -45,28 +43,27 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
   onSelectTab,
   onCloseTemporaryTab,
 }) => {
-  const { lookup } = useExtensionMeta();
-
   const onSelect = useCallback(
-    (extensionId: UUID) => {
+    (eventKey: string) => {
       reportEvent("ViewSidePanelPanel", {
-        ...selectEventData(lookup.get(extensionId)),
+        // FIXME: this was wrong, eventKey is not an extensionId
+        // ...selectEventData(lookup.get(extensionId)),
         initialLoad: false,
       });
-      onSelectTab(extensionId);
+      onSelectTab(eventKey);
     },
-    [onSelectTab, lookup]
+    [onSelectTab]
   );
 
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
-        ...selectEventData(lookup.get(activeKey)),
+        // FIXME: this was wrong, eventKey is not an extensionId
+        // ...selectEventData(lookup.get(activeKey)),
         initialLoad: true,
       });
     },
     // Only run on initial mount, other views are handled by onSelect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
