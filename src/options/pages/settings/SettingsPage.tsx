@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./SettingsPage.module.scss";
-
 import React from "react";
 import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
@@ -34,7 +32,7 @@ import { useSelector } from "react-redux";
 const DEBUG = process.env.DEBUG;
 
 const Section: React.FunctionComponent = ({ children }) => (
-  <div className={styles.root}>{children}</div>
+  <div className="mb-4">{children}</div>
 );
 
 const SettingsPage: React.FunctionComponent = () => {
@@ -44,6 +42,7 @@ const SettingsPage: React.FunctionComponent = () => {
 
   return (
     <Page
+      className="max-550"
       icon={faCogs}
       title="Extension Settings"
       description={

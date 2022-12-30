@@ -17,6 +17,7 @@
 
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
 import "./options.scss";
 
 import "@/extensionContext";
