@@ -25,16 +25,15 @@ import blueprintsSlice, {
 import { appApi } from "@/services/api";
 import GetStartedView from "@/options/pages/blueprints/GetStartedView";
 import { Provider } from "react-redux";
-import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { recipesSlice } from "@/recipes/recipesSlice";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 
 export default {
   title: "Blueprints/GetStartedView",
   component: GetStartedView,
-} as ComponentMeta<typeof OnboardingView>;
+} as ComponentMeta<typeof GetStartedView>;
 
 function optionsStore(initialState?: any) {
   return configureStore({
