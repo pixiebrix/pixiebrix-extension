@@ -136,13 +136,10 @@ const sidebarSlice = createSlice({
   reducers: {
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
-      if (eventKeyExists(state, action.payload)) {
-        state.activeKey = action.payload;
-        // User manually selected a panel, so cancel any pending automatic panel activation
-        state.pendingActivePanel = null;
-      }
+      state.activeKey = eventKeyExists(state, action.payload)
+        ? action.payload
+        : defaultEventKey(state);
 
-      state.activeKey = defaultEventKey(state);
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
     },
