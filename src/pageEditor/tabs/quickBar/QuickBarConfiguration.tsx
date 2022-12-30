@@ -85,8 +85,8 @@ const QuickBarConfiguration: React.FC<{
         blankValue="eventTarget"
         description={
           <p>
-            Use&nbsp;<code>eventTarget</code> to pass the target of the
-            right-click as the action root. Use&nbsp;
+            Use&nbsp;<code>eventTarget</code> to pass the focused element as the
+            action root. Use&nbsp;
             <code>document</code> to pass the document as the action root.
           </p>
         }

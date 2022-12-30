@@ -43,6 +43,8 @@ import { DisableEffect } from "./disable";
 import { EnableEffect } from "./enable";
 import InsertHtml from "@/blocks/effects/insertHtml";
 import CustomEventEffect from "@/blocks/effects/customEvent";
+import ReplaceTextEffect from "@/blocks/effects/replaceText";
+import HighlightText from "@/blocks/effects/highlightText";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -78,6 +80,8 @@ function registerEffects(): void {
   registerBlock(new DisableEffect());
   registerBlock(new InsertHtml());
   registerBlock(new CustomEventEffect());
+  registerBlock(new ReplaceTextEffect());
+  registerBlock(new HighlightText());
 }
 
 export default registerEffects;

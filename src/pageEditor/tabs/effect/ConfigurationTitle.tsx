@@ -34,6 +34,7 @@ import { Button } from "react-bootstrap";
 import { actions as pageEditorActions } from "@/pageEditor/slices/editorSlice";
 import useReduxState from "@/hooks/useReduxState";
 import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const DOCUMENT_BODY_PATH = "config.body";
 
@@ -138,7 +139,7 @@ const ConfigurationTitle: React.FunctionComponent = () => {
     <div className={styles.root}>
       {title}
       <a
-        href={`https://www.pixiebrix.com/marketplace/${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+        href={`${MARKETPLACE_URL}${listing.id}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
         target="_blank"
         rel="noreferrer"
         className={styles.documentationLink}

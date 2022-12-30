@@ -34,7 +34,7 @@ const Effect: React.FunctionComponent<{
   const [prev, setPrev] = useState(values);
 
   const [debounced] = useDebounce(values, delayMillis, {
-    leading: true,
+    leading: false,
     trailing: true,
   });
 

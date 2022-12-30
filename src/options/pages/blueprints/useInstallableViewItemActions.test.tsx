@@ -32,6 +32,7 @@ import {
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -56,7 +57,7 @@ const expectActions = (
     allActions.map((action) => [
       action,
       expectedActions.includes(action)
-        ? expect.toBeFunction()
+        ? expect.not.toBeNil()
         : expect.toBeNil(),
     ])
   );
@@ -100,6 +101,10 @@ const installableItemFactory = ({
     },
     status,
   } as InstallableViewItem);
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 describe("useInstallableViewItemActions", () => {
   test("cloud extension", () => {
@@ -333,26 +338,58 @@ describe("useInstallableViewItemActions", () => {
     expectActions(["viewLogs"], actions);
   });
 
-  test("public blueprint is not publishable", () => {
-    mockHooks();
-    const blueprintItem = {
-      installable: recipeFactory({
-        sharing: { public: true, organizations: [] },
-      }),
-      sharing: {
-        source: {
-          type: "Personal",
-        },
-      },
-      status: "Active",
-    } as InstallableViewItem;
+  describe("public blueprint", () => {
+    let blueprintItem: InstallableViewItem;
+    beforeEach(() => {
+      mockHooks();
 
-    const {
-      result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-    expectActions(
-      ["viewShare", "uninstall", "viewLogs", "exportBlueprint", "reinstall"],
-      actions
-    );
+      blueprintItem = {
+        installable: recipeFactory({
+          sharing: { public: true, organizations: [] },
+        }),
+        sharing: {
+          source: {
+            type: "Personal",
+          },
+        },
+        status: "Active",
+      } as InstallableViewItem;
+    });
+
+    test("pending publish", () => {
+      const {
+        result: { current: actions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      expectActions(
+        [
+          "viewPublish",
+          "viewShare",
+          "uninstall",
+          "viewLogs",
+          "exportBlueprint",
+          "reinstall",
+        ],
+        actions
+      );
+    });
+
+    test("published", () => {
+      blueprintItem.sharing.listingId = uuidv4();
+
+      const {
+        result: { current: actions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      expectActions(
+        [
+          "viewInMarketplaceHref",
+          "viewShare",
+          "uninstall",
+          "viewLogs",
+          "exportBlueprint",
+          "reinstall",
+        ],
+        actions
+      );
+    });
   });
 });

@@ -1140,6 +1140,15 @@ export interface components {
         id: string;
         name: string;
       }[];
+      partner_principals?: readonly {
+        /**
+         * Format: int64
+         * @description AA unique identifier used to interact with the Control Room user via the AA API
+         */
+        control_room_user_id: number;
+        /** Format: uri */
+        control_room_url?: string;
+      }[];
       is_onboarded?: boolean;
       milestones: {
         key: string;

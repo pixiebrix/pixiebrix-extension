@@ -102,11 +102,13 @@ async function ensurePermissions(element: FormState) {
 /**
  * @param element the page editor formik state
  * @param pushToCloud true to save a copy of the extension to the user's account
+ * @param checkPermissions should the permissions be checked before saving? Defaults to true.
  * @returns errorMessage an error message, or null if no error error occurred
  */
 type CreateCallback = (config: {
   element: FormState;
   pushToCloud: boolean;
+  checkPermissions?: boolean;
 }) => Promise<string | null>;
 
 function onStepError(error: unknown, step: string): string {
@@ -131,18 +133,21 @@ function useCreate(): CreateCallback {
   const saveElement = useCallback(
     async (
       element: FormState,
-      pushToCloud: boolean
+      pushToCloud: boolean,
+      checkPermissions = true
     ): Promise<string | null> => {
-      // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
-      void ensurePermissions(element).catch((error) => {
-        console.error("Error checking/enabling permissions", { error });
-        notify.warning({
-          message:
-            "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
-          error,
-          reportError: true,
+      if (checkPermissions) {
+        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
+        void ensurePermissions(element).catch((error) => {
+          console.error("Error checking/enabling permissions", { error });
+          notify.warning({
+            message:
+              "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+            error,
+            reportError: true,
+          });
         });
-      });
+      }
 
       const adapter = ADAPTERS.get(element.type);
 
@@ -215,9 +220,9 @@ function useCreate(): CreateCallback {
   );
 
   return useCallback(
-    async ({ element, pushToCloud }): Promise<string | null> => {
+    async ({ element, pushToCloud, checkPermissions }) => {
       try {
-        return await saveElement(element, pushToCloud);
+        return await saveElement(element, pushToCloud, checkPermissions);
       } catch (error) {
         console.error("Error saving extension", { error });
         notify.error({

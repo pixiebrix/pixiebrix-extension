@@ -44,9 +44,9 @@ jest.mock("@/store/optionsStore", () => ({
 }));
 
 jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: jest.fn(() => ({
-    data: [],
-  })),
+  useGetMarketplaceListingsQuery: jest
+    .fn()
+    .mockReturnValue({ data: {}, isLoading: false }),
   useGetDatabasesQuery: jest.fn(() => ({
     data: [],
   })),

@@ -22,6 +22,7 @@ import workshopImage from "@img/workshop.svg";
 import { Col, Container, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 import useFlags from "@/hooks/useFlags";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 export const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>
@@ -73,11 +74,7 @@ export const OnboardingContent: React.FunctionComponent = () => (
         </p>
         <p>
           Visit the{" "}
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
             PixieBrix Marketplace
           </a>{" "}
           for ideas.

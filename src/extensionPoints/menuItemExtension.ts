@@ -74,6 +74,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
 import {
+  BusinessError,
   CancelError,
   MultipleElementsFoundError,
   NoElementsFoundError,
@@ -201,6 +202,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   public get kind(): "menuItem" {
     return "menuItem";
+  }
+
+  public get targetMode(): MenuTargetMode {
+    return "document";
   }
 
   public override get defaultOptions(): { caption: string } {
@@ -339,7 +344,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  getReaderRoot(_$containerElement: JQuery): HTMLElement | Document {
+  getPipelineRoot($buttonElement: JQuery): HTMLElement | Document {
+    return document;
+  }
+
+  getReaderRoot({
+    $containerElement,
+    $buttonElement,
+  }: {
+    $containerElement: JQuery;
+    $buttonElement: JQuery;
+  }): HTMLElement | Document {
     return document;
   }
 
@@ -510,6 +525,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         serviceContext,
       });
 
+      // There's no button at this point, so can't use the eventTarget targetMode
+      if (this.targetMode !== "document") {
+        throw new BusinessError(
+          `targetMode ${this.targetMode} not supported for conditional menu items`
+        );
+      }
+
       const initialValues: InitialValues = {
         input,
         serviceContext,
@@ -581,10 +603,15 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           const reader = await this.defaultReader();
 
           const initialValues: InitialValues = {
-            input: await reader.read(this.getReaderRoot($menu)),
+            input: await reader.read(
+              this.getReaderRoot({
+                $containerElement: $menu,
+                $buttonElement: $menuItem,
+              })
+            ),
             serviceContext: await makeServiceContext(extension.services),
             optionsArgs: extension.optionsArgs,
-            root: document,
+            root: this.getPipelineRoot($menuItem),
           };
 
           await reduceExtensionPipeline(actionConfig, initialValues, {
@@ -759,7 +786,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           // Wrap in rejectOnCancelled because if the reader takes a long time to run, the user may
           // navigate away from the page before the reader comes back.
           ctxtPromise = rejectOnCancelled(
-            reader.read(this.getReaderRoot($(menu))),
+            reader.read(
+              this.getReaderRoot({
+                $containerElement: $(menu),
+                $buttonElement: null,
+              })
+            ),
             isNavigationCancelled
           );
         }
@@ -811,12 +843,29 @@ export type MenuPosition =
       sibling: string | null;
     };
 
+/**
+ * @since 1.7.16
+ */
+export type MenuTargetMode = "document" | "eventTarget";
+
 export interface MenuDefinition extends ExtensionPointDefinition {
   type: "menuItem";
   template: string;
   position?: MenuPosition;
   containerSelector: string;
+  /**
+   * Selector passed to `.parents()` to determine the reader context. Must match exactly one element.
+   * See https://api.jquery.com/parents/
+   * @deprecated use targetMode and the Traverse Elements brick instead
+   */
   readerSelector?: string;
+  /**
+   * The element to pass as the root to the readers and extension (default="document")
+   * @since 1.7.16
+   * @see readerSelector
+   */
+  targetMode?: MenuTargetMode;
+
   defaultOptions?: MenuDefaultOptions;
   shadowDOM?: ShadowDOM;
 }
@@ -891,7 +940,19 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     }
   }
 
-  override getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+  override getReaderRoot({
+    $containerElement,
+    $buttonElement,
+  }: {
+    $containerElement: JQuery;
+    $buttonElement: JQuery | null;
+  }): HTMLElement | Document {
+    if (this._definition.readerSelector && this.targetMode !== "document") {
+      throw new BusinessError(
+        "Cannot provide both readerSelector and targetMode"
+      );
+    }
+
     const selector = this._definition.readerSelector;
     if (selector) {
       if ($containerElement.length > 1) {
@@ -916,6 +977,24 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       return $elements.get(0);
     }
 
+    if (this.targetMode === "eventTarget") {
+      if ($buttonElement == null) {
+        throw new BusinessError(
+          "eventTarget not supported for buttons with dynamic captions"
+        );
+      }
+
+      return $buttonElement.get()[0];
+    }
+
+    return document;
+  }
+
+  override getPipelineRoot($buttonElement: JQuery): HTMLElement | Document {
+    if (this.targetMode === "eventTarget") {
+      return $buttonElement.get()[0];
+    }
+
     return document;
   }
 
@@ -929,6 +1008,10 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   override getTemplate(): string {
     return this._definition.template;
+  }
+
+  override get targetMode(): MenuTargetMode {
+    return this._definition.targetMode ?? "document";
   }
 
   protected makeItem(

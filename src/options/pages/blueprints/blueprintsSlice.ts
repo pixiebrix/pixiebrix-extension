@@ -19,6 +19,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Filters, type SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type InstallableViewItem } from "./blueprintsTypes";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 type View = "list" | "grid";
 
@@ -78,7 +79,7 @@ const blueprintsSlice = createSlice({
 
 export const persistBlueprintsConfig = {
   key: "blueprintsOptions",
-  storage: localStorage,
+  storage: localStorage as StorageInterface,
 };
 
 export default blueprintsSlice;

@@ -27,6 +27,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/core";
 import { useRecipe } from "@/recipes/recipesHooks";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;
@@ -155,7 +156,7 @@ const GetStartedView: React.VoidFunctionComponent<{
             Visit the{" "}
             <ExternalLink
               linkText="PixieBrix Marketplace"
-              url="https://www.pixiebrix.com/marketplace/"
+              url={MARKETPLACE_URL}
             />{" "}
             for ideas.
           </p>

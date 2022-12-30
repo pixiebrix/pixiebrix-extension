@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeEmptyValues, selectIsAvailable } from "./base";
+import {
+  getImplicitReader,
+  removeEmptyValues,
+  selectIsAvailable,
+} from "./base";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {
@@ -80,4 +85,37 @@ describe("selectIsAvailable", () => {
     expect(normalized.selectors).toBeUndefined();
     expect(normalized.urlPatterns).toBeUndefined();
   });
+});
+
+describe("getImplicitReader", () => {
+  it.each([
+    ["menuItem"],
+    ["quickBar"],
+    ["contextMenu"],
+    ["trigger"],
+    ["panel"],
+    ["sidePanel"],
+  ])("includes metadata reader for %s", (type: ExtensionPointType) => {
+    expect(getImplicitReader(type)).toContainEqual(
+      "@pixiebrix/document-metadata"
+    );
+  });
+
+  it.each([["menuItem"], ["quickBar"], ["contextMenu"], ["trigger"]])(
+    "includes element reader for %s",
+    (type: ExtensionPointType) => {
+      expect(getImplicitReader(type)).toContainEqual({
+        element: "@pixiebrix/html/element",
+      });
+    }
+  );
+
+  it.each([["panel"], ["sidePanel"]])(
+    "does not include element reader for %s",
+    (type: ExtensionPointType) => {
+      expect(getImplicitReader(type)).not.toContainEqual({
+        element: "@pixiebrix/html/element",
+      });
+    }
+  );
 });
