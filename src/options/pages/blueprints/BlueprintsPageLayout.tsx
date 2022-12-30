@@ -95,6 +95,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableGroupBy: true,
     disableFilters: true,
     disableGlobalFilter: true,
+    sortInverted: true,
   },
   {
     Header: "Status",

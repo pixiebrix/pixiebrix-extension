@@ -146,15 +146,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
               }}
             >
               <FontAwesomeIcon
-                icon={
-                  sortBy[0].id === "updatedAt"
-                    ? sortBy[0].desc
-                      ? faSortAmountDownAlt
-                      : faSortAmountUpAlt
-                    : sortBy[0].desc
-                    ? faSortAmountUpAlt
-                    : faSortAmountDownAlt
-                }
+                icon={sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt}
                 size="lg"
               />
             </Button>
