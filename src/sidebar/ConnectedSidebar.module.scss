@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/themes/colors";
+
 // Due to design system inconsistencies,
 // we have to override our primary purple color
 // for the PixieBrix theme
 .themeColorOverride {
-  color: #6562aa;
+  color: $N800;
 
   &:hover {
-    color: #4d4b8b;
-    background-color: #d1c2d7;
+    color: $N300;
   }
 }
 
