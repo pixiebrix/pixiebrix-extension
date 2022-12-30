@@ -50,7 +50,7 @@ const PermissionsPane: React.FunctionComponent = () => {
   );
 
   return (
-    <Centered vertically={true}>
+    <Centered vertically>
       <p>
         <AsyncButton onClick={onRequestPermission} className="btn-">
           <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on {siteLabel}
