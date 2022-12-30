@@ -31,9 +31,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               >
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myStr"
+                  for="myBool"
                 >
-                  myStr
+                  myBool
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -46,8 +46,8 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                     >
                       <input
                         class="form-control"
-                        id="myStr"
-                        name="myStr"
+                        id="myBool"
+                        name="myBool"
                         readonly=""
                         value=""
                       />
@@ -55,7 +55,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                     <div
                       class="dropdown dropdown"
                       data-test-selected="Exclude"
-                      data-testid="toggle-myStr"
+                      data-testid="toggle-myBool"
                     >
                       <button
                         aria-expanded="false"
@@ -105,55 +105,6 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                       class="dropdown dropdown"
                       data-test-selected="Exclude"
                       data-testid="toggle-myNum"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myBool"
-                >
-                  myBool
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myBool"
-                        name="myBool"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myBool"
                     >
                       <button
                         aria-expanded="false"
@@ -252,6 +203,55 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                       class="dropdown dropdown"
                       data-test-selected="Exclude"
                       data-testid="toggle-myObject"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="myStr"
+                >
+                  myStr
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="myStr"
+                        name="myStr"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-myStr"
                     >
                       <button
                         aria-expanded="false"
