@@ -29,9 +29,10 @@ import OnboardingView from "@/options/pages/blueprints/onboardingView/Onboarding
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { recipesSlice } from "@/recipes/recipesSlice";
+import { RecipeDefinition } from "@/types/definitions";
 
 export default {
-  title: "Onboarding/GetStartedView",
+  title: "Blueprints/GetStartedView",
   component: GetStartedView,
 } as ComponentMeta<typeof OnboardingView>;
 
@@ -55,8 +56,32 @@ function optionsStore(initialState?: any) {
   });
 }
 
+const testRecipe = {
+  metadata: {
+    id: "@pixiebrix/test-blueprint",
+    name: "Test Blueprint",
+  },
+  extensionPoints: [],
+} as RecipeDefinition;
+
 const Template: ComponentStory<typeof GetStartedView> = (args) => (
-  <Provider store={optionsStore({ auth: { milestones: [] } })}>
+  <Provider
+    store={optionsStore({
+      auth: {
+        milestones: [
+          {
+            key: "first_time_public_blueprint_install",
+            metadata: { blueprintId: testRecipe.metadata.id },
+          },
+        ],
+      },
+      recipes: {
+        recipes: [testRecipe],
+        isUninitialized: false,
+        isCacheUninitialized: false,
+      },
+    })}
+  >
     <GetStartedView {...args} />
   </Provider>
 );
@@ -67,12 +92,26 @@ Default.args = {
   height: 500,
 };
 
-Default.parameters = {
+export const ActivateBlueprint = Template.bind({});
+ActivateBlueprint.args = {
+  width: 800,
+  height: 500,
+};
+
+ActivateBlueprint.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", (request, result, context) =>
-        // State is blank for unauthenticated users
-        result(context.json({}))
+      rest.get("/api/marketplace/listings/", (request, result, context) =>
+        result(
+          context.json([
+            {
+              package: {
+                name: testRecipe.metadata.id,
+                verbose_name: testRecipe.metadata.name,
+              },
+            },
+          ])
+        )
       ),
     ],
   },
