@@ -172,12 +172,15 @@ const sidebarSlice = createSlice({
     ) {
       const { panel } = action.payload;
 
-      const [existingPanels, otherTemporaryPanels] = partition(
-        state.temporaryPanels,
-        (x) => x.extensionId === panel.extensionId
-      );
+      const [existingExtensionTemporaryPanels, otherTemporaryPanels] =
+        partition(
+          state.temporaryPanels,
+          (x) => x.extensionId === panel.extensionId
+        );
 
-      void cancelPanels(existingPanels.map((panel) => panel.nonce));
+      void cancelPanels(
+        existingExtensionTemporaryPanels.map((panel) => panel.nonce)
+      );
 
       state.temporaryPanels = [...otherTemporaryPanels, panel];
       state.activeKey = mapTabEventKey("temporaryPanel", panel);
@@ -185,16 +188,18 @@ const sidebarSlice = createSlice({
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
 
-      const originalLength = state.temporaryPanels.length;
       state.temporaryPanels = state.temporaryPanels.filter(
         (panel) => panel.nonce !== nonce
       );
 
       void resolvePanels([nonce]);
 
-      // A panel was actually removed. The removeTemporary panel action get called via the cancelPanels
-      // call in addTemporaryPanel
-      if (originalLength !== state.temporaryPanels.length) {
+      // Only update the active panel if the panel needs to change
+      // Temporary panels use nonce instead of extensionId, so can pass null for extensionId
+      if (
+        state.activeKey ===
+        mapTabEventKey("temporaryPanel", { nonce, extensionId: undefined })
+      ) {
         state.activeKey = defaultEventKey(state);
       }
     },

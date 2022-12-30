@@ -19,6 +19,14 @@ import { type SidebarEntries, type EntryType } from "@/sidebar/types";
 import { type UUID } from "@/core";
 
 export function mapTabEventKey(
+  type: "panel",
+  entry: { extensionId: UUID } | null
+): string | null;
+export function mapTabEventKey(
+  type: "form" | "temporaryPanel",
+  entry: { nonce?: UUID; extensionId?: UUID } | null
+): string | null;
+export function mapTabEventKey(
   entryType: EntryType,
   // Permanent panels don't have a nonce
   entry: { nonce?: UUID; extensionId: UUID } | null
