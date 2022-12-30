@@ -63,7 +63,11 @@ export async function cancelTemporaryPanels(nonces: UUID[]) {
   expectContext("contentScript");
 
   for (const nonce of nonces) {
-    panels.get(nonce)?.reject(new CancelError("Temporary panel was replaced"));
+    panels
+      .get(nonce)
+      ?.reject(
+        new CancelError("Temporary panel was replaced with another panel")
+      );
     panels.delete(nonce);
   }
 }

@@ -147,7 +147,9 @@ export default function registerMessenger(): void {
     FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,
     FORM_CANCEL: cancelForm,
+
     TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
+    TEMPORARY_PANEL_CANCEL: cancelTemporaryPanels,
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
