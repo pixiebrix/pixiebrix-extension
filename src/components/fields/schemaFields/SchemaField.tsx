@@ -50,8 +50,8 @@ const SchemaField: SchemaFieldComponent = (props) => {
   }
 
   if (props.name.endsWith(".isRootAware")) {
-    // Hide the isRootAware field. The field was introduced for backward compatibility when upgrading DOM
-    // bricks to be root-aware.
+    // Hide the isRootAware field if rendered as part of config.isRootAware. The field was introduced for
+    // backward compatibility when upgrading DOM bricks to be root-aware.
     return <RootAwareField {...props} />;
   }
 

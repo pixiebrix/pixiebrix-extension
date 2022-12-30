@@ -443,4 +443,48 @@ describe("SchemaField", () => {
       await expectToggleOptions(container, expectedOptions);
     }
   );
+
+  test("don't render truthy root aware field", async () => {
+    const { container } = render(
+      <Formik
+        onSubmit={jest.fn()}
+        initialValues={{ apiVersion: "v3", config: { isRootAware: true } }}
+      >
+        <SchemaField
+          name="config.isRootAware"
+          schema={{
+            type: "boolean",
+          }}
+        />
+      </Formik>
+    );
+
+    // Renders no HTML element
+    expect(container.querySelector(".switch")).toBeNull();
+    await expectToggleOptions(container, []);
+  });
+
+  test.each([[undefined], [false]])(
+    "render root aware field with value %s",
+    async (value) => {
+      const { container } = render(
+        <Formik
+          onSubmit={jest.fn()}
+          initialValues={{ apiVersion: "v3", config: { isRootAware: value } }}
+        >
+          <SchemaField
+            name="config.isRootAware"
+            isRequired
+            schema={{
+              type: "boolean",
+            }}
+          />
+        </Formik>
+      );
+
+      // Renders switch HTML element
+      expect(container.querySelector(".switch")).not.toBeNull();
+      await expectToggleOptions(container, []);
+    }
+  );
 });
