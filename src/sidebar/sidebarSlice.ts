@@ -25,7 +25,11 @@ import {
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/core";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
-import { cancelForm, closeTemporaryPanel } from "@/contentScript/messenger/api";
+import {
+  cancelForm,
+  cancelTemporaryPanel,
+  closeTemporaryPanel,
+} from "@/contentScript/messenger/api";
 import { partition, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 
@@ -63,6 +67,13 @@ function findNextActiveKey(
       return mapTabEventKey("form", extensionForm);
     }
 
+    const extensionTemporaryPanel = state.temporaryPanels.find(
+      (x) => x.extensionId === extensionId
+    );
+    if (extensionTemporaryPanel) {
+      return mapTabEventKey("temporaryPanel", extensionTemporaryPanel);
+    }
+
     const extensionPanel = state.panels.find(
       (x) => x.extensionId === extensionId
     );
@@ -97,6 +108,11 @@ function findNextActiveKey(
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   cancelForm(topLevelFrame, ...forms);
+}
+
+async function cancelPanels(nonces: UUID[]): Promise<void> {
+  const topLevelFrame = await getTopLevelFrame();
+  cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
 async function resolvePanels(nonces: UUID[]): Promise<void> {
@@ -147,18 +163,26 @@ const sidebarSlice = createSlice({
         (x) => x.extensionId === panel.extensionId
       );
 
-      void resolvePanels(existingPanels.map((panel) => panel.nonce));
+      void cancelPanels(existingPanels.map((panel) => panel.nonce));
 
       state.temporaryPanels = [...otherTemporaryPanels, panel];
       state.activeKey = mapTabEventKey("temporaryPanel", panel);
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
+
+      const originalLength = state.temporaryPanels.length;
       state.temporaryPanels = state.temporaryPanels.filter(
         (panel) => panel.nonce !== nonce
       );
-      state.activeKey = defaultEventKey(state);
+
       void resolvePanels([nonce]);
+
+      // A panel was actually removed. The removeTemporary panel action get called via the cancelPanels
+      // call in addTemporaryPanel
+      if (originalLength !== state.temporaryPanels.length) {
+        state.activeKey = defaultEventKey(state);
+      }
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar

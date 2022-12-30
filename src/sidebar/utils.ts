@@ -30,13 +30,25 @@ export function mapTabEventKey(
 }
 
 /**
- * Return the default tab to show. Give preference to the most recent ephemeral form.
+ * Return the default tab to show.
+ *
+ * Give preference to:
+ * - Most recent ephemeral form
+ * - Most recent temporary panel
+ * - First panel
  */
 export function defaultEventKey({
   forms = [],
   panels = [],
+  temporaryPanels = [],
 }: SidebarEntries): string | null {
-  return forms.length > 0
-    ? mapTabEventKey("form", forms.at(-1))
-    : mapTabEventKey("panel", panels[0]);
+  if (forms.length > 0) {
+    return mapTabEventKey("form", forms.at(-1));
+  }
+
+  if (temporaryPanels.length > 0) {
+    return mapTabEventKey("temporaryPanel", temporaryPanels.at(-1));
+  }
+
+  return mapTabEventKey("panel", panels[0]);
 }
