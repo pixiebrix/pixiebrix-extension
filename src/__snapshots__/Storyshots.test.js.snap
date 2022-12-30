@@ -5920,6 +5920,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         >
           <div
             className="my-1"
+            id="root-title"
           >
             <h5>
               A form
@@ -5933,10 +5934,14 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               }
             />
           </div>
-          <div
-            className="field-description"
-            id="root-description"
-          />
+          <div>
+            <div
+              className="mb-3"
+              id="root-description"
+            >
+              A form example with _(you can use markdown)_
+            </div>
+          </div>
           <div
             className="p-0 container-fluid"
           >
@@ -5960,29 +5965,21 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        First name
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_firstName"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value="Chuck"
-                      />
-                    </div>
+                    <input
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_firstName"
+                      name="root_firstName"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value="Chuck"
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6011,29 +6008,22 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Age
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_age"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="integer"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_age"
+                      name="root_age"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      step={1}
+                      type="number"
+                      value=""
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6062,29 +6052,21 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Telephone
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_telephone"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_telephone"
+                      name="root_telephone"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value=""
+                    />
                   </div>
                 </div>
               </div>

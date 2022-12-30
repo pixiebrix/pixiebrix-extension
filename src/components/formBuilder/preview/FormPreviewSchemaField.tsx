@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
+import { getDefaultRegistry } from "@rjsf/core";
 import React from "react";
 import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
 import { type SchemaDefinition } from "@/core";
 
-const RjsfSchemaField = RjsfTheme.fields.SchemaField;
+const RjsfSchemaField = getDefaultRegistry().fields.SchemaField;
 
 /**
  * A base field used by RJSF to render a field preview.

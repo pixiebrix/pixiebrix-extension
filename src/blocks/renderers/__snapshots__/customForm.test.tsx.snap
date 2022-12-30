@@ -22,22 +22,14 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
-              <div
-                class="mb-0 form-group"
-              >
-                <label
-                  class="form-label"
-                >
-                  name
-                </label>
-                <input
-                  class="form-control"
-                  id="root_name"
-                  placeholder=""
-                  type="text"
-                  value=""
-                />
-              </div>
+              <input
+                class="form-control"
+                id="root_name"
+                name="root_name"
+                placeholder=""
+                type="text"
+                value=""
+              />
             </div>
           </div>
         </div>
@@ -52,22 +44,15 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
-              <div
-                class="mb-0 form-group"
-              >
-                <label
-                  class="form-label"
-                >
-                  age
-                </label>
-                <input
-                  class="form-control"
-                  id="root_age"
-                  placeholder=""
-                  type="integer"
-                  value=""
-                />
-              </div>
+              <input
+                class="form-control"
+                id="root_age"
+                name="root_age"
+                placeholder=""
+                step="1"
+                type="number"
+                value=""
+              />
             </div>
           </div>
         </div>
@@ -91,6 +76,7 @@ exports[`form data normalization renders normalized data 1`] = `
                   <input
                     class="form-check-input"
                     id="root_isAdmin"
+                    name="root_isAdmin"
                     type="checkbox"
                   />
                   <label
@@ -116,22 +102,15 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
-              <div
-                class="mb-0 form-group"
-              >
-                <label
-                  class="form-label"
-                >
-                  rating
-                </label>
-                <input
-                  class="form-control"
-                  id="root_rating"
-                  placeholder=""
-                  type="number"
-                  value=""
-                />
-              </div>
+              <input
+                class="form-control"
+                id="root_rating"
+                name="root_rating"
+                placeholder=""
+                step="any"
+                type="number"
+                value=""
+              />
             </div>
           </div>
         </div>

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
+import { getDefaultRegistry } from "@rjsf/core";
 import React from "react";
 import FormPreviewFieldTemplate, {
   type FormPreviewFieldProps,
 } from "./FormPreviewFieldTemplate";
 import styles from "./FormPreviewBooleanField.module.scss";
 
-const RjsfStringField = RjsfTheme.fields.StringField;
+const RjsfStringField = getDefaultRegistry().fields.StringField;
 
 const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
   <FormPreviewFieldTemplate
