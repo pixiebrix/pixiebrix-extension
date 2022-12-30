@@ -71,6 +71,10 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
+  const [{ value: isAttended = false }] = useField<boolean>(
+    configName("isAttended")
+  );
+
   const [{ value: awaitResult }] = useField<boolean | null>(
     configName("awaitResult")
   );
@@ -175,25 +179,35 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               {workspaceType === "public" && (
                 <>
                   <ConnectedFieldTemplate
-                    label="Run as Users"
-                    name={configName("runAsUserIds")}
-                    description="The user(s) to run the bots"
-                    as={RemoteMultiSelectWidget}
-                    optionsFactory={cachedFetchRunAsUsers}
-                    factoryArgs={factoryArgs}
-                    blankValue={[]}
-                    config={config}
+                    label="Attended"
+                    name={configName("isAttended")}
+                    description="Run the bot in attended mode, using the authenticated user's device. Requires an Attended Bot license"
+                    as={BooleanWidget}
                   />
-                  <ConnectedFieldTemplate
-                    label="Device Pools"
-                    name={configName("poolIds")}
-                    description="A device pool that has at least one active device (optional)"
-                    as={RemoteMultiSelectWidget}
-                    optionsFactory={cachedFetchDevicePools}
-                    factoryArgs={factoryArgs}
-                    blankValue={[]}
-                    config={config}
-                  />
+                  {!isAttended && (
+                    <>
+                      <ConnectedFieldTemplate
+                        label="Run as Users"
+                        name={configName("runAsUserIds")}
+                        description="The user(s) to run the bots"
+                        as={RemoteMultiSelectWidget}
+                        optionsFactory={cachedFetchRunAsUsers}
+                        factoryArgs={factoryArgs}
+                        blankValue={[]}
+                        config={config}
+                      />
+                      <ConnectedFieldTemplate
+                        label="Device Pools"
+                        name={configName("poolIds")}
+                        description="A device pool that has at least one active device (optional)"
+                        as={RemoteMultiSelectWidget}
+                        optionsFactory={cachedFetchDevicePools}
+                        factoryArgs={factoryArgs}
+                        blankValue={[]}
+                        config={config}
+                      />
+                    </>
+                  )}
                 </>
               )}
               <ConnectedFieldTemplate

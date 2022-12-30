@@ -122,9 +122,9 @@ export async function launchAuthIntegration({
     );
     await setPartnerAuth({
       authId: config.id,
-      token: data.access_token,
+      token: data.access_token as string,
       // `refresh_token` only returned if offline_access scope is requested
-      refreshToken: data.refresh_token,
+      refreshToken: data.refresh_token as string,
       extraHeaders: {
         "X-Control-Room": config.config.controlRoomUrl,
       },

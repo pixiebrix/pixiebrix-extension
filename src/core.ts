@@ -862,7 +862,7 @@ export interface AuthData {
    * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
    */
   _oauthBrand: null;
-  [key: string]: string | null;
+  [key: string]: unknown;
 }
 
 export interface TokenContext {

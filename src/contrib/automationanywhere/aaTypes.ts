@@ -28,6 +28,13 @@ export type CommunityBotArgs = {
 export type EnterpriseBotArgs = {
   service: SanitizedServiceConfiguration;
   fileId: string;
+
+  /**
+   * Run the bot in attended mode using the authenticated user's device.
+   * @since 1.7.16
+   */
+  isAttended?: boolean;
+
   runAsUserIds: number[];
   poolIds: string[];
   data: UnknownObject;
