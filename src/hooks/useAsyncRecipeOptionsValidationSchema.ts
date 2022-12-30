@@ -30,7 +30,8 @@ const useAsyncRecipeOptionsValidationSchema = (
       return object().shape({});
     }
 
-    const dereferenced = await dereference(optionsDefinitionSchema);
+    // Clone the schema here to make sure it's extensible so properties can be added
+    const dereferenced = await dereference(cloneDeep(optionsDefinitionSchema));
     const schemaWithNullableRequiredFields = {
       ...dereferenced,
       properties: mapValues(
@@ -48,8 +49,7 @@ const useAsyncRecipeOptionsValidationSchema = (
       ),
     };
 
-    // Clone the schema here to make sure it's extensible, buildYup adds properties
-    return buildYup(cloneDeep(schemaWithNullableRequiredFields), {});
+    return buildYup(schemaWithNullableRequiredFields, {});
   }, [optionsDefinitionSchema]);
 
 export default useAsyncRecipeOptionsValidationSchema;
