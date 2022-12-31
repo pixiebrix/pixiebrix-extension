@@ -36,11 +36,12 @@ import {
   type OAuth2AuthenticationDefinition,
   type TokenAuthenticationDefinition,
   type OAuth2AuthorizationGrantDefinition,
+  type BasicAuthenticationDefinition,
 } from "@/types/definitions";
 import { type AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils";
 import { missingProperties } from "@/helpers";
-import { NotConfiguredError } from "@/errors/businessErrors";
+import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
 
 /**
@@ -94,6 +95,17 @@ class LocalDefinedService<
     return (
       this._definition.authentication != null &&
       "oauth2" in this._definition.authentication
+    );
+  }
+
+  /**
+   * Return true if service uses basic authentication
+   * @since 1.7.16
+   */
+  get isBasic(): boolean {
+    return (
+      this._definition.authentication != null &&
+      "basic" in this._definition.authentication
     );
   }
 
@@ -239,6 +251,53 @@ class LocalDefinedService<
     return result;
   }
 
+  private authenticateBasicRequest(
+    serviceConfig: ServiceConfig,
+    requestConfig: AxiosRequestConfig
+  ): AxiosRequestConfig {
+    if (!this.isAvailable(requestConfig.url)) {
+      throw new IncompatibleServiceError(
+        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`
+      );
+    }
+
+    const {
+      baseURL,
+      basic,
+      headers = {},
+    } = renderMustache<BasicAuthenticationDefinition>(
+      this._definition.authentication as BasicAuthenticationDefinition,
+      serviceConfig
+    );
+
+    if (isEmpty(basic.username) && isEmpty(basic.password)) {
+      throw new BusinessError(
+        "At least one of username and password is required for basic authentication"
+      );
+    }
+
+    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
+      throw new Error(
+        "Must use absolute URLs for services that don't define a baseURL"
+      );
+    }
+
+    const result = produce(requestConfig, (draft) => {
+      requestConfig.baseURL = baseURL;
+      draft.headers = {
+        ...draft.headers,
+        Authorization: `Basic ${btoa(
+          [basic.username, basic.password].join(":")
+        )}`,
+        ...headers,
+      };
+    });
+
+    this.checkRequestUrl(baseURL, requestConfig);
+
+    return result;
+  }
+
   private authenticateRequestToken(
     serviceConfig: ServiceConfig,
     requestConfig: AxiosRequestConfig,
@@ -285,9 +344,19 @@ class LocalDefinedService<
       );
     }
 
-    return this.isOAuth2 || this.isToken
-      ? this.authenticateRequestToken(serviceConfig, requestConfig, authData)
-      : this.authenticateRequestKey(serviceConfig, requestConfig);
+    if (this.isOAuth2 || this.isToken) {
+      return this.authenticateRequestToken(
+        serviceConfig,
+        requestConfig,
+        authData
+      );
+    }
+
+    if (this.isBasic) {
+      return this.authenticateBasicRequest(serviceConfig, requestConfig);
+    }
+
+    return this.authenticateRequestKey(serviceConfig, requestConfig);
   }
 }
 

@@ -17,9 +17,11 @@
 
 import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
 import automationAnywhereOAuth2 from "@contrib/services/automation-anywhere-oauth2.yaml";
+import greenhouse from "@contrib/services/greenhouse.yaml";
 import { fromJS } from "@/services/factory";
 import { type ServiceDefinition } from "@/types/definitions";
-import { type SanitizedConfig } from "@/core";
+import { type SanitizedConfig, ServiceConfig } from "@/core";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("LocalDefinedService", () => {
   test("includes version", () => {
@@ -55,5 +57,37 @@ describe("LocalDefinedService", () => {
       "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl=&audience=https://controlroom",
       "https://oauthconfigapp.automationanywhere.digital/client/oauth/token",
     ]);
+  });
+});
+
+describe("LocalDefinedService.authenticateBasicRequest", () => {
+  it("adds authorization header", () => {
+    const service = fromJS(greenhouse as unknown as ServiceDefinition);
+
+    expect(service.isBasic).toBeTrue();
+
+    const config = service.authenticateRequest(
+      { apiToken: "topsecret" } as unknown as ServiceConfig,
+      { url: "/v1/candidates/", method: "get" }
+    );
+
+    expect(config.baseURL).toEqual("https://harvest.greenhouse.io");
+
+    expect(config.headers).toStrictEqual({
+      Authorization: `Basic ${btoa("topsecret:")}`,
+    });
+  });
+
+  it("requires value", () => {
+    const service = fromJS(greenhouse as unknown as ServiceDefinition);
+
+    expect(service.isBasic).toBeTrue();
+
+    expect(() =>
+      service.authenticateRequest(
+        { notTheKey: "topsecret" } as unknown as ServiceConfig,
+        { url: "/v1/candidates/", method: "get" }
+      )
+    ).toThrow(BusinessError);
   });
 });

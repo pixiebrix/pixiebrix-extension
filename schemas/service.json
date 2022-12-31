@@ -145,6 +145,26 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "basic": {
+              "type": "object",
+              "required": ["username", "password"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["basic"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
             "oauth2": {
               "type": "object",
               "properties": {

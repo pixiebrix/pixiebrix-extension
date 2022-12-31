@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: greenhouse/api
+  version: 1.0.0
+  name: Greenhouse ATS API
+  description: The Greenhouse Harvest API
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    apiToken:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: Your Greenhouse API token
+  required:
+    - apiToken
+authentication:
+  baseURL: "https://harvest.greenhouse.io"
+  basic:
+    # https://developers.greenhouse.io/harvest.html#authentication
+    username: "{{{ apiToken }}}"
+    password: ""
