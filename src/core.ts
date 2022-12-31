@@ -961,7 +961,7 @@ export interface IService<
    * True if service uses basic access authentication to authenticate
    * https://en.wikipedia.org/wiki/Basic_access_authentication
    */
-  isBasic: boolean;
+  isBasicHttpAuth: boolean;
 
   getOrigins: (serviceConfig: TSanitized) => string[];
 

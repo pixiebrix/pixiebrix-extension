@@ -102,7 +102,7 @@ class LocalDefinedService<
    * Return true if service uses basic authentication
    * @since 1.7.16
    */
-  get isBasic(): boolean {
+  get isBasicHttpAuth(): boolean {
     return (
       this._definition.authentication != null &&
       "basic" in this._definition.authentication
@@ -352,7 +352,7 @@ class LocalDefinedService<
       );
     }
 
-    if (this.isBasic) {
+    if (this.isBasicHttpAuth) {
       return this.authenticateBasicRequest(serviceConfig, requestConfig);
     }
 

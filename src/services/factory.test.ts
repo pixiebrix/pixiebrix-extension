@@ -20,7 +20,7 @@ import automationAnywhereOAuth2 from "@contrib/services/automation-anywhere-oaut
 import greenhouse from "@contrib/services/greenhouse.yaml";
 import { fromJS } from "@/services/factory";
 import { type ServiceDefinition } from "@/types/definitions";
-import { type SanitizedConfig, ServiceConfig } from "@/core";
+import { type SanitizedConfig, type ServiceConfig } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 
 describe("LocalDefinedService", () => {
@@ -64,7 +64,7 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
   it("adds authorization header", () => {
     const service = fromJS(greenhouse as unknown as ServiceDefinition);
 
-    expect(service.isBasic).toBeTrue();
+    expect(service.isBasicHttpAuth).toBeTrue();
 
     const config = service.authenticateRequest(
       { apiToken: "topsecret" } as unknown as ServiceConfig,
@@ -81,7 +81,7 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
   it("requires value", () => {
     const service = fromJS(greenhouse as unknown as ServiceDefinition);
 
-    expect(service.isBasic).toBeTrue();
+    expect(service.isBasicHttpAuth).toBeTrue();
 
     expect(() =>
       service.authenticateRequest(

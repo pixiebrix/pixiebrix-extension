@@ -58,7 +58,7 @@ export abstract class Service<
 
   abstract get isToken(): boolean;
 
-  abstract get isBasic(): boolean;
+  abstract get isBasicHttpAuth(): boolean;
 
   protected constructor(
     public id: RegistryId,
