@@ -145,6 +145,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "baseURL": {
+              "type": "string",
+              "description": "The base URL of the API, as a URL literal or Mustache template"
+            },
             "basic": {
               "type": "object",
               "required": ["username", "password"],
