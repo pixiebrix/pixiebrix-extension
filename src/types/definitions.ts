@@ -197,6 +197,15 @@ export interface TokenAuthenticationDefinition {
   headers: Record<string, string>;
 }
 
+export interface BasicAuthenticationDefinition {
+  baseURL?: string;
+  basic: {
+    username: string;
+    password: string;
+  };
+  headers: Record<string, string>;
+}
+
 export interface OAuth2AuthenticationDefinition {
   baseURL?: string;
   oauth2: {
@@ -218,8 +227,9 @@ export interface ServiceDefinition<
   TAuth =
     | KeyAuthenticationDefinition
     | OAuth2AuthenticationDefinition
-    | TokenAuthenticationDefinition
     | OAuth2AuthorizationGrantDefinition
+    | TokenAuthenticationDefinition
+    | BasicAuthenticationDefinition
 > {
   metadata: Metadata;
   inputSchema: Schema;
