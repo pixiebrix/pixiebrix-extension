@@ -33,7 +33,7 @@ function getDefaultInstallableIcon(installable: Installable) {
   return faCube;
 }
 
-const DARK_LAVENDER = "rgb(101, 98, 170)";
+const DARK_LAVENDER = "#5a19da";
 
 const InstallableIcon: React.FunctionComponent<{
   listing: MarketplaceListing;

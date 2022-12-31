@@ -1,36 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 
-/* === Plugin styles === */
+// Customize the base colors
+@import "../assets/styles/base-colors";
 
-//@import "~react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-//@import "~chartist/dist/chartist.min.css";
-//@import "~nouislider/distribute/nouislider.min.css";
-//@import "~slick-carousel/slick/slick.css";
-//@import "~slick-carousel/slick/slick-theme.css";
-//@import '~@fullcalendar/core/main.css';
-//@import '~@fullcalendar/daygrid/main.css';
-//@import '~react-bootstrap-typeahead/css/Typeahead.css';
-//@import '~react-bootstrap-typeahead/css/Typeahead-bs4.css';
-//@import '~react-datepicker/dist/react-datepicker.css';
+// Import bootstrap
+@import "~compass-mixins/lib/animate";
+@import "~bootstrap";
 
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-
+// Import our theme overrides and extensions
 @import "../assets/styles/variables";
 @import "../assets/styles/themes";
-//@import "~compass-mixins/lib/compass";
-@import "~compass-mixins/lib/animate";
-@import "~bootstrap/scss/bootstrap";
 @import "../assets/styles/functions";
-
-/* === Icon fonts === */
-//@import "~ti-icons/css/themify-icons.css";
-// @import "~@mdi/font/scss/materialdesignicons";
-//@import "~font-awesome/scss/font-awesome";
-//@import "~flag-icon-css/sass/flag-icon";
-//@import "~simple-line-icons/scss/simple-line-icons";
-//@import "~simple-line-icons/scss/simple-line-icons";
-//@import "~typicons.font/src/font/typicons.css";
 
 /* === Template mixins === */
 @import "../assets/styles/mixins/animation";
