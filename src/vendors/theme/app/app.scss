@@ -1,16 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 
-// Customize the base colors
+// Customize the base colors (must come before any Bootstrap imports)
 @import "../assets/styles/base-colors";
 
-// Import bootstrap
-@import "~compass-mixins/lib/animate";
-@import "~bootstrap";
+// Import some basics for our theme https://stackoverflow.com/a/50253707/288906
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
 
 // Import our theme overrides and extensions
 @import "../assets/styles/variables";
 @import "../assets/styles/themes";
 @import "../assets/styles/functions";
+
+// Import the rest of Bootstrap
+@import "~compass-mixins/lib/animate";
+@import "~bootstrap/scss/bootstrap";
 
 /* === Template mixins === */
 @import "../assets/styles/mixins/animation";

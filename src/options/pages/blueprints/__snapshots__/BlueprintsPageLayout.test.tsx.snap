@@ -371,7 +371,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
             role="group"
           >
             <button
-              class="ml-3 btn btn-info btn-sm"
+              class="ml-3 btn btn-primary btn-sm"
               type="button"
             >
               <svg
@@ -391,7 +391,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
               </svg>
             </button>
             <button
-              class="btn btn-outline-info btn-sm"
+              class="btn btn-outline-primary btn-sm"
               type="button"
             >
               <svg
