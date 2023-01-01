@@ -62,6 +62,10 @@ export type InstallableViewItemActions = {
   uninstall: ActionCallback | null;
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
+
+  // XXX: this is one is not implemented like the others for some reason. It will always be defined but will show
+  // an error if the action is not available
+  exportBlueprint: ActionCallback;
 };
 
 // eslint-disable-next-line complexity
@@ -236,6 +240,26 @@ function useInstallableViewItemActions(
     );
   };
 
+  const exportBlueprint = useUserAction(
+    () => {
+      if (isInstallableBlueprint) {
+        throw new Error("Already a blueprint. Access in the Workshop");
+      }
+
+      if (extensionsFromInstallable.length === 0) {
+        throw new Error("Extension must be installed to export as blueprint");
+      }
+
+      exportBlueprintYaml(extensionsFromInstallable[0]);
+    },
+    {
+      successMessage: `Exported blueprint: ${getLabel(installable)}`,
+      errorMessage: `Error exporting blueprint: ${getLabel(installable)}`,
+      event: "ExtensionExport",
+    },
+    [installable, extensionsFromInstallable]
+  );
+
   const showPublishAction =
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
@@ -262,6 +286,8 @@ function useInstallableViewItemActions(
     reinstall: hasBlueprint && isInstalled && !isRestricted ? reinstall : null,
     viewLogs: status === "Inactive" ? null : viewLogs,
     activate: status === "Inactive" ? activate : null,
+    // If a developer needs to access the underlying blueprint, they can access it in the workshop
+    exportBlueprint: isDeployment ? null : exportBlueprint,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };
 }
