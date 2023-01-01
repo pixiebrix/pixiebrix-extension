@@ -22,7 +22,7 @@ import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { type UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { Card, CloseButton, Nav, Tab } from "react-bootstrap";
+import { CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -76,93 +76,89 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
       defaultActiveKey={activeKey}
       activeKey={activeKey}
     >
-      <Card>
-        <Card.Header>
-          <Nav fill variant="tabs" onSelect={onSelect}>
-            {panels.map((panel) => (
-              <Nav.Link
-                key={panel.extensionId}
-                eventKey={mapTabEventKey("panel", panel)}
-                className={styles.tabHeader}
-              >
-                {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
-              </Nav.Link>
-            ))}
-            {forms.map((form) => (
-              <Nav.Link
-                key={form.extensionId}
-                eventKey={mapTabEventKey("form", form)}
-                className={styles.tabHeader}
-              >
-                {form.form.schema.title ?? "Form"}
-              </Nav.Link>
-            ))}
-            {temporaryPanels.map((panel) => (
-              <Nav.Link
-                key={panel.nonce}
-                eventKey={mapTabEventKey("temporaryPanel", panel)}
-                className={styles.tabHeader}
-              >
-                {panel.heading}
-                <CloseButton
-                  onClick={() => {
-                    onCloseTemporaryTab(panel.nonce);
+      <div className="full-height bg-white">
+        <Nav fill variant="tabs" onSelect={onSelect}>
+          {panels.map((panel) => (
+            <Nav.Link
+              key={panel.extensionId}
+              eventKey={mapTabEventKey("panel", panel)}
+              className={styles.tabHeader}
+            >
+              {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
+            </Nav.Link>
+          ))}
+          {forms.map((form) => (
+            <Nav.Link
+              key={form.extensionId}
+              eventKey={mapTabEventKey("form", form)}
+              className={styles.tabHeader}
+            >
+              {form.form.schema.title ?? "Form"}
+            </Nav.Link>
+          ))}
+          {temporaryPanels.map((panel) => (
+            <Nav.Link
+              key={panel.nonce}
+              eventKey={mapTabEventKey("temporaryPanel", panel)}
+              className={styles.tabHeader}
+            >
+              {panel.heading}
+              <CloseButton
+                onClick={() => {
+                  onCloseTemporaryTab(panel.nonce);
+                }}
+              />
+            </Nav.Link>
+          ))}
+        </Nav>
+        <Tab.Content className="p-0 border-0 full-height scrollable-area">
+          {panels.map((panel: PanelEntry) => (
+            <Tab.Pane
+              className={cx("full-height flex-grow", styles.paneOverrides)}
+              key={panel.extensionId}
+              eventKey={mapTabEventKey("panel", panel)}
+            >
+              <ErrorBoundary>
+                <PanelBody
+                  isRootPanel
+                  payload={panel.payload}
+                  context={{
+                    extensionId: panel.extensionId,
+                    extensionPointId: panel.extensionPointId,
+                    blueprintId: panel.blueprintId,
                   }}
                 />
-              </Nav.Link>
-            ))}
-          </Nav>
-        </Card.Header>
-        <Card.Body className="p-0 scrollable-area full-height">
-          <Tab.Content className="p-0 border-0 full-height">
-            {panels.map((panel: PanelEntry) => (
-              <Tab.Pane
-                className={cx("full-height flex-grow", styles.paneOverrides)}
-                key={panel.extensionId}
-                eventKey={mapTabEventKey("panel", panel)}
-              >
-                <ErrorBoundary>
-                  <PanelBody
-                    isRootPanel
-                    payload={panel.payload}
-                    context={{
-                      extensionId: panel.extensionId,
-                      extensionPointId: panel.extensionPointId,
-                      blueprintId: panel.blueprintId,
-                    }}
-                  />
-                </ErrorBoundary>
-              </Tab.Pane>
-            ))}
-            {forms.map((form) => (
-              <Tab.Pane
-                className="full-height flex-grow"
-                key={form.nonce}
-                eventKey={mapTabEventKey("form", form)}
-              >
-                <ErrorBoundary>
-                  <FormBody form={form} />
-                </ErrorBoundary>
-              </Tab.Pane>
-            ))}
-            {temporaryPanels.map((panel) => (
-              <Tab.Pane
-                className={cx("full-height flex-grow", styles.paneOverrides)}
-                key={panel.nonce}
-                eventKey={mapTabEventKey("temporaryPanel", panel)}
-              >
-                <ErrorBoundary>
-                  <PanelBody
-                    isRootPanel={false}
-                    payload={panel.payload}
-                    context={{ extensionId: panel.extensionId }}
-                  />
-                </ErrorBoundary>
-              </Tab.Pane>
-            ))}
-          </Tab.Content>
-        </Card.Body>
-      </Card>
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
+          {forms.map((form) => (
+            <Tab.Pane
+              className="full-height flex-grow"
+              key={form.nonce}
+              eventKey={mapTabEventKey("form", form)}
+            >
+              <ErrorBoundary>
+                <FormBody form={form} />
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
+          {temporaryPanels.map((panel) => (
+            <Tab.Pane
+              className={cx("full-height flex-grow", styles.paneOverrides)}
+              key={panel.nonce}
+              eventKey={mapTabEventKey("temporaryPanel", panel)}
+            >
+              <ErrorBoundary>
+                <PanelBody
+                  isRootPanel={false}
+                  payload={panel.payload}
+                  context={{ extensionId: panel.extensionId }}
+                />
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
+        </Tab.Content>
+      </div>
     </Tab.Container>
   );
 };
