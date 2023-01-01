@@ -19,6 +19,7 @@ import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { JQTransformer } from "@/blocks/transformers/jq";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("TraceAnalysis.mapErrorAnnotations", () => {
   test("handles invalid field value", async () => {
@@ -37,5 +38,37 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
 
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position).toEqual({ path: "config.filter" });
+  });
+
+  test("handles required field value", async () => {
+    let inputError;
+    try {
+      await throwIfInvalidInput(new JQTransformer(), {} as any);
+      expect.fail("Invalid test, expected validateInput to throw");
+    } catch (error) {
+      inputError = serializeError(error);
+    }
+
+    const annotations = new TraceAnalysis([]).mapErrorAnnotations(
+      { path: "" },
+      inputError
+    );
+
+    expect(annotations).toHaveLength(1);
+    expect(annotations[0].position).toEqual({ path: "config.filter" });
+    expect(annotations[0].message).toEqual(
+      "Error from the last run: This field is required."
+    );
+  });
+
+  test("handles non input value", async () => {
+    const annotations = new TraceAnalysis([]).mapErrorAnnotations(
+      { path: "" },
+      serializeError(new BusinessError("foo"))
+    );
+
+    expect(annotations).toHaveLength(1);
+    expect(annotations[0].position).toEqual({ path: "" });
+    expect(annotations[0].message).toEqual("foo");
   });
 });
