@@ -141,3 +141,13 @@ export async function onTabClose(watchedTabId: number): Promise<void> {
     browser.tabs.onRemoved.addListener(listener);
   });
 }
+
+export async function tryUpdatingExtension(): Promise<chrome.runtime.RequestUpdateCheckStatus> {
+  const status = await browser.runtime.requestUpdateCheck();
+  if (status === "update_available") {
+    browser.runtime.reload();
+    // It will stop here
+  }
+
+  return status;
+}
