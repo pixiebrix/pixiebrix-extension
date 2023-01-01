@@ -95,7 +95,7 @@ const store = configureStore({
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
-    /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+    /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
     return getDefaultMiddleware({
       // This check significantly slows down the app in dev mode.
       // See PR for more details https://github.com/pixiebrix/pixiebrix-extension/pull/4951

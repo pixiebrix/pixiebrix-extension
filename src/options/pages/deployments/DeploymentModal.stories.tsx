@@ -54,7 +54,7 @@ const Template: Story<StoryType> = ({
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware().concat(appApi.middleware);
       /* eslint-enable unicorn/prefer-spread */
     },
