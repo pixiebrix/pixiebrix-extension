@@ -34,7 +34,7 @@ import useUserAction from "@/hooks/useUserAction";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
-import { tryUpdatingExtension } from "@/chrome";
+import { reloadIfNewVersionIsReady } from "@/chrome";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -79,7 +79,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   }, []);
 
   const requestExtensionUpdate = useCallback(async () => {
-    const status = await tryUpdatingExtension();
+    const status = await reloadIfNewVersionIsReady();
     if (status === "throttled") {
       notify.error({ message: "Too many update requests", reportError: false });
     } else {

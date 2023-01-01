@@ -142,12 +142,15 @@ export async function onTabClose(watchedTabId: number): Promise<void> {
   });
 }
 
-export async function tryUpdatingExtension(): Promise<chrome.runtime.RequestUpdateCheckStatus> {
+/** If no update is available and downloaded yet, it will return a string explaining why */
+export async function reloadIfNewVersionIsReady(): Promise<
+  "throttled" | "no_update"
+> {
   const status = await browser.runtime.requestUpdateCheck();
   if (status === "update_available") {
     browser.runtime.reload();
     // It will stop here
   }
 
-  return status;
+  return status as "throttled" | "no_update";
 }

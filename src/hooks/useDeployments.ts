@@ -24,7 +24,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
-import { getExtensionVersion, tryUpdatingExtension } from "@/chrome";
+import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { type Dispatch } from "redux";
 import { type IExtension } from "@/core";
@@ -243,7 +243,7 @@ function useDeployments(): DeploymentState {
   }, [deployments, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
-    await tryUpdatingExtension();
+    await reloadIfNewVersionIsReady();
     notify.info(
       "The extension update hasn't yet been downloaded. Try again in a few minutes."
     );
