@@ -49,7 +49,7 @@
     "autocompleter": "^7.0.1",
     "axios": "^0.27.2",
     "bootstrap": "^4.6.0",
-    "bootstrap-icons": "^1.5.0",
+    "bootstrap-icons": "^1.10.3",
     "bootstrap-switch-button-react": "^1.2.0",
     "canvas-confetti": "^1.4.0",
     "chrono-node": "^2.4.2",
