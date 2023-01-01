@@ -184,7 +184,7 @@
     "@types/google.picker": "0.0.39",
     "@types/holderjs": "^2.9.2",
     "@types/intro.js": "^5.1.0",
-    "@types/jest": "^29.2.4",
+    "@types/jest": "^29.2.5",
     "@types/jquery": "^3.5.6",
     "@types/js-beautify": "^1.13.2",
     "@types/js-cookie": "^3.0.0",
