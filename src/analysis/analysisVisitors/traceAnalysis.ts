@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { AnnotationType } from "@/analysis/analysisTypes";
+import { type Annotation, AnnotationType } from "@/analysis/analysisTypes";
 import {
   isTraceError,
   type TraceError,
@@ -24,11 +24,12 @@ import {
 } from "@/telemetry/trace";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { type UUID } from "@/core";
-import { groupBy } from "lodash";
+import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type JsonObject } from "type-fest";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -56,27 +57,20 @@ class TraceAnalysis extends AnalysisVisitor {
     }
   }
 
-  override visitBlock(
+  mapErrorAnnotations(
     position: BlockPosition,
-    blockConfig: BlockConfig,
-    extra: VisitBlockExtra
-  ) {
-    super.visitBlock(position, blockConfig, extra);
-
-    const errorRecord = this.traceErrorMap.get(blockConfig.instanceId)?.at(0);
-    if (errorRecord == null) {
-      return;
-    }
-
-    const { error: traceError } = errorRecord;
+    traceError: JsonObject
+  ): Annotation[] {
+    const annotations: Annotation[] = [];
 
     if (isInputValidationError(traceError)) {
       for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(
           maybeInputError.instanceLocation
         )?.groups.property;
+
         if (rootProperty) {
-          this.annotations.push({
+          annotations.push({
             position: nestedPosition(position, "config", rootProperty),
             message: getErrorMessage(maybeInputError.error),
             analysisId: this.id,
@@ -92,7 +86,7 @@ class TraceAnalysis extends AnalysisVisitor {
           const errorMessage =
             "Error from the last run: This field is required.";
 
-          this.annotations.push({
+          annotations.push({
             position: nestedPosition(position, "config", requiredProperty),
             message: errorMessage,
             analysisId: this.id,
@@ -101,15 +95,40 @@ class TraceAnalysis extends AnalysisVisitor {
           });
         }
       }
-    } else {
-      this.annotations.push({
+    }
+
+    if (annotations.length === 0) {
+      const rawMessage = getErrorMessage(traceError);
+      annotations.push({
         position,
-        message: getErrorMessage(traceError),
+        // Avoid a blank error message if the traceError doesn't have a single message
+        message: isEmpty(rawMessage)
+          ? "An error occurred on the last run"
+          : rawMessage,
         analysisId: this.id,
         type: AnnotationType.Error,
         detail: traceError,
       });
     }
+
+    return annotations;
+  }
+
+  override visitBlock(
+    position: BlockPosition,
+    blockConfig: BlockConfig,
+    extra: VisitBlockExtra
+  ) {
+    super.visitBlock(position, blockConfig, extra);
+
+    const errorRecord = this.traceErrorMap.get(blockConfig.instanceId)?.at(0);
+    if (errorRecord == null) {
+      return;
+    }
+
+    const { error: traceError } = errorRecord;
+
+    this.annotations.push(...this.mapErrorAnnotations(position, traceError));
   }
 
   override run(extension: FormState): void {

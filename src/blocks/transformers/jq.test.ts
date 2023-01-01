@@ -21,6 +21,8 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { InputValidationError } from "@/blocks/errors";
 import { neverPromise } from "@/testUtils/testHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 
 describe("smoke tests", () => {
   test("passes input to filter", async () => {
@@ -57,6 +59,69 @@ describe("ctxt", () => {
 });
 
 describe("parse compile error", () => {
+  test("compile error has correct metadata", async () => {
+    try {
+      await new JQTransformer().transform(
+        unsafeAssumeValidArg({ filter: '"" | fromdate', data: {} }),
+        {
+          ctxt: {},
+          root: null,
+          logger: new ConsoleLogger(),
+          runPipeline: neverPromise,
+          runRendererPipeline: neverPromise,
+        }
+      );
+    } catch (error) {
+      expect(serializeError(error)).toStrictEqual({
+        name: "InputValidationError",
+        schema: expect.toBeObject(),
+        input: expect.toBeObject(),
+        message: expect.toBeString(),
+        stack: expect.toBeString(),
+        errors: [
+          {
+            error: expect.toBeString(),
+            instanceLocation: "#/filter",
+            keyword: "format",
+            keywordLocation: "#/properties/filter/format",
+          },
+        ],
+      });
+    }
+  });
+
+  test("error metadata matches", async () => {
+    try {
+      await throwIfInvalidInput(new JQTransformer(), {
+        filter: 42,
+        data: {},
+      } as any);
+      expect.fail("Invalid test, expected validateInput to throw");
+    } catch (error) {
+      expect(serializeError(error)).toStrictEqual({
+        name: "InputValidationError",
+        schema: expect.toBeObject(),
+        input: expect.toBeObject(),
+        message: expect.toBeString(),
+        stack: expect.toBeString(),
+        errors: [
+          {
+            error: expect.toBeString(),
+            instanceLocation: "#",
+            keyword: "properties",
+            keywordLocation: "#/properties",
+          },
+          {
+            error: expect.toBeString(),
+            instanceLocation: "#/filter",
+            keyword: "type",
+            keywordLocation: "#/properties/filter/type",
+          },
+        ],
+      });
+    }
+  });
+
   test("invalid fromdate", async () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
