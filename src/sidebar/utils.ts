@@ -19,24 +19,46 @@ import { type SidebarEntries, type EntryType } from "@/sidebar/types";
 import { type UUID } from "@/core";
 
 export function mapTabEventKey(
-  entryType: EntryType,
+  type: "panel",
   entry: { extensionId: UUID } | null
+): string | null;
+export function mapTabEventKey(
+  type: "form" | "temporaryPanel",
+  entry: { nonce?: UUID; extensionId?: UUID } | null
+): string | null;
+export function mapTabEventKey(
+  entryType: EntryType,
+  // Permanent panels don't have a nonce
+  entry: { nonce?: UUID; extensionId: UUID } | null
 ): string | null {
   if (entry == null) {
     return null;
   }
 
-  return `${entryType}-${entry.extensionId}`;
+  // Prefer nonce so there's unique eventKey for forms and temporary panels from an extension
+  return `${entryType}-${entry.nonce ?? entry.extensionId}`;
 }
 
 /**
- * Return the default tab to show. Give preference to the most recent ephemeral form.
+ * Return the default tab to show.
+ *
+ * Give preference to:
+ * - Most recent ephemeral form
+ * - Most recent temporary panel
+ * - First panel
  */
 export function defaultEventKey({
   forms = [],
   panels = [],
+  temporaryPanels = [],
 }: SidebarEntries): string | null {
-  return forms.length > 0
-    ? mapTabEventKey("form", forms.at(-1))
-    : mapTabEventKey("panel", panels[0]);
+  if (forms.length > 0) {
+    return mapTabEventKey("form", forms.at(-1));
+  }
+
+  if (temporaryPanels.length > 0) {
+    return mapTabEventKey("temporaryPanel", temporaryPanels.at(-1));
+  }
+
+  return mapTabEventKey("panel", panels[0]);
 }

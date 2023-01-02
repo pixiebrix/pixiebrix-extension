@@ -18,6 +18,7 @@
 import { type UUID } from "@/core";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
+import { CancelError } from "@/errors/businessErrors";
 
 const panels = new Map<UUID, DeferredPromise<void>>();
 
@@ -50,6 +51,23 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
 
   for (const nonce of nonces) {
     panels.get(nonce)?.resolve();
+    panels.delete(nonce);
+  }
+}
+
+/**
+ * Cancel some temporary panels' deferred promises
+ * @param nonces The nonces of the panels to reject with a CancelError
+ */
+export async function cancelTemporaryPanels(nonces: UUID[]) {
+  expectContext("contentScript");
+
+  for (const nonce of nonces) {
+    panels
+      .get(nonce)
+      ?.reject(
+        new CancelError("Temporary panel was replaced with another panel")
+      );
     panels.delete(nonce);
   }
 }

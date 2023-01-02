@@ -25,7 +25,11 @@ import {
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/core";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
-import { cancelForm, closeTemporaryPanel } from "@/contentScript/messenger/api";
+import {
+  cancelForm,
+  cancelTemporaryPanel,
+  closeTemporaryPanel,
+} from "@/contentScript/messenger/api";
 import { partition, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 
@@ -49,6 +53,16 @@ export const emptySidebarState: SidebarState = {
   pendingActivePanel: null,
 };
 
+function eventKeyExists(state: SidebarState, query: string): boolean {
+  return (
+    state.forms.some((x) => mapTabEventKey("form", x) === query) ||
+    state.temporaryPanels.some(
+      (x) => mapTabEventKey("temporaryPanel", x) === query
+    ) ||
+    state.panels.some((x) => mapTabEventKey("panel", x) === query)
+  );
+}
+
 function findNextActiveKey(
   state: SidebarState,
   { extensionId, blueprintId, panelHeading }: ActivatePanelOptions
@@ -61,6 +75,13 @@ function findNextActiveKey(
     );
     if (extensionForm) {
       return mapTabEventKey("form", extensionForm);
+    }
+
+    const extensionTemporaryPanel = state.temporaryPanels.find(
+      (x) => x.extensionId === extensionId
+    );
+    if (extensionTemporaryPanel) {
+      return mapTabEventKey("temporaryPanel", extensionTemporaryPanel);
     }
 
     const extensionPanel = state.panels.find(
@@ -99,6 +120,11 @@ async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
   cancelForm(topLevelFrame, ...forms);
 }
 
+async function cancelPanels(nonces: UUID[]): Promise<void> {
+  const topLevelFrame = await getTopLevelFrame();
+  cancelTemporaryPanel(topLevelFrame, nonces);
+}
+
 async function resolvePanels(nonces: UUID[]): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   closeTemporaryPanel(topLevelFrame, nonces);
@@ -109,7 +135,11 @@ const sidebarSlice = createSlice({
   name: "sidebar",
   reducers: {
     selectTab(state, action: PayloadAction<string>) {
-      state.activeKey = action.payload;
+      // We were seeing some automatic calls to selectTab with a stale event key...
+      state.activeKey = eventKeyExists(state, action.payload)
+        ? action.payload
+        : defaultEventKey(state);
+
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
     },
@@ -142,23 +172,36 @@ const sidebarSlice = createSlice({
     ) {
       const { panel } = action.payload;
 
-      const [existingPanels, otherTemporaryPanels] = partition(
-        state.temporaryPanels,
-        (x) => x.extensionId === panel.extensionId
-      );
+      const [existingExtensionTemporaryPanels, otherTemporaryPanels] =
+        partition(
+          state.temporaryPanels,
+          (x) => x.extensionId === panel.extensionId
+        );
 
-      void resolvePanels(existingPanels.map((panel) => panel.nonce));
+      void cancelPanels(
+        existingExtensionTemporaryPanels.map((panel) => panel.nonce)
+      );
 
       state.temporaryPanels = [...otherTemporaryPanels, panel];
       state.activeKey = mapTabEventKey("temporaryPanel", panel);
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
+
       state.temporaryPanels = state.temporaryPanels.filter(
         (panel) => panel.nonce !== nonce
       );
-      state.activeKey = defaultEventKey(state);
+
       void resolvePanels([nonce]);
+
+      // Only update the active panel if the panel needs to change
+      // Temporary panels use nonce instead of extensionId, so can pass null for extensionId
+      if (
+        state.activeKey ===
+        mapTabEventKey("temporaryPanel", { nonce, extensionId: undefined })
+      ) {
+        state.activeKey = defaultEventKey(state);
+      }
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar
