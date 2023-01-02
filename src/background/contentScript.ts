@@ -48,11 +48,13 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
 
 /**
  * @see makeSenderKey
+ * @see makeTargetKey
  */
 const targetReadyPromiseMap = new Map<string, DeferredPromise<Event>>();
 
 function makeSenderKey(sender: MessageSender): string {
-  return JSON.stringify({ tabId: sender.tab.id, frameId: sender.frameId });
+  // `tab?` to handle messages from other locations (so we can ignore instead of error)
+  return JSON.stringify({ tabId: sender.tab?.id, frameId: sender.frameId });
 }
 
 function makeTargetKey(target: Target): string {
