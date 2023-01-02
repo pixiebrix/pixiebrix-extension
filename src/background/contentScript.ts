@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -96,6 +96,7 @@ export const ensureContentScript = memoizeUntilSettled(
       controller.abort();
     }
   },
+  // Stringify since Target is an object
   { cacheKey: JSON.stringify }
 );
 

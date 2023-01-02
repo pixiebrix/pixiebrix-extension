@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,6 +28,13 @@ export type CommunityBotArgs = {
 export type EnterpriseBotArgs = {
   service: SanitizedServiceConfiguration;
   fileId: string;
+
+  /**
+   * Run the bot in attended mode using the authenticated user's device.
+   * @since 1.7.16
+   */
+  isAttended?: boolean;
+
   runAsUserIds: number[];
   poolIds: string[];
   data: UnknownObject;

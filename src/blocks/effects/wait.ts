@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +18,9 @@
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
-import { runInMillis, sleep, TimeoutError } from "@/utils";
+import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
+import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 
 export class WaitEffect extends Effect {
@@ -117,7 +118,7 @@ export class WaitElementEffect extends Effect {
     if (maxWaitMillis > 0) {
       const [promise, cancel] = awaitElementOnce(selector, $root);
       try {
-        await runInMillis(async () => promise, maxWaitMillis);
+        await pTimeout(promise, { milliseconds: maxWaitMillis });
       } catch (error) {
         cancel();
 

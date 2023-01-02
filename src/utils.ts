@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,6 +44,7 @@ import { type ApiVersion, type RegistryId, type SafeString } from "@/core";
 import { type UnknownObject } from "@/types";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
+import { TimeoutError } from "p-timeout";
 
 const specialCharsRegex = /[\s.[\]]/;
 
@@ -164,10 +165,6 @@ export const sleep = async (milliseconds: number): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
-
-export class TimeoutError extends Error {
-  override name = "TimeoutError";
-}
 
 export async function awaitValue<T>(
   valueFactory: () => T,
@@ -476,23 +473,6 @@ export function getProperty<TResult = unknown>(
   }
 }
 
-export async function runInMillis<TResult>(
-  factory: () => Promise<TResult>,
-  maxMillis: number
-): Promise<TResult> {
-  const timeout = Symbol("timeout");
-  const value = await Promise.race([
-    factory(),
-    sleep(maxMillis).then(() => timeout),
-  ]);
-
-  if (value === timeout) {
-    throw new TimeoutError(`Method did not complete in ${maxMillis}ms`);
-  }
-
-  return value as TResult;
-}
-
 /** Loop an iterable with the ability to place `await` in the loop itself */
 export async function asyncForEach<Item>(
   iterable: Iterable<Item>,
@@ -501,8 +481,6 @@ export async function asyncForEach<Item>(
   await Promise.all([...iterable].map(unary(iteratee)));
 }
 
-/** @deprecate Use pollUntilTruthy directly, better-named for clarity */
-export const waitFor = pollUntilTruthy;
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
   { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }
