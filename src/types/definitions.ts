@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -197,6 +197,15 @@ export interface TokenAuthenticationDefinition {
   headers: Record<string, string>;
 }
 
+export interface BasicAuthenticationDefinition {
+  baseURL?: string;
+  basic: {
+    username: string;
+    password: string;
+  };
+  headers: Record<string, string>;
+}
+
 export interface OAuth2AuthenticationDefinition {
   baseURL?: string;
   oauth2: {
@@ -218,8 +227,9 @@ export interface ServiceDefinition<
   TAuth =
     | KeyAuthenticationDefinition
     | OAuth2AuthenticationDefinition
-    | TokenAuthenticationDefinition
     | OAuth2AuthorizationGrantDefinition
+    | TokenAuthenticationDefinition
+    | BasicAuthenticationDefinition
 > {
   metadata: Metadata;
   inputSchema: Schema;
