@@ -481,8 +481,6 @@ export async function asyncForEach<Item>(
   await Promise.all([...iterable].map(unary(iteratee)));
 }
 
-/** @deprecate Use pollUntilTruthy directly, better-named for clarity */
-export const waitFor = pollUntilTruthy;
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
   { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }

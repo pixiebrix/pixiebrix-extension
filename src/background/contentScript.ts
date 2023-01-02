@@ -96,6 +96,7 @@ export const ensureContentScript = memoizeUntilSettled(
       controller.abort();
     }
   },
+  // Stringify since Target is an object
   { cacheKey: JSON.stringify }
 );
 
