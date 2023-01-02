@@ -90,9 +90,9 @@ export class JQTransformer extends Transformer {
         { filter, data: input },
         [
           {
-            keyword: "filter",
-            keywordLocation: "#/filter",
-            instanceLocation: "#",
+            keyword: "format",
+            keywordLocation: "#/properties/filter/format",
+            instanceLocation: "#/filter",
             error: error.stack,
           },
         ]
