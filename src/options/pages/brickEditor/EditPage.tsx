@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -36,6 +36,7 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
+import { useAsyncState, useIsMounted } from "@/hooks/common";
 
 const { touchBrick } = workshopSlice.actions;
 
@@ -111,6 +112,20 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
     create: false,
   });
 
+  const isMounted = useIsMounted();
+
+  const [isRemoving, setIsRemovingBrick] = useState(false);
+  const onRemove = async () => {
+    setIsRemovingBrick(true);
+    await remove(id);
+
+    // If the brick has been removed, the app will navigate away from this page,
+    // so we need to check if the component is still mounted
+    if (isMounted()) {
+      setIsRemovingBrick(false);
+    }
+  };
+
   useLogContext(data.config);
 
   const name = rawConfig.metadata?.name;
@@ -146,17 +161,18 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                       </div>
                     )}
                     <div>
-                      <Button disabled={!isValid || isSubmitting} type="submit">
+                      <Button
+                        disabled={!isValid || isSubmitting || isRemoving}
+                        type="submit"
+                      >
                         {values.public ? "Publish Brick" : "Update Brick"}
                       </Button>
                     </div>
                     <div>
                       <Button
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || isRemoving}
                         variant="danger"
-                        onClick={() => {
-                          void remove(id);
-                        }}
+                        onClick={onRemove}
                       >
                         Delete Brick
                       </Button>
