@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,19 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import useTimeoutState from "@/hooks/useTimeoutState";
+import { renderHook } from "@testing-library/react-hooks";
+import useTimeoutState from "./useTimeoutState";
 
-type Props = {
-  millis: number;
-};
+jest.useFakeTimers();
 
-/** Component used to reduce flashing */
-const DelayedRender: React.FC<Props> = ({ children, millis }) => {
-  const isShown = useTimeoutState(millis);
-  // The hidden element allows us to preload the content (and images) while hidden.
-  // Replacing this with `null` defeats the purpose of this component
-  return isShown ? <>{children}</> : <div hidden>{children}</div>;
-};
+test("useTimeoutState", () => {
+  const { result } = renderHook(() => useTimeoutState(200));
 
-export default DelayedRender;
+  expect(result.current).toEqual(false);
+  jest.advanceTimersByTime(30);
+  expect(result.current).toEqual(false);
+  jest.advanceTimersByTime(300);
+  expect(result.current).toEqual(true);
+});
