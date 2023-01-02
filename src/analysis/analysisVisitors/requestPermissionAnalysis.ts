@@ -62,6 +62,20 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
       !isVarExpression(requestUrl) &&
       !isTemplateString(requestUrl.__value__)
     ) {
+      const url = requestUrl.__value__;
+
+      if (url.startsWith("http://")) {
+        this.annotations.push({
+          position: nestedPosition(position, "config.url"),
+          message:
+            "PixieBrix does not support calls using http: because they are insecure. Please use https: instead.",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+
+        return;
+      }
+
       const permissionCheckPromise = browser.permissions
         .contains({
           origins: [requestUrl.__value__],
@@ -86,7 +100,9 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
   override async run(extension: FormState): Promise<void> {
     super.run(extension);
 
-    await Promise.all(this.permissionCheckPromises);
+    // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs,
+    // missing path, etc.
+    await Promise.allSettled(this.permissionCheckPromises);
   }
 }
 
