@@ -92,7 +92,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
           // URL prefixes error message with "Invalid URL"
           message: getErrorMessage(error),
           analysisId: this.id,
-          type: AnnotationType.Warning,
+          type: AnnotationType.Error,
         });
 
         return;

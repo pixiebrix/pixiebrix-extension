@@ -27,6 +27,23 @@ const containsMock = browser.permissions.contains as jest.MockedFunction<
   typeof browser.permissions.contains
 >;
 
+function blockExtensionFactory(url: string) {
+  const extension = triggerFormStateFactory();
+  extension.extension.blockPipeline = [
+    blockConfigFactory({
+      id: RemoteMethod.BLOCK_ID,
+      config: {
+        url: {
+          __type__: "nunjucks",
+          __value__: url,
+        },
+      },
+    }),
+  ];
+
+  return extension;
+}
+
 describe("requestPermissionAnalysis", () => {
   beforeEach(() => {
     containsMock.mockResolvedValue(true);
@@ -35,18 +52,7 @@ describe("requestPermissionAnalysis", () => {
 
   test("it annotates http: url", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = triggerFormStateFactory();
-    extension.extension.blockPipeline = [
-      blockConfigFactory({
-        id: RemoteMethod.BLOCK_ID,
-        config: {
-          url: {
-            __type__: "nunjucks",
-            __value__: "http://example.com",
-          },
-        },
-      }),
-    ];
+    const extension = blockExtensionFactory("http://example.com");
 
     await visitor.run(extension);
     expect(visitor.getAnnotations()).toStrictEqual([
@@ -64,24 +70,13 @@ describe("requestPermissionAnalysis", () => {
 
   test("it annotates invalid url", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = triggerFormStateFactory();
-    extension.extension.blockPipeline = [
-      blockConfigFactory({
-        id: RemoteMethod.BLOCK_ID,
-        config: {
-          url: {
-            __type__: "nunjucks",
-            __value__: "https://there is a space in here",
-          },
-        },
-      }),
-    ];
+    const extension = blockExtensionFactory("https://there is a space in here");
 
     await visitor.run(extension);
     expect(visitor.getAnnotations()).toStrictEqual([
       {
         analysisId: "requestPermission",
-        type: "warning",
+        type: "error",
         message: "Invalid URL: https://there is a space in here",
         position: {
           path: "extension.blockPipeline.0.config.url",
@@ -92,18 +87,7 @@ describe("requestPermissionAnalysis", () => {
 
   test("it annotates insufficient permissions", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = triggerFormStateFactory();
-    extension.extension.blockPipeline = [
-      blockConfigFactory({
-        id: RemoteMethod.BLOCK_ID,
-        config: {
-          url: {
-            __type__: "nunjucks",
-            __value__: "https://example.com",
-          },
-        },
-      }),
-    ];
+    const extension = blockExtensionFactory("https://example.com");
 
     containsMock.mockResolvedValue(false);
 
@@ -125,5 +109,24 @@ describe("requestPermissionAnalysis", () => {
         },
       },
     ]);
+  });
+
+  test("skip relative URLs", async () => {
+    const visitor = new RequestPermissionAnalysis();
+    const extension = blockExtensionFactory("/relative/url");
+
+    await visitor.run(extension);
+
+    expect(visitor.getAnnotations()).toHaveLength(0);
+  });
+
+  test("skips valid URLs", async () => {
+    const visitor = new RequestPermissionAnalysis();
+    containsMock.mockResolvedValue(true);
+    const extension = blockExtensionFactory("https://example.com");
+
+    await visitor.run(extension);
+
+    expect(visitor.getAnnotations()).toHaveLength(0);
   });
 });
