@@ -52,8 +52,8 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
  */
 const targetReadyPromiseMap = new Map<string, DeferredPromise<Event>>();
 
-function makeSenderKey(sender: MessageSender): string {
-  // `tab?` to handle messages from other locations (so we can ignore instead of error)
+export function makeSenderKey(sender: MessageSender): string {
+  // Be defensive: `tab?` to handle messages from other locations (so we can ignore instead of error)
   return JSON.stringify({ tabId: sender.tab?.id, frameId: sender.frameId });
 }
 

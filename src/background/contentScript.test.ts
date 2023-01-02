@@ -18,6 +18,7 @@
 import {
   ensureContentScript,
   initContentScriptReadyListener,
+  makeSenderKey,
 } from "@/background/contentScript";
 import { getTargetState } from "@/contentScript/ready";
 import { injectContentScript } from "webext-content-scripts";
@@ -250,5 +251,11 @@ describe("ensureContentScript", () => {
     expect(secondFrameReady).toBe(true);
 
     await Promise.all([firstFrame, secondFrame]);
+  });
+});
+
+describe("makeSenderKey", () => {
+  it("handles non-tab message", () => {
+    expect(makeSenderKey({ id: RUNTIME_ID })).toBe("{}");
   });
 });
