@@ -43,6 +43,7 @@ import initActiveTabTracking from "@/background/activeTab";
 import initPartnerTheme from "@/background/partnerTheme";
 import initStarterBlueprints from "@/background/starterBlueprints";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
+import { initContentScriptReadyListener } from "@/background/contentScript";
 
 void initLocator();
 registerMessenger();
@@ -53,6 +54,7 @@ initNavigation();
 initExecutor();
 void initGoogle();
 initContextMenus();
+initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
 initFirefoxCompat();
