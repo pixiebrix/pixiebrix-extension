@@ -61,17 +61,16 @@ describe("ElementEvent", () => {
     }
   );
 
-  test("it disables element for isRootAware: true", async () => {
+  test("it clicks element for isRootAware: true", async () => {
     const clickHandler = jest.fn();
     document.querySelector("button").addEventListener("click", clickHandler);
 
     await brick.run(
       unsafeAssumeValidArg({
-        selector: "button",
         isRootAware: true,
         event: "click",
       }),
-      { root: document, logger } as BlockOptions
+      { root: document.querySelector("button"), logger } as any
     );
 
     expect(clickHandler).toHaveBeenCalled();
