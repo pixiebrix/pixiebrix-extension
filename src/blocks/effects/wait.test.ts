@@ -46,7 +46,7 @@ describe("WaitElementEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it wait element isRootAware: %s",
     async (isRootAware) => {
       await brick.run(

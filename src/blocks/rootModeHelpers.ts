@@ -24,7 +24,7 @@ import { $safeFind } from "@/helpers";
  * Special prop used to upgrade DOM bricks to be root-aware
  * @since 1.7.16
  */
-export const IS_ROOT_AWARE_BRICK_PROPS = {
+export const IS_ROOT_AWARE_BRICK_PROPS = Object.freeze({
   isRootAware: {
     description:
       "Whether the brick should run in the context of the target element, or document",
@@ -33,7 +33,7 @@ export const IS_ROOT_AWARE_BRICK_PROPS = {
     // behavior of the runtime/bricks.
     default: true,
   },
-} as const;
+} as const);
 
 /**
  * Return JQuery elements for use in a brick.
@@ -58,21 +58,21 @@ export function $safeFindElementsWithRootMode({
   blockId: RegistryId;
   selectorProp?: string;
 }): JQuery<HTMLElement | Document> {
-  if (!isRootAware && isEmpty(selector)) {
-    throw new PropError(
-      "Selector is required",
-      blockId,
-      selectorProp,
-      selector
-    );
-  }
-
   if (isRootAware) {
     if (isEmpty(selector)) {
       return $(root);
     }
 
     return $safeFind(selector, root);
+  }
+
+  if (isEmpty(selector)) {
+    throw new PropError(
+      "Selector is required",
+      blockId,
+      selectorProp,
+      selector
+    );
   }
 
   return $safeFind(selector, document);

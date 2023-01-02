@@ -464,7 +464,7 @@ describe("SchemaField", () => {
     await expectToggleOptions(container, []);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "render root aware field with value %s",
     async (value) => {
       const { container } = render(

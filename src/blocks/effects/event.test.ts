@@ -42,7 +42,7 @@ describe("ElementEvent", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it clicks element for isRootAware: %s",
     async (isRootAware) => {
       const clickHandler = jest.fn();

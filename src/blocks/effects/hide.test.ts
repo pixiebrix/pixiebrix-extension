@@ -42,7 +42,7 @@ describe("HideEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it hides element for isRootAware: %s",
     async (isRootAware) => {
       await brick.run(

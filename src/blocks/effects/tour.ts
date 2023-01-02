@@ -124,6 +124,11 @@ export class TourEffect extends Effect {
   ): Promise<void> {
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
+    // NOTE: we're not using $safeFindElementsWithRootMode in this method because:
+    // - it assumes that the selector is a top level prop when generating error messages
+    // - Tours will generally have multiple tour stops, so it's expected that the user is providing a selector for each
+    //  tour stop. In the future, the user would use the Display Temporary Information brick with location: popover
+    //  to show a popover on a single element
     const $root = $(isRootAware ? root : document);
 
     const removeStylesheet = () => {

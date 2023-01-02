@@ -42,7 +42,7 @@ describe("DisableEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it disable element for isRootAware: %s",
     async (isRootAware) => {
       await brick.run(

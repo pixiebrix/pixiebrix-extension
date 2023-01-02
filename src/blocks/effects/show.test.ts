@@ -42,7 +42,7 @@ describe("ShowEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it shows element for isRootAware: %s",
     async (isRootAware) => {
       expect(document.querySelector("button")).not.toBeVisible();

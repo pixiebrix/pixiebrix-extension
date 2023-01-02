@@ -45,7 +45,7 @@ describe("DetectElement", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it detects element: %s",
     async (isRootAware) => {
       const result = await brick.run(

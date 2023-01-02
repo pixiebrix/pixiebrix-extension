@@ -38,7 +38,7 @@ describe("EnableEffect", () => {
     `;
   });
 
-  test.each([[undefined], [false]])(
+  test.each([undefined, false])(
     "it enables element for isRootAware: %s",
     async (isRootAware) => {
       await brick.run(
