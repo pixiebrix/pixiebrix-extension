@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -36,7 +36,7 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
-import { useAsyncState, useIsMounted } from "@/hooks/common";
+import { useIsMounted } from "@/hooks/common";
 
 const { touchBrick } = workshopSlice.actions;
 
