@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer from "p-defer";
+import pDefer, { type DeferredPromise } from "p-defer";
 import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
@@ -26,6 +26,8 @@ import pTimeout from "p-timeout";
 import type { Target } from "@/types";
 import { getTargetState } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
+import { Runtime } from "webextension-polyfill";
+import MessageSender = Runtime.MessageSender;
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -44,28 +46,77 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
-export async function onReadyNotification(signal: AbortSignal): Promise<void> {
-  const { resolve, promise: readyNotification } = pDefer();
+/**
+ * @see makeSenderKey
+ * @see makeTargetKey
+ */
+const targetReadyPromiseMap = new Map<string, DeferredPromise<Event>>();
 
-  const onMessage = (message: unknown) => {
-    if (
-      isRemoteProcedureCallRequest(message) &&
-      message.type === ENSURE_CONTENT_SCRIPT_READY
-    ) {
-      resolve();
+export function makeSenderKey(sender: MessageSender): string {
+  // Be defensive: `tab?` to handle messages from other locations (so we can ignore instead of error)
+  return JSON.stringify({ tabId: sender.tab?.id, frameId: sender.frameId });
+}
+
+function makeTargetKey(target: Target): string {
+  return JSON.stringify({ tabId: target.tabId, frameId: target.frameId });
+}
+
+/**
+ * Runtime message handler to handle ENSURE_CONTENT_SCRIPT_READY messages sent from the contentScript
+ */
+function onContentScriptReadyMessage(
+  message: unknown,
+  sender: MessageSender
+): null | undefined {
+  if (
+    isRemoteProcedureCallRequest(message) &&
+    message.type === ENSURE_CONTENT_SCRIPT_READY &&
+    sender.id === browser.runtime.id
+  ) {
+    const key = makeSenderKey(sender);
+
+    try {
+      targetReadyPromiseMap.get(key)?.resolve();
+    } catch (error) {
+      console.error("Error resolving contentScript ready promise", error);
+    } finally {
+      targetReadyPromiseMap.delete(key);
     }
-  };
+
+    // Don't value to indicate we handled the message
+    return null;
+  }
+
+  // Don't return anything to indicate this didn't handle the message
+}
+
+export async function onReadyNotification(
+  target: Target,
+  signal: AbortSignal
+): Promise<void> {
+  // Track if this thread is created the promise, so it can be the one to delete it from the map
+  let isLeader = false;
+  const key = makeTargetKey(target);
+
+  let deferredPromise = targetReadyPromiseMap.get(key);
+  if (!deferredPromise) {
+    isLeader = true;
+    deferredPromise = pDefer<Event>();
+    targetReadyPromiseMap.set(key, deferredPromise);
+  }
 
   // `onReadyNotification` is not expected to throw. It resolves on `abort` simply to
   // clean up the listeners, but by then nothing is awaiting this promise anyway.
-  browser.runtime.onMessage.addListener(onMessage);
-  signal.addEventListener("abort", resolve);
+  signal.addEventListener("abort", deferredPromise.resolve);
 
   try {
-    await readyNotification;
+    await deferredPromise.promise;
   } finally {
-    browser.runtime.onMessage.removeListener(onMessage);
-    signal.removeEventListener("abort", resolve);
+    signal.removeEventListener("abort", deferredPromise.resolve);
+    if (isLeader) {
+      // Avoid race condition where another task has created a new promise
+      targetReadyPromiseMap.delete(key);
+    }
   }
 }
 
@@ -106,7 +157,7 @@ async function ensureContentScriptWithoutTimeout(
 ): Promise<void> {
   // Start waiting for the notification as early as possible,
   // `webext-dynamic-content-scripts` might have already injected the content script
-  const readyNotificationPromise = onReadyNotification(signal);
+  const readyNotificationPromise = onReadyNotification(target, signal);
 
   const result = await getTargetState(target); // It will throw if we don't have permissions
 
@@ -146,4 +197,8 @@ async function ensureContentScriptWithoutTimeout(
 
   await injectContentScript(target, scripts);
   await readyNotificationPromise;
+}
+
+export function initContentScriptReadyListener() {
+  browser.runtime.onMessage.addListener(onContentScriptReadyMessage);
 }
