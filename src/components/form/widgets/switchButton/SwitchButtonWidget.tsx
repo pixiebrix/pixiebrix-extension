@@ -29,6 +29,7 @@ const SwitchButtonWidget: CustomFieldWidget<boolean, CheckBoxLike> = ({
   name,
   onChange,
   value,
+  disabled,
 }) => {
   const patchedOnChange = (checked: boolean) => {
     onChange({
@@ -39,6 +40,7 @@ const SwitchButtonWidget: CustomFieldWidget<boolean, CheckBoxLike> = ({
   return (
     <div className={styles.root}>
       <BootstrapSwitchButton
+        disabled={disabled}
         onlabel=" "
         offlabel=" "
         checked={value}

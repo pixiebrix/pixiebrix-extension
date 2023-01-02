@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
-import useTimeoutState from "./useTimeoutState";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { BusinessError } from "@/errors/businessErrors";
+import { type BlockOptions } from "@/core";
+import { ErrorEffect } from "@/blocks/effects/error";
 
-jest.useFakeTimers();
+const brick = new ErrorEffect();
 
-test("useTimeoutState", () => {
-  const { result } = renderHook(() => useTimeoutState(200));
-
-  expect(result.current).toEqual(false);
-  jest.advanceTimersByTime(30);
-  expect(result.current).toEqual(false);
-  jest.advanceTimersByTime(300);
-  expect(result.current).toEqual(true);
+describe("ErrorEffect", () => {
+  test("it throws BusinessError", async () => {
+    await expect(
+      brick.run(unsafeAssumeValidArg({}), {} as BlockOptions)
+    ).rejects.toThrow(BusinessError);
+  });
 });

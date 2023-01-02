@@ -19,10 +19,12 @@ import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { type AutocompleteItem } from "autocompleter";
-
+import {
+  $safeFindElementsWithRootMode,
+  IS_ROOT_AWARE_BRICK_PROPS,
+} from "@/blocks/rootModeHelpers";
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
-import { $safeFind } from "@/helpers";
 
 export class AttachAutocomplete extends Effect {
   constructor() {
@@ -31,6 +33,10 @@ export class AttachAutocomplete extends Effect {
       "Attach Autocomplete",
       "Attach autocomplete to an input"
     );
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -45,33 +51,49 @@ export class AttachAutocomplete extends Effect {
           type: "string",
         },
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["selector", "options"]
+    ["options"]
   );
 
   async effect(
     {
       selector,
       options,
+      isRootAware = false,
     }: BlockArg<{
       selector: string;
       options: string[];
+      isRootAware?: boolean;
     }>,
-    { logger }: BlockOptions
+    { logger, root }: BlockOptions
   ): Promise<void> {
-    const $elements = $safeFind(selector);
+    const $elements = $safeFindElementsWithRootMode({
+      selector,
+      isRootAware,
+      root,
+      blockId: this.id,
+    });
 
-    const inputs = $elements.toArray().filter((x) => x.tagName === "INPUT");
+    const inputs = $elements
+      .toArray()
+      .filter((x) => !(x instanceof Document) && x.tagName === "INPUT");
+
+    if (inputs.length === 0) {
+      logger.warn("No input elements found", {
+        selector,
+        isRootAware,
+      });
+
+      // Return early to avoid injecting the stylesheet and loading the module
+      return;
+    }
 
     const { default: autocompleter } = await import(
       /* webpackChunkName: "autocompleter" */ "autocompleter"
     );
     // TODO: adjust style to hard-code font color so it works on dark themes that have a light font color by default
     await injectStylesheet(autocompleterStyleUrl);
-
-    if (inputs.length === 0) {
-      logger.warn("No input elements found for selector");
-    }
 
     for (const input of inputs) {
       autocompleter({

@@ -16,10 +16,13 @@
  */
 
 import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
 import { compact } from "lodash";
+import {
+  $safeFindElementsWithRootMode,
+  IS_ROOT_AWARE_BRICK_PROPS,
+} from "@/blocks/rootModeHelpers";
 
 function isCheckbox(
   element: HTMLInputElement | HTMLTextAreaElement
@@ -42,12 +45,20 @@ export class FormData extends Transformer {
     return true;
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    selector: {
-      type: "string",
-      description: "jQuery selector for the form",
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  inputSchema: Schema = propertiesToSchema(
+    {
+      selector: {
+        type: "string",
+        description: "jQuery selector for the form",
+      },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-  });
+    []
+  );
 
   override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -55,8 +66,18 @@ export class FormData extends Transformer {
     additionalProperties: true,
   };
 
-  async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const result = $safeFind(selector)
+  async transform(
+    { selector, isRootAware = false }: BlockArg,
+    { root }: BlockOptions
+  ): Promise<Record<string, unknown>> {
+    const $elements = $safeFindElementsWithRootMode({
+      selector,
+      isRootAware,
+      root,
+      blockId: this.id,
+    });
+
+    const result = $elements
       .find<HTMLInputElement | HTMLTextAreaElement>(":input")
       .get()
       .map((input) => {

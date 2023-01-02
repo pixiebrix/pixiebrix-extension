@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
-import useTimeoutState from "./useTimeoutState";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { type BlockOptions } from "@/core";
+import { IdentityTransformer } from "@/blocks/transformers/identity";
 
-jest.useFakeTimers();
+const brick = new IdentityTransformer();
 
-test("useTimeoutState", () => {
-  const { result } = renderHook(() => useTimeoutState(200));
-
-  expect(result.current).toEqual(false);
-  jest.advanceTimersByTime(30);
-  expect(result.current).toEqual(false);
-  jest.advanceTimersByTime(300);
-  expect(result.current).toEqual(true);
+describe("IdentityTransformer", () => {
+  test("it returns same value", async () => {
+    const value = { foo: "bar" };
+    const result = await brick.run(
+      unsafeAssumeValidArg(value),
+      {} as BlockOptions
+    );
+    expect(result).toStrictEqual(value);
+  });
 });

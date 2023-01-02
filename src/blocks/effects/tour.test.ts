@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
-import useTimeoutState from "./useTimeoutState";
+import { TourEffect } from "@/blocks/effects/tour";
 
-jest.useFakeTimers();
+const brick = new TourEffect();
 
-test("useTimeoutState", () => {
-  const { result } = renderHook(() => useTimeoutState(200));
-
-  expect(result.current).toEqual(false);
-  jest.advanceTimersByTime(30);
-  expect(result.current).toEqual(false);
-  jest.advanceTimersByTime(300);
-  expect(result.current).toEqual(true);
+describe("TourEffect", () => {
+  test("isRootAware", async () => {
+    await expect(brick.isRootAware()).resolves.toBe(true);
+  });
 });
