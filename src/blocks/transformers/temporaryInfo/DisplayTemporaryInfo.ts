@@ -31,6 +31,7 @@ import {
   waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { CancelError } from "@/errors/businessErrors";
 
 class DisplayTemporaryInfo extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/display");
@@ -113,6 +114,16 @@ class DisplayTemporaryInfo extends Transformer {
 
     try {
       await waitForTemporaryPanel(nonce);
+    } catch (error) {
+      if (error instanceof CancelError) {
+        // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915
+        // For temporary forms, we throw the CancelError because typically the form is input to additional bricks.
+        // For temporary information, typically the information is displayed as the last brick in the action.
+        // Given that this brick doesn't return any values currently, we'll just swallow the error and return normally
+        // NOP
+      } else {
+        throw error;
+      }
     } finally {
       controller.abort();
     }
