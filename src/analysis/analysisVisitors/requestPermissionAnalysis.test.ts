@@ -29,7 +29,7 @@ const containsMock = browser.permissions.contains as jest.MockedFunction<
 
 describe("requestPermissionAnalysis", () => {
   beforeEach(() => {
-    browser.permissions.contains = jest.fn().mockResolvedValue(true);
+    containsMock.mockResolvedValue(true);
     containsMock.mockReset();
   });
 
@@ -62,6 +62,34 @@ describe("requestPermissionAnalysis", () => {
     ]);
   });
 
+  test("it annotates invalid url", async () => {
+    const visitor = new RequestPermissionAnalysis();
+    const extension = triggerFormStateFactory();
+    extension.extension.blockPipeline = [
+      blockConfigFactory({
+        id: RemoteMethod.BLOCK_ID,
+        config: {
+          url: {
+            __type__: "nunjucks",
+            __value__: "https://there is a space in here",
+          },
+        },
+      }),
+    ];
+
+    await visitor.run(extension);
+    expect(visitor.getAnnotations()).toStrictEqual([
+      {
+        analysisId: "requestPermission",
+        type: "warning",
+        message: "Invalid URL: https://there is a space in here",
+        position: {
+          path: "extension.blockPipeline.0.config.url",
+        },
+      },
+    ]);
+  });
+
   test("it annotates insufficient permissions", async () => {
     const visitor = new RequestPermissionAnalysis();
     const extension = triggerFormStateFactory();
@@ -77,9 +105,15 @@ describe("requestPermissionAnalysis", () => {
       }),
     ];
 
-    browser.permissions.contains = jest.fn().mockResolvedValue(false);
+    containsMock.mockResolvedValue(false);
 
     await visitor.run(extension);
+
+    expect(containsMock).toHaveBeenCalledWith({
+      // Checking that the visitor applies a trailing slash. `contains` requires a path on the URL
+      origins: ["https://example.com/"],
+    });
+
     expect(visitor.getAnnotations()).toStrictEqual([
       {
         analysisId: "requestPermission",

@@ -24,6 +24,8 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { isAbsoluteUrl } from "@/utils";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -64,6 +66,10 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
     ) {
       const url = requestUrl.__value__;
 
+      if (!isAbsoluteUrl(url)) {
+        return;
+      }
+
       if (url.startsWith("http://")) {
         this.annotations.push({
           position: nestedPosition(position, "config.url"),
@@ -76,9 +82,25 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
         return;
       }
 
+      let parsedURL: URL;
+
+      try {
+        parsedURL = new URL(url);
+      } catch (error) {
+        this.annotations.push({
+          position: nestedPosition(position, "config.url"),
+          // URL prefixes error message with "Invalid URL"
+          message: getErrorMessage(error),
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+
+        return;
+      }
+
       const permissionCheckPromise = browser.permissions
         .contains({
-          origins: [requestUrl.__value__],
+          origins: [parsedURL.href],
         })
         // eslint-disable-next-line promise/prefer-await-to-then -- need the complete Promise
         .then((hasPermission) => {
@@ -100,8 +122,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
   override async run(extension: FormState): Promise<void> {
     super.run(extension);
 
-    // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs,
-    // missing path, etc.
+    // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs
     await Promise.allSettled(this.permissionCheckPromises);
   }
 }
