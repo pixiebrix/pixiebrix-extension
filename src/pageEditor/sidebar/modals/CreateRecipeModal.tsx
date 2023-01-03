@@ -30,7 +30,7 @@ import {
   selectDeletedElements,
   selectDirty,
   selectDirtyMetadataForRecipeId,
-  selectDirtyRecipeOptions,
+  selectDirtyRecipeOptionDefinitions,
   selectEditorModalVisibilities,
   selectElements,
   selectKeepLocalCopyOnCreateRecipe,
@@ -100,7 +100,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
+  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 

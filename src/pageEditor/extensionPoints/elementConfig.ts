@@ -101,10 +101,7 @@ export interface BaseFormState<
   label: string;
 
   /**
-   * The options the user provided when installing the extension as a blueprint from the marketplace.
-   *
-   * Not currently exposed in the page editor.
-   *
+   * The input options from the extension's blueprint
    * @since 1.4.3
    */
   optionsArgs: UserOptions;
@@ -226,7 +223,9 @@ export interface ElementConfig<
   /**
    * Returns the extension point configuration corresponding to the FormState.
    */
-  readonly selectExtensionPoint: (element: TState) => ExtensionPointConfig;
+  readonly selectExtensionPointConfig: (
+    element: TState
+  ) => ExtensionPointConfig;
 
   /**
    * Returns the extension configuration corresponding to the FormState.

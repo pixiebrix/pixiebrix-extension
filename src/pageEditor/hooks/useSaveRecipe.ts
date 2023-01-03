@@ -21,7 +21,7 @@ import {
   selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
-  selectDirtyRecipeOptions,
+  selectDirtyRecipeOptionDefinitions,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
 import {
@@ -58,7 +58,7 @@ type RecipeSaver = {
 async function getPermissions(
   element: FormState
 ): Promise<Permissions.Permissions> {
-  const { extension, extensionPoint: extensionPointConfig } = ADAPTERS.get(
+  const { extension, extensionPointConfig } = ADAPTERS.get(
     element.type
   ).asDynamicElement(element);
   const extensionPoint = extensionPointFactory(extensionPointConfig);
@@ -90,7 +90,7 @@ function useSaveRecipe(): RecipeSaver {
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
+  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
