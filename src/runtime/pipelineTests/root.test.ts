@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ import {
   type ApiVersion,
   type BlockArg,
   type BlockOptions,
+  type Expression,
   type ReaderRoot,
 } from "@/core";
 import blockRegistry from "@/blocks/registry";
@@ -30,6 +31,7 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -139,7 +141,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     });
 
     test.each([rootBlock.id, rootReader.id])(
-      "custom root for: %s",
+      "custom root via selector for: %s",
       async (blockId) => {
         const element = document.createElement("IMG");
         document.body.append(element);
@@ -177,7 +179,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
     test.each([rootBlock.id, rootReader.id])(
       "throw on multiple custom root matches: %s",
-      async () => {
+      async (blockId) => {
         const div = document.createElement("DIV");
         const element = document.createElement("IMG");
         div.append(element);
@@ -188,7 +190,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         await expect(
           reducePipeline(
             // Force document as starting point for the selector
-            { id: rootBlock.id, config: {}, rootMode: "document", root: "img" },
+            { id: blockId, config: {}, rootMode: "document", root: "img" },
             { ...simpleInput({}), optionsArgs: {}, root: div },
             testOptions(apiVersion)
           )
@@ -198,16 +200,58 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
     test.each([rootBlock.id, rootReader.id])(
       "throw on no custom root matches: %s",
-      async () => {
+      async (blockId) => {
         await expect(
           reducePipeline(
             // Force document as starting point for the selector
-            { id: rootBlock.id, config: {}, rootMode: "document", root: "a" },
+            { id: blockId, config: {}, rootMode: "document", root: "a" },
             { ...simpleInput({}), optionsArgs: {} },
             testOptions(apiVersion)
           )
         ).rejects.toThrow(/No roots found/);
       }
     );
+
+    test("pass hard-coded root reference", async () => {
+      const div = document.createElement("DIV");
+      document.body.append(div);
+
+      const ref = getReferenceForElement(div);
+
+      await expect(
+        reducePipeline(
+          // Force document as starting point for the selector
+          { id: rootBlock.id, config: {}, rootMode: "element", root: ref },
+          { ...simpleInput({}), optionsArgs: {}, root: document },
+          testOptions(apiVersion)
+        )
+      ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
+    });
   }
 );
+
+describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
+  test("pass templated root reference", async () => {
+    const div = document.createElement("DIV");
+    document.body.append(div);
+
+    const ref = getReferenceForElement(div);
+
+    await expect(
+      reducePipeline(
+        // Force document as starting point for the selector
+        {
+          id: rootBlock.id,
+          config: {},
+          rootMode: "element",
+          root: {
+            __type__: "var",
+            __value__: "@options.element",
+          } as Expression,
+        },
+        { ...simpleInput({}), optionsArgs: { element: ref }, root: document },
+        testOptions(apiVersion)
+      )
+    ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
+  });
+});

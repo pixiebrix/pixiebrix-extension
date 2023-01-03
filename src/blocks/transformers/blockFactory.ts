@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,6 +33,7 @@ import {
   type RegistryId,
   type Schema,
   type SemVerString,
+  type UiSchema,
 } from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
@@ -50,7 +51,16 @@ type ComponentConfig = {
   defaultOptions: Record<string, string>;
   pipeline: BlockConfig | BlockPipeline;
   inputSchema: Schema;
+  /**
+   * An optional RJSF uiSchema for inputs.
+   *
+   * Currently only supports the ui:order property.
+   *
+   * @since 1.7.16
+   */
+  uiSchema?: UiSchema;
   outputSchema?: Schema;
+
   // Mapping from `key` -> `serviceId`
   services?: Record<string, RegistryId>;
 };
@@ -84,6 +94,8 @@ class ExternalBlock extends Block {
 
   readonly inputSchema: Schema;
 
+  readonly uiSchema?: UiSchema;
+
   readonly version: SemVerString;
 
   constructor(component: ComponentConfig) {
@@ -92,6 +104,7 @@ class ExternalBlock extends Block {
     this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
     this.inputSchema = this.component.inputSchema;
+    this.uiSchema = this.component.uiSchema;
     this.outputSchema = this.component.outputSchema;
     this.version = version;
   }

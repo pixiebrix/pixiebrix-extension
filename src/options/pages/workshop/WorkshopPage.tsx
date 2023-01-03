@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import React, { useMemo, useState } from "react";
 import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
@@ -142,98 +142,85 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   }, [fuse, query, scopes, collections, kinds, bricks]);
 
   return (
-    <>
-      <Row>
-        <Col md="12" lg="8">
-          <Form>
-            <InputGroup className="mb-2 mr-sm-2">
-              <InputGroup.Prepend>
-                <InputGroup.Text>Search</InputGroup.Text>
-              </InputGroup.Prepend>
-              <Form.Control
-                id="query"
-                placeholder="Start typing to find results"
-                value={query}
-                onChange={({ target }) => {
-                  setQuery(target.value);
-                }}
-              />
-            </InputGroup>
-          </Form>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <div className="d-flex">
-            <div style={{ width: 200 }}>
-              <Select
-                isMulti
-                placeholder="Filter @scope"
-                options={scopeOptions}
-                value={scopeOptions.filter((x) => scopes.includes(x.value))}
-                onChange={(values) => {
-                  dispatch(
-                    actions.setScopes((values ?? []).map((x) => x.value))
-                  );
-                }}
-              />
-            </div>
-            <div style={{ width: 200 }} className="ml-3">
-              <Select
-                isMulti
-                placeholder="Filter collection"
-                options={collectionOptions}
-                value={collectionOptions.filter((x) =>
-                  collections.includes(x.value)
-                )}
-                onChange={(values) => {
-                  dispatch(
-                    actions.setCollections((values ?? []).map((x) => x.value))
-                  );
-                }}
-              />
-            </div>
-            <div style={{ width: 200 }} className="ml-3">
-              <Select
-                isMulti
-                placeholder="Filter kind"
-                options={kindOptions}
-                value={kindOptions.filter((x) => kinds.includes(x.value))}
-                onChange={(values) => {
-                  dispatch(
-                    actions.setKinds((values ?? []).map((x) => x.value))
-                  );
-                }}
-              />
-            </div>
-            <div className="ml-3">
-              {filtered && (
-                <Button
-                  variant="info"
-                  size="sm"
-                  style={{ height: "36px", marginTop: "1px" }}
-                  onClick={() => {
-                    dispatch(actions.clearFilters());
-                  }}
-                >
-                  <FontAwesomeIcon icon={faTimes} /> Reset Filters
-                </Button>
-              )}
-            </div>
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="mt-4" md="12" xl="8">
-          <CustomBricksCard
-            navigate={navigate}
-            bricks={sortedBricks}
-            isFetching={isLoading}
-            error={error}
+    <div className="max-950">
+      <Form>
+        <InputGroup className="mb-2 mr-sm-2">
+          <InputGroup.Prepend>
+            <InputGroup.Text>Search</InputGroup.Text>
+          </InputGroup.Prepend>
+          <Form.Control
+            id="query"
+            placeholder="Start typing to find results"
+            value={query}
+            onChange={({ target }) => {
+              setQuery(target.value);
+            }}
           />
-        </Col>
-      </Row>
-    </>
+        </InputGroup>
+      </Form>
+
+      <div className="d-flex">
+        <div style={{ width: 200 }}>
+          <Select
+            isMulti
+            placeholder="Filter @scope"
+            options={scopeOptions}
+            value={scopeOptions.filter((x) => scopes.includes(x.value))}
+            onChange={(values) => {
+              dispatch(actions.setScopes((values ?? []).map((x) => x.value)));
+            }}
+          />
+        </div>
+        <div style={{ width: 200 }} className="ml-3">
+          <Select
+            isMulti
+            placeholder="Filter collection"
+            options={collectionOptions}
+            value={collectionOptions.filter((x) =>
+              collections.includes(x.value)
+            )}
+            onChange={(values) => {
+              dispatch(
+                actions.setCollections((values ?? []).map((x) => x.value))
+              );
+            }}
+          />
+        </div>
+        <div style={{ width: 200 }} className="ml-3">
+          <Select
+            isMulti
+            placeholder="Filter kind"
+            options={kindOptions}
+            value={kindOptions.filter((x) => kinds.includes(x.value))}
+            onChange={(values) => {
+              dispatch(actions.setKinds((values ?? []).map((x) => x.value)));
+            }}
+          />
+        </div>
+        <div className="ml-3">
+          {filtered && (
+            <Button
+              variant="info"
+              size="sm"
+              style={{ height: "36px", marginTop: "1px" }}
+              onClick={() => {
+                dispatch(actions.clearFilters());
+              }}
+            >
+              <FontAwesomeIcon icon={faTimes} /> Reset Filters
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className="mt-4">
+        <CustomBricksCard
+          navigate={navigate}
+          bricks={sortedBricks}
+          isFetching={isLoading}
+          error={error}
+        />
+      </div>
+    </div>
   );
 };
 

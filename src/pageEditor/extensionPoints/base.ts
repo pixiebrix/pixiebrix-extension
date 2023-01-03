@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -408,11 +408,26 @@ export function getImplicitReader(
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),
       validateRegistryId("@pixiebrix/selection"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
     ]);
   }
 
-  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
-  // the contextMenu extension point.
+  if (type === "contextMenu") {
+    // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
+    // the contextMenu extension point.
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
+  if (type === "menuItem") {
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }
 

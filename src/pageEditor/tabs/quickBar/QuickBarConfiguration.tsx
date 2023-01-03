@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -85,8 +85,8 @@ const QuickBarConfiguration: React.FC<{
         blankValue="eventTarget"
         description={
           <p>
-            Use&nbsp;<code>eventTarget</code> to pass the target of the
-            right-click as the action root. Use&nbsp;
+            Use&nbsp;<code>eventTarget</code> to pass the focused element as the
+            action root. Use&nbsp;
             <code>document</code> to pass the document as the action root.
           </p>
         }

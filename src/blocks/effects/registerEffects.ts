@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,6 +44,7 @@ import { EnableEffect } from "./enable";
 import InsertHtml from "@/blocks/effects/insertHtml";
 import CustomEventEffect from "@/blocks/effects/customEvent";
 import ReplaceTextEffect from "@/blocks/effects/replaceText";
+import HighlightText from "@/blocks/effects/highlightText";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -80,6 +81,7 @@ function registerEffects(): void {
   registerBlock(new InsertHtml());
   registerBlock(new CustomEventEffect());
   registerBlock(new ReplaceTextEffect());
+  registerBlock(new HighlightText());
 }
 
 export default registerEffects;

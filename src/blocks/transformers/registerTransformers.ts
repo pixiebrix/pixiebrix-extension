@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,6 +47,7 @@ import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import { RandomNumber } from "@/blocks/transformers/randomNumber";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import TraverseElements from "@/blocks/transformers/traverseElements";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -75,6 +76,7 @@ function registerTransformers() {
   registerBlock(new ParseDate());
   registerBlock(new ScreenshotTab());
   registerBlock(new RandomNumber());
+  registerBlock(new TraverseElements());
 
   // Control Flow Bricks
   registerBlock(new ForEach());

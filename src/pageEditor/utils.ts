@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,7 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { type RecipeDefinition } from "@/types/definitions";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -66,6 +67,13 @@ export function getRecipeIdForElement(
   element: IExtension | FormState
 ): RegistryId {
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
+}
+
+export function getRecipeById(
+  recipes: RecipeDefinition[],
+  id: RegistryId
+): RecipeDefinition | undefined {
+  return recipes.find((recipe) => recipe.metadata.id === id);
 }
 
 export function getPipelinePropNames(block: BlockConfig): string[] {

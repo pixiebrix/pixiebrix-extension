@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,13 +16,14 @@
  */
 
 import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import { $safeFind } from "@/helpers";
 import pDefer from "p-defer";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 
 type Step = {
   title: string;
@@ -45,6 +46,10 @@ let tourInProgress = false;
 export class TourEffect extends Effect {
   constructor() {
     super("@pixiebrix/tour", "Show Tour", "Show step-by-step tour");
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -102,17 +107,29 @@ export class TourEffect extends Effect {
           minItems: 1,
         },
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
     ["steps"]
   );
 
-  async effect({
-    showProgress = false,
-    showBullets = true,
-    disableInteraction = false,
-    steps = [] as Step[],
-  }: BlockArg): Promise<void> {
+  async effect(
+    {
+      showProgress = false,
+      showBullets = true,
+      disableInteraction = false,
+      steps = [] as Step[],
+      isRootAware = false,
+    }: BlockArg,
+    { root }: BlockOptions
+  ): Promise<void> {
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
+
+    // NOTE: we're not using $safeFindElementsWithRootMode in this method because:
+    // - it assumes that the selector is a top level prop when generating error messages
+    // - Tours will generally have multiple tour stops, so it's expected that the user is providing a selector for each
+    //  tour stop. In the future, the user would use the Display Temporary Information brick with location: popover
+    //  to show a popover on a single element
+    const $root = $(isRootAware ? root : document);
 
     const removeStylesheet = () => {
       stylesheetLink.remove();
@@ -130,7 +147,7 @@ export class TourEffect extends Effect {
       }
 
       const [firstStep] = steps as Step[];
-      if ($safeFind(firstStep.element).length === 0) {
+      if ($safeFind(firstStep.element, $root).length === 0) {
         throw new BusinessError(
           "No matching element found for first step in tour"
         );
@@ -145,7 +162,7 @@ export class TourEffect extends Effect {
           disableInteraction,
           steps: (steps as Step[]).map(({ element, ...rest }) => ({
             ...rest,
-            element: $safeFind(element).get(0),
+            element: $safeFind(element, $root).get(0),
           })),
         })
         .oncomplete(() => {

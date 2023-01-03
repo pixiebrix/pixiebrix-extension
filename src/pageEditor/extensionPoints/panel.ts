@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,7 +47,7 @@ import { insertPanel } from "@/contentScript/messenger/api";
 import {
   type DynamicDefinition,
   type PanelSelectionResult,
-} from "@/contentScript/nativeEditor/types";
+} from "@/contentScript/pageEditor/types";
 import { type PanelFormState, type PanelTraits } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

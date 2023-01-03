@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -76,11 +76,6 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     }
 
     return this.typeCachePromise;
-  }
-
-  async lookupTyped(id: RegistryId): Promise<TypedBlock | undefined> {
-    const typeCache = await this.allTyped();
-    return typeCache.get(id);
   }
 
   override register(...items: IBlock[]): void {

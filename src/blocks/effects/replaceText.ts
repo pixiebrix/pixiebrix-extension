@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,39 +18,45 @@
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { $safeFind } from "@/helpers";
+import { uniq } from "lodash";
+
+// Adapted from https://github.com/refined-github/refined-github/blob/main/source/helpers/get-text-nodes.ts
+export function getTextNodes(roots: Node[]): Text[] {
+  const textNodes: Text[] = [];
+
+  for (const root of roots) {
+    // `ownerDocument` is null for documents
+    const nodeDocument = root.ownerDocument ?? (root as Document);
+    const walker = nodeDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+
+    let node;
+
+    do {
+      node = walker.nextNode();
+
+      if (node) {
+        textNodes.push(node as Text);
+      }
+    } while (node);
+  }
+
+  return uniq(textNodes);
+}
 
 /**
  * Recursively replace text in an element and its children, without modifying the structure of the document.
  */
 export function replaceText({
-  node,
+  nodes,
   pattern,
   replacement,
-  visited,
 }: {
-  node: Node;
+  nodes: Node[];
   pattern: string | RegExp;
   replacement: string;
-  visited: WeakSet<Node>;
 }) {
-  // `ownerDocument` is null for documents
-  const nodeDocument = node.ownerDocument ?? (node as Document);
-  const walker = nodeDocument.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-
-  let currentNode: Node | null;
-
-  while ((currentNode = walker.nextNode())) {
-    if (visited.has(currentNode)) {
-      // Avoid running replaceText on same node twice if selector passed to brick matches multiple nodes
-      // in the same subtree
-      continue;
-    }
-
-    visited.add(currentNode);
-    currentNode.textContent = currentNode.textContent.replaceAll(
-      pattern,
-      replacement
-    );
+  for (const node of getTextNodes(nodes)) {
+    node.textContent = node.textContent.replaceAll(pattern, replacement);
   }
 }
 
@@ -110,17 +116,13 @@ class ReplaceTextEffect extends Effect {
   ): Promise<void> {
     const $elements = selector ? $safeFind(selector, root) : $(root);
 
-    const visited = new WeakSet<Node>();
     const convertedPattern = isRegex ? new RegExp(pattern, "g") : pattern;
 
-    for (const element of $elements.get()) {
-      replaceText({
-        node: element,
-        pattern: convertedPattern,
-        replacement,
-        visited,
-      });
-    }
+    replaceText({
+      nodes: $elements.get(),
+      pattern: convertedPattern,
+      replacement,
+    });
   }
 }
 

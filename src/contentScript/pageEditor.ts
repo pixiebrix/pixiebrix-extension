@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import { deserializeError, serializeError } from "serialize-error";
 import { makeRead, type ReaderTypeConfig } from "@/blocks/readers/factory";
-import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
+import FRAMEWORK_ADAPTERS from "@/pageScript/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
@@ -42,7 +42,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { $safeFind } from "@/helpers";
-import { clearDynamicElements } from "@/contentScript/nativeEditor/dynamic";
+import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
@@ -50,7 +50,7 @@ import { uuidv4 } from "@/types/helpers";
 import { type PanelPayload } from "@/sidebar/types";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
-import { stopInspectingNativeHandler } from "./nativeEditor/elementPicker";
+import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {

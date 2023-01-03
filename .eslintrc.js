@@ -20,7 +20,7 @@ const restrictedZones = [
     `../${exporter}/messenger`,
     `../${exporter}/types.ts`,
     // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
-    `../${exporter}/nativeEditor/types.ts`,
+    `../${exporter}/pageEditor/types.ts`,
     `../${exporter}/pageEditorTypes.ts`,
     `../${exporter}/runBlockTypes.ts`,
     `../${exporter}/extensionPoints/formStateTypes.ts`,
