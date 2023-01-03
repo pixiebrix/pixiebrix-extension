@@ -105,9 +105,9 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   const createRecipeFromElement = useCallback(
-    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` breaks the call chain
+    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     (element: FormState, metadata: RecipeMetadataFormState) =>
-      // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` breaks the call chain
+      // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       checkPermissions(element).then(async (hasPermissions) => {
         if (!hasPermissions) {
           return;

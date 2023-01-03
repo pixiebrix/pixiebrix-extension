@@ -101,8 +101,9 @@ async function ensurePermissions(element: FormState) {
   return hasPermissions;
 }
 
-export async function checkPermissions(element: FormState): Promise<boolean> {
-  // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+export function checkPermissions(element: FormState): Promise<boolean> {
+  // eslint-disable-next-line promise/prefer-await-to-then -- return a promise and let the calling party do decide whether to await it or not
   return ensurePermissions(element).catch((error) => {
     console.error("Error checking/enabling permissions", { error });
     notify.warning({
