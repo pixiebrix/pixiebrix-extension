@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,6 +34,7 @@ import useUserAction from "@/hooks/useUserAction";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
+import { reloadIfNewVersionIsReady } from "@/chrome";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -78,10 +79,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
   }, []);
 
   const requestExtensionUpdate = useCallback(async () => {
-    const status = await browser.runtime.requestUpdateCheck();
-    if (status === "update_available") {
-      browser.runtime.reload();
-    } else if (status === "throttled") {
+    const status = await reloadIfNewVersionIsReady();
+    if (status === "throttled") {
       notify.error({ message: "Too many update requests", reportError: false });
     } else {
       notify.info("No update available");

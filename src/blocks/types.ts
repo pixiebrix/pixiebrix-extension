@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  */
 
 import {
+  type ElementReference,
   type Expression,
   type OutputKey,
   type RegistryId,
@@ -166,18 +167,23 @@ export type BlockConfig = {
    * (Optional) whether the block should inherit the current root element, or if it should use the document
    * (default=`inherit`)
    *
+   * `element` rootMode added in 1.7.16
+   *
    * @see root
    * @since 1.4.0
    */
-  rootMode?: "inherit" | "document";
+  rootMode?: "inherit" | "document" | "element";
 
   /**
-   * (Optional) root jQuery/CSS selector. The selector is relative to the `root` that is passed to the pipeline/stage.
+   * (Optional) root jQuery/CSS selector or element reference.
    *
-   * An error is thrown at runtime if the selector doesn't match exactly one element
+   * For rootMode of "inherit" and "document", interpreted as a jQuery/CSS selector. The selector is relative to the
+   * `root` that is passed to the pipeline/stage. An error is thrown at runtime if the selector doesn't match exactly
+   * one element
+   *
    * @see rootMode
    */
-  root?: string;
+  root?: string | ElementReference | Expression;
 
   /**
    * (Optional) template language to use for rendering the `if` and `config` properties (default=`mustache`)

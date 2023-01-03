@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import styles from "./SettingsPage.module.scss";
 
 import React from "react";
 import Page from "@/layout/Page";
@@ -34,7 +32,7 @@ import { useSelector } from "react-redux";
 const DEBUG = process.env.DEBUG;
 
 const Section: React.FunctionComponent = ({ children }) => (
-  <div className={styles.root}>{children}</div>
+  <div className="mb-4">{children}</div>
 );
 
 const SettingsPage: React.FunctionComponent = () => {
@@ -44,6 +42,7 @@ const SettingsPage: React.FunctionComponent = () => {
 
   return (
     <Page
+      className="max-550"
       icon={faCogs}
       title="Extension Settings"
       description={

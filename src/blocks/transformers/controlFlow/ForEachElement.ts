@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,9 @@ import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { $safeFind } from "@/helpers";
 import { castArray } from "lodash";
+import { getReferenceForElement } from "@/contentScript/elementReference";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { PropError } from "@/errors/businessErrors";
 
 class ForEachElement extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");
@@ -55,6 +58,12 @@ class ForEachElement extends Transformer {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
         description: "The bricks to execute for each element",
       },
+      elementKey: {
+        type: "string",
+        default: "element",
+        description:
+          "The element key/variable for the body of the loop, without the leading @",
+      },
     },
     ["selector", "body"]
   );
@@ -63,22 +72,44 @@ class ForEachElement extends Transformer {
     {
       selector,
       body: bodyPipeline,
+      // For backward compatibility, don't default to "element"
+      elementKey,
     }: BlockArg<{
       selector: string;
       body: PipelineExpression;
+      elementKey?: string;
     }>,
     options: BlockOptions
   ): Promise<unknown> {
+    if (elementKey) {
+      try {
+        validateOutputKey(elementKey);
+      } catch {
+        throw new PropError(
+          "Invalid value for elementKey",
+          this.id,
+          "elementKey",
+          null
+        );
+      }
+    }
+
     const elements = $safeFind(selector, options.root ?? document);
 
     let last: unknown;
 
     for (const [index, element] of castArray(elements.get()).entries()) {
+      const extraContext = elementKey
+        ? {
+            [`@${elementKey}`]: getReferenceForElement(element),
+          }
+        : {};
+
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
       last = await options.runPipeline(
         bodyPipeline.__value__,
         { key: "body", counter: index },
-        {},
+        extraContext,
         element
       );
     }

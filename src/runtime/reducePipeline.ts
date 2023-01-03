@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -595,7 +595,12 @@ export async function blockReducer(
   };
 
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
-  const blockRoot = selectBlockRootElement(blockConfig, root);
+  const blockRoot = await selectBlockRootElement(
+    blockConfig,
+    root,
+    context,
+    options
+  );
 
   let renderedArgs: RenderedArgs;
   let renderError: unknown;

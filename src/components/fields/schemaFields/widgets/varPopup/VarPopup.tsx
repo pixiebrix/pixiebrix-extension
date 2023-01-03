@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { joinName } from "@/utils";
 import fitTextarea from "fit-textarea";
+import { type UnknownObject } from "@/types";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
@@ -34,6 +35,11 @@ type VarPopupProps = {
   setValue: (value: string) => void;
 };
 
+// A bit of hack to determine if we're in a context where autosuggest is supported. Used to prevent autosuggest from
+// breaking service configuration.
+const selectAnalysisSliceExists = (state: UnknownObject) =>
+  Boolean(state.analysis);
+
 const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   inputMode,
   inputElementRef,
@@ -41,9 +47,10 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   setValue,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
-
+  const analysisSliceExists = useSelector(selectAnalysisSliceExists);
   const { varAnalysis, varAutosuggest } = useSelector(selectSettings);
-  const autosuggestEnabled = varAnalysis && varAutosuggest;
+  const autosuggestEnabled =
+    varAnalysis && varAutosuggest && analysisSliceExists;
 
   useEffect(() => {
     if (

@@ -42,6 +42,19 @@
     },
     "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
     "inputSchema": { "$ref": "http://json-schema.org/draft-07/schema#" },
+    "uiSchema": {
+      "type": "object",
+      "description": "An RJSF UI schema for the inputSchema",
+      "properties": {
+        "ui:order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "isAvailable": {
       "type": "object",
       "properties": {
@@ -127,6 +140,30 @@
             }
           },
           "required": ["oauth2"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "baseURL": {
+              "type": "string",
+              "description": "The base URL of the API, as a URL literal or Mustache template"
+            },
+            "basic": {
+              "type": "object",
+              "required": ["username", "password"],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["basic"]
         },
         {
           "type": "object",

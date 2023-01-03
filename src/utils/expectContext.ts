@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBrowserSidebar } from "@/chrome";
 import {
   isBackground,
   isContentScript,
   isExtensionContext,
   isWebPage,
 } from "webext-detect-page";
+
+export function isBrowserSidebar(): boolean {
+  return isExtensionContext() && location.pathname === "/sidebar.html";
+}
 
 /**
  * Accepts 'This is my error' | new Error('This is my error') | Error;

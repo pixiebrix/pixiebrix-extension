@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,13 +36,11 @@ import {
   cancelSelect,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import {
-  type ElementInfo,
-  type SelectMode,
-} from "@/contentScript/nativeEditor/types";
+import { type SelectMode } from "@/contentScript/pageEditor/types";
+import { type ElementInfo } from "@/pageScript/frameworks";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settingsTypes";
-import { sortBySelector } from "@/contentScript/nativeEditor/selectorInference";
+import { sortBySelector } from "@/utils/inference/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
 

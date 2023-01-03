@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,6 +41,10 @@ beforeEach(() => {
 });
 
 describe("TableReader", () => {
+  test("isRootAware", async () => {
+    await expect(tableReaderBlock.isRootAware()).resolves.toBe(true);
+  });
+
   test("runs successfully", async () => {
     const blockConfig: BlockConfig = {
       id: tableReaderBlock.id,
@@ -99,5 +103,31 @@ describe("TableReader", () => {
       } as any);
 
     await expect(getResult).rejects.toThrow(TypeError);
+  });
+
+  test("selector is optional", async () => {
+    const blockConfig: BlockConfig = {
+      id: tableReaderBlock.id,
+      config: {},
+      outputKey: validateOutputKey("table"),
+    };
+    document.body.innerHTML = `
+      <table id="myTable">
+        <tr><th>Name</th><th>Age</th></tr>
+        <tr><td>Pete</td><td>25</td></tr>
+      </table>
+    `;
+
+    const expected = {
+      fieldNames: ["Name", "Age"],
+      records: [{ Name: "Pete", Age: "25" }],
+    };
+
+    const result = await tableReaderBlock.run(
+      unsafeAssumeValidArg(blockConfig.config),
+      { root: document.querySelector("table") } as any
+    );
+
+    expect(result).toStrictEqual(expected);
   });
 });

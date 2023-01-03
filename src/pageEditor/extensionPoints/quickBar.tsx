@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,7 +51,7 @@ import {
   QuickBarExtensionPoint,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
-import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type QuickBarFormState } from "./formStateTypes";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";

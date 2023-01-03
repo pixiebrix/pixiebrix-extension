@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/themes/colors";
+
 // Due to design system inconsistencies,
 // we have to override our primary purple color
 // for the PixieBrix theme
 .themeColorOverride {
-  color: #6562aa;
+  color: $N800;
 
   &:hover {
-    color: #4d4b8b;
-    background-color: #d1c2d7;
+    color: $N300;
   }
 }
 

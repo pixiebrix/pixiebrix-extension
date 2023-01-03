@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,8 +26,6 @@ import {
 } from "@/contentScript/ready";
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
-// eslint-disable-next-line import/no-unassigned-import -- monkey patching import
-import "@/utils/jqueryHack";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {

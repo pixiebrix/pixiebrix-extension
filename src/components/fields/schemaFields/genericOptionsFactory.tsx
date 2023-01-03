@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,10 +18,14 @@
 import React from "react";
 import { inputProperties } from "@/helpers";
 import { type Schema, type UiSchema } from "@/core";
-import { isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import pipelineSchema from "@schemas/pipeline.json";
+import {
+  isDatabaseField,
+  isServiceField,
+} from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 export type BlockOptionProps = {
   /**
@@ -40,19 +44,55 @@ const NoOptions: React.FunctionComponent = () => (
   <div>No options available</div>
 );
 
-/**
- * Return the Options fields for configuring a block with the given schema.
- */
-function genericOptionsFactory(
-  schema: Schema,
-  uiSchema?: UiSchema
-): React.FunctionComponent<BlockOptionProps> {
-  const optionSchema = inputProperties(schema);
-  if (isEmpty(optionSchema)) {
-    return NoOptions;
-  }
+type FieldConfig = {
+  prop: string;
+  isRequired: boolean;
+  fieldSchema: Schema;
+  propUiSchema: unknown;
+};
 
-  const fieldsConfig = Object.entries(optionSchema)
+export function sortedFields(
+  schema: Schema,
+  uiSchema: UiSchema | null,
+  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {}
+): FieldConfig[] {
+  const optionSchema = inputProperties(schema);
+
+  const order = uiSchema?.["ui:order"] ?? ["*"];
+  const asteriskIndex = order.indexOf("*");
+
+  const uiSchemaOrder = (field: FieldConfig) => {
+    // https://react-jsonschema-form.readthedocs.io/en/docs/usage/objects/#specifying-property-order
+    const propIndex = order.indexOf(field.prop);
+    const index = propIndex === -1 ? asteriskIndex : propIndex;
+    return index === -1 ? order.length : index;
+  };
+
+  const fieldTypeOrder = (field: FieldConfig) => {
+    // Integration configurations
+    if (isServiceField(field.fieldSchema)) {
+      return 0;
+    }
+
+    // Databases
+    if (isDatabaseField(field.fieldSchema)) {
+      return 1;
+    }
+
+    // Required fields, and fields that will have input values pre-filled
+    if (field.isRequired || field.fieldSchema.default != null) {
+      return 2;
+    }
+
+    // Optional fields that are excluded by default
+    return Number.MAX_SAFE_INTEGER;
+  };
+
+  // Order by label
+  const labelOrder = (field: FieldConfig) =>
+    (field.fieldSchema.title ?? field.prop).toLowerCase();
+
+  const fields: FieldConfig[] = Object.entries(optionSchema)
     .filter(
       ([, fieldSchema]) =>
         typeof fieldSchema === "object" &&
@@ -65,23 +105,52 @@ function genericOptionsFactory(
 
       return {
         prop,
-        fieldSchema,
+        isRequired: schema.required?.includes(prop),
+        // The fieldSchema type has been filtered so its safe to assume it is Schema
+        fieldSchema: fieldSchema as Schema,
         propUiSchema,
       };
     });
 
+  return preserveSchemaOrder && isEmpty(uiSchema)
+    ? fields
+    : sortBy(fields, uiSchemaOrder, fieldTypeOrder, labelOrder);
+}
+
+/**
+ * Return the Options fields for configuring a block with the given schema.
+ *
+ * @param schema the JSONSchema for the block configuration
+ * @param uiSchema an optional RJSF UISchema for the block configuration
+ * @param preserveSchemaOrder if true, preserve order of the schema properties if no uiSchema is provided
+ */
+function genericOptionsFactory(
+  schema: Schema,
+  uiSchema: UiSchema = {},
+  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {}
+): React.FunctionComponent<BlockOptionProps> {
+  const optionSchema = inputProperties(schema);
+  if (isEmpty(optionSchema)) {
+    return NoOptions;
+  }
+
+  const sortedFieldsConfig = sortedFields(schema, uiSchema, {
+    preserveSchemaOrder,
+  });
+
   const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
     <>
-      {fieldsConfig.map(({ prop, fieldSchema, propUiSchema }) => (
-        <SchemaField
-          key={prop}
-          name={joinName(name, configKey, prop)}
-          // The fieldSchema type has been filtered and is safe to assume it is Schema
-          schema={fieldSchema as Schema}
-          isRequired={schema.required?.includes(prop)}
-          uiSchema={propUiSchema}
-        />
-      ))}
+      {sortedFieldsConfig.map(
+        ({ prop, fieldSchema, propUiSchema, isRequired }) => (
+          <SchemaField
+            key={prop}
+            name={joinName(name, configKey, prop)}
+            schema={fieldSchema}
+            isRequired={isRequired}
+            uiSchema={propUiSchema}
+          />
+        )
+      )}
     </>
   );
 

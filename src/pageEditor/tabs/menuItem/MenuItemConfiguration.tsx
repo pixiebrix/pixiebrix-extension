@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -96,6 +96,24 @@ const MenuItemConfiguration: React.FC<{
           snippets={menuSnippets}
           {...makeLockableFieldProps("Template", isLocked)}
         />
+
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.targetMode"
+          as="select"
+          title="Target Mode"
+          blankValue="document"
+          description={
+            <p>
+              Use&nbsp;<code>eventTarget</code> to pass the button element as
+              the action root. Use&nbsp;
+              <code>document</code> to pass the document as the action root.
+            </p>
+          }
+          {...makeLockableFieldProps("Target Mode", isLocked)}
+        >
+          <option value="eventTarget">eventTarget</option>
+          <option value="document">document</option>
+        </ConnectedFieldTemplate>
 
         <ConnectedFieldTemplate
           name="extension.synchronous"

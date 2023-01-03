@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +46,7 @@ import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
-import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 

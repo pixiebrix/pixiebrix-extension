@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -79,7 +79,7 @@ import {
   type Milestone,
   UserRole,
 } from "@/types/contract";
-import { type ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import getType from "@/runtime/getType";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
