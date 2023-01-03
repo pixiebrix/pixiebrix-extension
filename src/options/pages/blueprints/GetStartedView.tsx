@@ -20,7 +20,7 @@ import styles from "./GetStartedView.module.scss";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
@@ -76,92 +76,96 @@ const GetStartedView: React.VoidFunctionComponent<{
       style={{ height: `${height}px`, width: `${width}px` }}
       className={styles.root}
     >
-      {onboardingBlueprintListing && (
-        <Row className={styles.infoRow}>
-          <Col>
-            <h4>
-              Success!{" "}
-              <InstallableIcon
-                installable={recipe}
-                listing={onboardingBlueprintListing}
-                isLoading={isLoading && isFetchingRecipe}
-              />{" "}
-              <ExternalLink
-                linkText={onboardingBlueprintListing.package.verbose_name}
-                url={marketplaceUrl}
-              />{" "}
-              is ready to use.
-            </h4>
-            <ul>
-              <li>
-                Time to try this Blueprint in the wild! You can navigate to a
-                webpage this Blueprint enhances to see it in action.
-              </li>
-              <li>
-                Check out the &quot;How to Use&quot; section for{" "}
+      <Card>
+        <Card.Body>
+          {onboardingBlueprintListing && (
+            <Row className={styles.infoRow}>
+              <Col>
+                <h4>
+                  Success!{" "}
+                  <InstallableIcon
+                    installable={recipe}
+                    listing={onboardingBlueprintListing}
+                    isLoading={isLoading && isFetchingRecipe}
+                  />{" "}
+                  <ExternalLink
+                    linkText={onboardingBlueprintListing.package.verbose_name}
+                    url={marketplaceUrl}
+                  />{" "}
+                  is ready to use.
+                </h4>
+                <ul>
+                  <li>
+                    Time to try this Blueprint in the wild! You can navigate to
+                    a webpage this Blueprint enhances to see it in action.
+                  </li>
+                  <li>
+                    Check out the &quot;How to Use&quot; section for{" "}
+                    <ExternalLink
+                      linkText={`${onboardingBlueprintListing.package.verbose_name}`}
+                      url={marketplaceUrl}
+                    />{" "}
+                    in the Marketplace for more details about how to use this
+                    Blueprint.
+                  </li>
+                </ul>
+              </Col>
+            </Row>
+          )}
+          <Row className={styles.infoRow}>
+            <Col>
+              <h4>Want to create a new Blueprint?</h4>
+              <ul>
+                <li>
+                  Start by opening a new browser tab and navigating to the
+                  webpage you want to modify.
+                </li>
+                <li>
+                  Open the Page Editor by selecting the PixieBrix tab via the{" "}
+                  <strong>Chrome DevTools</strong> using{" "}
+                  {isMac() ? (
+                    <kbd>Cmd + Option + C</kbd>
+                  ) : (
+                    <kbd>Ctrl + Shift + C</kbd>
+                  )}{" "}
+                  or <kbd>F12</kbd> and start editing your page.
+                </li>
+                <li>
+                  Save your Blueprint in the Page Editor, and you&apos;ll see it
+                  here as a personal Blueprint.
+                </li>
+              </ul>
+            </Col>
+          </Row>
+          <Row className={styles.infoRow}>
+            <Col>
+              <h4>Need more help?</h4>
+              <p>
+                Visit the{" "}
                 <ExternalLink
-                  linkText={`${onboardingBlueprintListing.package.verbose_name}`}
-                  url={marketplaceUrl}
+                  linkText="Quick Start Guide"
+                  url="https://docs.pixiebrix.com/quick-start-guide"
                 />{" "}
-                in the Marketplace for more details about how to use this
-                Blueprint.
-              </li>
-            </ul>
-          </Col>
-        </Row>
-      )}
-      <Row className={styles.infoRow}>
-        <Col>
-          <h4>Want to create a new Blueprint?</h4>
-          <ul>
-            <li>
-              Start by opening a new browser tab and navigating to the webpage
-              you want to modify.
-            </li>
-            <li>
-              Open the Page Editor by selecting the PixieBrix tab via the{" "}
-              <strong>Chrome DevTools</strong> using{" "}
-              {isMac() ? (
-                <kbd>Cmd + Option + C</kbd>
-              ) : (
-                <kbd>Ctrl + Shift + C</kbd>
-              )}{" "}
-              or <kbd>F12</kbd> and start editing your page.
-            </li>
-            <li>
-              Save your Blueprint in the Page Editor, and you&apos;ll see it
-              here as a personal Blueprint.
-            </li>
-          </ul>
-        </Col>
-      </Row>
-      <Row className={styles.infoRow}>
-        <Col>
-          <h4>Need more help?</h4>
-          <p>
-            Visit the{" "}
-            <ExternalLink
-              linkText="Quick Start Guide"
-              url="https://docs.pixiebrix.com/quick-start-guide"
-            />{" "}
-            or ask questions in the{" "}
-            <ExternalLink
-              linkText="Slack Community"
-              url="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-            />
-            .
-          </p>
-          <p>
-            {" "}
-            Visit the{" "}
-            <ExternalLink
-              linkText="PixieBrix Marketplace"
-              url={MARKETPLACE_URL}
-            />{" "}
-            for ideas.
-          </p>
-        </Col>
-      </Row>
+                or ask questions in the{" "}
+                <ExternalLink
+                  linkText="Slack Community"
+                  url="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+                />
+                .
+              </p>
+              <p>
+                {" "}
+                Visit the{" "}
+                <ExternalLink
+                  linkText="PixieBrix Marketplace"
+                  url={MARKETPLACE_URL}
+                />{" "}
+                for ideas.
+              </p>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
     </div>
   );
 };
