@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,6 +28,7 @@ import {
   isHeadingStyleField,
   isServiceField,
 } from "./fieldTypeCheckers";
+import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema } = props;
@@ -46,6 +47,12 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   if (isHeadingStyleField(schema)) {
     return <HeadingStyleField {...props} />;
+  }
+
+  if (props.name.endsWith(".isRootAware")) {
+    // Hide the isRootAware field if rendered as part of config.isRootAware. The field was introduced for
+    // backward compatibility when upgrading DOM bricks to be root-aware.
+    return <RootAwareField {...props} />;
   }
 
   return <BasicSchemaField {...props} />;

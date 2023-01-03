@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { useSelector } from "react-redux";
 import { selectTabStateError } from "@/pageEditor/tabState/tabStateSelectors";
-import { TimeoutError } from "@/utils";
+import { TimeoutError } from "p-timeout";
 
 /**
  * Error banner for Page Editor browser connection errors.

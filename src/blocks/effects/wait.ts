@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +18,10 @@
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
-import { runInMillis, sleep, TimeoutError } from "@/utils";
+import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
+import pTimeout, { TimeoutError } from "p-timeout";
+import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 
 export class WaitEffect extends Effect {
   constructor() {
@@ -78,24 +80,33 @@ export class WaitElementEffect extends Effect {
         description:
           "Maximum time of to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
     required: ["selector"],
   };
+
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
 
   async effect(
     {
       selector,
       maxWaitMillis = 0,
+      isRootAware,
     }: BlockArg<{
       selector: string | string[];
       maxWaitMillis: number | undefined;
+      isRootAware: boolean;
     }>,
-    { logger }: BlockOptions
+    { logger, root }: BlockOptions
   ): Promise<void> {
     // Single string for logging, the exact format isn't that important
     const combinedSelector = Array.isArray(selector)
       ? selector.join(" ")
       : selector;
+
+    const $root = $(isRootAware ? root : document);
 
     console.debug("Waiting for element: %s", combinedSelector, {
       selector,
@@ -105,9 +116,9 @@ export class WaitElementEffect extends Effect {
     logger.debug(`Waiting for element: ${combinedSelector}`);
 
     if (maxWaitMillis > 0) {
-      const [promise, cancel] = awaitElementOnce(selector);
+      const [promise, cancel] = awaitElementOnce(selector, $root);
       try {
-        await runInMillis(async () => promise, maxWaitMillis);
+        await pTimeout(promise, { milliseconds: maxWaitMillis });
       } catch (error) {
         cancel();
 
@@ -120,7 +131,7 @@ export class WaitElementEffect extends Effect {
         throw error ?? new Error("Unknown error waiting for element");
       }
     } else {
-      const [promise] = awaitElementOnce(selector);
+      const [promise] = awaitElementOnce(selector, $root);
       await promise;
     }
 
