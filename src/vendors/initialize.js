@@ -148,6 +148,11 @@ msobservers.initialize = function (selector, callback, options) {
       }
     }
 
+    // Check if the match applies now that the document has been updated. The handles cases where an ancestor was
+    // added/modified causing an element on the page to now match. This strictly isn't an "initialization", as the
+    // element wasn't just added. But conceptually, it corresponds to the selector now matching
+    matches.push(...$safeFind(msobserver.selector, options.target).toArray());
+
     // For each match, call the callback using jQuery.each() to initialize the element (once only.)
     for (var i = 0; i < matches.length; i++)
       $(matches[i]).each(msobserver.callback);
