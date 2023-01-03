@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -862,7 +862,7 @@ export interface AuthData {
    * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
    */
   _oauthBrand: null;
-  [key: string]: string | null;
+  [key: string]: unknown;
 }
 
 export interface TokenContext {
@@ -956,6 +956,12 @@ export interface IService<
   isAuthorizationGrant: boolean;
 
   isToken: boolean;
+
+  /**
+   * True if service uses basic access authentication to authenticate
+   * https://en.wikipedia.org/wiki/Basic_access_authentication
+   */
+  isBasicHttpAuth: boolean;
 
   getOrigins: (serviceConfig: TSanitized) => string[];
 

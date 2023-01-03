@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -180,8 +180,43 @@ describe("BotOptions", () => {
 
     expect(result.queryByText("Workspace")).not.toBeNull();
     expect(result.queryByText("Bot")).not.toBeNull();
+    expect(result.queryByText("Attended")).not.toBeNull();
     expect(result.queryByText("Run as Users")).not.toBeNull();
     expect(result.queryByText("Device Pools")).not.toBeNull();
+    expect(result.queryByText("Await Result")).not.toBeNull();
+    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+
+    // There's non-determinism in React Selects ids: react-select-X-live-region
+    // expect(result.container).toMatchSnapshot();
+  });
+
+  it("should render attended enterprise fields for public workspace", async () => {
+    (useDependency as jest.Mock).mockReturnValue({
+      config: {
+        id: uuidv4(),
+        config: {
+          controlRoomUrl: "https://control.room.com",
+        },
+      },
+      service: {} as IService,
+      hasPermissions: true,
+      requestPermissions: jest.fn(),
+    });
+
+    const base = makeBaseState();
+    base.extension.blockPipeline[0].config.workspaceType = "public";
+    base.extension.blockPipeline[0].config.isAttended = true;
+    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+      "@automationAnywhere"
+    );
+
+    const result = renderOptions(base);
+
+    expect(result.queryByText("Workspace")).not.toBeNull();
+    expect(result.queryByText("Bot")).not.toBeNull();
+    expect(result.queryByText("Attended")).not.toBeNull();
+    expect(result.queryByText("Run as Users")).toBeNull();
+    expect(result.queryByText("Device Pools")).toBeNull();
     expect(result.queryByText("Await Result")).not.toBeNull();
     expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
 

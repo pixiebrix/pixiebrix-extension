@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -122,9 +122,9 @@ export async function launchAuthIntegration({
     );
     await setPartnerAuth({
       authId: config.id,
-      token: data.access_token,
+      token: data.access_token as string,
       // `refresh_token` only returned if offline_access scope is requested
-      refreshToken: data.refresh_token,
+      refreshToken: data.refresh_token as string,
       extraHeaders: {
         "X-Control-Room": config.config.controlRoomUrl,
       },

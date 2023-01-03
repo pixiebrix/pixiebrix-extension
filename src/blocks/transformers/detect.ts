@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,12 @@
  */
 
 import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
+import {
+  $safeFindElementsWithRootMode,
+  IS_ROOT_AWARE_BRICK_PROPS,
+} from "@/blocks/rootModeHelpers";
 
 export class DetectElement extends Transformer {
   defaultOutputKey = "match";
@@ -27,16 +30,20 @@ export class DetectElement extends Transformer {
     super(
       "@pixiebrix/dom/detect",
       "Detect an element on a page",
-      "Detect and/or count an element on a page from a jQuery selector"
+      "Detect and/or count an element using a jQuery selector"
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    selector: {
-      type: "string",
-      description: "jQuery selector",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      selector: {
+        type: "string",
+        description: "jQuery selector",
+      },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-  });
+    ["selector"]
+  );
 
   override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -54,8 +61,20 @@ export class DetectElement extends Transformer {
     required: ["exists", "count"],
   };
 
-  async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const $result = $safeFind(selector);
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  async transform(
+    { selector, isRootAware }: BlockArg,
+    { root }: BlockOptions
+  ): Promise<Record<string, unknown>> {
+    const $result = $safeFindElementsWithRootMode({
+      selector,
+      isRootAware,
+      root,
+      blockId: this.id,
+    });
     return {
       count: $result.length,
       exists: $result.length > 0,

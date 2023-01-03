@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  max-width: 550px;
-  margin-bottom: 20px;
-}
+import { renderHook } from "@testing-library/react-hooks";
+import { useIsMounted } from "./common";
+
+describe("useIsMounted", () => {
+  it("should return true if component is mounted", () => {
+    const {
+      result: { current: isMounted },
+      unmount,
+    } = renderHook(() => useIsMounted());
+    expect(isMounted()).toBe(true);
+    unmount();
+    expect(isMounted()).toBe(false);
+  });
+});
