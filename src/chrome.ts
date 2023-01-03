@@ -18,6 +18,8 @@
 import { forbidContext } from "@/utils/expectContext";
 import { type JsonValue } from "type-fest";
 import { type UnknownObject } from "@/types";
+import { foreverPendingPromise } from "@/utils";
+import pTimeout from "p-timeout";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -149,7 +151,12 @@ export async function reloadIfNewVersionIsReady(): Promise<
   const status = await browser.runtime.requestUpdateCheck();
   if (status === "update_available") {
     browser.runtime.reload();
-    // It will stop here
+
+    // This should be dead code
+    await pTimeout(foreverPendingPromise, {
+      message: "Extension did not reload as requested",
+      milliseconds: 1000,
+    });
   }
 
   return status as "throttled" | "no_update";
