@@ -636,3 +636,5 @@ export const memoizeUntilSettled: typeof pMemoize = (
     ...options,
     cache: false,
   });
+
+export const foreverPendingPromise = new Promise(() => {});

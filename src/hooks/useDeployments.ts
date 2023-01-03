@@ -24,7 +24,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
-import { getExtensionVersion } from "@/chrome";
+import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { type Dispatch } from "redux";
 import { type IExtension } from "@/core";
@@ -204,7 +204,7 @@ function useDeployments(): DeploymentState {
     }
 
     if (checkExtensionUpdateRequired(deployments)) {
-      await browser.runtime.requestUpdateCheck();
+      void browser.runtime.requestUpdateCheck();
       notify.warning(
         "You must update the PixieBrix browser extension to activate the deployment"
       );
@@ -243,8 +243,10 @@ function useDeployments(): DeploymentState {
   }, [deployments, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
-    await browser.runtime.requestUpdateCheck();
-    browser.runtime.reload();
+    await reloadIfNewVersionIsReady();
+    notify.info(
+      "The extension update hasn't yet been downloaded. Try again in a few minutes."
+    );
   }, []);
 
   return {
