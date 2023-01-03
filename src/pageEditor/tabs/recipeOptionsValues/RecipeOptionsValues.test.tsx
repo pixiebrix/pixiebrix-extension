@@ -25,8 +25,8 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/definitions";
-import { Except } from "type-fest";
-import { UseCachedQueryResult } from "@/core";
+import { type Except } from "type-fest";
+import { type UseCachedQueryResult } from "@/core";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
