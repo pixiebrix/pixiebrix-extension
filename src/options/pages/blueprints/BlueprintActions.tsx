@@ -21,7 +21,6 @@ import EllipsisMenu, {
 } from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faDownload,
   faList,
   faShare,
   faStore,
@@ -70,15 +69,6 @@ const BlueprintActions: React.FunctionComponent<{
         ),
         action: actions.viewShare,
         hide: !actions.viewShare,
-      },
-      {
-        title: (
-          <>
-            <FontAwesomeIcon icon={faDownload} /> Export
-          </>
-        ),
-        action: actions.exportBlueprint,
-        hide: !actions.exportBlueprint,
       },
       {
         title: (

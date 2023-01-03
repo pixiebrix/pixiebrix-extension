@@ -141,8 +141,7 @@ function useSaveRecipe(): RecipeSaver {
     void ensurePermissions(dirtyRecipeElements).catch((error) => {
       console.error("Error checking/enabling permissions", { error });
       notify.warning({
-        message:
-          "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+        message: "Error verifying permissions",
         error,
         reportError: true,
       });
