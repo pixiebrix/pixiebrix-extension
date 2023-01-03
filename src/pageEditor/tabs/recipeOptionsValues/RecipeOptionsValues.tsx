@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
@@ -35,7 +35,7 @@ import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { inferRecipeOptions } from "@/store/extensionsUtils";
-import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/RecipeOptionsDefinition";
+import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/pageEditor/components/Effect";
@@ -47,7 +47,7 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   allowExpressions: false,
 };
 
-const ActivationOptionsContent: React.FC = () => {
+const RecipeOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const recipeId = useSelector(selectActiveRecipeId);
   const {
@@ -64,6 +64,10 @@ const ActivationOptionsContent: React.FC = () => {
     selectDirtyOptionValuesForRecipeId(recipeId)
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
+
+  useEffect(() => {
+    console.log({ schema: recipe?.options?.schema });
+  }, [recipe?.options?.schema]);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {
@@ -114,7 +118,7 @@ const ActivationOptionsContent: React.FC = () => {
     <>
       <Effect values={values} onChange={updateRedux} delayMillis={300} />
       <Card>
-        <Card.Header>Blueprint input options</Card.Header>
+        <Card.Header>Blueprint Input Options</Card.Header>
         <Card.Body>
           <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
             <OptionsFieldGroup name="" />
@@ -142,14 +146,14 @@ const ActivationOptionsContent: React.FC = () => {
   );
 };
 
-const ActivationOptions: React.FC = () => (
+const RecipeOptionsValues: React.FC = () => (
   <Container fluid className="pt-3">
     <Row>
       <Col>
-        <ActivationOptionsContent />
+        <RecipeOptionsValuesContent />
       </Col>
     </Row>
   </Container>
 );
 
-export default ActivationOptions;
+export default RecipeOptionsValues;

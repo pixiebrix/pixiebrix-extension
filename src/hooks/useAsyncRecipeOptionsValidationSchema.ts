@@ -30,26 +30,19 @@ const useAsyncRecipeOptionsValidationSchema = (
       return object().shape({});
     }
 
-    // Clone the schema here to make sure it's extensible so properties can be added
-    const dereferenced = await dereference(cloneDeep(optionsDefinitionSchema));
-    const schemaWithNullableRequiredFields = {
-      ...dereferenced,
-      properties: mapValues(
-        dereferenced.properties,
-        (schema: Schema, name: string) =>
-          optionsDefinitionSchema.required?.includes(name)
-            ? {
-                ...schema,
-                // Yup will produce an ugly "null is not type of x" validation error instead of a
-                // "this field is required" error unless we allow null values for required fields
-                // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
-                nullable: true,
-              }
-            : schema
-      ),
-    };
-
-    return buildYup(schemaWithNullableRequiredFields, {});
+    // Sometimes this schema comes in as a non-extensible object for some
+    // reason, so we need to clone it to make sure dereference() can add
+    // fields to the object
+    const dereferencedSchema = await dereference(
+      cloneDeep(optionsDefinitionSchema)
+    );
+    const yupSchema = buildYup(dereferencedSchema);
+    // Yup will produce an ugly "null is not type of x" validation error instead of an
+    // "this field is required" error unless we allow null values for required fields
+    // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
+    return yupSchema.shape(
+      mapValues(yupSchema.fields, (value) => value.nullable())
+    );
   }, [optionsDefinitionSchema]);
 
 export default useAsyncRecipeOptionsValidationSchema;

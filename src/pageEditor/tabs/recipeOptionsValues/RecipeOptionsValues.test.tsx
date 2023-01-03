@@ -18,40 +18,40 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import ActivationOptions from "@/pageEditor/tabs/activationOptionsTab/ActivationOptions";
+import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
 import { recipeFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/definitions";
+import { Except } from "type-fest";
+import { UseCachedQueryResult } from "@/core";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
   useAllRecipes: jest.fn(),
 }));
 
+const mockFlags: Except<UseCachedQueryResult<RecipeDefinition[]>, "data"> = {
+  isFetchingFromCache: false,
+  isCacheUninitialized: false,
+  isFetching: false,
+  isLoading: false,
+  isUninitialized: false,
+  error: undefined,
+  refetch: jest.fn(),
+};
+
 function mockRecipe(recipe: RecipeDefinition) {
   (useAllRecipes as jest.Mock).mockReturnValue({
     data: [recipe],
-    isFetchingFromCache: false,
-    isCacheUninitialized: false,
-    isFetching: false,
-    isLoading: false,
-    isUninitialized: false,
-    error: undefined,
-    refetch: jest.fn(),
+    ...mockFlags,
   });
 
   (useRecipe as jest.Mock).mockReturnValue({
     data: recipe,
-    isFetchingFromCache: false,
-    isCacheUninitialized: false,
-    isFetching: false,
-    isLoading: false,
-    isUninitialized: false,
-    error: undefined,
-    refetch: jest.fn(),
+    ...mockFlags,
   });
 }
 
@@ -63,7 +63,7 @@ describe("ActivationOptions", () => {
   test("renders empty options", async () => {
     const recipe = recipeFactory();
     mockRecipe(recipe);
-    const rendered = render(<ActivationOptions />, {
+    const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installRecipe({
           recipe,
@@ -114,7 +114,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockRecipe(recipe);
-    const rendered = render(<ActivationOptions />, {
+    const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installRecipe({
           recipe,
@@ -138,7 +138,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockRecipe(recipe);
-    const rendered = render(<ActivationOptions />, {
+    const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installRecipe({
           recipe,
@@ -176,7 +176,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockRecipe(recipe);
-    render(<ActivationOptions />, {
+    render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installRecipe({
           recipe,
