@@ -50,8 +50,6 @@ import { createStateSyncMiddleware } from "redux-state-sync";
 import { sessionChangesMiddleware } from "@/pageEditor/sessionChanges/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
-const disablePageEditorPersistence =
-  process.env.PAGE_EDITOR_STATE_PERSISTENCE === "false";
 
 const persistSettingsConfig = {
   key: "settings",
@@ -82,9 +80,7 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: disablePageEditorPersistence
-      ? editorSlice.reducer
-      : persistReducer(persistEditorConfig, editorSlice.reducer),
+    editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
@@ -101,11 +97,9 @@ const store = configureStore({
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
     return getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "analysis/setKnownVars"],
-        ignoredPaths: ["analysis.knownVars"],
-      },
+      // This check significantly slows down the app in dev mode.
+      // See PR for more details https://github.com/pixiebrix/pixiebrix-extension/pull/4951
+      serializableCheck: false,
       // RTK uses Immer internally, we don't need this extra check
       immutableCheck: false,
     })
