@@ -29,9 +29,13 @@ import { getAdditionalPermissions } from "webext-additional-permissions";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
-jest.mock("@/contentScript/ready", () => ({
-  getTargetState: jest.fn().mockRejectedValue(new Error("Not Implemented")),
-}));
+jest.mock("@/contentScript/ready", () => {
+  const actual = jest.requireActual("@/contentScript/ready");
+  return {
+    ...actual,
+    getTargetState: jest.fn().mockRejectedValue(new Error("Not Implemented")),
+  };
+});
 
 jest.mock("webext-content-scripts", () => ({
   injectContentScript: jest
