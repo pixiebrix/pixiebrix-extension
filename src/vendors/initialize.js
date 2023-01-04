@@ -76,10 +76,12 @@ msobservers.initialize = function (selector, callback, options) {
   };
 
   var throttledCheckTarget = throttle(
-    function () {
+    () => {
       // For UI performance, we might consider wrapping in a requestAnimationFrame in the future
       $safeFind(selector, options.target).each(callbackOnce);
     },
+    // Try to choose a wait that is long enough to avoid performance issues, but short enough to provide responsiveness
+    // for triggers that depend on ancestor/sibling elements changing
     150,
     { leading: true, trailing: true }
   );
@@ -162,12 +164,13 @@ msobservers.initialize = function (selector, callback, options) {
     for (var i = 0; i < matches.length; i++)
       $(matches[i]).each(msobserver.callback);
 
-    isMatchinInProgress = false;
-
     // Check if the match applies now that the document has been updated. This handles cases where an ancestor was
     // added/modified causing an element on the page to now match. This strictly isn't an "initialization", as the
     // element wasn't just added. But conceptually, it corresponds to the selector now matching a new argument
     throttledCheckTarget();
+
+    // Must be last in order to avoid entering infinite loop
+    isMatchinInProgress = false;
   });
 
   // Observe the target element.
