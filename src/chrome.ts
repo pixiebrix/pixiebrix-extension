@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,8 @@
 import { forbidContext } from "@/utils/expectContext";
 import { type JsonValue } from "type-fest";
 import { type UnknownObject } from "@/types";
+import { foreverPendingPromise } from "@/utils";
+import pTimeout from "p-timeout";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -140,4 +142,22 @@ export async function onTabClose(watchedTabId: number): Promise<void> {
 
     browser.tabs.onRemoved.addListener(listener);
   });
+}
+
+/** If no update is available and downloaded yet, it will return a string explaining why */
+export async function reloadIfNewVersionIsReady(): Promise<
+  "throttled" | "no_update"
+> {
+  const status = await browser.runtime.requestUpdateCheck();
+  if (status === "update_available") {
+    browser.runtime.reload();
+
+    // This should be dead code
+    await pTimeout(foreverPendingPromise, {
+      message: "Extension did not reload as requested",
+      milliseconds: 1000,
+    });
+  }
+
+  return status as "throttled" | "no_update";
 }

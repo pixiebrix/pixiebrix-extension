@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -74,7 +74,10 @@ import {
 } from "@/contentScript/pipelineProtocol";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { getPageState, setPageState } from "@/contentScript/pageState";
-import { stopWaitingForTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import {
+  cancelTemporaryPanels,
+  stopWaitingForTemporaryPanels,
+} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
 expectContext("contentScript");
 
@@ -84,6 +87,8 @@ declare global {
     FORM_RESOLVE: typeof resolveForm;
     FORM_CANCEL: typeof cancelForm;
     TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
+
+    TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
@@ -142,7 +147,9 @@ export default function registerMessenger(): void {
     FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,
     FORM_CANCEL: cancelForm,
+
     TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
+    TEMPORARY_PANEL_CANCEL: cancelTemporaryPanels,
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,

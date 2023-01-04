@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,6 +43,10 @@ class CustomEventEffect extends Effect {
     required: ["eventName"],
   };
 
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
   async effect(
     {
       eventName,
@@ -50,10 +54,6 @@ class CustomEventEffect extends Effect {
     }: BlockArg<{ eventName: string; data?: UnknownObject }>,
     { root }: BlockOptions
   ): Promise<void> {
-    console.debug("Emitting custom event %s", eventName, {
-      data,
-    });
-
     const event = new CustomEvent(eventName, { detail: data, bubbles: true });
     root.dispatchEvent(event);
   }

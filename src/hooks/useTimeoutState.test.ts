@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "@/core";
+import { renderHook } from "@testing-library/react-hooks";
+import useTimeoutState from "./useTimeoutState";
 
-export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";
+jest.useFakeTimers();
+
+test("useTimeoutState", () => {
+  const { result } = renderHook(() => useTimeoutState(200));
+
+  expect(result.current).toEqual(false);
+  jest.advanceTimersByTime(30);
+  expect(result.current).toEqual(false);
+  jest.advanceTimersByTime(300);
+  expect(result.current).toEqual(true);
+});

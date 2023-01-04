@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -61,7 +61,7 @@ const PermissionsToolbar: React.FunctionComponent<{
     reloadPermissions,
   ] = useAsyncState<PermissionsState>(async () => {
     const adapter = ADAPTERS.get(debouncedElement.type);
-    const { extension, extensionPoint: extensionPointConfig } =
+    const { extension, extensionPointConfig } =
       adapter.asDynamicElement(debouncedElement);
     const extensionPoint = extensionPointFactory(extensionPointConfig);
 

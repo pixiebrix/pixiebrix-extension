@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,30 +16,20 @@
  */
 
 import React from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import cx from "classnames";
 
 const Centered: React.FunctionComponent<{
   isScrollable?: boolean;
   vertically?: boolean;
 }> = ({ isScrollable = false, vertically = false, children }) => (
-  <Container
-    fluid
-    className={cx({
-      "h-100 pb-2 overflow-auto": isScrollable,
-      "h-100": vertically,
+  <div
+    className={cx("d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center", {
+      "h-100 overflow-auto": isScrollable,
+      "h-100 justify-content-center": vertically,
     })}
   >
-    <Row
-      className={cx({
-        "h-100 align-items-center": vertically,
-      })}
-    >
-      <Col className="mx-auto mt-4 text-center" sm={11} md={9} lg={6} xl={5}>
-        {children}
-      </Col>
-    </Row>
-  </Container>
+    {children}
+  </div>
 );
 
 export default Centered;

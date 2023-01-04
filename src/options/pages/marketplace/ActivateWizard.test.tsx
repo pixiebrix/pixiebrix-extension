@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,8 +53,12 @@ jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(() => ({
     data: [],
   })),
+  useGetMeQuery: jest.fn(() => ({
+    data: [],
+  })),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
+  useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
 }));
 
 jest.mock("@/recipes/recipesHooks", () => ({

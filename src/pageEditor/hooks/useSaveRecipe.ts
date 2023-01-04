@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import {
   selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
-  selectDirtyRecipeOptions,
+  selectDirtyRecipeOptionDefinitions,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
 import {
@@ -58,7 +58,7 @@ type RecipeSaver = {
 async function getPermissions(
   element: FormState
 ): Promise<Permissions.Permissions> {
-  const { extension, extensionPoint: extensionPointConfig } = ADAPTERS.get(
+  const { extension, extensionPointConfig } = ADAPTERS.get(
     element.type
   ).asDynamicElement(element);
   const extensionPoint = extensionPointFactory(extensionPointConfig);
@@ -90,7 +90,7 @@ function useSaveRecipe(): RecipeSaver {
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
+  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
@@ -141,8 +141,7 @@ function useSaveRecipe(): RecipeSaver {
     void ensurePermissions(dirtyRecipeElements).catch((error) => {
       console.error("Error checking/enabling permissions", { error });
       notify.warning({
-        message:
-          "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+        message: "Error verifying permissions",
         error,
         reportError: true,
       });

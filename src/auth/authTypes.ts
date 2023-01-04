@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -84,6 +84,11 @@ export type UserData = Partial<{
    * @since 1.7.14
    */
   readonly partner?: Me["partner"];
+  /**
+   * The partner principals. Currently, just the Automation Anywhere Control Room principal if applicable.
+   * @since 1.7.16
+   */
+  readonly partnerPrincipals?: Me["partner_principals"];
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
@@ -102,6 +107,7 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "flags",
   "enforceUpdateMillis",
   "partner",
+  "partnerPrincipals",
 ];
 
 export interface TokenAuthData extends UserData {

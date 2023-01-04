@@ -66,6 +66,314 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 </div>
 `;
 
+exports[`Storyshots Blueprints/GetStartedView Activate Blueprint 1`] = `
+<div
+  className="root"
+  style={
+    {
+      "height": "500px",
+      "width": "800px",
+    }
+  }
+>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Want to create a new Blueprint?
+      </h4>
+      <ul>
+        <li>
+          Start by opening a new browser tab and navigating to the webpage you want to modify.
+        </li>
+        <li>
+          Open the Page Editor by selecting the PixieBrix tab via the
+           
+          <strong>
+            Chrome DevTools
+          </strong>
+           using
+           
+          <kbd>
+            Ctrl + Shift + C
+          </kbd>
+           
+          or 
+          <kbd>
+            F12
+          </kbd>
+           and start editing your page.
+        </li>
+        <li>
+          Save your Blueprint in the Page Editor, and you'll see it here as a personal Blueprint.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Need more help?
+      </h4>
+      <p>
+        Visit the
+         
+        <span>
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Quick Start Guide
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        or ask questions in the
+         
+        <span>
+          <a
+            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Slack Community
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+        .
+      </p>
+      <p>
+         
+        Visit the
+         
+        <span>
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            PixieBrix Marketplace
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        for ideas.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Blueprints/GetStartedView Default 1`] = `
+<div
+  className="root"
+  style={
+    {
+      "height": "500px",
+      "width": "800px",
+    }
+  }
+>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Want to create a new Blueprint?
+      </h4>
+      <ul>
+        <li>
+          Start by opening a new browser tab and navigating to the webpage you want to modify.
+        </li>
+        <li>
+          Open the Page Editor by selecting the PixieBrix tab via the
+           
+          <strong>
+            Chrome DevTools
+          </strong>
+           using
+           
+          <kbd>
+            Ctrl + Shift + C
+          </kbd>
+           
+          or 
+          <kbd>
+            F12
+          </kbd>
+           and start editing your page.
+        </li>
+        <li>
+          Save your Blueprint in the Page Editor, and you'll see it here as a personal Blueprint.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Need more help?
+      </h4>
+      <p>
+        Visit the
+         
+        <span>
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Quick Start Guide
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        or ask questions in the
+         
+        <span>
+          <a
+            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Slack Community
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+        .
+      </p>
+      <p>
+         
+        Visit the
+         
+        <span>
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            PixieBrix Marketplace
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        for ideas.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
 <div
   style={
@@ -7124,68 +7432,52 @@ exports[`Storyshots Onboarding/Setup/DefaultSetupCard Default 1`] = `
 
 exports[`Storyshots PageEditor/LoginCard Default 1`] = `
 <div
-  className="h-100 container-fluid"
+  className="d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center h-100 justify-content-center"
 >
-  <div
-    className="h-100 align-items-center row"
+  <p>
+    Complete PixieBrix Extension setup to use the Page Editor
+  </p>
+  <a
+    className="mt-2 btn btn-primary"
+    href="/options.html"
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    target="_blank"
   >
-    <div
-      className="mx-auto mt-4 text-center col-xl-5 col-lg-6 col-md-9 col-sm-11"
+    <svg
+      aria-hidden="true"
+      className="svg-inline--fa fa-link fa-w-16 "
+      data-icon="link"
+      data-prefix="fas"
+      focusable="false"
+      role="img"
+      style={{}}
+      viewBox="0 0 512 512"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <p>
-        Complete PixieBrix Extension setup to use the Page Editor
-      </p>
-      <a
-        className="mt-2 btn btn-primary"
-        href="/options.html"
-        onClick={[Function]}
-        onKeyDown={[Function]}
-        target="_blank"
-      >
-        <svg
-          aria-hidden="true"
-          className="svg-inline--fa fa-link fa-w-16 "
-          data-icon="link"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
-          style={{}}
-          viewBox="0 0 512 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"
-            fill="currentColor"
-            style={{}}
-          />
-        </svg>
-         Create/link PixieBrix account
-      </a>
-    </div>
-  </div>
+      <path
+        d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"
+        fill="currentColor"
+        style={{}}
+      />
+    </svg>
+     Create/link PixieBrix account
+  </a>
 </div>
 `;
 
 exports[`Storyshots PageEditor/RestrictedPane Default 1`] = `
 <div
-  className="container-fluid"
+  className="d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center"
 >
   <div
-    className="row"
+    className="title"
   >
-    <div
-      className="mx-auto mt-4 text-center col-xl-5 col-lg-6 col-md-9 col-sm-11"
-    >
-      <div
-        className="title"
-      >
-        Your team admin has restricted access to the Page Editor
-      </div>
-      <p>
-        Contact your admin to receive access
-      </p>
-    </div>
+    Your team admin has restricted access to the Page Editor
   </div>
+  <p>
+    Contact your admin to receive access
+  </p>
 </div>
 `;
 

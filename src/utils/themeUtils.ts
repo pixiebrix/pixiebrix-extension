@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import { DEFAULT_THEME, type Theme, THEMES } from "@/options/types";
 import logo from "@img/logo.svg";
-import logoSmall from "@img/logo-small-rounded.svg";
+import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 

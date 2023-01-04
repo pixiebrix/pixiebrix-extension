@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,12 @@
  */
 
 import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
+import {
+  $safeFindElementsWithRootMode,
+  IS_ROOT_AWARE_BRICK_PROPS,
+} from "@/blocks/rootModeHelpers";
 
 export class HideEffect extends Effect {
   constructor() {
@@ -27,6 +30,10 @@ export class HideEffect extends Effect {
       "Hide",
       "Hide or remove one or more elements on a page"
     );
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -40,18 +47,30 @@ export class HideEffect extends Effect {
         enum: ["hide", "remove"],
         default: "hide",
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["selector"]
+    []
   );
 
-  async effect({
-    selector,
-    mode = "hide",
-  }: BlockArg<{
-    selector: string;
-    mode?: "hide" | "remove";
-  }>): Promise<void> {
-    const $elements = $safeFind(selector);
+  async effect(
+    {
+      selector,
+      mode = "hide",
+      isRootAware,
+    }: BlockArg<{
+      selector: string;
+      mode?: "hide" | "remove";
+      isRootAware: boolean;
+    }>,
+    { root }: BlockOptions
+  ): Promise<void> {
+    const $elements = $safeFindElementsWithRootMode({
+      selector,
+      isRootAware,
+      blockId: this.id,
+      root,
+    });
+
     if (mode === "hide") {
       $elements.hide();
     } else {

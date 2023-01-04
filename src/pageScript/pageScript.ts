@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,7 +45,7 @@ import {
   type ReadOptions,
   type WritePayload,
 } from "@/pageScript/messenger/api";
-import { awaitValue, TimeoutError } from "@/utils";
+import { awaitValue } from "@/utils";
 import {
   type ReadableComponentAdapter,
   traverse,
@@ -59,6 +59,7 @@ import {
 } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
 import { initialize, type SerializableResponse } from "./messenger/pigeon";
+import { TimeoutError } from "p-timeout";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");

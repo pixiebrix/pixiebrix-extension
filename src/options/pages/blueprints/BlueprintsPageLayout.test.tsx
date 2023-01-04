@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -151,6 +151,10 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("shows the bot games tab", async () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+    }));
+
     render(
       <Provider
         store={optionsStore({
