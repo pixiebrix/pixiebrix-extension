@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -97,11 +97,9 @@ const store = configureStore({
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
     return getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "analysis/setKnownVars"],
-        ignoredPaths: ["analysis.knownVars"],
-      },
+      // This check significantly slows down the app in dev mode.
+      // See PR for more details https://github.com/pixiebrix/pixiebrix-extension/pull/4951
+      serializableCheck: false,
       // RTK uses Immer internally, we don't need this extra check
       immutableCheck: false,
     })

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
+import useTimeoutState from "@/hooks/useTimeoutState";
 
 type Props = {
   millis: number;
@@ -23,15 +24,9 @@ type Props = {
 
 /** Component used to reduce flashing */
 const DelayedRender: React.FC<Props> = ({ children, millis }) => {
-  const [isShown, setIsShown] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsShown(true);
-    }, millis);
-  }, [millis]);
-
-  // The hidden element allows us to preload the content (and images) while hidden. Replacing this with `null` defeats the purpose of this component
+  const isShown = useTimeoutState(millis);
+  // The hidden element allows us to preload the content (and images) while hidden.
+  // Replacing this with `null` defeats the purpose of this component
   return isShown ? <>{children}</> : <div hidden>{children}</div>;
 };
 

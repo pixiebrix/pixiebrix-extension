@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -72,36 +72,6 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
 
 export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 
-export const selectDirtyRecipeOptions = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeOptionsById;
-
-const dirtyOptionsForRecipeIdSelector = createSelector(
-  selectDirtyRecipeOptions,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeOptionsById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection
-    dirtyRecipeOptionsById[recipeId]
-);
-
-export const selectDirtyOptionsForRecipeId =
-  (recipeId: RegistryId) => (state: RootState) =>
-    dirtyOptionsForRecipeIdSelector(state, recipeId);
-
-export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
-  editor.dirtyRecipeMetadataById;
-
-const dirtyMetadataForRecipeIdSelector = createSelector(
-  selectDirtyRecipeMetadata,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeMetadataById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection
-    dirtyRecipeMetadataById[recipeId]
-);
-
-export const selectDirtyMetadataForRecipeId =
-  (recipeId: RegistryId) => (state: RootState) =>
-    dirtyMetadataForRecipeIdSelector(state, recipeId);
-
 export const selectDeletedElements = ({ editor }: EditorRootState) =>
   editor.deletedElementsByRecipeId;
 
@@ -128,6 +98,48 @@ export const selectNotDeletedExtensions: ({
     extensions.filter(({ id }) => !deletedElementIds.has(id))
 );
 
+export const selectDirtyRecipeOptionDefinitions = ({
+  editor,
+}: EditorRootState) => editor.dirtyRecipeOptionsById;
+
+const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
+  selectDirtyRecipeOptionDefinitions,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeOptionDefinitionsById, recipeId) =>
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
+    dirtyRecipeOptionDefinitionsById[recipeId]
+);
+
+export const selectDirtyOptionDefinitionsForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    dirtyOptionDefinitionsForRecipeIdSelector(state, recipeId);
+
+const dirtyOptionValuesForRecipeIdSelector = createSelector(
+  selectNotDeletedElements,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (elements, recipeId) =>
+    elements.find((element) => element.recipe?.id === recipeId)?.optionsArgs
+);
+
+export const selectDirtyOptionValuesForRecipeId =
+  (recipeId: RegistryId) => (state: EditorRootState) =>
+    dirtyOptionValuesForRecipeIdSelector(state, recipeId);
+
+export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
+  editor.dirtyRecipeMetadataById;
+
+const dirtyMetadataForRecipeIdSelector = createSelector(
+  selectDirtyRecipeMetadata,
+  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeMetadataById, recipeId) =>
+    // eslint-disable-next-line security/detect-object-injection
+    dirtyRecipeMetadataById[recipeId]
+);
+
+export const selectDirtyMetadataForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    dirtyMetadataForRecipeIdSelector(state, recipeId);
+
 const elementIsDirtySelector = createSelector(
   selectDirty,
   (state: RootState, elementId: UUID) => elementId,
@@ -140,7 +152,7 @@ export const selectElementIsDirty = (elementId: UUID) => (state: RootState) =>
 
 const recipeIsDirtySelector = createSelector(
   selectDirty,
-  dirtyOptionsForRecipeIdSelector,
+  dirtyOptionDefinitionsForRecipeIdSelector,
   dirtyMetadataForRecipeIdSelector,
   (state: EditorRootState, recipeId: RegistryId) =>
     // eslint-disable-next-line security/detect-object-injection

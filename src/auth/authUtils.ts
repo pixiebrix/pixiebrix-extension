@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -56,6 +56,7 @@ export function selectUserDataUpdate({
   flags = [],
   partner,
   enforce_update_millis: enforceUpdateMillis,
+  partner_principals: partnerPrincipals = [],
 }: Me): UserDataUpdate {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
@@ -69,6 +70,7 @@ export function selectUserDataUpdate({
     groups,
     partner,
     enforceUpdateMillis,
+    partnerPrincipals,
   };
 }
 

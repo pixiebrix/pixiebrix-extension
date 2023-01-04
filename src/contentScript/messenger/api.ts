@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ import { getMethod, getNotifier } from "webext-messenger";
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
 export const resolveForm = getMethod("FORM_RESOLVE");
 export const cancelForm = getNotifier("FORM_CANCEL");
+export const cancelTemporaryPanel = getNotifier("TEMPORARY_PANEL_CANCEL");
 export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");

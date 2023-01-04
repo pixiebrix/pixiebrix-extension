@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -86,7 +86,7 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: ActionFormState
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
@@ -220,7 +220,7 @@ function asDynamicElement(element: ActionFormState): ButtonDefinition {
   return {
     type: "menuItem",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -235,7 +235,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
 };

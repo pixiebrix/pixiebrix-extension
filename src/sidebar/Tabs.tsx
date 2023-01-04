@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,13 +16,11 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { type SidebarEntries, type PanelEntry } from "@/sidebar/types";
+import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
 import { mapTabEventKey } from "@/sidebar/utils";
-import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { type UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
-import { selectEventData } from "@/telemetry/deployments";
-import { Card, CloseButton, Nav, Tab } from "react-bootstrap";
+import { CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -45,28 +43,27 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
   onSelectTab,
   onCloseTemporaryTab,
 }) => {
-  const { lookup } = useExtensionMeta();
-
   const onSelect = useCallback(
-    (extensionId: UUID) => {
+    (eventKey: string) => {
       reportEvent("ViewSidePanelPanel", {
-        ...selectEventData(lookup.get(extensionId)),
+        // FIXME: this was wrong, eventKey is not an extensionId
+        // ...selectEventData(lookup.get(extensionId)),
         initialLoad: false,
       });
-      onSelectTab(extensionId);
+      onSelectTab(eventKey);
     },
-    [onSelectTab, lookup]
+    [onSelectTab]
   );
 
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
-        ...selectEventData(lookup.get(activeKey)),
+        // FIXME: this was wrong, eventKey is not an extensionId
+        // ...selectEventData(lookup.get(activeKey)),
         initialLoad: true,
       });
     },
     // Only run on initial mount, other views are handled by onSelect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -76,93 +73,93 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
       defaultActiveKey={activeKey}
       activeKey={activeKey}
     >
-      <Card>
-        <Card.Header>
-          <Nav fill variant="tabs" onSelect={onSelect}>
-            {panels.map((panel) => (
-              <Nav.Link
-                key={panel.extensionId}
-                eventKey={mapTabEventKey("panel", panel)}
-                className={styles.tabHeader}
-              >
+      <div className="full-height bg-white">
+        <Nav fill variant="tabs" onSelect={onSelect}>
+          {panels.map((panel) => (
+            <Nav.Link
+              key={panel.extensionId}
+              eventKey={mapTabEventKey("panel", panel)}
+              className={styles.tabHeader}
+            >
+              <span className={styles.tabTitle}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
-              </Nav.Link>
-            ))}
-            {forms.map((form) => (
-              <Nav.Link
-                key={form.extensionId}
-                eventKey={mapTabEventKey("form", form)}
-                className={styles.tabHeader}
-              >
+              </span>
+            </Nav.Link>
+          ))}
+          {forms.map((form) => (
+            <Nav.Link
+              key={form.extensionId}
+              eventKey={mapTabEventKey("form", form)}
+              className={styles.tabHeader}
+            >
+              <span className={styles.tabTitle}>
                 {form.form.schema.title ?? "Form"}
-              </Nav.Link>
-            ))}
-            {temporaryPanels.map((panel) => (
-              <Nav.Link
-                key={panel.nonce}
-                eventKey={mapTabEventKey("temporaryPanel", panel)}
-                className={styles.tabHeader}
-              >
-                {panel.heading}
-                <CloseButton
-                  onClick={() => {
-                    onCloseTemporaryTab(panel.nonce);
+              </span>
+            </Nav.Link>
+          ))}
+          {temporaryPanels.map((panel) => (
+            <Nav.Link
+              key={panel.nonce}
+              eventKey={mapTabEventKey("temporaryPanel", panel)}
+              className={styles.tabHeader}
+            >
+              <span className={styles.tabTitle}>{panel.heading}</span>
+              <CloseButton
+                onClick={() => {
+                  onCloseTemporaryTab(panel.nonce);
+                }}
+              />
+            </Nav.Link>
+          ))}
+        </Nav>
+        <Tab.Content className="p-0 border-0 full-height scrollable-area">
+          {panels.map((panel: PanelEntry) => (
+            <Tab.Pane
+              className={cx("full-height flex-grow", styles.paneOverrides)}
+              key={panel.extensionId}
+              eventKey={mapTabEventKey("panel", panel)}
+            >
+              <ErrorBoundary>
+                <PanelBody
+                  isRootPanel
+                  payload={panel.payload}
+                  context={{
+                    extensionId: panel.extensionId,
+                    extensionPointId: panel.extensionPointId,
+                    blueprintId: panel.blueprintId,
                   }}
                 />
-              </Nav.Link>
-            ))}
-          </Nav>
-        </Card.Header>
-        <Card.Body className="p-0 scrollable-area full-height">
-          <Tab.Content className="p-0 border-0 full-height">
-            {panels.map((panel: PanelEntry) => (
-              <Tab.Pane
-                className={cx("full-height flex-grow", styles.paneOverrides)}
-                key={panel.extensionId}
-                eventKey={mapTabEventKey("panel", panel)}
-              >
-                <ErrorBoundary>
-                  <PanelBody
-                    isRootPanel
-                    payload={panel.payload}
-                    context={{
-                      extensionId: panel.extensionId,
-                      extensionPointId: panel.extensionPointId,
-                      blueprintId: panel.blueprintId,
-                    }}
-                  />
-                </ErrorBoundary>
-              </Tab.Pane>
-            ))}
-            {forms.map((form) => (
-              <Tab.Pane
-                className="full-height flex-grow"
-                key={form.nonce}
-                eventKey={mapTabEventKey("form", form)}
-              >
-                <ErrorBoundary>
-                  <FormBody form={form} />
-                </ErrorBoundary>
-              </Tab.Pane>
-            ))}
-            {temporaryPanels.map((panel) => (
-              <Tab.Pane
-                className={cx("full-height flex-grow", styles.paneOverrides)}
-                key={panel.nonce}
-                eventKey={mapTabEventKey("temporaryPanel", panel)}
-              >
-                <ErrorBoundary>
-                  <PanelBody
-                    isRootPanel={false}
-                    payload={panel.payload}
-                    context={{ extensionId: panel.extensionId }}
-                  />
-                </ErrorBoundary>
-              </Tab.Pane>
-            ))}
-          </Tab.Content>
-        </Card.Body>
-      </Card>
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
+          {forms.map((form) => (
+            <Tab.Pane
+              className="full-height flex-grow"
+              key={form.nonce}
+              eventKey={mapTabEventKey("form", form)}
+            >
+              <ErrorBoundary>
+                <FormBody form={form} />
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
+          {temporaryPanels.map((panel) => (
+            <Tab.Pane
+              className={cx("full-height flex-grow", styles.paneOverrides)}
+              key={panel.nonce}
+              eventKey={mapTabEventKey("temporaryPanel", panel)}
+            >
+              <ErrorBoundary>
+                <PanelBody
+                  isRootPanel={false}
+                  payload={panel.payload}
+                  context={{ extensionId: panel.extensionId }}
+                />
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
+        </Tab.Content>
+      </div>
     </Tab.Container>
   );
 };
