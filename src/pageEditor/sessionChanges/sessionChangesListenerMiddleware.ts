@@ -30,7 +30,8 @@ sessionChangesListenerMiddleware.startListening({
     actions.resetInstalled,
     actions.removeElement,
     actions.editRecipeMetadata,
-    actions.editRecipeOptions,
+    actions.editRecipeOptionsDefinitions,
+    actions.editRecipeOptionsValues,
     actions.resetMetadataAndOptionsForRecipe,
     actions.addElementToRecipe,
     actions.removeElementFromRecipe

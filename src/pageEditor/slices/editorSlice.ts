@@ -21,7 +21,12 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { type RecipeMetadata, type RegistryId, type UUID } from "@/core";
+import {
+  type RecipeMetadata,
+  type RegistryId,
+  type UserOptions,
+  type UUID,
+} from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BlockConfig } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
@@ -63,7 +68,7 @@ import reportError from "@/telemetry/reportError";
 import {
   activateElement,
   editRecipeMetadata,
-  editRecipeOptions,
+  editRecipeOptionsDefinitions,
   ensureElementUIState,
   removeElement,
   selectRecipeId,
@@ -534,9 +539,12 @@ export const editorSlice = createSlice({
     hideV3UpgradeMessage(state) {
       state.showV3UpgradeMessageByElement[state.activeElementId] = false;
     },
-    editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
+    editRecipeOptionsDefinitions(
+      state,
+      action: PayloadAction<OptionsDefinition>
+    ) {
       const { payload: options } = action;
-      editRecipeOptions(state, options);
+      editRecipeOptionsDefinitions(state, options);
     },
     editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
       const { payload: metadata } = action;
@@ -705,7 +713,7 @@ export const editorSlice = createSlice({
 
       // Set the metadata and options
       editRecipeMetadata(state, metadata);
-      editRecipeOptions(state, options);
+      editRecipeOptionsDefinitions(state, options);
 
       // Clean up the old metadata and options
       delete state.dirtyRecipeMetadataById[oldRecipeId];
@@ -812,6 +820,21 @@ export const editorSlice = createSlice({
     },
     hideModal(state) {
       state.visibleModalKey = null;
+    },
+    editRecipeOptionsValues(state, action: PayloadAction<UserOptions>) {
+      const recipeId = state.activeRecipeId;
+      if (recipeId == null) {
+        return;
+      }
+
+      const elements = selectNotDeletedElements({ editor: state });
+      const recipeElements = elements.filter(
+        (element) => element.recipe?.id === recipeId
+      );
+      for (const element of recipeElements) {
+        element.optionsArgs = action.payload;
+        state.dirty[element.uuid] = true;
+      }
     },
   },
   extraReducers(builder) {
