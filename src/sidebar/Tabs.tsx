@@ -81,7 +81,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               eventKey={mapTabEventKey("panel", panel)}
               className={styles.tabHeader}
             >
-              <span>
+              <span className={styles.tabTitle}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
               </span>
             </Nav.Link>
@@ -92,7 +92,9 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               eventKey={mapTabEventKey("form", form)}
               className={styles.tabHeader}
             >
-              <span>{form.form.schema.title ?? "Form"}</span>
+              <span className={styles.tabTitle}>
+                {form.form.schema.title ?? "Form"}
+              </span>
             </Nav.Link>
           ))}
           {temporaryPanels.map((panel) => (
@@ -101,7 +103,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               eventKey={mapTabEventKey("temporaryPanel", panel)}
               className={styles.tabHeader}
             >
-              <span>{panel.heading}</span>
+              <span className={styles.tabTitle}>{panel.heading}</span>
               <CloseButton
                 onClick={() => {
                   onCloseTemporaryTab(panel.nonce);
