@@ -1,6 +1,6 @@
 /* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -119,13 +119,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(cloudExtensionItem));
     expectActions(
-      [
-        "viewPublish",
-        "viewShare",
-        "activate",
-        "deleteExtension",
-        "exportBlueprint",
-      ],
+      ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
     );
   });
@@ -142,7 +136,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(personalExtensionItem));
     expectActions(
-      ["viewPublish", "viewShare", "uninstall", "viewLogs", "exportBlueprint"],
+      ["viewPublish", "viewShare", "uninstall", "viewLogs"],
       actions
     );
   });
@@ -159,14 +153,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
     expectActions(
-      [
-        "viewPublish",
-        "viewShare",
-        "uninstall",
-        "viewLogs",
-        "exportBlueprint",
-        "reinstall",
-      ],
+      ["viewPublish", "viewShare", "uninstall", "viewLogs", "reinstall"],
       actions
     );
   });
@@ -182,10 +169,7 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
-    expectActions(
-      ["viewPublish", "viewShare", "activate", "exportBlueprint"],
-      actions
-    );
+    expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
   test("active team blueprint", () => {
@@ -200,14 +184,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
     expectActions(
-      [
-        "viewPublish",
-        "viewShare",
-        "uninstall",
-        "viewLogs",
-        "exportBlueprint",
-        "reinstall",
-      ],
+      ["viewPublish", "viewShare", "uninstall", "viewLogs", "reinstall"],
       actions
     );
   });
@@ -223,10 +200,7 @@ describe("useInstallableViewItemActions", () => {
     const {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
-    expectActions(
-      ["viewPublish", "viewShare", "activate", "exportBlueprint"],
-      actions
-    );
+    expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
   test("public blueprint", () => {
@@ -241,14 +215,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
     expectActions(
-      [
-        "viewPublish",
-        "viewShare",
-        "reinstall",
-        "exportBlueprint",
-        "viewLogs",
-        "uninstall",
-      ],
+      ["viewPublish", "viewShare", "reinstall", "viewLogs", "uninstall"],
       actions
     );
   });
@@ -299,7 +266,6 @@ describe("useInstallableViewItemActions", () => {
         "uninstall",
         "viewLogs",
         "requestPermissions",
-        "exportBlueprint",
         "reinstall",
       ],
       actions
@@ -361,14 +327,7 @@ describe("useInstallableViewItemActions", () => {
         result: { current: actions },
       } = renderHook(() => useInstallableViewItemActions(blueprintItem));
       expectActions(
-        [
-          "viewPublish",
-          "viewShare",
-          "uninstall",
-          "viewLogs",
-          "exportBlueprint",
-          "reinstall",
-        ],
+        ["viewPublish", "viewShare", "uninstall", "viewLogs", "reinstall"],
         actions
       );
     });
@@ -385,7 +344,6 @@ describe("useInstallableViewItemActions", () => {
           "viewShare",
           "uninstall",
           "viewLogs",
-          "exportBlueprint",
           "reinstall",
         ],
         actions

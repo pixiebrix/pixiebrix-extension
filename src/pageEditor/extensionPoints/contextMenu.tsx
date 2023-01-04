@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -85,7 +85,7 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: ContextMenuFormState
 ): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
@@ -219,7 +219,7 @@ function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -234,7 +234,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   fromNativeElement,
   fromExtensionPoint,
   asDynamicElement,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
   InsertModeHelpText: () => (

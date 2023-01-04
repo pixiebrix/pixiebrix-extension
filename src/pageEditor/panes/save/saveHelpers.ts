@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -200,7 +200,7 @@ export function replaceRecipeExtension(
     }
 
     if (hasInnerExtensionPoint) {
-      const extensionPointConfig = adapter.selectExtensionPoint(element);
+      const extensionPointConfig = adapter.selectExtensionPointConfig(element);
 
       const originalInnerId = sourceRecipe.extensionPoints.at(index).id;
       let newInnerId = originalInnerId;
@@ -363,7 +363,8 @@ export function buildRecipe({
         const extension = adapter.selectExtension(element);
 
         if (isInnerExtensionPoint(extension.extensionPointId)) {
-          const extensionPointConfig = adapter.selectExtensionPoint(element);
+          const extensionPointConfig =
+            adapter.selectExtensionPointConfig(element);
           extension.definitions = {
             [extension.extensionPointId]: {
               kind: "extensionPoint",

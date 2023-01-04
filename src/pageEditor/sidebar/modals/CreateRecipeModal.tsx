@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ import {
   selectDeletedElements,
   selectDirty,
   selectDirtyMetadataForRecipeId,
-  selectDirtyRecipeOptions,
+  selectDirtyRecipeOptionDefinitions,
   selectEditorModalVisibilities,
   selectElements,
   selectKeepLocalCopyOnCreateRecipe,
@@ -55,7 +55,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useCreate, { checkPermissions } from "@/pageEditor/hooks/useCreate";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -75,6 +75,7 @@ import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
+import ModalLayout from "@/components/ModalLayout";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -99,38 +100,49 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
+  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const deletedElementsByRecipeId = useSelector(selectDeletedElements);
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   const createRecipeFromElement = useCallback(
-    async (element: FormState, metadata: RecipeMetadataFormState) => {
-      let recipeElement = produce(activeElement, (draft) => {
-        draft.uuid = uuidv4();
-      });
-      const newRecipe = buildRecipe({
-        cleanRecipeExtensions: [],
-        dirtyRecipeElements: [recipeElement],
-        metadata,
-      });
-      const response = await createRecipe({
-        recipe: newRecipe,
-        organizations: [],
-        public: false,
-      }).unwrap();
-      recipeElement = produce(recipeElement, (draft) => {
-        draft.recipe = selectRecipeMetadata(newRecipe, response);
-      });
-      dispatch(editorActions.addElement(recipeElement));
-      // Don't push to cloud since we're saving it with the recipe
-      await createExtension({ element: recipeElement, pushToCloud: false });
-      if (!keepLocalCopy) {
-        await removeExtension({
-          extensionId: activeElement.uuid,
-          shouldShowConfirmation: false,
+    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+    (element: FormState, metadata: RecipeMetadataFormState) =>
+      // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+      checkPermissions(element).then(async (hasPermissions) => {
+        if (!hasPermissions) {
+          return;
+        }
+
+        let recipeElement = produce(activeElement, (draft) => {
+          draft.uuid = uuidv4();
         });
-      }
-    },
+        const newRecipe = buildRecipe({
+          cleanRecipeExtensions: [],
+          dirtyRecipeElements: [recipeElement],
+          metadata,
+        });
+        const response = await createRecipe({
+          recipe: newRecipe,
+          organizations: [],
+          public: false,
+        }).unwrap();
+        recipeElement = produce(recipeElement, (draft) => {
+          draft.recipe = selectRecipeMetadata(newRecipe, response);
+        });
+        dispatch(editorActions.addElement(recipeElement));
+        // Don't push to cloud since we're saving it with the recipe
+        await createExtension({
+          element: recipeElement,
+          pushToCloud: false,
+          checkPermissions: false,
+        });
+        if (!keepLocalCopy) {
+          await removeExtension({
+            extensionId: activeElement.uuid,
+            shouldShowConfirmation: false,
+          });
+        }
+      }),
     [
       activeElement,
       createExtension,
@@ -312,12 +324,9 @@ function useFormSchema() {
   });
 }
 
-const CreateRecipeModal: React.FC = () => {
+const CreateRecipeModalBody: React.FC = () => {
   const dispatch = useDispatch();
 
-  const { isCreateRecipeModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
-  );
   const activeElement = useSelector(selectActiveElement);
 
   // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
@@ -417,26 +426,38 @@ const CreateRecipeModal: React.FC = () => {
   );
 
   return (
-    <Modal show={show} onHide={hideModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Create new blueprint</Modal.Title>
-      </Modal.Header>
-      <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
-        {isRecipeFetching ? (
-          <Loader />
-        ) : (
-          <Form
-            validationSchema={formSchema}
-            showUntouchedErrors
-            validateOnMount
-            initialValues={initialFormState}
-            onSubmit={onSubmit}
-            renderBody={renderBody}
-            renderSubmit={renderSubmit}
-          />
-        )}
-      </RequireScope>
-    </Modal>
+    <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
+      {isRecipeFetching ? (
+        <Loader />
+      ) : (
+        <Form
+          validationSchema={formSchema}
+          showUntouchedErrors
+          validateOnMount
+          initialValues={initialFormState}
+          onSubmit={onSubmit}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      )}
+    </RequireScope>
+  );
+};
+
+const CreateRecipeModal: React.FunctionComponent = () => {
+  const { isCreateRecipeModalVisible: show } = useSelector(
+    selectEditorModalVisibilities
+  );
+
+  const dispatch = useDispatch();
+  const hideModal = useCallback(() => {
+    dispatch(editorActions.hideModal());
+  }, [dispatch]);
+
+  return (
+    <ModalLayout title="Create new blueprint" show={show} onHide={hideModal}>
+      <CreateRecipeModalBody />
+    </ModalLayout>
   );
 };
 
