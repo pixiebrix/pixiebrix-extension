@@ -20,7 +20,6 @@ import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
 import { mapTabEventKey } from "@/sidebar/utils";
 import { type UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
-import { selectEventData } from "@/telemetry/deployments";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
