@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,29 +18,46 @@
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
+import { type Milestone } from "@/types/contract";
+import { useGetMeQuery } from "@/services/api";
 
 export type MilestoneHelpers = {
+  getMilestone: (milestoneKey: string) => Milestone;
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
+  isFetching: boolean;
+  isLoading: boolean;
+  refetch: () => void;
 };
 
 function useMilestones(): MilestoneHelpers {
-  const milestones = useSelector(selectMilestones);
+  const cachedMilestones = useSelector(selectMilestones);
+  const { data: me, isFetching, isLoading, refetch } = useGetMeQuery();
+  const milestones = me ? me.milestones : cachedMilestones;
 
   return useMemo(() => {
-    const userMilestoneKeys = new Set((milestones ?? []).map((x) => x.key));
+    const milestonesByKey = new Map(
+      (milestones ?? []).map((milestone) => [milestone.key, milestone])
+    );
+
+    const getMilestone = (milestoneKey: string) =>
+      milestonesByKey.get(milestoneKey);
 
     const hasMilestone = (milestoneKey: string) =>
-      userMilestoneKeys.has(milestoneKey);
+      milestonesByKey.has(milestoneKey);
 
     const hasEveryMilestone = (milestoneKeys: string[]) =>
       milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
 
     return {
+      getMilestone,
       hasMilestone,
       hasEveryMilestone,
+      isFetching,
+      isLoading,
+      refetch,
     };
-  }, [milestones]);
+  }, [milestones, isFetching, isLoading, refetch]);
 }
 
 export default useMilestones;

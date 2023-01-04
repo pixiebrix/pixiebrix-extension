@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +35,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
+import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import Form, {
   type OnSubmit,
   type RenderBody,

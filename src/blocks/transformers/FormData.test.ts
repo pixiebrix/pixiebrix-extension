@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -65,6 +65,11 @@ describe("FormData block", () => {
     });
   });
 
+  test("isRootAware", async () => {
+    const brick = new FormData();
+    await expect(brick.isRootAware()).resolves.toBe(true);
+  });
+
   test("Django Admin Logout Form Serialization", async () => {
     const brick = new FormData();
 
@@ -88,6 +93,35 @@ describe("FormData block", () => {
 
     expect(result).toEqual({
       csrfmiddlewaretoken: "redacted",
+    });
+  });
+
+  test("is root aware", async () => {
+    const brick = new FormData();
+    document.body.innerHTML = html`
+      <div>
+        <form id="fooForm">
+          <input type="text" name="foo" value="42" />
+        </form>
+        <form>
+          <input type="text" name="bar" value="42" />
+        </form>
+      </div>
+    `;
+
+    const arg = unsafeAssumeValidArg({ isRootAware: true });
+
+    const result = await brick.run(arg, {
+      ctxt: null,
+      logger: null,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- thinks it's an element
+      root: document.querySelector("#fooForm") as HTMLElement,
+      runPipeline: neverPromise,
+      runRendererPipeline: neverPromise,
+    });
+
+    expect(result).toEqual({
+      foo: "42",
     });
   });
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,9 +18,9 @@
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useMemo } from "react";
-import { type IExtension } from "@/core";
+import { type IExtension, type UUID } from "@/core";
 
-function useExtensionMeta(): { lookup: Map<string, IExtension> } {
+function useExtensionMeta(): { lookup: Map<UUID, IExtension> } {
   const extensions = useSelector(selectExtensions);
   const lookup = useMemo(
     () => new Map(extensions.map((x) => [x.id, x])),

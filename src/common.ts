@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  */
 
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import { type ApiVersion } from "@/core";
 
 export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
@@ -30,3 +31,5 @@ export const PRIVATE_ATTRIBUTES_SELECTOR = `
   [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]
 `;
+
+export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";

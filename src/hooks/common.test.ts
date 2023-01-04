@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,28 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.paneContent {
-  height: 100%;
-  width: 100%;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: stretch;
-  padding-top: 10px;
-}
+import { renderHook } from "@testing-library/react-hooks";
+import { useIsMounted } from "./common";
 
-.configPanel {
-  flex-grow: 2;
-  flex-basis: 0;
-  overflow-y: auto;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.dataPanel {
-  flex-grow: 1;
-  flex-basis: 0;
-  overflow-y: auto;
-  max-width: 360px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
+describe("useIsMounted", () => {
+  it("should return true if component is mounted", () => {
+    const {
+      result: { current: isMounted },
+      unmount,
+    } = renderHook(() => useIsMounted());
+    expect(isMounted()).toBe(true);
+    unmount();
+    expect(isMounted()).toBe(false);
+  });
+});

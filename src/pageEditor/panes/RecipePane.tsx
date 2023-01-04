@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +35,8 @@ import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
 import { type MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
-import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
+import RecipeOptionsDefinition from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
+import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
 
 const RecipePane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -61,8 +62,12 @@ const RecipePane: React.VFC = () => {
       TabContent: EditRecipe,
     },
     {
-      name: "Blueprint Options",
-      TabContent: RecipeOptions,
+      name: "Current Inputs",
+      TabContent: RecipeOptionsValues,
+    },
+    {
+      name: "Input Form",
+      TabContent: RecipeOptionsDefinition,
     },
     {
       name: "Logs",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -97,90 +97,84 @@ const BlueprintsToolbar: React.FunctionComponent<{
   return (
     <div className="d-flex justify-content-between align-items-center mb-3">
       <h3 className={styles.filterTitle}>{tabContentTitle}</h3>
-      <span className="d-flex align-items-center small">
-        <Select
-          className="ml-2"
-          isClearable
-          placeholder="Group by"
-          options={groupByOptions}
-          onChange={(option, { action }) => {
-            const value = action === "clear" ? [] : [option.value];
-            setGroupBy(value);
-          }}
-          value={groupByOptions.find((opt) => opt.value === groupBy[0])}
-          formatOptionLabel={({ label }, { context }) => (
-            <>
-              {context === "value" && <strong>Group by: </strong>}
-              {label}
-            </>
-          )}
-        />
+      {!activeTab.hideToolbar && (
+        <span className="d-flex align-items-center small">
+          <Select
+            className="ml-2"
+            isClearable
+            placeholder="Group by"
+            options={groupByOptions}
+            onChange={(option, { action }) => {
+              const value = action === "clear" ? [] : [option.value];
+              setGroupBy(value);
+            }}
+            value={groupByOptions.find((opt) => opt.value === groupBy[0])}
+            formatOptionLabel={({ label }, { context }) => (
+              <>
+                {context === "value" && <strong>Group by: </strong>}
+                {label}
+              </>
+            )}
+          />
 
-        <Select
-          className="ml-3"
-          isClearable
-          placeholder="Sort by"
-          options={sortByOptions}
-          onChange={(option, { action }) => {
-            const value =
-              action === "clear" ? [] : [{ id: option.value, desc: false }];
-            setSortBy(value);
-          }}
-          value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
-          formatOptionLabel={({ label }, { context }) => (
-            <>
-              {context === "value" && <strong>Sort by: </strong>}
-              {label}
-            </>
-          )}
-        />
-
-        {isSorted && (
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => {
-              const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
+          <Select
+            className="ml-3"
+            isClearable
+            placeholder="Sort by"
+            options={sortByOptions}
+            onChange={(option, { action }) => {
+              const value =
+                action === "clear" ? [] : [{ id: option.value, desc: false }];
               setSortBy(value);
             }}
-          >
-            <FontAwesomeIcon
-              icon={
-                sortBy[0].id === "updatedAt"
-                  ? sortBy[0].desc
-                    ? faSortAmountDownAlt
-                    : faSortAmountUpAlt
-                  : sortBy[0].desc
-                  ? faSortAmountUpAlt
-                  : faSortAmountDownAlt
-              }
-              size="lg"
-            />
-          </Button>
-        )}
+            value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
+            formatOptionLabel={({ label }, { context }) => (
+              <>
+                {context === "value" && <strong>Sort by: </strong>}
+                {label}
+              </>
+            )}
+          />
 
-        <ButtonGroup>
-          <Button
-            variant={view === "list" ? "primary" : "outline-primary"}
-            size="sm"
-            className="ml-3"
-            onClick={() => {
-              setView("list");
-            }}
-          >
-            <FontAwesomeIcon icon={faList} size="1x" />
-          </Button>
-          <Button
-            variant={view === "grid" ? "primary" : "outline-primary"}
-            size="sm"
-            onClick={() => {
-              setView("grid");
-            }}
-          >
-            <FontAwesomeIcon icon={faThLarge} size="1x" />
-          </Button>
-        </ButtonGroup>
-      </span>
+          {isSorted && (
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => {
+                const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
+                setSortBy(value);
+              }}
+            >
+              <FontAwesomeIcon
+                icon={sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt}
+                size="lg"
+              />
+            </Button>
+          )}
+
+          <ButtonGroup>
+            <Button
+              variant={view === "list" ? "primary" : "outline-primary"}
+              size="sm"
+              className="ml-3"
+              onClick={() => {
+                setView("list");
+              }}
+            >
+              <FontAwesomeIcon icon={faList} size="1x" />
+            </Button>
+            <Button
+              variant={view === "grid" ? "primary" : "outline-primary"}
+              size="sm"
+              onClick={() => {
+                setView("grid");
+              }}
+            >
+              <FontAwesomeIcon icon={faThLarge} size="1x" />
+            </Button>
+          </ButtonGroup>
+        </span>
+      )}
     </div>
   );
 };

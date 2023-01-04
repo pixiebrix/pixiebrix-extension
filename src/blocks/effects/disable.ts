@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,12 @@
  */
 
 import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { $safeFind } from "@/helpers";
+import {
+  IS_ROOT_AWARE_BRICK_PROPS,
+  $safeFindElementsWithRootMode,
+} from "@/blocks/rootModeHelpers";
 
 export class DisableEffect extends Effect {
   constructor() {
@@ -35,11 +38,25 @@ export class DisableEffect extends Effect {
         type: "string",
         format: "selector",
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["selector"]
+    []
   );
 
-  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    $safeFind(selector).prop("disabled", true);
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  async effect(
+    args: BlockArg<{ selector: string; isRootAware?: boolean }>,
+    { root }: BlockOptions
+  ): Promise<void> {
+    const $elements = $safeFindElementsWithRootMode({
+      ...args,
+      root,
+      blockId: this.id,
+    });
+
+    $elements.prop("disabled", true);
   }
 }

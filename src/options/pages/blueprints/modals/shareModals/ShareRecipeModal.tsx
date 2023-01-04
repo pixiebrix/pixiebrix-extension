@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { RequireScope } from "@/auth/RequireScope";
-import ModalLayout from "@/options/pages/blueprints/modals/ModalLayout";
+import ModalLayout from "@/components/ModalLayout";
 import ShareRecipeModalBody from "./ShareRecipeModalBody";
 
 const ShareRecipeModal: React.FunctionComponent = () => {
