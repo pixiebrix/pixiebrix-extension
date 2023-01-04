@@ -50,6 +50,8 @@ import { createStateSyncMiddleware } from "redux-state-sync";
 import { sessionChangesMiddleware } from "@/pageEditor/sessionChanges/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
+const disablePageEditorPersistence =
+  process.env.PAGE_EDITOR_STATE_PERSISTENCE === "false";
 
 const persistSettingsConfig = {
   key: "settings",
@@ -80,7 +82,9 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: persistReducer(persistEditorConfig, editorSlice.reducer),
+    editor: disablePageEditorPersistence
+      ? editorSlice.reducer
+      : persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
