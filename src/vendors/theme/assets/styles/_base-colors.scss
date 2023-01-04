@@ -1,3 +1,5 @@
+@import "@/themes/colors";
+
 ////////// COLOR SYSTEM //////////
 
 $blue: #5e50f9;
@@ -38,7 +40,7 @@ $colors: (
 );
 
 $theme-colors: (
-  primary: #5a19da,
+  primary: $P500,
   secondary: #d8d8d8,
   success: #1bcfb4,
   info: #198ae3,
