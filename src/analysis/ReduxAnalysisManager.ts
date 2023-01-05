@@ -87,28 +87,44 @@ class ReduxAnalysisManager {
     listenerConfig: AnalysisListenerConfig,
     effectConfig?: EffectConfig<TAnalysis>
   ) {
+    let abortController: AbortController;
+
     const effect: AnalysisEffect = async (action, listenerApi) => {
+      if (abortController) {
+        abortController.abort();
+      }
+
+      // Capture state at the moment of the action
       const state = listenerApi.getState();
-      const activeElement = selectActiveElement(state);
-      if (activeElement == null) {
-        return;
-      }
 
-      const analysis = analysisFactory(action, state);
-      if (!analysis) {
-        return;
-      }
-
-      const extensionId = activeElement.uuid;
-
-      listenerApi.dispatch(
-        analysisSlice.actions.startAnalysis({
-          extensionId,
-          analysisId: analysis.id,
-        })
-      );
+      abortController = new AbortController();
+      const { signal: abortSignal } = abortController;
 
       const task = async () => {
+        if (abortSignal.aborted) {
+          console.debug("Analysis aborted");
+          return;
+        }
+
+        const activeElement = selectActiveElement(state);
+        if (activeElement == null) {
+          return;
+        }
+
+        const analysis = analysisFactory(action, state);
+        if (!analysis) {
+          return;
+        }
+
+        const extensionId = activeElement.uuid;
+
+        listenerApi.dispatch(
+          analysisSlice.actions.startAnalysis({
+            extensionId,
+            analysisId: analysis.id,
+          })
+        );
+
         await analysis.run(activeElement);
 
         listenerApi.dispatch(

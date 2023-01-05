@@ -48,6 +48,11 @@ const nodeListMutationActions = [
   editorActions.removeNode,
 ] as const;
 
+// The order in which the analysis are registered is important.
+// The first analysis registered will be the first to run.
+// When multiple actions trigger analysis (e.g. typing), the later analysis have more chances to get aborted.
+// Try to put the faster analysis first, and the slower ones at the end.
+
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
@@ -88,13 +93,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   }
 );
 
-pageEditorAnalysisManager.registerAnalysisEffect(
-  () => new OutputKeyAnalysis(),
-  {
-    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-  }
-);
-
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
@@ -131,7 +129,16 @@ const varAnalysisFactory = (
   return new VarAnalysis(records);
 };
 
-// VarAnalysis on node mutation and traces
+// OutputKeyAnalysis seems to be the slowest one, so we register it at the end
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new OutputKeyAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+// VarAnalysis is not the slowest itself, but it triggers a post analysis action,
+// so it be the last one
 pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
