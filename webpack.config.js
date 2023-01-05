@@ -140,7 +140,7 @@ function updateManifestToV3(manifest) {
   // Extract host permissions
   pull(manifest.permissions, "https://*.pixiebrix.com/*");
   pull(manifest.optional_permissions, "*://*/*");
-  manifest.host_permissions = ["https://*.pixiebrix.com/*", "*://*/*"];
+  manifest.host_permissions = ["https://*.pixiebrix.com/*"];
   manifest.permissions.push("scripting");
 
   // Update format
