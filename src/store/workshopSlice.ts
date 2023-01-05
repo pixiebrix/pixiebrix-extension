@@ -18,6 +18,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { orderBy } from "lodash";
 import { localStorage } from "redux-persist-webextension-storage";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 type RecentBrick = {
   id: string;
@@ -33,6 +34,10 @@ export type WorkshopState = {
     collections: string[];
     kinds: string[];
   };
+};
+
+export type WorkshopRootState = {
+  workshop: WorkshopState;
 };
 
 const initialWorkshopState: WorkshopState = {
@@ -86,7 +91,9 @@ const workshopSlice = createSlice({
 
 export const persistWorkshopConfig = {
   key: "workshop",
-  storage: localStorage,
+  // Change the type of localStorage to our overridden version so that it can be exported
+  // See: @/store/StorageInterface.ts
+  storage: localStorage as StorageInterface,
 };
 
 export default workshopSlice;

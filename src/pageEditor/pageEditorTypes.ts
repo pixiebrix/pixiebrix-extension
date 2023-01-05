@@ -34,7 +34,7 @@ import { type FormState } from "./extensionPoints/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
+import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 
 export enum PipelineFlavor {

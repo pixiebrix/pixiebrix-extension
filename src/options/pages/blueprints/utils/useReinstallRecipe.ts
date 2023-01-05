@@ -26,7 +26,7 @@ const { installRecipe, removeRecipeById } = extensionsSlice.actions;
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
-function useReinstall(): Reinstall {
+function useReinstallRecipe(): Reinstall {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 
@@ -62,4 +62,4 @@ function useReinstall(): Reinstall {
 }
 
 export { inferRecipeAuths, inferRecipeOptions };
-export default useReinstall;
+export default useReinstallRecipe;

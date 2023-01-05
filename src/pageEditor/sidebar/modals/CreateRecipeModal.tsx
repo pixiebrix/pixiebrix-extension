@@ -56,7 +56,6 @@ import Form, {
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
 import useCreate, { checkPermissions } from "@/pageEditor/hooks/useCreate";
-import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
@@ -76,8 +75,6 @@ import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
-
-const { actions: optionsActions } = extensionsSlice;
 
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedRecipeDefinition,
@@ -207,7 +204,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       }
 
       dispatch(
-        optionsActions.installRecipe({
+        editorActions.installRecipe({
           recipe: savedRecipe,
           services: inferRecipeAuths([
             ...dirtyRecipeElements,

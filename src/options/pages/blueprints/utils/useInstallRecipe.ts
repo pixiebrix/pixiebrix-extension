@@ -31,16 +31,16 @@ import { collectPermissions } from "@/permissions";
 import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-
-const { installRecipe } = extensionsSlice.actions;
+import { resetStateFromPersistence } from "@/store/optionsStore";
 
 type InstallRecipe = (
   values: WizardValues,
   helpers: FormikHelpers<WizardValues>
 ) => Promise<void>;
 
-function useInstall(recipe: RecipeDefinition): InstallRecipe {
+function useInstallRecipe(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
 
   return useCallback(
@@ -88,8 +88,13 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       }
 
       try {
+        // Re-sync with any dynamic page editor elements in redux persistence
+        resetStateFromPersistence();
+
+        dispatch(editorActions.removeAllElementsForRecipe(recipe.metadata.id));
+
         dispatch(
-          installRecipe({
+          extensionsSlice.actions.installRecipe({
             recipe,
             extensionPoints: recipe.extensionPoints,
             services: Object.fromEntries(
@@ -119,4 +124,4 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
   );
 }
 
-export default useInstall;
+export default useInstallRecipe;

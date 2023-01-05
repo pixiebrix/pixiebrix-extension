@@ -17,8 +17,9 @@
 
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
-import { sessionChangesActions } from "@/pageEditor/sessionChanges/sessionChangesSlice";
+import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import extensionsSlice from "@/store/extensionsSlice";
 
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
@@ -33,7 +34,11 @@ sessionChangesListenerMiddleware.startListening({
     actions.editRecipeOptions,
     actions.resetMetadataAndOptionsForRecipe,
     actions.addElementToRecipe,
-    actions.removeElementFromRecipe
+    actions.removeElementFromRecipe,
+
+    extensionsSlice.actions.installCloudExtension,
+    extensionsSlice.actions.attachExtension,
+    extensionsSlice.actions.installRecipe
   ),
   effect(action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;

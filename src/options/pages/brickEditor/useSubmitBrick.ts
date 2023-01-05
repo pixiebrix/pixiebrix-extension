@@ -27,7 +27,7 @@ import {
   type Definition,
   type UnsavedRecipeDefinition,
 } from "@/types/definitions";
-import useReinstall from "@/options/pages/blueprints/utils/useReinstall";
+import useReinstallRecipe from "@/options/pages/blueprints/utils/useReinstallRecipe";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import {
@@ -58,7 +58,7 @@ type SubmitCallbacks = {
 
 function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefresh({ refreshOnMount: false });
-  const reinstall = useReinstall();
+  const reinstall = useReinstallRecipe();
   const history = useHistory();
   const dispatch = useDispatch();
 

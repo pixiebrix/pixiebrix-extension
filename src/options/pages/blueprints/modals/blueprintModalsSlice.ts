@@ -38,6 +38,10 @@ export type BlueprintModalsState = {
   showPublishContext: PublishContext;
 };
 
+export type BlueprintModalsRootState = {
+  blueprintModals: BlueprintModalsState;
+};
+
 const initialState: BlueprintModalsState = Object.freeze<BlueprintModalsState>({
   showLogsContext: null,
   showShareContext: null,

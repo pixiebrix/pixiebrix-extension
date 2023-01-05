@@ -23,7 +23,7 @@ import { Card, Col, Form, Row } from "react-bootstrap";
 import { truncate } from "lodash";
 import { Formik } from "formik";
 import { useTitle } from "@/hooks/title";
-import useInstall from "@/options/pages/blueprints/utils/useInstall";
+import useInstallRecipe from "@/options/pages/blueprints/utils/useInstallRecipe";
 import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -80,7 +80,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     new URLSearchParams(location.search).get("reinstall") === "1";
   const [blueprintSteps, initialValues, validationSchema] =
     useWizard(blueprint);
-  const install = useInstall(blueprint);
+  const install = useInstallRecipe(blueprint);
 
   const installedExtensions = useSelector(selectExtensions);
 

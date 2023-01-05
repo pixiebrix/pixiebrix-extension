@@ -15,7 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PersistedExtension, type UnresolvedExtension } from "@/core";
+import {
+  type PersistedExtension,
+  type RegistryId,
+  type UnresolvedExtension,
+  type UserOptions,
+  type UUID,
+} from "@/core";
+import {
+  type ExtensionPointConfig,
+  type RecipeDefinition,
+} from "@/types/definitions";
+import { type Deployment } from "@/types/contract";
 
 export type OptionsState =
   | LegacyExtensionObjectShapeState
@@ -48,4 +59,12 @@ export type LegacyExtensionObjectShapeState = {
  */
 export type LegacyExtensionObjectState = {
   extensions: UnresolvedExtension[];
+};
+
+export type InstallRecipePayload = {
+  recipe: RecipeDefinition;
+  services?: Record<RegistryId, UUID>;
+  extensionPoints: ExtensionPointConfig[];
+  optionsArgs?: UserOptions;
+  deployment?: Deployment;
 };

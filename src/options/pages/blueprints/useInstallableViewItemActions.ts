@@ -46,6 +46,8 @@ import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { actions } from "@/pageEditor/slices/editorSlice";
+import { resetStateFromPersistence } from "@/store/optionsStore";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -194,6 +196,10 @@ function useInstallableViewItemActions(
   const uninstall = useUserAction(
     () => {
       for (const extension of extensionsFromInstallable) {
+        // Re-sync with any dynamic page editor elements in redux persistence
+        resetStateFromPersistence();
+        dispatch(actions.removeElement(extension.id));
+
         // Remove from storage first so it doesn't get re-added in reactivate step below
         dispatch(removeExtension({ extensionId: extension.id }));
         // XXX: also remove sidebar panels that are already open?

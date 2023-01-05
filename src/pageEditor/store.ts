@@ -45,9 +45,9 @@ import {
   sessionChangesSlice,
   persistSessionChangesConfig,
   sessionChangesStateSyncActions,
-} from "@/pageEditor/sessionChanges/sessionChangesSlice";
+} from "@/store/sessionChanges/sessionChangesSlice";
 import { createStateSyncMiddleware } from "redux-state-sync";
-import { sessionChangesMiddleware } from "@/pageEditor/sessionChanges/sessionChangesListenerMiddleware";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -113,7 +113,10 @@ const store = configureStore({
       .concat(
         createStateSyncMiddleware({
           // In the future: concat whitelisted sync action lists here
-          whitelist: sessionChangesStateSyncActions,
+          whitelist: sessionChangesStateSyncActions.concat(
+            "editor/removeAllElementsForRecipe",
+            "editor/removeElement"
+          ),
         })
       );
     /* eslint-enable unicorn/prefer-spread */

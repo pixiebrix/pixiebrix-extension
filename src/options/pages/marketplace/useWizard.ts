@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import {
   inferRecipeAuths,
   inferRecipeOptions,
-} from "@/options/pages/blueprints/utils/useReinstall";
+} from "@/options/pages/blueprints/utils/useReinstallRecipe";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type Schema } from "@/core";

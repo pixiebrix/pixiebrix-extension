@@ -27,19 +27,15 @@ import {
   type PersistedExtension,
   type RecipeMetadata,
   type RegistryId,
-  type UserOptions,
   type UUID,
 } from "@/core";
-import {
-  type ExtensionPointConfig,
-  type RecipeDefinition,
-} from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
   type ExtensionOptionsState,
+  type InstallRecipePayload,
   type LegacyExtensionObjectState,
   type OptionsState,
 } from "@/store/extensionsTypes";
@@ -97,18 +93,7 @@ const extensionsSlice = createSlice({
       extension._recipe = recipeMetadata;
     },
 
-    installRecipe(
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        recipe: RecipeDefinition;
-        services?: Record<RegistryId, UUID>;
-        extensionPoints: ExtensionPointConfig[];
-        optionsArgs?: UserOptions;
-        deployment?: Deployment;
-      }>
-    ) {
+    installRecipe(state, action: PayloadAction<InstallRecipePayload>) {
       requireLatestState(state);
 
       const {
@@ -117,7 +102,7 @@ const extensionsSlice = createSlice({
         optionsArgs,
         extensionPoints,
         deployment,
-      } = payload;
+      } = action.payload;
 
       for (const {
         // Required
