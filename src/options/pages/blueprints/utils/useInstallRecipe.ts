@@ -33,6 +33,10 @@ import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
+import useMilestones from "@/hooks/useMilestones";
+import { useCreateMilestoneMutation } from "@/services/api";
+import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
+import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
 import { resetStateFromPersistence } from "@/store/optionsStore";
 
 type InstallRecipe = (
@@ -42,6 +46,9 @@ type InstallRecipe = (
 
 function useInstallRecipe(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
+  const [createMilestone] = useCreateMilestoneMutation();
+  const { hasMilestone } = useMilestones();
+  const { setActiveTab } = blueprintsSlice.actions;
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -106,6 +113,17 @@ function useInstallRecipe(recipe: RecipeDefinition): InstallRecipe {
 
         notify.success(`Installed ${recipe.metadata.name}`);
         reportEvent("InstallBlueprint");
+
+        if (!hasMilestone("first_time_public_blueprint_install")) {
+          await createMilestone({
+            key: "first_time_public_blueprint_install",
+            metadata: {
+              blueprintId: recipe.metadata.id,
+            },
+          });
+
+          dispatch(setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted));
+        }
 
         setSubmitting(false);
 

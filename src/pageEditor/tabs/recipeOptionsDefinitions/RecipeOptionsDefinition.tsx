@@ -22,7 +22,7 @@ import FieldRuntimeContext, {
 import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { isEmpty } from "lodash";
-import styles from "./RecipeOptions.module.scss";
+import styles from "./RecipeOptionsDefinition.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -38,7 +38,7 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
-  selectDirtyOptionsForRecipeId,
+  selectDirtyOptionDefinitionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { Formik } from "formik";
@@ -63,27 +63,30 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
-const emptyOptions: OptionsDefinition = {
+export const EMPTY_RECIPE_OPTIONS_DEFINITION: OptionsDefinition = {
   schema: getMinimalSchema(),
   uiSchema: getMinimalUiSchema(),
 };
 
-const RecipeOptions: React.VFC = () => {
+const RecipeOptionsDefinition: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipe, isFetching, error } = useRecipe(recipeId);
 
   const savedOptions = recipe?.options;
-  const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
+  const dirtyOptions = useSelector(
+    selectDirtyOptionDefinitionsForRecipeId(recipeId)
+  );
 
-  const optionsDefinition = dirtyOptions ?? savedOptions ?? emptyOptions;
+  const optionsDefinition =
+    dirtyOptions ?? savedOptions ?? EMPTY_RECIPE_OPTIONS_DEFINITION;
 
   const initialValues = { optionsDefinition };
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
     (options: OptionsDefinition) => {
-      dispatch(actions.editRecipeOptions(options));
+      dispatch(actions.editRecipeOptionsDefinitions(options));
     },
     [dispatch]
   );
@@ -184,4 +187,4 @@ const RecipeOptions: React.VFC = () => {
   );
 };
 
-export default RecipeOptions;
+export default RecipeOptionsDefinition;

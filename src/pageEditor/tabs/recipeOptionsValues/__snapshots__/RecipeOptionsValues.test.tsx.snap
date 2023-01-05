@@ -1,0 +1,353 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivationOptions renders blueprint options 1`] = `
+<DocumentFragment>
+  <div
+    class="pt-3 container-fluid"
+  >
+    <div
+      class="row"
+    >
+      <div
+        class="col"
+      >
+        <form
+          class=""
+          novalidate=""
+        >
+          <div
+            class="card"
+          >
+            <div
+              class="card-header"
+            >
+              Blueprint Input Options
+            </div>
+            <div
+              class="card-body"
+            >
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="myBool"
+                >
+                  myBool
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="myBool"
+                        name="myBool"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-myBool"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="myNum"
+                >
+                  myNum
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="myNum"
+                        name="myNum"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-myNum"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="myArray"
+                >
+                  myArray
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="myArray"
+                        name="myArray"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-myArray"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="myObject"
+                >
+                  myObject
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="myObject"
+                        name="myObject"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-myObject"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="formGroup form-group row"
+              >
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="myStr"
+                >
+                  myStr
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="myStr"
+                        name="myStr"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-myStr"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ActivationOptions renders blueprint options with additional props 1`] = `
+<DocumentFragment>
+  <div
+    class="pt-3 container-fluid"
+  >
+    <div
+      class="row"
+    >
+      <div
+        class="col"
+      >
+        <div
+          class="fade alert alert-danger show"
+          role="alert"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-exclamation-circle fa-w-16 "
+            data-icon="exclamation-circle"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+              fill="currentColor"
+            />
+          </svg>
+           Cannot access 'a' before initialization
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ActivationOptions renders empty options 1`] = `
+<DocumentFragment>
+  <div
+    class="pt-3 container-fluid"
+  >
+    <div
+      class="row"
+    >
+      <div
+        class="col"
+      >
+        <form
+          class=""
+          novalidate=""
+        >
+          <div
+            class="card"
+          >
+            <div
+              class="card-header"
+            >
+              Blueprint Input Options
+            </div>
+            <div
+              class="card-body"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -27,6 +27,7 @@ export type ActiveTab = {
   key: string;
   tabTitle: string;
   filters: Filters<InstallableViewItem>;
+  hideToolbar?: boolean;
 };
 
 export type BlueprintsState = {

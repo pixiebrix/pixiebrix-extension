@@ -305,4 +305,39 @@ describe("menuItemExtension", () => {
 
     extensionPoint.uninstall();
   });
+
+  it("watches ancestor changes for menu location", async () => {
+    document.body.innerHTML = getDocument(
+      '<div id="root"><div id="menu"></div></div>'
+    ).body.innerHTML;
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        containerSelector: ".newClass #menu",
+      })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    const installPromise = extensionPoint.install();
+
+    expect(document.querySelectorAll("button")).toHaveLength(0);
+
+    document.querySelector("#root").classList.add("newClass");
+
+    await installPromise;
+
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    await tick();
+
+    console.debug(document.body.innerHTML);
+
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    extensionPoint.uninstall();
+  });
 });

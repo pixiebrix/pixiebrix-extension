@@ -94,9 +94,7 @@ const contextMenuReaderShim = {
 };
 
 export async function runExtensionPointReader(
-  {
-    extensionPoint: extensionPointConfig,
-  }: Pick<DynamicDefinition, "extensionPoint">,
+  { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
   rootSelector: string | undefined
 ): Promise<ReaderOutput> {
   expectContext("contentScript");
@@ -149,7 +147,7 @@ export async function runExtensionPointReader(
 }
 
 export async function updateDynamicElement({
-  extensionPoint: extensionPointConfig,
+  extensionPointConfig,
   extension: extensionConfig,
 }: DynamicDefinition): Promise<void> {
   expectContext("contentScript");

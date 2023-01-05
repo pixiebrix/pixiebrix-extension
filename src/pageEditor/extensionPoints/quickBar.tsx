@@ -88,7 +88,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: QuickBarFormState
 ): ExtensionPointConfig<QuickBarDefinition> {
   const { extensionPoint } = formState;
@@ -224,7 +224,7 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   return {
     type: "quickBar",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -263,7 +263,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   fromNativeElement,
   fromExtensionPoint,
   asDynamicElement,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
   InsertModeHelpText() {

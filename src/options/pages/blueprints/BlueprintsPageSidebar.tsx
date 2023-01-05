@@ -27,6 +27,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
 import { useInstallBotGamesBlueprint } from "@/options/pages/blueprints/BotGamesView";
+import { type RegistryId } from "@/core";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 type BlueprintsPageSidebarProps = {
@@ -72,11 +73,13 @@ export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
     key: "Get Started",
     tabTitle: "Welcome to the PixieBrix Extension Console",
     filters: [],
+    hideToolbar: true,
   },
   botGames: {
     key: "Bot Games",
     tabTitle: "Bot Games 2022",
     filters: [],
+    hideToolbar: true,
   },
 };
 
@@ -104,10 +107,19 @@ const useOnboardingTabs = (
     blueprintsSlice.actions.setActiveTab
   );
   const { data: installableViewItems } = tableInstance;
-  const { data: me, isLoading: isMeLoading } = useGetMeQuery();
+  const {
+    data: me,
+    isLoading: isMeLoading,
+    isFetching: isMeFetching,
+  } = useGetMeQuery();
   const { hasMilestone } = useMilestones();
   const { flagOn } = useFlags();
   const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
+  const { getMilestone } = useMilestones();
+
+  const onboardingBlueprintId = getMilestone(
+    "first_time_public_blueprint_install"
+  )?.metadata?.blueprintId as RegistryId;
 
   const isFreemiumUser = !me?.organization;
 
@@ -117,12 +129,16 @@ const useOnboardingTabs = (
         return true;
       }
 
-      const isNotStarterBlueprint = starterBlueprints?.some(
+      if (onboardingBlueprintId === installableViewItem.sharing.packageId) {
+        return false;
+      }
+
+      const isStarterBlueprint = starterBlueprints?.some(
         (starterBlueprint) =>
-          installableViewItem.sharing.packageId !== starterBlueprint.metadata.id
+          installableViewItem.sharing.packageId === starterBlueprint.metadata.id
       );
 
-      return installableViewItem.status === "Active" && isNotStarterBlueprint;
+      return installableViewItem.status === "Active" && !isStarterBlueprint;
     }
   );
 
@@ -131,7 +147,7 @@ const useOnboardingTabs = (
     flagOn("bot-games-event-in-progress");
 
   const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isMeLoading
+    !isStarterBlueprintsLoading && !isMeLoading && !isMeFetching
       ? isFreemiumUser && !hasSomeBlueprintEngagement && !showBotGamesTab
       : false;
 
@@ -143,7 +159,7 @@ const useOnboardingTabs = (
   }, []);
 
   useEffect(() => {
-    if (isStarterBlueprintsLoading || isMeLoading) {
+    if (isStarterBlueprintsLoading || isMeLoading || isMeFetching) {
       return;
     }
 
@@ -180,6 +196,7 @@ const useOnboardingTabs = (
     }
   }, [
     isMeLoading,
+    isMeFetching,
     starterBlueprints,
     isStarterBlueprintsLoading,
     activeTab.key,

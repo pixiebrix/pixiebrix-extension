@@ -83,7 +83,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: SidebarFormState
 ): ExtensionPointConfig {
   const { extensionPoint } = formState;
@@ -124,7 +124,7 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
   return {
     type: "actionPanel",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -228,7 +228,7 @@ const config: ElementConfig<never, SidebarFormState> = {
   fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
   EditorNode: SidebarConfiguration,

@@ -53,8 +53,12 @@ jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(() => ({
     data: [],
   })),
+  useGetMeQuery: jest.fn(() => ({
+    data: [],
+  })),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
+  useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
 }));
 
 jest.mock("@/recipes/recipesHooks", () => ({

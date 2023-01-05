@@ -141,7 +141,7 @@ export interface EditorState {
   showV3UpgradeMessageByElement: Record<UUID, boolean>;
 
   /**
-   * Unsaved, changed recipe options
+   * Unsaved, changed recipe options definitions
    */
   dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
 
