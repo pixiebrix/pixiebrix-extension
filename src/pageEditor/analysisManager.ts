@@ -50,7 +50,7 @@ const nodeListMutationActions = [
 
 // The order in which the analysis are registered is important.
 // The first analysis registered will be the first to run.
-// When multiple actions trigger analysis (e.g. typing), the later analysis have more chances to get aborted.
+// When multiple actions (e.g. typing) trigger analysis, the later analysis have more chances to get aborted.
 // Try to put the faster analysis first, and the slower ones at the end.
 
 pageEditorAnalysisManager.registerAnalysisEffect(
@@ -129,7 +129,7 @@ const varAnalysisFactory = (
   return new VarAnalysis(records);
 };
 
-// OutputKeyAnalysis seems to be the slowest one, so we register it at the end
+// OutputKeyAnalysis seems to be the slowest one, so we register it in the end
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
@@ -137,8 +137,8 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   }
 );
 
-// VarAnalysis is not the slowest itself, but it triggers a post analysis action,
-// so it be the last one
+// VarAnalysis is not the slowest itself, but it triggers a post-analysis action,
+// so it is the last one
 pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {

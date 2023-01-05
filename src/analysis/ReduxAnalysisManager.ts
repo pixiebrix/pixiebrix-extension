@@ -46,6 +46,7 @@ type AnalysisListenerConfig =
   | {
       matcher: MatchFunction<AnyAction>;
     };
+
 type EffectConfig<TAnalysis extends Analysis = Analysis> = {
   postAnalysisAction?: (
     analysis: TAnalysis,
@@ -102,7 +103,6 @@ class ReduxAnalysisManager {
 
       const task = async () => {
         if (abortSignal.aborted) {
-          console.debug("Analysis aborted");
           return;
         }
 
