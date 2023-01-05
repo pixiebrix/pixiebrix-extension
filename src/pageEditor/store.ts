@@ -18,10 +18,7 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import {
-  editorSlice,
-  persistEditorConfig,
-} from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
@@ -41,13 +38,6 @@ import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
-import {
-  sessionChangesSlice,
-  persistSessionChangesConfig,
-  sessionChangesStateSyncActions,
-} from "@/pageEditor/sessionChanges/sessionChangesSlice";
-import { createStateSyncMiddleware } from "redux-state-sync";
-import { sessionChangesMiddleware } from "@/pageEditor/sessionChanges/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -80,7 +70,7 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: persistReducer(persistEditorConfig, editorSlice.reducer),
+    editor: editorSlice.reducer,
     session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
@@ -88,10 +78,6 @@ const store = configureStore({
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
     recipes: recipesSlice.reducer,
-    sessionChanges: persistReducer(
-      persistSessionChangesConfig,
-      sessionChangesSlice.reducer
-    ),
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -106,14 +92,7 @@ const store = configureStore({
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
       .concat(recipesMiddleware)
-      .concat(conditionalMiddleware)
-      .concat(sessionChangesMiddleware)
-      .concat(
-        createStateSyncMiddleware({
-          // In the future: concat whitelisted sync action lists here
-          whitelist: sessionChangesStateSyncActions,
-        })
-      );
+      .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,
