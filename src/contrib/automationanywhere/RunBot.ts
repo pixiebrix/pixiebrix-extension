@@ -170,7 +170,6 @@ export class RunBot extends Transformer {
       awaitResult,
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       service,
-      workspaceType,
     } = args;
 
     if (isCommunityControlRoom(service.config.controlRoomUrl)) {
@@ -202,9 +201,11 @@ export class RunBot extends Transformer {
 
     let runAsUserIds: number[] = enterpriseBotArgs.runAsUserIds ?? [];
     if (
-      (enterpriseBotArgs.isAttended || workspaceType === "private") &&
+      enterpriseBotArgs.isAttended &&
       service.serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID
     ) {
+      // Attended mode uses the authenticated user id as a runAsUserId
+
       const { partnerPrincipals = [] } = await getUserData();
 
       const principal = partnerPrincipals.find(
@@ -222,11 +223,11 @@ export class RunBot extends Transformer {
       runAsUserIds = [principal.control_room_user_id];
       enterpriseBotArgs.poolIds = [];
     } else if (
-      (workspaceType === "private" ||
-        workspaceType == null ||
-        enterpriseBotArgs.isAttended) &&
+      enterpriseBotArgs.isAttended &&
       service.serviceId === CONTROL_ROOM_SERVICE_ID
     ) {
+      // Attended mode uses the authenticated user id as a runAsUserId
+
       // Get the user id from the cached token data. AA doesn't have any endpoints for retrieving the user id that
       // we could automatically fetch in the Page Editor
       const userData = (await getCachedAuthData(service.id)) as unknown as {
