@@ -77,10 +77,7 @@ import {
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
-import {
-  type ExtensionsRootState,
-  type InstallRecipePayload,
-} from "@/store/extensionsTypes";
+import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
@@ -95,7 +92,6 @@ import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
-import extensionsSlice from "@/store/extensionsSlice";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -319,24 +315,6 @@ const checkActiveElementAvailability = createAsyncThunk<
     unavailableInstalledCount,
     unavailableDynamicCount,
   };
-});
-
-// TODO: Move this directly into useInstallRecipe, it doesn't need to be a thunk
-const installRecipe = createAsyncThunk<
-  void,
-  InstallRecipePayload,
-  { state: ExtensionsRootState & EditorRootState }
->("extensions/installRecipe", async (arg, thunkAPI) => {
-  // TODO: We need to re-hydrate here so that any dynamic elements
-  //  are in local state and can be removed, then those removals will
-  //  flow through to the persistence.
-
-  thunkAPI.dispatch(extensionsSlice.actions.installRecipe(arg));
-  thunkAPI.dispatch(actions.removeAllElementsForRecipe(arg.recipe.metadata.id));
-
-  // TODO: After removing elements from the editor slice, we should flush
-  //  the persisted state and use the session slice to invalidate any
-  //  open page editor instances
 });
 
 export const editorSlice = createSlice({
@@ -937,7 +915,6 @@ export const actions = {
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
   checkActiveElementAvailability,
-  installRecipe,
 };
 
 export const persistEditorConfig = {

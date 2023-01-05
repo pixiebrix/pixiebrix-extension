@@ -75,6 +75,7 @@ import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
+import extensionsSlice from "@/store/extensionsSlice";
 
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedRecipeDefinition,
@@ -204,7 +205,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
       }
 
       dispatch(
-        editorActions.installRecipe({
+        extensionsSlice.actions.installRecipe({
           recipe: savedRecipe,
           services: inferRecipeAuths([
             ...dirtyRecipeElements,
