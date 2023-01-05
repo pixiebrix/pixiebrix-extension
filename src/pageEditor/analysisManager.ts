@@ -92,17 +92,29 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  },
+  {
+    runAsynchronously: true,
   }
 );
 
-pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
-  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-});
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new TemplateAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  },
+  {
+    runAsynchronously: true,
+  }
+);
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  },
+  {
+    runAsynchronously: true,
   }
 );
 
@@ -110,12 +122,21 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RequestPermissionAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  },
+  {
+    runAsynchronously: true,
   }
 );
 
-pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
-  matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-});
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new RegexAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  },
+  {
+    runAsynchronously: true,
+  }
+);
 
 const varAnalysisFactory = (
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
@@ -136,6 +157,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
     matcher: isAnyOf(
+      editorActions.editElement,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions
     ),
@@ -149,26 +171,26 @@ pageEditorAnalysisManager.registerAnalysisEffect(
         })
       );
     },
+    runAsynchronously: true,
   }
 );
 
 // VarAnalysis with debounce on edit
-pageEditorAnalysisManager.registerAnalysisEffect(
-  varAnalysisFactory,
-  {
-    actionCreator: editorActions.editElement,
-  },
-  {
-    postAnalysisAction(analysis, extensionId, listenerApi) {
-      listenerApi.dispatch(
-        analysisSlice.actions.setKnownVars({
-          extensionId,
-          vars: analysis.getKnownVars(),
-        })
-      );
-    },
-    debounce: 500,
-  }
-);
+// pageEditorAnalysisManager.registerAnalysisEffect(
+//   varAnalysisFactory,
+//   {
+//     actionCreator: editorActions.editElement,
+//   },
+//   {
+//     postAnalysisAction(analysis, extensionId, listenerApi) {
+//       listenerApi.dispatch(
+//         analysisSlice.actions.setKnownVars({
+//           extensionId,
+//           vars: analysis.getKnownVars(),
+//         })
+//       );
+//     },
+//   }
+// );
 
 export default pageEditorAnalysisManager;

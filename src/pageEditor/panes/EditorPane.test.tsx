@@ -69,6 +69,7 @@ import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/re
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
+import { act } from "react-dom/test-utils";
 
 jest.mock("@/services/api", () => {
   const originalModule = jest.requireActual("@/services/api");
@@ -665,7 +666,9 @@ describe("validation", () => {
     jest.clearAllTimers();
   });
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
   });
 
   function expectEditorError(container: HTMLElement, errorMessage: string) {
@@ -698,10 +701,12 @@ describe("validation", () => {
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization
-    // First one runs the Effect (debounce #1) that triggers Redux state update
+    // 1st one runs the Effect (debounce #1) that triggers Redux state update
     await runPendingTimers();
-    // Second one runs the Redux state update (debounce #2)
+    // 2nd one runs the Redux state update (debounce #2)
     await runPendingTimers();
+    // 3d one runs the analysis
+    await act(async () => runPendingTimers());
 
     expectEditorError(
       rendered.container,
@@ -755,6 +760,14 @@ describe("validation", () => {
     });
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
+
+    // Run the timers of the Formik-Redux state synchronization
+    // 1st one runs the Effect (debounce #1) that triggers Redux state update
+    await runPendingTimers();
+    // 2nd one runs the Redux state update (debounce #2)
+    await runPendingTimers();
+    // 3d one runs the analysis
+    await act(async () => runPendingTimers());
 
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again

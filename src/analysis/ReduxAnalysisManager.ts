@@ -56,6 +56,7 @@ type EffectConfig<TAnalysis extends Analysis = Analysis> = {
     >
   ) => void;
   debounce?: number;
+  runAsynchronously?: boolean;
 };
 
 type AnalysisFactory<
@@ -96,25 +97,36 @@ class ReduxAnalysisManager {
         })
       );
 
-      await analysis.run(activeElement);
+      const executor = async () => {
+        await analysis.run(activeElement);
 
-      listenerApi.dispatch(
-        analysisSlice.actions.finishAnalysis({
-          extensionId,
-          analysisId: analysis.id,
-          annotations: analysis.getAnnotations(),
-        })
-      );
+        listenerApi.dispatch(
+          analysisSlice.actions.finishAnalysis({
+            extensionId,
+            analysisId: analysis.id,
+            annotations: analysis.getAnnotations(),
+          })
+        );
 
-      if (effectConfig?.postAnalysisAction) {
-        effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
+        if (effectConfig?.postAnalysisAction) {
+          effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
+        }
+      };
+
+      if (effectConfig?.runAsynchronously) {
+        setTimeout(executor, 100);
+      } else {
+        void executor();
       }
     };
 
     this.listenerMiddleware.startListening({
       ...listenerConfig,
       effect: effectConfig?.debounce
-        ? debounce(effect, effectConfig.debounce)
+        ? debounce(effect, effectConfig.debounce, {
+            leading: false,
+            trailing: true,
+          })
         : effect,
     } as any);
   }
