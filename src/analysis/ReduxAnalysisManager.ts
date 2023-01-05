@@ -71,6 +71,17 @@ class ReduxAnalysisManager {
     return this.listenerMiddleware.middleware;
   }
 
+  private readonly queue: Array<() => Promise<void>> = [];
+  private runTask() {
+    setTimeout(async () => {
+      const task = this.queue.shift();
+      await task();
+      if (this.queue.length > 0) {
+        this.runTask();
+      }
+    }, 0);
+  }
+
   public registerAnalysisEffect<TAnalysis extends Analysis>(
     analysisFactory: AnalysisFactory<TAnalysis>,
     listenerConfig: AnalysisListenerConfig,
@@ -97,7 +108,7 @@ class ReduxAnalysisManager {
         })
       );
 
-      const executor = async () => {
+      const task = async () => {
         await analysis.run(activeElement);
 
         listenerApi.dispatch(
@@ -113,10 +124,9 @@ class ReduxAnalysisManager {
         }
       };
 
-      if (effectConfig?.runAsynchronously) {
-        setTimeout(executor, 100);
-      } else {
-        void executor();
+      this.queue.push(task);
+      if (this.queue.length === 1) {
+        this.runTask();
       }
     };
 
