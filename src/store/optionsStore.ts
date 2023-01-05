@@ -145,10 +145,7 @@ const store = configureStore({
       .concat(
         createStateSyncMiddleware({
           // In the future: concat whitelisted sync action lists here
-          whitelist: sessionChangesStateSyncActions.concat(
-            "editor/removeAllElementsForRecipe",
-            "editor/removeElement"
-          ),
+          whitelist: sessionChangesStateSyncActions,
         })
       );
     /* eslint-enable unicorn/prefer-spread */
