@@ -77,7 +77,10 @@ export default async function postMessage({
       { once: true }
     );
 
-    console.debug("SANDBOX:", type, "Posting payload:", payload);
+    if (LOGGING_ENABLED) {
+      console.debug("SANDBOX:", type, "Posting payload:", payload);
+    }
+
     const packet: RequestPacket = {
       type,
       payload,
