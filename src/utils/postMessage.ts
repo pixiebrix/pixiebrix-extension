@@ -39,6 +39,8 @@ const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
+const LOGGING_ENABLED = process.env.WEBEXT_MESSENGER_LOGGING === "true";
+
 export type RequestPacket = {
   type: string;
   payload: Payload;
@@ -107,19 +109,19 @@ export function addPostMessageListener(
 
     // Only log with process.env.WEBEXT_MESSENGER_LOGGING to avoid large logging payloads
     try {
-      if (process.env.WEBEXT_MESSENGER_LOGGING) {
+      if (LOGGING_ENABLED) {
         console.debug("SANDBOX:", type, "Received payload:", data.payload);
       }
 
       const response = await listener(data.payload);
 
-      if (process.env.WEBEXT_MESSENGER_LOGGING) {
+      if (LOGGING_ENABLED) {
         console.debug("SANDBOX:", type, "Responding with", response);
       }
 
       source.postMessage({ response } satisfies ResponsePacket);
     } catch (error) {
-      if (process.env.WEBEXT_MESSENGER_LOGGING) {
+      if (LOGGING_ENABLED) {
         console.debug("SANDBOX:", type, "Throwing", error);
       }
 
