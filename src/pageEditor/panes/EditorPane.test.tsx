@@ -42,7 +42,7 @@ import {
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { defaultBlockConfig } from "@/blocks/util";
-import { runPendingTimers, waitForEffect } from "@/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/blocks/transformers/jq";
