@@ -482,6 +482,18 @@ function selectTraceRecordMeta(
   };
 }
 
+/**
+ * Return true if tracing is enabled based on the given tracing options
+ * @see traces.addEntry
+ * @see traces.addExit
+ */
+function selectTraceEnabled({
+  runId,
+  blockInstanceId,
+}: Pick<TraceMetadata, "runId" | "blockInstanceId">): boolean {
+  return Boolean(runId) && Boolean(blockInstanceId);
+}
+
 export async function runBlock(
   resolvedConfig: ResolvedBlockConfig,
   props: BlockProps,
@@ -505,7 +517,7 @@ export async function runBlock(
   }
 
   if (type === "renderer" && headless) {
-    if (trace.blockInstanceId && trace.runId) {
+    if (selectTraceEnabled(trace)) {
       traces.addExit({
         ...trace,
         extensionId: logger.context.extensionId,
@@ -622,8 +634,7 @@ export async function blockReducer(
 
   // // Pass blockOptions because it includes the trace property
   const traceMeta = selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef);
-  const traceEnabled =
-    Boolean(traceMeta.blockInstanceId) && Boolean(traceMeta.runId);
+  const traceEnabled = selectTraceEnabled(traceMeta);
 
   if (traceEnabled) {
     await lazyRenderArgs();
