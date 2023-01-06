@@ -154,7 +154,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
 
           <ButtonGroup>
             <Button
-              variant={view === "list" ? "info" : "outline-info"}
+              variant={view === "list" ? "primary" : "outline-primary"}
               size="sm"
               className="ml-3"
               onClick={() => {
@@ -164,7 +164,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
               <FontAwesomeIcon icon={faList} size="1x" />
             </Button>
             <Button
-              variant={view === "grid" ? "info" : "outline-info"}
+              variant={view === "grid" ? "primary" : "outline-primary"}
               size="sm"
               onClick={() => {
                 setView("grid");

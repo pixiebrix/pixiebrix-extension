@@ -377,7 +377,7 @@ module.exports = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: options.mode,
-        WEBEXT_MESSENGER_LOGGING: "false",
+        WEBEXT_MESSENGER_LOGGING: false,
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/themes/colors";
+
 .root {
   margin: auto; // Center
   padding: 20px;
@@ -27,8 +29,7 @@
   animation: loading-fade-in 0.5s 0.5s both;
 
   span span {
-    /* TODO: Use color variable */
-    background-color: #6562aa !important;
+    background-color: $P500 !important;
   }
 }
 
