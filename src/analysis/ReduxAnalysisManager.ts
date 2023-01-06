@@ -32,6 +32,7 @@ import { type Analysis } from "./analysisTypes";
 import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
 import { type UUID } from "@/core";
+import AsyncAnalysisQueue from "./asyncAnalysisQueue";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -72,16 +73,7 @@ class ReduxAnalysisManager {
     return this.listenerMiddleware.middleware;
   }
 
-  private readonly queue: Array<() => Promise<void>> = [];
-  private runTask() {
-    setTimeout(async () => {
-      const task = this.queue.shift();
-      await task();
-      if (this.queue.length > 0) {
-        this.runTask();
-      }
-    }, 0);
-  }
+  private readonly queue = new AsyncAnalysisQueue();
 
   public registerAnalysisEffect<TAnalysis extends Analysis>(
     analysisFactory: AnalysisFactory<TAnalysis>,
@@ -140,10 +132,7 @@ class ReduxAnalysisManager {
         }
       };
 
-      this.queue.push(task);
-      if (this.queue.length === 1) {
-        this.runTask();
-      }
+      this.queue.enqueue(task);
     };
 
     this.listenerMiddleware.startListening({
