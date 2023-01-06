@@ -73,6 +73,11 @@ import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 
 let clock: sinonTimers.InstalledClock;
+async function flushAsyncEffects() {
+  return act(async () => {
+    await clock.tickAsync(1000);
+  });
+}
 
 jest.mock("@/services/api", () => {
   const originalModule = jest.requireActual("@/services/api");
@@ -180,7 +185,18 @@ beforeAll(async () => {
   (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
 
   (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
+
+  clock = sinonTimers.install();
 });
+
+afterAll(() => {
+  clock.uninstall();
+});
+
+beforeEach(() => {
+  clock.reset();
+});
+afterEach(async () => clock.runAllAsync());
 
 const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
@@ -235,7 +251,7 @@ async function addABlock(addButton: Element, blockName: string) {
   );
 
   // Run the debounced search
-  await clock.tickAsync(500);
+  await flushAsyncEffects();
 
   // Sometimes unexpected extra results come back in the search,
   // but the exact-match result to the search string should
@@ -259,7 +275,7 @@ describe("renders", () => {
       },
     });
 
-    await waitForEffect();
+    await flushAsyncEffects();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -273,24 +289,13 @@ describe("renders", () => {
       },
     });
 
-    await waitForEffect();
+    await flushAsyncEffects();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
 
 describe("can add a node", () => {
-  beforeAll(() => {
-    clock = sinonTimers.install();
-  });
-  afterAll(() => {
-    clock.uninstall();
-  });
-
-  beforeEach(() => {
-    clock.reset();
-  });
-
   test("to root pipeline", async () => {
     const formState = getPlainFormState();
     render(
@@ -471,17 +476,6 @@ describe("can remove a node", () => {
 });
 
 describe("can move a node up", () => {
-  beforeAll(() => {
-    clock = sinonTimers.install();
-  });
-  afterAll(() => {
-    clock.uninstall();
-  });
-
-  beforeEach(() => {
-    clock.reset();
-  });
-
   test("in root pipeline", async () => {
     await renderEditorPaneWithBasicFormState();
 
@@ -533,17 +527,6 @@ describe("can move a node up", () => {
 });
 
 describe("can move a node down", () => {
-  beforeAll(() => {
-    clock = sinonTimers.install();
-  });
-  afterAll(() => {
-    clock.uninstall();
-  });
-
-  beforeEach(() => {
-    clock.reset();
-  });
-
   test("in root pipeline", async () => {
     await renderEditorPaneWithBasicFormState();
 
@@ -673,17 +656,6 @@ describe("can copy and paste a node", () => {
 });
 
 describe("validation", () => {
-  beforeAll(() => {
-    clock = sinonTimers.install();
-  });
-  afterAll(() => {
-    clock.uninstall();
-  });
-
-  beforeEach(() => {
-    clock.reset();
-  });
-
   function expectEditorError(container: HTMLElement, errorMessage: string) {
     const errorBadge = container.querySelector(
       '.active[data-testid="editor-node"] span.badge'
@@ -708,15 +680,13 @@ describe("validation", () => {
       },
     });
 
-    await waitForEffect();
+    await flushAsyncEffects();
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
-    await act(async () => {
-      await clock.tickAsync(1000);
-    });
+    await flushAsyncEffects();
 
     expectEditorError(
       rendered.container,
@@ -754,15 +724,13 @@ describe("validation", () => {
       }
     );
 
-    await waitForEffect();
+    await flushAsyncEffects();
 
     // Make invalid string template
     // This is field level error
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
-    await act(async () => {
-      await clock.tickAsync(500);
-    });
+    await flushAsyncEffects();
 
     // Adding a renderer in the first position in the pipeline
     // This is a node level error
@@ -773,9 +741,7 @@ describe("validation", () => {
     await addABlock(addButton, "markdown");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
-    await act(async () => {
-      await clock.tickAsync(500);
-    });
+    await flushAsyncEffects();
 
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
@@ -847,7 +813,7 @@ describe("validation", () => {
       }
     );
 
-    await waitForEffect();
+    await flushAsyncEffects();
 
     // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
@@ -855,6 +821,8 @@ describe("validation", () => {
     });
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
+
+    await flushAsyncEffects();
 
     expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
@@ -888,6 +856,8 @@ describe("validation", () => {
     );
 
     await immediateUserEvent.click(moveUpButton);
+
+    await flushAsyncEffects();
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
@@ -939,7 +909,7 @@ describe("validation", () => {
         }
       );
 
-      await waitForEffect();
+      await flushAsyncEffects();
 
       const blockType = await getType(disallowedBlock);
       expectEditorError(
@@ -951,20 +921,6 @@ describe("validation", () => {
 });
 
 describe("block validation in Add Block Modal UI", () => {
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
-  beforeEach(() => {
-    jest.clearAllTimers();
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-  });
-
   const testCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
@@ -1010,7 +966,7 @@ describe("block validation in Add Block Modal UI", () => {
       );
 
       // Run the debounced search
-      await runPendingTimers();
+      await flushAsyncEffects();
 
       // Check for the alert on hover
       const firstResult = screen.queryAllByRole("button", { name: /add/i })[0]
@@ -1051,7 +1007,7 @@ describe("block validation in Add Block Modal UI", () => {
     );
 
     // Run the debounced search
-    await runPendingTimers();
+    await flushAsyncEffects();
 
     const addButtons = screen.queryAllByRole("button", { name: /add/i });
 
