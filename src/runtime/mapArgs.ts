@@ -21,7 +21,7 @@ import {
   type TemplateRenderer,
   engineRenderer,
   type RendererOptions,
-} from "./renderers";
+} from "@/runtime/renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
 import {
