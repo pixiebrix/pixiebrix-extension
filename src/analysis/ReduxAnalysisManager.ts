@@ -58,7 +58,6 @@ type EffectConfig<TAnalysis extends Analysis = Analysis> = {
     >
   ) => void;
   debounce?: number;
-  runAsynchronously?: boolean;
 };
 
 type AnalysisFactory<

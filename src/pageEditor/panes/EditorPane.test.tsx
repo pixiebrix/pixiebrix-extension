@@ -672,283 +672,283 @@ describe("can copy and paste a node", () => {
   });
 });
 
-// describe("validation", () => {
-//   beforeAll(() => {
-//     clock = sinonTimers.install();
-//   });
-//   afterAll(() => {
-//     clock.uninstall();
-//   });
+describe("validation", () => {
+  beforeAll(() => {
+    clock = sinonTimers.install();
+  });
+  afterAll(() => {
+    clock.uninstall();
+  });
 
-//   beforeEach(() => {
-//     clock.reset();
-//   });
+  beforeEach(() => {
+    clock.reset();
+  });
 
-//   function expectEditorError(container: HTMLElement, errorMessage: string) {
-//     const errorBadge = container.querySelector(
-//       '.active[data-testid="editor-node"] span.badge'
-//     );
-//     expect(errorBadge).toBeInTheDocument();
+  function expectEditorError(container: HTMLElement, errorMessage: string) {
+    const errorBadge = container.querySelector(
+      '.active[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadge).toBeInTheDocument();
 
-//     expect(
-//       getByText(container.querySelector(".configPanel"), errorMessage)
-//     ).toBeInTheDocument();
-//   }
+    expect(
+      getByText(container.querySelector(".configPanel"), errorMessage)
+    ).toBeInTheDocument();
+  }
 
-//   test("validates string templates", async () => {
-//     const formState = getFormStateWithSubPipelines();
-//     const subEchoNode = (
-//       formState.extension.blockPipeline[1].config.body as PipelineExpression
-//     ).__value__[0];
-//     const rendered = render(<EditorPane />, {
-//       setupRedux(dispatch) {
-//         dispatch(editorActions.addElement(formState));
-//         dispatch(editorActions.selectElement(formState.uuid));
-//         dispatch(editorActions.setElementActiveNodeId(subEchoNode.instanceId));
-//       },
-//     });
+  test("validates string templates", async () => {
+    const formState = getFormStateWithSubPipelines();
+    const subEchoNode = (
+      formState.extension.blockPipeline[1].config.body as PipelineExpression
+    ).__value__[0];
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.setElementActiveNodeId(subEchoNode.instanceId));
+      },
+    });
 
-//     await waitForEffect();
+    await waitForEffect();
 
-//     // By some reason, the validation doesn't fire with userEvent.type
-//     fireTextInput(rendered.getByLabelText("message"), "{{!");
+    // By some reason, the validation doesn't fire with userEvent.type
+    fireTextInput(rendered.getByLabelText("message"), "{{!");
 
-//     // Run the timers of the Formik-Redux state synchronization and analysis
-//     await act(async () => {
-//       await clock.tickAsync(1000);
-//     });
+    // Run the timers of the Formik-Redux state synchronization and analysis
+    await act(async () => {
+      await clock.tickAsync(1000);
+    });
 
-//     expectEditorError(
-//       rendered.container,
-//       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
-//     );
-//   });
+    expectEditorError(
+      rendered.container,
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+    );
+  });
 
-//   test("preserves validation results when switching between extensions", async () => {
-//     // The test adds 2 extensions.
-//     // It creates an input field error to one node of the extension 1,
-//     // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
-//     // Then we select the second extension and make sure there're no error badges displayed.
-//     // Going back to extension 1.
-//     // See the 2 error badges in the Node Layout.
-//     // Select the Markdown node and check the error.
-//     // Select the Echo block and check the error.
-//     const extension1 = getPlainFormState();
-//     const extension2 = getPlainFormState();
+  test("preserves validation results when switching between extensions", async () => {
+    // The test adds 2 extensions.
+    // It creates an input field error to one node of the extension 1,
+    // then it creates a node level error on another node (adding a renderer at the beginning of the pipeline).
+    // Then we select the second extension and make sure there're no error badges displayed.
+    // Going back to extension 1.
+    // See the 2 error badges in the Node Layout.
+    // Select the Markdown node and check the error.
+    // Select the Echo block and check the error.
+    const extension1 = getPlainFormState();
+    const extension2 = getPlainFormState();
 
-//     // Selecting the Echo block in the first extension
-//     const { instanceId: echoBlockInstanceId } =
-//       extension1.extension.blockPipeline[0];
-//     const rendered = render(
-//       <>
-//         <EditorPane />
-//         <AddBlockModal />
-//       </>,
-//       {
-//         setupRedux(dispatch) {
-//           dispatch(editorActions.addElement(extension1));
-//           dispatch(editorActions.addElement(extension2));
-//           dispatch(editorActions.selectElement(extension1.uuid));
-//           dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
-//         },
-//       }
-//     );
+    // Selecting the Echo block in the first extension
+    const { instanceId: echoBlockInstanceId } =
+      extension1.extension.blockPipeline[0];
+    const rendered = render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(extension1));
+          dispatch(editorActions.addElement(extension2));
+          dispatch(editorActions.selectElement(extension1.uuid));
+          dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
+        },
+      }
+    );
 
-//     await waitForEffect();
+    await waitForEffect();
 
-//     // Make invalid string template
-//     // This is field level error
-//     fireTextInput(rendered.getByLabelText("message"), "{{!");
+    // Make invalid string template
+    // This is field level error
+    fireTextInput(rendered.getByLabelText("message"), "{{!");
 
-//     await act(async () => {
-//       await clock.tickAsync(500);
-//     });
+    await act(async () => {
+      await clock.tickAsync(500);
+    });
 
-//     // Adding a renderer in the first position in the pipeline
-//     // This is a node level error
-//     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
-//       exact: false,
-//     });
-//     const addButton = addButtons.at(0);
-//     await addABlock(addButton, "markdown");
+    // Adding a renderer in the first position in the pipeline
+    // This is a node level error
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
+      exact: false,
+    });
+    const addButton = addButtons.at(0);
+    await addABlock(addButton, "markdown");
 
-//     // Run the timers of the Formik-Redux state synchronization and analysis
-//     await act(async () => {
-//       await clock.tickAsync(500);
-//     });
+    // Run the timers of the Formik-Redux state synchronization and analysis
+    await act(async () => {
+      await clock.tickAsync(500);
+    });
 
-//     // Select foundation node.
-//     // For testing purposes we don't want a node with error to be active when we select extension1 again
-//     await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+    // Select foundation node.
+    // For testing purposes we don't want a node with error to be active when we select extension1 again
+    await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
 
-//     // Ensure 2 nodes have error badges
-//     expect(
-//       rendered.container.querySelectorAll(
-//         '[data-testid="editor-node"] span.badge'
-//       )
-//     ).toHaveLength(2);
+    // Ensure 2 nodes have error badges
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
-//     // Selecting another extension. Only possible with Redux
-//     const store = rendered.getReduxStore();
-//     store.dispatch(editorActions.selectElement(extension2.uuid));
+    // Selecting another extension. Only possible with Redux
+    const store = rendered.getReduxStore();
+    store.dispatch(editorActions.selectElement(extension2.uuid));
 
-//     // Ensure no error is displayed
-//     const errorBadgesOfAnotherExtension = rendered.container.querySelectorAll(
-//       '[data-testid="editor-node"] span.badge'
-//     );
-//     expect(errorBadgesOfAnotherExtension).toHaveLength(0);
+    // Ensure no error is displayed
+    const errorBadgesOfAnotherExtension = rendered.container.querySelectorAll(
+      '[data-testid="editor-node"] span.badge'
+    );
+    expect(errorBadgesOfAnotherExtension).toHaveLength(0);
 
-//     // Selecting the first extension
-//     store.dispatch(editorActions.selectElement(extension1.uuid));
+    // Selecting the first extension
+    store.dispatch(editorActions.selectElement(extension1.uuid));
 
-//     // Should show 2 error in the Node Layout
-//     expect(
-//       rendered.container.querySelectorAll(
-//         '[data-testid="editor-node"] span.badge'
-//       )
-//     ).toHaveLength(2);
+    // Should show 2 error in the Node Layout
+    expect(
+      rendered.container.querySelectorAll(
+        '[data-testid="editor-node"] span.badge'
+      )
+    ).toHaveLength(2);
 
-//     const editorNodes = rendered.queryAllByTestId("editor-node");
+    const editorNodes = rendered.queryAllByTestId("editor-node");
 
-//     // Selecting the markdown block in the first extension
-//     await immediateUserEvent.click(editorNodes[1]);
+    // Selecting the markdown block in the first extension
+    await immediateUserEvent.click(editorNodes[1]);
 
-//     expectEditorError(rendered.container, "A renderer must be the last brick.");
+    expectEditorError(rendered.container, "A renderer must be the last brick.");
 
-//     // Selecting the echo block
-//     await immediateUserEvent.click(editorNodes[2]);
+    // Selecting the echo block
+    await immediateUserEvent.click(editorNodes[2]);
 
-//     expectEditorError(
-//       rendered.container,
-//       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
-//     );
-//   });
+    expectEditorError(
+      rendered.container,
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+    );
+  });
 
-//   test("validates multiple renderers on add", async () => {
-//     const formState = getPlainFormState();
-//     formState.extension.blockPipeline.push(
-//       blockConfigFactory({
-//         id: MarkdownRenderer.BLOCK_ID,
-//         config: {
-//           markdown: makeTemplateExpression("nunjucks", "test"),
-//         },
-//       })
-//     );
-//     const rendered = render(
-//       <>
-//         <EditorPane />
-//         <AddBlockModal />
-//       </>,
-//       {
-//         setupRedux(dispatch) {
-//           dispatch(editorActions.addElement(formState));
-//           dispatch(editorActions.selectElement(formState.uuid));
-//         },
-//       }
-//     );
+  test("validates multiple renderers on add", async () => {
+    const formState = getPlainFormState();
+    formState.extension.blockPipeline.push(
+      blockConfigFactory({
+        id: MarkdownRenderer.BLOCK_ID,
+        config: {
+          markdown: makeTemplateExpression("nunjucks", "test"),
+        },
+      })
+    );
+    const rendered = render(
+      <>
+        <EditorPane />
+        <AddBlockModal />
+      </>,
+      {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+        },
+      }
+    );
 
-//     await waitForEffect();
+    await waitForEffect();
 
-//     // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
-//     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
-//       exact: false,
-//     });
-//     const addButton = addButtons.at(0);
-//     await addABlock(addButton, "markdown");
+    // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
+    const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
+      exact: false,
+    });
+    const addButton = addButtons.at(0);
+    await addABlock(addButton, "markdown");
 
-//     expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
-//   });
+    expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
+  });
 
-//   test("validates that renderer is the last node on move", async () => {
-//     const formState = getPlainFormState();
-//     formState.extension.blockPipeline.push(
-//       blockConfigFactory({
-//         id: MarkdownRenderer.BLOCK_ID,
-//         config: {
-//           markdown: makeTemplateExpression("nunjucks", "test"),
-//         },
-//       })
-//     );
+  test("validates that renderer is the last node on move", async () => {
+    const formState = getPlainFormState();
+    formState.extension.blockPipeline.push(
+      blockConfigFactory({
+        id: MarkdownRenderer.BLOCK_ID,
+        config: {
+          markdown: makeTemplateExpression("nunjucks", "test"),
+        },
+      })
+    );
 
-//     // Selecting the last node (renderer)
-//     const { instanceId } = formState.extension.blockPipeline[2];
-//     const rendered = render(<EditorPane />, {
-//       setupRedux(dispatch) {
-//         dispatch(editorActions.addElement(formState));
-//         dispatch(editorActions.selectElement(formState.uuid));
-//         dispatch(editorActions.setElementActiveNodeId(instanceId));
-//       },
-//     });
+    // Selecting the last node (renderer)
+    const { instanceId } = formState.extension.blockPipeline[2];
+    const rendered = render(<EditorPane />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+        dispatch(editorActions.selectElement(formState.uuid));
+        dispatch(editorActions.setElementActiveNodeId(instanceId));
+      },
+    });
 
-//     await waitForEffect();
+    await waitForEffect();
 
-//     const moveUpButton = getByTitle(
-//       rendered.container.querySelector('.active[data-testid="editor-node"]'),
-//       "Move brick higher"
-//     );
+    const moveUpButton = getByTitle(
+      rendered.container.querySelector('.active[data-testid="editor-node"]'),
+      "Move brick higher"
+    );
 
-//     await immediateUserEvent.click(moveUpButton);
+    await immediateUserEvent.click(moveUpButton);
 
-//     expectEditorError(rendered.container, "A renderer must be the last brick.");
-//   });
+    expectEditorError(rendered.container, "A renderer must be the last brick.");
+  });
 
-//   const disallowedBlockValidationTestCases = [
-//     {
-//       pipelineFlavor: PipelineFlavor.NoRenderer,
-//       formFactory: triggerFormStateFactory,
-//       disallowedBlock: markdownBlock,
-//     },
-//     {
-//       pipelineFlavor: PipelineFlavor.NoEffect,
-//       formFactory: formStateFactory,
-//       disallowedBlock: alertBlock,
-//     },
-//   ];
+  const disallowedBlockValidationTestCases = [
+    {
+      pipelineFlavor: PipelineFlavor.NoRenderer,
+      formFactory: triggerFormStateFactory,
+      disallowedBlock: markdownBlock,
+    },
+    {
+      pipelineFlavor: PipelineFlavor.NoEffect,
+      formFactory: formStateFactory,
+      disallowedBlock: alertBlock,
+    },
+  ];
 
-//   test.each(disallowedBlockValidationTestCases)(
-//     "validates a disallowed block in $pipelineFlavor pipeline",
-//     async ({ formFactory, disallowedBlock }) => {
-//       const formState = formFactory();
-//       const disallowedBlockConfig = blockConfigFactory({
-//         id: disallowedBlock.id,
-//         config: defaultBlockConfig(disallowedBlock.inputSchema),
-//       });
+  test.each(disallowedBlockValidationTestCases)(
+    "validates a disallowed block in $pipelineFlavor pipeline",
+    async ({ formFactory, disallowedBlock }) => {
+      const formState = formFactory();
+      const disallowedBlockConfig = blockConfigFactory({
+        id: disallowedBlock.id,
+        config: defaultBlockConfig(disallowedBlock.inputSchema),
+      });
 
-//       const rendered = render(
-//         <>
-//           <EditorPane />
-//         </>,
-//         {
-//           setupRedux(dispatch) {
-//             dispatch(editorActions.addElement(formState));
-//             dispatch(editorActions.selectElement(formState.uuid));
-//             // Adding the node will invoke validation (can't add with UI because of UI validation rules)
-//             dispatch(
-//               editorActions.addNode({
-//                 block: disallowedBlockConfig,
-//                 pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
-//                 pipelineIndex: 0,
-//               })
-//             );
-//             dispatch(
-//               editorActions.setElementActiveNodeId(
-//                 disallowedBlockConfig.instanceId
-//               )
-//             );
-//           },
-//         }
-//       );
+      const rendered = render(
+        <>
+          <EditorPane />
+        </>,
+        {
+          setupRedux(dispatch) {
+            dispatch(editorActions.addElement(formState));
+            dispatch(editorActions.selectElement(formState.uuid));
+            // Adding the node will invoke validation (can't add with UI because of UI validation rules)
+            dispatch(
+              editorActions.addNode({
+                block: disallowedBlockConfig,
+                pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+                pipelineIndex: 0,
+              })
+            );
+            dispatch(
+              editorActions.setElementActiveNodeId(
+                disallowedBlockConfig.instanceId
+              )
+            );
+          },
+        }
+      );
 
-//       await waitForEffect();
+      await waitForEffect();
 
-//       const blockType = await getType(disallowedBlock);
-//       expectEditorError(
-//         rendered.container,
-//         `Block of type "${blockType}" is not allowed in this pipeline`
-//       );
-//     }
-//   );
-// });
+      const blockType = await getType(disallowedBlock);
+      expectEditorError(
+        rendered.container,
+        `Block of type "${blockType}" is not allowed in this pipeline`
+      );
+    }
+  );
+});
 
 describe("block validation in Add Block Modal UI", () => {
   beforeAll(() => {
