@@ -20,11 +20,10 @@ import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
-import {
-  renderHandlebarsTemplate,
-  renderNunjucksTemplate,
-} from "@/sandbox/messenger/api";
+import { type TemplateRenderPayload } from "@/sandbox/messenger/api";
 import { type JsonObject } from "type-fest";
+import { isErrorObject } from "@/errors/errorHelpers";
+import { InvalidTemplateError } from "@/errors/businessErrors";
 
 export type AsyncTemplateRenderer = (
   template: string,
@@ -42,6 +41,48 @@ export type RendererOptions = {
  */
 export function containsTemplateExpression(literalOrTemplate: string): boolean {
   return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
+}
+
+// XXX: https://github.com/pixiebrix/pixiebrix-extension/issues/4964
+// Copied from the sandbox handler
+async function renderNunjucksTemplate({
+  autoescape,
+  template,
+  context,
+}: TemplateRenderPayload): Promise<string> {
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { default: nunjucks } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
+
+  nunjucks.configure({ autoescape });
+  try {
+    return nunjucks.renderString(template, context);
+  } catch (error) {
+    if (isErrorObject(error) && error.name === "Template render error") {
+      throw new InvalidTemplateError(error.message, template);
+    }
+
+    throw error;
+  }
+}
+
+// XXX: https://github.com/pixiebrix/pixiebrix-extension/issues/4964
+// Copied from the sandbox handler
+async function renderHandlebarsTemplate({
+  autoescape,
+  template,
+  context,
+}: TemplateRenderPayload): Promise<string> {
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { default: handlebars } = await import(
+    /* webpackChunkName: "handlebars" */ "handlebars"
+  );
+
+  const compiledTemplate = handlebars.compile(template, {
+    noEscape: !autoescape,
+  });
+  return compiledTemplate(context);
 }
 
 export function engineRenderer(
