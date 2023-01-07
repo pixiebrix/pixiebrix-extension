@@ -15,4 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default {};
+export default {
+  runtime: {
+    getManifest: () => ({
+      homepage_url: "https://www.pixiebrix.com/",
+    }),
+  },
+};

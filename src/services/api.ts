@@ -228,13 +228,14 @@ export const appApi = createApi({
     }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
-      void
+      { package__name?: RegistryId } | void
     >({
-      query: () => ({
+      query: (params) => ({
         url: "/api/marketplace/listings/",
         method: "get",
         // Returns public marketplace
         requireLinked: false,
+        params,
       }),
       providesTags: ["MarketplaceListings"],
       transformResponse(
@@ -403,7 +404,7 @@ export const appApi = createApi({
         { type: "StarterBlueprints", id: "LIST" },
       ],
     }),
-    createMilestone: builder.mutation<Milestone, { key: string }>({
+    createMilestone: builder.mutation<Milestone, Omit<Milestone, "user">>({
       query: (data) => ({
         url: "/api/me/milestones/",
         method: "post",

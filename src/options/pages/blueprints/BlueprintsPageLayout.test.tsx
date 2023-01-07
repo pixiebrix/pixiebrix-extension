@@ -151,6 +151,10 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("shows the bot games tab", async () => {
+    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+      isLoading: false,
+    }));
+
     render(
       <Provider
         store={optionsStore({

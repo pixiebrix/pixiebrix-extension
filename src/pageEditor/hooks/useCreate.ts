@@ -73,8 +73,7 @@ function selectErrorMessage(error: unknown): string {
 async function ensurePermissions(element: FormState) {
   const adapter = ADAPTERS.get(element.type);
 
-  const { extension, extensionPoint: extensionPointConfig } =
-    adapter.asDynamicElement(element);
+  const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
@@ -97,6 +96,23 @@ async function ensurePermissions(element: FormState) {
       "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
     );
   }
+
+  return hasPermissions;
+}
+
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+export function checkPermissions(element: FormState): Promise<boolean> {
+  // eslint-disable-next-line promise/prefer-await-to-then -- return a promise and let the calling party do decide whether to await it or not
+  return ensurePermissions(element).catch((error) => {
+    console.error("Error checking/enabling permissions", { error });
+    notify.warning({
+      message: "Error verifying permissions",
+      error,
+      reportError: true,
+    });
+
+    return false;
+  });
 }
 
 /**
@@ -134,19 +150,10 @@ function useCreate(): CreateCallback {
     async (
       element: FormState,
       pushToCloud: boolean,
-      checkPermissions = true
+      shouldCheckPermissions = true
     ): Promise<string | null> => {
-      if (checkPermissions) {
-        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
-        void ensurePermissions(element).catch((error) => {
-          console.error("Error checking/enabling permissions", { error });
-          notify.warning({
-            message:
-              "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
-            error,
-            reportError: true,
-          });
-        });
+      if (shouldCheckPermissions) {
+        void checkPermissions(element);
       }
 
       const adapter = ADAPTERS.get(element.type);
@@ -165,7 +172,8 @@ function useCreate(): CreateCallback {
 
         if (!isLocked) {
           try {
-            const extensionPointConfig = adapter.selectExtensionPoint(element);
+            const extensionPointConfig =
+              adapter.selectExtensionPointConfig(element);
             const packageId = element.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
@@ -192,7 +200,8 @@ function useCreate(): CreateCallback {
       try {
         const rawExtension = adapter.selectExtension(element);
         if (hasInnerExtensionPoint) {
-          const extensionPointConfig = adapter.selectExtensionPoint(element);
+          const extensionPointConfig =
+            adapter.selectExtensionPointConfig(element);
           dispatch(
             saveExtension({
               extension: extensionWithInnerDefinitions(

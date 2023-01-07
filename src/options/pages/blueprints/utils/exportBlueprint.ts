@@ -18,13 +18,10 @@
 import { isEmpty } from "lodash";
 import {
   type Metadata,
-  type RegistryId,
   type Schema,
   type UnresolvedExtension,
   type UserOptions,
 } from "@/core";
-import { objToYaml } from "@/utils/objToYaml";
-import { saveAs } from "file-saver";
 import {
   type OptionsDefinition,
   type UnsavedRecipeDefinition,
@@ -32,8 +29,6 @@ import {
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { isInnerExtensionPoint } from "@/registry/internal";
-import filenamify from "filenamify";
-import { validateSemVerString } from "@/types/helpers";
 
 /**
  * Infer optionsSchema from the options provided to the extension.
@@ -94,17 +89,4 @@ export function makeBlueprint(
       },
     ],
   };
-}
-
-export function exportBlueprint(extension: UnresolvedExtension): void {
-  const blueprint = makeBlueprint(extension, {
-    id: "" as RegistryId,
-    name: extension.label,
-    description: "Blueprint exported from PixieBrix",
-    version: validateSemVerString("1.0.0"),
-  });
-
-  const blueprintYAML = objToYaml(blueprint);
-  const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, [filenamify(extension.label), "yaml"].join("."));
 }

@@ -85,7 +85,7 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint(
+function selectExtensionPointConfig(
   formState: PanelFormState
 ): ExtensionPointConfig<PanelDefinition> {
   const { extensionPoint } = formState;
@@ -129,7 +129,7 @@ function asDynamicElement(element: PanelFormState): DynamicDefinition {
   return {
     type: "panel",
     extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPoint: selectExtensionPoint(element),
+    extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
@@ -233,7 +233,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,
-  selectExtensionPoint,
+  selectExtensionPointConfig,
   selectExtension,
   fromExtension,
 };

@@ -48,11 +48,18 @@ jest.mock("@/telemetry/logging", () => {
   };
 });
 
+const addEntryMock = traces.addEntry as jest.MockedFunction<
+  typeof traces.addEntry
+>;
+const addExitMock = traces.addExit as jest.MockedFunction<
+  typeof traces.addExit
+>;
+
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register(echoBlock, contextBlock, throwBlock);
-  (traces.addEntry as any).mockReset();
-  (traces.addExit as any).mockReset();
+  addEntryMock.mockReset();
+  addExitMock.mockReset();
 });
 
 describe("Trace normal exit", () => {
@@ -367,5 +374,56 @@ describe("Trace normal execution", () => {
         }),
       })
     );
+  });
+});
+
+describe("Tracing disabled", () => {
+  it("Does not call addEntry or addExit if tracing is disabled", async () => {
+    const result = await reducePipeline(
+      {
+        id: echoBlock.id,
+        config: {
+          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+        },
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({ message: "hello" });
+
+    expect(traces.addEntry).not.toHaveBeenCalled();
+    expect(traces.addExit).not.toHaveBeenCalled();
+  });
+
+  it("Does not render config if condition is false and tracing is disabled", async () => {
+    // XXX: this doesn't appear to be working
+    jest.doMock("@/runtime/renderers", () => ({
+      engineRenderer: jest.fn().mockImplementation(() => {
+        throw new Error("should not be called");
+      }),
+    }));
+
+    const result = await reducePipeline(
+      {
+        id: echoBlock.id,
+        if: false,
+        config: {
+          message: makeTemplateExpression(
+            "nunjucks",
+            "Hello, {{@input.inputArg}}"
+          ),
+        },
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({});
+
+    // I manually verified engineRenderer doesn't get called. It's not clear how to only mock in this method. See
+    // comment above
+    expect(traces.addEntry).not.toHaveBeenCalled();
+    expect(traces.addExit).not.toHaveBeenCalled();
   });
 });
