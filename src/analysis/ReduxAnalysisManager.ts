@@ -32,6 +32,7 @@ import { type Analysis } from "./analysisTypes";
 import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
 import { type UUID } from "@/core";
+import AsyncAnalysisQueue from "./asyncAnalysisQueue";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -46,6 +47,7 @@ type AnalysisListenerConfig =
   | {
       matcher: MatchFunction<AnyAction>;
     };
+
 type EffectConfig<TAnalysis extends Analysis = Analysis> = {
   postAnalysisAction?: (
     analysis: TAnalysis,
@@ -70,51 +72,75 @@ class ReduxAnalysisManager {
     return this.listenerMiddleware.middleware;
   }
 
+  private readonly queue = new AsyncAnalysisQueue();
+
   public registerAnalysisEffect<TAnalysis extends Analysis>(
     analysisFactory: AnalysisFactory<TAnalysis>,
     listenerConfig: AnalysisListenerConfig,
     effectConfig?: EffectConfig<TAnalysis>
   ) {
+    let abortController: AbortController;
+
     const effect: AnalysisEffect = async (action, listenerApi) => {
+      if (abortController) {
+        abortController.abort();
+      }
+
+      // Capture state at the moment of the action
       const state = listenerApi.getState();
-      const activeElement = selectActiveElement(state);
-      if (activeElement == null) {
-        return;
-      }
 
-      const analysis = analysisFactory(action, state);
-      if (!analysis) {
-        return;
-      }
+      abortController = new AbortController();
+      const { signal: abortSignal } = abortController;
 
-      const extensionId = activeElement.uuid;
+      const task = async () => {
+        if (abortSignal.aborted) {
+          return;
+        }
 
-      listenerApi.dispatch(
-        analysisSlice.actions.startAnalysis({
-          extensionId,
-          analysisId: analysis.id,
-        })
-      );
+        const activeElement = selectActiveElement(state);
+        if (activeElement == null) {
+          return;
+        }
 
-      await analysis.run(activeElement);
+        const analysis = analysisFactory(action, state);
+        if (!analysis) {
+          return;
+        }
 
-      listenerApi.dispatch(
-        analysisSlice.actions.finishAnalysis({
-          extensionId,
-          analysisId: analysis.id,
-          annotations: analysis.getAnnotations(),
-        })
-      );
+        const extensionId = activeElement.uuid;
 
-      if (effectConfig?.postAnalysisAction) {
-        effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
-      }
+        listenerApi.dispatch(
+          analysisSlice.actions.startAnalysis({
+            extensionId,
+            analysisId: analysis.id,
+          })
+        );
+
+        await analysis.run(activeElement);
+
+        listenerApi.dispatch(
+          analysisSlice.actions.finishAnalysis({
+            extensionId,
+            analysisId: analysis.id,
+            annotations: analysis.getAnnotations(),
+          })
+        );
+
+        if (effectConfig?.postAnalysisAction) {
+          effectConfig.postAnalysisAction(analysis, extensionId, listenerApi);
+        }
+      };
+
+      this.queue.enqueue(task);
     };
 
     this.listenerMiddleware.startListening({
       ...listenerConfig,
       effect: effectConfig?.debounce
-        ? debounce(effect, effectConfig.debounce)
+        ? debounce(effect, effectConfig.debounce, {
+            leading: false,
+            trailing: true,
+          })
         : effect,
     } as any);
   }
