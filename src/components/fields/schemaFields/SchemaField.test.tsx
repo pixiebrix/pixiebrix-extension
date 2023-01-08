@@ -18,6 +18,7 @@
 import React from "react";
 import { render, screen, waitFor } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import {
   type ApiVersion,

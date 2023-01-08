@@ -18,6 +18,7 @@
 import React, { useMemo, useState } from "react";
 import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";

@@ -19,8 +19,10 @@ import styles from "./ActivateWizard.module.scss";
 
 import React, { useEffect } from "react";
 import { type RecipeDefinition } from "@/types/definitions";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Col, Form, Row } from "react-bootstrap";
 import { truncate } from "lodash";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { useTitle } from "@/hooks/title";
 import useInstall from "@/options/pages/blueprints/utils/useInstall";

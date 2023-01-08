@@ -19,6 +19,7 @@ import React from "react";
 import { render, screen } from "@/options/testHelpers";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { MemoryRouter } from "react-router";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 

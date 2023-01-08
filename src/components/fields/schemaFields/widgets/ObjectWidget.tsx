@@ -17,6 +17,7 @@
  */
 
 import React, { useCallback, useMemo, useRef } from "react";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form, Table } from "react-bootstrap";
 import { type SafeString, type Schema } from "@/core";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";

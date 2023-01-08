@@ -17,6 +17,7 @@
 
 import styles from "./AdvancedSettings.module.scss";
 
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";

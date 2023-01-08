@@ -19,6 +19,7 @@ import styles from "./PasswordWidget.module.scss";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Button,
+  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form,
   type FormControlProps,
   InputGroup,

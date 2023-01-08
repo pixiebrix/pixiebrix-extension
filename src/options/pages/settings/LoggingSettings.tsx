@@ -17,6 +17,7 @@
 
 import React from "react";
 import { useLoggingConfig } from "@/hooks/logging";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
