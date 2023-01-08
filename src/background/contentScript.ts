@@ -17,8 +17,8 @@
 
 import pDefer, { type DeferredPromise } from "p-defer";
 import { injectContentScript } from "webext-content-scripts";
-import { getAdditionalPermissions } from "webext-additional-permissions";
-import { patternToRegex } from "webext-patterns";
+import { isContentScriptRegistered } from "webext-dynamic-content-scripts/utils";
+
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
@@ -28,23 +28,6 @@ import { getTargetState } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
 import MessageSender = Runtime.MessageSender;
-
-/** Checks whether a URL will have the content scripts automatically injected */
-export async function isContentScriptRegistered(url: string): Promise<boolean> {
-  // Injected by the browser
-  const manifestScriptsOrigins = browser.runtime
-    .getManifest()
-    .content_scripts.flatMap((script) => script.matches);
-
-  // Injected by `webext-dynamic-content-scripts`
-  const { origins } = await getAdditionalPermissions({
-    strictOrigins: false,
-  });
-
-  // Do not replace the 2 calls above with `permissions.getAll` because it might also
-  // include hosts that are permitted by the manifest but have no content script registered.
-  return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
-}
 
 /**
  * @see makeSenderKey
@@ -176,10 +159,21 @@ async function ensureContentScriptWithoutTimeout(
     return;
   }
 
-  if (await isContentScriptRegistered(result.url)) {
+  const registration = await isContentScriptRegistered(result.url);
+  if (registration === "static") {
     // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
     console.debug(
-      "ensureContentScript: will be injected automatically by the manifest or webext-dynamic-content-script",
+      "ensureContentScript: will be injected automatically by the manifest",
+      target
+    );
+
+    await readyNotificationPromise;
+    return;
+  }
+
+  if (registration === "dynamic") {
+    console.debug(
+      "ensureContentScript: will be injected automatically by webext-dynamic-content-script",
       target
     );
 
