@@ -30,6 +30,7 @@ import Autosuggest, {
 } from "react-autosuggest";
 import cx from "classnames";
 import { noop } from "lodash";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 
 export interface SuggestionTypeBase {

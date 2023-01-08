@@ -20,6 +20,7 @@ import styles from "@/options/pages/marketplace/ActivateWizard.module.scss";
 import React, { useCallback, useMemo } from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { type CloudExtension } from "@/types/contract";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik, type FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";

@@ -18,6 +18,7 @@
 import styles from "./Sidebar.module.scss";
 import React, { type FormEvent, useEffect, useMemo, useState } from "react";
 import { sortBy } from "lodash";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import hash from "object-hash";

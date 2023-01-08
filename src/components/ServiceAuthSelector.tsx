@@ -22,6 +22,7 @@ import React, {
   useMemo,
 } from "react";
 import { useField } from "formik";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import Select, {
   type GroupBase,

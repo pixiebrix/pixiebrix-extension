@@ -19,6 +19,7 @@ import React from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import CssClassWidget, { parseValue } from "./CssClassWidget";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik, useField } from "formik";
 import { type Expression } from "@/core";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";

@@ -18,6 +18,7 @@
 import React from "react";
 import { type Schema } from "@/core";
 import { render } from "@/pageEditor/testHelpers";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";

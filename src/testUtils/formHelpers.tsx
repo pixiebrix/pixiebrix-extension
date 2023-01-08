@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik, type FormikValues } from "formik";
 import React, { type PropsWithChildren } from "react";
 import { fireEvent, screen } from "@testing-library/react";
