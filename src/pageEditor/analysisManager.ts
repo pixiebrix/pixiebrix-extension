@@ -115,20 +115,6 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
 
-const varAnalysisFactory = (
-  action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
-  state: RootState
-) => {
-  const { varAnalysis } = selectSettings(state);
-  if (!varAnalysis) {
-    return null;
-  }
-
-  const records = selectActiveElementTraces(state);
-
-  return new VarAnalysis(records);
-};
-
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
@@ -140,7 +126,19 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 // VarAnalysis is not the slowest itself, but it triggers a post-analysis action,
 // so it is the last one
 pageEditorAnalysisManager.registerAnalysisEffect(
-  varAnalysisFactory,
+  (
+    action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
+    state: RootState
+  ) => {
+    const { varAnalysis } = selectSettings(state);
+    if (!varAnalysis) {
+      return null;
+    }
+
+    const records = selectActiveElementTraces(state);
+
+    return new VarAnalysis(records);
+  },
   {
     matcher: isAnyOf(
       editorActions.editElement,
