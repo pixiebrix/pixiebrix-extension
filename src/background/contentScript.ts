@@ -27,7 +27,11 @@ import type { Target } from "@/types";
 import { getTargetState } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
+import { possiblyActiveTabs } from "webext-dynamic-content-scripts/active-tab";
+
 import MessageSender = Runtime.MessageSender;
+
+const log = console.debug.bind(console, "ensureContentScript:");
 
 /**
  * @see makeSenderKey
@@ -103,6 +107,18 @@ export async function onReadyNotification(
   }
 }
 
+async function injectFromManifest(target: Target): Promise<void> {
+  log("injecting", target);
+  const scripts = browser.runtime
+    .getManifest()
+    .content_scripts.map((script) => {
+      script.all_frames = false;
+      return script;
+    });
+
+  await injectContentScript(target, scripts);
+}
+
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
  * - If it's not expected to be injected automatically, it also injects it into the page.
@@ -116,7 +132,7 @@ export const ensureContentScript = memoizeUntilSettled(
     const { signal } = controller;
 
     try {
-      console.debug("ensureContentScript: requested", target);
+      log("requested", target);
 
       // TODO: Simplify after https://github.com/sindresorhus/p-timeout/issues/31
       await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
@@ -125,7 +141,7 @@ export const ensureContentScript = memoizeUntilSettled(
         message: `contentScript not ready in ${timeoutMillis}ms`,
       });
 
-      console.debug("ensureContentScript: ready", target);
+      log("ready", target);
     } finally {
       controller.abort();
     }
@@ -145,7 +161,7 @@ async function ensureContentScriptWithoutTimeout(
   const result = await getTargetState(target); // It will throw if we don't have permissions
 
   if (result.ready) {
-    console.debug("ensureContentScript: already exists and is ready", target);
+    log("already exists and is ready", target);
     return;
   }
 
@@ -166,30 +182,19 @@ async function ensureContentScriptWithoutTimeout(
       "ensureContentScript: will be injected automatically by the manifest",
       target
     );
-
-    await readyNotificationPromise;
-    return;
-  }
-
-  if (registration === "dynamic") {
+  } else if (registration === "dynamic") {
     console.debug(
       "ensureContentScript: will be injected automatically by webext-dynamic-content-script",
       target
     );
-
-    await readyNotificationPromise;
-    return;
+  } else if (possiblyActiveTabs.has(target.tabId)) {
+    console.debug(
+      "ensureContentScript: will be injected automatically by webext-dynamic-content-script, via activeTab",
+      target
+    );
+    await injectFromManifest(target);
   }
 
-  console.debug("ensureContentScript: injecting", target);
-  const scripts = browser.runtime
-    .getManifest()
-    .content_scripts.map((script) => {
-      script.all_frames = false;
-      return script;
-    });
-
-  await injectContentScript(target, scripts);
   await readyNotificationPromise;
 }
 
