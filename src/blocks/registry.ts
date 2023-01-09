@@ -40,34 +40,13 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     super(["block", "component", "effect", "reader"], "blocks", fromJS);
   }
 
-  private allBlocksLoaded = false;
+  private loadingBlockTypePromises: Array<Promise<void>> = [];
+  private loadAllPromise: Promise<IBlock[]>;
   private readonly typeCache: TypedBlockMap = new Map();
 
-  /**
-   * Return Map for block by RegistryId with computed/inferred metadata.
-   * @see all
-   */
-  async allTyped(): Promise<TypedBlockMap> {
-    console.log("BlocksRegistry.allTyped");
-    if (this.allBlocksLoaded) {
-      console.log("BlocksRegistry. returning cached value");
-      return this.typeCache;
-    }
-
-    console.log("BlocksRegistry. loading all blocks");
-
-    // No need to loadTypes from this method.
-    // this.all() will load blocks and register each block
-    // this.register() loads types
-    await this.all();
-
-    this.allBlocksLoaded = true;
-    return this.typeCache;
-  }
-
-  private async loadTypes(items: IBlock[]): Promise<void> {
-    await Promise.all(
-      items.map(async (item) => {
+  private loadTypes(items: IBlock[]) {
+    this.loadingBlockTypePromises.push(
+      ...items.map(async (item) => {
         // XXX: will we run into problems with circular dependency between getType and the registry exported from
         //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
         //  that are defined as a pipeline of other blocks.
@@ -79,14 +58,52 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     );
   }
 
+  /**
+   * Return Map for block by RegistryId with computed/inferred metadata.
+   * @see all
+   */
+  async allTyped(): Promise<TypedBlockMap> {
+    // Load all blocks if not already loaded
+    if (this.loadAllPromise == null) {
+      console.debug("Resolving types for all known blocks");
+
+      void this.all();
+      return this.allTyped();
+    }
+
+    // Wait for all blocks to be loaded
+    await this.loadAllPromise;
+
+    if (this.loadingBlockTypePromises.length === 0) {
+      return this.typeCache;
+    }
+
+    // Wait for all block types to be loaded (see this.register)
+    const loadingBlockTypes = this.loadingBlockTypePromises;
+    this.loadingBlockTypePromises = [];
+
+    await Promise.all(loadingBlockTypes);
+
+    return this.typeCache;
+  }
+
+  override async all(): Promise<IBlock[]> {
+    console.debug("Loading all blocks from registry");
+
+    this.loadAllPromise = super.all();
+    return this.loadAllPromise;
+  }
+
   override register(...items: IBlock[]): void {
     super.register(...items);
-    void this.loadTypes(items);
+    this.loadTypes(items);
   }
 
   override clear() {
     super.clear();
     this.typeCache.clear();
+    this.loadAllPromise = null;
+    this.loadingBlockTypePromises = [];
   }
 }
 
