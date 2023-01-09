@@ -31,7 +31,6 @@
     "<rootDir>/src/testUtils/testAfterEnv.js",
     "jest-extended/all"
   ],
-  "coverageReporters": ["lcov"],
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}",
     "!src/**/*.stories.tsx",
