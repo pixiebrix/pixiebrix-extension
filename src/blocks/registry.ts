@@ -40,52 +40,53 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     super(["block", "component", "effect", "reader"], "blocks", fromJS);
   }
 
-  // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
-  private typeCachePromise: Promise<TypedBlockMap> = null;
-
-  private async inferAllTypes(): Promise<TypedBlockMap> {
-    const typeCache: TypedBlockMap = new Map();
-    const items = await this.all();
-
-    console.debug("Computing block types for %d block(s)", items.length);
-
-    await Promise.all(
-      items.map(async (item) => {
-        // XXX: will we run into problems with circular dependency between getType and the registry exported from
-        //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
-        //  that are defined as a pipeline of other blocks.
-        typeCache.set(item.id, {
-          block: item,
-          type: await getType(item),
-        });
-      })
-    );
-
-    return typeCache;
-  }
+  private allBlocksLoaded = false;
+  private readonly typeCache: TypedBlockMap = new Map();
 
   /**
    * Return Map for block by RegistryId with computed/inferred metadata.
    * @see all
    */
   async allTyped(): Promise<TypedBlockMap> {
-    if (this.typeCachePromise == null) {
-      const promise = this.inferAllTypes();
-      this.typeCachePromise = promise;
-      return promise;
+    console.log("BlocksRegistry.allTyped");
+    if (this.allBlocksLoaded) {
+      console.log("BlocksRegistry. returning cached value");
+      return this.typeCache;
     }
 
-    return this.typeCachePromise;
+    console.log("BlocksRegistry. loading all blocks");
+
+    // No need to loadTypes from this method.
+    // this.all() will load blocks and register each block
+    // this.register() loads types
+    await this.all();
+
+    this.allBlocksLoaded = true;
+    return this.typeCache;
+  }
+
+  private async loadTypes(items: IBlock[]): Promise<void> {
+    await Promise.all(
+      items.map(async (item) => {
+        // XXX: will we run into problems with circular dependency between getType and the registry exported from
+        //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
+        //  that are defined as a pipeline of other blocks.
+        this.typeCache.set(item.id, {
+          block: item,
+          type: await getType(item),
+        });
+      })
+    );
   }
 
   override register(...items: IBlock[]): void {
     super.register(...items);
-    this.typeCachePromise = null;
+    void this.loadTypes(items);
   }
 
   override clear() {
     super.clear();
-    this.typeCachePromise = null;
+    this.typeCache.clear();
   }
 }
 

@@ -66,19 +66,18 @@ describe("blocksMap", () => {
       extensionFactory(),
     ]);
 
-    // @ts-expect-error -- testing private method
-    jest.spyOn(registry, "inferAllTypes");
+    jest.spyOn(registry, "all");
 
     // First call loads the blocks
-    await registry.allTyped();
+    let blocks = await registry.allTyped();
 
-    // @ts-expect-error -- testing private method
-    expect(registry.inferAllTypes).toHaveBeenCalledTimes(1);
+    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(blocks.size).toBe(2);
 
     // Second call uses the cache
-    await registry.allTyped();
+    blocks = await registry.allTyped();
 
-    // @ts-expect-error -- testing private method
-    expect(registry.inferAllTypes).toHaveBeenCalledTimes(1);
+    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(blocks.size).toBe(2);
   });
 });

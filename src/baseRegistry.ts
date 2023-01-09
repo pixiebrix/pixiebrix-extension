@@ -135,6 +135,7 @@ export class Registry<
    * @deprecated requires all data to be parsed
    */
   async all(): Promise<Item[]> {
+    console.log("BaseRegistry.all() has been called");
     await Promise.allSettled(
       [...this.kinds.values()].map(async (kind) => {
         for (const raw of await registry.getKind(kind)) {
