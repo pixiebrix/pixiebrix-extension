@@ -192,6 +192,7 @@ async function ensureContentScriptWithoutTimeout(
       "ensureContentScript: will be injected automatically by webext-dynamic-content-script, via activeTab",
       target
     );
+  } else {
     await injectFromManifest(target);
   }
 
