@@ -212,7 +212,9 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     <small
                                       class="text-muted form-text"
                                     >
-                                      Pattern to match the hostname part of a URL.
+                                      <span>
+                                        Pattern to match the hostname part of a URL.
+                                      </span>
                                     </small>
                                   </div>
                                 </div>
@@ -273,7 +275,9 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     <small
                                       class="text-muted form-text"
                                     >
-                                      Pattern to match the pathname part of a URL.
+                                      <span>
+                                        Pattern to match the pathname part of a URL.
+                                      </span>
                                     </small>
                                   </div>
                                 </div>
@@ -335,7 +339,9 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     <small
                                       class="text-muted form-text"
                                     >
-                                      Pattern to match the hash part of a URL.
+                                      <span>
+                                        Pattern to match the hash part of a URL.
+                                      </span>
                                     </small>
                                   </div>
                                 </div>
@@ -396,7 +402,9 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     <small
                                       class="text-muted form-text"
                                     >
-                                      Pattern to match the search part of a URL.
+                                      <span>
+                                        Pattern to match the search part of a URL.
+                                      </span>
                                     </small>
                                   </div>
                                 </div>

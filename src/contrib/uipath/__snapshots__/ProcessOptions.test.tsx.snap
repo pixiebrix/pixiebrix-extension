@@ -370,7 +370,9 @@ exports[`UiPath Options Render with selected dependency 1`] = `
         <small
           class="text-muted form-text"
         >
-          The UiPath release/process
+          <span>
+            The UiPath release/process
+          </span>
         </small>
       </div>
     </div>
@@ -506,7 +508,9 @@ exports[`UiPath Options Render with selected dependency 1`] = `
         <small
           class="text-muted form-text"
         >
-          How the process should be run
+          <span>
+            How the process should be run
+          </span>
         </small>
       </div>
     </div>
@@ -560,7 +564,9 @@ exports[`UiPath Options Render with selected dependency 1`] = `
         <small
           class="text-muted form-text"
         >
-          When using strategy JobsCount, the process will run x times where x is the value of the JobsCount field.
+          <span>
+            When using strategy JobsCount, the process will run x times where x is the value of the JobsCount field.
+          </span>
         </small>
       </div>
     </div>
@@ -628,7 +634,9 @@ exports[`UiPath Options Render with selected dependency 1`] = `
         <small
           class="text-muted form-text"
         >
-          Wait for the process to complete and output the results.
+          <span>
+            Wait for the process to complete and output the results.
+          </span>
         </small>
       </div>
     </div>
