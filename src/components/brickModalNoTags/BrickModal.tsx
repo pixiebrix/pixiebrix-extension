@@ -50,6 +50,7 @@ import { type Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import useAutoFocus from "@/hooks/useAutoFocus";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -191,9 +192,7 @@ function ActualModal<T extends IBrick>({
   const brickResultSizePx = 87;
 
   // Auto-focus search input upon opening Modal
-  useEffect(() => {
-    searchInput.current.focus();
-  }, []);
+  useAutoFocus(searchInput);
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
