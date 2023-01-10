@@ -235,7 +235,7 @@ export class FormFill extends Effect {
       submit: {
         description: "true to submit the form, or a jQuery selector to click",
         default: false,
-        oneOf: [{ type: "string" }, { type: "boolean" }],
+        oneOf: [{ type: "string", format: "selector" }, { type: "boolean" }],
       },
     },
     required: [],
