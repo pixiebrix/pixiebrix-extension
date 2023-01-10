@@ -33,12 +33,14 @@ const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
  */
 async function getEditorState(): Promise<EditorState> {
   const storage: Record<string, string> = await readReduxStorage(STORAGE_KEY);
+  // Redux-persist stores the values of each top-level property in the state object as a JSON string
   return mapValues(storage, (value) => JSON.parse(value)) as EditorState;
 }
 
 async function saveEditorState(state: EditorState): Promise<void> {
   await setReduxStorage(
     STORAGE_KEY,
+    // Redux-persist stores the values of each top-level property in the state object as a JSON string
     mapValues(state, (value) => JSON.stringify(value))
   );
 }
@@ -71,6 +73,9 @@ async function removeElements(
  *
  * Note: this does not trigger a change even in any current redux instances
  * @param elementIds the elements to remove from persisted redux storage
+ *
+ * The logic here needs to be roughly kept in sync with removeElement in the redux helpers
+ * @see removeElement
  */
 export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
   const state = await getEditorState();
@@ -82,7 +87,10 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
  * Remove all elements for a given recipe from persisted redux storage.
  *
  * Note: this does not trigger a change even in any current redux instances
- * @param recipeId
+ * @param recipeId The recipe to remove
+ *
+ * The logic here needs to be roughly kept in sync with the useRemoveRecipe hook
+ * @see useRemoveRecipe.ts
  */
 export async function removeDynamicElementsForRecipe(
   recipeId: RegistryId
