@@ -53,6 +53,7 @@ export class FormData extends Transformer {
     {
       selector: {
         type: "string",
+        format: "selector",
         description: "jQuery selector for the form",
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
