@@ -80,6 +80,10 @@ export async function removeDynamicElementsForRecipe(
 ): Promise<void> {
   const state = await getEditorState();
   const nextState = produce(state, (draft) => {
+    if (state.activeRecipeId === recipeId) {
+      draft.activeRecipeId = null;
+    }
+
     if (state.expandedRecipeId === recipeId) {
       draft.expandedRecipeId = null;
     }
