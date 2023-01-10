@@ -86,6 +86,7 @@
     "json-stringify-safe": "^5.0.1",
     "jsonpath-plus": "^7.0.0",
     "kbar": "^0.1.0-beta.39",
+    "linkify-urls": "^4.0.0",
     "lodash-es": "^4.17.21",
     "marked": "^4.2.5",
     "mustache": "^4.2.0",

@@ -29,6 +29,7 @@ import cx from "classnames";
 import { castArray, isPlainObject } from "lodash";
 import AnnotationAlert from "@/components/annotationAlert/AnnotationAlert";
 import { AnnotationType } from "@/analysis/analysisTypes";
+import linkifyUrls from "linkify-urls";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
@@ -222,9 +223,16 @@ const FieldTemplate: React.FC<FieldProps> = ({
       <Col {...colSize}>
         {formControl}
         {description && (
-          <BootstrapForm.Text className="text-muted">
-            {description}
-          </BootstrapForm.Text>
+          <BootstrapForm.Text
+            className="text-muted"
+            dangerouslySetInnerHTML={{
+              __html: linkifyUrls(description, {
+                attributes: {
+                  target: "_blank",
+                },
+              }),
+            }}
+          ></BootstrapForm.Text>
         )}
       </Col>
     </BootstrapForm.Group>
