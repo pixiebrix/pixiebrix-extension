@@ -214,25 +214,32 @@ export class SetInputValue extends Effect {
     }>,
     { logger, root }: BlockOptions
   ): Promise<void> {
-    const form = isRootAware ? root : document;
+    const target = isRootAware ? root : document;
     for (const { selector, value } of inputs) {
       if (isEmpty(selector)) {
-        if (form == null || form === document) {
+        if (target == null || target === document) {
           throw new BusinessError("Selector required when called on document");
         }
 
-        if (!isFieldElement(form as HTMLElement)) {
+        if (!isFieldElement(target as HTMLElement)) {
           throw new BusinessError(
             "Field is not a input field or editable element"
           );
         }
 
-        setFieldValue(form as FieldElement, value, {
+        setFieldValue(target as FieldElement, value, {
           dispatchEvent: true,
           isOption: false,
         });
       } else {
-        setValue({ selector, value, logger, dispatchEvent: true, form });
+        // `setValue` works on any element that contains fields, not just forms
+        setValue({
+          selector,
+          value,
+          logger,
+          dispatchEvent: true,
+          form: target,
+        });
       }
     }
   }
