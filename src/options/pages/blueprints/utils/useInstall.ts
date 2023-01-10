@@ -96,7 +96,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       }
 
       try {
-        await removeDynamicElementsForRecipe(recipe.metadata.id);
+        void removeDynamicElementsForRecipe(recipe.metadata.id);
 
         dispatch(
           installRecipe({

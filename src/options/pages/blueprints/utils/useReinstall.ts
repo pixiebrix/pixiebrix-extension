@@ -48,7 +48,7 @@ function useReinstall(): Reinstall {
       });
 
       dispatch(removeRecipeById(recipe.metadata.id));
-      await removeDynamicElementsForRecipe(recipe.metadata.id);
+      void removeDynamicElementsForRecipe(recipe.metadata.id);
 
       dispatch(
         installRecipe({

@@ -66,12 +66,24 @@ async function removeElements(
   });
 }
 
+/**
+ * Remove a list of elements by id from persisted redux storage.
+ *
+ * Note: this does not trigger a change even in any current redux instances
+ * @param elementIds the elements to remove from persisted redux storage
+ */
 export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
   const state = await getEditorState();
   const newState = await removeElements(state, elementIds);
   await saveEditorState(newState);
 }
 
+/**
+ * Remove all elements for a given recipe from persisted redux storage.
+ *
+ * Note: this does not trigger a change even in any current redux instances
+ * @param recipeId
+ */
 export async function removeDynamicElementsForRecipe(
   recipeId: RegistryId
 ): Promise<void> {

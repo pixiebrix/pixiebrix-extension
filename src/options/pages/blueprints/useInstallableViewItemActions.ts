@@ -193,8 +193,8 @@ function useInstallableViewItemActions(
   );
 
   const uninstall = useUserAction(
-    async () => {
-      await removeDynamicElements(
+    () => {
+      void removeDynamicElements(
         extensionsFromInstallable.map((extension) => extension.id)
       );
 
