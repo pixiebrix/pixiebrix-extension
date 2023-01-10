@@ -18,7 +18,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { orderBy } from "lodash";
 import { localStorage } from "redux-persist-webextension-storage";
-import { StorageInterface } from "@/store/StorageInterface";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 type RecentBrick = {
   id: string;
