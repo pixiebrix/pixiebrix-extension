@@ -17,6 +17,7 @@
 
 import React from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 
 const WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>> = () => (

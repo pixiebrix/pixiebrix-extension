@@ -35,7 +35,7 @@ exports[`ActivateWizard activate blueprint with missing required blueprint optio
                   <svg
                     aria-hidden="true"
                     class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
-                    color="rgb(101, 98, 170)"
+                    color="#241C32"
                     data-icon="cube"
                     data-prefix="fas"
                     focusable="false"
@@ -338,7 +338,7 @@ exports[`ActivateWizard renders 1`] = `
                   <svg
                     aria-hidden="true"
                     class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
-                    color="rgb(101, 98, 170)"
+                    color="#241C32"
                     data-icon="cube"
                     data-prefix="fas"
                     focusable="false"

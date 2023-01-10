@@ -19,6 +19,7 @@ import styles from "./PasswordWidget.module.scss";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Button,
+  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form,
   type FormControlProps,
   InputGroup,
@@ -27,6 +28,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { useField } from "formik";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import useAutoFocus from "@/hooks/useAutoFocus";
 
 const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
@@ -44,12 +46,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   const [show, setShow] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>();
-
-  useEffect(() => {
-    if (focusInput) {
-      inputRef.current?.focus();
-    }
-  }, [focusInput]);
+  useAutoFocus(inputRef, focusInput);
 
   useEffect(() => {
     // Sync the ref values

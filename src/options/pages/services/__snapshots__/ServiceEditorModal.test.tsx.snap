@@ -67,7 +67,9 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               <small
                 class="text-muted form-text"
               >
-                A label to help identify this integration
+                <span>
+                  A label to help identify this integration
+                </span>
               </small>
             </div>
           </div>
@@ -171,7 +173,9 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               <small
                 class="text-muted form-text"
               >
-                Your Pipedrive API Key
+                <span>
+                  Your Pipedrive API Key
+                </span>
               </small>
             </div>
           </div>
@@ -225,7 +229,9 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
               <small
                 class="text-muted form-text"
               >
-                The subdomain of your Pipedrive instance URL
+                <span>
+                  The subdomain of your Pipedrive instance URL
+                </span>
               </small>
             </div>
           </div>

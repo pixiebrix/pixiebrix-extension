@@ -178,6 +178,15 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             <>
               {workspaceType === "public" && (
                 <>
+                  {isAttended && (
+                    <Alert variant="info">
+                      <FontAwesomeIcon icon={faInfoCircle} /> In attended mode,
+                      the bot will run using the authenticated user&apos;s
+                      credentials. You will not be able to run the bot using a
+                      Bot Creator license. Switch to unattended mode to test
+                      using a Bot Creator license.
+                    </Alert>
+                  )}
                   <ConnectedFieldTemplate
                     label="Attended"
                     name={configName("isAttended")}

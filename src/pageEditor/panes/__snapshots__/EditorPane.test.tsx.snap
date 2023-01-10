@@ -672,7 +672,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <small
                         class="text-muted form-text"
                       >
-                        Panel heading
+                        <span>
+                          Panel heading
+                        </span>
                       </small>
                     </div>
                   </div>
@@ -756,7 +758,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <small
                         class="text-muted form-text"
                       >
-                        Location on the page
+                        <span>
+                          Location on the page
+                        </span>
                       </small>
                     </div>
                   </div>
@@ -916,7 +920,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <small
                         class="text-muted form-text"
                       >
-                        Render the panel as a collapsible drawer
+                        <span>
+                          Render the panel as a collapsible drawer
+                        </span>
                       </small>
                     </div>
                   </div>
@@ -960,7 +966,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <small
                         class="text-muted form-text"
                       >
-                        Isolate the panel style with a Shadow DOM
+                        <span>
+                          Isolate the panel style with a Shadow DOM
+                        </span>
                       </small>
                     </div>
                   </div>
@@ -1005,7 +1013,9 @@ exports[`renders an extension with sub pipeline 1`] = `
                       <small
                         class="text-muted form-text"
                       >
-                        A template for the item, with a placeholder for the heading and body
+                        <span>
+                          A template for the item, with a placeholder for the heading and body
+                        </span>
                       </small>
                     </div>
                   </div>

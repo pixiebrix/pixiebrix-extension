@@ -17,6 +17,7 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";

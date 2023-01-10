@@ -15,17 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  font-size: 0.9rem;
+import linkifyUrls from "linkify-urls";
+import React from "react";
 
-  h5 {
-    font-weight: bold;
-    font-size: 0.8rem;
-    color: #bba8bff5;
+const LinkifiedString: React.FC = ({ children }) => {
+  if (typeof children !== "string") {
+    return <>{children}</>;
   }
 
-  :global .nav-link {
-    padding-inline: 0.7rem; // Reduce horizontal padding
-    border: none; // Drop unwanted border
-  }
-}
+  return (
+    <span
+      dangerouslySetInnerHTML={{
+        __html: linkifyUrls(children, {
+          attributes: {
+            target: "_blank",
+          },
+        }),
+      }}
+    />
+  );
+};
+
+export default LinkifiedString;

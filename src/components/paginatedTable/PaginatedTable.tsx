@@ -17,6 +17,7 @@ import {
   type Row,
 } from "react-table";
 import { useLocation, useHistory } from "react-router";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Pagination, Table, Form } from "react-bootstrap";
 import { type History, type Location } from "history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

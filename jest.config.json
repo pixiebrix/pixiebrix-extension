@@ -18,7 +18,7 @@
     "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard)"
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat)"
   ],
   "setupFiles": [
     "dotenv/config",
@@ -31,6 +31,7 @@
     "<rootDir>/src/testUtils/testAfterEnv.js",
     "jest-extended/all"
   ],
+  "coverageReporters": ["json"],
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}",
     "!src/**/*.stories.tsx",

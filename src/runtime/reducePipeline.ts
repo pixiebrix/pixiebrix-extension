@@ -25,7 +25,7 @@ import {
   type UserOptions,
   type UUID,
 } from "@/core";
-import { castArray, isPlainObject } from "lodash";
+import { castArray, isPlainObject, once } from "lodash";
 import {
   clearExtensionDebugLogs,
   requestRun,
@@ -482,6 +482,18 @@ function selectTraceRecordMeta(
   };
 }
 
+/**
+ * Return true if tracing is enabled based on the given tracing options
+ * @see traces.addEntry
+ * @see traces.addExit
+ */
+function selectTraceEnabled({
+  runId,
+  blockInstanceId,
+}: Pick<TraceMetadata, "runId" | "blockInstanceId">): boolean {
+  return Boolean(runId) && Boolean(blockInstanceId);
+}
+
 export async function runBlock(
   resolvedConfig: ResolvedBlockConfig,
   props: BlockProps,
@@ -505,16 +517,18 @@ export async function runBlock(
   }
 
   if (type === "renderer" && headless) {
-    traces.addExit({
-      ...trace,
-      extensionId: logger.context.extensionId,
-      blockId: block.id,
-      isFinal: true,
-      isRenderer: true,
-      error: null,
-      output: null,
-      skippedRun: false,
-    });
+    if (selectTraceEnabled(trace)) {
+      traces.addExit({
+        ...trace,
+        extensionId: logger.context.extensionId,
+        blockId: block.id,
+        isFinal: true,
+        isRenderer: true,
+        error: null,
+        output: null,
+        skippedRun: false,
+      });
+    }
 
     throw new HeadlessModeError(
       block.id,
@@ -604,27 +618,38 @@ export async function blockReducer(
 
   let renderedArgs: RenderedArgs;
   let renderError: unknown;
-  try {
-    renderedArgs = await renderBlockArg(
-      resolvedConfig,
-      { ...state, root: blockRoot },
-      optionsWithTraceRef
-    );
-  } catch (error) {
-    renderError = error;
-  }
 
-  // Always add the trace entry, even if the block didn't run
-  traces.addEntry({
-    // Pass blockOptions because it includes the trace property
-    ...selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef),
-    timestamp: new Date().toISOString(),
-    templateContext: context as JsonObject,
-    renderError: renderError ? serializeError(renderError) : null,
-    // `renderedArgs` will be null if there's an error rendering args
-    renderedArgs,
-    blockConfig,
+  // Only renders the args if we need them
+  const lazyRenderArgs = once(async () => {
+    try {
+      renderedArgs = await renderBlockArg(
+        resolvedConfig,
+        { ...state, root: blockRoot },
+        optionsWithTraceRef
+      );
+    } catch (error) {
+      renderError = error;
+    }
   });
+
+  // // Pass blockOptions because it includes the trace property
+  const traceMeta = selectTraceRecordMeta(resolvedConfig, optionsWithTraceRef);
+  const traceEnabled = selectTraceEnabled(traceMeta);
+
+  if (traceEnabled) {
+    await lazyRenderArgs();
+
+    // Always add the trace entry, even if the block didn't run
+    traces.addEntry({
+      ...traceMeta,
+      timestamp: new Date().toISOString(),
+      templateContext: context as JsonObject,
+      renderError: renderError ? serializeError(renderError) : null,
+      // `renderedArgs` will be null if there's an error rendering args
+      renderedArgs,
+      blockConfig,
+    });
+  }
 
   const preconfiguredTraceExit: TraceExitData = {
     runId,
@@ -644,14 +669,19 @@ export async function blockReducer(
   ) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
-    traces.addExit({
-      ...preconfiguredTraceExit,
-      output: null,
-      skippedRun: true,
-    });
+    if (traceEnabled) {
+      traces.addExit({
+        ...preconfiguredTraceExit,
+        output: null,
+        skippedRun: true,
+      });
+    }
 
     return { output: previousOutput, context, blockOutput: undefined };
   }
+
+  // Render args for the run
+  await lazyRenderArgs();
 
   // Above we had wrapped the call to renderBlockArg in a try-catch to always have an entry trace entry
   if (renderError) {
@@ -679,11 +709,13 @@ export async function blockReducer(
     });
   }
 
-  traces.addExit({
-    ...preconfiguredTraceExit,
-    output: output as JsonObject,
-    skippedRun: false,
-  });
+  if (traceEnabled) {
+    traces.addExit({
+      ...preconfiguredTraceExit,
+      output: output as JsonObject,
+      skippedRun: false,
+    });
+  }
 
   await logIfInvalidOutput(resolvedConfig.block, output, logger, {
     window: blockConfig.window,
@@ -739,17 +771,19 @@ function throwBlockError(
     throw error;
   }
 
-  traces.addExit({
-    runId,
-    branches,
-    extensionId: logger.context.extensionId,
-    blockId: blockConfig.id,
-    blockInstanceId: blockConfig.instanceId,
-    error: serializeError(error),
-    skippedRun: false,
-    isRenderer: false,
-    isFinal: true,
-  });
+  if (runId && blockConfig.instanceId) {
+    traces.addExit({
+      runId,
+      branches,
+      extensionId: logger.context.extensionId,
+      blockId: blockConfig.id,
+      blockInstanceId: blockConfig.instanceId,
+      error: serializeError(error),
+      skippedRun: false,
+      isRenderer: false,
+      isFinal: true,
+    });
+  }
 
   if (blockConfig.onError?.alert) {
     // An affordance to send emails to allow for manual process recovery if a step fails (e.g., an API call to a

@@ -20,11 +20,11 @@ import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
+import { type JsonObject } from "type-fest";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
-} from "@/sandbox/messenger/api";
-import { type JsonObject } from "type-fest";
+} from "@/sandbox/messenger/executor";
 
 export type AsyncTemplateRenderer = (
   template: string,

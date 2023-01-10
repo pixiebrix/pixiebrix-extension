@@ -19,6 +19,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import * as contentScriptApi from "@/contentScript/messenger/api";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
