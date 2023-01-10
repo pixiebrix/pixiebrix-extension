@@ -25,6 +25,7 @@ import React, {
 } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { type Schema, type TemplateEngine } from "@/core";

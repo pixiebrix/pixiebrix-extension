@@ -23,6 +23,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";

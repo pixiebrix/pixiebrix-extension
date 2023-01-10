@@ -22,7 +22,7 @@ import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { applyJq } from "@/sandbox/messenger/api";
+import { applyJq } from "@/sandbox/messenger/executor";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 

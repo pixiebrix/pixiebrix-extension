@@ -26,6 +26,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm } from "react-bootstrap";
 import { type CustomFieldWidget } from "./FieldTemplate";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";

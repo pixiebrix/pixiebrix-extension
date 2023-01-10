@@ -20,6 +20,7 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import OptionsBody from "./OptionsBody";
 import { MemoryRouter } from "react-router";
 import { action } from "@storybook/addon-actions";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";

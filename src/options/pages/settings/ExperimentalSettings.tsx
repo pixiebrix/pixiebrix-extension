@@ -16,6 +16,7 @@
  */
 
 import React from "react";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
