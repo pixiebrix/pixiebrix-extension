@@ -29,6 +29,7 @@ import cx from "classnames";
 import { castArray, isPlainObject } from "lodash";
 import AnnotationAlert from "@/components/annotationAlert/AnnotationAlert";
 import { AnnotationType } from "@/analysis/analysisTypes";
+import LinkifiedString from "@/components/LinkifiedString";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
@@ -223,7 +224,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
-            {description}
+            <LinkifiedString>{description}</LinkifiedString>
           </BootstrapForm.Text>
         )}
       </Col>

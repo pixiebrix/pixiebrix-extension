@@ -149,7 +149,9 @@ exports[`it renders default state 1`] = `
               <small
                 class="text-muted form-text"
               >
-                A unique id for the blueprint
+                <span>
+                  A unique id for the blueprint
+                </span>
               </small>
             </div>
           </div>
@@ -174,7 +176,9 @@ exports[`it renders default state 1`] = `
               <small
                 class="text-muted form-text"
               >
-                A display name for the blueprint
+                <span>
+                  A display name for the blueprint
+                </span>
               </small>
             </div>
           </div>
@@ -199,7 +203,9 @@ exports[`it renders default state 1`] = `
               <small
                 class="text-muted form-text"
               >
-                The current blueprint version
+                <span>
+                  The current blueprint version
+                </span>
               </small>
             </div>
           </div>
@@ -224,7 +230,9 @@ exports[`it renders default state 1`] = `
               <small
                 class="text-muted form-text"
               >
-                A short description of the blueprint
+                <span>
+                  A short description of the blueprint
+                </span>
               </small>
             </div>
           </div>
@@ -372,7 +380,9 @@ exports[`it renders requires user scope 1`] = `
                 <small
                   class="text-muted form-text"
                 >
-                  Your @alias for publishing bricks, e.g. @peter-parker
+                  <span>
+                    Your @alias for publishing bricks, e.g. @peter-parker
+                  </span>
                 </small>
               </div>
             </div>
