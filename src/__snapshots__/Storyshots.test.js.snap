@@ -59,7 +59,13 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
       <small
         className="text-muted form-text"
       >
-        This is a basic required text field.
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "This is a basic required text field.",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -3795,7 +3801,13 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
               <small
                 className="text-muted form-text"
               >
-                This is a description for the field
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "This is a description for the field",
+                    }
+                  }
+                />
               </small>
             </div>
           </div>
@@ -5130,7 +5142,13 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
       <small
         className="text-muted form-text"
       >
-        A secret field
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A secret field",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -5809,7 +5827,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             <small
               className="text-muted form-text"
             >
-              Enter a name to refer to this value in the output later
+              <span
+                dangerouslySetInnerHTML={
+                  {
+                    "__html": "Enter a name to refer to this value in the output later",
+                  }
+                }
+              />
             </small>
           </div>
         </div>
@@ -5868,7 +5892,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             <small
               className="text-muted form-text"
             >
-              The user-visible label for this field
+              <span
+                dangerouslySetInnerHTML={
+                  {
+                    "__html": "The user-visible label for this field",
+                  }
+                }
+              />
             </small>
           </div>
         </div>
@@ -5927,7 +5957,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             <small
               className="text-muted form-text"
             >
-              The user-visible description for the field
+              <span
+                dangerouslySetInnerHTML={
+                  {
+                    "__html": "The user-visible description for the field",
+                  }
+                }
+              />
             </small>
           </div>
         </div>
@@ -6631,7 +6667,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       <small
         className="text-muted form-text"
       >
-        A name
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A name",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -6659,7 +6701,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       <small
         className="text-muted form-text"
       >
-        Tell me your story
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Tell me your story",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -6781,7 +6829,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       <small
         className="text-muted form-text"
       >
-        Demonstration dropdown
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Demonstration dropdown",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -6903,7 +6957,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       <small
         className="text-muted form-text"
       >
-        Creatable
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Creatable",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -7001,7 +7061,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       <small
         className="text-muted form-text"
       >
-        You can use a FormControl as a wrapped Widget
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "You can use a FormControl as a wrapped Widget",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -7061,7 +7127,13 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
       <small
         className="text-muted form-text"
       >
-        A name
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A name",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -7088,7 +7160,13 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
       <small
         className="text-muted form-text"
       >
-        Your age
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Your age",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -7147,7 +7225,13 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
       <small
         className="text-muted form-text"
       >
-        A name
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A name",
+            }
+          }
+        />
       </small>
     </div>
   </div>
@@ -7174,7 +7258,13 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
       <small
         className="text-muted form-text"
       >
-        Your age
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Your age",
+            }
+          }
+        />
       </small>
     </div>
   </div>
