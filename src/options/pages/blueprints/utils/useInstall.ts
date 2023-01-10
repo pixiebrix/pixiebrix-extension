@@ -36,6 +36,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { useCreateMilestoneMutation } from "@/services/api";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
+import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
 
 const { installRecipe } = extensionsSlice.actions;
 
@@ -95,6 +96,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       }
 
       try {
+        await removeDynamicElementsForRecipe(recipe.metadata.id);
+
         dispatch(
           installRecipe({
             recipe,

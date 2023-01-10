@@ -21,6 +21,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
 
 const { installRecipe, removeRecipeById } = extensionsSlice.actions;
 
@@ -47,6 +48,7 @@ function useReinstall(): Reinstall {
       });
 
       dispatch(removeRecipeById(recipe.metadata.id));
+      await removeDynamicElementsForRecipe(recipe.metadata.id);
 
       dispatch(
         installRecipe({
