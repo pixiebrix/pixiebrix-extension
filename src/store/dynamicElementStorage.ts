@@ -24,6 +24,7 @@ import {
 import { type RegistryId, type UUID } from "@/core";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
+import { mapValues } from "lodash";
 
 const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
 
@@ -32,17 +33,13 @@ const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
  */
 async function getEditorState(): Promise<EditorState> {
   const storage: Record<string, string> = await readReduxStorage(STORAGE_KEY);
-  return Object.fromEntries(
-    Object.entries(storage).map(([key, value]) => [key, JSON.parse(value)])
-  ) as EditorState;
+  return mapValues(storage, (value) => JSON.parse(value)) as EditorState;
 }
 
 async function saveEditorState(state: EditorState): Promise<void> {
   await setReduxStorage(
     STORAGE_KEY,
-    Object.fromEntries(
-      Object.entries(state).map(([key, value]) => [key, JSON.stringify(value)])
-    )
+    mapValues(state, (value) => JSON.stringify(value))
   );
 }
 
