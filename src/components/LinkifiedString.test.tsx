@@ -25,41 +25,19 @@ describe("LinkifiedString", () => {
       <LinkifiedString>https://example.com and more</LinkifiedString>
     );
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot(`
-      <DocumentFragment>
-        <span>
-          <a
-            href="https://example.com"
-            target="_blank"
-          >
-            https://example.com
-          </a>
-           and more
-        </span>
-      </DocumentFragment>
-    `);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
   test("ignores string without links", async () => {
     const rendered = render(
       <LinkifiedString>Here’s regular text</LinkifiedString>
     );
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot(`
-      <DocumentFragment>
-        <span>
-          Here’s regular text
-        </span>
-      </DocumentFragment>
-    `);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
   test("ignores empty string", async () => {
     const rendered = render(<LinkifiedString>{""}</LinkifiedString>);
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot(`
-      <DocumentFragment>
-        <span />
-      </DocumentFragment>
-    `);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
   test("ignores non-string children", async () => {
     const rendered = render(
@@ -68,20 +46,11 @@ describe("LinkifiedString", () => {
       </LinkifiedString>
     );
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot(`
-      <DocumentFragment>
-        Half
-        <a
-          href="https://example.com"
-        >
-          linked
-        </a>
-      </DocumentFragment>
-    `);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
   test("ignores missing children", async () => {
     const rendered = render(<LinkifiedString />);
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot("<DocumentFragment />");
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
