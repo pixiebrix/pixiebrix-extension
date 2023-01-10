@@ -32,6 +32,12 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
+/**
+ * This hook provides a callback function to deactivate a recipe and remove it from the page editor
+ *
+ * The logic here needs to be kept roughly in sync with removeDynamicElementsForRecipe
+ * @see removeDynamicElementsForRecipe
+ */
 function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeExtension = useRemoveExtension();

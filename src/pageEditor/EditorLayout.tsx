@@ -29,13 +29,14 @@ import useCurrentUrl from "./hooks/useCurrentUrl";
 import NonScriptablePage from "./NonScriptablePage";
 import { isScriptableUrl } from "@/utils/permissions";
 import Loader from "@/components/Loader";
+import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
+import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 
 const EditorLayout: React.FunctionComponent = () => {
   const inserting = useSelector(selectInserting);
   const { restrict } = useFlags();
   const isRestricted = restrict("page-editor");
-  // TODO: Re-add this stale session check after redux persistence is fixed
-  // const isStaleSession = useSelector(selectIsStaleSession);
+  const isStaleSession = useSelector(selectIsStaleSession);
 
   const url = useCurrentUrl();
 
@@ -53,6 +54,8 @@ const EditorLayout: React.FunctionComponent = () => {
       <div className={styles.root}>
         {isRestricted ? (
           <RestrictedPane />
+        ) : isStaleSession ? (
+          <StaleSessionPane />
         ) : inserting ? (
           <InsertPane inserting={inserting} />
         ) : (

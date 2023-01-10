@@ -19,7 +19,7 @@ import { type UUID } from "@/core";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
-import { type SessionChangesState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
+import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
 
 export const initialState: SessionChangesState = {
   latestChanges: {},

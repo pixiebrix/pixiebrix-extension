@@ -18,7 +18,10 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import {
+  editorSlice,
+  persistEditorConfig,
+} from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
@@ -38,6 +41,13 @@ import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
+import {
+  persistSessionChangesConfig,
+  sessionChangesSlice,
+  sessionChangesStateSyncActions,
+} from "@/store/sessionChanges/sessionChangesSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import { createStateSyncMiddleware } from "redux-state-sync";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -70,8 +80,12 @@ const store = configureStore({
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    editor: editorSlice.reducer,
+    editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
+    sessionChanges: persistReducer(
+      persistSessionChangesConfig,
+      sessionChangesSlice.reducer
+    ),
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
     logs: logSlice.reducer,
@@ -92,7 +106,14 @@ const store = configureStore({
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
       .concat(recipesMiddleware)
-      .concat(conditionalMiddleware);
+      .concat(conditionalMiddleware)
+      .concat(sessionChangesMiddleware)
+      .concat(
+        createStateSyncMiddleware({
+          // In the future: concat whitelisted sync action lists here
+          whitelist: sessionChangesStateSyncActions,
+        })
+      );
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,

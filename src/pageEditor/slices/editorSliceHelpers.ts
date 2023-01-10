@@ -93,6 +93,14 @@ export function setActiveNodeId(
   elementUIState.activeNodeId = nodeId;
 }
 
+/**
+ * Remove a dynamic element from the redux state
+ * @param state The redux state (slice)
+ * @param uuid The id for the dynamic element to remove
+ *
+ * This logic needs to be roughly kept in sync with removeDynamicElements
+ * @see removeDynamicElements
+ */
 export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
   if (state.activeElementId === uuid) {
     state.activeElementId = null;
@@ -108,6 +116,10 @@ export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
 
   delete state.dirty[uuid];
   delete state.elementUIStates[uuid];
+  delete state.showV3UpgradeMessageByElement[uuid];
+  state.availableDynamicIds = state.availableDynamicIds.filter(
+    (id) => id !== uuid
+  );
 
   // Make sure we're not keeping any private data around from Page Editor sessions
   void clearExtensionTraces(uuid);
