@@ -31,6 +31,21 @@ export type ExistenceMap = {
   [name: string]: ExistenceMap;
 };
 
+export function createNode(
+  selfExistence: VarExistence,
+  allowAnyChild?: boolean
+): ExistenceMap {
+  const node: ExistenceMap = {
+    [SELF_EXISTENCE]: selfExistence,
+  };
+
+  if (typeof allowAnyChild === "boolean") {
+    node[ALLOW_ANY_CHILD] = allowAnyChild;
+  }
+
+  return node;
+}
+
 class VarMap {
   private map: Record<string, ExistenceMap> = {};
   public getMap(): Record<string, ExistenceMap> {
@@ -60,10 +75,7 @@ class VarMap {
           this.map,
           [source, ...toPath(parentPath), key, SELF_EXISTENCE],
           VarExistence.DEFINITELY,
-          (x) =>
-            x ?? {
-              [SELF_EXISTENCE]: VarExistence.DEFINITELY,
-            }
+          (x) => x ?? createNode(VarExistence.DEFINITELY)
         );
       }
     }
@@ -86,10 +98,7 @@ class VarMap {
     // While any block can provide no more than one output key,
     // we are safe to create a new object for the 'source'
     this.map[source] = {
-      [outputKey]: {
-        [SELF_EXISTENCE]: existence,
-        [ALLOW_ANY_CHILD]: allowAnyChild,
-      },
+      [outputKey]: createNode(existence, allowAnyChild),
     };
   }
 
