@@ -169,7 +169,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
 
   const { meta, payload } = event.data;
 
-  console.debug(`RECEIVE ${type}`, event.data);
+  console.debug("RECEIVE", type, event.data);
 
   try {
     const result = await handler(payload);
