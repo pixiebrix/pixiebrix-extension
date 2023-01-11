@@ -118,6 +118,12 @@ class HighlightText extends Effect {
     }>,
     { root }: BlockOptions
   ): Promise<void> {
+    // Don't make replacements outside the `body`, like in `title`
+    const body = (root as Document).body ?? root.ownerDocument.body;
+    if (root.contains(body)) {
+      root = body;
+    }
+
     const $elements = selector ? $safeFind(selector, root) : $(root);
 
     const convertedPattern = isRegex ? new RegExp(pattern, "g") : pattern;
