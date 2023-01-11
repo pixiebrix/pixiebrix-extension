@@ -16,51 +16,53 @@
  */
 
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
-import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
-import { useEffect, useMemo } from "react";
 import { type RegistryChangeListener } from "@/baseRegistry";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { useState } from "react";
+import { useAsyncEffect } from "use-async-effect";
 
-let allBlocksCached: TypedBlockMap = new Map();
+const subscribe = (callback: () => void) => {
+  const listener: RegistryChangeListener = {
+    onCacheChanged: callback,
+  };
+
+  blockRegistry.addListener(listener);
+
+  return () => {
+    blockRegistry.removeListener(listener);
+  };
+};
 
 /**
- * Load the TypedBlockMap from the block registry. Refreshes on mount.
+ * Load the TypedBlockMap from the block registry, and listen for changes in the registry.
  */
 function useAllBlocks(): {
   allBlocks: TypedBlockMap;
   isLoading: boolean;
 } {
-  // Note: we don't want to return the loading flag from the async state here,
-  // because outside this hook, we only care about when the cache is empty
-  const [allBlocks, , error, reload] = useAsyncState<TypedBlockMap>(
-    async () => {
-      allBlocksCached = await blockRegistry.allTyped();
-      return allBlocksCached;
+  // Use useAsyncEffect and useState to handle the promise. Can't use useAsyncState because it requires that
+  // the data is serializable because it uses RTK.
+  const [allTyped, setAllTyped] = useState<TypedBlockMap>(new Map());
+
+  const allTypedPromise = useSyncExternalStore(
+    subscribe,
+    blockRegistry.allTyped
+  );
+
+  useAsyncEffect(
+    async (isMounted) => {
+      const allTyped = await allTypedPromise;
+      if (isMounted()) {
+        setAllTyped(allTyped);
+      }
     },
-    [],
-    allBlocksCached
+    [allTypedPromise, setAllTyped]
   );
-
-  const registryListener = useMemo<RegistryChangeListener>(
-    () => ({
-      onCacheChanged() {
-        void reload();
-      },
-    }),
-    [reload]
-  );
-
-  useEffect(() => {
-    blockRegistry.addListener(registryListener);
-
-    return () => {
-      blockRegistry.removeListener(registryListener);
-    };
-  }, [registryListener]);
 
   return {
-    allBlocks,
-    isLoading: isEmpty(allBlocksCached) && !error,
+    allBlocks: allTyped,
+    isLoading: isEmpty(allTyped),
   };
 }
 
