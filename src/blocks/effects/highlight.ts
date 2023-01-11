@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* eslint-disable unicorn/no-array-callback-reference -- $.find false positives */
 
 import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
@@ -130,36 +131,30 @@ export class HighlightEffect extends Effect {
     }>,
     { root }: BlockOptions
   ): Promise<void> {
-    let $roots: JQuery<HTMLElement | Document>;
-
-    if (rootMode === "document") {
-      $roots = rootSelector ? $safeFind(rootSelector) : $(document);
-    } else {
-      $roots = rootSelector ? $safeFind(rootSelector, root) : $(root);
-    }
-
     if (condition !== undefined && !boolean(condition)) {
       return;
     }
 
-    $roots.each(function () {
-      const $root = $(this);
+    const documentRoot = rootMode === "document" ? document.body : root;
+    const $roots = rootSelector
+      ? $safeFind(rootSelector, documentRoot)
+      : $(documentRoot);
 
-      if (elements == null) {
-        $root.css({ backgroundColor });
+    if (elements == null) {
+      $roots.css({ backgroundColor });
+      return;
+    }
+
+    for (const element of elements) {
+      if (typeof element === "string") {
+        $roots.find(element).css({ backgroundColor });
       } else {
-        for (const element of elements) {
-          if (typeof element === "string") {
-            $safeFind(element, $root).css({ backgroundColor });
-          } else if (element.condition && boolean(condition)) {
-            const {
-              selector,
-              backgroundColor: elementColor = backgroundColor,
-            } = element;
-            $safeFind(selector, $root).css({ backgroundColor: elementColor });
-          }
+        const { condition, selector, backgroundColor } = element;
+
+        if (condition && boolean(condition)) {
+          $roots.find(selector).css({ backgroundColor });
         }
       }
-    });
+    }
   }
 }

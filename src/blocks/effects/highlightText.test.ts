@@ -184,6 +184,25 @@ describe("ReplaceTextEffect", () => {
     );
   });
 
+  test("excludes elements outside the body", async () => {
+    const document = getDocument(
+      "<title>Support page</title><h1>Superlatives Abound</h1>"
+    );
+    const brick = new HighlightText();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "Sup",
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    expect(document.head.innerHTML).toEqual("<title>Support page</title>");
+    expect(document.body.innerHTML).toEqual(
+      '<h1><mark style="background-color: yellow;">Sup</mark>erlatives Abound</h1>'
+    );
+  });
+
   test("sanitize color HTML", async () => {
     const document = getDocument("<div>foobar</div>");
     const brick = new HighlightText();
