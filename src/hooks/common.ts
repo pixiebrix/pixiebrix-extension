@@ -17,7 +17,7 @@
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { type Action, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type StateFactory<T> = Promise<T> | (() => Promise<T>);
 
@@ -52,77 +52,28 @@ const defaultAsyncState: State = {
   error: undefined,
 };
 
-// const slice = createSlice({
-//   name: "asyncSlice",
-//   initialState: defaultAsyncState,
-//   reducers: {
-//     start(state) {
-//       // NOTE: do not set `state.data = undefined` because that would immediately reset the initialState passed into
-//       // useAsyncState below
-//       state.isLoading = true;
-//       state.error = undefined;
-//     },
-//     success(state, action: PayloadAction<{ data: unknown }>) {
-//       state.isLoading = false;
-//       state.data = action.payload.data;
-//       state.error = undefined;
-//     },
-//     failure(state, action: PayloadAction<{ error: unknown }>) {
-//       state.isLoading = false;
-//       state.data = undefined;
-//       state.error = action.payload.error ?? "Error producing data";
-//     },
-//   },
-// });
-
-const slice = {
-  reducer(
-    state: State,
-    action:
-      | Action
-      | PayloadAction<{ data: unknown }>
-      | PayloadAction<{ error: unknown }>
-  ) {
-    state = state ?? defaultAsyncState;
-
-    switch (action.type) {
-      case "start": {
-        return { ...state, isLoading: true, error: undefined };
-      }
-
-      case "success": {
-        return {
-          isLoading: false,
-          data: action.payload.data,
-          error: undefined,
-        };
-      }
-
-      case "failure": {
-        return {
-          isLoading: false,
-          data: undefined,
-          error: action.payload.error ?? "Error producing data",
-        };
-      }
-
-      default: {
-        throw new Error("Unknown action", action.type);
-      }
-    }
-  },
-  actions: {
-    start() {
-      return { type: "start" };
+const slice = createSlice({
+  name: "asyncSlice",
+  initialState: defaultAsyncState,
+  reducers: {
+    start(state) {
+      // NOTE: do not set `state.data = undefined` because that would immediately reset the initialState passed into
+      // useAsyncState below
+      state.isLoading = true;
+      state.error = undefined;
     },
-    success({ data }: unknown) {
-      return { type: "success", payload: { data } };
+    success(state, action: PayloadAction<{ data: unknown }>) {
+      state.isLoading = false;
+      state.data = action.payload.data;
+      state.error = undefined;
     },
-    failure({ error }: unknown) {
-      return { type: "failure", payload: { error } };
+    failure(state, action: PayloadAction<{ error: unknown }>) {
+      state.isLoading = false;
+      state.data = undefined;
+      state.error = action.payload.error ?? "Error producing data";
     },
   },
-};
+});
 
 export function useAsyncState<T>(
   promiseOrGenerator: StateFactory<T>,
