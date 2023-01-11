@@ -17,32 +17,51 @@
 
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
-import { setWith } from 'lodash';
+import { type TraceRecord } from "@/telemetry/trace";
+import { isEmpty, mapValues, set } from "lodash";
 
-function getMenuOptions(knownVars: VarMap) {
+function getMenuOptions(knownVars: VarMap, trace: TraceRecord) {
   const varMap = knownVars.getMap();
-  const traceVars = varMap[KnownSources.TRACE];
-  if (traceVars === undefined) {
-    return Object.entries(varMap);
+
+  if (isEmpty(trace?.templateContext)) {
+    return Object.entries(mapValues(varMap, setEmptyValues));
   }
 
   delete varMap[KnownSources.TRACE];
 
   const varMapEntries = Object.entries(varMap);
+  const visitedOutputs = new Set<string>();
+  for (let index = varMapEntries.length - 1; index >= 0; index--) {
+    const [, existenceMap] = varMapEntries[index];
 
-  // TODO mark the visited items (shadowed items issue)
- for (const [source, existenceMap] of varMapEntries.reverse()) {
-   for (const [outputKey, map] of Object.entries(existenceMap)) {
-
-    if (traceVars[outputKey] !== undefined) {
-      setWith()
+    for (const [outputKey] of Object.entries(existenceMap)) {
+      if (
+        trace.templateContext[outputKey] != null &&
+        !visitedOutputs.has(outputKey)
+      ) {
+        set(existenceMap, outputKey, trace.templateContext[outputKey]);
+        visitedOutputs.add(outputKey);
+      }
     }
-   }
 
-   }
- }
+    varMapEntries[index][1] = setEmptyValues(existenceMap);
+  }
 
   return varMapEntries;
+}
+
+function setEmptyValues(existenceMap: any): any {
+  return existenceMap;
+
+  if (isEmpty(existenceMap)) {
+    return "not set";
+  }
+
+  if (typeof existenceMap !== "object") {
+    return existenceMap;
+  }
+
+  return mapValues(existenceMap, setEmptyValues);
 }
 
 export default getMenuOptions;

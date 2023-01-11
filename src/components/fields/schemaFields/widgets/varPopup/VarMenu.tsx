@@ -30,6 +30,7 @@ import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useAsyncEffect } from "use-async-effect";
 import { computePosition, size, flip, offset } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";
+import { selectActiveNodeTrace } from "@/pageEditor/slices/runtimeSelectors";
 
 type VarMenuProps = {
   inputElementRef: React.MutableRefObject<HTMLElement>;
@@ -62,6 +63,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const { allBlocks } = useAllBlocks();
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
+  const trace = useSelector(selectActiveNodeTrace);
 
   useAsyncEffect(async () => {
     if (
@@ -110,7 +112,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     ? ADAPTERS.get(activeElement.type).label
     : "";
 
-  const options = getMenuOptions(knownVars);
+  const options = getMenuOptions(knownVars, trace);
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
