@@ -47,14 +47,18 @@ function useAllBlocks(): {
 
   const allTypedPromise = useSyncExternalStore(
     subscribe,
-    blockRegistry.allTyped
+    blockRegistry.allTyped.bind(blockRegistry)
   );
 
   useAsyncEffect(
     async (isMounted) => {
-      const allTyped = await allTypedPromise;
-      if (isMounted()) {
-        setAllTyped(allTyped);
+      try {
+        const allTyped = await allTypedPromise;
+        if (isMounted()) {
+          setAllTyped(allTyped);
+        }
+      } catch (error) {
+        console.debug("Error loading blocks", error);
       }
     },
     [allTypedPromise, setAllTyped]

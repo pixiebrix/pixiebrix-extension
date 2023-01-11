@@ -81,6 +81,12 @@ export class Registry<
     this.listeners = this.listeners.filter((x) => x !== listener);
   }
 
+  private notifyAll() {
+    for (const listener of this.listeners) {
+      listener.onCacheChanged();
+    }
+  }
+
   async exists(id: Id): Promise<boolean> {
     return this.cache.has(id) || (await registry.find(id)) != null;
   }
@@ -155,12 +161,6 @@ export class Registry<
     this.register(...parsedItems);
 
     return this.cached();
-  }
-
-  private notifyAll() {
-    for (const listener of this.listeners) {
-      listener.onCacheChanged();
-    }
   }
 
   register(...items: Item[]): void {

@@ -79,7 +79,8 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
    * Return Map for block by RegistryId with computed/inferred metadata.
    * @see cached
    */
-  async allTyped(): Promise<TypedBlockMap> {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async -- async returns different promise ids
+  allTyped(): Promise<TypedBlockMap> {
     if (this.typeCachePromise == null) {
       const promise = this.inferAllTypes();
       this.typeCachePromise = promise;
