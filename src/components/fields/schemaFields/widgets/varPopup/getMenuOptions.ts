@@ -33,14 +33,14 @@ function getMenuOptions(knownVars: VarMap) {
   // TODO mark the visited items (shadowed items issue)
  for (const [source, existenceMap] of varMapEntries.reverse()) {
    for (const [outputKey, map] of Object.entries(existenceMap)) {
-     
+
     if (traceVars[outputKey] !== undefined) {
       setWith()
     }
    }
-    
+
    }
- } 
+ }
 
   return varMapEntries;
 }
