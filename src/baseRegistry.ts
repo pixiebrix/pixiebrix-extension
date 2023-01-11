@@ -38,7 +38,7 @@ export class DoesNotExistError extends Error {
 }
 
 export type RegistryChangeListener = {
-  onCacheChanged: () => void;
+  onCacheChanged?: () => void;
 };
 
 /**
@@ -46,7 +46,8 @@ export type RegistryChangeListener = {
  */
 export class Registry<
   Id extends RegistryId = RegistryId,
-  Item extends RegistryItem<Id> = RegistryItem<Id>
+  Item extends RegistryItem<Id> = RegistryItem<Id>,
+  Listener extends RegistryChangeListener = RegistryChangeListener
 > {
   // Use RegistryId for `cache` and `remote` because they come from the external service
 
@@ -60,7 +61,7 @@ export class Registry<
 
   private readonly deserialize: (raw: unknown) => Item;
 
-  private listeners: RegistryChangeListener[] = [];
+  protected listeners: Listener[] = [];
 
   constructor(
     kinds: Kind[],
@@ -73,11 +74,11 @@ export class Registry<
     this.deserialize = deserialize;
   }
 
-  addListener(listener: RegistryChangeListener): void {
+  addListener(listener: Listener): void {
     this.listeners.push(listener);
   }
 
-  removeListener(listener: RegistryChangeListener): void {
+  removeListener(listener: Listener): void {
     this.listeners = this.listeners.filter((x) => x !== listener);
   }
 
@@ -118,7 +119,7 @@ export class Registry<
     this.register(item);
 
     for (const listener of this.listeners) {
-      listener.onCacheChanged();
+      listener.onCacheChanged?.();
     }
 
     return item;
@@ -230,7 +231,7 @@ export class Registry<
     );
 
     for (const listener of this.listeners) {
-      listener.onCacheChanged();
+      listener.onCacheChanged?.();
     }
   }
 
@@ -241,7 +242,7 @@ export class Registry<
     this.cache.clear();
 
     for (const listener of this.listeners) {
-      listener.onCacheChanged();
+      listener.onCacheChanged?.();
     }
   }
 }

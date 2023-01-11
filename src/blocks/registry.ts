@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "@/baseRegistry";
+import BaseRegistry, { type RegistryChangeListener } from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { type IBlock, type RegistryId } from "@/core";
 import {
@@ -33,9 +33,17 @@ export type TypedBlock = {
   type: BlockType;
 };
 
+type BlockRegistryChangeListener = RegistryChangeListener & {
+  onTypedCacheChanged?: () => void;
+};
+
 export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
-export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+export class BlocksRegistry extends BaseRegistry<
+  RegistryId,
+  IBlock,
+  BlockRegistryChangeListener
+> {
   constructor() {
     super(["block", "component", "effect", "reader"], "blocks", fromJS);
   }
@@ -58,6 +66,28 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     );
   }
 
+  private emitAllTypedChange() {
+    for (const listener of this.listeners.filter(
+      (x) => x.onTypedCacheChanged
+    )) {
+      listener.onCacheChanged();
+    }
+  }
+
+  allTypedSnapshot = (): TypedBlockMap => this.typeCache;
+
+  subscribeToAllTyped = (listener: () => void): (() => void) => {
+    const registryListener: BlockRegistryChangeListener = {
+      onTypedCacheChanged: listener,
+    };
+
+    this.addListener(registryListener);
+
+    return () => {
+      this.removeListener(registryListener);
+    };
+  };
+
   /**
    * Return Map for block by RegistryId with computed/inferred metadata.
    * @see all
@@ -68,7 +98,10 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
       console.debug("Resolving types for all known blocks");
 
       void this.all();
-      return this.allTyped();
+      const typedBlocks = await this.allTyped();
+
+      this.emitAllTypedChange();
+      return typedBlocks;
     }
 
     // Wait for all blocks to be loaded
@@ -104,6 +137,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     this.typeCache.clear();
     this.loadAllPromise = null;
     this.loadingBlockTypePromises = [];
+    this.emitAllTypedChange();
   }
 }
 

@@ -16,12 +16,8 @@
  */
 
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
-import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
-import { useEffect, useMemo } from "react";
-import { type RegistryChangeListener } from "@/baseRegistry";
-
-let allBlocksCached: TypedBlockMap = new Map();
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
 /**
  * Load the TypedBlockMap from the block registry. Refreshes on mount.
@@ -30,37 +26,14 @@ function useAllBlocks(): {
   allBlocks: TypedBlockMap;
   isLoading: boolean;
 } {
-  // Note: we don't want to return the loading flag from the async state here,
-  // because outside this hook, we only care about when the cache is empty
-  const [allBlocks, , error, reload] = useAsyncState<TypedBlockMap>(
-    async () => {
-      allBlocksCached = await blockRegistry.allTyped();
-      return allBlocksCached;
-    },
-    [],
-    allBlocksCached
+  const allBlocks = useSyncExternalStore(
+    blockRegistry.subscribeToAllTyped,
+    blockRegistry.allTypedSnapshot
   );
-
-  const registryListener = useMemo<RegistryChangeListener>(
-    () => ({
-      onCacheChanged() {
-        void reload();
-      },
-    }),
-    [reload]
-  );
-
-  useEffect(() => {
-    blockRegistry.addListener(registryListener);
-
-    return () => {
-      blockRegistry.removeListener(registryListener);
-    };
-  }, [registryListener]);
 
   return {
     allBlocks,
-    isLoading: isEmpty(allBlocksCached) && !error,
+    isLoading: isEmpty(allBlocks),
   };
 }
 
