@@ -75,7 +75,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     await this.loadAllPromise;
 
     if (this.loadingBlockTypePromises.length === 0) {
-      return this.typeCache;
+      return new Map(this.typeCache);
     }
 
     // Wait for all block types to be loaded (see this.register)
@@ -84,7 +84,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
 
     await Promise.all(loadingBlockTypes);
 
-    return this.typeCache;
+    return new Map(this.typeCache);
   }
 
   override async all(): Promise<IBlock[]> {
