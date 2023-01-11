@@ -16,18 +16,6 @@ exports[`highlight highlight multiple matches with rootSelector 2`] = `
         "
 `;
 
-exports[`highlight is root aware if 'inherit' 1`] = `
-"
-            <div id="tree">
-                <span style="background-color: rgb(255, 255, 0);">Foo</span>
-                <span style="background-color: rgb(255, 255, 0);">Bar</span>
-            </div>
-            <div>
-                <span>Baz</span>
-            </div>
-        "
-`;
-
 exports[`highlight is root aware if rootMode is 'inherit' 1`] = `
 "
             <div id="tree">
