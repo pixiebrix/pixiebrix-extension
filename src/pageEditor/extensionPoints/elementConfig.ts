@@ -27,7 +27,7 @@ import {
   type UserOptions,
   type UUID,
 } from "@/core";
-import { type FrameworkMeta } from "@/messaging/constants";
+import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
   type ExtensionPointConfig,
   type ExtensionPointType,

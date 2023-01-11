@@ -21,7 +21,7 @@ import {
   type FrameworkConfig,
   frameworkReadFactory,
 } from "@/blocks/readers/frameworkReader";
-import { KNOWN_READERS } from "@/messaging/constants";
+import { KNOWN_READERS } from "@/pageScript/messenger/constants";
 import { validateRegistryId } from "@/types/helpers";
 
 export const COMPONENT_READER_ID = validateRegistryId(

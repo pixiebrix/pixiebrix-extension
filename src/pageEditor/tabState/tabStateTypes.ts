@@ -16,7 +16,7 @@
  */
 
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type FrameworkMeta } from "@/messaging/constants";
+import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];

@@ -31,7 +31,7 @@ import {
   toErrorResponse,
   isErrorResponse,
   type RemoteProcedureCallRequest,
-} from "@/messaging/protocol";
+} from "@/pageScript/messenger/pigeon";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 

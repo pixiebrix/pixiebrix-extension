@@ -23,9 +23,9 @@ import {
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
 } from "@/utils/inference/selectorInference";
-import { type Framework } from "@/messaging/constants";
+import { type Framework } from "@/pageScript/messenger/constants";
 import { uniq, compact, difference } from "lodash";
-import * as pageScript from "@/pageScript/protocol";
+import * as pageScript from "@/pageScript/messenger/api";
 import { requireSingleElement } from "@/utils/requireSingleElement";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import {

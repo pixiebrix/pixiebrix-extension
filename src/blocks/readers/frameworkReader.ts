@@ -16,11 +16,11 @@
  */
 
 import { type Read } from "@/blocks/readers/factory";
-import { type Framework } from "@/messaging/constants";
+import { type Framework } from "@/pageScript/messenger/constants";
 import { type ReaderOutput, type ReaderRoot } from "@/core";
 import { getCssSelector } from "css-selector-generator";
 import { castArray, compact } from "lodash";
-import { getComponentData, type ReadPayload } from "@/pageScript/protocol";
+import { getComponentData, type ReadPayload } from "@/pageScript/messenger/api";
 
 export type FrameworkConfig = ReadPayload & {
   /**

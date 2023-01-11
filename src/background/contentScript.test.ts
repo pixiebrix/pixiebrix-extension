@@ -20,16 +20,22 @@ import {
   initContentScriptReadyListener,
   makeSenderKey,
 } from "@/background/contentScript";
-import { getTargetState } from "@/contentScript/ready";
+import {
+  ENSURE_CONTENT_SCRIPT_READY,
+  getTargetState,
+} from "@/contentScript/ready";
 import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
-jest.mock("@/contentScript/ready", () => ({
-  getTargetState: jest.fn().mockRejectedValue(new Error("Not Implemented")),
-}));
+jest.mock("@/contentScript/ready", () => {
+  const actual = jest.requireActual("@/contentScript/ready");
+  return {
+    ...actual,
+    getTargetState: jest.fn().mockRejectedValue(new Error("Not Implemented")),
+  };
+});
 
 jest.mock("webext-content-scripts", () => ({
   injectContentScript: jest
