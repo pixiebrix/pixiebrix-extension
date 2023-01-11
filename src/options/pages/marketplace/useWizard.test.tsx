@@ -35,7 +35,10 @@ describe("useWizard", () => {
         recipeDefinitionFactory({
           // Page Editor produces normalized form
           options: {
-            schema: { properties: { foo: { type: "string" } } },
+            schema: {
+              type: "object",
+              properties: { foo: { type: "string" } },
+            },
           } as OptionsDefinition,
         })
       )
@@ -53,7 +56,12 @@ describe("useWizard", () => {
       useWizard(
         recipeDefinitionFactory({
           // Page Editor produces normalized form
-          options: { schema: { properties: {} } } as OptionsDefinition,
+          options: {
+            schema: {
+              type: "object",
+              properties: {},
+            },
+          } as OptionsDefinition,
         })
       )
     );

@@ -17,7 +17,7 @@
 
 import { object } from "yup";
 import { dereference } from "@/validators/generic";
-import { cloneDeep, mapValues } from "lodash";
+import { cloneDeep, isEmpty, mapValues } from "lodash";
 import { type Schema } from "@/core";
 import { buildYup } from "schema-to-yup";
 import { useAsyncState } from "@/hooks/common";
@@ -26,7 +26,7 @@ const useAsyncRecipeOptionsValidationSchema = (
   optionsDefinitionSchema: Schema | undefined
 ) =>
   useAsyncState(async () => {
-    if (!optionsDefinitionSchema) {
+    if (isEmpty(optionsDefinitionSchema)) {
       return object().shape({});
     }
 
