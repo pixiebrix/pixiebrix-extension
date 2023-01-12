@@ -17,14 +17,14 @@
 
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
-import { type TraceRecord } from "@/telemetry/trace";
-import { isEmpty, mapValues, set } from "lodash";
+import { isEmpty, merge } from "lodash";
+import { type JsonObject } from "type-fest";
 
-function getMenuOptions(knownVars: VarMap, trace: TraceRecord) {
+function getMenuOptions(knownVars: VarMap, contextValues: JsonObject) {
   const varMap = knownVars.getMap();
 
-  if (isEmpty(trace?.templateContext)) {
-    return Object.entries(mapValues(varMap, setEmptyValues));
+  if (isEmpty(contextValues)) {
+    return Object.entries(varMap);
   }
 
   delete varMap[KnownSources.TRACE];
@@ -32,36 +32,20 @@ function getMenuOptions(knownVars: VarMap, trace: TraceRecord) {
   const varMapEntries = Object.entries(varMap);
   const visitedOutputs = new Set<string>();
   for (let index = varMapEntries.length - 1; index >= 0; index--) {
+    // eslint-disable-next-line security/detect-object-injection -- accessing array item by index
     const [, existenceMap] = varMapEntries[index];
 
     for (const [outputKey] of Object.entries(existenceMap)) {
-      if (
-        trace.templateContext[outputKey] != null &&
-        !visitedOutputs.has(outputKey)
-      ) {
-        set(existenceMap, outputKey, trace.templateContext[outputKey]);
+      // eslint-disable-next-line security/detect-object-injection -- access via object key
+      if (contextValues[outputKey] != null && !visitedOutputs.has(outputKey)) {
+        // eslint-disable-next-line security/detect-object-injection -- access via object key
+        merge(existenceMap[outputKey], contextValues[outputKey]);
         visitedOutputs.add(outputKey);
       }
     }
-
-    varMapEntries[index][1] = setEmptyValues(existenceMap);
   }
 
   return varMapEntries;
-}
-
-function setEmptyValues(existenceMap: any): any {
-  return existenceMap;
-
-  if (isEmpty(existenceMap)) {
-    return "not set";
-  }
-
-  if (typeof existenceMap !== "object") {
-    return existenceMap;
-  }
-
-  return mapValues(existenceMap, setEmptyValues);
 }
 
 export default getMenuOptions;

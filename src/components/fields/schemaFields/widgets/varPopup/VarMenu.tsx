@@ -112,7 +112,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     ? ADAPTERS.get(activeElement.type).label
     : "";
 
-  const options = getMenuOptions(knownVars, trace);
+  const options = getMenuOptions(knownVars, trace?.templateContext);
 
   return (
     <div className={styles.menu} ref={rootElementRef}>

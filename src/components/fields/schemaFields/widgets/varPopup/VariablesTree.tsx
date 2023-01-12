@@ -16,10 +16,11 @@
  */
 
 import React from "react";
-import { JSONTree } from "react-json-tree";
+import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
 import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
+import { isEmpty } from "lodash";
 
 const theme = {
   extend: jsonTreeTheme,
@@ -72,8 +73,23 @@ function postprocessValue(value: unknown): unknown {
   return value;
 }
 
+// JSONTree defaultItemString
+const defaultItemString: GetItemString = (type, data, itemType, itemString) => (
+  <span>
+    {itemType} {itemString}
+  </span>
+);
+
+const getItemString: GetItemString = (type, data, itemType, itemString) => {
+  if (type === "Object" && isEmpty(data)) {
+    return <span>not set</span>;
+  }
+
+  return defaultItemString(type, data, itemType, itemString, null);
+};
+
 type NodeLabelProps = {
-  path: Array<string | number>;
+  path: KeyPath;
   onSelect: (path: string[]) => void;
 };
 
@@ -108,12 +124,13 @@ const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
     data={vars}
     theme={theme}
     postprocessValue={postprocessValue}
-    shouldExpandNode={() => true}
+    shouldExpandNodeInitially={() => true}
     invertTheme
     hideRoot
     labelRenderer={(relativePath) => (
       <NodeLabel path={relativePath} onSelect={onVarSelect} />
     )}
+    getItemString={getItemString}
   />
 );
 
