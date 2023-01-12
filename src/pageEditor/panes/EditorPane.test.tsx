@@ -767,6 +767,9 @@ describe("validation", () => {
     // Selecting the first extension
     store.dispatch(editorActions.selectElement(extension1.uuid));
 
+    // Run the timers of the Formik-Redux state synchronization and analysis
+    await flushAsyncEffects();
+
     // Should show 2 error in the Node Layout
     expect(
       rendered.container.querySelectorAll(
