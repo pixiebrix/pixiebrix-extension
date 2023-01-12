@@ -21,6 +21,7 @@ import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMa
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
+import { type Theme } from "react-base16-styling";
 
 const theme = {
   extend: jsonTreeTheme,
@@ -63,7 +64,7 @@ const theme = {
     textOverflow: "ellipsis",
     textIndent: 0,
   },
-};
+} as Theme;
 
 function sortObjectKeys(a: string, b: string, obj: UnknownObject): number {
   // eslint-disable-next-line security/detect-object-injection -- a and b are keys of obj received from Object.getOwnPropertyNames
