@@ -38,6 +38,31 @@ const theme = {
     justifyContent: "center",
     alignItems: "center",
   },
+  // This aligns the arrow, label, and items string (N keys)
+  nestedNode: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  // This makes the nested items to be rendered below the label
+  nestedNodeChildren: {
+    width: "100%",
+  },
+  value: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: "1.125em",
+  },
+  label: {
+    wordBreak: "initial",
+    textIndent: "-0.5em",
+  },
+  valueText: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    textIndent: 0,
+  },
 };
 
 function sortObjectKeys(a: string, b: string, obj: UnknownObject): number {
