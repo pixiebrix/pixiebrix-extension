@@ -71,6 +71,7 @@ import {
   editRecipeOptionsDefinitions,
   ensureElementUIState,
   removeElement,
+  removeRecipeData,
   selectRecipeId,
   setActiveNodeId,
   syncElementNodeUIStates,
@@ -677,8 +678,9 @@ export const editorSlice = createSlice({
         delete state.deletedElementsByRecipeId[recipeId];
       }
     },
-    clearActiveRecipe(state) {
-      state.activeRecipeId = null;
+    removeRecipeData(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      removeRecipeData(state, recipeId);
     },
     showCreateRecipeModal(
       state,

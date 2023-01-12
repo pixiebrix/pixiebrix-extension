@@ -128,6 +128,28 @@ export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
   void clearExtensionTraces(uuid);
 }
 
+/**
+ * Remove a given recipe's extra data from a redux state object
+ * @param state The editor redux state
+ * @param recipeId The id of the recipe to remove
+ */
+export function removeRecipeData(
+  state: WritableDraft<EditorState>,
+  recipeId: RegistryId
+) {
+  if (state.activeRecipeId === recipeId) {
+    state.activeRecipeId = null;
+  }
+
+  if (state.expandedRecipeId === recipeId) {
+    state.expandedRecipeId = null;
+  }
+
+  delete state.dirtyRecipeOptionsById[recipeId];
+  delete state.dirtyRecipeMetadataById[recipeId];
+  delete state.deletedElementsByRecipeId[recipeId];
+}
+
 export function selectRecipeId(
   state: WritableDraft<EditorState>,
   recipeId: RegistryId

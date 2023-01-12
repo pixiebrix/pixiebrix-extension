@@ -25,7 +25,10 @@ import { type RegistryId, type UUID } from "@/core";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
 import { mapValues } from "lodash";
-import { removeElement } from "@/pageEditor/slices/editorSliceHelpers";
+import {
+  removeElement,
+  removeRecipeData,
+} from "@/pageEditor/slices/editorSliceHelpers";
 
 const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
 
@@ -68,26 +71,13 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
  *
  * Note: this does not trigger a change even in any current redux instances
  * @param recipeId The recipe to remove
- *
- * The logic here needs to be roughly kept in sync with the useRemoveRecipe hook
- * @see useRemoveRecipe.ts
  */
 export async function removeDynamicElementsForRecipe(
   recipeId: RegistryId
 ): Promise<void> {
   const state = await getEditorState();
   const newState = produce(state, (draft) => {
-    if (state.activeRecipeId === recipeId) {
-      draft.activeRecipeId = null;
-    }
-
-    if (state.expandedRecipeId === recipeId) {
-      draft.expandedRecipeId = null;
-    }
-
-    delete draft.dirtyRecipeOptionsById[recipeId];
-    delete draft.dirtyRecipeMetadataById[recipeId];
-    delete draft.deletedElementsByRecipeId[recipeId];
+    removeRecipeData(draft, recipeId);
 
     for (const element of state.elements) {
       if (element.recipe?.id === recipeId) {
