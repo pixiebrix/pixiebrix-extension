@@ -25,6 +25,7 @@ import { type RegistryId, type UUID } from "@/core";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
 import { mapValues } from "lodash";
+import { removeElement } from "@/pageEditor/slices/editorSliceHelpers";
 
 const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
 
@@ -45,41 +46,20 @@ async function saveEditorState(state: EditorState): Promise<void> {
   );
 }
 
-async function removeElements(
-  state: EditorState,
-  elementIds: UUID[]
-): Promise<EditorState> {
-  return produce(state, (draft) => {
-    for (const elementId of elementIds) {
-      if (state.activeElementId === elementId) {
-        draft.activeElementId = null;
-      }
-
-      delete draft.dirty[elementId];
-      delete draft.elementUIStates[elementId];
-      delete draft.showV3UpgradeMessageByElement[elementId];
-      draft.availableDynamicIds = draft.availableDynamicIds.filter(
-        (id) => id !== elementId
-      );
-      draft.elements = draft.elements.filter(
-        (element) => element.uuid !== elementId
-      );
-    }
-  });
-}
-
 /**
  * Remove a list of elements by id from persisted redux storage.
  *
  * Note: this does not trigger a change even in any current redux instances
  * @param elementIds the elements to remove from persisted redux storage
- *
- * The logic here needs to be roughly kept in sync with removeElement in the redux helpers
- * @see removeElement
  */
 export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
   const state = await getEditorState();
-  const newState = await removeElements(state, elementIds);
+  const newState = produce(state, (draft) => {
+    for (const id of elementIds) {
+      removeElement(draft, id);
+    }
+  });
+
   await saveEditorState(newState);
 }
 
@@ -96,7 +76,7 @@ export async function removeDynamicElementsForRecipe(
   recipeId: RegistryId
 ): Promise<void> {
   const state = await getEditorState();
-  const nextState = produce(state, (draft) => {
+  const newState = produce(state, (draft) => {
     if (state.activeRecipeId === recipeId) {
       draft.activeRecipeId = null;
     }
@@ -108,10 +88,12 @@ export async function removeDynamicElementsForRecipe(
     delete draft.dirtyRecipeOptionsById[recipeId];
     delete draft.dirtyRecipeMetadataById[recipeId];
     delete draft.deletedElementsByRecipeId[recipeId];
+
+    for (const element of state.elements) {
+      if (element.recipe?.id === recipeId) {
+        removeElement(draft, element.uuid);
+      }
+    }
   });
-  const elementIds = state.elements
-    .filter((element) => element.recipe?.id === recipeId)
-    .map((element) => element.uuid);
-  const newState = await removeElements(nextState, elementIds);
   await saveEditorState(newState);
 }
