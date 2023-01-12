@@ -7608,9 +7608,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
       <li
         style={
           {
-            "alignItems": "center",
-            "display": "flex",
-            "flexWrap": "wrap",
             "marginLeft": 0,
             "paddingLeft": 0,
             "paddingTop": "0.25em",
@@ -7672,8 +7669,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               "display": "inline-block",
               "margin": 0,
               "padding": 0,
-              "textIndent": "-0.5em",
-              "wordBreak": "initial",
             }
           }
         >
@@ -7717,16 +7712,12 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               "listStyle": "none",
               "margin": 0,
               "padding": 0,
-              "width": "100%",
             }
           }
         >
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -7745,8 +7736,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -7769,7 +7758,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -7779,7 +7779,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
@@ -7787,9 +7786,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -7808,8 +7804,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -7832,7 +7826,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -7842,7 +7847,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
@@ -7850,9 +7854,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -7871,8 +7872,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -7895,7 +7894,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -7905,7 +7915,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
@@ -7913,9 +7922,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -7934,8 +7940,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -7958,7 +7962,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -7968,7 +7983,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
@@ -7976,9 +7990,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": 0,
                 "paddingTop": "0.25em",
@@ -8040,8 +8051,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -8085,16 +8094,12 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             >
               <li
                 style={
                   {
-                    "alignItems": "center",
-                    "display": "flex",
-                    "flexWrap": "wrap",
                     "marginLeft": "0.875em",
                     "paddingLeft": "1.125em",
                     "paddingTop": "0.25em",
@@ -8113,8 +8118,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                       "display": "inline-block",
                       "margin": 0,
                       "padding": 0,
-                      "textIndent": "-0.5em",
-                      "wordBreak": "initial",
                     }
                   }
                 >
@@ -8137,7 +8140,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   }
                 >
                   <span>
-                    not set
+                    <span
+                      style={
+                        {
+                          "marginLeft": "0.3em",
+                          "marginRight": "0.3em",
+                        }
+                      }
+                    >
+                      {}
+                    </span>
+                     
+                    0 keys
                   </span>
                 </span>
                 <ul
@@ -8147,7 +8161,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                       "listStyle": "none",
                       "margin": 0,
                       "padding": 0,
-                      "width": "100%",
                     }
                   }
                 />
@@ -8157,9 +8170,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -8178,8 +8188,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -8202,7 +8210,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -8212,7 +8231,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
@@ -8220,9 +8238,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -8241,8 +8256,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -8265,7 +8278,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -8275,7 +8299,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
@@ -8283,9 +8306,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           <li
             style={
               {
-                "alignItems": "center",
-                "display": "flex",
-                "flexWrap": "wrap",
                 "marginLeft": "0.875em",
                 "paddingLeft": "1.125em",
                 "paddingTop": "0.25em",
@@ -8304,8 +8324,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "display": "inline-block",
                   "margin": 0,
                   "padding": 0,
-                  "textIndent": "-0.5em",
-                  "wordBreak": "initial",
                 }
               }
             >
@@ -8328,7 +8346,18 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
               }
             >
               <span>
-                not set
+                <span
+                  style={
+                    {
+                      "marginLeft": "0.3em",
+                      "marginRight": "0.3em",
+                    }
+                  }
+                >
+                  {}
+                </span>
+                 
+                0 keys
               </span>
             </span>
             <ul
@@ -8338,7 +8367,6 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
                   "listStyle": "none",
                   "margin": 0,
                   "padding": 0,
-                  "width": "100%",
                 }
               }
             />
