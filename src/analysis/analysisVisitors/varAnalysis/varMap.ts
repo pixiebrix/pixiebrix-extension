@@ -22,8 +22,8 @@ export enum VarExistence {
   DEFINITELY = "DEFINITELY",
 }
 
-const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
-const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
+export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
 export type ExistenceMap = {
   [SELF_EXISTENCE]?: VarExistence;
   [ALLOW_ANY_CHILD]?: boolean;
@@ -33,15 +33,12 @@ export type ExistenceMap = {
 
 export function createNode(
   selfExistence: VarExistence,
-  allowAnyChild?: boolean
+  allowAnyChild = false
 ): ExistenceMap {
   const node: ExistenceMap = {
     [SELF_EXISTENCE]: selfExistence,
+    [ALLOW_ANY_CHILD]: allowAnyChild,
   };
-
-  if (typeof allowAnyChild === "boolean") {
-    node[ALLOW_ANY_CHILD] = allowAnyChild;
-  }
 
   return node;
 }

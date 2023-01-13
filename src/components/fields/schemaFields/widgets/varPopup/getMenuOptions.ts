@@ -23,14 +23,19 @@ import { type JsonObject } from "type-fest";
 function getMenuOptions(knownVars: VarMap, contextValues: JsonObject) {
   const varMap = knownVars.getMap();
 
+  // We don't show traces as a separate source
+  delete varMap[KnownSources.TRACE];
+
   if (isEmpty(contextValues)) {
     return Object.entries(varMap);
   }
 
-  delete varMap[KnownSources.TRACE];
-
   const varMapEntries = Object.entries(varMap);
   const visitedOutputs = new Set<string>();
+
+  // Merging the context values into the varMapEntries
+  // We do this in reverse order so that the most recent block gets the values
+  // This is important for the case where the same output key is used multiple times in a pipeline
   for (let index = varMapEntries.length - 1; index >= 0; index--) {
     // eslint-disable-next-line security/detect-object-injection -- accessing array item by index
     const [, existenceMap] = varMapEntries[index];
