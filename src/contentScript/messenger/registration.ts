@@ -51,7 +51,7 @@ import { getProcesses, initRobot } from "@/contentScript/uipath";
 import {
   withDetectFrameworkVersions,
   withSearchWindow,
-} from "@/messaging/protocol";
+} from "@/pageScript/messenger/api";
 import {
   runBlock,
   runReaderBlock,

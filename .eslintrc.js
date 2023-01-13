@@ -4,7 +4,7 @@ const restrictedZones = [
   "pageEditor",
   "options",
   "sidebar",
-  // "pageScript", // TODO: After Messenger migration
+  "pageScript",
 ].map((exporter) => ({
   // All of these files cannot import `from` (exclude self-imports)
   target:

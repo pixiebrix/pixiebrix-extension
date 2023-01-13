@@ -16,6 +16,7 @@
  */
 
 import "./contentScript.scss";
+import "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import {
   isInstalledInThisSession,

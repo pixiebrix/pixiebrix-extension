@@ -15,24 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import emberAdapter from "./contrib/ember";
-import angularjsAdapter from "@/pageScript/frameworks/contrib/angularjs";
-import reactAdapter from "./contrib/react";
-import vueAdapter from "./contrib/vue";
-import { type FrameworkAdapter } from "@/pageScript/messenger/constants";
-import {
-  type ReadableComponentAdapter,
-  type WriteableComponentAdapter,
-} from "@/pageScript/frameworks/component";
+import { MAX_Z_INDEX } from "@/common";
 
-const FRAMEWORK_ADAPTERS = new Map<
-  FrameworkAdapter,
-  ReadableComponentAdapter | WriteableComponentAdapter
->([
-  ["react", reactAdapter],
-  ["emberjs", emberAdapter],
-  ["vue", vueAdapter],
-  ["angularjs", angularjsAdapter],
-]);
+if (process.env.ENVIRONMENT === "development") {
+  const indicator = document.createElement("div");
 
-export default FRAMEWORK_ADAPTERS;
+  // Hide on hover
+  indicator.addEventListener("mouseenter", indicator.remove);
+
+  Object.assign(indicator.style, {
+    position: "fixed",
+    top: 0,
+    height: "1px",
+    zIndex: MAX_Z_INDEX,
+
+    // Vary position to see multiple injections
+    left: `${Math.random() * 100}px`,
+
+    // Add contrast so it's visible no matter the background
+    borderLeft: "solid 5px white",
+    borderRight: "solid 5px black",
+  });
+  document.body.prepend(indicator);
+}

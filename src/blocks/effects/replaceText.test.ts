@@ -169,4 +169,22 @@ describe("ReplaceTextEffect", () => {
     );
     expect(document.body.innerHTML).toBe("<div>123-456-7890</div>");
   });
+
+  test("excludes elements outside the body", async () => {
+    const document = getDocument(
+      "<title>Support page</title><h1>Superlatives Abound</h1>"
+    );
+    const brick = new ReplaceTextEffect();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "Sup",
+        replacement: "Foo",
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    expect(document.head.innerHTML).toEqual("<title>Support page</title>");
+    expect(document.body.innerHTML).toEqual("<h1>Fooerlatives Abound</h1>");
+  });
 });

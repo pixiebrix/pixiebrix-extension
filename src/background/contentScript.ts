@@ -19,12 +19,14 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
+import { isRemoteProcedureCallRequest } from "@/pageScript/messenger/pigeon";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
-import { getTargetState } from "@/contentScript/ready";
+import {
+  getTargetState,
+  ENSURE_CONTENT_SCRIPT_READY,
+} from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
 import MessageSender = Runtime.MessageSender;
