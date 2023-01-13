@@ -278,6 +278,7 @@ module.exports = (env, options) =>
         "sandbox/sandbox",
 
         "tinyPages/ephemeralForm",
+        "tinyPages/ephemeralPanel",
         "tinyPages/permissionsPopup",
 
         // Tiny files without imports

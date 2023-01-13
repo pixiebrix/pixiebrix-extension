@@ -19,14 +19,32 @@ import { type UUID } from "@/core";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 import { CancelError } from "@/errors/businessErrors";
+import { type TemporaryPanelEntry } from "@/sidebar/types";
 
-const panels = new Map<UUID, DeferredPromise<void>>();
+type RegisteredPanel = {
+  entry: TemporaryPanelEntry;
+  registration: DeferredPromise<void>;
+};
+
+const panels = new Map<UUID, RegisteredPanel>();
+
+export async function getPanelDefinition(
+  nonce: UUID
+): Promise<TemporaryPanelEntry> {
+  expectContext("contentScript");
+
+  return panels.get(nonce).entry;
+}
 
 /**
  * Register a temporary display panel
  * @param nonce The instance nonce for the panel to register
+ * @param entry the panel definition
  */
-export async function waitForTemporaryPanel(nonce: UUID): Promise<void> {
+export async function waitForTemporaryPanel(
+  nonce: UUID,
+  entry: TemporaryPanelEntry
+): Promise<void> {
   expectContext("contentScript");
 
   const registration = pDefer<void>();
@@ -37,7 +55,10 @@ export async function waitForTemporaryPanel(nonce: UUID): Promise<void> {
     );
   }
 
-  panels.set(nonce, registration);
+  panels.set(nonce, {
+    entry,
+    registration,
+  });
 
   return registration.promise;
 }
@@ -50,7 +71,7 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
   expectContext("contentScript");
 
   for (const nonce of nonces) {
-    panels.get(nonce)?.resolve();
+    panels.get(nonce)?.registration?.resolve();
     panels.delete(nonce);
   }
 }
@@ -65,7 +86,7 @@ export async function cancelTemporaryPanels(nonces: UUID[]) {
   for (const nonce of nonces) {
     panels
       .get(nonce)
-      ?.reject(
+      ?.registration?.reject(
         new CancelError("Temporary panel was replaced with another panel")
       );
     panels.delete(nonce);

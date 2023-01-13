@@ -22,6 +22,14 @@ import "@/extensionContext";
 
 import React from "react";
 import { render } from "react-dom";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 
-render(<EphemeralForm />, document.querySelector("#container"));
+function init(): void {
+  render(<EphemeralPanel />, document.querySelector("#container"));
+}
+
+registerContribBlocks();
+registerBuiltinBlocks();
+init();
