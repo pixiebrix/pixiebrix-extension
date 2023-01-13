@@ -28,12 +28,22 @@ type RegisteredPanel = {
 
 const panels = new Map<UUID, RegisteredPanel>();
 
+/**
+ * Get panel definition, or error if panel is not defined for nonce.
+ * @param nonce the panel nonce
+ */
 export async function getPanelDefinition(
   nonce: UUID
 ): Promise<TemporaryPanelEntry> {
   expectContext("contentScript");
 
-  return panels.get(nonce).entry;
+  const panel = panels.get(nonce);
+
+  if (!panel) {
+    throw new Error("Panel definition not found");
+  }
+
+  return panel.entry;
 }
 
 /**
@@ -71,7 +81,7 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
   expectContext("contentScript");
 
   for (const nonce of nonces) {
-    panels.get(nonce)?.registration?.resolve();
+    panels.get(nonce)?.registration.resolve();
     panels.delete(nonce);
   }
 }
