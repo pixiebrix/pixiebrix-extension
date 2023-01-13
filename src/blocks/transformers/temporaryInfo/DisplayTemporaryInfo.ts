@@ -35,7 +35,7 @@ import { CancelError, PropError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 
-type Location = "sidebar" | "modal";
+type Location = "panel" | "modal";
 
 export async function createFrameSource(
   nonce: string,
@@ -76,8 +76,9 @@ class DisplayTemporaryInfo extends Transformer {
       },
       location: {
         type: "string",
-        enum: ["sidebar", "modal"],
-        default: "sidebar",
+        enum: ["panel", "modal"],
+        default: "panel",
+        description: "The location of the information (default='panel')",
       },
     },
     required: ["body"],
@@ -87,7 +88,7 @@ class DisplayTemporaryInfo extends Transformer {
     {
       title,
       body: bodyPipeline,
-      location = "sidebar",
+      location = "panel",
     }: BlockArg<{
       title: string;
       location: Location;
@@ -112,7 +113,7 @@ class DisplayTemporaryInfo extends Transformer {
       counter: 0,
     })) as PanelPayload;
 
-    if (location === "sidebar") {
+    if (location === "panel") {
       await ensureSidebar();
 
       showTemporarySidebarPanel({
@@ -140,8 +141,8 @@ class DisplayTemporaryInfo extends Transformer {
       const frameSource = await createFrameSource(nonce, location);
       showModal(frameSource, controller);
     } else {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for validated value
       throw new PropError(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for validated value
         `Invalid location: ${location}`,
         this.id,
         "location",
