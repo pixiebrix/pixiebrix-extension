@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection -- lots of deleting by UUID */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
