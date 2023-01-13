@@ -64,7 +64,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
-type RunBlockArgs = {
+export type RunBlockArgs = {
   apiVersion: ApiVersion;
   blockConfig: BlockConfig;
   /**
@@ -144,6 +144,8 @@ export async function runBlock({
   return cloneDeep(output) as SerializableResponse;
 }
 
+type Location = "modal" | "panel";
+
 /**
  * Run a single renderer (e.g. - for running a block preview)
  *
@@ -162,7 +164,8 @@ export async function runRendererBlock(
   extensionId: UUID,
   runId: UUID,
   title: string,
-  args: RunBlockArgs
+  args: RunBlockArgs,
+  location: Location
 ): Promise<void> {
   const nonce = uuidv4();
 
@@ -191,12 +194,16 @@ export async function runRendererBlock(
       };
     }
 
-    showTemporarySidebarPanel({
-      extensionId: null,
-      nonce,
-      heading: title,
-      payload,
-    });
+    if (location === "panel") {
+      showTemporarySidebarPanel({
+        extensionId: null,
+        nonce,
+        heading: title,
+        payload,
+      });
+    } else {
+      throw new Error(`Support for previewing in ${location} not implemented`);
+    }
   }
 }
 

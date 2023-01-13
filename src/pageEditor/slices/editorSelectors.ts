@@ -290,6 +290,10 @@ const parentBlockInfoSelector = createSelector(
   }
 );
 
+/**
+ * Return the block with the pipeline that contains the given node.
+ * @param instanceId the block instanceId
+ */
 export const selectParentBlockInfo =
   (instanceId: UUID) => (state: EditorRootState) =>
     parentBlockInfoSelector(state, instanceId);
