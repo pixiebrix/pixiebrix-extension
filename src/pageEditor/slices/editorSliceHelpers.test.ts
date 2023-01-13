@@ -432,8 +432,7 @@ describe("removeRecipeData", () => {
 describe("selectRecipeId", () => {
   test("select unselected recipe", () => {
     const recipe = installedRecipeMetadataFactory();
-    const state: EditorState = initialState;
-    const newState = produce(state, (draft) => {
+    const newState = produce(initialState, (draft) => {
       selectRecipeId(draft, recipe.id);
     });
     expect(selectActiveRecipeId({ editor: newState })).toEqual(recipe.id);
