@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import cx from "classnames";
 import React, { useEffect } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { Modal } from "react-bootstrap";
+import { Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   getPanelDefinition,
@@ -31,9 +32,22 @@ import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 
-const ModalLayout: React.FC = ({ children }) => (
+type Mode = "modal" | "popover";
+
+const ModalLayout: React.FC<{ className?: string }> = ({
+  className,
+  children,
+}) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
-  <div className="modal-content">{children}</div>
+  <div className={cx("modal-content", className)}>{children}</div>
+);
+
+const PopoverLayout: React.FC<{ className?: string }> = ({
+  className,
+  children,
+}) => (
+  // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
+  <div className={cx("popover", className)}>{children}</div>
 );
 
 /**
@@ -43,15 +57,24 @@ const EphemeralPanel: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const nonce = validateUUID(params.get("nonce"));
   const opener = JSON.parse(params.get("opener")) as Target;
+  const mode = params.get("mode") as Mode;
 
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId
   const target = opener;
 
+  const Layout = mode === "modal" ? ModalLayout : PopoverLayout;
+
   const [entry, isLoading, error] = useAsyncState(
     async () => getPanelDefinition(target, nonce),
     [nonce]
   );
+
+  useEffect(() => {
+    document.dispatchEvent(
+      new CustomEvent("@@pixiebrix/PANEL_MOUNTED", { detail: nonce })
+    );
+  }, [nonce]);
 
   // Report error once
   useEffect(() => {
@@ -63,15 +86,15 @@ const EphemeralPanel: React.FC = () => {
 
   if (isLoading) {
     return (
-      <ModalLayout>
+      <Layout>
         <Loader />
-      </ModalLayout>
+      </Layout>
     );
   }
 
   if (error) {
     return (
-      <ModalLayout>
+      <Layout>
         <div>Panel Error</div>
 
         <div className="text-danger my-3">{getErrorMessage(error)}</div>
@@ -87,20 +110,24 @@ const EphemeralPanel: React.FC = () => {
             Close
           </button>
         </div>
-      </ModalLayout>
+      </Layout>
     );
   }
 
   return (
-    <ModalLayout>
-      <Modal.Header
-        closeButton
-        onHide={() => {
-          cancelTemporaryPanel(target, [nonce]);
-        }}
-      >
-        <Modal.Title>{entry.heading}</Modal.Title>
-      </Modal.Header>
+    <Layout>
+      {mode === "popover" ? (
+        <Popover.Title>{entry.heading}</Popover.Title>
+      ) : (
+        <Modal.Header
+          closeButton
+          onHide={() => {
+            cancelTemporaryPanel(target, [nonce]);
+          }}
+        >
+          <Modal.Title>{entry.heading}</Modal.Title>
+        </Modal.Header>
+      )}
       <Modal.Body>
         <ErrorBoundary>
           <PanelBody
@@ -113,7 +140,7 @@ const EphemeralPanel: React.FC = () => {
           />
         </ErrorBoundary>
       </Modal.Body>
-    </ModalLayout>
+    </Layout>
   );
 };
 

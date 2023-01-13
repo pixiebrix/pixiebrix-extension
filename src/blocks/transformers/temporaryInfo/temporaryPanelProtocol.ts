@@ -47,6 +47,8 @@ type RegisteredPanel = {
 };
 
 const panels = new Map<UUID, RegisteredPanel>();
+// Mapping from extensionId to active panel nonces
+const extensionNonces = new Map<UUID, Set<UUID>>();
 
 /**
  * Get panel definition, or error if panel is not defined for nonce.
@@ -90,7 +92,27 @@ export async function waitForTemporaryPanel(
     registration,
   });
 
+  if (!extensionNonces.has(entry.extensionId)) {
+    extensionNonces.set(entry.extensionId, new Set());
+  }
+
+  extensionNonces.get(entry.extensionId).add(nonce);
+
   return registration.promise;
+}
+
+/**
+ * Helper method to remove panel from panels and extensionNonces.
+ * @param panelNonce
+ */
+function removePanelEntry(panelNonce: UUID): void {
+  const panel = panels.get(panelNonce);
+  if (panel) {
+    const { extensionId } = panel.entry;
+    extensionNonces.get(extensionId).delete(panelNonce);
+  }
+
+  panels.delete(panelNonce);
 }
 
 /**
@@ -103,7 +125,7 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
 
   for (const nonce of nonces) {
     panels.get(nonce)?.registration.resolve();
-    panels.delete(nonce);
+    removePanelEntry(nonce);
   }
 }
 
@@ -132,6 +154,17 @@ export async function cancelTemporaryPanels(nonces: UUID[]) {
       ?.registration?.reject(
         new CancelError("Temporary panel was replaced with another panel")
       );
-    panels.delete(nonce);
+    removePanelEntry(nonce);
   }
+}
+
+/**
+ * Cancel all temporary panels for a given extension.
+ * @see cancelTemporaryPanels
+ */
+export async function cancelTemporaryPanelsForExtension(
+  extensionId: UUID
+): Promise<void> {
+  const nonces = extensionNonces.get(extensionId) ?? new Set();
+  await cancelTemporaryPanels([...nonces]);
 }

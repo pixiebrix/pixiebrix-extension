@@ -126,7 +126,7 @@ export type MenuItemExtensionConfig = {
   dynamicCaption?: boolean;
 
   /**
-   * True if want to prevent button to be clicked again while action is in progress
+   * True to prevent button to be clicked again while action is in progress
    */
   synchronous: boolean;
 
