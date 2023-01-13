@@ -22,7 +22,7 @@ import {
   waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { uuidv4 } from "@/types/helpers";
-import { TemporaryPanelEntry } from "@/sidebar/types";
+import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { CancelError } from "@/errors/businessErrors";
 
 describe("temporaryPanelProtocol", () => {
