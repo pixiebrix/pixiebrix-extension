@@ -16,19 +16,15 @@
  */
 
 import React from "react";
-import {
-  actions,
-  editorSlice,
-  initialState,
-} from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { formStateFactory } from "@/testUtils/factories";
-import { createRenderFunctionWithRedux } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
 import { cleanup, perf } from "@/vendors/reactPerformanceTesting/perf";
 import { type RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
 import { act } from "@testing-library/react";
+import { render } from "@/pageEditor/testHelpers";
 
 const data = {
   name: "test",
@@ -42,25 +38,22 @@ const data = {
   ],
 };
 
-// Need to add and select an element before we can work with Data Panel tabs
-const editorPreloadedState = editorSlice.reducer(
-  initialState,
-  actions.selectInstalled(formStateFactory())
-);
-const renderJsonTree = createRenderFunctionWithRedux({
-  reducer: {
-    editor: editorSlice.reducer,
-  },
-  preloadedState: {
-    editor: editorPreloadedState,
-  },
-  ComponentUnderTest: DataTabJsonTree,
-  defaultProps: { data, tabKey: DataPanelTabKey.Context },
-});
+const renderJsonTree = () =>
+  render(<DataTabJsonTree data={data} tabKey={DataPanelTabKey.Context} />, {
+    setupRedux(dispatch) {
+      dispatch(actions.selectInstalled(formStateFactory()));
+    },
+  });
 
 afterEach(() => {
   cleanup();
 });
+
+const runTimers = () => {
+  act(() => {
+    jest.runAllTimers();
+  });
+};
 
 test("renders the DataTabJsonTree component", () => {
   const rendered = renderJsonTree();
@@ -75,15 +68,18 @@ test("doesn't re-render internal JSONTree on expand", async () => {
   const { renderCount } = perf(React);
   const rendered = renderJsonTree();
 
+  // The redux action to update the expanded state is async, resolving all timeouts for it to fire
+  runTimers();
+
+  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+
   // Get the element to expand the tree
   const bullet = rendered.container.querySelector("li > div > div");
 
   await immediateUserEvent.click(bullet);
 
-  act(() => {
-    // The redux action to update the expanded state is async, resolving all timeouts for it to fire
-    jest.runAllTimers();
-  });
+  // The redux action to update the expanded state is async, resolving all timeouts for it to fire
+  runTimers();
 
   // Ensure the JSONTree was rendered only once
   expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
