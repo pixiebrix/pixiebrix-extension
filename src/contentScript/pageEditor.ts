@@ -44,13 +44,20 @@ import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
-import { BusinessError, NoRendererError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  NoRendererError,
+} from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { type PanelPayload } from "@/sidebar/types";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 import { KNOWN_READERS } from "@/pageScript/messenger/constants";
+import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -196,12 +203,37 @@ export async function runRendererBlock(
 
     if (location === "panel") {
       showTemporarySidebarPanel({
-        extensionId: null,
+        // Pass extension id so previous run is cancelled
+        extensionId,
         nonce,
         heading: title,
         payload,
       });
+    } else if (location === "modal") {
+      const controller = new AbortController();
+      const url = await createFrameSource(nonce, "modal");
+
+      showModal(url, controller);
+
+      try {
+        await waitForTemporaryPanel(nonce, {
+          extensionId,
+          nonce,
+          heading: title,
+          payload,
+        });
+      } catch (error) {
+        // Match behavior of Display Temporary Info
+        if (error instanceof CancelError) {
+          // NOP
+        } else {
+          throw error;
+        }
+      } finally {
+        controller.abort();
+      }
     } else {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
       throw new Error(`Support for previewing in ${location} not implemented`);
     }
   }
