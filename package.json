@@ -23,7 +23,7 @@
   },
   "engine-strict": true,
   "engines": {
-    "node": "18.x",
+    "node": ">=18.13 <19",
     "npm": "8.x"
   },
   "author": "Todd Schiller",
