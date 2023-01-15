@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ParseDate block Results snapshot - EST input 1`] = `
+{
+  "local": {
+    "date": "12/9/2021",
+    "humanReadable": "12/9/2021, 10:00:00 PM",
+    "iso8601": "2021-12-09T22:00:00.000-05:00",
+    "time": "10:00:00 PM",
+  },
+  "utc": {
+    "date": "12/10/2021",
+    "epochMillis": 1639105200000,
+    "humanReadable": "Fri, 10 Dec 2021 03:00:00 GMT",
+    "iso8601": "2021-12-10T03:00:00.000Z",
+    "time": "3:00:00 AM",
+  },
+}
+`;
+
+exports[`ParseDate block Results snapshot - GMT input 1`] = `
+{
+  "local": {
+    "date": "12/8/2021",
+    "humanReadable": "12/8/2021, 10:00:00 PM",
+    "iso8601": "2021-12-08T22:00:00.000-05:00",
+    "time": "10:00:00 PM",
+  },
+  "utc": {
+    "date": "12/9/2021",
+    "epochMillis": 1639018800000,
+    "humanReadable": "Thu, 09 Dec 2021 03:00:00 GMT",
+    "iso8601": "2021-12-09T03:00:00.000Z",
+    "time": "3:00:00 AM",
+  },
+}
+`;
