@@ -65,21 +65,7 @@ describe("ParseDate block", () => {
       runRendererPipeline: neverPromise,
     });
 
-    expect(result).toEqual({
-      utc: {
-        iso8601: "2021-12-10T03:00:00.000Z",
-        date: "12/10/2021",
-        time: "3:00:00 AM",
-        humanReadable: "Fri, 10 Dec 2021 03:00:00 GMT",
-        epochMillis: 1_639_105_200_000,
-      },
-      local: {
-        iso8601: "2021-12-09T22:00:00.000-05:00",
-        date: "12/9/2021",
-        time: "10:00:00 PM",
-        humanReadable: "12/9/2021, 10:00:00 PM",
-      },
-    });
+    expect(result).toMatchSnapshot();
 
     const validation = await validateOutput(brick.outputSchema, result);
     expect(validation.valid).toBeTruthy();
@@ -128,21 +114,7 @@ describe("ParseDate block", () => {
       runRendererPipeline: neverPromise,
     });
 
-    expect(result).toEqual({
-      utc: {
-        iso8601: "2021-12-09T03:00:00.000Z",
-        date: "12/9/2021",
-        time: "3:00:00 AM",
-        humanReadable: "Thu, 09 Dec 2021 03:00:00 GMT",
-        epochMillis: 1_639_018_800_000,
-      },
-      local: {
-        iso8601: "2021-12-08T22:00:00.000-05:00",
-        date: "12/8/2021",
-        time: "10:00:00 PM",
-        humanReadable: "12/8/2021, 10:00:00 PM",
-      },
-    });
+    expect(result).toMatchSnapshot();
 
     const validation = await validateOutput(brick.outputSchema, result);
     expect(validation.valid).toBeTruthy();
