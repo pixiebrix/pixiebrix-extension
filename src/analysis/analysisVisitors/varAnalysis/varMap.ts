@@ -22,20 +22,26 @@ export enum VarExistence {
   DEFINITELY = "DEFINITELY",
 }
 
+// This symbols are used to define the own properties of the existence tree node
 export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
 export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
-export type ExistenceMap = {
+export type ExistenceNode = {
   [SELF_EXISTENCE]?: VarExistence;
   [ALLOW_ANY_CHILD]?: boolean;
 
-  [name: string]: ExistenceMap;
+  [name: string]: ExistenceNode;
 };
 
+/**
+ * Creates an new node for the existence map
+ * @param selfExistence Existence of the current node
+ * @param allowAnyChild Whether the current node allows any child (i.e. doesn't have  a strict schema)
+ */
 export function createNode(
   selfExistence: VarExistence,
   allowAnyChild = false
-): ExistenceMap {
-  const node: ExistenceMap = {
+): ExistenceNode {
+  const node: ExistenceNode = {
     [SELF_EXISTENCE]: selfExistence,
     [ALLOW_ANY_CHILD]: allowAnyChild,
   };
@@ -44,8 +50,8 @@ export function createNode(
 }
 
 class VarMap {
-  private map: Record<string, ExistenceMap> = {};
-  public getMap(): Record<string, ExistenceMap> {
+  private map: Record<string, ExistenceNode> = {};
+  public getMap(): Record<string, ExistenceNode> {
     return cloneDeep(this.map);
   }
 
@@ -122,7 +128,7 @@ class VarMap {
       (x) => x[pathParts[0]] != null
     )) {
       if (
-        (get(sourceMap, pathParts) as ExistenceMap)?.[SELF_EXISTENCE] != null
+        (get(sourceMap, pathParts) as ExistenceNode)?.[SELF_EXISTENCE] != null
       ) {
         return true;
       }

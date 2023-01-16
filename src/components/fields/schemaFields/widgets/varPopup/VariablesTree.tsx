@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
-import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import { type ExistenceNode } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
@@ -138,7 +138,7 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
 };
 
 type VariablesTreeProps = {
-  vars: ExistenceMap;
+  vars: ExistenceNode;
   onVarSelect: (selectedPath: string[]) => void;
 };
 
