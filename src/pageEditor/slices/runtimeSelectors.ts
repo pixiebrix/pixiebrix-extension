@@ -21,6 +21,7 @@ import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
 import { getLatestCall } from "@/telemetry/traceHelpers";
+import { selectActiveNodeId } from "./editorSelectors";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 
@@ -43,6 +44,12 @@ const activeElementTraceForBlockSelector = createSelector(
 export const selectActiveElementTraceForBlock =
   (instanceId: UUID) => (state: RootState) =>
     activeElementTraceForBlockSelector(state, instanceId);
+
+export const selectActiveNodeTrace = createSelector(
+  (state: RootState) => state,
+  selectActiveNodeId,
+  activeElementTraceForBlockSelector
+);
 
 /**
  * Trace records corresponding to errors in the last run. May return multiple for because of sub-pipelines
