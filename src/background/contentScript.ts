@@ -20,7 +20,6 @@ import { injectContentScript } from "webext-content-scripts";
 import { isRemoteProcedureCallRequest } from "@/pageScript/messenger/pigeon";
 import {
   isContentScriptDynamicallyRegistered,
-  isContentScriptRegistered,
   isContentScriptStaticallyRegistered,
 } from "webext-dynamic-content-scripts/utils";
 import { expectContext } from "@/utils/expectContext";
