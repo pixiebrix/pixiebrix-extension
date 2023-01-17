@@ -293,6 +293,7 @@ module.exports = (env, options) =>
     resolve: {
       alias: {
         // Enforce a single version
+        // TODO: Undo after https://github.com/fregante/webext-dynamic-content-scripts/issues/54
         "webext-content-scripts": require.resolve("webext-content-scripts"),
 
         ...mockHeavyDependencies(),
