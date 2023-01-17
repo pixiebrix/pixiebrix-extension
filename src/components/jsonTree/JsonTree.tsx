@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSONTree } from "react-json-tree";
+import { type CommonExternalProps, JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, {
   type ReactNode,
@@ -56,7 +56,13 @@ export type TreeExpandedState = {
   [key: string | number]: boolean | TreeExpandedState;
 };
 
-export type JsonTreeProps = Partial<JSONTree["props"]> & {
+interface JsonTreeOrigProps extends Partial<CommonExternalProps> {
+  data: unknown;
+  theme?: Theme;
+  invertTheme?: boolean;
+}
+
+export type JsonTreeProps = JsonTreeOrigProps & {
   /**
    * True if user can copy the path properties (default=false)
    */
@@ -270,7 +276,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           hideRoot
           theme={jsonTreeTheme}
           invertTheme
-          shouldExpandNode={getExpanded}
+          shouldExpandNodeInitially={getExpanded}
           {...restProps}
         />
       )}

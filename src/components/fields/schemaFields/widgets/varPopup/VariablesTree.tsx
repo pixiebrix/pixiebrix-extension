@@ -16,10 +16,12 @@
  */
 
 import React from "react";
-import { JSONTree } from "react-json-tree";
-import { type ExistenceMap } from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
+import { type ExistenceNode } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
+import { isEmpty } from "lodash";
+import { type Theme } from "react-base16-styling";
 
 const theme = {
   extend: jsonTreeTheme,
@@ -37,7 +39,32 @@ const theme = {
     justifyContent: "center",
     alignItems: "center",
   },
-};
+  // This aligns the arrow, label, and items string (N keys)
+  nestedNode: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  // This makes the nested items to be rendered below the label
+  nestedNodeChildren: {
+    width: "100%",
+  },
+  value: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: "1.125em",
+  },
+  label: {
+    wordBreak: "initial",
+    textIndent: "-0.5em",
+  },
+  valueText: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    textIndent: 0,
+  },
+} as Theme;
 
 function sortObjectKeys(a: string, b: string, obj: UnknownObject): number {
   // eslint-disable-next-line security/detect-object-injection -- a and b are keys of obj received from Object.getOwnPropertyNames
@@ -72,8 +99,23 @@ function postprocessValue(value: unknown): unknown {
   return value;
 }
 
+// JSONTree defaultItemString
+const defaultItemString: GetItemString = (type, data, itemType, itemString) => (
+  <span>
+    {itemType} {itemString}
+  </span>
+);
+
+const getItemString: GetItemString = (type, data, itemType, itemString) => {
+  if (type === "Object" && isEmpty(data)) {
+    return <span>not set</span>;
+  }
+
+  return defaultItemString(type, data, itemType, itemString, null);
+};
+
 type NodeLabelProps = {
-  path: Array<string | number>;
+  path: KeyPath;
   onSelect: (path: string[]) => void;
 };
 
@@ -96,7 +138,7 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
 };
 
 type VariablesTreeProps = {
-  vars: ExistenceMap;
+  vars: ExistenceNode;
   onVarSelect: (selectedPath: string[]) => void;
 };
 
@@ -108,12 +150,13 @@ const VariablesTree: React.FunctionComponent<VariablesTreeProps> = ({
     data={vars}
     theme={theme}
     postprocessValue={postprocessValue}
-    shouldExpandNode={() => true}
+    shouldExpandNodeInitially={() => true}
     invertTheme
     hideRoot
     labelRenderer={(relativePath) => (
       <NodeLabel path={relativePath} onSelect={onVarSelect} />
     )}
+    getItemString={getItemString}
   />
 );
 
