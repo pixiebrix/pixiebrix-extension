@@ -73,7 +73,7 @@ import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 
 let clock: sinonTimers.InstalledClock;
-async function flushAsyncEffects() {
+async function tickAsyncEffects() {
   return act(async () => {
     await clock.tickAsync(1000);
   });
@@ -119,8 +119,6 @@ jest.mock("@/hooks/useRefresh");
 jest.mock("@/hooks/useTheme", () => ({
   useGetTheme: jest.fn(),
 }));
-
-jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
 const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
@@ -251,7 +249,7 @@ async function addABlock(addButton: Element, blockName: string) {
   );
 
   // Run the debounced search
-  await flushAsyncEffects();
+  await tickAsyncEffects();
 
   // Sometimes unexpected extra results come back in the search,
   // but the exact-match result to the search string should
@@ -275,7 +273,7 @@ describe("renders", () => {
       },
     });
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -289,7 +287,7 @@ describe("renders", () => {
       },
     });
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -680,13 +678,13 @@ describe("validation", () => {
       },
     });
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     expectEditorError(
       rendered.container,
@@ -724,13 +722,13 @@ describe("validation", () => {
       }
     );
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     // Make invalid string template
     // This is field level error
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     // Adding a renderer in the first position in the pipeline
     // This is a node level error
@@ -741,7 +739,7 @@ describe("validation", () => {
     await addABlock(addButton, "markdown");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
@@ -768,7 +766,7 @@ describe("validation", () => {
     store.dispatch(editorActions.selectElement(extension1.uuid));
 
     // Run the timers of the Formik-Redux state synchronization and analysis
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     // Should show 2 error in the Node Layout
     expect(
@@ -816,7 +814,7 @@ describe("validation", () => {
       }
     );
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
@@ -825,7 +823,7 @@ describe("validation", () => {
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
@@ -860,7 +858,7 @@ describe("validation", () => {
 
     await immediateUserEvent.click(moveUpButton);
 
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
@@ -912,7 +910,7 @@ describe("validation", () => {
         }
       );
 
-      await flushAsyncEffects();
+      await tickAsyncEffects();
 
       const blockType = await getType(disallowedBlock);
       expectEditorError(
@@ -969,7 +967,7 @@ describe("block validation in Add Block Modal UI", () => {
       );
 
       // Run the debounced search
-      await flushAsyncEffects();
+      await tickAsyncEffects();
 
       // Check for the alert on hover
       const firstResult = screen.queryAllByRole("button", { name: /add/i })[0]
@@ -1010,7 +1008,7 @@ describe("block validation in Add Block Modal UI", () => {
     );
 
     // Run the debounced search
-    await flushAsyncEffects();
+    await tickAsyncEffects();
 
     const addButtons = screen.queryAllByRole("button", { name: /add/i });
 

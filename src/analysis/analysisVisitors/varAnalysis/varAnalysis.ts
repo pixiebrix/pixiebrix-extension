@@ -37,6 +37,8 @@ import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
 
+const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
+
 type PreviousVisitedBlock = {
   vars: VarMap;
   output: VarMap | null;
@@ -220,9 +222,23 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     varName: string,
     expression: Expression<string, TemplateEngine>
   ) {
+    if (
+      varName === "@" &&
+      this.annotations.some(
+        (x) => x.message === INVALID_VARIABLE_GENERIC_MESSAGE
+      )
+    ) {
+      return;
+    }
+
+    const message =
+      varName === "@"
+        ? INVALID_VARIABLE_GENERIC_MESSAGE
+        : `Variable "${varName}" might not be defined`;
+
     this.annotations.push({
       position,
-      message: `Variable "${varName}" might not be defined`,
+      message,
       analysisId: this.id,
       type: AnnotationType.Warning,
       detail: {

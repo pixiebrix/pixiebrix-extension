@@ -12,7 +12,7 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
         style="padding: 0px; margin: 0px; list-style: none;"
       >
         <li
-          style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
+          style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px; display: flex; align-items: center; flex-wrap: wrap;"
         >
           <div
             style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 10px; background-color: rgb(240, 239, 242); border-radius: 2px;"
@@ -24,7 +24,7 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
             </div>
           </div>
           <label
-            style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: pointer;"
+            style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px; padding: 0px; cursor: pointer;"
           >
             <button
               class="btn"
@@ -46,13 +46,13 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
             </span>
           </span>
           <ul
-            style="padding: 0px; margin: 0px; list-style: none; display: block;"
+            style="padding: 0px; margin: 0px; list-style: none; display: block; width: 100%;"
           >
             <li
-              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;"
+              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.125em; text-indent: -0.5em; word-break: break-all; display: flex; align-items: center;"
             >
               <label
-                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
+                style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px 0.5em 0px 0px;"
               >
                 <button
                   class="btn"
@@ -62,16 +62,16 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                 </button>
               </label>
               <span
-                style="color: rgb(64, 175, 108);"
+                style="color: rgb(64, 175, 108); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-indent: 0;"
               >
                 "not set"
               </span>
             </li>
             <li
-              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;"
+              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.125em; text-indent: -0.5em; word-break: break-all; display: flex; align-items: center;"
             >
               <label
-                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
+                style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px 0.5em 0px 0px;"
               >
                 <button
                   class="btn"
@@ -81,16 +81,16 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                 </button>
               </label>
               <span
-                style="color: rgb(64, 175, 108);"
+                style="color: rgb(64, 175, 108); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-indent: 0;"
               >
                 "not set"
               </span>
             </li>
             <li
-              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;"
+              style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.125em; text-indent: -0.5em; word-break: break-all; display: flex; align-items: center;"
             >
               <label
-                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px 0.5em 0px 0px;"
+                style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px 0.5em 0px 0px;"
               >
                 <button
                   class="btn"
@@ -100,16 +100,16 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                 </button>
               </label>
               <span
-                style="color: rgb(64, 175, 108);"
+                style="color: rgb(64, 175, 108); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-indent: 0;"
               >
                 "not set"
               </span>
             </li>
             <li
-              style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 1.125em;"
+              style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 1.125em; display: flex; align-items: center; flex-wrap: wrap;"
             >
               <label
-                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: default;"
+                style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px; padding: 0px; cursor: default;"
               >
                 <button
                   class="btn"
@@ -122,20 +122,15 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                 style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
               >
                 <span>
-                  <span
-                    style="margin-left: 0.3em; margin-right: 0.3em;"
-                  >
-                    {}
-                  </span>
-                   0 keys
+                  not set
                 </span>
               </span>
               <ul
-                style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                style="padding: 0px; margin: 0px; list-style: none; display: block; width: 100%;"
               />
             </li>
             <li
-              style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 0px;"
+              style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 0px; display: flex; align-items: center; flex-wrap: wrap;"
             >
               <div
                 style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 10px; background-color: rgb(240, 239, 242); border-radius: 2px;"
@@ -147,7 +142,7 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                 </div>
               </div>
               <label
-                style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: pointer;"
+                style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <button
                   class="btn"
@@ -169,13 +164,13 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                 </span>
               </span>
               <ul
-                style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                style="padding: 0px; margin: 0px; list-style: none; display: block; width: 100%;"
               >
                 <li
-                  style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 1.125em;"
+                  style="position: relative; padding-top: 0.25em; margin-left: 0.875em; padding-left: 1.125em; display: flex; align-items: center; flex-wrap: wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(46, 36, 65); margin: 0px; padding: 0px; cursor: default;"
+                    style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px; padding: 0px; cursor: default;"
                   >
                     <button
                       class="btn"
@@ -188,16 +183,11 @@ exports[`Renders the tree expanded with correct sorting 1`] = `
                     style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
                   >
                     <span>
-                      <span
-                        style="margin-left: 0.3em; margin-right: 0.3em;"
-                      >
-                        {}
-                      </span>
-                       0 keys
+                      not set
                     </span>
                   </span>
                   <ul
-                    style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                    style="padding: 0px; margin: 0px; list-style: none; display: block; width: 100%;"
                   />
                 </li>
               </ul>
