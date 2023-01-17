@@ -23,6 +23,7 @@ import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
+import reportError from "@/telemetry/reportError";
 
 const { setExtensionTrace } = runtimeSlice.actions;
 
@@ -71,7 +72,10 @@ function useExtensionTrace() {
         );
         dispatch(setExtensionTrace({ extensionId, records: lastRun }));
       }
+    } catch (error) {
+      reportError(error);
     } finally {
+      // Make sure we reset the flag
       checkingNewEntriesRef.current = false;
     }
   };
