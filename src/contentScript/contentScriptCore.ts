@@ -26,7 +26,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
+import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";

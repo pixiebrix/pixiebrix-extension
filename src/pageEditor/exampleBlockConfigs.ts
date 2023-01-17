@@ -113,6 +113,13 @@ export function getExampleBlockConfig(
     };
   }
 
+  if (blockId === "@pixiebrix/forms/set") {
+    return {
+      isRootAware: true,
+      inputs: [{ selector: null, value: "" }],
+    };
+  }
+
   if (blockId === DisplayTemporaryInfo.BLOCK_ID) {
     return {
       title: "Example Info",

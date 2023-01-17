@@ -17,14 +17,19 @@
 
 import pDefer, { type DeferredPromise } from "p-defer";
 import { injectContentScript } from "webext-content-scripts";
-import { isContentScriptRegistered } from "webext-dynamic-content-scripts/utils";
-
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
+import { isRemoteProcedureCallRequest } from "@/pageScript/messenger/pigeon";
+import {
+  isContentScriptDynamicallyRegistered,
+  isContentScriptRegistered,
+  isContentScriptStaticallyRegistered,
+} from "webext-dynamic-content-scripts/utils";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
-import { getTargetState } from "@/contentScript/ready";
+import {
+  getTargetState,
+  ENSURE_CONTENT_SCRIPT_READY,
+} from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
 import { possiblyActiveTabs } from "webext-dynamic-content-scripts/distribution/active-tab";
@@ -158,14 +163,14 @@ async function ensureContentScriptWithoutTimeout(
   // `webext-dynamic-content-scripts` might have already injected the content script
   const readyNotificationPromise = onReadyNotification(target, signal);
 
-  const result = await getTargetState(target); // It will throw if we don't have permissions
+  const state = await getTargetState(target); // It will throw if we don't have permissions
 
-  if (result.ready) {
+  if (state.ready) {
     log("already exists and is ready", target);
     return;
   }
 
-  if (result.installed) {
+  if (state.installed) {
     console.debug(
       "ensureContentScript: already exists but isn't ready",
       target
@@ -175,14 +180,13 @@ async function ensureContentScriptWithoutTimeout(
     return;
   }
 
-  const registration = await isContentScriptRegistered(result.url);
-  if (registration === "static") {
+  if (isContentScriptStaticallyRegistered(state.url)) {
     // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
     console.debug(
       "ensureContentScript: will be injected automatically by the manifest",
       target
     );
-  } else if (registration === "dynamic") {
+  } else if (await isContentScriptDynamicallyRegistered(state.url)) {
     console.debug(
       "ensureContentScript: will be injected automatically by webext-dynamic-content-script",
       target

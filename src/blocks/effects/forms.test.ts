@@ -37,7 +37,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidSequence } from "@/testUtils/factories";
 import { type BlockOptions } from "@/core";
 import { FormFill, SetInputValue } from "@/blocks/effects/forms";
-import { NoElementsFoundError } from "@/errors/businessErrors";
+import { BusinessError, NoElementsFoundError } from "@/errors/businessErrors";
 
 const setInputValueBrick = new SetInputValue();
 const formFillBrick = new FormFill();
@@ -104,6 +104,50 @@ describe("SetInputValue", () => {
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
+  });
+
+  test("accepts field root and blank selector", async () => {
+    await setInputValueBrick.run(
+      unsafeAssumeValidArg({
+        inputs: [{ value: "Bob Smith" }],
+        isRootAware: true,
+      }),
+      {
+        root: document.querySelector("input"),
+        logger,
+      } as unknown as BlockOptions
+    );
+
+    expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
+  });
+
+  test("requires selector for document root", async () => {
+    const promise = setInputValueBrick.run(
+      unsafeAssumeValidArg({
+        inputs: [{ value: "Bob Smith" }],
+        isRootAware: false,
+      }),
+      {
+        logger,
+      } as unknown as BlockOptions
+    );
+
+    await expect(promise).rejects.toThrow(BusinessError);
+  });
+
+  test("rejects non-field root", async () => {
+    const promise = setInputValueBrick.run(
+      unsafeAssumeValidArg({
+        inputs: [{ value: "Bob Smith" }],
+        isRootAware: true,
+      }),
+      {
+        logger,
+        root: document.querySelector("div"),
+      } as unknown as BlockOptions
+    );
+
+    await expect(promise).rejects.toThrow(BusinessError);
   });
 });
 

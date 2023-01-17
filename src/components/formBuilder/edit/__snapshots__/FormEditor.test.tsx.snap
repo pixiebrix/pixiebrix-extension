@@ -367,7 +367,9 @@ exports[`FormEditor renders simple schema 1`] = `
           <small
             class="text-muted form-text"
           >
-            Enter a name to refer to this value in the output later
+            <span>
+              Enter a name to refer to this value in the output later
+            </span>
           </small>
         </div>
       </div>
@@ -422,7 +424,9 @@ exports[`FormEditor renders simple schema 1`] = `
           <small
             class="text-muted form-text"
           >
-            The user-visible label for this field
+            <span>
+              The user-visible label for this field
+            </span>
           </small>
         </div>
       </div>
@@ -476,7 +480,9 @@ exports[`FormEditor renders simple schema 1`] = `
           <small
             class="text-muted form-text"
           >
-            The user-visible description for the field
+            <span>
+              The user-visible description for the field
+            </span>
           </small>
         </div>
       </div>
@@ -937,7 +943,9 @@ exports[`FormEditor renders unknown field format 1`] = `
           <small
             class="text-muted form-text"
           >
-            Enter a name to refer to this value in the output later
+            <span>
+              Enter a name to refer to this value in the output later
+            </span>
           </small>
         </div>
       </div>
@@ -992,7 +1000,9 @@ exports[`FormEditor renders unknown field format 1`] = `
           <small
             class="text-muted form-text"
           >
-            The user-visible label for this field
+            <span>
+              The user-visible label for this field
+            </span>
           </small>
         </div>
       </div>
@@ -1046,7 +1056,9 @@ exports[`FormEditor renders unknown field format 1`] = `
           <small
             class="text-muted form-text"
           >
-            The user-visible description for the field
+            <span>
+              The user-visible description for the field
+            </span>
           </small>
         </div>
       </div>

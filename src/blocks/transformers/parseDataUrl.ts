@@ -51,7 +51,7 @@ export class ParseDataUrl extends Transformer {
       },
       decodeText: {
         type: "boolean",
-        default: "false",
+        default: false,
         description: "Decode the body into text",
       },
     },

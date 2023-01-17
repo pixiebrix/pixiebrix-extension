@@ -24,6 +24,10 @@ export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;
 }
 
+export type ServicesRootState = {
+  services: ServicesState;
+};
+
 const initialServicesState: ServicesState = {
   configured: {},
 };

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
@@ -64,10 +64,6 @@ const RecipeOptionsValuesContent: React.FC = () => {
     selectDirtyOptionValuesForRecipeId(recipeId)
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
-
-  useEffect(() => {
-    console.log({ schema: recipe?.options?.schema });
-  }, [recipe?.options?.schema]);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {

@@ -30,7 +30,7 @@ exports[`AddBlockModal it renders 1`] = `
             class="searchContainer"
           >
             <div
-              class="root searchInput rootFocused"
+              class="root searchInput"
             >
               <input
                 class="input"
@@ -200,7 +200,7 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
             class="searchContainer"
           >
             <div
-              class="root searchInput rootFocused"
+              class="root searchInput"
             >
               <span
                 class="badge"

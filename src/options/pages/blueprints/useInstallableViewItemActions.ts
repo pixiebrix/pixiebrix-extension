@@ -46,6 +46,7 @@ import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { removeDynamicElements } from "@/store/dynamicElementStorage";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -193,8 +194,11 @@ function useInstallableViewItemActions(
 
   const uninstall = useUserAction(
     () => {
+      void removeDynamicElements(
+        extensionsFromInstallable.map((extension) => extension.id)
+      );
+
       for (const extension of extensionsFromInstallable) {
-        // Remove from storage first so it doesn't get re-added in reactivate step below
         dispatch(removeExtension({ extensionId: extension.id }));
         // XXX: also remove sidebar panels that are already open?
         void uninstallContextMenu({ extensionId: extension.id });

@@ -24,11 +24,11 @@ import { boolean } from "@/utils";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import servicesSlice, {
   persistServicesConfig,
-  type ServicesState,
+  type ServicesRootState,
 } from "@/store/servicesSlice";
 import {
+  type BlueprintModalsRootState,
   blueprintModalsSlice,
-  type BlueprintModalsState,
 } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
@@ -36,11 +36,11 @@ import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import workshopSlice, {
   persistWorkshopConfig,
-  type WorkshopState,
+  type WorkshopRootState,
 } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsRootState } from "@/store/settingsTypes";
 import blueprintsSlice, {
   persistBlueprintsConfig,
 } from "@/options/pages/blueprints/blueprintsSlice";
@@ -51,6 +51,16 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import {
+  persistSessionChangesConfig,
+  sessionChangesSlice,
+  sessionChangesStateSyncActions,
+} from "@/store/sessionChanges/sessionChangesSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import { createStateSyncMiddleware } from "redux-state-sync";
+import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -59,12 +69,13 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 export type RootState = AuthRootState &
   LogRootState &
   BlueprintsRootState &
-  ExtensionsRootState & {
-    services: ServicesState;
-    settings: SettingsState;
-    workshop: WorkshopState;
-    blueprintModals: BlueprintModalsState;
-  };
+  ExtensionsRootState &
+  ServicesRootState &
+  SettingsRootState &
+  WorkshopRootState &
+  BlueprintModalsRootState &
+  SessionRootState &
+  SessionChangesRootState;
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -97,6 +108,11 @@ const store = configureStore({
     blueprintModals: blueprintModalsSlice.reducer,
     logs: logSlice.reducer,
     recipes: recipesSlice.reducer,
+    session: sessionSlice.reducer,
+    sessionChanges: persistReducer(
+      persistSessionChangesConfig,
+      sessionChangesSlice.reducer
+    ),
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -110,7 +126,14 @@ const store = configureStore({
       .concat(appApi.middleware)
       .concat(recipesMiddleware)
       .concat(routerMiddleware(hashHistory))
-      .concat(conditionalMiddleware);
+      .concat(conditionalMiddleware)
+      .concat(sessionChangesMiddleware)
+      .concat(
+        createStateSyncMiddleware({
+          // In the future: concat whitelisted sync action lists here
+          whitelist: sessionChangesStateSyncActions,
+        })
+      );
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,

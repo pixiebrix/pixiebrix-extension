@@ -27,7 +27,7 @@ import CreatableAutosuggest, {
   type SuggestionTypeBase,
 } from "@/pageEditor/fields/creatableAutosuggest/CreatableAutosuggest";
 import SelectorListItem from "@/pageEditor/fields/selectorListItem/SelectorListItem";
-import { type Framework } from "@/messaging/constants";
+import { type Framework } from "@/pageScript/messenger/constants";
 import { useField } from "formik";
 import {
   disableOverlay,

@@ -103,7 +103,7 @@ const PageStateTab: React.VFC = () => {
         <JsonTree
           data={state}
           copyable={false}
-          shouldExpandNode={alwaysExpandNode}
+          shouldExpandNodeInitially={alwaysExpandNode}
         />
       )}
     </DataTab>

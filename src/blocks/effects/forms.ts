@@ -34,6 +34,7 @@ import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
+import { isEmpty } from "lodash";
 
 type SetValueData = RequireExactlyOne<
   {
@@ -48,6 +49,68 @@ type SetValueData = RequireExactlyOne<
 >;
 
 const optionFields = ["checkbox", "radio"];
+
+type FieldElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+
+function isFieldElement(element: HTMLElement): boolean {
+  return (
+    element.isContentEditable ||
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement
+  );
+}
+
+function setFieldValue(
+  field: FieldElement,
+  value: unknown,
+  { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean }
+): void {
+  if (field.isContentEditable) {
+    // Field needs to be focused first
+    field.focus();
+
+    // `insertText` acts as a "paste", so if no text is selected it's just appended
+    document.execCommand("selectAll");
+
+    // It automatically triggers an `input` event
+    document.execCommand("insertText", false, String(value));
+
+    return;
+  }
+
+  // `instanceof` is there as a type guard only
+  if (
+    !optionFields.includes(field.type) ||
+    field instanceof HTMLTextAreaElement ||
+    field instanceof HTMLSelectElement
+  ) {
+    // Plain text field
+    field.value = String(value);
+  } else if (isOption) {
+    // Value-based radio/checkbox
+    field.checked = field.value === value;
+  } else {
+    // Boolean checkbox
+    field.checked = boolean(value);
+  }
+
+  if (dispatchEvent) {
+    if (
+      !(optionFields.includes(field.type) || field instanceof HTMLSelectElement)
+    ) {
+      // Browsers normally fire these text events while typing
+      field.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
+      field.dispatchEvent(new KeyboardEvent("keypress", { bubbles: true }));
+      field.dispatchEvent(new CompositionEvent("textInput", { bubbles: true }));
+      field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+      field.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
+    }
+
+    // Browsers normally fire this on `blur` if it's a text field, otherwise immediately
+    field.dispatchEvent(new KeyboardEvent("change", { bubbles: true }));
+  }
+}
 
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
@@ -65,11 +128,7 @@ function setValue({
     .find<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector)
     .toArray()
     .filter((element) => {
-      const isField =
-        element.isContentEditable ||
-        element instanceof HTMLInputElement ||
-        element instanceof HTMLTextAreaElement ||
-        element instanceof HTMLSelectElement;
+      const isField = isFieldElement(element);
       if (!isField) {
         logger.warn(
           "The selected element is not an input field nor an editable element",
@@ -98,55 +157,7 @@ function setValue({
     );
 
   for (const field of fields) {
-    if (field.isContentEditable) {
-      // Field needs to be focused first
-      field.focus();
-
-      // `insertText` acts as a "paste", so if no text is selected it's just appended
-      document.execCommand("selectAll");
-
-      // It automatically triggers an `input` event
-      document.execCommand("insertText", false, String(value));
-
-      continue;
-    }
-
-    // `instanceof` is there as a type guard only
-    if (
-      !optionFields.includes(field.type) ||
-      field instanceof HTMLTextAreaElement ||
-      field instanceof HTMLSelectElement
-    ) {
-      // Plain text field
-      field.value = String(value);
-    } else if (isOption) {
-      // Value-based radio/checkbox
-      field.checked = field.value === value;
-    } else {
-      // Boolean checkbox
-      field.checked = boolean(value);
-    }
-
-    if (dispatchEvent) {
-      if (
-        !(
-          optionFields.includes(field.type) ||
-          field instanceof HTMLSelectElement
-        )
-      ) {
-        // Browsers normally fire these text events while typing
-        field.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
-        field.dispatchEvent(new KeyboardEvent("keypress", { bubbles: true }));
-        field.dispatchEvent(
-          new CompositionEvent("textInput", { bubbles: true })
-        );
-        field.dispatchEvent(new InputEvent("input", { bubbles: true }));
-        field.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
-      }
-
-      // Browsers normally fire this on `blur` if it's a text field, otherwise immediately
-      field.dispatchEvent(new KeyboardEvent("change", { bubbles: true }));
-    }
+    setFieldValue(field, value, { dispatchEvent, isOption });
   }
 }
 
@@ -174,6 +185,8 @@ export class SetInputValue extends Effect {
             selector: {
               type: "string",
               format: "selector",
+              description:
+                "jQuery selector for the input(s), or exclude to use target element",
             },
             value: {
               oneOf: [
@@ -201,9 +214,33 @@ export class SetInputValue extends Effect {
     }>,
     { logger, root }: BlockOptions
   ): Promise<void> {
-    const form = isRootAware ? root : document;
+    const target = isRootAware ? root : document;
     for (const { selector, value } of inputs) {
-      setValue({ selector, value, logger, dispatchEvent: true, form });
+      if (isEmpty(selector)) {
+        if (target == null || target === document) {
+          throw new BusinessError("Selector required when called on document");
+        }
+
+        if (!isFieldElement(target as HTMLElement)) {
+          throw new BusinessError(
+            "Field is not a input field or editable element"
+          );
+        }
+
+        setFieldValue(target as FieldElement, value, {
+          dispatchEvent: true,
+          isOption: false,
+        });
+      } else {
+        // `setValue` works on any element that contains fields, not just forms
+        setValue({
+          selector,
+          value,
+          logger,
+          dispatchEvent: true,
+          form: target,
+        });
+      }
     }
   }
 }
@@ -235,7 +272,7 @@ export class FormFill extends Effect {
       submit: {
         description: "true to submit the form, or a jQuery selector to click",
         default: false,
-        oneOf: [{ type: "string" }, { type: "boolean" }],
+        oneOf: [{ type: "string", format: "selector" }, { type: "boolean" }],
       },
     },
     required: [],

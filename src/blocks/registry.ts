@@ -38,18 +38,29 @@ export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   constructor() {
     super(["block", "component", "effect", "reader"], "blocks", fromJS);
+
+    this.addListener({
+      onCacheChanged: () => {
+        this.typeCachePromise = null;
+      },
+    });
   }
 
   // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
   private typeCachePromise: Promise<TypedBlockMap> = null;
 
+  /**
+   * Infer the type of all blocks in the registry. Uses the brick cache if available.
+   * @private
+   */
   private async inferAllTypes(): Promise<TypedBlockMap> {
     const typeCache: TypedBlockMap = new Map();
-    const items = await this.all();
+
+    const items = this.cached().length > 0 ? this.cached() : await this.all();
 
     console.debug("Computing block types for %d block(s)", items.length);
 
-    await Promise.all(
+    await Promise.allSettled(
       items.map(async (item) => {
         // XXX: will we run into problems with circular dependency between getType and the registry exported from
         //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
@@ -66,9 +77,10 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
 
   /**
    * Return Map for block by RegistryId with computed/inferred metadata.
-   * @see all
+   * @see cached
    */
-  async allTyped(): Promise<TypedBlockMap> {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async -- async returns different promise ids
+  allTyped(): Promise<TypedBlockMap> {
     if (this.typeCachePromise == null) {
       const promise = this.inferAllTypes();
       this.typeCachePromise = promise;
@@ -76,16 +88,6 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     }
 
     return this.typeCachePromise;
-  }
-
-  override register(...items: IBlock[]): void {
-    super.register(...items);
-    this.typeCachePromise = null;
-  }
-
-  override clear() {
-    super.clear();
-    this.typeCachePromise = null;
   }
 }
 
