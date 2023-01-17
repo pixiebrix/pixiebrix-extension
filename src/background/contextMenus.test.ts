@@ -34,6 +34,8 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type IExtension } from "@/core";
 import chromeP from "webext-polyfill-kinda";
 
+jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+
 jest.mock("@/background/messenger/api", () => ({
   ensureContextMenu: jest.fn().mockResolvedValue(undefined),
 }));
@@ -47,6 +49,7 @@ jest.mock("webext-polyfill-kinda", () => ({
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => false,
   isExtensionContext: () => true,
+  isBackground: () => true,
   isBackgroundPage: () => true,
   isContentScript: () => false,
 }));

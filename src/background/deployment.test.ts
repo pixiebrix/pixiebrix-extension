@@ -37,6 +37,8 @@ browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
 const axiosMock = new MockAdapter(axios);
 
+jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+
 jest.mock("@/store/settingsStorage", () => ({
   getSettingsState: jest.fn(),
   saveSettingsState: jest.fn(),
