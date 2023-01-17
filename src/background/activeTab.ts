@@ -1,20 +1,17 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
 import { updatePageEditor } from "@/pageEditor/messenger/api";
-import { isScriptableUrl } from "@/utils/permissions";
 import {
   type ActiveTab,
   onActiveTab,
   possiblyActiveTabs,
-} from "webext-dynamic-content-scripts/active-tab";
+} from "webext-dynamic-content-scripts/distribution/active-tab";
 
 type TabId = number;
 
 function updateUI(tab: ActiveTab): void {
-  if (isScriptableUrl(tab.origin)) {
-    // Inform pageEditor that it now has the ActiveTab permission, if it's open
-    updatePageEditor({ page: `/pageEditor.html?tabId=${tab.id}` });
-  }
+  // Inform pageEditor that it now has the ActiveTab permission, if it's open
+  updatePageEditor({ page: `/pageEditor.html?tabId=${tab.id}` });
 }
 
 export default function initActiveTabTracking() {

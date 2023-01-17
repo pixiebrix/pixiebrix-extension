@@ -27,7 +27,7 @@ import type { Target } from "@/types";
 import { getTargetState } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
-import { possiblyActiveTabs } from "webext-dynamic-content-scripts/active-tab";
+import { possiblyActiveTabs } from "webext-dynamic-content-scripts/distribution/active-tab";
 
 import MessageSender = Runtime.MessageSender;
 
@@ -193,6 +193,10 @@ async function ensureContentScriptWithoutTimeout(
       target
     );
   } else {
+    console.warn(
+      "ensureContentScript: will be injected here, but will likely fail",
+      target
+    );
     await injectFromManifest(target);
   }
 
