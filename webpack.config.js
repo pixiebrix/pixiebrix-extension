@@ -292,6 +292,9 @@ module.exports = (env, options) =>
 
     resolve: {
       alias: {
+        // Enforce a single version
+        "webext-content-scripts": require.resolve("webext-content-scripts"),
+
         ...mockHeavyDependencies(),
 
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
