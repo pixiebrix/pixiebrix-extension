@@ -34,9 +34,6 @@ type Config = {
 
 /**
  * This hook provides a callback function to deactivate a recipe and remove it from the page editor
- *
- * The logic here needs to be kept roughly in sync with removeDynamicElementsForRecipe
- * @see removeDynamicElementsForRecipe
  */
 function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
@@ -75,9 +72,7 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
         blueprintId: recipeId,
       });
 
-      dispatch(actions.clearActiveRecipe());
-      dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
-      dispatch(actions.clearDeletedElementsForRecipe(recipeId));
+      dispatch(actions.removeRecipeData(recipeId));
     },
     [dispatch, elements, extensions, removeExtension, showConfirmation]
   );

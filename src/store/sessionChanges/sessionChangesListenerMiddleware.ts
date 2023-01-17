@@ -36,6 +36,7 @@ sessionChangesListenerMiddleware.startListening({
     actions.resetMetadataAndOptionsForRecipe,
     actions.addElementToRecipe,
     actions.removeElementFromRecipe,
+    actions.removeRecipeData,
 
     extensionsSlice.actions.installCloudExtension,
     extensionsSlice.actions.removeExtension,
