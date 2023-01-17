@@ -36,10 +36,9 @@ import { formStateToDynamicElement } from "./extensionPoints/adapter";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
-  const { tabId } = browser.devtools.inspectedWindow;
   const activeElement = useSelector(selectActiveElement);
 
-  useTabEventListener(tabId, navigationEvent, () => {
+  useTabEventListener(thisTab.tabId, navigationEvent, () => {
     dispatch(tabStateActions.connectToContentScript());
 
     if (activeElement != null) {
