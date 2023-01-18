@@ -68,8 +68,13 @@ async function initContentScript() {
   });
 }
 
-void logPromiseDuration("contentScript: ready", initContentScript()).catch(
-  (error) => {
-    throw new Error("Error initializing contentScript", { cause: error });
-  }
-);
+if (location.protocol === "https:") {
+  // eslint-disable-next-line promise/prefer-await-to-then -- Top-level await isn't available
+  void logPromiseDuration("contentScript: ready", initContentScript()).catch(
+    (error) => {
+      throw new Error("Error initializing contentScript", { cause: error });
+    }
+  );
+} else {
+  console.warn("Unsupported protocol", location.protocol);
+}

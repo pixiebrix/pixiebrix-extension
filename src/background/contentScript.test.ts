@@ -29,6 +29,8 @@ import { getAdditionalPermissions } from "webext-additional-permissions";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
+jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+
 jest.mock("@/contentScript/ready", () => {
   const actual = jest.requireActual("@/contentScript/ready");
   return {
@@ -45,6 +47,10 @@ jest.mock("webext-content-scripts", () => ({
 
 jest.mock("webext-additional-permissions", () => ({
   getAdditionalPermissions: jest.fn().mockResolvedValue({ origins: [] }),
+}));
+
+jest.mock("webext-detect-page", () => ({
+  isBackground: () => true,
 }));
 
 let messageListener: any;
