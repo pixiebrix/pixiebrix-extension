@@ -150,6 +150,7 @@ const FormRendererOptions: React.FC<{
       {storageType === "state" && (
         <SchemaField
           name={makeName("storage", "namespace")}
+          label="State Namespace"
           isRequired
           schema={
             customFormRendererSchema.properties.storage.oneOf[1].properties
