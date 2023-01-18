@@ -63,6 +63,7 @@ async function initContentScript() {
 }
 
 if (location.protocol === "https:") {
+  // eslint-disable-next-line promise/prefer-await-to-then -- Top-level await isn't available
   void initContentScript().catch((error) => {
     throw new Error("Error initializing contentScript", { cause: error });
   });
