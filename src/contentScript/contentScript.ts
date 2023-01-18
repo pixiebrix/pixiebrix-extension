@@ -20,7 +20,6 @@ import "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import {
   isInstalledInThisSession,
-  isReadyInThisDocument,
   setInstalledInThisSession,
   setReadyInThisDocument,
   unsetReadyInThisDocument,
@@ -30,22 +29,17 @@ import { onContextInvalidated } from "@/errors/contextInvalidated";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
+  const context = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
   if (isInstalledInThisSession()) {
     console.error(
-      "contentScript: was requested twice in the same context, aborting injection"
+      `contentScript: was requested twice in the same context, aborting injection ${context}`
     );
     return;
   }
 
-  if (isReadyInThisDocument()) {
-    console.warn(
-      "contentScript: injecting again because the previous context was invalidated"
-    );
-  } else {
-    console.debug(`contentScript: injecting ${uuid}`);
-  }
+  console.debug(`contentScript: importing ${uuid} ${context}`);
 
   setInstalledInThisSession();
 
@@ -58,7 +52,7 @@ async function initContentScript() {
   void logPromiseDuration("contentScript: imported", contentScript);
 
   const { init } = await contentScript;
-  await init(uuid);
+  await logPromiseDuration("contentScript: ready", init());
   setReadyInThisDocument(uuid);
 
   // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
@@ -70,11 +64,9 @@ async function initContentScript() {
 
 if (location.protocol === "https:") {
   // eslint-disable-next-line promise/prefer-await-to-then -- Top-level await isn't available
-  void logPromiseDuration("contentScript: ready", initContentScript()).catch(
-    (error) => {
-      throw new Error("Error initializing contentScript", { cause: error });
-    }
-  );
+  void initContentScript().catch((error) => {
+    throw new Error("Error initializing contentScript", { cause: error });
+  });
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }
