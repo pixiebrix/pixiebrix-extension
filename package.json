@@ -233,7 +233,6 @@
     "eslint": "^8.31.0",
     "eslint-config-pixiebrix": "^0.22.0",
     "fake-indexeddb": "^4.0.0",
-    "geckodriver": "^3.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
