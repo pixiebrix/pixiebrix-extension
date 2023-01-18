@@ -168,6 +168,12 @@ const FormRendererOptions: React.FC<{
       )}
 
       <SchemaField
+        name={makeName("submitCaption")}
+        label="Submit Caption"
+        schema={customFormRendererSchema.properties.submitCaption as Schema}
+      />
+
+      <SchemaField
         name={makeName("successMessage")}
         label="Success Message"
         schema={customFormRendererSchema.properties.successMessage as Schema}
