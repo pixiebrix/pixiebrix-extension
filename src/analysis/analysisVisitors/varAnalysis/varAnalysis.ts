@@ -318,8 +318,6 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 
-    console.log("context vars", contextVars.getMap());
-
     this.previousVisitedBlock = {
       vars: contextVars,
       output: null,

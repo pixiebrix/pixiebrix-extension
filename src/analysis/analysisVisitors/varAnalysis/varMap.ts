@@ -70,12 +70,28 @@ class VarMap {
     // Don't overwrite a DEFINITELY existence with a MAYBE existence
     if (
       currentExistence != null &&
-      (currentExistence === existence || existence === VarExistence.MAYBE)
+      (currentExistence === existence ||
+        currentExistence === VarExistence.DEFINITELY)
     ) {
       return;
     }
 
-    setWith(this.map, pathParts, existence, (x) => x ?? createNode(existence));
+    setWith(this.map, pathParts, existence, (currentNode) => {
+      if (currentNode == null) {
+        return createNode(existence);
+      }
+
+      if (
+        existence === VarExistence.DEFINITELY &&
+        // eslint-disable-next-line security/detect-object-injection -- accessing a known property
+        currentNode[SELF_EXISTENCE] !== VarExistence.DEFINITELY
+      ) {
+        // eslint-disable-next-line security/detect-object-injection -- accessing a known property
+        currentNode[SELF_EXISTENCE] = VarExistence.DEFINITELY;
+      }
+
+      return currentNode;
+    });
   }
 
   /**

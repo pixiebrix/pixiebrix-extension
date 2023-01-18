@@ -19,6 +19,7 @@ import {
   blockConfigFactory,
   formStateFactory,
   installedRecipeMetadataFactory,
+  recipeFactory,
 } from "@/testUtils/factories";
 import VarAnalysis from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
@@ -31,6 +32,8 @@ import {
 } from "@/runtime/expressionCreators";
 import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import recipeRegistry from "@/recipes/registry";
+import { SELF_EXISTENCE, VarExistence } from "./varMap";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -56,7 +59,24 @@ jest.mock("@/blocks/registry", () => ({
   },
 }));
 
+jest.mock("@/recipes/registry", () => ({
+  __esModule: true,
+  default: {
+    lookup: jest.fn(),
+  },
+}));
+
 describe("Collecting available vars", () => {
+  function mockBlueprintWithOptions(optionsSchema: any) {
+    (recipeRegistry.lookup as jest.Mock).mockResolvedValue(
+      recipeFactory({
+        options: {
+          schema: optionsSchema,
+        },
+      })
+    );
+  }
+
   let analysis: VarAnalysis;
   afterEach(() => {
     jest.clearAllMocks();
@@ -68,6 +88,14 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the context vars", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+        },
+      });
+
       const extension = formStateFactory(
         {
           // Let this extension to have a service reference
@@ -160,16 +188,74 @@ describe("Collecting available vars", () => {
   });
 
   describe("blueprint @options", () => {
-    test("gets values from schema", () => {
-      expect(false).toBeTrue();
+    beforeEach(() => {
+      analysis = new VarAnalysis([]);
     });
 
-    test("respects the required options", () => {
-      expect(false).toBeTrue();
+    test("sets DEFINITELY for required options", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "string",
+          },
+        },
+        required: ["foo"],
+      });
+
+      const extension = formStateFactory(
+        {
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const knownVars = analysis.getKnownVars();
+
+      const optionsVars = knownVars.get("extension.blockPipeline.0").getMap()[
+        "options:test/recipe"
+      ]["@options"];
+
+      expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+      expect(optionsVars.bar[SELF_EXISTENCE]).toBe(VarExistence.MAYBE);
     });
 
-    test("respects the actually set values", () => {
-      expect(false).toBeTrue();
+    test("sets DEFINITELY for the actually set values", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+        },
+      });
+
+      const extension = formStateFactory(
+        {
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+          optionsArgs: {
+            foo: "bar",
+          },
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const knownVars = analysis.getKnownVars();
+
+      const optionsVars = knownVars.get("extension.blockPipeline.0").getMap()[
+        "options:test/recipe"
+      ]["@options"];
+
+      expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
     });
   });
 

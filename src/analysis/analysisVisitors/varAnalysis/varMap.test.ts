@@ -15,7 +15,90 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import VarMap, { VarExistence } from "./varMap";
+import VarMap, {
+  ALLOW_ANY_CHILD,
+  SELF_EXISTENCE,
+  VarExistence,
+} from "./varMap";
+
+describe("setExistence", () => {
+  test("sets the existence", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("brick1", "@foo", VarExistence.DEFINITELY);
+    expect(varMap.isVariableDefined("@foo")).toBeTrue();
+  });
+
+  test("doesn't override DEFINITELY with MAYBE", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("brick1", "@foo", VarExistence.DEFINITELY);
+    varMap.setExistence("brick1", "@foo", VarExistence.MAYBE);
+
+    const map = varMap.getMap();
+    expect(map.brick1["@foo"][SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("overrides MAYBE with DEFINITELY", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("brick1", "@foo", VarExistence.MAYBE);
+    varMap.setExistence("brick1", "@foo", VarExistence.DEFINITELY);
+
+    const map = varMap.getMap();
+    expect(map.brick1["@foo"][SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+  });
+
+  test("sets a nested key", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("brick1", "@foo.bar", VarExistence.DEFINITELY);
+    expect(varMap.isVariableDefined("@foo.bar")).toBeTrue();
+  });
+
+  test("ovverrides nested MAYBE for DEFINITELY", () => {
+    const varMap = new VarMap();
+    varMap.setExistence("brick1", "@foo.baz", VarExistence.MAYBE);
+
+    varMap.setExistence("brick1", "@foo.bar", VarExistence.MAYBE);
+    expect(varMap.getMap()).toEqual({
+      brick1: {
+        [SELF_EXISTENCE]: VarExistence.MAYBE,
+        [ALLOW_ANY_CHILD]: false,
+        "@foo": {
+          bar: {
+            [SELF_EXISTENCE]: VarExistence.MAYBE,
+            [ALLOW_ANY_CHILD]: false,
+          },
+          baz: {
+            [SELF_EXISTENCE]: VarExistence.MAYBE,
+            [ALLOW_ANY_CHILD]: false,
+          },
+          [SELF_EXISTENCE]: VarExistence.MAYBE,
+          [ALLOW_ANY_CHILD]: false,
+        },
+      },
+    });
+
+    // VarMap updates the existence of target node and all its parents
+    varMap.setExistence("brick1", "@foo.bar", VarExistence.DEFINITELY);
+    expect(varMap.getMap()).toEqual({
+      brick1: {
+        [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+        [ALLOW_ANY_CHILD]: false,
+        "@foo": {
+          bar: {
+            [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+            [ALLOW_ANY_CHILD]: false,
+          },
+          // This node stays unchanged
+          baz: {
+            [SELF_EXISTENCE]: VarExistence.MAYBE,
+            [ALLOW_ANY_CHILD]: false,
+          },
+          [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+          [ALLOW_ANY_CHILD]: false,
+        },
+      },
+    });
+  });
+});
 
 describe("setting output key", () => {
   // Use case: setting the existence for a block's output
