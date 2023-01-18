@@ -20,7 +20,7 @@ import { type MessageContext, type RegistryId, type Schema } from "@/core";
 import { type OutputUnit } from "@cfworker/json-schema";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { type JsonObject } from "type-fest";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
@@ -115,7 +115,7 @@ export class RemoteExecutionError extends BusinessError {
 /**
  * Error for providing control flow for the temporary panel.
  */
-export class SubmitPanelAction extends Error {
+export class SubmitPanelAction extends CancelError {
   override name = "SubmitPanelAction";
 
   // Use type and detail to match the naming of CustomEvent
