@@ -34,6 +34,7 @@ import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { type SubmitPanelAction } from "@/blocks/errors";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -41,18 +42,23 @@ type BodyProps = {
   meta: PanelRunMeta;
 };
 
-const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
-  blockId,
-  body,
-  isFetching,
-  meta,
-}) => (
+const BodyContainer: React.FC<
+  BodyProps & {
+    isFetching: boolean;
+    onAction: (action: SubmitPanelAction) => void;
+  }
+> = ({ blockId, body, isFetching, onAction, meta }) => (
   <>
     {isFetching && <Loader />}
 
     <div className="full-height" data-block-id={blockId}>
       <ReactShadowRoot>
-        <RendererComponent body={body} meta={meta} />
+        <RendererComponent
+          blockId={blockId}
+          body={body}
+          meta={meta}
+          onAction={onAction}
+        />
       </ReactShadowRoot>
     </div>
   </>
@@ -112,7 +118,8 @@ const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
   payload: PanelPayload;
   context: MessageContext;
-}> = ({ payload, context, isRootPanel = false }) => {
+  onAction: (action: SubmitPanelAction) => void;
+}> = ({ payload, context, isRootPanel = false, onAction }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
 
   useAsyncEffect(async () => {
@@ -215,7 +222,13 @@ const PanelBody: React.FunctionComponent<{
     );
   }
 
-  return <BodyContainer {...state.component} isFetching={state.isFetching} />;
+  return (
+    <BodyContainer
+      {...state.component}
+      isFetching={state.isFetching}
+      onAction={onAction}
+    />
+  );
 };
 
 export default PanelBody;

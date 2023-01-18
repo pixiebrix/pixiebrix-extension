@@ -45,6 +45,7 @@ import InsertHtml from "@/blocks/effects/insertHtml";
 import CustomEventEffect from "@/blocks/effects/customEvent";
 import ReplaceTextEffect from "@/blocks/effects/replaceText";
 import HighlightText from "@/blocks/effects/highlightText";
+import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -82,6 +83,7 @@ function registerEffects(): void {
   registerBlock(new CustomEventEffect());
   registerBlock(new ReplaceTextEffect());
   registerBlock(new HighlightText());
+  registerBlock(new SubmitPanelEffect());
 }
 
 export default registerEffects;

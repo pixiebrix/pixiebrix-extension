@@ -150,8 +150,10 @@ class DisplayTemporaryInfo extends Transformer {
       );
     }
 
+    let result = null;
+
     try {
-      await waitForTemporaryPanel(nonce, {
+      result = await waitForTemporaryPanel(nonce, {
         heading: title,
         extensionId,
         nonce,
@@ -171,7 +173,7 @@ class DisplayTemporaryInfo extends Transformer {
       controller.abort();
     }
 
-    return {};
+    return result ?? {};
   }
 }
 

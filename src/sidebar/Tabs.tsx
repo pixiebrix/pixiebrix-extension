@@ -28,11 +28,18 @@ import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
+import { BusinessError } from "@/errors/businessErrors";
+import { type SubmitPanelAction } from "@/blocks/errors";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
   onSelectTab: (eventKey: string) => void;
   onCloseTemporaryTab: (nonce: UUID) => void;
+  onResolveTemporaryPanel: (nonce: UUID, action: SubmitPanelAction) => void;
+};
+
+const permanentSidebarPanelAction = () => {
+  throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
 const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
@@ -42,6 +49,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
   temporaryPanels,
   onSelectTab,
   onCloseTemporaryTab,
+  onResolveTemporaryPanel,
 }) => {
   const onSelect = useCallback(
     (eventKey: string) => {
@@ -123,6 +131,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
                 <PanelBody
                   isRootPanel
                   payload={panel.payload}
+                  onAction={permanentSidebarPanelAction}
                   context={{
                     extensionId: panel.extensionId,
                     extensionPointId: panel.extensionPointId,
@@ -154,6 +163,9 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
                   isRootPanel={false}
                   payload={panel.payload}
                   context={{ extensionId: panel.extensionId }}
+                  onAction={(action: SubmitPanelAction) => {
+                    onResolveTemporaryPanel(panel.nonce, action);
+                  }}
                 />
               </ErrorBoundary>
             </Tab.Pane>

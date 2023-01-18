@@ -29,9 +29,11 @@ import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
+  resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import { partition, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
+import { type SubmitPanelAction } from "@/blocks/errors";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -125,9 +127,17 @@ async function cancelPanels(nonces: UUID[]): Promise<void> {
   cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
-async function resolvePanels(nonces: UUID[]): Promise<void> {
+async function closePanels(nonces: UUID[]): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   closeTemporaryPanel(topLevelFrame, nonces);
+}
+
+async function resolvePanel(
+  nonce: UUID,
+  action: SubmitPanelAction
+): Promise<void> {
+  const topLevelFrame = await getTopLevelFrame();
+  resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
 const sidebarSlice = createSlice({
@@ -192,7 +202,28 @@ const sidebarSlice = createSlice({
         (panel) => panel.nonce !== nonce
       );
 
-      void resolvePanels([nonce]);
+      void closePanels([nonce]);
+
+      // Only update the active panel if the panel needs to change
+      // Temporary panels use nonce instead of extensionId, so can pass null for extensionId
+      if (
+        state.activeKey ===
+        mapTabEventKey("temporaryPanel", { nonce, extensionId: undefined })
+      ) {
+        state.activeKey = defaultEventKey(state);
+      }
+    },
+    resolveTemporaryPanel(
+      state,
+      action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>
+    ) {
+      const { nonce, action: panelAction } = action.payload;
+
+      state.temporaryPanels = state.temporaryPanels.filter(
+        (panel) => panel.nonce !== nonce
+      );
+
+      void resolvePanel(nonce, panelAction);
 
       // Only update the active panel if the panel needs to change
       // Temporary panels use nonce instead of extensionId, so can pass null for extensionId

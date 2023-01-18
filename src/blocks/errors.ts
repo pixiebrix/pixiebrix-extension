@@ -111,3 +111,22 @@ export class RemoteExecutionError extends BusinessError {
     super(message);
   }
 }
+
+/**
+ * Error for providing control flow for the temporary panel.
+ */
+export class SubmitPanelAction extends Error {
+  override name = "SubmitPanelAction";
+
+  // Use type and detail to match the naming of CustomEvent
+
+  type: string;
+
+  detail: JsonObject;
+
+  constructor(type: string, detail: JsonObject) {
+    super(`Submitted panel with action: ${type}`);
+    this.type = type;
+    this.detail = detail;
+  }
+}

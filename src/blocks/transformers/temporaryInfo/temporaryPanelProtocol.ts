@@ -20,10 +20,17 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 import { CancelError } from "@/errors/businessErrors";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { type JsonObject } from "type-fest";
+
+type PanelAction = {
+  name: string;
+
+  data?: JsonObject;
+};
 
 type RegisteredPanel = {
   entry: TemporaryPanelEntry;
-  registration: DeferredPromise<void>;
+  registration: DeferredPromise<PanelAction | null>;
 };
 
 const panels = new Map<UUID, RegisteredPanel>();
@@ -54,10 +61,10 @@ export async function getPanelDefinition(
 export async function waitForTemporaryPanel(
   nonce: UUID,
   entry: TemporaryPanelEntry
-): Promise<void> {
+): Promise<PanelAction | null> {
   expectContext("contentScript");
 
-  const registration = pDefer<void>();
+  const registration = pDefer<PanelAction | null>();
 
   if (panels.has(nonce)) {
     console.warn(
@@ -76,6 +83,7 @@ export async function waitForTemporaryPanel(
 /**
  * Resolve some temporary panels' deferred promises
  * @param nonces The nonces of the panels to resolve
+ * @see resolveTemporaryPanel
  */
 export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
   expectContext("contentScript");
@@ -84,6 +92,18 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
     panels.get(nonce)?.registration.resolve();
     panels.delete(nonce);
   }
+}
+
+/**
+ * Resolve some temporary panel with an action.
+ * @param nonce The nonce of the panels to resolve
+ * @param action The action to resolve the panel with
+ */
+export async function resolveTemporaryPanel(nonce: UUID, action: PanelAction) {
+  expectContext("contentScript");
+
+  panels.get(nonce)?.registration.resolve(action);
+  panels.delete(nonce);
 }
 
 /**

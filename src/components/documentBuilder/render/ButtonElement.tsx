@@ -25,6 +25,8 @@ import { type Except } from "type-fest";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { getTopLevelFrame } from "webext-messenger";
+import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { SubmitPanelAction } from "@/blocks/errors";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BlockPipeline;
@@ -38,6 +40,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
   ...restProps
 }) => {
   const {
+    onAction,
     meta,
     options: { ctxt, logger },
   } = useContext(DocumentContext);
@@ -54,24 +57,34 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
     const topLevelFrame = await getTopLevelFrame();
 
-    return runEffectPipeline(topLevelFrame, {
-      nonce: uuidv4(),
-      context: ctxt,
-      pipeline: onClick,
-      // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
-      options: apiVersionOptions("v3"),
-      messageContext: logger.context,
-      meta: {
-        ...meta,
-        branches: [
-          ...tracePath.branches.map(({ staticId, index }) => ({
-            key: staticId,
-            counter: index,
-          })),
-          { key: "onClick", counter: currentCounter },
-        ],
-      },
-    });
+    try {
+      await runEffectPipeline(topLevelFrame, {
+        nonce: uuidv4(),
+        context: ctxt,
+        pipeline: onClick,
+        // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+        options: apiVersionOptions("v3"),
+        messageContext: logger.context,
+        meta: {
+          ...meta,
+          branches: [
+            ...tracePath.branches.map(({ staticId, index }) => ({
+              key: staticId,
+              counter: index,
+            })),
+            { key: "onClick", counter: currentCounter },
+          ],
+        },
+      });
+    } catch (error) {
+      if (hasSpecificErrorCause(error, SubmitPanelAction)) {
+        // The error was handled by the SubmitPanelAction
+        const rootCause = getRootCause(error) as SubmitPanelAction;
+        onAction({ type: rootCause.type, detail: rootCause.detail });
+      } else {
+        throw error;
+      }
+    }
   };
 
   return <AsyncButton onClick={handler} {...restProps} />;

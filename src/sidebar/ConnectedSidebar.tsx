@@ -107,6 +107,11 @@ const ConnectedSidebar: React.VFC = () => {
               onCloseTemporaryTab={(nonce) => {
                 dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
               }}
+              onResolveTemporaryPanel={(nonce, action) => {
+                dispatch(
+                  sidebarSlice.actions.resolveTemporaryPanel({ nonce, action })
+                );
+              }}
             />
           ) : (
             <DelayedRender millis={300}>
