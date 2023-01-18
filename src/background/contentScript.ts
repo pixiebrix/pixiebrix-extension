@@ -35,7 +35,7 @@ import { possiblyActiveTabs } from "webext-dynamic-content-scripts/distribution/
 
 import MessageSender = Runtime.MessageSender;
 
-const log = console.debug.bind(console, "ensureContentScript:");
+const debug = console.debug.bind(console, "ensureContentScript:");
 
 /**
  * @see makeSenderKey
@@ -112,7 +112,7 @@ export async function onReadyNotification(
 }
 
 async function injectFromManifest(target: Target): Promise<void> {
-  log("injecting", target);
+  debug("injecting", target);
   const scripts = browser.runtime
     .getManifest()
     .content_scripts.map((script) => {
@@ -136,7 +136,7 @@ export const ensureContentScript = memoizeUntilSettled(
     const { signal } = controller;
 
     try {
-      log("requested", target);
+      debug("requested", target);
 
       // TODO: Simplify after https://github.com/sindresorhus/p-timeout/issues/31
       await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
@@ -145,7 +145,7 @@ export const ensureContentScript = memoizeUntilSettled(
         message: `contentScript not ready in ${timeoutMillis}ms`,
       });
 
-      log("ready", target);
+      debug("ready", target);
     } finally {
       controller.abort();
     }
@@ -165,15 +165,12 @@ async function ensureContentScriptWithoutTimeout(
   const state = await getTargetState(target); // It will throw if we don't have permissions
 
   if (state.ready) {
-    log("already exists and is ready", target);
+    debug("already exists and is ready", target);
     return;
   }
 
   if (state.installed) {
-    console.debug(
-      "ensureContentScript: already exists but isn't ready",
-      target
-    );
+    debug("already exists but isn't ready", target);
 
     await readyNotificationPromise;
     return;
@@ -181,25 +178,16 @@ async function ensureContentScriptWithoutTimeout(
 
   if (isContentScriptStaticallyRegistered(state.url)) {
     // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
-    console.debug(
-      "ensureContentScript: will be injected automatically by the manifest",
-      target
-    );
+    debug("handled by the browser, due to the manifest", target);
   } else if (await isContentScriptDynamicallyRegistered(state.url)) {
-    console.debug(
-      "ensureContentScript: will be injected automatically by webext-dynamic-content-script",
+    debug(
+      "handled by webext-dynamic-content-script, due to host grant",
       target
     );
   } else if (possiblyActiveTabs.has(target.tabId)) {
-    console.debug(
-      "ensureContentScript: will be injected automatically by webext-dynamic-content-script, via activeTab",
-      target
-    );
+    debug("handled by webext-dynamic-content-script, due to activeTab", target);
   } else {
-    console.warn(
-      "ensureContentScript: will be injected here, but will likely fail",
-      target
-    );
+    console.warn("injecting now but will likely fail", target);
     await injectFromManifest(target);
   }
 
