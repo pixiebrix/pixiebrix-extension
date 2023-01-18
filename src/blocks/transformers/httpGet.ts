@@ -29,7 +29,7 @@ export class GetAPITransformer extends Transformer {
   constructor() {
     super(
       GetAPITransformer.BLOCK_ID,
-      "HTTP GET",
+      "[Deprecated] HTTP GET",
       "Fetch data from an API",
       "faCloud"
     );
