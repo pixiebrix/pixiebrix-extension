@@ -36,6 +36,7 @@ import {
 } from "@/services/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type MessengerMeta } from "webext-messenger";
 
 const STORAGE_KEY = "LOG";
@@ -227,6 +228,10 @@ const warnAboutDisabledDNT = once(() => {
   console.warn("Rollbar telemetry is disabled because DNT is turned on");
 });
 
+const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
+const THROTTLE_RATE_MS = 60_000; // 1 minute
+let lastAxiosServerErrorTimestamp: Date = null;
+
 async function reportToRollbar(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
   // (It treats POJO as the custom data)
@@ -239,6 +244,32 @@ async function reportToRollbar(
   if (hasSpecificErrorCause(error, BusinessError)) {
     return;
   }
+
+  // TODO: delete logs
+  console.log(error.response?.status);
+
+  // Throttle certain Axios status codes because they are redundant with our platform alerts
+  if (
+    isAxiosError(error) &&
+    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response?.status)
+  ) {
+    const now = new Date();
+
+    // JS allows subtracting dates directly but TS complains, so convert the dates to numbers to satisfy both:
+    // https://github.com/microsoft/TypeScript/issues/8260
+    // The result is in milliseconds.
+    if (
+      lastAxiosServerErrorTimestamp &&
+      Number(now) - Number(lastAxiosServerErrorTimestamp) < THROTTLE_RATE_MS
+    ) {
+      console.debug("Skipping Rollbar report due to throttling");
+      return;
+    }
+
+    lastAxiosServerErrorTimestamp = now;
+  }
+
+  console.log("Reporting to rollbar");
 
   if (!(await allowsTrack())) {
     warnAboutDisabledDNT();
