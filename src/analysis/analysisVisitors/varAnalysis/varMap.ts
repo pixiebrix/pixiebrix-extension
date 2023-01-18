@@ -55,6 +55,29 @@ class VarMap {
     return cloneDeep(this.map);
   }
 
+  public setExistence(
+    source: string,
+    path: string | string[],
+    existence: VarExistence
+  ): void {
+    const pathParts = [
+      source,
+      ...(Array.isArray(path) ? path : toPath(path)),
+      SELF_EXISTENCE,
+    ];
+    const currentExistence = get(this.map, pathParts);
+
+    // Don't overwrite a DEFINITELY existence with a MAYBE existence
+    if (
+      currentExistence != null &&
+      (currentExistence === existence || existence === VarExistence.MAYBE)
+    ) {
+      return;
+    }
+
+    setWith(this.map, pathParts, existence, (x) => x ?? createNode(existence));
+  }
+
   /**
    * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
    * @param source The source of the values context (ex.: brick, trace, page reader)

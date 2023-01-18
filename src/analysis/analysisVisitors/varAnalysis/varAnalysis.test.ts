@@ -159,6 +159,20 @@ describe("Collecting available vars", () => {
     });
   });
 
+  describe("blueprint @options", () => {
+    test("gets values from schema", () => {
+      expect(false).toBeTrue();
+    });
+
+    test("respects the required options", () => {
+      expect(false).toBeTrue();
+    });
+
+    test("respects the actually set values", () => {
+      expect(false).toBeTrue();
+    });
+  });
+
   describe("if-else brick", () => {
     beforeAll(async () => {
       const ifElseBlock = {

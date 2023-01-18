@@ -36,6 +36,7 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
+import registry from "@/recipes/registry";
 
 const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -90,14 +91,39 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   );
 }
 
-function setOptionsVars(extension: FormState, contextVars: VarMap) {
-  // TODO: should we check the blueprint definition instead?
-  if (!isEmpty(extension.optionsArgs)) {
-    contextVars.setExistenceFromValues(
-      `${KnownSources.OPTIONS}:${extension.recipe.id}`,
-      extension.optionsArgs,
-      "@options"
+async function setOptionsVars(extension: FormState, contextVars: VarMap) {
+  if (extension.recipe == null) {
+    return;
+  }
+
+  const recipeId = extension.recipe.id;
+  const recipe = await registry.lookup(recipeId);
+  const optionsSchema = recipe?.options?.schema;
+  const optionsProps = optionsSchema?.properties;
+  if (optionsProps == null) {
+    return;
+  }
+
+  const source = `${KnownSources.OPTIONS}:${recipeId}`;
+  const optionsOutputKey = "@options";
+  for (const optionName of Object.keys(optionsProps)) {
+    contextVars.setExistence(
+      source,
+      [optionsOutputKey, optionName],
+      optionsSchema.required?.includes(optionName)
+        ? VarExistence.DEFINITELY
+        : VarExistence.MAYBE
     );
+  }
+
+  if (!isEmpty(extension.optionsArgs)) {
+    for (const optionName of Object.keys(extension.optionsArgs)) {
+      contextVars.setExistence(
+        source,
+        [optionsOutputKey, optionName],
+        VarExistence.DEFINITELY
+      );
+    }
   }
 }
 
@@ -288,9 +314,11 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     const contextVars = new VarMap();
 
     // Order of the following calls will determine the order of the sources in the UI
-    setOptionsVars(extension, contextVars);
+    await setOptionsVars(extension, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
+
+    console.log("context vars", contextVars.getMap());
 
     this.previousVisitedBlock = {
       vars: contextVars,
