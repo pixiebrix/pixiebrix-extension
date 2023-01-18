@@ -124,6 +124,7 @@ export function getExampleBlockConfig(
   if (blockId === DisplayTemporaryInfo.BLOCK_ID) {
     return {
       title: "Example Info",
+      location: "panel",
       body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
     };
   }

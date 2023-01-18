@@ -37,6 +37,8 @@ import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSel
 import { useAsyncState } from "@/hooks/common";
 import { isExpression } from "@/runtime/mapArgs";
 
+type Location = "modal" | "panel";
+
 type BlockPreviewState = {
   /**
    * The output from the block
@@ -130,13 +132,15 @@ export default function useDocumentPreviewRunBlock(
     }
   }, [blockError]);
 
-  const record = useSelector(selectActiveElementTraceForBlock(blockInstanceId));
+  const traceRecord = useSelector(
+    selectActiveElementTraceForBlock(blockInstanceId)
+  );
   const [serviceContext, isLoadingServiceContext] = useAsyncState(
     makeServiceContext(services),
     [services]
   );
   const context = {
-    ...record?.templateContext,
+    ...traceRecord?.templateContext,
     ...serviceContext,
   } as BlockArgContext;
 
@@ -176,16 +180,26 @@ export default function useDocumentPreviewRunBlock(
           ? extensionPoint.definition.rootSelector
           : undefined;
 
+      const location: Location =
+        (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
+
       try {
-        await runRendererBlock(thisTab, extensionId, record.runId, title, {
-          apiVersion,
-          blockConfig: {
-            ...removeEmptyValues(blockConfig),
-            if: undefined,
+        await runRendererBlock(
+          thisTab,
+          extensionId,
+          traceRecord.runId,
+          title,
+          {
+            apiVersion,
+            blockConfig: {
+              ...removeEmptyValues(blockConfig),
+              if: undefined,
+            },
+            context,
+            rootSelector,
           },
-          context,
-          rootSelector,
-        });
+          location
+        );
         dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {
         dispatch(previewSlice.actions.setError({ error }));

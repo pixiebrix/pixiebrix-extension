@@ -31,7 +31,24 @@ import {
   waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { CancelError } from "@/errors/businessErrors";
+import { CancelError, PropError } from "@/errors/businessErrors";
+import { getThisFrame } from "webext-messenger";
+import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+
+type Location = "panel" | "modal";
+
+export async function createFrameSource(
+  nonce: string,
+  mode: Location
+): Promise<URL> {
+  const target = await getThisFrame();
+
+  const frameSource = new URL(browser.runtime.getURL("ephemeralPanel.html"));
+  frameSource.searchParams.set("nonce", nonce);
+  frameSource.searchParams.set("opener", JSON.stringify(target));
+  frameSource.searchParams.set("mode", mode);
+  return frameSource;
+}
 
 class DisplayTemporaryInfo extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/display");
@@ -57,6 +74,12 @@ class DisplayTemporaryInfo extends Transformer {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
         description: "The render pipeline for the temporary document",
       },
+      location: {
+        type: "string",
+        enum: ["panel", "modal"],
+        default: "panel",
+        description: "The location of the information (default='panel')",
+      },
     },
     required: ["body"],
   };
@@ -65,8 +88,10 @@ class DisplayTemporaryInfo extends Transformer {
     {
       title,
       body: bodyPipeline,
+      location = "panel",
     }: BlockArg<{
       title: string;
+      location: Location;
       body: PipelineExpression;
     }>,
     {
@@ -83,37 +108,55 @@ class DisplayTemporaryInfo extends Transformer {
     const nonce = uuidv4();
     const controller = new AbortController();
 
-    await ensureSidebar();
-
     const payload = (await runRendererPipeline(bodyPipeline?.__value__ ?? [], {
       key: "body",
       counter: 0,
     })) as PanelPayload;
 
-    showTemporarySidebarPanel({
-      extensionId,
-      nonce,
-      heading: title,
-      payload,
-    });
+    if (location === "panel") {
+      await ensureSidebar();
 
-    window.addEventListener(
-      PANEL_HIDING_EVENT,
-      () => {
-        controller.abort();
-      },
-      {
-        signal: controller.signal,
-      }
-    );
+      showTemporarySidebarPanel({
+        extensionId,
+        nonce,
+        heading: title,
+        payload,
+      });
 
-    controller.signal.addEventListener("abort", () => {
-      hideTemporarySidebarPanel(nonce);
-      void stopWaitingForTemporaryPanels([nonce]);
-    });
+      window.addEventListener(
+        PANEL_HIDING_EVENT,
+        () => {
+          controller.abort();
+        },
+        {
+          signal: controller.signal,
+        }
+      );
+
+      controller.signal.addEventListener("abort", () => {
+        hideTemporarySidebarPanel(nonce);
+        void stopWaitingForTemporaryPanels([nonce]);
+      });
+    } else if (location === "modal") {
+      const frameSource = await createFrameSource(nonce, location);
+      showModal(frameSource, controller);
+    } else {
+      throw new PropError(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for validated value
+        `Invalid location: ${location}`,
+        this.id,
+        "location",
+        location
+      );
+    }
 
     try {
-      await waitForTemporaryPanel(nonce);
+      await waitForTemporaryPanel(nonce, {
+        heading: title,
+        extensionId,
+        nonce,
+        payload,
+      });
     } catch (error) {
       if (error instanceof CancelError) {
         // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915
