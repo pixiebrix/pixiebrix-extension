@@ -212,6 +212,11 @@ describe("dynamicElementStorage", () => {
           nodeUIStates: element2NodeUIStates,
         },
       },
+      availableDynamicIds: [
+        ...baseState.availableDynamicIds,
+        element1.uuid,
+        element2.uuid,
+      ],
     };
     (readReduxStorage as jest.Mock).mockResolvedValue(
       jsonifyObject(stateWithRecipe)
@@ -296,6 +301,11 @@ describe("dynamicElementStorage", () => {
           nodeUIStates: element2NodeUIStates,
         },
       },
+      availableDynamicIds: [
+        ...baseState.availableDynamicIds,
+        element1.uuid,
+        element2.uuid,
+      ],
     };
     (readReduxStorage as jest.Mock).mockResolvedValue(
       jsonifyObject(stateWithRecipe)

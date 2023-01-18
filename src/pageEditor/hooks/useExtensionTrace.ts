@@ -23,6 +23,7 @@ import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
+import reportError from "@/telemetry/reportError";
 
 const { setExtensionTrace } = runtimeSlice.actions;
 
@@ -56,19 +57,27 @@ function useExtensionTrace() {
     }
 
     checkingNewEntriesRef.current = true;
-    const lastRun = await getLatestRunByExtensionId(extensionId);
-    // Keep the Redux log clean. Don't setExtensionTrace unless we have to
-    if (
-      !isEqual(
-        lastRun.map((x) => selectTraceMetadata(x)),
-        extensionTrace.map((x) => selectTraceMetadata(x))
-      )
-    ) {
-      console.debug("Updating extension trace in Redux slice: %s", extensionId);
-      dispatch(setExtensionTrace({ extensionId, records: lastRun }));
+    try {
+      const lastRun = await getLatestRunByExtensionId(extensionId);
+      // Keep the Redux log clean. Don't setExtensionTrace unless we have to
+      if (
+        !isEqual(
+          lastRun.map((x) => selectTraceMetadata(x)),
+          extensionTrace.map((x) => selectTraceMetadata(x))
+        )
+      ) {
+        console.debug(
+          "Updating extension trace in Redux slice: %s",
+          extensionId
+        );
+        dispatch(setExtensionTrace({ extensionId, records: lastRun }));
+      }
+    } catch (error) {
+      reportError(error);
+    } finally {
+      // Make sure we reset the flag
+      checkingNewEntriesRef.current = false;
     }
-
-    checkingNewEntriesRef.current = false;
   };
 
   useInterval(refreshTrace, TRACE_RELOAD_MILLIS);

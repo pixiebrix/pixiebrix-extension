@@ -62,6 +62,10 @@ async function initContentScript() {
   });
 }
 
-void initContentScript().catch((error) => {
-  throw new Error("Error initializing contentScript", { cause: error });
-});
+if (location.protocol === "https:") {
+  void initContentScript().catch((error) => {
+    throw new Error("Error initializing contentScript", { cause: error });
+  });
+} else {
+  console.warn("Unsupported protocol", location.protocol);
+}
