@@ -150,6 +150,7 @@ const FormRendererOptions: React.FC<{
       {storageType === "state" && (
         <SchemaField
           name={makeName("storage", "namespace")}
+          label="State Namespace"
           isRequired
           schema={
             customFormRendererSchema.properties.storage.oneOf[1].properties
@@ -166,6 +167,12 @@ const FormRendererOptions: React.FC<{
           isRequired
         />
       )}
+
+      <SchemaField
+        name={makeName("submitCaption")}
+        label="Submit Caption"
+        schema={customFormRendererSchema.properties.submitCaption as Schema}
+      />
 
       <SchemaField
         name={makeName("successMessage")}

@@ -72,6 +72,7 @@ export function getExampleBlockConfig(
         type: "state",
         namespace: "blueprint",
       },
+      submitCaption: "Submit",
       successMessage: "Successfully submitted form",
       schema: {
         title: "Example Form",
