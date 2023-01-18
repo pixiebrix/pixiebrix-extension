@@ -3,7 +3,7 @@
 import { updatePageEditor } from "@/pageEditor/messenger/api";
 import {
   type ActiveTab,
-  onActiveTab,
+  addActiveTabListener,
   possiblyActiveTabs,
 } from "webext-dynamic-content-scripts/distribution/active-tab";
 
@@ -15,7 +15,7 @@ function updateUI(tab: ActiveTab): void {
 }
 
 export default function initActiveTabTracking() {
-  onActiveTab(updateUI);
+  addActiveTabListener(updateUI);
 }
 
 export async function getTabsWithAccess(): Promise<TabId[]> {
