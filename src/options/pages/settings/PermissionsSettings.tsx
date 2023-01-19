@@ -15,103 +15,105 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import notify from "@/utils/notify";
 import {
-  getAdditionalPermissions,
   dropOverlappingPermissions,
+  selectAdditionalPermissionsSync,
 } from "webext-additional-permissions";
 import { type Manifest } from "webextension-polyfill";
-import { sortBy } from "lodash";
-import { useAsyncEffect } from "use-async-effect";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import { remove } from "lodash";
+import { Badge, Button, Card, ListGroup } from "react-bootstrap";
+import useExtensionPermissions from "@/hooks/useExtensionPermissions";
 
 type OptionalPermission = Manifest.OptionalPermission;
 type Permissions = chrome.permissions.Permissions;
 
+const IS_DEV = process.env.ENVIRONMENT === "development";
+
 const PermissionRow: React.FunctionComponent<{
   value: string;
-  remove: (value: string) => void;
+  remove?: (value: string) => void;
 }> = ({ value, remove }) => (
   <ListGroup.Item className="d-flex">
     <div className="flex-grow-1 align-self-center">{value}</div>
-    <div className="align-self-center">
-      <Button
-        variant="danger"
-        size="sm"
-        onClick={async () => {
-          remove(value);
-        }}
-      >
-        Revoke
-      </Button>{" "}
-    </div>
+    {remove ? (
+      <div className="align-self-center">
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={async () => {
+            remove(value);
+          }}
+        >
+          Revoke
+        </Button>
+      </div>
+    ) : (
+      <Badge>
+        overlapping
+        <br />
+        dev only
+      </Badge>
+    )}
   </ListGroup.Item>
 );
 
-// `devtools` is actually a required permission that gets added automatically
-// https://github.com/fregante/webext-additional-permissions/issues/6
-const HIDE_EXTRA_PERMISSIONS = ["devtools"];
-
 const PermissionsSettings: React.FunctionComponent = () => {
-  const [permissions, setPermissions] = useState<Permissions>();
-
-  const refresh = useCallback(async () => {
-    setPermissions(
-      dropOverlappingPermissions(await getAdditionalPermissions())
-    );
-  }, [setPermissions]);
-
-  const removeOrigin = useCallback(
-    async (origin: string) => {
-      await browser.permissions.remove({ origins: [origin] });
-      notify.success(`Removed permission for ${origin}`);
-      await refresh();
-    },
-    [refresh]
+  let permissions: Permissions = selectAdditionalPermissionsSync(
+    useExtensionPermissions()
   );
+
+  // `devtools` is actually a required permission that gets added automatically
+  // https://github.com/fregante/webext-additional-permissions/issues/6
+  permissions.permissions = remove(permissions.permissions, "devtools");
+
+  const uniquePermissions = dropOverlappingPermissions(permissions);
+
+  if (!IS_DEV) {
+    permissions = uniquePermissions;
+  }
+
+  const removeOrigin = useCallback(async (origin: string) => {
+    await browser.permissions.remove({ origins: [origin] });
+    notify.success(`Removed permission for ${origin}`);
+  }, []);
 
   const removePermission = useCallback(
-    async (permission: string) => {
+    async (permission: OptionalPermission) => {
       await browser.permissions.remove({
-        permissions: [permission as OptionalPermission],
+        permissions: [permission],
       });
       notify.success(`Removed ${permission}`);
-      await refresh();
     },
-    [refresh]
+    []
   );
-
-  const origins = useMemo(
-    () => sortBy(permissions?.origins ?? []),
-    [permissions]
-  );
-
-  const extraPermissions = useMemo(
-    () =>
-      sortBy(permissions?.permissions ?? []).filter(
-        (x) => !HIDE_EXTRA_PERMISSIONS.includes(x)
-      ),
-    [permissions]
-  );
-
-  useAsyncEffect(async () => refresh(), []);
 
   return (
     <Card>
       <Card.Header>Additional Permissions</Card.Header>
       <ListGroup variant="flush">
-        {extraPermissions.map((permission) => (
+        {permissions.permissions.map((permission) => (
           <PermissionRow
             key={permission}
             value={permission}
-            remove={removePermission}
+            remove={
+              uniquePermissions.permissions.includes(permission)
+                ? removePermission
+                : null
+            }
           />
         ))}
-        {origins.map((origin) => (
-          <PermissionRow key={origin} value={origin} remove={removeOrigin} />
+        {permissions.origins.map((origin) => (
+          <PermissionRow
+            key={origin}
+            value={origin}
+            remove={
+              uniquePermissions.origins.includes(origin) ? removeOrigin : null
+            }
+          />
         ))}
-        {origins.length + extraPermissions.length === 0 && (
+        {permissions.origins.length + permissions.permissions.length === 0 && (
           <ListGroup.Item>No active permissions</ListGroup.Item>
         )}
       </ListGroup>
