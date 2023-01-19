@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 browser.permissions.getAll = jest.fn();
 (browser.permissions.onAdded as any) = {
@@ -55,7 +56,7 @@ describe("useExtensionPermissions", () => {
     mockOrigins();
     const { result } = renderHook(useExtensionPermissions);
     expect(result.current).toMatchInlineSnapshot("[]");
-    await act(async () => {});
+    await waitForEffect();
     expect(result.current).toMatchInlineSnapshot(`
       [
         {
@@ -71,7 +72,7 @@ describe("useExtensionPermissions", () => {
   test("includes additional permissions", async () => {
     mockOrigins("https://added.example.com/*", "https://more.example.com/*");
     const { result } = renderHook(useExtensionPermissions);
-    await act(async () => {});
+    await waitForEffect();
     expect(result.current).toMatchInlineSnapshot(`
       [
         {
@@ -99,7 +100,7 @@ describe("useExtensionPermissions", () => {
   test("detects overlapping permissions", async () => {
     mockOrigins("https://added.example.com/*", "https://*.example.com/*");
     const { result } = renderHook(useExtensionPermissions);
-    await act(async () => {});
+    await waitForEffect();
     expect(result.current).toMatchInlineSnapshot(`
       [
         {
