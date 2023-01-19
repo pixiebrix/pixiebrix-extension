@@ -72,6 +72,7 @@ export function getExampleBlockConfig(
         type: "state",
         namespace: "blueprint",
       },
+      submitCaption: "Submit",
       successMessage: "Successfully submitted form",
       schema: {
         title: "Example Form",
@@ -123,6 +124,7 @@ export function getExampleBlockConfig(
   if (blockId === DisplayTemporaryInfo.BLOCK_ID) {
     return {
       title: "Example Info",
+      location: "panel",
       body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
     };
   }
