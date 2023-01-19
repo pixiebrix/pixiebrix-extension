@@ -21,7 +21,7 @@ import {
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { type BlockPosition, type BlockConfig } from "@/blocks/types";
-import { type Expression, type TemplateEngine } from "@/core";
+import type { Schema, Expression, TemplateEngine } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
@@ -36,7 +36,8 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
-import registry from "@/recipes/registry";
+import recipesRegistry from "@/recipes/registry";
+import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 
 const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -91,30 +92,72 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   );
 }
 
+type SetVarsFromSchemaArgs = {
+  schema: Schema;
+  contextVars: VarMap;
+  source: string;
+  parentPath: string[];
+  existenceOverride?: VarExistence;
+};
+
+function setVarsFromSchema({
+  schema,
+  contextVars,
+  source,
+  parentPath,
+  existenceOverride,
+}: SetVarsFromSchemaArgs) {
+  const { properties, required } = schema;
+  if (properties == null) {
+    return;
+  }
+
+  for (const [key, propertySchema] of Object.entries(properties)) {
+    if (typeof propertySchema === "boolean") {
+      continue;
+    }
+
+    if (propertySchema.type === "object") {
+      setVarsFromSchema({
+        schema: propertySchema,
+        contextVars,
+        source,
+        parentPath: [...parentPath, key],
+      });
+      continue;
+    }
+
+    contextVars.setExistence(
+      source,
+      [...parentPath, key],
+      existenceOverride ?? required?.includes(key)
+        ? VarExistence.DEFINITELY
+        : VarExistence.MAYBE
+    );
+  }
+}
+
 async function setOptionsVars(extension: FormState, contextVars: VarMap) {
   if (extension.recipe == null) {
     return;
   }
 
   const recipeId = extension.recipe.id;
-  const recipe = await registry.lookup(recipeId);
+  const recipe = await recipesRegistry.lookup(recipeId);
   const optionsSchema = recipe?.options?.schema;
-  const optionsProps = optionsSchema?.properties;
-  if (optionsProps == null) {
+  if (optionsSchema == null) {
     return;
   }
 
   const source = `${KnownSources.OPTIONS}:${recipeId}`;
   const optionsOutputKey = "@options";
-  for (const optionName of Object.keys(optionsProps)) {
-    contextVars.setExistence(
-      source,
-      [optionsOutputKey, optionName],
-      optionsSchema.required?.includes(optionName)
-        ? VarExistence.DEFINITELY
-        : VarExistence.MAYBE
-    );
-  }
+
+  setVarsFromSchema({
+    schema: optionsSchema,
+    contextVars,
+    source,
+    parentPath: [optionsOutputKey],
+  });
 
   if (!isEmpty(extension.optionsArgs)) {
     for (const optionName of Object.keys(extension.optionsArgs)) {
@@ -133,6 +176,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
   protected readonly annotations: Annotation[] = [];
+  private allBlocks: TypedBlockMap;
 
   get id() {
     return "var";
@@ -185,12 +229,27 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (blockConfig.outputKey) {
       const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-      currentBlockOutput.setOutputKeyExistence(
-        position.path,
-        outputVarName,
-        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
-        true
-      );
+      // ToDo set existence from output schema
+      const outputSchema = this.allBlocks.get(blockConfig.id)?.block
+        ?.outputSchema;
+
+      if (outputSchema == null) {
+        currentBlockOutput.setOutputKeyExistence(
+          position.path,
+          outputVarName,
+          blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
+          true
+        );
+      } else {
+        setVarsFromSchema({
+          schema: outputSchema,
+          contextVars: currentBlockOutput,
+          source: position.path,
+          parentPath: [outputVarName],
+          existenceOverride:
+            blockConfig.if == null ? undefined : VarExistence.MAYBE,
+        });
+      }
 
       this.previousVisitedBlock.output = currentBlockOutput;
     }
@@ -311,6 +370,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   async run(extension: FormState): Promise<void> {
+    this.allBlocks = await blockRegistry.allTyped();
+
     const contextVars = new VarMap();
 
     // Order of the following calls will determine the order of the sources in the UI

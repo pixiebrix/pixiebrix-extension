@@ -33,6 +33,7 @@ import {
 import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
+import blockRegistry from "@/blocks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 
 jest.mock("@/background/messenger/api", () => ({
@@ -56,6 +57,7 @@ jest.mock("@/blocks/registry", () => ({
         },
       },
     }),
+    allTyped: jest.fn().mockResolvedValue(new Map()),
   },
 }));
 
@@ -192,6 +194,46 @@ describe("Collecting available vars", () => {
       analysis = new VarAnalysis([]);
     });
 
+    test("read values from blueprint and extension", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "string",
+          },
+        },
+      });
+
+      const extension = formStateFactory(
+        {
+          // Let this extension to have a service reference
+          optionsArgs: {
+            bar: "qux",
+            baz: "quux",
+          },
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const foundationKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+
+      // A variable defined in the blueprint
+      expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
+      // A variable defined in the blueprint and extension options
+      expect(foundationKnownVars.isVariableDefined("@options.bar")).toBeTrue();
+      // A variable defined in the extension options but not in the blueprint
+      expect(foundationKnownVars.isVariableDefined("@options.baz")).toBeTrue();
+    });
+
     test("sets DEFINITELY for required options", async () => {
       mockBlueprintWithOptions({
         properties: {
@@ -256,6 +298,65 @@ describe("Collecting available vars", () => {
       ]["@options"];
 
       expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+    });
+  });
+
+  describe("output key schema", () => {
+    test("reads output schema of a block when defined", async () => {
+      const outputKey = validateOutputKey("foo");
+
+      const extension = formStateFactory(undefined, [
+        blockConfigFactory({
+          outputKey,
+        }),
+        blockConfigFactory(),
+      ]);
+      (blockRegistry.allTyped as jest.Mock).mockResolvedValue(
+        new Map([
+          [
+            extension.extension.blockPipeline[0].id,
+            {
+              block: {
+                // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+                outputSchema: {
+                  $schema: "https://json-schema.org/draft/2019-09/schema#",
+                  type: "object",
+                  properties: {
+                    innerHTML: {
+                      type: "string",
+                      description: "The HTML inside the element/document",
+                    },
+                    outerHTML: {
+                      type: "string",
+                      description: "The HTML including the element/document",
+                    },
+                  },
+                  required: ["innerHTML", "outerHTML"],
+                },
+              },
+            },
+          ],
+        ])
+      );
+
+      await analysis.run(extension);
+
+      const secondBlockKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.1");
+
+      // Knows schema variables are defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.innerHTML`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.outerHTML`)
+      ).toBeTrue();
+
+      // Arbitrary child of the output key is not defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+      ).toBeFalse();
     });
   });
 
