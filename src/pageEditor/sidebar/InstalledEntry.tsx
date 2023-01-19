@@ -37,11 +37,9 @@ import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import {
   disableOverlay,
   enableOverlay,
-  removeExtension,
   showSidebar,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { resolveDefinitions } from "@/registry/internal";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
@@ -84,17 +82,9 @@ const InstalledEntry: React.FunctionComponent<{
           extensionId: extension.id,
         });
 
-        // Remove the extension so that we don't get double-actions when editing a trigger.
-        // At this point the extensionPointId can be a
-        const resolved = await resolveDefinitions(extension);
-        removeExtension(thisTab, resolved.extensionPointId, resolved.id);
-
         const state = await extensionToFormState(extension);
         initRecipeOptionsIfNeeded(state, recipes);
 
-        // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
-        //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
-        // -- We can remove the extension once we're also persisting the editor slice
         dispatch(actions.selectInstalled(state));
         dispatch(actions.checkActiveElementAvailability());
 

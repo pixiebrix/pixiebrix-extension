@@ -41,7 +41,11 @@ import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
 
 let _initialLoadNavigation = true;
+// Track the extensions installed on the page
+const _installed = new Map<UUID, IExtensionPoint>();
+// Track the dynamic extensions that are installed on the page (i.e., the ones loaded and changed in Page Editor)
 const _dynamic = new Map<UUID, IExtensionPoint>();
+
 const _frameHref = new Map<number, string>();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
@@ -119,6 +123,8 @@ export function removeExtension(
   } else {
     console.warn("Extension point %s not found", extensionPointId);
   }
+
+  _installed.delete(extensionId);
 }
 
 function markUninstalled(id: RegistryId) {
@@ -199,15 +205,20 @@ export async function runDynamic(
   extensionPoint: IExtensionPoint
 ): Promise<void> {
   // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
-  const previousExtensionPoint = _dynamic.get(elementId);
-
+  const previousExtensionPoint = _installed.get(elementId);
   if (previousExtensionPoint) {
-    if (previousExtensionPoint.kind === "actionPanel") {
-      const sidebar = previousExtensionPoint as SidebarExtensionPoint;
+    removeExtension(previousExtensionPoint.id, elementId);
+  }
+
+  const previousDynamicExtensionPoint = _dynamic.get(elementId);
+
+  if (previousDynamicExtensionPoint) {
+    if (previousDynamicExtensionPoint.kind === "actionPanel") {
+      const sidebar = previousDynamicExtensionPoint as SidebarExtensionPoint;
       // eslint-disable-next-line new-cap -- hack for action panels
       sidebar.HACK_uninstallExceptExtension(elementId);
     } else {
-      previousExtensionPoint.uninstall();
+      previousDynamicExtensionPoint.uninstall();
     }
   }
 
@@ -229,6 +240,7 @@ async function loadExtensions() {
     (_extensionPoints ?? []).map((x) => x.id)
   );
 
+  _installed.clear();
   _extensionPoints = [];
 
   const options = await loadOptions();
@@ -246,39 +258,42 @@ async function loadExtensions() {
   const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
 
   await Promise.all(
-    Object.entries(extensionMap).map(async (entry) => {
-      // Object.entries loses the type information :sadface:
-      const [extensionPointId, extensions] = entry as unknown as [
+    Object.entries(extensionMap).map(
+      async ([extensionPointId, extensions]: [
         RegistryId,
         ResolvedExtension[]
-      ];
-
-      if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
-        // Ignore the case where we uninstalled the last extension, but the extension point was
-        // not deleted from the state.
-        //
-        // But for updates (i.e., re-activation flow) we need to include to so that when we run
-        // syncExtensions their elements are removed from the page
-        return;
-      }
-
-      try {
-        const extensionPoint = await extensionPointRegistry.lookup(
-          extensionPointId
-        );
-
-        extensionPoint.syncExtensions(extensions);
-
-        if (extensions.length > 0) {
-          // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
-          _extensionPoints.push(extensionPoint);
+      ]) => {
+        if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
+          // Ignore the case where we uninstalled the last extension, but the extension point was
+          // not deleted from the state.
+          //
+          // But for updates (i.e., re-activation flow) we need to include to so that when we run
+          // syncExtensions their elements are removed from the page
+          return;
         }
-      } catch (error) {
-        console.warn(`Error adding extension point: ${extensionPointId}`, {
-          error,
-        });
+
+        try {
+          const extensionPoint = await extensionPointRegistry.lookup(
+            extensionPointId
+          );
+
+          extensionPoint.syncExtensions(extensions);
+
+          if (extensions.length > 0) {
+            // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
+            _extensionPoints.push(extensionPoint);
+
+            for (const extension of extensions) {
+              _installed.set(extension.id, extensionPoint);
+            }
+          }
+        } catch (error) {
+          console.warn(`Error adding extension point: ${extensionPointId}`, {
+            error,
+          });
+        }
       }
-    })
+    )
   );
 }
 
