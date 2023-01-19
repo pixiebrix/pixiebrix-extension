@@ -245,9 +245,6 @@ async function reportToRollbar(
     return;
   }
 
-  // TODO: delete logs
-  console.log(error.response?.status);
-
   // Throttle certain Axios status codes because they are redundant with our platform alerts
   if (
     isAxiosError(error) &&
@@ -268,8 +265,6 @@ async function reportToRollbar(
 
     lastAxiosServerErrorTimestamp = now;
   }
-
-  console.log("Reporting to rollbar");
 
   if (!(await allowsTrack())) {
     warnAboutDisabledDNT();
