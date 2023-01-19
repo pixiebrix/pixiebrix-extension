@@ -117,6 +117,7 @@ const ElementWizard: React.FunctionComponent<{
         value={{
           shouldUseAnalysis: true,
           showUntouchedErrors: false,
+          showFieldActions: true,
         }}
       >
         <BootstrapForm

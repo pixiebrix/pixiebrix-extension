@@ -17,7 +17,7 @@
 
 import {
   type Analysis,
-  type Annotation,
+  type AnalysisAnnotation,
   AnnotationType,
 } from "@/analysis/analysisTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -55,8 +55,8 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     return "urlPattern";
   }
 
-  private readonly annotations: Annotation[] = [];
-  getAnnotations(): Annotation[] {
+  private readonly annotations: AnalysisAnnotation[] = [];
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 

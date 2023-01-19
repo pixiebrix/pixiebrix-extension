@@ -18,7 +18,7 @@
 import { type Expression } from "@/core";
 import {
   type Analysis,
-  type Annotation,
+  type AnalysisAnnotation,
   AnnotationType,
 } from "@/analysis/analysisTypes";
 import { type BlockPosition } from "@/blocks/types";
@@ -42,8 +42,8 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return "template";
   }
 
-  protected readonly annotations: Annotation[] = [];
-  getAnnotations(): Annotation[] {
+  protected readonly annotations: AnalysisAnnotation[] = [];
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 

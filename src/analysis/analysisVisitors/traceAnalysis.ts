@@ -16,7 +16,10 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import {
+  type AnalysisAnnotation,
+  AnnotationType,
+} from "@/analysis/analysisTypes";
 import {
   isTraceError,
   type TraceError,
@@ -60,8 +63,8 @@ class TraceAnalysis extends AnalysisVisitor {
   mapErrorAnnotations(
     position: BlockPosition,
     traceError: JsonObject
-  ): Annotation[] {
-    const annotations: Annotation[] = [];
+  ): AnalysisAnnotation[] {
+    const annotations: AnalysisAnnotation[] = [];
 
     if (isInputValidationError(traceError)) {
       for (const maybeInputError of traceError.errors) {

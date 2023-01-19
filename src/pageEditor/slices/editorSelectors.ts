@@ -28,16 +28,17 @@ import {
   type RootState,
 } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { flatMap, isEmpty, uniqBy } from "lodash";
+import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type ElementUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
+import { type AnalysisRootState } from "@/analysis/analysisTypes";
+import { AnnotationType } from "@/types";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
   editor.activeElementId;
@@ -322,19 +323,34 @@ export function selectNodePreviewActiveElement(state: EditorRootState): string {
     .activeElement;
 }
 
-export const selectAddBlockLocation = ({ editor }: RootState) =>
+export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
   editor.addBlockLocation;
 
 const annotationsForPathSelector = createSelector(
-  [
-    (state: RootState) => {
-      const activeElementId = selectActiveElementId(state);
-      return selectExtensionAnnotations(activeElementId)(state);
-    },
-    (state, path: string) => path,
-  ],
-  (extensionAnnotations, path) =>
-    extensionAnnotations.filter((x) => x.position.path === path)
+  selectActiveElementId,
+  (state: AnalysisRootState) => state.analysis.extensionAnnotations,
+  (state: RootState, path: string) => path,
+  (activeElementId, annotations, path) => {
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    const pathAnnotations = annotations[activeElementId].filter(
+      (x) => x.position.path === path
+    );
+    return sortBy(pathAnnotations, (annotation) => {
+      switch (annotation.type) {
+        case AnnotationType.Error: {
+          return 2;
+        }
+
+        case AnnotationType.Warning: {
+          return 1;
+        }
+
+        default: {
+          return 0;
+        }
+      }
+    });
+  }
 );
 
 /**

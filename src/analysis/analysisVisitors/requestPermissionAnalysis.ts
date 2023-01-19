@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnnotationType } from "@/analysis/analysisTypes";
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { GetAPITransformer } from "@/blocks/transformers/httpGet";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
@@ -26,6 +25,8 @@ import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { AnnotationType } from "@/types";
+import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -111,6 +112,14 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
                 "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the extension.",
               analysisId: this.id,
               type: AnnotationType.Error,
+              actions: [
+                {
+                  caption: "Add Extra Permission",
+                  type: AnalysisAnnotationActionType.AddValueToArray,
+                  path: "permissions.origins",
+                  value: `${parsedURL.origin}/*`,
+                },
+              ],
             });
           }
         });

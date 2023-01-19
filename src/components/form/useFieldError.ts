@@ -19,13 +19,14 @@ import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import { useField } from "formik";
 import { useFormErrorSettings } from "@/components/form/FormErrorContext";
-import { type Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
+import { AnnotationType } from "@/types";
 
 type UseFieldErrorResult = {
-  warning?: string | string[] | undefined;
+  warning?: string | AnalysisAnnotation[] | undefined;
 
   // Formik error tree can return an object, hence the 'Record<string, unknown>'
-  error?: string | string[] | Record<string, unknown> | undefined;
+  error?: string | AnalysisAnnotation[] | Record<string, unknown> | undefined;
 };
 
 function useFormikFieldError(
@@ -36,13 +37,6 @@ function useFormikFieldError(
   return showUntouched || touched ? { error } : {};
 }
 
-function getAnnotationMessages(
-  annotations: Annotation[],
-  type: AnnotationType
-): string[] {
-  return annotations.filter((x) => x.type === type).map((x) => x.message);
-}
-
 function useAnalysisFieldError(fieldPath: string): UseFieldErrorResult {
   const annotations = useSelector(selectAnnotationsForPath(fieldPath));
   if (!annotations?.length) {
@@ -50,8 +44,12 @@ function useAnalysisFieldError(fieldPath: string): UseFieldErrorResult {
   }
 
   return {
-    error: getAnnotationMessages(annotations, AnnotationType.Error),
-    warning: getAnnotationMessages(annotations, AnnotationType.Warning),
+    error: annotations.filter(
+      (annotation) => annotation.type === AnnotationType.Error
+    ),
+    warning: annotations.filter(
+      (annotation) => annotation.type === AnnotationType.Warning
+    ),
   };
 }
 

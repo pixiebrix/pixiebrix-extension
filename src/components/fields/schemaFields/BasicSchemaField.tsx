@@ -35,7 +35,7 @@ import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/hooks/useToggleFormField";
 import { isExpression } from "@/runtime/mapArgs";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
-import useFieldError from "@/components/form/useFieldError";
+import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -119,7 +119,8 @@ const BasicSchemaField: SchemaFieldComponent = ({
       validate,
     }
   );
-  const { error, warning } = useFieldError(name);
+
+  const annotations = useFieldAnnotations(name);
 
   useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
@@ -140,8 +141,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
         name={name}
         label={fieldLabel}
         description={fieldDescription}
-        warning={warning}
-        error={error}
+        annotations={annotations}
         touched={touched}
         as={widgetsRegistry.UnsupportedWidget}
       />
@@ -166,8 +166,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       name={name}
       label={fieldLabel}
       description={fieldDescription}
-      warning={warning}
-      error={error}
+      annotations={annotations}
       touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
       as={widgetsRegistry.TemplateToggleWidget}

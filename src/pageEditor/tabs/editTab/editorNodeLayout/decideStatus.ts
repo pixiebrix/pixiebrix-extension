@@ -17,10 +17,13 @@
 
 import { RunStatus } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { type TraceRecord } from "@/telemetry/trace";
-import { type Annotation, AnnotationType } from "@/analysis/analysisTypes";
+import {
+  type AnalysisAnnotation,
+  AnnotationType,
+} from "@/analysis/analysisTypes";
 
 type DecideBlockStatusArgs = {
-  blockAnnotations: Annotation[];
+  blockAnnotations: AnalysisAnnotation[];
   traceRecord: TraceRecord;
 };
 
@@ -61,7 +64,7 @@ export function decideBlockStatus({
 
 type DecideFoundationStatusArgs = {
   hasTraces: boolean;
-  blockAnnotations: Annotation[];
+  blockAnnotations: AnalysisAnnotation[];
 };
 export function decideFoundationStatus({
   hasTraces,

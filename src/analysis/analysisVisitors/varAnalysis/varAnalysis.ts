@@ -29,7 +29,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import {
   type Analysis,
-  type Annotation,
+  type AnalysisAnnotation,
   AnnotationType,
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
@@ -106,13 +106,13 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private currentBlockKnownVars: VarMap;
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
-  protected readonly annotations: Annotation[] = [];
+  protected readonly annotations: AnalysisAnnotation[] = [];
 
   get id() {
     return "var";
   }
 
-  getAnnotations(): Annotation[] {
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 
