@@ -31,7 +31,7 @@ import {
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
-import { get, set } from "lodash";
+import { get, isEmpty, set } from "lodash";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
@@ -67,7 +67,7 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
         message,
         type,
       };
-      if (showFieldActions) {
+      if (showFieldActions && !isEmpty(actions)) {
         fieldAnnotation.actions = actions.map((action) =>
           makeFieldActionForAnnotationAction(action, formik)
         );

@@ -332,7 +332,8 @@ const annotationsForPathSelector = createSelector(
   (state: RootState, path: string) => path,
   (activeElementId, annotations, path) => {
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    const pathAnnotations = annotations[activeElementId].filter(
+    const elementAnnotations = annotations[activeElementId] ?? [];
+    const pathAnnotations = elementAnnotations.filter(
       (x) => x.position.path === path
     );
     return sortBy(pathAnnotations, (annotation) => {

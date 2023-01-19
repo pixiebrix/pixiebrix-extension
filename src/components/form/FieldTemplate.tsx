@@ -119,7 +119,9 @@ const FieldTemplate: React.FC<FieldProps> = ({
 }) => {
   const annotations: FieldAnnotation[] = untypedAnnotations;
   const isInvalid = !isEmpty(
-    annotations.filter((annotation) => annotation.type === AnnotationType.Error)
+    annotations?.filter(
+      (annotation) => annotation.type === AnnotationType.Error
+    )
   );
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
