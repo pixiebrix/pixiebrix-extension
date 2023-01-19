@@ -53,6 +53,7 @@ import {
   type ServiceSlice,
 } from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
+import { basicErrorAnnotation } from "@/components/form/FieldAnnotation";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -178,8 +179,9 @@ const ServiceField: React.FunctionComponent<
   const [authOptions, refreshOptions] = useAuthOptions();
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
-  const [{ value, ...field }, meta, helpers] =
+  const [{ value, ...field }, { touched, error }, helpers] =
     useField<Expression<ServiceKeyVar>>(props);
+  const annotations = [basicErrorAnnotation(error)];
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -292,8 +294,8 @@ const ServiceField: React.FunctionComponent<
       refreshOptions={refreshOptions}
       value={selectedValue}
       onChange={onChange}
-      error={meta.error}
-      touched={meta.touched}
+      annotations={annotations}
+      touched={touched}
     />
   );
 };
