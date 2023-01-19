@@ -35,7 +35,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
-import { Schema } from "@/core";
+import { type Schema } from "@/core";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
