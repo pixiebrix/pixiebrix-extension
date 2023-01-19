@@ -57,10 +57,6 @@ const PermissionRow: React.FunctionComponent<{
 const PermissionsSettings: React.FunctionComponent = () => {
   const permissions = useExtensionPermissions();
 
-  // `devtools` is actually a required permission that gets added automatically
-  // https://github.com/fregante/webext-additional-permissions/issues/6
-  remove(permissions, ({ name }) => name === "devtools");
-
   const removeOrigin = useCallback(async (origin: string) => {
     await browser.permissions.remove({ origins: [origin] });
     notify.success(`Removed permission for ${origin}`);
@@ -82,12 +78,15 @@ const PermissionsSettings: React.FunctionComponent = () => {
       <ListGroup variant="flush">
         {permissions.map(
           ({ name, isUnique, isOrigin, isAdditional }) =>
+            // Only show removable permissions
             isAdditional &&
+            // Exclude overlapping permissions, unless it's a dev build
             (isUnique || IS_DEV) && (
               <PermissionRow
                 key={name}
                 value={name}
                 remove={
+                  // Removing a non-unique permission does nothing, so don't show the button
                   isUnique ? (isOrigin ? removeOrigin : removePermission) : null
                 }
               />

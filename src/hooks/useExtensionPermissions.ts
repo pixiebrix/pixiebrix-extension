@@ -28,34 +28,38 @@ type DetailedPermissions = Array<{
   isUnique: boolean;
 }>;
 
+async function getDetailedPermissions() {
+  const all = await browser.permissions.getAll();
+  const unique = dropOverlappingPermissions(all);
+  const additional = selectAdditionalPermissionsSync(all);
+  return [
+    ...all.permissions.sort().map((permission) => ({
+      name: permission,
+      isOrigin: false,
+      isUnique: unique.permissions.includes(permission),
+      isAdditional: additional.permissions.includes(permission),
+    })),
+    ...all.origins.sort().map((origin) => ({
+      name: origin,
+      isOrigin: true,
+      isUnique: unique.origins.includes(origin),
+      isAdditional: additional.origins.includes(origin),
+    })),
+  ];
+}
+
+/** Returns a sorted array of all the permission with details, auto-updating */
 export default function useExtensionPermissions(): DetailedPermissions {
   const [permissions, setPermissions] = useState<DetailedPermissions>([]);
-  console.log({ permissions });
 
   const update = async () => {
-    const all = await browser.permissions.getAll();
-    const additional = selectAdditionalPermissionsSync(all);
-    const unique = dropOverlappingPermissions(all);
-    setPermissions([
-      ...all.permissions.sort().map((permission) => ({
-        name: permission,
-        isOrigin: false,
-        isUnique: unique.permissions.includes(permission),
-        isAdditional: additional.permissions.includes(permission),
-      })),
-      ...all.origins.sort().map((origin) => ({
-        name: origin,
-        isOrigin: true,
-        isUnique: unique.origins.includes(origin),
-        isAdditional: additional.origins.includes(origin),
-      })),
-    ]);
+    setPermissions(await getDetailedPermissions());
   };
 
   useEffect(() => {
+    void update();
     browser.permissions.onAdded.addListener(update);
     browser.permissions.onRemoved.addListener(update);
-    void update();
     return () => {
       browser.permissions.onAdded.removeListener(update);
       browser.permissions.onRemoved.removeListener(update);
