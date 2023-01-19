@@ -35,6 +35,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
+import { Schema } from "@/core";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -302,9 +303,9 @@ describe("Collecting available vars", () => {
   });
 
   describe("output key schema", () => {
-    test("reads output schema of a block when defined", async () => {
-      const outputKey = validateOutputKey("foo");
+    const outputKey = validateOutputKey("foo");
 
+    async function runAnalysisWithOutputSchema(outputSchema: Schema) {
       const extension = formStateFactory(undefined, [
         blockConfigFactory({
           outputKey,
@@ -318,21 +319,7 @@ describe("Collecting available vars", () => {
             {
               block: {
                 // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
-                outputSchema: {
-                  $schema: "https://json-schema.org/draft/2019-09/schema#",
-                  type: "object",
-                  properties: {
-                    innerHTML: {
-                      type: "string",
-                      description: "The HTML inside the element/document",
-                    },
-                    outerHTML: {
-                      type: "string",
-                      description: "The HTML including the element/document",
-                    },
-                  },
-                  required: ["innerHTML", "outerHTML"],
-                },
+                outputSchema,
               },
             },
           ],
@@ -341,9 +328,28 @@ describe("Collecting available vars", () => {
 
       await analysis.run(extension);
 
-      const secondBlockKnownVars = analysis
-        .getKnownVars()
-        .get("extension.blockPipeline.1");
+      return analysis.getKnownVars().get("extension.blockPipeline.1");
+    }
+
+    test("reads output schema of a block when defined", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema(
+        // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+        {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          type: "object",
+          properties: {
+            innerHTML: {
+              type: "string",
+              description: "The HTML inside the element/document",
+            },
+            outerHTML: {
+              type: "string",
+              description: "The HTML including the element/document",
+            },
+          },
+          required: ["innerHTML", "outerHTML"],
+        }
+      );
 
       // Knows schema variables are defined
       expect(
@@ -357,6 +363,61 @@ describe("Collecting available vars", () => {
       expect(
         secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
       ).toBeFalse();
+    });
+
+    test("supports output schema with no properties", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema(
+        // FormData's output schema, see @/blocks/transformers/FormData.ts
+        {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          type: "object",
+          additionalProperties: true,
+        }
+      );
+
+      // The output key allows any property
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+      ).toBeTrue();
+    });
+
+    test("supports array properties in output schema", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema(
+        // PageSemanticReader's output schema, see @/blocks/readers/PageSemanticReader.ts
+        {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          type: "object",
+          properties: {
+            alternate: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  type: {
+                    type: "string",
+                  },
+                  href: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        }
+      );
+
+      // The output key allows only known properties
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`)
+      ).toBeFalse();
+
+      // The array property allows any child
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeTrue();
     });
   });
 

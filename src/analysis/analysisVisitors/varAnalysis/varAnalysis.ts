@@ -109,6 +109,12 @@ function setVarsFromSchema({
 }: SetVarsFromSchemaArgs) {
   const { properties, required } = schema;
   if (properties == null) {
+    contextVars.setExistence(
+      source,
+      parentPath,
+      existenceOverride ?? VarExistence.DEFINITELY,
+      true
+    );
     return;
   }
 
@@ -124,16 +130,26 @@ function setVarsFromSchema({
         source,
         parentPath: [...parentPath, key],
       });
-      continue;
-    }
+    } else if (propertySchema.type === "array") {
+      const existence =
+        existenceOverride ?? required?.includes(key)
+          ? VarExistence.DEFINITELY
+          : VarExistence.MAYBE;
 
-    contextVars.setExistence(
-      source,
-      [...parentPath, key],
-      existenceOverride ?? required?.includes(key)
-        ? VarExistence.DEFINITELY
-        : VarExistence.MAYBE
-    );
+      // Parent node do not allow arbitrary children
+      contextVars.setExistence(source, parentPath, existence);
+
+      // The array property can have any child
+      contextVars.setExistence(source, [...parentPath, key], existence, true);
+    } else {
+      contextVars.setExistence(
+        source,
+        [...parentPath, key],
+        existenceOverride ?? required?.includes(key)
+          ? VarExistence.DEFINITELY
+          : VarExistence.MAYBE
+      );
+    }
   }
 }
 

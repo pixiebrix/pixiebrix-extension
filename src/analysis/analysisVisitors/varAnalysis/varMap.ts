@@ -58,7 +58,8 @@ class VarMap {
   public setExistence(
     source: string,
     path: string | string[],
-    existence: VarExistence
+    existence: VarExistence,
+    allowAnyChild = false
   ): void {
     const pathParts = [
       source,
@@ -78,7 +79,7 @@ class VarMap {
 
     setWith(this.map, pathParts, existence, (currentNode) => {
       if (currentNode == null) {
-        return createNode(existence);
+        return createNode(existence, allowAnyChild);
       }
 
       if (
