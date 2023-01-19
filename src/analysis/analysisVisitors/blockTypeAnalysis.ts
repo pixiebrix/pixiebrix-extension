@@ -16,10 +16,10 @@
  */
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { AnnotationType } from "@/analysis/analysisTypes";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
+import { AnnotationType } from "@/types";
 
 class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
   get id() {

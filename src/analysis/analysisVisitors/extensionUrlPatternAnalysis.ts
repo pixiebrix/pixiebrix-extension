@@ -18,11 +18,11 @@
 import {
   type Analysis,
   type AnalysisAnnotation,
-  AnnotationType,
 } from "@/analysis/analysisTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
+import { AnnotationType } from "@/types";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;

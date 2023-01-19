@@ -30,12 +30,12 @@ import { isEmpty } from "lodash";
 import {
   type Analysis,
   type AnalysisAnnotation,
-  AnnotationType,
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
+import { AnnotationType } from "@/types";
 
 const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
