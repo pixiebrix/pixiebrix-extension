@@ -16,22 +16,40 @@
  */
 
 import { useEffect, useState } from "react";
+import {
+  dropOverlappingPermissions,
+  selectAdditionalPermissionsSync,
+} from "webext-additional-permissions";
 
-type Permissions = chrome.permissions.Permissions;
+type DetailedPermissions = Array<{
+  name: string;
+  isOrigin: boolean;
+  isAdditional: boolean;
+  isUnique: boolean;
+}>;
 
-export default function useExtensionPermissions(): Permissions {
-  const [permissions, setPermissions] = useState<Permissions>({
-    permissions: [],
-    origins: [],
-  });
+export default function useExtensionPermissions(): DetailedPermissions {
+  const [permissions, setPermissions] = useState<DetailedPermissions>([]);
   console.log({ permissions });
 
   const update = async () => {
-    const { permissions, origins } = await browser.permissions.getAll();
-    setPermissions({
-      permissions: permissions.sort(),
-      origins: origins.sort(),
-    });
+    const all = await browser.permissions.getAll();
+    const additional = selectAdditionalPermissionsSync(all);
+    const unique = dropOverlappingPermissions(all);
+    setPermissions([
+      ...all.permissions.sort().map((permission) => ({
+        name: permission,
+        isOrigin: false,
+        isUnique: unique.permissions.includes(permission),
+        isAdditional: additional.permissions.includes(permission),
+      })),
+      ...all.origins.sort().map((origin) => ({
+        name: origin,
+        isOrigin: true,
+        isUnique: unique.origins.includes(origin),
+        isAdditional: additional.origins.includes(origin),
+      })),
+    ]);
   };
 
   useEffect(() => {
