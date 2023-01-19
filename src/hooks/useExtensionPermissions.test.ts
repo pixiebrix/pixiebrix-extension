@@ -18,17 +18,11 @@
 import { renderHook } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { getChromeEventMocks, waitForEffect } from "@/testUtils/testHelpers";
 
 browser.permissions.getAll = jest.fn();
-(browser.permissions.onAdded as any) = {
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-};
-(browser.permissions.onRemoved as any) = {
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-};
+browser.permissions.onAdded = getChromeEventMocks();
+browser.permissions.onRemoved = getChromeEventMocks();
 
 const getAllMock = jest.mocked(browser.permissions.getAll);
 const selectAdditionalMock = jest.mocked(selectAdditionalPermissionsSync);
