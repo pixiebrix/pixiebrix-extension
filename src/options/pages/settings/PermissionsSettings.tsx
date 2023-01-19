@@ -18,7 +18,6 @@
 import React, { useCallback } from "react";
 import notify from "@/utils/notify";
 import { type Manifest } from "webextension-polyfill";
-import { remove } from "lodash";
 import { Badge, Button, Card, ListGroup } from "react-bootstrap";
 import useExtensionPermissions from "@/hooks/useExtensionPermissions";
 
