@@ -25,6 +25,7 @@ import {
   type DeployResponse,
   type Device,
   type DevicePool,
+  type Execution,
   FAILURE_STATUSES,
   type Folder,
   type Interface,
@@ -335,7 +336,7 @@ export async function pollEnterpriseResult({
     const { data: activityList } = await proxyService<ListResponse<Activity>>(
       service,
       {
-        url: "/v2/activity/list",
+        url: "/v3/activity/list",
         method: "post",
         data: {
           filter: {
@@ -370,7 +371,7 @@ export async function pollEnterpriseResult({
     const activity = activityList.list[0];
 
     if (activity.status === "COMPLETED") {
-      return selectBotOutput(activity);
+      return activity;
     }
 
     if (FAILURE_STATUSES.has(activity.status)) {
@@ -381,13 +382,25 @@ export async function pollEnterpriseResult({
     }
   };
 
-  const result = await pollUntilTruthy(poll, {
+  const completedActivity = await pollUntilTruthy(poll, {
     intervalMillis: 0, // Already covered by the inline `sleep`
     maxWaitMillis,
   });
 
-  if (result) {
-    return result;
+  if (completedActivity) {
+    const { data: execution } = await proxyService<Execution>(service, {
+      url: `/v3/activity/execution/${completedActivity.id}`,
+      method: "get",
+      data: {
+        filter: {
+          operator: "eq",
+          field: "deploymentId",
+          value: deploymentId,
+        },
+      },
+    });
+
+    return selectBotOutput(execution);
   }
 
   throw new BusinessError(
