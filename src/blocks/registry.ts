@@ -60,7 +60,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
 
     console.debug("Computing block types for %d block(s)", items.length);
 
-    await Promise.allSettled(
+    const typePromises = await Promise.allSettled(
       items.map(async (item) => {
         // XXX: will we run into problems with circular dependency between getType and the registry exported from
         //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
@@ -71,6 +71,13 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
         });
       })
     );
+
+    const failureCount = typePromises.filter(
+      (x) => x.status === "rejected"
+    ).length;
+    if (failureCount > 0) {
+      console.warn("Failed to compute type for %d block(s)", failureCount);
+    }
 
     return typeCache;
   }

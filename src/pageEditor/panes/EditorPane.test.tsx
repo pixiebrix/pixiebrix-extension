@@ -115,7 +115,7 @@ jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn().mockResolvedValue(true),
 }));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
-jest.mock("@/hooks/useRefresh");
+jest.mock("@/hooks/useRefreshRegistries");
 jest.mock("@/hooks/useTheme", () => ({
   useGetTheme: jest.fn(),
 }));

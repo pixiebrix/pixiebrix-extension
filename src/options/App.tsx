@@ -34,7 +34,7 @@ import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import useRefresh from "@/hooks/useRefresh";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import SetupPage from "@/options/pages/onboarding/SetupPage";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
@@ -62,7 +62,7 @@ registerDefaultWidgets();
 const RefreshBricks: React.VFC = () => {
   const dispatch = useDispatch();
   // Get the latest brick definitions. Defined as a component to put inside the RequireAuth gate in the layout.
-  useRefresh();
+  useRefreshRegistries();
 
   useEffect(() => {
     // Start polling logs
