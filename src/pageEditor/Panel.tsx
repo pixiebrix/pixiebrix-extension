@@ -22,7 +22,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import useRefresh from "@/hooks/useRefresh";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import PanelContent from "@/pageEditor/PanelContent";
 
 // Register the built-in bricks
@@ -35,7 +35,7 @@ registerDefaultWidgets();
 
 const Panel: React.VoidFunctionComponent = () => {
   // Refresh the brick registry on mount
-  useRefresh({ refreshOnMount: true });
+  useRefreshRegistries({ refreshOnMount: true });
 
   return (
     <Provider store={store}>
