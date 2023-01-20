@@ -25,7 +25,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
-import { refreshRegistries } from "@/hooks/useRefresh";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "redux";
 import { type IExtension } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";

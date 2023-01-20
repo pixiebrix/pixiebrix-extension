@@ -68,7 +68,7 @@ const throttledRefreshRegistries = throttle(
  * Hook to refresh brick registries.
  * @param options hook options, e.g., whether to refresh the registries on initial hook mount.
  */
-function useRefresh(options?: {
+function useRefreshRegistries(options?: {
   refreshOnMount: boolean;
 }): [boolean, () => Promise<void>] {
   const { refreshOnMount } = {
@@ -105,4 +105,4 @@ function useRefresh(options?: {
   return [loaded, refresh];
 }
 
-export default useRefresh;
+export default useRefreshRegistries;
