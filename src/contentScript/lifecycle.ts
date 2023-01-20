@@ -44,6 +44,7 @@ let _initialLoadNavigation = true;
 // Track the extensions installed on the page
 const _installed = new Map<UUID, IExtensionPoint>();
 // Track the dynamic extensions that are installed on the page (i.e., the ones loaded and changed in Page Editor)
+// _installed and _dynamic should be mutually exclusive
 const _dynamic = new Map<UUID, IExtensionPoint>();
 
 const _frameHref = new Map<number, string>();
@@ -110,21 +111,36 @@ export function getInstalled(): IExtensionPoint[] {
 /**
  * Remove an extension from an extension point on the page
  */
-export function removeExtension(
-  extensionPointId: RegistryId,
-  extensionId: UUID
-) {
+function removeInstalledExtension(extensionId: UUID) {
   // We need to select correct extensionPoint with extensionId param
-  const extensionPoint = _installedExtensionPoints.find(
-    (x) => x.id === extensionPointId
-  );
+  const extensionPoint = _installed.get(extensionId);
   if (extensionPoint) {
     extensionPoint.removeExtension(extensionId);
   } else {
-    console.warn("Extension point %s not found", extensionPointId);
+    console.warn("Extension point of extension %s not found", extensionId);
   }
 
   _installed.delete(extensionId);
+}
+
+function removeDynamicExtension(extensionId: UUID) {
+  const extensionPoint = _dynamic.get(extensionId);
+  if (extensionPoint) {
+    if (extensionPoint.kind === "actionPanel") {
+      const sidebar = extensionPoint as SidebarExtensionPoint;
+      // eslint-disable-next-line new-cap -- hack for action panels
+      sidebar.HACK_uninstallExceptExtension(extensionId);
+    } else {
+      extensionPoint.uninstall();
+    }
+  } else {
+    console.warn(
+      "Dynamic extension point of extension %s not found",
+      extensionId
+    );
+  }
+
+  _dynamic.delete(extensionId);
 }
 
 function markUninstalled(id: RegistryId) {
@@ -204,25 +220,18 @@ export async function runDynamic(
   elementId: UUID,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
-  // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
-  const previousExtensionPoint = _installed.get(elementId);
-  if (previousExtensionPoint) {
-    removeExtension(previousExtensionPoint.id, elementId);
+  // Uninstall the initial extension point instance in favor of the dynamic extensionPoint
+  if (_installed.has(elementId)) {
+    removeInstalledExtension(elementId);
   }
 
-  const previousDynamicExtensionPoint = _dynamic.get(elementId);
-
-  if (previousDynamicExtensionPoint) {
-    if (previousDynamicExtensionPoint.kind === "actionPanel") {
-      const sidebar = previousDynamicExtensionPoint as SidebarExtensionPoint;
-      // eslint-disable-next-line new-cap -- hack for action panels
-      sidebar.HACK_uninstallExceptExtension(elementId);
-    } else {
-      previousDynamicExtensionPoint.uninstall();
-    }
+  // Uninstall the previous extension point instance in favor of the updated extensionPoint
+  if (_dynamic.has(elementId)) {
+    removeDynamicExtension(elementId);
   }
 
   _dynamic.set(elementId, extensionPoint);
+
   await runExtensionPoint(
     extensionPoint,
     RunReason.MANUAL,

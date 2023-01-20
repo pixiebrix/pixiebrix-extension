@@ -92,7 +92,6 @@ declare global {
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
-    REMOVE_EXTENSION: typeof removeExtension;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -154,7 +153,6 @@ export default function registerMessenger(): void {
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
-    REMOVE_EXTENSION: removeExtension,
     RESET_TAB: resetTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
