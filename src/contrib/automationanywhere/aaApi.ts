@@ -391,13 +391,6 @@ export async function pollEnterpriseResult({
     const { data: execution } = await proxyService<Execution>(service, {
       url: `/v3/activity/execution/${completedActivity.id}`,
       method: "get",
-      data: {
-        filter: {
-          operator: "eq",
-          field: "deploymentId",
-          value: deploymentId,
-        },
-      },
     });
 
     return selectBotOutput(execution);
