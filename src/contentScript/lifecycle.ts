@@ -41,7 +41,12 @@ import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
 
 let _initialLoadNavigation = true;
+// Track the extensions installed on the page
+const _installed = new Map<UUID, IExtensionPoint>();
+// Track the dynamic extensions that are installed on the page (i.e., the ones loaded and changed in Page Editor)
+// _installed and _dynamic should be mutually exclusive
 const _dynamic = new Map<UUID, IExtensionPoint>();
+
 const _frameHref = new Map<number, string>();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
@@ -105,20 +110,44 @@ export function getInstalled(): IExtensionPoint[] {
 
 /**
  * Remove an extension from an extension point on the page
+ * if it's installed (i.e. clean saved extension)
  */
-export function removeExtension(
-  extensionPointId: RegistryId,
-  extensionId: UUID
-) {
+export function removeExtension(extensionId: UUID): void {
+  if (_installed.has(extensionId)) {
+    removeInstalledExtension(extensionId);
+  }
+}
+
+function removeInstalledExtension(extensionId: UUID) {
   // We need to select correct extensionPoint with extensionId param
-  const extensionPoint = _installedExtensionPoints.find(
-    (x) => x.id === extensionPointId
-  );
+  const extensionPoint = _installed.get(extensionId);
   if (extensionPoint) {
     extensionPoint.removeExtension(extensionId);
   } else {
-    console.warn("Extension point %s not found", extensionPointId);
+    console.warn("Extension point of extension %s not found", extensionId);
   }
+
+  _installed.delete(extensionId);
+}
+
+function removeDynamicExtension(extensionId: UUID) {
+  const extensionPoint = _dynamic.get(extensionId);
+  if (extensionPoint) {
+    if (extensionPoint.kind === "actionPanel") {
+      const sidebar = extensionPoint as SidebarExtensionPoint;
+      // eslint-disable-next-line new-cap -- hack for action panels
+      sidebar.HACK_uninstallExceptExtension(extensionId);
+    } else {
+      extensionPoint.uninstall();
+    }
+  } else {
+    console.warn(
+      "Dynamic extension point of extension %s not found",
+      extensionId
+    );
+  }
+
+  _dynamic.delete(extensionId);
 }
 
 function markUninstalled(id: RegistryId) {
@@ -198,20 +227,18 @@ export async function runDynamic(
   elementId: UUID,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
-  // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
-  const previousExtensionPoint = _dynamic.get(elementId);
+  // Uninstall the initial extension point instance in favor of the dynamic extensionPoint
+  if (_installed.has(elementId)) {
+    removeInstalledExtension(elementId);
+  }
 
-  if (previousExtensionPoint) {
-    if (previousExtensionPoint.kind === "actionPanel") {
-      const sidebar = previousExtensionPoint as SidebarExtensionPoint;
-      // eslint-disable-next-line new-cap -- hack for action panels
-      sidebar.HACK_uninstallExceptExtension(elementId);
-    } else {
-      previousExtensionPoint.uninstall();
-    }
+  // Uninstall the previous extension point instance in favor of the updated extensionPoint
+  if (_dynamic.has(elementId)) {
+    removeDynamicExtension(elementId);
   }
 
   _dynamic.set(elementId, extensionPoint);
+
   await runExtensionPoint(
     extensionPoint,
     RunReason.MANUAL,
@@ -229,6 +256,7 @@ async function loadExtensions() {
     (_extensionPoints ?? []).map((x) => x.id)
   );
 
+  _installed.clear();
   _extensionPoints = [];
 
   const options = await loadOptions();
@@ -246,39 +274,42 @@ async function loadExtensions() {
   const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
 
   await Promise.all(
-    Object.entries(extensionMap).map(async (entry) => {
-      // Object.entries loses the type information :sadface:
-      const [extensionPointId, extensions] = entry as unknown as [
+    Object.entries(extensionMap).map(
+      async ([extensionPointId, extensions]: [
         RegistryId,
         ResolvedExtension[]
-      ];
-
-      if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
-        // Ignore the case where we uninstalled the last extension, but the extension point was
-        // not deleted from the state.
-        //
-        // But for updates (i.e., re-activation flow) we need to include to so that when we run
-        // syncExtensions their elements are removed from the page
-        return;
-      }
-
-      try {
-        const extensionPoint = await extensionPointRegistry.lookup(
-          extensionPointId
-        );
-
-        extensionPoint.syncExtensions(extensions);
-
-        if (extensions.length > 0) {
-          // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
-          _extensionPoints.push(extensionPoint);
+      ]) => {
+        if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
+          // Ignore the case where we uninstalled the last extension, but the extension point was
+          // not deleted from the state.
+          //
+          // But for updates (i.e., re-activation flow) we need to include to so that when we run
+          // syncExtensions their elements are removed from the page
+          return;
         }
-      } catch (error) {
-        console.warn(`Error adding extension point: ${extensionPointId}`, {
-          error,
-        });
+
+        try {
+          const extensionPoint = await extensionPointRegistry.lookup(
+            extensionPointId
+          );
+
+          extensionPoint.syncExtensions(extensions);
+
+          if (extensions.length > 0) {
+            // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
+            _extensionPoints.push(extensionPoint);
+
+            for (const extension of extensions) {
+              _installed.set(extension.id, extensionPoint);
+            }
+          }
+        } catch (error) {
+          console.warn(`Error adding extension point: ${extensionPointId}`, {
+            error,
+          });
+        }
       }
-    })
+    )
   );
 }
 
