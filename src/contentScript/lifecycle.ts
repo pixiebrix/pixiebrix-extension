@@ -110,7 +110,14 @@ export function getInstalled(): IExtensionPoint[] {
 
 /**
  * Remove an extension from an extension point on the page
+ * if it's installed (i.e. clean saved extension)
  */
+export function removeExtension(extensionId: UUID): void {
+  if (_installed.has(extensionId)) {
+    removeInstalledExtension(extensionId);
+  }
+}
+
 function removeInstalledExtension(extensionId: UUID) {
   // We need to select correct extensionPoint with extensionId param
   const extensionPoint = _installed.get(extensionId);
