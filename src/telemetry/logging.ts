@@ -230,7 +230,7 @@ const warnAboutDisabledDNT = once(() => {
 
 const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
-let lastAxiosServerErrorTimestamp: Date = null;
+let lastAxiosServerErrorTimestamp: number = null;
 
 async function reportToRollbar(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
@@ -250,14 +250,13 @@ async function reportToRollbar(
     isAxiosError(error) &&
     THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response?.status)
   ) {
-    const now = new Date();
-
-    // JS allows subtracting dates directly but TS complains, so convert the dates to numbers to satisfy both:
+    // JS allows subtracting dates directly but TS complains, so get the date in milliseconds:
     // https://github.com/microsoft/TypeScript/issues/8260
-    // The result is in milliseconds.
+    const now = Date.now();
+
     if (
       lastAxiosServerErrorTimestamp &&
-      Number(now) - Number(lastAxiosServerErrorTimestamp) < THROTTLE_RATE_MS
+      now - lastAxiosServerErrorTimestamp < THROTTLE_RATE_MS
     ) {
       console.debug("Skipping Rollbar report due to throttling");
       return;
