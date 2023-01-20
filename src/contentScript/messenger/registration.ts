@@ -24,7 +24,6 @@ import {
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
-  removeExtension,
 } from "@/contentScript/lifecycle";
 import {
   getFormDefinition,
