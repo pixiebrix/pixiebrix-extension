@@ -250,7 +250,7 @@ async function reportToRollbar(
     isAxiosError(error) &&
     THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response?.status)
   ) {
-    // JS allows subtracting dates directly but TS complains, so get the date in milliseconds:
+    // JS allows subtracting dates directly but TS complains, so get the date as a number in milliseconds:
     // https://github.com/microsoft/TypeScript/issues/8260
     const now = Date.now();
 
