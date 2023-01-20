@@ -382,6 +382,8 @@ describe("Automation Anywhere - RunBot", () => {
   });
 
   it("awaits Enterprise Edition result", async () => {
+    const activityId = "288bf36b-e902-4ed2-a5bf-b5534eca137e_6bb3be11a848a48b";
+
     proxyServiceMock.mockImplementation(async (service, request) => {
       if (request.url.includes("deploy")) {
         return {
@@ -394,30 +396,43 @@ describe("Automation Anywhere - RunBot", () => {
         };
       }
 
-      if (request.url.includes("activity")) {
+      if (request.url.endsWith("/v3/activity/list")) {
         return {
           status: 200,
           statusText: "Success",
           data: {
             list: [
               {
+                id: activityId,
                 status: "COMPLETED",
-                botOutVariables: {
-                  values: {
-                    foo: {
-                      type: "STRING",
-                      string: "bar",
-                      number: "",
-                      boolean: "",
-                    },
-                  },
-                },
               },
             ],
           },
           $$proxied: false,
         };
       }
+
+      if (request.url.endsWith(`/v3/activity/execution/${activityId}`)) {
+        return {
+          status: 200,
+          statusText: "Success",
+          data: {
+            id: activityId,
+            botOutVariables: {
+              values: {
+                foo: {
+                  type: "STRING",
+                  string: "bar",
+                  number: "",
+                  boolean: "",
+                },
+              },
+            },
+          },
+        };
+      }
+
+      throw new Error("Unexpected request");
     });
 
     getCachedAuthDataMock.mockResolvedValue({
