@@ -51,6 +51,17 @@ export const neverPromise = async (...args: unknown[]): Promise<never> => {
   throw new Error("This method should not have been called");
 };
 
+/**
+ * Generate mocked listeners for browser.*.onEvent objects
+ * @example browser.permissions.onAdded = getChromeEventMocks();
+ */
+export const getChromeEventMocks = () => ({
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+});
+
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update
