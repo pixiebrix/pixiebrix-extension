@@ -140,7 +140,7 @@ const BrickHistory: React.FunctionComponent<{
             width="100%"
             theme="chrome"
             mode="yaml"
-            name={"DIFF_EDITOR_DIV"}
+            name="DIFF_EDITOR_DIV"
             readOnly
           />
         </Suspense>
