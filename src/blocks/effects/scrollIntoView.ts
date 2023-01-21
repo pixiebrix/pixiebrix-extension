@@ -19,11 +19,7 @@ import { Effect } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFindElementsWithRootMode } from "@/blocks/rootModeHelpers";
-import {
-  BusinessError,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
-} from "@/errors/businessErrors";
+import { assertSingleElement } from "@/utils/requireSingleElement";
 
 export class ScrollIntoViewEffect extends Effect {
   constructor() {
@@ -89,21 +85,9 @@ export class ScrollIntoViewEffect extends Effect {
       blockId: this.id,
     });
 
-    if ($elements.length > 1) {
-      throw new MultipleElementsFoundError(selector);
-    }
+    const element = assertSingleElement<HTMLElement>($elements, selector);
 
-    if ($elements.length === 0) {
-      throw new NoElementsFoundError(selector);
-    }
-
-    const element = $elements.get()[0];
-
-    if (element === document) {
-      throw new BusinessError("A target element is required");
-    }
-
-    (element as HTMLElement).scrollIntoView({
+    element.scrollIntoView({
       behavior,
       block,
       inline,
