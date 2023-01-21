@@ -38,7 +38,7 @@ export function wrapText({
   color: string;
 }) {
   for (const textNode of getTextNodes(nodes)) {
-    if ((textNode.parentNode as HTMLElement)?.tagName === "MARK") {
+    if (textNode.parentElement?.tagName === "MARK") {
       // Don't highlight text that's already highlighted
       continue;
     }
