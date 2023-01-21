@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   dropOverlappingPermissions,
   selectAdditionalPermissionsSync,
 } from "webext-additional-permissions";
+import { useAsyncState } from "./common";
 
 type DetailedPermissions = Array<{
   name: string;
@@ -50,21 +51,20 @@ async function getDetailedPermissions() {
 
 /** Returns a sorted array of all the permission with details, auto-updating */
 export default function useExtensionPermissions(): DetailedPermissions {
-  const [permissions, setPermissions] = useState<DetailedPermissions>([]);
-
-  const update = async () => {
-    setPermissions(await getDetailedPermissions());
-  };
+  const [permissions, _loading, _error, recalculate] = useAsyncState(
+    getDetailedPermissions,
+    [],
+    []
+  );
 
   useEffect(() => {
-    void update();
-    browser.permissions.onAdded.addListener(update);
-    browser.permissions.onRemoved.addListener(update);
+    browser.permissions.onAdded.addListener(recalculate);
+    browser.permissions.onRemoved.addListener(recalculate);
     return () => {
-      browser.permissions.onAdded.removeListener(update);
-      browser.permissions.onRemoved.removeListener(update);
+      browser.permissions.onAdded.removeListener(recalculate);
+      browser.permissions.onRemoved.removeListener(recalculate);
     };
-  }, []);
+  }, [recalculate]);
 
   return permissions;
 }
