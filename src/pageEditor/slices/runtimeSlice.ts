@@ -33,7 +33,6 @@ const runtimeSlice = createSlice({
       { payload }: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>
     ) {
       const { extensionId, records } = payload;
-      // @ts-expect-error -- infinite type warning caused by Partial over Output and Error states in TraceRecord?
       state.extensionTraces[extensionId] = records;
     },
   },
