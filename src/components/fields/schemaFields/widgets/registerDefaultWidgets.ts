@@ -33,6 +33,7 @@ import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
 import CssClassWidget from "./CssClassWidget";
 import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
+import IconWidget from "@/components/fields/IconWidget";
 
 const defaultWidgets = {
   ArrayWidget,
@@ -51,6 +52,7 @@ const defaultWidgets = {
   CssClassWidget,
   WorkshopMessageWidget,
   DatabaseWidget,
+  IconWidget,
   PasswordWidget,
 } as const;
 

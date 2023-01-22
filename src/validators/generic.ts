@@ -144,6 +144,7 @@ export async function validateInput(
     pipelineSchema,
     refSchema,
     databaseSchema,
+    iconSchema,
   ]) {
     // @ts-expect-error: loading statically
     validator.addSchema(inputArgSchema);

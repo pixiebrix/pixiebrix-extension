@@ -36,7 +36,7 @@ const PIXIEBRIX_SECTION = "PixieBrix";
 /**
  * `kbar` action with additional metadata about the extension point that added it.
  */
-type CustomAction = Action & {
+export type CustomAction = Action & {
   extensionPointId?: RegistryId;
 };
 
@@ -95,9 +95,13 @@ const defaultActions: Action[] = [
 
 type ChangeHandler = (actions: CustomAction[]) => void;
 
+export type ActionGenerator = (query: string) => Promise<void>;
+
 class QuickBarRegistry {
   private readonly actions: CustomAction[] = defaultActions;
   private readonly listeners: ChangeHandler[] = [];
+
+  private readonly actionGenerators: ActionGenerator[] = [];
 
   private notifyListeners() {
     for (const listener of this.listeners) {
@@ -109,7 +113,7 @@ class QuickBarRegistry {
     return this.actions;
   }
 
-  add(action: CustomAction): void {
+  addAction(action: CustomAction): void {
     remove(this.actions, (x) => x.id === action.id);
     this.actions.unshift(action);
     this.notifyListeners();
@@ -120,17 +124,31 @@ class QuickBarRegistry {
     this.notifyListeners();
   }
 
-  remove(id: string): void {
+  removeAction(id: string): void {
     remove(this.actions, (x) => x.id === id);
     this.notifyListeners();
   }
 
-  addListener(handler: ChangeHandler) {
+  addListener(handler: ChangeHandler): void {
     this.listeners.push(handler);
   }
 
-  removeListener(handler: ChangeHandler) {
+  removeListener(handler: ChangeHandler): void {
     pull(this.listeners, handler);
+  }
+
+  addGenerator(generator: ActionGenerator): void {
+    this.actionGenerators.push(generator);
+  }
+
+  removeGenerator(generator: ActionGenerator): void {
+    pull(this.actionGenerators, generator);
+  }
+
+  generateActions(query: string) {
+    for (const generator of this.actionGenerators) {
+      void generator(query);
+    }
   }
 }
 

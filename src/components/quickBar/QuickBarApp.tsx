@@ -32,7 +32,7 @@ import ReactShadowRoot from "react-shadow-root";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
-import { once } from "lodash";
+import { debounce, once } from "lodash";
 import { MAX_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
@@ -130,9 +130,22 @@ const KBarComponent: React.FC = () => {
   );
 };
 
+const debouncedGenerateActions = debounce(
+  (query: string) => {
+    quickBarRegistry.generateActions(query);
+  },
+  150,
+  { leading: false, trailing: true }
+);
+
 const QuickBarApp: React.FC = () => (
   /* Disable exit animation due to #3724. `enterMs` is required too */
-  <KBarProvider options={{ animations: { enterMs: 300, exitMs: 0 } }}>
+  <KBarProvider
+    options={{
+      animations: { enterMs: 300, exitMs: 0 },
+      callbacks: { onQueryChange: debouncedGenerateActions },
+    }}
+  >
     <AutoShow />
     <KBarComponent />
   </KBarProvider>

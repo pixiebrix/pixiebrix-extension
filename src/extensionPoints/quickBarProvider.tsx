@@ -17,10 +17,6 @@
 
 import React from "react";
 import {
-  type InitialValues,
-  reduceExtensionPipeline,
-} from "@/runtime/reducePipeline";
-import {
   type IBlock,
   type IconConfig,
   type IExtensionPoint,
@@ -42,69 +38,79 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import notify, {
-  DEFAULT_ACTION_RESULTS,
-  showNotification,
-} from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { makeServiceContext } from "@/services/serviceUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
-import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import quickBarRegistry, {
+  type ActionGenerator,
+} from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
-import { guessSelectedElement } from "@/utils/selectionController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
+import { makeServiceContext } from "@/services/serviceUtils";
+import { guessSelectedElement } from "@/utils/selectionController";
+import {
+  type InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { isSpecificError } from "@/errors/errorHelpers";
 
-export type QuickBarTargetMode = "document" | "eventTarget";
-
-export type QuickBarConfig = {
+export type QuickBarProviderConfig = {
   /**
-   * The title to show in the Quick Bar
+   * A root action. If provided, produced actions will be nested under this action.
    */
-  title: string;
+  rootAction?: {
+    /**
+     * The title of the parent action to show in the Quick Bar
+     */
+    title: string;
+
+    /**
+     * (Optional) the icon to show in the Quick Bar
+     */
+    icon?: IconConfig;
+  };
 
   /**
-   * (Optional) the icon to show in the Quick Bar
+   * Action generator pipeline.
    */
-  icon?: IconConfig;
-
-  action: BlockConfig | BlockPipeline;
+  generator: BlockConfig | BlockPipeline;
 };
 
-export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConfig> {
-  static isQuickBarExtensionPoint(
+export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<QuickBarProviderConfig> {
+  static isQuickBarProviderExtensionPoint(
     extensionPoint: IExtensionPoint
-  ): extensionPoint is QuickBarExtensionPoint {
-    // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (IExtensionPoint)
+  ): extensionPoint is QuickBarProviderExtensionPoint {
+    // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (IExtensionPoint)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (extensionPoint as any)?._definition?.type === "quickBar";
+    return (extensionPoint as any)?._definition?.type === "quickBarProvider";
   }
-
-  abstract get targetMode(): QuickBarTargetMode;
 
   abstract getBaseReader(): Promise<IReader>;
 
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
-  abstract readonly contexts: Menus.ContextType[];
+  private readonly generators: Map<UUID, ActionGenerator> = new Map<
+    UUID,
+    ActionGenerator
+  >();
 
   inputSchema: Schema = propertiesToSchema(
     {
-      title: {
-        type: "string",
-        description:
-          "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
+      rootAction: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+        },
       },
-      icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
-      action: {
+      generator: {
         oneOf: [
           { $ref: "https://app.pixiebrix.com/schemas/effect#" },
           {
@@ -114,26 +120,34 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
         ],
       },
     },
-    ["title", "action"]
+    ["generator"]
   );
 
   async getBlocks(
-    extension: ResolvedExtension<QuickBarConfig>
+    extension: ResolvedExtension<QuickBarProviderConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.action);
+    return blockList(extension.config.generator);
   }
 
-  public get kind(): "quickBar" {
-    return "quickBar";
+  public get kind(): "quickBarProvider" {
+    return "quickBarProvider";
   }
 
   override uninstall(): void {
+    // Remove generators and all existing actions in the Quick Bar
+    this.removeExtensions(this.extensions.map((x) => x.id));
     quickBarRegistry.removeExtensionPointActions(this.id);
+    this.extensions.splice(0, this.extensions.length);
   }
 
+  /**
+   * Unregister quick bar action providers for the given extension IDs.
+   * @param extensionIds the extensions IDs to unregister
+   */
   removeExtensions(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
-      quickBarRegistry.removeAction(extensionId);
+      quickBarRegistry.removeGenerator(this.generators.get(extensionId));
+      this.generators.delete(extensionId);
     }
   }
 
@@ -149,34 +163,19 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     return this.getBaseReader();
   }
 
-  decideRoot(target: HTMLElement | Document): HTMLElement | Document {
-    switch (this.targetMode) {
-      case "eventTarget": {
-        return target;
-      }
-
-      case "document": {
-        return document;
-      }
-
-      default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
-      }
-    }
-  }
-
-  private async syncActionsForUrl(): Promise<void> {
+  private async syncActionProvidersForUrl(): Promise<void> {
     // Remove any actions that were available on the previous navigation, but are no longer available
     if (!testMatchPatterns(this.documentUrlPatterns)) {
+      // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
+      this.removeExtensions(this.extensions.map((x) => x.id));
       return;
     }
 
     const results = await Promise.allSettled(
       this.extensions.map(async (extension) => {
         try {
-          await this.registerExtensionAction(extension);
+          await this.registerActionProvider(extension);
         } catch (error) {
           reportError(error, selectEventData(extension));
           throw error;
@@ -194,75 +193,69 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
    * Add a QuickBar action for extension
    * @private
    */
-  private async registerExtensionAction(
-    extension: ResolvedExtension<QuickBarConfig>
+  private async registerActionProvider(
+    extension: ResolvedExtension<QuickBarProviderConfig>
   ): Promise<void> {
-    const {
-      title: name,
-      action: actionConfig,
-      icon: iconConfig,
-    } = extension.config;
-
-    const icon = iconConfig ? (
-      <Icon icon={iconConfig.id} library={iconConfig.library} />
-    ) : (
-      <Icon />
-    ); // Defaults to a box
+    const { generator, rootAction } = extension.config;
 
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)
     );
 
-    quickBarRegistry.addAction({
-      id: extension.id,
-      extensionPointId: this.id,
-      name,
-      icon,
-      perform: async () => {
-        reportEvent("HandleQuickBar", selectEventData(extension));
+    if (rootAction) {
+      const { title, icon: iconConfig } = rootAction;
+      const icon = iconConfig ? (
+        <Icon icon={iconConfig.id} library={iconConfig.library} />
+      ) : (
+        <Icon />
+      ); // Defaults to a box
 
-        try {
-          const reader = await this.getBaseReader();
-          const serviceContext = await makeServiceContext(extension.services);
+      quickBarRegistry.addAction({
+        id: `provider-${extension.id}`,
+        extensionPointId: this.id,
+        name: title,
+        icon,
+      });
+    }
 
-          const targetElement = guessSelectedElement() ?? document;
+    const actionGenerator: ActionGenerator = async (query: string) => {
+      const reader = await this.getBaseReader();
+      const serviceContext = await makeServiceContext(extension.services);
 
-          const input = {
-            ...(await reader.read(this.decideRoot(targetElement))),
-            // Add some additional data that people will generally want
-            documentUrl: document.location.href,
-          };
+      const targetElement = guessSelectedElement() ?? document;
 
-          const initialValues: InitialValues = {
-            input,
-            root: this.decideRoot(targetElement),
-            serviceContext,
-            optionsArgs: extension.optionsArgs,
-          };
+      const input = {
+        query,
+        ...(await reader.read(targetElement)),
+      };
 
-          await reduceExtensionPipeline(actionConfig, initialValues, {
-            logger: extensionLogger,
-            ...apiVersionOptions(extension.apiVersion),
-          });
-        } catch (error) {
-          if (hasSpecificErrorCause(error, CancelError)) {
-            showNotification(DEFAULT_ACTION_RESULTS.cancel);
-          } else {
-            extensionLogger.error(error);
-            showNotification(DEFAULT_ACTION_RESULTS.error);
-          }
+      const initialValues: InitialValues = {
+        input,
+        root: targetElement,
+        serviceContext,
+        optionsArgs: extension.optionsArgs,
+      };
+
+      try {
+        await reduceExtensionPipeline(generator, initialValues, {
+          logger: extensionLogger,
+          ...apiVersionOptions(extension.apiVersion),
+        });
+      } catch (error) {
+        if (isSpecificError(error, CancelError)) {
+          // Ignore cancel errors. It means there's no results
         }
-      },
-    });
 
-    console.debug(
-      "Register quick bar action handler for: %s (%s)",
-      extension.id,
-      extension.label ?? "No Label",
-      {
-        extension,
+        throw error;
       }
-    );
+    };
+
+    // Remove previous generator (if any)
+    quickBarRegistry.removeGenerator(this.generators.get(extension.id));
+
+    // Register new generator
+    quickBarRegistry.addGenerator(actionGenerator);
+    this.generators.set(extension.id, actionGenerator);
   }
 
   async run(): Promise<void> {
@@ -275,24 +268,19 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
       return;
     }
 
-    await this.syncActionsForUrl();
+    await this.syncActionProvidersForUrl();
   }
 }
 
-export type QuickBarDefaultOptions = {
-  title?: string;
-  [key: string]: string | string[];
-};
+export type QuickBarProviderDefaultOptions = Record<string, string | string[]>;
 
-export interface QuickBarDefinition extends ExtensionPointDefinition {
+export interface QuickBarProviderDefinition extends ExtensionPointDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
-  contexts: Menus.ContextType[];
-  targetMode: QuickBarTargetMode;
-  defaultOptions?: QuickBarDefaultOptions;
+  defaultOptions?: QuickBarProviderDefaultOptions;
 }
 
-export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
-  private readonly _definition: QuickBarDefinition;
+export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderExtensionPoint {
+  private readonly _definition: QuickBarProviderDefinition;
 
   public readonly permissions: Permissions.Permissions;
 
@@ -300,27 +288,22 @@ export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: ExtensionPointConfig<QuickBarDefinition>;
+  public readonly rawConfig: ExtensionPointConfig<QuickBarProviderDefinition>;
 
-  constructor(config: ExtensionPointConfig<QuickBarDefinition>) {
+  constructor(config: ExtensionPointConfig<QuickBarProviderDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
-    const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
+    const { isAvailable, documentUrlPatterns } = cloned.definition;
     // If documentUrlPatterns not specified show everywhere
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);
-    this.contexts = castArray(contexts);
     this.permissions = {
       origins: isAvailable?.matchPatterns
         ? castArray(isAvailable.matchPatterns)
         : [],
     };
-  }
-
-  get targetMode(): QuickBarTargetMode {
-    return this._definition.targetMode ?? "eventTarget";
   }
 
   async isAvailable(): Promise<boolean> {
@@ -340,24 +323,18 @@ export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
     return mergeReaders(this._definition.reader);
   }
 
-  public override get defaultOptions(): {
-    title: string;
-    [key: string]: string | string[];
-  } {
-    return {
-      title: "PixieBrix",
-      ...this._definition.defaultOptions,
-    };
+  public override get defaultOptions(): QuickBarProviderDefaultOptions {
+    return this._definition.defaultOptions;
   }
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<QuickBarDefinition>
+  config: ExtensionPointConfig<QuickBarProviderDefinition>
 ): IExtensionPoint {
   const { type } = config.definition;
-  if (type !== "quickBar") {
-    throw new Error(`Expected type=quickBar, got ${type}`);
+  if (type !== "quickBarProvider") {
+    throw new Error(`Expected type=quickBarProvider, got ${type}`);
   }
 
-  return new RemoteQuickBarExtensionPoint(config);
+  return new RemoteQuickBarProviderExtensionPoint(config);
 }
