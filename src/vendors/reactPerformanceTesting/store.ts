@@ -11,7 +11,7 @@ const checkRenderTimeDeclaring = (prop: keyof PerfTools) => {
   }
 };
 
-type Store = {
+export type Store = {
   tools: PerfTools;
   componentsMap: WeakMap<Record<string, unknown>, any>;
   perfState: PerfState;
