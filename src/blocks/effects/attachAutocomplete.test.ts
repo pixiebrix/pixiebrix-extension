@@ -53,19 +53,40 @@ describe("AttachAutocomplete", () => {
   });
 
   test("it attaches autocomplete", async () => {
-    await brick.run(unsafeAssumeValidArg({ selector: "[name='name']" }), {
-      root: document,
-      logger,
-    } as unknown as BlockOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ selector: "[name='name']", options: ["a", "b"] }),
+      {
+        root: document,
+        logger,
+      } as unknown as BlockOptions
+    );
 
     expect(
-      document.querySelector("[name='name']").getAttribute("role")
-    ).toEqual("combobox");
+      document.querySelector("[name='name']").getAttribute("list")
+    ).toStartWith("pb-list");
+  });
+
+  test("it's skipped when there are no options", async () => {
+    await brick.run(
+      unsafeAssumeValidArg({ selector: "[name='name']", options: [] }),
+      {
+        root: document,
+        logger,
+      } as unknown as BlockOptions
+    );
+
+    expect(
+      document.querySelector("[name='name']").getAttribute("list")
+    ).toBeNull();
   });
 
   test("it is root aware", async () => {
     await brick.run(
-      unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
+      unsafeAssumeValidArg({
+        selector: "[name='name']",
+        isRootAware: true,
+        options: ["a", "b"],
+      }),
       {
         root: document.querySelector("#noForm"),
         logger,
@@ -73,11 +94,15 @@ describe("AttachAutocomplete", () => {
     );
 
     expect(
-      document.querySelector("[name='name']").getAttribute("role")
+      document.querySelector("[name='name']").getAttribute("list")
     ).toBeNull();
 
     await brick.run(
-      unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
+      unsafeAssumeValidArg({
+        selector: "[name='name']",
+        isRootAware: true,
+        options: ["a", "b"],
+      }),
       {
         root: document.querySelector("#hasForm"),
         logger,
@@ -85,7 +110,7 @@ describe("AttachAutocomplete", () => {
     );
 
     expect(
-      document.querySelector("[name='name']").getAttribute("role")
-    ).toEqual("combobox");
+      document.querySelector("[name='name']").getAttribute("list")
+    ).toStartWith("pb-list");
   });
 });

@@ -92,12 +92,13 @@ export class AttachAutocomplete extends Effect {
         isRootAware,
       });
 
-      // Return early to avoid injecting the stylesheet and loading the module
       return;
     }
 
-    const datalist = getDataList(options);
-    document.head.append(datalist);
-    $inputs.attr("list", datalist.id);
+    if (options?.length > 0) {
+      const datalist = getDataList(options);
+      document.head.append(datalist);
+      $inputs.attr("list", datalist.id);
+    }
   }
 }
