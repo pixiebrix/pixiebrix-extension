@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const SEARCH_WINDOW = "@@pixiebrix/script/SEARCH_WINDOW";
 export const READ_WINDOW = "@@pixiebrix/script/READ_WINDOW";
 export const SCRIPT_LOADED = "@@pixiebrix/script/SCRIPT_LOADED";
 export const CONNECT_EXTENSION = "@@pixiebrix/script/CONNECT_EXTENSION";
