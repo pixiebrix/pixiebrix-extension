@@ -109,7 +109,7 @@ function useInstallableViewItems(installables: Installable[]): {
           listing={listing}
           installable={installable}
           isLoading={listingsQuery.isLoading}
-          size={"2x"}
+          size="2x"
         />
       );
     },

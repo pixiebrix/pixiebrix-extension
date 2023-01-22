@@ -28,9 +28,9 @@ import { getCommonAncestor } from "@/utils/inference/selectorInference";
 export function guessSelectedElement(): HTMLElement | null {
   const selection = document.getSelection();
   if (selection?.rangeCount) {
-    const start = selection.getRangeAt(0).startContainer.parentNode;
+    const start = selection.getRangeAt(0).startContainer.parentElement;
     const end = selection.getRangeAt(selection.rangeCount - 1).endContainer
-      .parentNode;
+      .parentElement;
     const node = getCommonAncestor(start, end);
     if (node instanceof HTMLElement) {
       return node;

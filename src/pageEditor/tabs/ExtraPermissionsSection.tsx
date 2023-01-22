@@ -24,7 +24,7 @@ const ExtraPermissionsSection: React.FunctionComponent = () => (
     <UrlMatchPatternField
       label="Sites/APIs"
       name="permissions.origins"
-      addButtonCaption={"Add Allowed Origin"}
+      addButtonCaption="Add Allowed Origin"
       description={
         <div>
           URL match patterns permitting the extension to run on a site or call
