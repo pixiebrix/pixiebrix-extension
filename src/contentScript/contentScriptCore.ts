@@ -28,7 +28,6 @@ import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
-import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
@@ -54,7 +53,6 @@ export async function init(): Promise<void> {
   registerBuiltinBlocks();
   registerContribBlocks();
 
-  addListenerForUpdateSelectedElement();
   initTelemetry();
   initToaster();
   void initSandbox();

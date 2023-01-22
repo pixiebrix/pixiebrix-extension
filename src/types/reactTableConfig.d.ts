@@ -40,10 +40,6 @@ type ActionOptions<D extends object> = Partial<{
   actions: Record<string, (...args: unknown[]) => void>;
 }>;
 
-export interface ActionInstanceProps<D extends object> {
-  actions: Record<string, (...args: unknown[]) => void>;
-}
-
 declare module "react-table" {
   // Add entries for any plugins we use in the project. See the GitHub for all of the possible plugins/configurations
   // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-table

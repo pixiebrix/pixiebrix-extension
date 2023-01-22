@@ -15,26 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError, serializeError } from "serialize-error";
-import { makeRead, type ReaderTypeConfig } from "@/blocks/readers/factory";
-import { getComponentData } from "@/pageScript/messenger/api";
-import blockRegistry from "@/blocks/registry";
-import { getCssSelector } from "css-selector-generator";
+import { serializeError } from "serialize-error";
 import {
   blockReducer,
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import {
-  type ApiVersion,
-  type BlockArgContext,
-  type IReader,
-  type RegistryId,
-  type UUID,
-} from "@/core";
+import { type ApiVersion, type BlockArgContext, type UUID } from "@/core";
 // eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
-import { selectedElement } from "@/pageEditor/getSelectedElement";
-import { isNullOrBlank, resolveObj } from "@/utils";
 import { type BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
@@ -43,7 +31,6 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
-import selection from "@/utils/selectionController";
 import {
   BusinessError,
   CancelError,
@@ -54,22 +41,9 @@ import { type PanelPayload } from "@/sidebar/types";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
-import { KNOWN_READERS } from "@/pageScript/messenger/constants";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-
-async function read(factory: () => Promise<unknown>): Promise<unknown> {
-  try {
-    return await factory();
-  } catch (error) {
-    if (deserializeError(error).name === "ComponentNotFoundError") {
-      return "Component not detected";
-    }
-
-    return { error };
-  }
-}
 
 type RunBlockArgs = {
   apiVersion: ApiVersion;
@@ -237,86 +211,6 @@ export async function runRendererBlock(
       throw new Error(`Support for previewing in ${location} not implemented`);
     }
   }
-}
-
-export async function runReaderBlock({
-  id,
-  rootSelector,
-}: {
-  id: RegistryId;
-  rootSelector?: string;
-}) {
-  const root = isNullOrBlank(rootSelector)
-    ? document
-    : $safeFind(rootSelector).get(0);
-
-  if (id === "@pixiebrix/context-menu-data") {
-    // HACK: special handling for context menu built-in
-    if (root instanceof HTMLElement) {
-      return {
-        // TODO: extract the media type
-        mediaType: null,
-        // Use `innerText` because only want human readable elements
-        // https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext
-        // eslint-disable-next-line unicorn/prefer-dom-node-text-content
-        linkText: root.tagName === "A" ? root.innerText : null,
-        linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
-        srcUrl: root.getAttribute("src"),
-        documentUrl: document.location.href,
-      };
-    }
-
-    return {
-      selectionText: selection.get(),
-      documentUrl: document.location.href,
-    };
-  }
-
-  const reader = (await blockRegistry.lookup(id)) as IReader;
-  return reader.read(root);
-}
-
-export async function runReader({
-  config,
-  rootSelector,
-}: {
-  config: ReaderTypeConfig;
-  rootSelector?: string;
-}) {
-  console.debug("runReader", { config, rootSelector });
-
-  const root = isNullOrBlank(rootSelector)
-    ? document
-    : $safeFind(rootSelector).get(0);
-
-  return makeRead(config)(root);
-}
-
-export async function readSelected() {
-  if (selectedElement) {
-    const selector = getCssSelector(selectedElement);
-    console.debug(`Generated selector: ${selector}`);
-
-    const base: Record<string, unknown> = {
-      selector,
-      htmlData: $(selectedElement).data(),
-    };
-
-    const frameworkData = await resolveObj(
-      Object.fromEntries(
-        KNOWN_READERS.map((framework) => [
-          framework,
-          read(async () => getComponentData({ framework, selector })),
-        ])
-      )
-    );
-
-    return { ...base, ...frameworkData };
-  }
-
-  return {
-    error: "No element selected",
-  };
 }
 
 export async function resetTab(): Promise<void> {

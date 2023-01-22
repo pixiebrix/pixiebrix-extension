@@ -71,14 +71,6 @@ export const getUpdatedAt = (installable: Installable): string =>
       installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 
-const getSharing = (installable: Installable) =>
-  isExtension(installable) ? installable._recipe?.sharing : installable.sharing;
-
-export const isShared = (installable: Installable) => {
-  const sharing = getSharing(installable);
-  return sharing?.organizations?.length > 0 || sharing?.public;
-};
-
 const isPublic = (installable: Installable): boolean =>
   isExtension(installable)
     ? installable._recipe?.sharing?.public

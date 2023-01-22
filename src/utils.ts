@@ -345,27 +345,6 @@ export function excludeUndefined(obj: unknown): unknown {
   return obj;
 }
 
-export function evaluableFunction(
-  function_: (...parameters: unknown[]) => unknown
-): string {
-  return "(" + function_.toString() + ")()";
-}
-
-/**
- * Lift a unary function to pass through null/undefined.
- */
-export function optional<T extends (arg: unknown) => unknown>(
-  fn: T
-): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
-  return (arg: Parameters<T>[0]) => {
-    if (arg == null) {
-      return null;
-    }
-
-    return fn(arg) as ReturnType<T>;
-  };
-}
-
 /**
  * Returns true if `url` is an absolute URL, based on whether the URL contains a schema
  */

@@ -186,9 +186,6 @@ export const selectRecipeIsDirty =
   (recipeId?: RegistryId) => (state: EditorRootState) =>
     Boolean(recipeId) && recipeIsDirtySelector(state, recipeId);
 
-export const selectIsAddToRecipeModalVisible = ({ editor }: EditorRootState) =>
-  editor.visibleModalKey === ModalKey.ADD_TO_RECIPE;
-
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
   isAddToRecipeModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
   isRemoveFromRecipeModalVisible:

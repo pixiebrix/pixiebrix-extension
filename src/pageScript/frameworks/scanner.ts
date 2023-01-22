@@ -22,34 +22,3 @@ export interface Visitor {
 export interface RootInstanceVisitor<T> extends Visitor {
   readonly rootInstances: T[];
 }
-
-/**
- * DOM walk helper.
- */
-function walk(node: Node | Element, visitor: Visitor): void {
-  // Adapted from: https://github.com/vuejs/vue-devtools/blob/6d8fee4d058716fe72825c9ae22cf831ef8f5172/packages/app-backend/src/index.js#L198
-  // Could alternatively use TreeWalker similar to https://github.com/johnmichel/Library-Detector-for-Chrome/
-
-  if (node.childNodes) {
-    for (let i = 0, l = node.childNodes.length; i < l; i++) {
-      const child = node.childNodes[i];
-      const stop = visitor.visit(child);
-      if (!stop) {
-        walk(child, visitor);
-      }
-    }
-  }
-
-  // Also walk shadow DOM
-  if (node instanceof Element && node.shadowRoot) {
-    walk(node.shadowRoot, visitor);
-  }
-}
-
-/**
- * Scan the page for root level instances.
- */
-export function scan<T>(visitor: RootInstanceVisitor<T>): T[] {
-  walk(document, visitor);
-  return visitor.rootInstances;
-}

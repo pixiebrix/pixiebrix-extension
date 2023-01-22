@@ -421,11 +421,6 @@ export interface ServiceDependency {
   config?: UUID;
 }
 
-export type ServiceLocator = (
-  serviceId: RegistryId,
-  configurationId?: UUID
-) => Promise<SanitizedServiceConfiguration>;
-
 export type ServiceAuthPair = {
   /**
    * The registry id of the service.
