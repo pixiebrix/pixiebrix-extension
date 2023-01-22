@@ -187,7 +187,7 @@ export interface Message<
 }
 
 // `ContextName`s from webext-detect-page
-export type ContextName = keyof typeof contextNames | "unknown";
+type ContextName = keyof typeof contextNames | "unknown";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.

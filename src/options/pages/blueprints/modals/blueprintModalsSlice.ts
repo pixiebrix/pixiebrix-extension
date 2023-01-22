@@ -18,7 +18,7 @@
 import { type MessageContext, type RegistryId, type UUID } from "@/core";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-export type LogsContext = {
+type LogsContext = {
   title: string;
   messageContext: MessageContext;
 };
@@ -32,7 +32,7 @@ export type PublishContext = ShareContext & {
   cancelingPublish?: boolean;
 };
 
-export type BlueprintModalsState = {
+type BlueprintModalsState = {
   showLogsContext: LogsContext;
   showShareContext: ShareContext;
   showPublishContext: PublishContext;

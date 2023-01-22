@@ -162,7 +162,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   );
 };
 
-export function getPropertyRow(
+function getPropertyRow(
   schema: Schema
 ): React.FunctionComponent<PropertyRowProps> {
   switch (schema?.type) {

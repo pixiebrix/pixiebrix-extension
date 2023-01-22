@@ -26,7 +26,7 @@ export interface RootInstanceVisitor<T> extends Visitor {
 /**
  * DOM walk helper.
  */
-export function walk(node: Node | Element, visitor: Visitor): void {
+function walk(node: Node | Element, visitor: Visitor): void {
   // Adapted from: https://github.com/vuejs/vue-devtools/blob/6d8fee4d058716fe72825c9ae22cf831ef8f5172/packages/app-backend/src/index.js#L198
   // Could alternatively use TreeWalker similar to https://github.com/johnmichel/Library-Detector-for-Chrome/
 

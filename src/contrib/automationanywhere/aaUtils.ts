@@ -147,7 +147,7 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
-export function mapBotOutput(value: OutputValue): Primitive {
+function mapBotOutput(value: OutputValue): Primitive {
   switch (value.type) {
     case "STRING": {
       return value.string;

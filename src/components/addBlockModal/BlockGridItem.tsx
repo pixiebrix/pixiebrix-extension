@@ -28,7 +28,7 @@ import Alert from "@/components/Alert";
 
 export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
 
-export type BlockItemProps = {
+type BlockItemProps = {
   block: BlockResult;
   onSelect: () => void;
   onShowDetail: () => void;

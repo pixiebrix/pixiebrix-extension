@@ -22,7 +22,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
-export const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
+const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
 

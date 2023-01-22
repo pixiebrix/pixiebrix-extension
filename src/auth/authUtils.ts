@@ -19,7 +19,7 @@ import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
 import { type UUID } from "@/core";
 
-export function selectOrganizations(
+function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]
 ): AuthState["organizations"] {
   if (organizationMemberships == null) {

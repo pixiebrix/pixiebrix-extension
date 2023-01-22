@@ -37,7 +37,7 @@ export type ExistenceNode = {
  * @param selfExistence Existence of the current node
  * @param allowAnyChild Whether the current node allows any child (i.e. doesn't have  a strict schema)
  */
-export function createNode(
+function createNode(
   selfExistence: VarExistence,
   allowAnyChild = false
 ): ExistenceNode {

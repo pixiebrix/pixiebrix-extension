@@ -75,7 +75,7 @@ export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 export const selectDeletedElements = ({ editor }: EditorRootState) =>
   editor.deletedElementsByRecipeId;
 
-export const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
+const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedElementsByRecipeId).map((formState) => formState.uuid)
   );
@@ -237,7 +237,7 @@ export function selectActiveElementUIState({
   return editor.elementUIStates[editor.activeElementId];
 }
 
-export const selectActiveNodeUIState = createSelector(
+const selectActiveNodeUIState = createSelector(
   selectActiveElementUIState,
   (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
 );

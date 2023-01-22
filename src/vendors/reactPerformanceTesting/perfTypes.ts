@@ -9,7 +9,7 @@ export interface RenderTimeField {
 
 export type DefaultPerfToolsField = Record<string, any>;
 
-export type PerfToolsMutation<T, U> = {
+type PerfToolsMutation<T, U> = {
   [K in keyof T]: T[K] extends unknown[]
     ? U[]
     : U extends unknown

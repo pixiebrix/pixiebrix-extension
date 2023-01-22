@@ -26,10 +26,8 @@ import {
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { lowerCase } from "lodash";
 
-export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
-export const TABLE_READER_ALL_ID = validateRegistryId(
-  "@pixiebrix/table-reader-all"
-);
+const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
+const TABLE_READER_ALL_ID = validateRegistryId("@pixiebrix/table-reader-all");
 
 export class TableReader extends Transformer {
   constructor() {

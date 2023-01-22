@@ -71,7 +71,7 @@ export const getUpdatedAt = (installable: Installable): string =>
       installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 
-export const getSharing = (installable: Installable) =>
+const getSharing = (installable: Installable) =>
   isExtension(installable) ? installable._recipe?.sharing : installable.sharing;
 
 export const isShared = (installable: Installable) => {
@@ -79,7 +79,7 @@ export const isShared = (installable: Installable) => {
   return sharing?.organizations?.length > 0 || sharing?.public;
 };
 
-export const isPublic = (installable: Installable): boolean =>
+const isPublic = (installable: Installable): boolean =>
   isExtension(installable)
     ? installable._recipe?.sharing?.public
     : installable.sharing.public;
@@ -93,7 +93,7 @@ const hasSourceRecipeWithScope = (extension: IExtension, scope: string) =>
 const hasRecipeScope = (recipe: RecipeDefinition, scope: string) =>
   Boolean(recipe.metadata?.id.startsWith(scope + "/"));
 
-export const isPersonal = (installable: Installable, userScope: string) => {
+const isPersonal = (installable: Installable, userScope: string) => {
   if (isExtension(installable)) {
     return (
       isPersonalExtension(installable) ||
@@ -244,7 +244,7 @@ export function updateAvailable(
   return false;
 }
 
-export const getOrganization = (
+const getOrganization = (
   installable: Installable,
   organizations: Organization[]
 ) => {

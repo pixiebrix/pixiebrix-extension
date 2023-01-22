@@ -42,7 +42,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 
-export type OwnProps = {
+type OwnProps = {
   configuration: RawServiceConfiguration;
   service: IService;
   onClose: () => void;

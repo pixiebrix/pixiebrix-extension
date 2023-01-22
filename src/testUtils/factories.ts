@@ -252,7 +252,7 @@ export const cloudExtensionFactory = (
   return extension;
 };
 
-export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
+const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
   timestamp: timestampFactory,
@@ -711,7 +711,7 @@ export const sanitizedServiceConfigurationFactory =
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);
 
-export const foundationOutputFactory = define<JsonObject>({
+const foundationOutputFactory = define<JsonObject>({
   "@input": () => ({
     icon: "",
     title: "Test website title | test.com",

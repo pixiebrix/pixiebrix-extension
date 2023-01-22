@@ -71,7 +71,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
-export type RunBlockArgs = {
+type RunBlockArgs = {
   apiVersion: ApiVersion;
   blockConfig: BlockConfig;
   /**

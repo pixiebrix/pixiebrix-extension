@@ -243,7 +243,7 @@ function isBrickSchema(schema: Schema): boolean {
   );
 }
 
-export function configSchemaFactory(
+function configSchemaFactory(
   schema: Schema,
   { required = false }: Options = {} as Options
 ): Lazy<Yup.BaseSchema> | Yup.BaseSchema {
@@ -393,7 +393,7 @@ function serviceSchemaFactory(): Yup.ArraySchema<Yup.AnySchema> {
     );
 }
 
-export function extensionValidatorFactory(schema: Schema): Yup.AnyObjectSchema {
+function extensionValidatorFactory(schema: Schema): Yup.AnyObjectSchema {
   return Yup.object().shape({
     label: Yup.string(),
     services: serviceSchemaFactory(),
