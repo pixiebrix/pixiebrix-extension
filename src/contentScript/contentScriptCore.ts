@@ -27,7 +27,6 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
-// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {

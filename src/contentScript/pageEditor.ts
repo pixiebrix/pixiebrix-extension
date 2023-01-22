@@ -22,7 +22,6 @@ import {
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
 import { type ApiVersion, type BlockArgContext, type UUID } from "@/core";
-// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { type BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
