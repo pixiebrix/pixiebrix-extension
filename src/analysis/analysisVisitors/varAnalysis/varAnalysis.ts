@@ -128,12 +128,12 @@ function setVarsFromSchema({
 }: SetVarsFromSchemaArgs) {
   const { properties, required } = schema;
   if (properties == null) {
-    contextVars.setExistence(
+    contextVars.setExistence({
       source,
-      parentPath,
-      existenceOverride ?? VarExistence.DEFINITELY,
-      true
-    );
+      path: parentPath,
+      existence: existenceOverride ?? VarExistence.DEFINITELY,
+      allowAnyChild: true,
+    });
     return;
   }
 
@@ -156,18 +156,24 @@ function setVarsFromSchema({
           : VarExistence.MAYBE;
 
       // Parent node do not allow arbitrary children
-      contextVars.setExistence(source, parentPath, existence);
+      contextVars.setExistence({ source, path: parentPath, existence });
 
       // The array property can have any child
-      contextVars.setExistence(source, [...parentPath, key], existence, true);
-    } else {
-      contextVars.setExistence(
+      contextVars.setExistence({
         source,
-        [...parentPath, key],
-        existenceOverride ?? required?.includes(key)
-          ? VarExistence.DEFINITELY
-          : VarExistence.MAYBE
-      );
+        path: [...parentPath, key],
+        existence,
+        allowAnyChild: true,
+      });
+    } else {
+      contextVars.setExistence({
+        source,
+        path: [...parentPath, key],
+        existence:
+          existenceOverride ?? required?.includes(key)
+            ? VarExistence.DEFINITELY
+            : VarExistence.MAYBE,
+      });
     }
   }
 }
@@ -196,11 +202,11 @@ async function setOptionsVars(extension: FormState, contextVars: VarMap) {
 
   if (!isEmpty(extension.optionsArgs)) {
     for (const optionName of Object.keys(extension.optionsArgs)) {
-      contextVars.setExistence(
+      contextVars.setExistence({
         source,
-        [optionsOutputKey, optionName],
-        VarExistence.DEFINITELY
-      );
+        path: [optionsOutputKey, optionName],
+        existence: VarExistence.DEFINITELY,
+      });
     }
   }
 }
