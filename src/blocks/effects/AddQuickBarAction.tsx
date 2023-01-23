@@ -99,10 +99,16 @@ class AddQuickBarAction extends Effect {
     // Keep track of run for tracing
     let counter = 0;
 
+    // Expected parent id from QuickBarProviderExtensionPoint
+    const parentId = `provider-${logger.context.extensionId}`;
+
     const action: CustomAction = {
-      // Known Issue: if the creator changes the title, the old actions will still appear in the quick bar.
+      // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
       id: `${logger.context.extensionId}-${title}`,
-      parent: `provider-${logger.context.extensionId}`,
+      // Can only provide a parent if the parent exists
+      parent: quickBarRegistry.knownGeneratorRootIds.has(parentId)
+        ? parentId
+        : undefined,
       name: title,
       subtitle,
       section,

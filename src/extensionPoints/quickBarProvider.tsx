@@ -202,6 +202,8 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
       selectExtensionContext(extension)
     );
 
+    let rootActionId: string = null;
+
     if (rootAction) {
       const { title, icon: iconConfig } = rootAction;
       const icon = iconConfig ? (
@@ -210,15 +212,25 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
         <Icon />
       ); // Defaults to a box
 
+      rootActionId = `provider-${extension.id}`;
+
       quickBarRegistry.addAction({
-        id: `provider-${extension.id}`,
+        id: rootActionId,
         extensionPointId: this.id,
         name: title,
         icon,
       });
     }
 
-    const actionGenerator: ActionGenerator = async (query: string) => {
+    const actionGenerator: ActionGenerator = async ({
+      query,
+      rootActionId: currentRootActionId,
+    }) => {
+      if (rootActionId && rootActionId !== currentRootActionId) {
+        // User is not drilled into the current action, so skip generation
+        return;
+      }
+
       const reader = await this.getBaseReader();
       const serviceContext = await makeServiceContext(extension.services);
 
@@ -243,7 +255,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
-          // Ignore cancel errors. It means there's no results
+          // Ignore cancel errors. Creators can use to skip under certain conditions
         }
 
         throw error;
@@ -254,8 +266,8 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
     quickBarRegistry.removeGenerator(this.generators.get(extension.id));
 
     // Register new generator
-    quickBarRegistry.addGenerator(actionGenerator);
     this.generators.set(extension.id, actionGenerator);
+    quickBarRegistry.addGenerator(actionGenerator, rootActionId);
   }
 
   async run(): Promise<void> {

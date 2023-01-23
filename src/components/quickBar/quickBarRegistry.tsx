@@ -95,13 +95,20 @@ const defaultActions: Action[] = [
 
 type ChangeHandler = (actions: CustomAction[]) => void;
 
-export type ActionGenerator = (query: string) => Promise<void>;
+type GeneratorArgs = { query: string; rootActionId: string | null };
+
+export type ActionGenerator = (args: GeneratorArgs) => Promise<void>;
 
 class QuickBarRegistry {
   private readonly actions: CustomAction[] = defaultActions;
   private readonly listeners: ChangeHandler[] = [];
 
   private readonly actionGenerators: ActionGenerator[] = [];
+
+  private readonly generatorRootIdMap: Map<ActionGenerator, string> = new Map<
+    ActionGenerator,
+    string
+  >();
 
   private notifyListeners() {
     for (const listener of this.listeners) {
@@ -111,6 +118,10 @@ class QuickBarRegistry {
 
   get currentActions() {
     return this.actions;
+  }
+
+  get knownGeneratorRootIds(): Set<string> {
+    return new Set(this.generatorRootIdMap.values());
   }
 
   addAction(action: CustomAction): void {
@@ -137,17 +148,19 @@ class QuickBarRegistry {
     pull(this.listeners, handler);
   }
 
-  addGenerator(generator: ActionGenerator): void {
+  addGenerator(generator: ActionGenerator, rootActionId: string | null): void {
     this.actionGenerators.push(generator);
+    this.generatorRootIdMap.set(generator, rootActionId);
   }
 
   removeGenerator(generator: ActionGenerator): void {
     pull(this.actionGenerators, generator);
+    this.generatorRootIdMap.delete(generator);
   }
 
-  generateActions(query: string) {
+  generateActions(args: GeneratorArgs) {
     for (const generator of this.actionGenerators) {
-      void generator(query);
+      void generator(args);
     }
   }
 }

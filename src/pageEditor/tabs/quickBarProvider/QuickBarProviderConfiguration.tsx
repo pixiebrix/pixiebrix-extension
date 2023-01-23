@@ -25,10 +25,11 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type QuickBarProviderConfig } from "@/extensionPoints/quickBarProvider";
 import { type QuickBarProviderFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type CheckBoxLike } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import SwitchButtonWidget, {
+  type CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const QuickBarProviderConfiguration: React.FC<{
   isLocked: boolean;
@@ -65,7 +66,7 @@ const QuickBarProviderConfiguration: React.FC<{
         <FieldTemplate
           name="extension.rootAction"
           label="Parent Action"
-          as={BooleanWidget}
+          as={SwitchButtonWidget}
           value={Boolean(rootActionField.value)}
           description="Toggle on to show a parent action that contains child actions when selected"
           onChange={({ target }: ChangeEvent<CheckBoxLike>) => {

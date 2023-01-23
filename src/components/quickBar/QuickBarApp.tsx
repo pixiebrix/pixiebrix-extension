@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import ReactDOM from "react-dom";
 import {
   type Action,
@@ -32,13 +32,14 @@ import ReactShadowRoot from "react-shadow-root";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
-import { debounce, once } from "lodash";
+import { once } from "lodash";
 import { MAX_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
+import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -51,6 +52,45 @@ let autoShow = false;
  */
 const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
+function useActionGenerators(): void {
+  // Use the query directly for updating while the page editor is open. The useRegisterActions hook doesn't seem to
+  // work for that 🤷 even if actions are in the dependency list
+  const { searchQuery, currentRootActionId } = useKBar(
+    ({ searchQuery, currentRootActionId }) => ({
+      searchQuery,
+      currentRootActionId,
+    })
+  );
+
+  useEffect(
+    () => {
+      quickBarRegistry.generateActions({
+        query: searchQuery,
+        rootActionId: currentRootActionId,
+      });
+    },
+    // eslint-disable-next-line -- fire immediately when root changes to begin populating sub-items
+    [currentRootActionId]
+  );
+
+  const searchArgs = useMemo(
+    () => ({ searchQuery, currentRootActionId }),
+    [searchQuery, currentRootActionId]
+  );
+
+  useDebouncedEffect(
+    searchArgs,
+    (values) => {
+      quickBarRegistry.generateActions({
+        query: values.searchQuery,
+        rootActionId: values.currentRootActionId,
+      });
+    },
+    150,
+    750
+  );
+}
+
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
 
@@ -59,8 +99,6 @@ function useActions(): void {
   // https://github.com/timc1/kbar/blob/main/src/useRegisterActions.tsx#L19
   useRegisterActions(quickBarRegistry.currentActions, []);
 
-  // Use the query directly for updating while the page editor is open. The useRegisterActions hook doesn't seem to
-  // work for that 🤷 even if actions are in the dependency list
   const { query } = useKBar();
 
   // Listen for changes while the kbar is mounted (e.g., the user is making edits in the page editor)
@@ -101,6 +139,8 @@ const AutoShow: React.FC = () => {
 
 const KBarComponent: React.FC = () => {
   useActions();
+  useActionGenerators();
+
   const { showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
@@ -130,20 +170,11 @@ const KBarComponent: React.FC = () => {
   );
 };
 
-const debouncedGenerateActions = debounce(
-  (query: string) => {
-    quickBarRegistry.generateActions(query);
-  },
-  150,
-  { leading: false, trailing: true }
-);
-
 const QuickBarApp: React.FC = () => (
   /* Disable exit animation due to #3724. `enterMs` is required too */
   <KBarProvider
     options={{
       animations: { enterMs: 300, exitMs: 0 },
-      callbacks: { onQueryChange: debouncedGenerateActions },
     }}
   >
     <AutoShow />
