@@ -114,8 +114,7 @@ describe("FormData block", () => {
     const result = await brick.run(arg, {
       ctxt: null,
       logger: null,
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- thinks it's an element
-      root: document.querySelector("#fooForm") as HTMLElement,
+      root: document.querySelector<HTMLElement>("#fooForm"),
       runPipeline: neverPromise,
       runRendererPipeline: neverPromise,
     });

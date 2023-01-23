@@ -21,7 +21,7 @@ import {
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { type BlockPosition, type BlockConfig } from "@/blocks/types";
-import { type Expression, type TemplateEngine } from "@/core";
+import type { Schema, Expression, TemplateEngine } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
@@ -35,6 +35,8 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
+import recipesRegistry from "@/recipes/registry";
+import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 import { AnnotationType } from "@/types";
 
 const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
@@ -90,14 +92,122 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   );
 }
 
-function setOptionsVars(extension: FormState, contextVars: VarMap) {
-  // TODO: should we check the blueprint definition instead?
+type SetVarsFromSchemaArgs = {
+  /**
+   * The schema of the properties to use to set the variables.
+   */
+  schema: Schema;
+
+  /**
+   * The variable map to set the variables in.
+   */
+  contextVars: VarMap;
+
+  /**
+   * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline).
+   */
+  source: string;
+
+  /**
+   * The parent path of the properties in the schema.
+   */
+  parentPath: string[];
+
+  /**
+   * The existence to set the variables to. If not provided, the existence will be determined by the schema.
+   */
+  existenceOverride?: VarExistence;
+};
+
+function setVarsFromSchema({
+  schema,
+  contextVars,
+  source,
+  parentPath,
+  existenceOverride,
+}: SetVarsFromSchemaArgs) {
+  const { properties, required } = schema;
+  if (properties == null) {
+    contextVars.setExistence({
+      source,
+      path: parentPath,
+      existence: existenceOverride ?? VarExistence.DEFINITELY,
+      allowAnyChild: true,
+    });
+    return;
+  }
+
+  for (const [key, propertySchema] of Object.entries(properties)) {
+    if (typeof propertySchema === "boolean") {
+      continue;
+    }
+
+    if (propertySchema.type === "object") {
+      setVarsFromSchema({
+        schema: propertySchema,
+        contextVars,
+        source,
+        parentPath: [...parentPath, key],
+      });
+    } else if (propertySchema.type === "array") {
+      const existence =
+        existenceOverride ?? required?.includes(key)
+          ? VarExistence.DEFINITELY
+          : VarExistence.MAYBE;
+
+      // Parent node do not allow arbitrary children
+      contextVars.setExistence({ source, path: parentPath, existence });
+
+      // The array property can have any child
+      contextVars.setExistence({
+        source,
+        path: [...parentPath, key],
+        existence,
+        allowAnyChild: true,
+      });
+    } else {
+      contextVars.setExistence({
+        source,
+        path: [...parentPath, key],
+        existence:
+          existenceOverride ?? required?.includes(key)
+            ? VarExistence.DEFINITELY
+            : VarExistence.MAYBE,
+      });
+    }
+  }
+}
+
+async function setOptionsVars(extension: FormState, contextVars: VarMap) {
+  if (extension.recipe == null) {
+    return;
+  }
+
+  const recipeId = extension.recipe.id;
+  const recipe = await recipesRegistry.lookup(recipeId);
+  const optionsSchema = recipe?.options?.schema;
+  if (isEmpty(optionsSchema)) {
+    return;
+  }
+
+  const source = `${KnownSources.OPTIONS}:${recipeId}`;
+  const optionsOutputKey = "@options";
+
+  setVarsFromSchema({
+    schema: optionsSchema,
+    contextVars,
+    source,
+    parentPath: [optionsOutputKey],
+  });
+
   if (!isEmpty(extension.optionsArgs)) {
-    contextVars.setExistenceFromValues(
-      `${KnownSources.OPTIONS}:${extension.recipe.id}`,
-      extension.optionsArgs,
-      "@options"
-    );
+    for (const optionName of Object.keys(extension.optionsArgs)) {
+      contextVars.setExistence({
+        source,
+        path: [optionsOutputKey, optionName],
+        existence: VarExistence.DEFINITELY,
+      });
+    }
   }
 }
 
@@ -107,6 +217,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
   protected readonly annotations: AnalysisAnnotation[] = [];
+  private allBlocks: TypedBlockMap;
 
   get id() {
     return "var";
@@ -159,12 +270,26 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (blockConfig.outputKey) {
       const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-      currentBlockOutput.setOutputKeyExistence(
-        position.path,
-        outputVarName,
-        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
-        true
-      );
+      const outputSchema = this.allBlocks.get(blockConfig.id)?.block
+        ?.outputSchema;
+
+      if (outputSchema == null) {
+        currentBlockOutput.setOutputKeyExistence(
+          position.path,
+          outputVarName,
+          blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
+          true
+        );
+      } else {
+        setVarsFromSchema({
+          schema: outputSchema,
+          contextVars: currentBlockOutput,
+          source: position.path,
+          parentPath: [outputVarName],
+          existenceOverride:
+            blockConfig.if == null ? undefined : VarExistence.MAYBE,
+        });
+      }
 
       this.previousVisitedBlock.output = currentBlockOutput;
     }
@@ -285,10 +410,12 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   async run(extension: FormState): Promise<void> {
+    this.allBlocks = await blockRegistry.allTyped();
+
     const contextVars = new VarMap();
 
     // Order of the following calls will determine the order of the sources in the UI
-    setOptionsVars(extension, contextVars);
+    await setOptionsVars(extension, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 

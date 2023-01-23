@@ -51,7 +51,7 @@ import {
   traverse,
 } from "@/pageScript/frameworks/component";
 import { elementInfo } from "@/pageScript/frameworks";
-import { requireSingleElement } from "@/utils/requireSingleElement";
+import { findSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,
   noopProxy,
@@ -163,7 +163,7 @@ async function read<TComponent>(
   let element: HTMLElement;
 
   try {
-    element = requireSingleElement(selector);
+    element = findSingleElement(selector);
   } catch (error) {
     console.debug("read: error calling requireSingleElement", {
       error,
@@ -251,7 +251,7 @@ attachListener(
       throw new Error(`No write adapter available for ${framework}`);
     }
 
-    const element = requireSingleElement(selector);
+    const element = findSingleElement(selector);
     const component = adapter.getComponent(element);
     adapter.setData(component, valueMap);
   }
@@ -273,7 +273,7 @@ attachListener(
     traverseUp: number;
   }) => {
     console.debug("GET_COMPONENT_INFO", { selector, framework, traverseUp });
-    const element = requireSingleElement(selector);
+    const element = findSingleElement(selector);
     const info = await elementInfo(element, framework, [selector], traverseUp);
     console.debug("Element info", { element, selector, info });
     return info;

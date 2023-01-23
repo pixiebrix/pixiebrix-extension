@@ -75,7 +75,7 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
               Please verify the link you received to activate the blueprint
             </p>
 
-            <Link to={"/marketplace"} className="btn btn-info">
+            <Link to="/marketplace" className="btn btn-info">
               <FontAwesomeIcon icon={faStoreAlt} /> Go to Marketplace
             </Link>
           </Card.Body>

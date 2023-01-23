@@ -98,7 +98,7 @@ const ElementWizard: React.FunctionComponent<{
 
   const wizardSteps = [...wizard];
 
-  useAsyncEffect(async () => {
+  useAsyncEffect(async (isMounted) => {
     if (formState.apiVersion === "v2") {
       const newState = await produce(formState, async (draft) => {
         draft.extension.blockPipeline = await upgradePipelineToV3(
@@ -106,6 +106,10 @@ const ElementWizard: React.FunctionComponent<{
         );
         draft.apiVersion = "v3";
       });
+      if (!isMounted()) {
+        return;
+      }
+
       setFormState(newState);
       dispatch(actions.showV3UpgradeMessage());
     }
