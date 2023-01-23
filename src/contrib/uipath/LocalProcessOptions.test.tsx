@@ -30,9 +30,6 @@ import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
 import { type Service } from "@/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import { editorSlice, initialState } from "@/pageEditor/slices/editorSlice";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
@@ -99,21 +96,12 @@ function makeBaseState() {
 
 function renderOptions(formState: FormState = makeBaseState()) {
   return render(
-    <Provider
-      store={configureStore({
-        reducer: {
-          editor: editorSlice.reducer,
-        },
-        preloadedState: { editor: initialState },
-      })}
-    >
-      <Formik onSubmit={jest.fn()} initialValues={formState}>
-        <LocalProcessOptions
-          name="extension.blockPipeline.0"
-          configKey="config"
-        />
-      </Formik>
-    </Provider>
+    <Formik onSubmit={jest.fn()} initialValues={formState}>
+      <LocalProcessOptions
+        name="extension.blockPipeline.0"
+        configKey="config"
+      />
+    </Formik>
   );
 }
 

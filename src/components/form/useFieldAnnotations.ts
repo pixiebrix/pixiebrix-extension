@@ -58,10 +58,11 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
   const { shouldUseAnalysis, showUntouchedErrors, showFieldActions } =
     useFormErrorSettings();
 
-  const formik = useFormikContext<FormState>();
-  const analysisAnnotations = useSelector(selectAnnotationsForPath(fieldPath));
-
   if (shouldUseAnalysis) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
+    const analysisAnnotations = useSelector(
+      selectAnnotationsForPath(fieldPath)
+    );
     return analysisAnnotations.map(({ message, type, actions }) => {
       const fieldAnnotation: FieldAnnotation = {
         message,
@@ -77,6 +78,8 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     });
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
+  const formik = useFormikContext<FormState>();
   const { error, touched } = formik.getFieldMeta(fieldPath);
   const showFormikError =
     (showUntouchedErrors || touched) &&

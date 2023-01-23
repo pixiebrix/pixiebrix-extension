@@ -39,9 +39,14 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
 import { AnnotationType } from "@/types";
 
-export const selectActiveElementId = ({ editor }: EditorRootState) =>
-  // Null-safe access here so this doesn't break with the options redux store
-  editor?.activeElementId;
+export const selectActiveElementId = ({ editor }: EditorRootState) => {
+  if (editor == null) {
+    console.warn("selectActiveElementId called without editor redux slice");
+    return null;
+  }
+
+  return editor.activeElementId;
+};
 
 export const selectElements = ({ editor }: EditorRootState) => editor.elements;
 
