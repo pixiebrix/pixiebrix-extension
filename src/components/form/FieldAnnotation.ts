@@ -16,6 +16,7 @@
  */
 
 import { AnnotationType, type BaseAnnotation } from "@/types";
+import { isNullOrBlank } from "@/utils";
 
 export type FieldAnnotationAction = {
   caption: string;
@@ -27,6 +28,10 @@ export type FieldAnnotation = BaseAnnotation & {
 };
 
 export function basicErrorAnnotation(message: string): FieldAnnotation {
+  if (isNullOrBlank(message)) {
+    throw new Error("Cannot create an error annotation with a blank message.");
+  }
+
   return {
     message,
     type: AnnotationType.Error,

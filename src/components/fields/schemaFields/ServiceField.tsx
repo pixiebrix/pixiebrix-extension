@@ -36,7 +36,7 @@ import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { freshIdentifier } from "@/utils";
+import { freshIdentifier, isNullOrBlank } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -181,7 +181,7 @@ const ServiceField: React.FunctionComponent<
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, { touched, error }, helpers] =
     useField<Expression<ServiceKeyVar>>(props);
-  const annotations = [basicErrorAnnotation(error)];
+  const annotations = isNullOrBlank(error) ? [] : [basicErrorAnnotation(error)];
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);

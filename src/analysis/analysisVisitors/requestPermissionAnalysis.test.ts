@@ -21,6 +21,7 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
+import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 const containsMock = browser.permissions.contains as jest.MockedFunction<
@@ -100,6 +101,11 @@ describe("requestPermissionAnalysis", () => {
 
     expect(visitor.getAnnotations()).toStrictEqual([
       {
+        actions: [
+          expect.objectContaining({
+            type: AnalysisAnnotationActionType.AddValueToArray,
+          }),
+        ],
         analysisId: "requestPermission",
         type: "error",
         message:

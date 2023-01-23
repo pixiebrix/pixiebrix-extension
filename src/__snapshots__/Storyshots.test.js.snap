@@ -496,6 +496,23 @@ exports[`Storyshots Common/AsyncButton Primary 1`] = `
 </button>
 `;
 
+exports[`Storyshots Common/FieldAnnotationAlert Default 1`] = `
+<div
+  className="root error"
+>
+  <test-file-stub
+    className="icon"
+  />
+  <div
+    className="message"
+  >
+    <span>
+      This is an error message
+    </span>
+  </div>
+</div>
+`;
+
 exports[`Storyshots Common/LinkButton Link 1`] = `
 <button
   className="root btn btn-link"

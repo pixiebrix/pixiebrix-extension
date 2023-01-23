@@ -59,7 +59,6 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     useFormErrorSettings();
 
   const formik = useFormikContext<FormState>();
-  const { error, touched } = formik.getFieldMeta(fieldPath);
   const analysisAnnotations = useSelector(selectAnnotationsForPath(fieldPath));
 
   if (shouldUseAnalysis) {
@@ -78,8 +77,11 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     });
   }
 
+  const { error, touched } = formik.getFieldMeta(fieldPath);
   const showFormikError =
-    (showUntouchedErrors || touched) && !isNullOrBlank(error);
+    (showUntouchedErrors || touched) &&
+    typeof error === "string" &&
+    !isNullOrBlank(error);
   return showFormikError ? [basicErrorAnnotation(error)] : [];
 }
 

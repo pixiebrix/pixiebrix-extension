@@ -49,6 +49,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
 import { basicErrorAnnotation } from "@/components/form/FieldAnnotation";
+import { isNullOrBlank } from "@/utils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -78,7 +79,10 @@ const FieldEditor: React.FC<{
   }, [propertyName, schema]);
 
   const propertyNameAnnotations = useMemo(
-    () => [basicErrorAnnotation(propertyNameError)],
+    () =>
+      isNullOrBlank(propertyNameError)
+        ? []
+        : [basicErrorAnnotation(propertyNameError)],
     [propertyNameError]
   );
 

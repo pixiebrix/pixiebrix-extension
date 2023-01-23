@@ -37,11 +37,11 @@ import {
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { AnnotationType } from "@/types";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) =>
-  editor.activeElementId;
+  // Null-safe access here so this doesn't break with the options redux store
+  editor?.activeElementId;
 
 export const selectElements = ({ editor }: EditorRootState) => editor.elements;
 
@@ -328,11 +328,12 @@ export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
 
 const annotationsForPathSelector = createSelector(
   selectActiveElementId,
-  (state: AnalysisRootState) => state.analysis.extensionAnnotations,
+  // Null-safe access here so this doesn't break with the options redux store
+  (state: RootState) => state.analysis?.extensionAnnotations,
   (state: RootState, path: string) => path,
   (activeElementId, annotations, path) => {
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    const elementAnnotations = annotations[activeElementId] ?? [];
+    const elementAnnotations = annotations?.[activeElementId] ?? [];
     const pathAnnotations = elementAnnotations.filter(
       (x) => x.position.path === path
     );
