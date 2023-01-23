@@ -24,14 +24,26 @@ import VarMap, {
 describe("setExistence", () => {
   test("sets the existence", () => {
     const varMap = new VarMap();
-    varMap.setExistence("brick1", "@foo", VarExistence.DEFINITELY);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo",
+      existence: VarExistence.DEFINITELY,
+    });
     expect(varMap.isVariableDefined("@foo")).toBeTrue();
   });
 
   test("doesn't override DEFINITELY with MAYBE", () => {
     const varMap = new VarMap();
-    varMap.setExistence("brick1", "@foo", VarExistence.DEFINITELY);
-    varMap.setExistence("brick1", "@foo", VarExistence.MAYBE);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo",
+      existence: VarExistence.DEFINITELY,
+    });
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo",
+      existence: VarExistence.MAYBE,
+    });
 
     const map = varMap.getMap();
     expect(map.brick1["@foo"][SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
@@ -39,8 +51,16 @@ describe("setExistence", () => {
 
   test("overrides MAYBE with DEFINITELY", () => {
     const varMap = new VarMap();
-    varMap.setExistence("brick1", "@foo", VarExistence.MAYBE);
-    varMap.setExistence("brick1", "@foo", VarExistence.DEFINITELY);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo",
+      existence: VarExistence.MAYBE,
+    });
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo",
+      existence: VarExistence.DEFINITELY,
+    });
 
     const map = varMap.getMap();
     expect(map.brick1["@foo"][SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
@@ -48,15 +68,27 @@ describe("setExistence", () => {
 
   test("sets a nested key", () => {
     const varMap = new VarMap();
-    varMap.setExistence("brick1", "@foo.bar", VarExistence.DEFINITELY);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo.bar",
+      existence: VarExistence.DEFINITELY,
+    });
     expect(varMap.isVariableDefined("@foo.bar")).toBeTrue();
   });
 
   test("ovverrides nested MAYBE for DEFINITELY", () => {
     const varMap = new VarMap();
-    varMap.setExistence("brick1", "@foo.baz", VarExistence.MAYBE);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo.baz",
+      existence: VarExistence.MAYBE,
+    });
 
-    varMap.setExistence("brick1", "@foo.bar", VarExistence.MAYBE);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo.bar",
+      existence: VarExistence.MAYBE,
+    });
     expect(varMap.getMap()).toEqual({
       brick1: {
         [SELF_EXISTENCE]: VarExistence.MAYBE,
@@ -77,7 +109,11 @@ describe("setExistence", () => {
     });
 
     // VarMap updates the existence of target node and all its parents
-    varMap.setExistence("brick1", "@foo.bar", VarExistence.DEFINITELY);
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo.bar",
+      existence: VarExistence.DEFINITELY,
+    });
     expect(varMap.getMap()).toEqual({
       brick1: {
         [SELF_EXISTENCE]: VarExistence.DEFINITELY,

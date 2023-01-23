@@ -49,18 +49,41 @@ export function createNode(
   return node;
 }
 
+type SetExistenceArgs = {
+  /**
+   * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
+   */
+  source: string;
+
+  /**
+   * The path of the variable.
+   * String value will be converted to to a property path array using lodash's toPath function.
+   */
+  path: string | string[];
+
+  /**
+   * Existence of the variable
+   */
+  existence: VarExistence;
+
+  /**
+   * Whether the variable is allowed to have any child (i.e. doesn't have a strict schema)
+   */
+  allowAnyChild?: boolean;
+};
+
 class VarMap {
   private map: Record<string, ExistenceNode> = {};
   public getMap(): Record<string, ExistenceNode> {
     return cloneDeep(this.map);
   }
 
-  public setExistence(
-    source: string,
-    path: string | string[],
-    existence: VarExistence,
-    allowAnyChild = false
-  ): void {
+  public setExistence({
+    source,
+    path,
+    existence,
+    allowAnyChild = false,
+  }: SetExistenceArgs): void {
     const pathParts = [
       source,
       ...(Array.isArray(path) ? path : toPath(path)),

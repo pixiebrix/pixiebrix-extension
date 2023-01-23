@@ -93,10 +93,29 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
 }
 
 type SetVarsFromSchemaArgs = {
+  /**
+   * The schema of the properties to use to set the variables.
+   */
   schema: Schema;
+
+  /**
+   * The variable map to set the variables in.
+   */
   contextVars: VarMap;
+
+  /**
+   * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline).
+   */
   source: string;
+
+  /**
+   * The parent path of the properties in the schema.
+   */
   parentPath: string[];
+
+  /**
+   * The existence to set the variables to. If not provided, the existence will be determined by the schema.
+   */
   existenceOverride?: VarExistence;
 };
 
@@ -245,7 +264,6 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (blockConfig.outputKey) {
       const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-      // ToDo set existence from output schema
       const outputSchema = this.allBlocks.get(blockConfig.id)?.block
         ?.outputSchema;
 
