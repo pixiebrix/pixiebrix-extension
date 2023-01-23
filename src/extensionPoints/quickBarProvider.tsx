@@ -231,6 +231,9 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
         return;
       }
 
+      // Remove the old results since they'll be replaced anyway
+      quickBarRegistry.removeExtensionActions(extension.id);
+
       const reader = await this.getBaseReader();
       const serviceContext = await makeServiceContext(extension.services);
 

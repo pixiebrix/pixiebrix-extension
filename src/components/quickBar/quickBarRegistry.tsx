@@ -25,7 +25,7 @@ import {
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { type RegistryId } from "@/core";
+import { type RegistryId, UUID } from "@/core";
 import { pull, remove } from "lodash";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
@@ -38,6 +38,7 @@ const PIXIEBRIX_SECTION = "PixieBrix";
  */
 export type CustomAction = Action & {
   extensionPointId?: RegistryId;
+  extensionId?: UUID;
 };
 
 const defaultActions: Action[] = [
@@ -132,6 +133,11 @@ class QuickBarRegistry {
 
   removeExtensionPointActions(id: RegistryId) {
     remove(this.actions, (x) => x.extensionPointId === id);
+    this.notifyListeners();
+  }
+
+  removeExtensionActions(id: UUID) {
+    remove(this.actions, (x) => x.extensionId === id);
     this.notifyListeners();
   }
 

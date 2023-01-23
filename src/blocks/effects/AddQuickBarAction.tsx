@@ -105,6 +105,8 @@ class AddQuickBarAction extends Effect {
     const action: CustomAction = {
       // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
       id: `${logger.context.extensionId}-${title}`,
+      extensionPointId: logger.context.extensionPointId,
+      extensionId: logger.context.extensionId,
       // Can only provide a parent if the parent exists
       parent: quickBarRegistry.knownGeneratorRootIds.has(parentId)
         ? parentId
@@ -117,7 +119,6 @@ class AddQuickBarAction extends Effect {
       ) : (
         <Icon />
       ), // Defaults to a box
-      extensionPointId: logger.context.extensionPointId,
       async perform() {
         const pipelinePromise = runPipeline(actionPipeline.__value__ ?? [], {
           key: "action",

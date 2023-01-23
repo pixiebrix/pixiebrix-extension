@@ -69,7 +69,7 @@ function useActionGenerators(): void {
         rootActionId: currentRootActionId,
       });
     },
-    // eslint-disable-next-line -- fire immediately when root changes to begin populating sub-items
+    // eslint-disable-next-line -- fire immediately when root changes
     [currentRootActionId]
   );
 
@@ -101,7 +101,9 @@ function useActions(): void {
 
   const { query } = useKBar();
 
-  // Listen for changes while the kbar is mounted (e.g., the user is making edits in the page editor)
+  // Listen for changes while the kbar is mounted:
+  // - The user is making edits in the Page Editor
+  // - Generators are producing new actions in response to the search query changing
   useEffect(() => {
     const handler = (nextActions: Action[]) => {
       query.registerActions(nextActions);
