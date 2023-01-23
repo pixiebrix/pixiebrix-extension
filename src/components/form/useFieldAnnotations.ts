@@ -32,6 +32,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
+import { isNullOrBlank } from "@/utils";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
@@ -77,7 +78,9 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     });
   }
 
-  return showUntouchedErrors || touched ? [basicErrorAnnotation(error)] : [];
+  const showFormikError =
+    (showUntouchedErrors || touched) && !isNullOrBlank(error);
+  return showFormikError ? [basicErrorAnnotation(error)] : [];
 }
 
 export default useFieldAnnotations;
