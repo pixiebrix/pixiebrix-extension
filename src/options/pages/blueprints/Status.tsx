@@ -40,7 +40,7 @@ const Status: React.VoidFunctionComponent<{
 
   if (activate) {
     return (
-      <Button size="sm" variant="outline-info" onClick={activate}>
+      <Button size="sm" variant="outline-primary" onClick={activate}>
         Activate
       </Button>
     );

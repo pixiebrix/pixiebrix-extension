@@ -16,7 +16,7 @@
  */
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./ephemeralForm.scss";
+import "./ephemeralModal.scss";
 
 import "@/extensionContext";
 

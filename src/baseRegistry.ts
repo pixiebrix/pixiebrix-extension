@@ -16,7 +16,11 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import { PACKAGE_NAME_REGEX, type Kind } from "@/registry/localRegistry";
+import {
+  type Kind,
+  type Package,
+  PACKAGE_NAME_REGEX,
+} from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
 import { groupBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
@@ -52,6 +56,10 @@ export class Registry<
 
   private readonly cache = new Map<RegistryId, Item>();
 
+  /**
+   * Set of ids that have been retrieved from server.
+   * @private
+   */
   private readonly remote: Set<RegistryId>;
 
   private readonly remoteResourcePath: string;
@@ -79,6 +87,18 @@ export class Registry<
 
   removeListener(listener: RegistryChangeListener): void {
     this.listeners = this.listeners.filter((x) => x !== listener);
+  }
+
+  private notifyAll() {
+    console.debug(
+      "Notifying %d registry cache listener(s) for %s",
+      this.listeners.length,
+      [...this.kinds].join(", ")
+    );
+
+    for (const listener of this.listeners) {
+      listener.onCacheChanged();
+    }
   }
 
   async exists(id: Id): Promise<boolean> {
@@ -117,38 +137,55 @@ export class Registry<
 
     this.register(item);
 
-    for (const listener of this.listeners) {
-      listener.onCacheChanged();
-    }
-
     return item;
   }
 
   /**
    * @deprecated needed for header generation; will be removed in future versions
+   * @see all
    */
   cached(): Item[] {
     return [...this.cache.values()];
   }
 
   /**
+   * Reloads all brick configurations from IDB, and returns all bricks in the registry.
    * @deprecated requires all data to be parsed
+   * @see cached
    */
   async all(): Promise<Item[]> {
+    const parsedItems: Item[] = [];
+
     await Promise.allSettled(
       [...this.kinds.values()].map(async (kind) => {
         for (const raw of await registry.getKind(kind)) {
-          const parsed = this.parse(raw.config);
-          if (parsed) {
-            this.register(parsed);
+          try {
+            const parsed = this.parse(raw.config);
+            if (parsed) {
+              parsedItems.push(parsed);
+            }
+          } catch {
+            // NOP
           }
         }
       })
     );
-    return [...this.cache.values()];
+
+    console.debug(
+      "Parsed %d registry item(s) from IDB for %s",
+      parsedItems.length,
+      [...this.kinds].join(", ")
+    );
+
+    // Perform as single call to register so listeners are notified once
+    this.register(...parsedItems);
+
+    return this.cached();
   }
 
   register(...items: Item[]): void {
+    let changed = false;
+
     for (const item of items) {
       if (item.id == null) {
         console.warn("Skipping item with no id", item);
@@ -156,6 +193,11 @@ export class Registry<
       }
 
       this.cache.set(item.id, item);
+      changed = true;
+    }
+
+    if (changed) {
+      this.notifyAll();
     }
   }
 
@@ -189,7 +231,7 @@ export class Registry<
       throw new Error(`Expected array from ${this.remoteResourcePath}`);
     }
 
-    const packages = [];
+    const packages: Package[] = [];
 
     for (const item of data) {
       const [major, minor, patch] = item.metadata.version
@@ -206,8 +248,6 @@ export class Registry<
         );
       }
 
-      this.cache.delete(item.metadata.id);
-
       packages.push({
         id: item.metadata.id,
         version: { major, minor, patch },
@@ -217,21 +257,31 @@ export class Registry<
         rawConfig: undefined,
         timestamp,
       });
-
-      this.remote.add(item.metadata.id);
     }
 
-    await Promise.all(
+    // Persist in IDB
+    await Promise.allSettled(
       Object.entries(groupBy(packages, (x) => x.kind)).map(
         async ([kind, kindPackages]) => {
+          console.debug(
+            "Syncing %d %s package(s) with IDB",
+            kindPackages.length,
+            kind
+          );
           await registry.syncRemote(kind as Kind, kindPackages);
         }
       )
     );
 
-    for (const listener of this.listeners) {
-      listener.onCacheChanged();
+    // Mark as being from the remote server
+    for (const item of packages) {
+      this.remote.add(item.id as RegistryId);
     }
+
+    // Force reload of all items from IDB. To avoid hitting IDB, we could just re-register the items that were retrieved
+    // locally. However, the idea of syncRemote is that it might also remove bricks that are no longer
+    // available/accessible to the user.
+    await this.all();
   }
 
   /**
@@ -239,10 +289,7 @@ export class Registry<
    */
   clear(): void {
     this.cache.clear();
-
-    for (const listener of this.listeners) {
-      listener.onCacheChanged();
-    }
+    this.notifyAll();
   }
 }
 

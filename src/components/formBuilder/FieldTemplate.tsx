@@ -17,6 +17,7 @@
 
 import React from "react";
 import { type FieldTemplateProps } from "@rjsf/utils";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";

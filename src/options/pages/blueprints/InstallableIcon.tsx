@@ -33,7 +33,7 @@ function getDefaultInstallableIcon(installable: Installable) {
   return faCube;
 }
 
-const DARK_LAVENDER = "rgb(101, 98, 170)";
+const DEFAULT_TEXT_ICON_COLOR = "#241C32";
 
 const InstallableIcon: React.FunctionComponent<{
   listing: MarketplaceListing;
@@ -50,7 +50,13 @@ const InstallableIcon: React.FunctionComponent<{
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
   if (isLoading) {
-    return <FontAwesomeIcon icon={faCube} color={DARK_LAVENDER} size={size} />;
+    return (
+      <FontAwesomeIcon
+        icon={faCube}
+        color={DEFAULT_TEXT_ICON_COLOR}
+        size={size}
+      />
+    );
   }
 
   return listing?.image ? (
@@ -65,7 +71,7 @@ const InstallableIcon: React.FunctionComponent<{
   ) : (
     <FontAwesomeIcon
       icon={listingFaIcon}
-      color={listing?.icon_color ?? DARK_LAVENDER}
+      color={listing?.icon_color ?? DEFAULT_TEXT_ICON_COLOR}
       className={faIconClass}
       size={size}
       fixedWidth

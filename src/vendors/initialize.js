@@ -6,6 +6,7 @@
 // - use $safeFind to catch invalid selectors #3061
 
 import { $safeFind } from "@/helpers";
+import { throttle } from "lodash";
 
 var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators
 var fraternisers = ["+", "~"]; // These combinators involve siblings.
@@ -66,16 +67,27 @@ var msobservers = [];
 msobservers.initialize = function (selector, callback, options) {
   // Wrap the callback so that we can ensure that it is only
   // called once per element.
-  var seen = [];
+  var seen = new WeakSet();
   var callbackOnce = function () {
-    if (seen.indexOf(this) == -1) {
-      seen.push(this);
+    if (!seen.has(this)) {
+      seen.add(this);
       $(this).each(callback);
     }
   };
 
+  var throttledCheckTarget = throttle(
+    () => {
+      // For UI performance, we might consider wrapping in a requestAnimationFrame in the future
+      $safeFind(selector, options.target).each(callbackOnce);
+    },
+    // Try to choose a wait that is long enough to avoid performance issues, but short enough to provide responsiveness
+    // for triggers that depend on ancestor/sibling elements changing
+    150,
+    { leading: true, trailing: true }
+  );
+
   // See if the selector matches any elements already on the page.
-  $safeFind(selector, options.target).each(callbackOnce);
+  throttledCheckTarget();
 
   // Then, add it to the list of selector observers.
   var msobserver = new MutationSelectorObserver(
@@ -152,6 +164,12 @@ msobservers.initialize = function (selector, callback, options) {
     for (var i = 0; i < matches.length; i++)
       $(matches[i]).each(msobserver.callback);
 
+    // Check if the match applies now that the document has been updated. This handles cases where an ancestor was
+    // added/modified causing an element on the page to now match. This strictly isn't an "initialization", as the
+    // element wasn't just added. But conceptually, it corresponds to the selector now matching a new argument
+    throttledCheckTarget();
+
+    // Must be last in order to avoid entering infinite loop
     isMatchinInProgress = false;
   });
 

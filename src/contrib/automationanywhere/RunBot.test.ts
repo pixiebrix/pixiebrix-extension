@@ -62,6 +62,7 @@ const CE_CONTROL_ROOM_URL =
 const EE_CONTROL_ROOM_URL = "https://custom.dev";
 const FILE_ID = "456";
 const DEVICE_ID = "123";
+const DEVICE_POOL_ID = "012";
 const CONTROL_ROOM_USER_ID = 999;
 const UNATTENDED_RUN_AS_USER_ID = 1000;
 const DEPLOYMENT_ID = "789";
@@ -124,7 +125,7 @@ describe("Automation Anywhere - RunBot", () => {
     expect(values).toStrictEqual({});
   });
 
-  it("runs private Enterprise Edition bot using token configuration", async () => {
+  it("runs private unattended Enterprise Edition bot using token authentication", async () => {
     proxyServiceMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
@@ -150,7 +151,72 @@ describe("Automation Anywhere - RunBot", () => {
           },
         },
         workspaceType: "private",
-        deviceId: DEVICE_ID,
+        poolIds: [DEVICE_POOL_ID],
+        fileId: FILE_ID,
+        runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
+        data: {},
+      }),
+      { logger } as BlockOptions
+    );
+
+    expect(getCachedAuthDataMock).not.toHaveBeenCalled();
+
+    expect(proxyServiceMock).toHaveBeenCalledWith(
+      {
+        config: {
+          controlRoomUrl: EE_CONTROL_ROOM_URL,
+        },
+        id: tokenAuthId,
+        proxy: false,
+        serviceId: CONTROL_ROOM_SERVICE_ID,
+      },
+      {
+        data: {
+          botInput: {},
+          fileId: FILE_ID,
+          numOfRunAsUsersToUse: 1,
+          overrideDefaultDevice: true,
+          poolIds: [DEVICE_POOL_ID],
+          runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
+        },
+        method: "post",
+        url: "/v3/automations/deploy",
+      }
+    );
+
+    // CE returns blank object
+    expect(values).toStrictEqual({
+      deploymentId: DEPLOYMENT_ID,
+    });
+  });
+
+  it("runs public attended Enterprise Edition bot using token configuration", async () => {
+    proxyServiceMock.mockResolvedValue({
+      status: 201,
+      statusText: "Created",
+      data: {
+        deploymentId: DEPLOYMENT_ID,
+      },
+      $$proxied: false,
+    });
+
+    getCachedAuthDataMock.mockResolvedValue({
+      user: { id: CONTROL_ROOM_USER_ID },
+      _oauthBrand: undefined,
+    } as AuthData);
+
+    const values = await brick.run(
+      unsafeAssumeValidArg({
+        service: {
+          id: tokenAuthId,
+          proxy: false,
+          serviceId: CONTROL_ROOM_SERVICE_ID,
+          config: {
+            controlRoomUrl: EE_CONTROL_ROOM_URL,
+          },
+        },
+        workspaceType: "public",
+        isAttended: true,
         fileId: FILE_ID,
         data: {},
       }),
@@ -188,7 +254,7 @@ describe("Automation Anywhere - RunBot", () => {
     });
   });
 
-  it("runs public Enterprise Edition bot using token configuration", async () => {
+  it("runs unattended public Enterprise Edition bot using token authentication", async () => {
     proxyServiceMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
@@ -250,7 +316,7 @@ describe("Automation Anywhere - RunBot", () => {
     });
   });
 
-  it("runs Enterprise Edition bot in attended mode", async () => {
+  it("runs Enterprise Edition bot in attended mode using oauth2 configuration", async () => {
     proxyServiceMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
@@ -316,6 +382,8 @@ describe("Automation Anywhere - RunBot", () => {
   });
 
   it("awaits Enterprise Edition result", async () => {
+    const activityId = "288bf36b-e902-4ed2-a5bf-b5534eca137e_6bb3be11a848a48b";
+
     proxyServiceMock.mockImplementation(async (service, request) => {
       if (request.url.includes("deploy")) {
         return {
@@ -328,30 +396,43 @@ describe("Automation Anywhere - RunBot", () => {
         };
       }
 
-      if (request.url.includes("activity")) {
+      if (request.url.endsWith("/v3/activity/list")) {
         return {
           status: 200,
           statusText: "Success",
           data: {
             list: [
               {
+                id: activityId,
                 status: "COMPLETED",
-                botOutVariables: {
-                  values: {
-                    foo: {
-                      type: "STRING",
-                      string: "bar",
-                      number: "",
-                      boolean: "",
-                    },
-                  },
-                },
               },
             ],
           },
           $$proxied: false,
         };
       }
+
+      if (request.url.endsWith(`/v3/activity/execution/${activityId}`)) {
+        return {
+          status: 200,
+          statusText: "Success",
+          data: {
+            id: activityId,
+            botOutVariables: {
+              values: {
+                foo: {
+                  type: "STRING",
+                  string: "bar",
+                  number: "",
+                  boolean: "",
+                },
+              },
+            },
+          },
+        };
+      }
+
+      throw new Error("Unexpected request");
     });
 
     getCachedAuthDataMock.mockResolvedValue({

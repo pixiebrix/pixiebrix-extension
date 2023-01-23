@@ -16,15 +16,30 @@
  */
 
 /*
+* Used for dynamic theming of components with css variables,
+* shadows the structure of $theme-colors
+*/
+$variable-theme-colors: (
+  primary: --theme-primary,
+  secondary: --theme-secondary,
+  success: --theme-success,
+  info: --theme-info,
+  warning: --theme-warning,
+  danger: --theme-danger,
+  light: --theme-light,
+  dark: --theme-dark,
+);
+
+/*
 * Default PixieBrix colors - these correspond to the hex codes defined in $theme-colors
 *
 * We break down hsl values into parts in order to use css variables
 * with bootstrap component overrides for dynamic theming
 */
 :root {
-  --theme-primary-hs: 270, 100%;
-  --theme-primary-l: 71%;
-  --theme-primary: hsl(270, 100%, 71%);
+  --theme-primary-hs: 260, 79%;
+  --theme-primary-l: 48%;
+  --theme-primary: hsl(260, 79%, 48%);
 
   --theme-secondary-hs: 0, 0%;
   --theme-secondary-l: 85%;

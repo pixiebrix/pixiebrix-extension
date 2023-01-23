@@ -42,12 +42,12 @@ import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
 import {
-  sessionChangesSlice,
   persistSessionChangesConfig,
+  sessionChangesSlice,
   sessionChangesStateSyncActions,
-} from "@/pageEditor/sessionChanges/sessionChangesSlice";
+} from "@/store/sessionChanges/sessionChangesSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
-import { sessionChangesMiddleware } from "@/pageEditor/sessionChanges/sessionChangesListenerMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -82,20 +82,20 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
+    sessionChanges: persistReducer(
+      persistSessionChangesConfig,
+      sessionChangesSlice.reducer
+    ),
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
     recipes: recipesSlice.reducer,
-    sessionChanges: persistReducer(
-      persistSessionChangesConfig,
-      sessionChangesSlice.reducer
-    ),
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
-    /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+    /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
     return getDefaultMiddleware({
       // This check significantly slows down the app in dev mode.
       // See PR for more details https://github.com/pixiebrix/pixiebrix-extension/pull/4951

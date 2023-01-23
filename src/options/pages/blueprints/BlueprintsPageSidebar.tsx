@@ -1,5 +1,6 @@
 import styles from "./ListFilters.module.scss";
 
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Col, Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";

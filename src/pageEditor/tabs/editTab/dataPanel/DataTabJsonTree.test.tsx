@@ -16,19 +16,16 @@
  */
 
 import React from "react";
-import {
-  actions,
-  editorSlice,
-  initialState,
-} from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { formStateFactory } from "@/testUtils/factories";
-import { createRenderFunctionWithRedux } from "@/testUtils/testHelpers";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
 import { cleanup, perf } from "@/vendors/reactPerformanceTesting/perf";
 import { type RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
 import { act } from "@testing-library/react";
+import { render } from "@/pageEditor/testHelpers";
+import * as sinonTimers from "@sinonjs/fake-timers";
 
 const data = {
   name: "test",
@@ -42,50 +39,62 @@ const data = {
   ],
 };
 
-// Need to add and select an element before we can work with Data Panel tabs
-const editorPreloadedState = editorSlice.reducer(
-  initialState,
-  actions.selectInstalled(formStateFactory())
-);
-const renderJsonTree = createRenderFunctionWithRedux({
-  reducer: {
-    editor: editorSlice.reducer,
-  },
-  preloadedState: {
-    editor: editorPreloadedState,
-  },
-  ComponentUnderTest: DataTabJsonTree,
-  defaultProps: { data, tabKey: DataPanelTabKey.Context },
+const renderJsonTree = () =>
+  render(<DataTabJsonTree data={data} tabKey={DataPanelTabKey.Context} />, {
+    setupRedux(dispatch) {
+      dispatch(actions.selectInstalled(formStateFactory()));
+    },
+  });
+
+let clock: sinonTimers.InstalledClock;
+async function flushAsyncEffects() {
+  return act(async () => {
+    await clock.runAllAsync();
+  });
+}
+
+beforeAll(() => {
+  clock = sinonTimers.install();
+});
+afterAll(() => {
+  clock.uninstall();
 });
 
+beforeEach(() => {
+  clock.reset();
+});
 afterEach(() => {
   cleanup();
 });
 
-test("renders the DataTabJsonTree component", () => {
+test("renders the DataTabJsonTree component", async () => {
   const rendered = renderJsonTree();
+  await flushAsyncEffects();
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
 test("doesn't re-render internal JSONTree on expand", async () => {
-  jest.useFakeTimers();
   // No delay to run the click without setTimeout. Otherwise the test timeouts
   // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
   const immediateUserEvent = userEvent.setup({ delay: null });
   const { renderCount } = perf(React);
   const rendered = renderJsonTree();
 
+  await flushAsyncEffects();
+
+  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+
   // Get the element to expand the tree
   const bullet = rendered.container.querySelector("li > div > div");
 
   await immediateUserEvent.click(bullet);
 
-  act(() => {
-    // The redux action to update the expanded state is async, resolving all timeouts for it to fire
-    jest.runAllTimers();
-  });
-
-  // Ensure the JSONTree was rendered only once
+  // The click event doesn't trigger a re-render
   expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
-  jest.useRealTimers();
+
+  // The redux action to update the expanded state is async, resolving all timeouts for it to fire
+  await flushAsyncEffects();
+
+  // The expanded state in Redux has been updated, this triggers a re-render of the DataTabJsonTree and hence the JSONTree
+  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(2);
 });

@@ -16,8 +16,9 @@
  */
 
 import React, { useEffect } from "react";
-import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@rjsf/validator-ajv6";
+import { Theme } from "@rjsf/bootstrap-4";
+import { withTheme, getDefaultRegistry } from "@rjsf/core";
 import { useAsyncState } from "@/hooks/common";
 import {
   getFormDefinition,
@@ -51,6 +52,16 @@ const ModalLayout: React.FC = ({ children }) => (
 const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
+
+function monkeyPatchForm() {
+  // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
+  const registry = getDefaultRegistry();
+  const defaultFileWidget = registry.widgets.FileWidget;
+  (Theme as any).widgets.FileWidget = defaultFileWidget;
+  return withTheme(Theme);
+}
+
+const JsonSchemaForm = monkeyPatchForm();
 
 /**
  * @see FormTransformer

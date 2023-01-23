@@ -223,8 +223,7 @@ describe("menuItemExtension", () => {
 
     expect(rootReader.readCount).toEqual(1);
     const outerRef = getReferenceForElement(
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- eslint thinks type is Element
-      document.querySelector("#outer") as HTMLElement
+      document.querySelector<HTMLElement>("#outer")
     );
     expect(rootReader.ref).toEqual(outerRef);
 
@@ -301,6 +300,41 @@ describe("menuItemExtension", () => {
 
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
     await tick();
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    extensionPoint.uninstall();
+  });
+
+  it("watches ancestor changes for menu location", async () => {
+    document.body.innerHTML = getDocument(
+      '<div id="root"><div id="menu"></div></div>'
+    ).body.innerHTML;
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        containerSelector: ".newClass #menu",
+      })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    const installPromise = extensionPoint.install();
+
+    expect(document.querySelectorAll("button")).toHaveLength(0);
+
+    document.querySelector("#root").classList.add("newClass");
+
+    await installPromise;
+
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    await tick();
+
+    console.debug(document.body.innerHTML);
+
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     extensionPoint.uninstall();

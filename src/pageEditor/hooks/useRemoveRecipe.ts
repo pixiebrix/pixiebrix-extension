@@ -32,6 +32,9 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
+/**
+ * This hook provides a callback function to deactivate a recipe and remove it from the page editor
+ */
 function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeExtension = useRemoveExtension();
@@ -69,9 +72,7 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
         blueprintId: recipeId,
       });
 
-      dispatch(actions.clearActiveRecipe());
-      dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
-      dispatch(actions.clearDeletedElementsForRecipe(recipeId));
+      dispatch(actions.removeRecipeData(recipeId));
     },
     [dispatch, elements, extensions, removeExtension, showConfirmation]
   );

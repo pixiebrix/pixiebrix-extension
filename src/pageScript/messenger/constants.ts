@@ -28,21 +28,13 @@ export const GET_COMPONENT_INFO = "@@pixiebrix/script/GET_COMPONENT_INFO";
 
 type UNKNOWN_VERSION = null;
 
-export const KNOWN_READERS = <const>[
-  "react",
-  "emberjs",
-  "angularjs",
-  "vue",
-  "jquery",
-];
+export const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
+export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
 
+export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];
 export type Framework = typeof KNOWN_READERS[number];
 
 export interface FrameworkMeta {
   id: Framework;
   version: string | UNKNOWN_VERSION;
 }
-
-/** Communicates readiness to `ensureContentScript` */
-export const ENSURE_CONTENT_SCRIPT_READY =
-  "@@pixiebrix/script/ENSURE_CONTENT_SCRIPT_READY";

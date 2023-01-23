@@ -35,6 +35,7 @@ import {
   type ReducersMapObject,
   type ThunkDispatch,
 } from "@reduxjs/toolkit";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik, type FormikValues } from "formik";
 import { type Middleware } from "redux";
 import userEvent from "@testing-library/user-event";
@@ -49,6 +50,17 @@ export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
   throw new Error("This method should not have been called");
 };
+
+/**
+ * Generate mocked listeners for browser.*.onEvent objects
+ * @example browser.permissions.onAdded = getChromeEventMocks();
+ */
+export const getChromeEventMocks = () => ({
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+});
 
 export const waitForEffect = async () =>
   act(async () => {

@@ -335,7 +335,7 @@ const AddBlockModal: React.FC = () => {
                 onValueChange={(value) => {
                   dispatch(slice.actions.setQuery(value));
                 }}
-                placeholder={"Search"}
+                placeholder="Search"
                 tag={state.searchTag === TAG_ALL ? null : state.searchTag}
                 onClearTag={() => {
                   dispatch(slice.actions.onClearSearchTag());

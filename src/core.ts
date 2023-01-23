@@ -817,8 +817,8 @@ export interface IBlock extends Metadata {
  */
 export function isUserDefinedBlock(block: IBlock): boolean {
   // YAML-defined blocks have a .component property added by the ExternalBlock class
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- don't want to introduce circular dependency
-  return Boolean((block as any)?.component);
+  // We don't want to introduce circular dependency
+  return block && "component" in block && Boolean(block.component);
 }
 
 export type ReaderOutput = Record<string, unknown>;

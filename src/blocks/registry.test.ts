@@ -16,7 +16,14 @@
  */
 
 import { BlocksRegistry } from "@/blocks/registry";
-import { blockFactory } from "@/testUtils/factories";
+import { blockFactory, extensionFactory } from "@/testUtils/factories";
+import { registry as backgroundRegistry } from "@/background/messenger/api";
+
+jest.mock("@/background/messenger/api", () => ({
+  registry: {
+    getKind: jest.fn(),
+  },
+}));
 
 describe("blocksMap", () => {
   let registry: BlocksRegistry;
@@ -51,5 +58,26 @@ describe("blocksMap", () => {
 
     expect(enrichedBlocks.get(block2.id).type).toBe("reader");
     expect(enrichedBlocks.get(block2.id).block).toBe(block2);
+  });
+
+  test("caches the typed blocks", async () => {
+    (backgroundRegistry.getKind as jest.Mock).mockResolvedValueOnce([
+      extensionFactory(),
+      extensionFactory(),
+    ]);
+
+    jest.spyOn(registry, "all");
+
+    // First call loads the blocks
+    let blocks = await registry.allTyped();
+
+    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(blocks.size).toBe(2);
+
+    // Second call uses the cache
+    blocks = await registry.allTyped();
+
+    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(blocks.size).toBe(2);
   });
 });

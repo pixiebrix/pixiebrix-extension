@@ -34,6 +34,14 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
+import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { uuidv4 } from "@/types/helpers";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+
+(browser.runtime as any).getURL = jest.fn(
+  (path) => `chrome-extension://abc/${path}`
+);
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -45,6 +53,10 @@ jest.mock("@/telemetry/logging", () => {
   };
 });
 
+jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
+  showModal: jest.fn(),
+}));
+
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
   showTemporarySidebarPanel: jest.fn(),
@@ -54,6 +66,15 @@ jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
   waitForTemporaryPanel: jest.fn(),
   stopWaitingForTemporaryPanels: jest.fn(),
 }));
+
+const showTemporarySidebarPanelMock =
+  showTemporarySidebarPanel as jest.MockedFunction<
+    typeof showTemporarySidebarPanel
+  >;
+const showModalMock = showModal as jest.MockedFunction<typeof showModal>;
+const waitForTemporaryPanelMock = waitForTemporaryPanel as jest.MockedFunction<
+  typeof waitForTemporaryPanel
+>;
 
 describe("DisplayTemporaryInfo", () => {
   const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
@@ -67,6 +88,9 @@ describe("DisplayTemporaryInfo", () => {
       renderer,
       displayTemporaryInfoBlock
     );
+
+    showTemporarySidebarPanelMock.mockReset();
+    showModalMock.mockReset();
   });
 
   test("it returns payload", async () => {
@@ -79,7 +103,7 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
     let payload: PanelPayload;
-    (showTemporarySidebarPanel as jest.Mock).mockImplementation(
+    showTemporarySidebarPanelMock.mockImplementation(
       (entry: TemporaryPanelEntry) => {
         payload = entry.payload;
       }
@@ -108,7 +132,7 @@ describe("DisplayTemporaryInfo", () => {
     };
 
     let payload: PanelPayload;
-    (showTemporarySidebarPanel as jest.Mock).mockImplementation(
+    showTemporarySidebarPanelMock.mockImplementation(
       (entry: TemporaryPanelEntry) => {
         payload = entry.payload;
       }
@@ -121,5 +145,42 @@ describe("DisplayTemporaryInfo", () => {
     const error = payload as RendererError;
     const errorMessage = (error.error as BusinessError).message;
     expect(errorMessage).toStrictEqual(message);
+  });
+
+  test("it registers panel for modal", async () => {
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "modal",
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    await reducePipeline(pipeline, simpleInput({}), options);
+
+    expect(showModalMock).toHaveBeenCalled();
+    expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
+
+    expect(waitForTemporaryPanelMock).toHaveBeenCalledWith(
+      // First argument is nonce
+      expect.toBeString(),
+      expect.objectContaining({
+        extensionId,
+        heading: "Test Temp Panel",
+        nonce: expect.toBeString(),
+        payload: expect.toBeObject(),
+      })
+    );
   });
 });

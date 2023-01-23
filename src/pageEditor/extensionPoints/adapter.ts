@@ -30,6 +30,7 @@ import sidebarExtension from "@/pageEditor/extensionPoints/sidebar";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { hasInnerExtensionPoint } from "@/registry/internal";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 
 export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["trigger", triggerExtension],
@@ -77,4 +78,11 @@ export async function extensionToFormState(
 
   // FormState is the sum type of all the extension form states, so OK to cast
   return fromExtension(extension) as Promise<FormState>;
+}
+
+export function formStateToDynamicElement(
+  formState: FormState
+): DynamicDefinition {
+  const elementConfig = ADAPTERS.get(formState.type);
+  return elementConfig.asDynamicElement(formState);
 }

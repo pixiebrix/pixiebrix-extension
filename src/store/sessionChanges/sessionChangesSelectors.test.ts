@@ -16,11 +16,11 @@
  */
 
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
-import { type SessionChangesRootState } from "@/pageEditor/sessionChanges/sessionChangesTypes";
+import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { uuidv4 } from "@/types/helpers";
-import { selectIsStaleSession } from "@/pageEditor/sessionChanges/sessionChangesSelectors";
+import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import { initialState as initialSessionState } from "@/pageEditor/slices/sessionSlice";
-import { initialState as initialSessionChangesState } from "@/pageEditor/sessionChanges/sessionChangesSlice";
+import { initialState as initialSessionChangesState } from "@/store/sessionChanges/sessionChangesSlice";
 
 describe("selectIsStaleSession", () => {
   test("empty changes state", () => {

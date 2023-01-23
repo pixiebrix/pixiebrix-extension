@@ -42,7 +42,7 @@
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {
-    "matches": ["https://app.pixiebrix.com/*"]
+    "matches": ["https://*.pixiebrix.com/*"]
   },
   "storage": {
     "managed_schema": "managedStorageSchema.json"
@@ -58,7 +58,8 @@
     "pageEditor.css",
     "pageScript.js",
     "ephemeralForm.html",
-    "ephemeralForm.css",
+    "ephemeralPanel.html",
+    "ephemeralModal.css",
     "audio/*",
     "user-icons/*",
     "img/*"

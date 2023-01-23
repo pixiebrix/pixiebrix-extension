@@ -51,7 +51,7 @@ import { getProcesses, initRobot } from "@/contentScript/uipath";
 import {
   withDetectFrameworkVersions,
   withSearchWindow,
-} from "@/messaging/protocol";
+} from "@/pageScript/messenger/api";
 import {
   runBlock,
   runReaderBlock,
@@ -76,6 +76,7 @@ import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 import {
   cancelTemporaryPanels,
+  getPanelDefinition,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
@@ -87,9 +88,8 @@ declare global {
     FORM_RESOLVE: typeof resolveForm;
     FORM_CANCEL: typeof cancelForm;
     TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
-
     TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
-
+    PANEL_GET_DEFINITION: typeof getPanelDefinition;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_EXTENSION: typeof removeExtension;
@@ -150,6 +150,7 @@ export default function registerMessenger(): void {
 
     TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
     TEMPORARY_PANEL_CANCEL: cancelTemporaryPanels,
+    PANEL_GET_DEFINITION: getPanelDefinition,
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,

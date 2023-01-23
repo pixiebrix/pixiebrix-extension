@@ -80,23 +80,28 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 
   // Default the workspaceType based on the file id
-  useAsyncEffect(async () => {
-    if (config && isCommunityControlRoom(config.config.controlRoomUrl)) {
-      // In community edition, each user just works in their own private workspace
-      setWorkspaceType("private");
-    }
+  useAsyncEffect(
+    async (isMounted) => {
+      if (config && isCommunityControlRoom(config.config.controlRoomUrl)) {
+        // In community edition, each user just works in their own private workspace
+        setWorkspaceType("private");
+      }
 
-    // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
-    // for the fields in the fieldset
-    if (hasPermissions && config && workspaceType == null && fileId) {
-      const result = await cachedFetchBotFile(config, fileId);
-      const workspaceType =
-        result.workspaceType === "PUBLIC" ? "public" : "private";
-      setWorkspaceType(workspaceType);
-    }
+      // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
+      // for the fields in the fieldset
+      if (hasPermissions && config && workspaceType == null && fileId) {
+        const result = await cachedFetchBotFile(config, fileId);
+        const workspaceType =
+          result.workspaceType === "PUBLIC" ? "public" : "private";
+        if (isMounted()) {
+          setWorkspaceType(workspaceType);
+        }
+      }
 
-    // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
-  }, [config, fileId, hasPermissions, workspaceType]);
+      // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
+    },
+    [config, fileId, hasPermissions, workspaceType]
+  );
 
   const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
     useAsyncState(async () => {
@@ -178,6 +183,15 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             <>
               {workspaceType === "public" && (
                 <>
+                  {isAttended && (
+                    <Alert variant="info">
+                      <FontAwesomeIcon icon={faInfoCircle} /> In attended mode,
+                      the bot will run using the authenticated user&apos;s
+                      credentials. You will not be able to run the bot using a
+                      Bot Creator license. Switch to unattended mode to test
+                      using a Bot Creator license.
+                    </Alert>
+                  )}
                   <ConnectedFieldTemplate
                     label="Attended"
                     name={configName("isAttended")}

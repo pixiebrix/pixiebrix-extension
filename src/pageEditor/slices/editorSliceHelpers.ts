@@ -93,6 +93,11 @@ export function setActiveNodeId(
   elementUIState.activeNodeId = nodeId;
 }
 
+/**
+ * Remove a dynamic element from the redux state
+ * @param state The redux state (slice)
+ * @param uuid The id for the dynamic element to remove
+ */
 export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
   if (state.activeElementId === uuid) {
     state.activeElementId = null;
@@ -108,9 +113,41 @@ export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
 
   delete state.dirty[uuid];
   delete state.elementUIStates[uuid];
+  delete state.showV3UpgradeMessageByElement[uuid];
+
+  const dynamicIndex = state.availableDynamicIds.indexOf(uuid);
+  if (dynamicIndex > -1) {
+    // Element is available, update available ids
+    state.availableDynamicIds.splice(dynamicIndex, 1);
+  } else if (index > -1) {
+    // Element is present but unavailable, so update unavailable count
+    state.unavailableDynamicCount--;
+  }
 
   // Make sure we're not keeping any private data around from Page Editor sessions
   void clearExtensionTraces(uuid);
+}
+
+/**
+ * Remove a given recipe's extra data from a redux state object
+ * @param state The editor redux state
+ * @param recipeId The id of the recipe to remove
+ */
+export function removeRecipeData(
+  state: WritableDraft<EditorState>,
+  recipeId: RegistryId
+) {
+  if (state.activeRecipeId === recipeId) {
+    state.activeRecipeId = null;
+  }
+
+  if (state.expandedRecipeId === recipeId) {
+    state.expandedRecipeId = null;
+  }
+
+  delete state.dirtyRecipeOptionsById[recipeId];
+  delete state.dirtyRecipeMetadataById[recipeId];
+  delete state.deletedElementsByRecipeId[recipeId];
 }
 
 export function selectRecipeId(

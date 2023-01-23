@@ -121,7 +121,18 @@ export type OutputValue = {
 };
 
 export type Activity = {
+  /**
+   * The id of the activity
+   */
+  id: string;
   status: string;
+  /**
+   * The id of the deployment
+   */
+  deploymentId: string;
+};
+
+export type Execution = {
   botOutVariables?: {
     values: Record<string, OutputValue>;
   };

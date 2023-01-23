@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`highlight highlight multiple matches with rootSelector 1`] = `
+"
+            <div class="a" style="background-color: rgb(255, 255, 0);">Foo</div>
+            <div class="a" style="background-color: rgb(255, 255, 0);">Bar</div>
+            <div>Baz</div>
+        "
+`;
+
+exports[`highlight highlight multiple matches with rootSelector 2`] = `
+"
+            <div class="a" style="background-color: rgb(255, 255, 0);">Foo</div>
+            <div class="a" style="background-color: rgb(255, 255, 0);">Bar</div>
+            <div>Baz</div>
+        "
+`;
+
+exports[`highlight is root aware if rootMode is 'inherit' 1`] = `
+"
+            <div id="tree">
+                <span style="background-color: rgb(255, 255, 0);">Foo</span>
+                <span style="background-color: rgb(255, 255, 0);">Bar</span>
+            </div>
+            <div>
+                <span>Baz</span>
+            </div>
+        "
+`;
+
+exports[`highlight is root un-aware if rootMode is 'document' 1`] = `
+"
+            <div id="tree">
+                <span style="background-color: rgb(255, 255, 0);">Foo</span>
+                <span style="background-color: rgb(255, 255, 0);">Bar</span>
+            </div>
+            <div>
+                <span style="background-color: rgb(255, 255, 0);">Baz</span>
+            </div>
+        "
+`;
+
+exports[`highlight is root un-aware if rootMode is 'undefined' 1`] = `
+"
+            <div id="tree">
+                <span style="background-color: rgb(255, 255, 0);">Foo</span>
+                <span style="background-color: rgb(255, 255, 0);">Bar</span>
+            </div>
+            <div>
+                <span style="background-color: rgb(255, 255, 0);">Baz</span>
+            </div>
+        "
+`;

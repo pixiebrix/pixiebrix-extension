@@ -17,8 +17,7 @@
 
 import { deserializeError, serializeError } from "serialize-error";
 import { makeRead, type ReaderTypeConfig } from "@/blocks/readers/factory";
-import FRAMEWORK_ADAPTERS from "@/pageScript/frameworks/adapters";
-import { getComponentData } from "@/pageScript/protocol";
+import { getComponentData } from "@/pageScript/messenger/api";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
 import {
@@ -39,18 +38,26 @@ import { isNullOrBlank, resolveObj } from "@/utils";
 import { type BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type SerializableResponse } from "@/messaging/protocol";
+import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
-import { BusinessError, NoRendererError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  NoRendererError,
+} from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { type PanelPayload } from "@/sidebar/types";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
+import { KNOWN_READERS } from "@/pageScript/messenger/constants";
+import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -64,7 +71,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
-type RunBlockArgs = {
+export type RunBlockArgs = {
   apiVersion: ApiVersion;
   blockConfig: BlockConfig;
   /**
@@ -144,6 +151,8 @@ export async function runBlock({
   return cloneDeep(output) as SerializableResponse;
 }
 
+type Location = "modal" | "panel";
+
 /**
  * Run a single renderer (e.g. - for running a block preview)
  *
@@ -162,7 +171,8 @@ export async function runRendererBlock(
   extensionId: UUID,
   runId: UUID,
   title: string,
-  args: RunBlockArgs
+  args: RunBlockArgs,
+  location: Location
 ): Promise<void> {
   const nonce = uuidv4();
 
@@ -191,12 +201,41 @@ export async function runRendererBlock(
       };
     }
 
-    showTemporarySidebarPanel({
-      extensionId: null,
-      nonce,
-      heading: title,
-      payload,
-    });
+    if (location === "panel") {
+      showTemporarySidebarPanel({
+        // Pass extension id so previous run is cancelled
+        extensionId,
+        nonce,
+        heading: title,
+        payload,
+      });
+    } else if (location === "modal") {
+      const controller = new AbortController();
+      const url = await createFrameSource(nonce, "modal");
+
+      showModal(url, controller);
+
+      try {
+        await waitForTemporaryPanel(nonce, {
+          extensionId,
+          nonce,
+          heading: title,
+          payload,
+        });
+      } catch (error) {
+        // Match behavior of Display Temporary Info
+        if (error instanceof CancelError) {
+          // NOP
+        } else {
+          throw error;
+        }
+      } finally {
+        controller.abort();
+      }
+    } else {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+      throw new Error(`Support for previewing in ${location} not implemented`);
+    }
   }
 }
 
@@ -265,7 +304,7 @@ export async function readSelected() {
 
     const frameworkData = await resolveObj(
       Object.fromEntries(
-        [...FRAMEWORK_ADAPTERS.keys()].map((framework) => [
+        KNOWN_READERS.map((framework) => [
           framework,
           read(async () => getComponentData({ framework, selector })),
         ])

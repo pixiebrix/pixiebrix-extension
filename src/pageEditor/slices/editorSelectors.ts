@@ -111,7 +111,7 @@ const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
 );
 
 export const selectDirtyOptionDefinitionsForRecipeId =
-  (recipeId: RegistryId) => (state: RootState) =>
+  (recipeId: RegistryId) => (state: EditorRootState) =>
     dirtyOptionDefinitionsForRecipeIdSelector(state, recipeId);
 
 const dirtyOptionValuesForRecipeIdSelector = createSelector(
@@ -137,7 +137,7 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
 );
 
 export const selectDirtyMetadataForRecipeId =
-  (recipeId: RegistryId) => (state: RootState) =>
+  (recipeId: RegistryId) => (state: EditorRootState) =>
     dirtyMetadataForRecipeIdSelector(state, recipeId);
 
 const elementIsDirtySelector = createSelector(
@@ -290,6 +290,10 @@ const parentBlockInfoSelector = createSelector(
   }
 );
 
+/**
+ * Return the block with the pipeline that contains the given node.
+ * @param instanceId the block instanceId
+ */
 export const selectParentBlockInfo =
   (instanceId: UUID) => (state: EditorRootState) =>
     parentBlockInfoSelector(state, instanceId);

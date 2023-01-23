@@ -4,7 +4,7 @@ const restrictedZones = [
   "pageEditor",
   "options",
   "sidebar",
-  // "pageScript", // TODO: After Messenger migration
+  "pageScript",
 ].map((exporter) => ({
   // All of these files cannot import `from` (exclude self-imports)
   target:
@@ -60,7 +60,7 @@ module.exports = {
           "@/background/axiosFetch", // Must be run before other code
           "@/telemetry/reportUncaughtErrors",
           "@testing-library/jest-dom",
-          "webext-dynamic-content-scripts", // Automatic registration
+          "webext-dynamic-content-scripts/including-active-tab", // Automatic registration
           "regenerator-runtime/runtime", // Automatic registration
         ],
       },

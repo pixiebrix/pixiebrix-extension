@@ -42,7 +42,7 @@ import {
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { defaultBlockConfig } from "@/blocks/util";
-import { runPendingTimers, waitForEffect } from "@/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/blocks/transformers/jq";
@@ -69,6 +69,15 @@ import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/re
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
+import { act } from "react-dom/test-utils";
+import * as sinonTimers from "@sinonjs/fake-timers";
+
+let clock: sinonTimers.InstalledClock;
+async function tickAsyncEffects() {
+  return act(async () => {
+    await clock.tickAsync(1000);
+  });
+}
 
 jest.mock("@/services/api", () => {
   const originalModule = jest.requireActual("@/services/api");
@@ -106,12 +115,10 @@ jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn().mockResolvedValue(true),
 }));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
-jest.mock("@/hooks/useRefresh");
+jest.mock("@/hooks/useRefreshRegistries");
 jest.mock("@/hooks/useTheme", () => ({
   useGetTheme: jest.fn(),
 }));
-
-jest.setTimeout(30_000); // This test is flaky with the default timeout of 5000 ms
 
 const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
@@ -176,7 +183,18 @@ beforeAll(async () => {
   (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
 
   (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
+
+  clock = sinonTimers.install();
 });
+
+afterAll(() => {
+  clock.uninstall();
+});
+
+beforeEach(() => {
+  clock.reset();
+});
+afterEach(async () => clock.runAllAsync());
 
 const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
@@ -231,7 +249,7 @@ async function addABlock(addButton: Element, blockName: string) {
   );
 
   // Run the debounced search
-  await runPendingTimers();
+  await tickAsyncEffects();
 
   // Sometimes unexpected extra results come back in the search,
   // but the exact-match result to the search string should
@@ -255,7 +273,7 @@ describe("renders", () => {
       },
     });
 
-    await waitForEffect();
+    await tickAsyncEffects();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -269,27 +287,13 @@ describe("renders", () => {
       },
     });
 
-    await waitForEffect();
+    await tickAsyncEffects();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
 
 describe("can add a node", () => {
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
-  beforeEach(() => {
-    jest.clearAllTimers();
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-  });
-
   test("to root pipeline", async () => {
     const formState = getPlainFormState();
     render(
@@ -492,8 +496,6 @@ describe("can move a node up", () => {
   });
 
   test("in sub pipeline", async () => {
-    jest.useFakeTimers();
-
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
@@ -545,8 +547,6 @@ describe("can move a node down", () => {
   });
 
   test("in sub pipeline", async () => {
-    jest.useFakeTimers();
-
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
@@ -654,20 +654,6 @@ describe("can copy and paste a node", () => {
 });
 
 describe("validation", () => {
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
-  beforeEach(() => {
-    jest.clearAllTimers();
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-  });
-
   function expectEditorError(container: HTMLElement, errorMessage: string) {
     const errorBadge = container.querySelector(
       '.active[data-testid="editor-node"] span.badge'
@@ -692,16 +678,13 @@ describe("validation", () => {
       },
     });
 
-    await waitForEffect();
+    await tickAsyncEffects();
 
     // By some reason, the validation doesn't fire with userEvent.type
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
-    // Run the timers of the Formik-Redux state synchronization
-    // First one runs the Effect (debounce #1) that triggers Redux state update
-    await runPendingTimers();
-    // Second one runs the Redux state update (debounce #2)
-    await runPendingTimers();
+    // Run the timers of the Formik-Redux state synchronization and analysis
+    await tickAsyncEffects();
 
     expectEditorError(
       rendered.container,
@@ -739,14 +722,13 @@ describe("validation", () => {
       }
     );
 
-    await waitForEffect();
+    await tickAsyncEffects();
 
     // Make invalid string template
     // This is field level error
     fireTextInput(rendered.getByLabelText("message"), "{{!");
 
-    // Run the timers of the Formik-Redux state synchronization
-    await runPendingTimers();
+    await tickAsyncEffects();
 
     // Adding a renderer in the first position in the pipeline
     // This is a node level error
@@ -755,6 +737,9 @@ describe("validation", () => {
     });
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
+
+    // Run the timers of the Formik-Redux state synchronization and analysis
+    await tickAsyncEffects();
 
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
@@ -779,6 +764,9 @@ describe("validation", () => {
 
     // Selecting the first extension
     store.dispatch(editorActions.selectElement(extension1.uuid));
+
+    // Run the timers of the Formik-Redux state synchronization and analysis
+    await tickAsyncEffects();
 
     // Should show 2 error in the Node Layout
     expect(
@@ -826,7 +814,7 @@ describe("validation", () => {
       }
     );
 
-    await waitForEffect();
+    await tickAsyncEffects();
 
     // Hitting the second to last (Foundation node plus 2 bricks) Add Brick button
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
@@ -834,6 +822,8 @@ describe("validation", () => {
     });
     const addButton = addButtons.at(0);
     await addABlock(addButton, "markdown");
+
+    await tickAsyncEffects();
 
     expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
@@ -867,6 +857,8 @@ describe("validation", () => {
     );
 
     await immediateUserEvent.click(moveUpButton);
+
+    await tickAsyncEffects();
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
   });
@@ -918,7 +910,7 @@ describe("validation", () => {
         }
       );
 
-      await waitForEffect();
+      await tickAsyncEffects();
 
       const blockType = await getType(disallowedBlock);
       expectEditorError(
@@ -930,20 +922,6 @@ describe("validation", () => {
 });
 
 describe("block validation in Add Block Modal UI", () => {
-  beforeAll(() => {
-    jest.useFakeTimers();
-  });
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
-  beforeEach(() => {
-    jest.clearAllTimers();
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-  });
-
   const testCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
@@ -989,7 +967,7 @@ describe("block validation in Add Block Modal UI", () => {
       );
 
       // Run the debounced search
-      await runPendingTimers();
+      await tickAsyncEffects();
 
       // Check for the alert on hover
       const firstResult = screen.queryAllByRole("button", { name: /add/i })[0]
@@ -1030,7 +1008,7 @@ describe("block validation in Add Block Modal UI", () => {
     );
 
     // Run the debounced search
-    await runPendingTimers();
+    await tickAsyncEffects();
 
     const addButtons = screen.queryAllByRole("button", { name: /add/i });
 

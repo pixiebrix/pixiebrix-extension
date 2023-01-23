@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useTabEventListener } from "@/hooks/events";
 import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
@@ -29,12 +29,25 @@ import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
+import { thisTab } from "@/pageEditor/utils";
+import {
+  updateDynamicElement,
+  removeExtension,
+} from "@/contentScript/messenger/api";
+import { selectActiveElement } from "./slices/editorSelectors";
+import { formStateToDynamicElement } from "./extensionPoints/adapter";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
-  const { tabId } = browser.devtools.inspectedWindow;
-  useTabEventListener(tabId, navigationEvent, () => {
+  const activeElement = useSelector(selectActiveElement);
+
+  useTabEventListener(thisTab.tabId, navigationEvent, () => {
     dispatch(tabStateActions.connectToContentScript());
+
+    if (activeElement != null) {
+      const dynamicElement = formStateToDynamicElement(activeElement);
+      void updateDynamicElement(thisTab, dynamicElement);
+    }
   });
 
   useEffect(() => {
@@ -44,6 +57,13 @@ const PanelContent: React.FC = () => {
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
+
+  useEffect(() => {
+    // Remove the installed extension
+    if (activeElement != null) {
+      removeExtension(thisTab, activeElement.uuid);
+    }
+  }, [activeElement]);
 
   return (
     <PersistGate persistor={persistor}>

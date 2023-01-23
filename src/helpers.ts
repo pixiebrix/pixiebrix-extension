@@ -52,7 +52,7 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
 }
 
 /**
- * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element it it's
+ * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element if it's
  * passed HTML.
  * @param selector a jQuery selector
  * @param parent parent element to search (default=document)

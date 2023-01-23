@@ -26,5 +26,6 @@
 
   :global .nav-link {
     padding-inline: 0.7rem; // Reduce horizontal padding
+    border: none; // Drop unwanted border
   }
 }

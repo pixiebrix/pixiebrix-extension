@@ -19,6 +19,7 @@ import styles from "./ElementWizard.module.scss";
 
 import React, { useState } from "react";
 import { useFormikContext } from "formik";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
@@ -97,7 +98,7 @@ const ElementWizard: React.FunctionComponent<{
 
   const wizardSteps = [...wizard];
 
-  useAsyncEffect(async () => {
+  useAsyncEffect(async (isMounted) => {
     if (formState.apiVersion === "v2") {
       const newState = await produce(formState, async (draft) => {
         draft.extension.blockPipeline = await upgradePipelineToV3(
@@ -105,6 +106,10 @@ const ElementWizard: React.FunctionComponent<{
         );
         draft.apiVersion = "v3";
       });
+      if (!isMounted()) {
+        return;
+      }
+
       setFormState(newState);
       dispatch(actions.showV3UpgradeMessage());
     }

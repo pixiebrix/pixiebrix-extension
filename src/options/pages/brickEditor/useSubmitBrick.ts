@@ -22,7 +22,7 @@ import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
-import useRefresh from "@/hooks/useRefresh";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import {
   type Definition,
   type UnsavedRecipeDefinition,
@@ -57,7 +57,7 @@ type SubmitCallbacks = {
 };
 
 function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
-  const [, refresh] = useRefresh({ refreshOnMount: false });
+  const [, refresh] = useRefreshRegistries({ refreshOnMount: false });
   const reinstall = useReinstall();
   const history = useHistory();
   const dispatch = useDispatch();

@@ -34,7 +34,8 @@ import {
   SCRIPT_LOADED,
   SEARCH_WINDOW,
   SET_COMPONENT_DATA,
-} from "@/messaging/constants";
+  type FrameworkAdapter,
+} from "@/pageScript/messenger/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
@@ -43,22 +44,21 @@ import {
   type PathSpec,
   type ReadOptions,
   type WritePayload,
-  initialize,
-} from "@/pageScript/protocol";
+} from "@/pageScript/messenger/api";
 import { awaitValue } from "@/utils";
 import {
   type ReadableComponentAdapter,
   traverse,
-  type WriteableComponentAdapter,
 } from "@/pageScript/frameworks/component";
 import { elementInfo } from "@/pageScript/frameworks";
-import { requireSingleElement } from "@/utils/requireSingleElement";
+import { findSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,
   noopProxy,
   type ReadProxy,
 } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
+import { initialize, type SerializableResponse } from "./messenger/pigeon";
 import { TimeoutError } from "p-timeout";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
@@ -86,7 +86,7 @@ const MAX_READ_DEPTH = 5;
 
 const attachListener = initialize();
 
-attachListener(SEARCH_WINDOW, ({ query }) => {
+attachListener(SEARCH_WINDOW, async ({ query }) => {
   console.debug("Searching window for query: %s", query);
   return {
     results: globalSearch(window, query),
@@ -143,7 +143,7 @@ attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
       : values;
   };
 
-  return awaitValue(factory, { waitMillis });
+  return awaitValue(factory, { waitMillis }) as SerializableResponse;
 });
 
 async function read<TComponent>(
@@ -163,7 +163,7 @@ async function read<TComponent>(
   let element: HTMLElement;
 
   try {
-    element = requireSingleElement(selector);
+    element = findSingleElement(selector);
   } catch (error) {
     console.debug("read: error calling requireSingleElement", {
       error,
@@ -229,29 +229,29 @@ attachListener(
       return {};
     }
 
-    const adapter = adapters.get(framework) as ReadableComponentAdapter;
+    const adapter = adapters.get(framework as FrameworkAdapter);
     if (!adapter) {
       throw new Error(`No read adapter available for framework: ${framework}`);
     }
 
-    return read(adapter, selector, options);
+    return read(adapter, selector, options) as SerializableResponse;
   }
 );
 
 attachListener(
   SET_COMPONENT_DATA,
-  ({ framework, selector, valueMap }: WritePayload) => {
+  async ({ framework, selector, valueMap }: WritePayload): Promise<void> => {
     if (isEmpty(selector)) {
       // Throw error since this likely indicates a bug in a brick
       throw new Error("No selector provided");
     }
 
-    const adapter = adapters.get(framework) as WriteableComponentAdapter;
-    if (!adapter?.setData) {
+    const adapter = adapters.get(framework as FrameworkAdapter);
+    if (!("setData" in adapter)) {
       throw new Error(`No write adapter available for ${framework}`);
     }
 
-    const element = requireSingleElement(selector);
+    const element = findSingleElement(selector);
     const component = adapter.getComponent(element);
     adapter.setData(component, valueMap);
   }
@@ -273,7 +273,7 @@ attachListener(
     traverseUp: number;
   }) => {
     console.debug("GET_COMPONENT_INFO", { selector, framework, traverseUp });
-    const element = requireSingleElement(selector);
+    const element = findSingleElement(selector);
     const info = await elementInfo(element, framework, [selector], traverseUp);
     console.debug("Element info", { element, selector, info });
     return info;

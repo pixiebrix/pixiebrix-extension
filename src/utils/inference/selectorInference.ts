@@ -558,14 +558,14 @@ function doesSelectOneElement(selector: string): boolean {
   return $safeFind(selector).length === 1;
 }
 
-export function getCommonAncestor(...args: Node[]): Node {
+export function getCommonAncestor(...args: HTMLElement[]): HTMLElement {
   if (args.length === 1) {
-    return args[0].parentNode;
+    return args[0].parentElement;
   }
 
   const [node, ...otherNodes] = args;
 
-  let currentNode: Node | null = node;
+  let currentNode = node;
 
   while (currentNode) {
     // eslint-disable-next-line @typescript-eslint/no-loop-func -- The function is used immediately
@@ -573,7 +573,7 @@ export function getCommonAncestor(...args: Node[]): Node {
       return currentNode;
     }
 
-    currentNode = currentNode?.parentNode;
+    currentNode = currentNode?.parentElement;
   }
 
   return null;
@@ -633,7 +633,7 @@ export function findContainer(elements: HTMLElement[]): {
   selectors: string[];
 } {
   if (elements.length > 1) {
-    const container = getCommonAncestor(...elements) as HTMLElement | null;
+    const container = getCommonAncestor(...elements);
     if (!container) {
       throw new Error("Selected elements have no common ancestors");
     }

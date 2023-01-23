@@ -22,7 +22,7 @@ import {
   isErrorResponse,
   type SerializableResponse,
   toErrorResponse,
-} from "@/messaging/protocol";
+} from "@/pageScript/messenger/pigeon";
 import pTimeout from "p-timeout";
 import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
