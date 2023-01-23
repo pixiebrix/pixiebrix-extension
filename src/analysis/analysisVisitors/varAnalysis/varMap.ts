@@ -17,38 +17,6 @@
 
 import { cloneDeep, get, setWith, toPath } from "lodash";
 
-export enum VarExistence {
-  MAYBE = "MAYBE",
-  DEFINITELY = "DEFINITELY",
-}
-
-// This symbols are used to define the own properties of the existence tree node
-export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
-export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
-export type ExistenceNode = {
-  [SELF_EXISTENCE]?: VarExistence;
-  [ALLOW_ANY_CHILD]?: boolean;
-
-  [name: string]: ExistenceNode;
-};
-
-/**
- * Creates an new node for the existence map
- * @param selfExistence Existence of the current node
- * @param allowAnyChild Whether the current node allows any child (i.e. doesn't have  a strict schema)
- */
-export function createNode(
-  selfExistence: VarExistence,
-  allowAnyChild = false
-): ExistenceNode {
-  const node: ExistenceNode = {
-    [SELF_EXISTENCE]: selfExistence,
-    [ALLOW_ANY_CHILD]: allowAnyChild,
-  };
-
-  return node;
-}
-
 type SetExistenceArgs = {
   /**
    * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
@@ -67,22 +35,114 @@ type SetExistenceArgs = {
   existence: VarExistence;
 
   /**
-   * Whether the variable is allowed to have any child (i.e. doesn't have a strict schema)
+   * True if the output key can have any child, i.e. the output schema is unknown
    */
   allowAnyChild?: boolean;
+
+  isArray?: boolean;
 };
+
+type SetOutputKeyExistenceArgs = {
+  /**
+   * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
+   */
+  source: string;
+
+  /**
+   * The output key of the block
+   */
+  outputKey: string;
+
+  /**
+   * Existence of the variable
+   */
+  existence: VarExistence;
+
+  /**
+   * True if the output key can have any child, i.e. the output schema is unknown
+   */
+  allowAnyChild: boolean;
+};
+
+type SetExistenceFromValuesArgs = {
+  /**
+   * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
+   */
+  source: string;
+
+  /**
+   * The object containing the context values
+   */
+  values: Record<string, unknown>;
+
+  /**
+   * Parent path for the values.
+   * For instance, a page reader context gets a parent path of "@input"
+   */
+  parentPath?: string;
+};
+
+export enum VarExistence {
+  MAYBE = "MAYBE",
+  DEFINITELY = "DEFINITELY",
+}
+
+// This symbols are used to define the own properties of the existence tree node
+export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
+export const IS_ARRAY = Symbol("IS_ARRAY");
+export type ExistenceNode = {
+  [SELF_EXISTENCE]?: VarExistence;
+  [ALLOW_ANY_CHILD]?: boolean;
+  [IS_ARRAY]?: boolean;
+
+  [name: string]: ExistenceNode;
+};
+
+type CreateNodeOptions = {
+  allowAnyChild?: boolean;
+  isArray?: boolean;
+};
+
+/**
+ * Creates an new node for the existence map
+ * @param selfExistence Existence of the current node
+ * @param allowAnyChild Whether the current node allows any child (i.e. doesn't have  a strict schema)
+ */
+export function createNode(
+  selfExistence: VarExistence,
+  { allowAnyChild = false, isArray = false }: CreateNodeOptions = {}
+): ExistenceNode {
+  const node: ExistenceNode = {
+    [SELF_EXISTENCE]: selfExistence,
+    [ALLOW_ANY_CHILD]: allowAnyChild,
+    [IS_ARRAY]: isArray,
+  };
+
+  return node;
+}
+
+const numberReges = /^\d+$/;
 
 class VarMap {
   private map: Record<string, ExistenceNode> = {};
+
+  /**
+   * Returns the internal existence map (deep cloned, so it's safe to modify)
+   */
   public getMap(): Record<string, ExistenceNode> {
     return cloneDeep(this.map);
   }
 
+  /**
+   * Sets the existence of a variable by path
+   */
   public setExistence({
     source,
     path,
     existence,
     allowAnyChild = false,
+    isArray = false,
   }: SetExistenceArgs): void {
     const pathParts = [
       source,
@@ -102,7 +162,7 @@ class VarMap {
 
     setWith(this.map, pathParts, existence, (currentNode) => {
       if (currentNode == null) {
-        return createNode(existence, allowAnyChild);
+        return createNode(existence, { allowAnyChild, isArray });
       }
 
       if (
@@ -120,22 +180,19 @@ class VarMap {
 
   /**
    * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
-   * @param source The source of the values context (ex.: brick, trace, page reader)
-   * @param values The object containing the context values
-   * @param parentPath Parent path for the values. For instance, a page reader context gets a parent path of "@input"
    */
-  public setExistenceFromValues(
-    source: string,
-    values: Record<string, unknown>,
-    parentPath = ""
-  ): void {
+  public setExistenceFromValues({
+    source,
+    values,
+    parentPath = "",
+  }: SetExistenceFromValuesArgs): void {
     for (const [key, value] of Object.entries(values)) {
       if (typeof value === "object") {
-        this.setExistenceFromValues(
+        this.setExistenceFromValues({
           source,
-          value as Record<string, unknown>,
-          parentPath === "" ? key : `${parentPath}.${key}`
-        );
+          values: value as Record<string, unknown>,
+          parentPath: parentPath === "" ? key : `${parentPath}.${key}`,
+        });
       } else {
         setWith(
           this.map,
@@ -149,22 +206,17 @@ class VarMap {
 
   /**
    * Adds an existence for a block with output key
-   * As of now we only set existence for the root object, since output schema is not supported by the VarAnalysis
-   * @param source The source of the values context (ex.: brick, trace, page reader)
-   * @param outputKey The output key of the block
-   * @param existence Existence of the output key (MAYBE for a conditional block)
-   * @param allowAnyChild True if the output key can have any child, i.e. the output schema is unknown
    */
-  public setOutputKeyExistence(
-    source: string,
-    outputKey: string,
-    existence: VarExistence,
-    allowAnyChild: boolean
-  ): void {
+  public setOutputKeyExistence({
+    source,
+    outputKey,
+    existence,
+    allowAnyChild,
+  }: SetOutputKeyExistenceArgs): void {
     // While any block can provide no more than one output key,
     // we are safe to create a new object for the 'source'
     this.map[source] = {
-      [outputKey]: createNode(existence, allowAnyChild),
+      [outputKey]: createNode(existence, { allowAnyChild }),
     };
   }
 
@@ -188,31 +240,36 @@ class VarMap {
 
     for (const sourceMap of Object.values(this.map).filter(
       // Only check the sources (bricks) that provide the output key (the first part of the path)
+      // Usually there is one brick providing the output key and the vars from traces
       (x) => x[pathParts[0]] != null
     )) {
-      if (
-        (get(sourceMap, pathParts) as ExistenceNode)?.[SELF_EXISTENCE] != null
-      ) {
-        return true;
-      }
-
-      // If path consists of only one key (output key), the existence has been checked above
-      if (pathParts.length === 1) {
-        continue;
-      }
-
-      // Check if any child is allowed up in the hierarchy
       let bag = sourceMap;
       while (pathParts.length > 0) {
         const part = pathParts.shift();
+
+        // Handle the array case
+        const isNumberPart = numberReges.test(part);
+        if (isNumberPart && bag[IS_ARRAY]) {
+          if (pathParts.length === 0) {
+            return true;
+          }
+
+          continue;
+        }
+
         bag = bag[part];
         if (bag == null) {
           break;
         }
 
+        // Check if any child is allowed
         if (bag[ALLOW_ANY_CHILD]) {
           return true;
         }
+      }
+
+      if (bag?.[SELF_EXISTENCE] != null) {
+        return true;
       }
     }
 

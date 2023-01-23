@@ -27,22 +27,22 @@ let knownVars: VarMap;
 let trace: any;
 beforeEach(() => {
   knownVars = new VarMap();
-  knownVars.setExistenceFromValues(
-    "input:Array Composite Reader",
-    {
+  knownVars.setExistenceFromValues({
+    source: "input:Array Composite Reader",
+    values: {
       description: "foo",
       icon: "bar",
       image: "baz",
     },
-    "@input"
-  );
+    parentPath: "@input",
+  });
 
-  knownVars.setOutputKeyExistence(
-    "extension.blockPipeline.0",
-    "@jq",
-    VarExistence.DEFINITELY,
-    true
-  );
+  knownVars.setOutputKeyExistence({
+    source: "extension.blockPipeline.0",
+    outputKey: "@jq",
+    existence: VarExistence.DEFINITELY,
+    allowAnyChild: true,
+  });
 
   trace = {
     "@input": {
@@ -66,7 +66,10 @@ test("returns options in correct order when no trace is available", () => {
 });
 
 test("removes the trace source from VarMap", () => {
-  knownVars.setExistenceFromValues(KnownSources.TRACE, trace);
+  knownVars.setExistenceFromValues({
+    source: KnownSources.TRACE,
+    values: trace,
+  });
 
   const actual = getMenuOptions(knownVars, null);
 
