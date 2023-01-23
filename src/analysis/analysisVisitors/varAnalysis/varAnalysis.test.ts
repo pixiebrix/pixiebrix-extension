@@ -195,6 +195,27 @@ describe("Collecting available vars", () => {
       analysis = new VarAnalysis([]);
     });
 
+    test.each([{}, null, undefined])("no options", async (optionsSchema) => {
+      mockBlueprintWithOptions(optionsSchema);
+
+      const extension = formStateFactory(
+        {
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const foundationKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+
+      expect(foundationKnownVars.isVariableDefined("@options")).toBeFalse();
+    });
+
     test("read values from blueprint and extension", async () => {
       mockBlueprintWithOptions({
         properties: {
@@ -379,6 +400,51 @@ describe("Collecting available vars", () => {
       expect(
         secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
       ).toBeTrue();
+    });
+
+    test("supports nested objects in schema", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            description: "The email address for the account",
+          },
+          user: {
+            type: "object",
+            required: ["id", "name"],
+            description: "The user id for the account",
+            properties: {
+              id: {
+                type: "string",
+                format: "uuid",
+              },
+              name: {
+                type: "string",
+              },
+            },
+          },
+        },
+        required: ["user"],
+      });
+
+      // Knows schema variables are defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.email`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.id`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.name`)
+      ).toBeTrue();
+
+      // Arbitrary child of the user property is not defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.baz`)
+      ).toBeFalse();
     });
 
     test("supports array properties in output schema", async () => {

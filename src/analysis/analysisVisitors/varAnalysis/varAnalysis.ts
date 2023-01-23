@@ -186,7 +186,7 @@ async function setOptionsVars(extension: FormState, contextVars: VarMap) {
   const recipeId = extension.recipe.id;
   const recipe = await recipesRegistry.lookup(recipeId);
   const optionsSchema = recipe?.options?.schema;
-  if (optionsSchema == null) {
+  if (isEmpty(optionsSchema)) {
     return;
   }
 
