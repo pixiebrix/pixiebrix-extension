@@ -155,16 +155,28 @@ function setVarsFromSchema({
           ? VarExistence.DEFINITELY
           : VarExistence.MAYBE;
 
-      // Parent node do not allow arbitrary children
-      contextVars.setExistence({ source, path: parentPath, existence });
+      const nodePath = [...parentPath, key];
 
-      // The array property can have any child
+      // Parent node do not allow arbitrary children
       contextVars.setExistence({
         source,
-        path: [...parentPath, key],
+        path: nodePath,
         existence,
-        allowAnyChild: true,
+        isArray: true,
       });
+
+      if (
+        typeof propertySchema.items == "object" &&
+        !Array.isArray(propertySchema.items) &&
+        propertySchema.items.type === "object"
+      ) {
+        setVarsFromSchema({
+          schema: propertySchema.items,
+          contextVars,
+          source,
+          parentPath: nodePath,
+        });
+      }
     } else {
       contextVars.setExistence({
         source,

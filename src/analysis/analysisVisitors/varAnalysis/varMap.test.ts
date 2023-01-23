@@ -155,8 +155,8 @@ describe("setExistence", () => {
     });
 
     // Items of the array are defined
-    expect(varMap.isVariableDefined("@foo[0]")).toBeTrue();
-    expect(varMap.isVariableDefined("@foo[100]")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.0")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.100")).toBeTrue();
 
     // Unknown property of the array is not defined
     expect(varMap.isVariableDefined("@foo.bar")).toBeFalse();
@@ -179,12 +179,12 @@ describe("setExistence", () => {
     });
 
     // Item of the array is defined
-    expect(varMap.isVariableDefined("@foo[0]")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.0")).toBeTrue();
     // Known property of the array item is defined
-    expect(varMap.isVariableDefined("@foo[0].bar")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.0.bar")).toBeTrue();
 
     // Unknown property of the array item is not defined
-    expect(varMap.isVariableDefined("@foo[0].baz")).toBeFalse();
+    expect(varMap.isVariableDefined("@foo.0.baz")).toBeFalse();
     // Unknown property of the array is not defined
     expect(varMap.isVariableDefined("@foo.qux")).toBeFalse();
   });

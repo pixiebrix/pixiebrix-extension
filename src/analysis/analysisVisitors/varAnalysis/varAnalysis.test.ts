@@ -447,7 +447,7 @@ describe("Collecting available vars", () => {
       ).toBeFalse();
     });
 
-    test("supports array properties in output schema", async () => {
+    test("supports array of objects", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
         // PageSemanticReader's output schema, see @/blocks/readers/PageSemanticReader.ts
         {
@@ -480,10 +480,63 @@ describe("Collecting available vars", () => {
         secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`)
       ).toBeFalse();
 
-      // The array property allows any child
+      // The array items are known
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+      ).toBeTrue();
+
+      // Non-index access is not allowed
       expect(
         secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeFalse();
+
+      // Only the known properties of array items are allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.href`)
       ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.foo`)
+      ).toBeFalse();
+      expect(
+        secondBlockKnownVars.isVariableDefined(
+          `@${outputKey}.alternate.0.href.foo`
+        )
+      ).toBeFalse();
+    });
+
+    test("supports array of primitives", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          alternate: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
+        },
+      });
+
+      // The output key allows only known properties
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`)
+      ).toBeTrue();
+
+      // The array items are known
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+      ).toBeTrue();
+
+      // Non-index access is not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeFalse();
+
+      // Item's properties are not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
+      ).toBeFalse();
     });
   });
 
