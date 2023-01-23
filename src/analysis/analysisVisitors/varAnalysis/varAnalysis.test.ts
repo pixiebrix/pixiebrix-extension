@@ -538,6 +538,48 @@ describe("Collecting available vars", () => {
         secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
       ).toBeFalse();
     });
+
+    test("works with additionalItems in an array", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          alternate: {
+            type: "array",
+            items: [
+              {
+                type: "object",
+                properties: {
+                  type: {
+                    type: "string",
+                  },
+                  href: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+            additionalItems: {
+              type: "string",
+            },
+          },
+        },
+      });
+
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+      ).toBeTrue();
+
+      // Non-index access is not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeFalse();
+
+      // Any item's properties are allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
+      ).toBeTrue();
+    });
   });
 
   describe("if-else brick", () => {

@@ -18,6 +18,7 @@
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import VarMap, {
   ALLOW_ANY_CHILD,
+  IS_ARRAY,
   SELF_EXISTENCE,
   VarExistence,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
@@ -90,19 +91,23 @@ test("returns options in correct order when trace is available", () => {
   const readerNode = {
     [SELF_EXISTENCE]: VarExistence.DEFINITELY,
     [ALLOW_ANY_CHILD]: false,
+    [IS_ARRAY]: false,
 
     "@input": {
       [SELF_EXISTENCE]: VarExistence.DEFINITELY,
       [ALLOW_ANY_CHILD]: false,
+      [IS_ARRAY]: false,
 
       description: {
         [SELF_EXISTENCE]: VarExistence.DEFINITELY,
         [ALLOW_ANY_CHILD]: false,
+        [IS_ARRAY]: false,
       },
       icon: "https://pbx.vercel.app/bootstrap-5/favicon.ico",
       image: {
         [SELF_EXISTENCE]: VarExistence.DEFINITELY,
         [ALLOW_ANY_CHILD]: false,
+        [IS_ARRAY]: false,
       },
       title: "PixieBrix Testing Page",
     },
@@ -113,6 +118,7 @@ test("returns options in correct order when trace is available", () => {
     "@jq": {
       [SELF_EXISTENCE]: VarExistence.DEFINITELY,
       [ALLOW_ANY_CHILD]: true,
+      [IS_ARRAY]: false,
 
       foo: "bar",
     },

@@ -162,6 +162,27 @@ describe("setExistence", () => {
     expect(varMap.isVariableDefined("@foo.bar")).toBeFalse();
   });
 
+  test("validates arrays with unknown items", () => {
+    const varMap = new VarMap();
+
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo",
+      existence: VarExistence.DEFINITELY,
+      isArray: true,
+      allowAnyChild: true,
+    });
+
+    // Items of the array are defined
+    expect(varMap.isVariableDefined("@foo.0")).toBeTrue();
+
+    // Unknown property of the array is not defined
+    expect(varMap.isVariableDefined("@foo.bar")).toBeFalse();
+
+    // Unknown property of an item is defined
+    expect(varMap.isVariableDefined("@foo.0.baz")).toBeTrue();
+  });
+
   test("validates arrays of objects", () => {
     const varMap = new VarMap();
 

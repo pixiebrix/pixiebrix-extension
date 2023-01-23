@@ -92,8 +92,19 @@ export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
 export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
 export const IS_ARRAY = Symbol("IS_ARRAY");
 export type ExistenceNode = {
+  /**
+   * Existence of the current node
+   */
   [SELF_EXISTENCE]?: VarExistence;
+
+  /**
+   * Whether the current node allows any child (i.e. doesn't have  a strict schema)
+   */
   [ALLOW_ANY_CHILD]?: boolean;
+
+  /**
+   * Whether the current node is an array (allows only numeric keys)
+   */
   [IS_ARRAY]?: boolean;
 
   [name: string]: ExistenceNode;
@@ -247,10 +258,11 @@ class VarMap {
       while (pathParts.length > 0) {
         const part = pathParts.shift();
 
-        // Handle the array case
+        // Handle the array case (allow only numeric keys)
         const isNumberPart = numberReges.test(part);
         if (isNumberPart && bag[IS_ARRAY]) {
-          if (pathParts.length === 0) {
+          // Dealing with array of primitives or array of unknown objects
+          if (pathParts.length === 0 || bag[ALLOW_ANY_CHILD]) {
             return true;
           }
 
@@ -262,8 +274,8 @@ class VarMap {
           break;
         }
 
-        // Check if any child is allowed
-        if (bag[ALLOW_ANY_CHILD]) {
+        // Check if any child is allowed and the current bag is not an array
+        if (bag[ALLOW_ANY_CHILD] && !bag[IS_ARRAY]) {
           return true;
         }
       }

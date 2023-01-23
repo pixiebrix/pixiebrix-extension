@@ -157,13 +157,23 @@ function setVarsFromSchema({
 
       const nodePath = [...parentPath, key];
 
-      // Parent node do not allow arbitrary children
+      // If the items is an array, then we allow any child to simplify the validation logic
+      const allowAnyChild =
+        Array.isArray(propertySchema.items) ||
+        !isEmpty(propertySchema.additionalItems);
+
+      // Setting existence for the current node
       contextVars.setExistence({
         source,
         path: nodePath,
         existence,
         isArray: true,
+        allowAnyChild,
       });
+
+      if (allowAnyChild) {
+        continue;
+      }
 
       if (
         typeof propertySchema.items == "object" &&
