@@ -23,7 +23,7 @@ import {
   type Schema,
 } from "@/core";
 import { boolean } from "@/utils";
-import { requireSingleElement } from "@/utils/requireSingleElement";
+import { findSingleElement } from "@/utils/requireSingleElement";
 import { type RequireExactlyOne } from "type-fest";
 import {
   BusinessError,
@@ -337,7 +337,7 @@ export class FormFill extends Effect {
         $form.trigger("submit");
       }
     } else if (typeof submit === "string") {
-      const $submit = $(requireSingleElement(submit, submitRoot));
+      const $submit = $(findSingleElement(submit, submitRoot));
       $submit.trigger("click");
     } else {
       throw new BusinessError("Unexpected argument for property submit");

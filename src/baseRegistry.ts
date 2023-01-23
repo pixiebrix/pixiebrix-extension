@@ -16,7 +16,11 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import { type Kind, PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
+import {
+  type Kind,
+  type Package,
+  PACKAGE_NAME_REGEX,
+} from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
 import { groupBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
@@ -52,6 +56,10 @@ export class Registry<
 
   private readonly cache = new Map<RegistryId, Item>();
 
+  /**
+   * Set of ids that have been retrieved from server.
+   * @private
+   */
   private readonly remote: Set<RegistryId>;
 
   private readonly remoteResourcePath: string;
@@ -82,6 +90,12 @@ export class Registry<
   }
 
   private notifyAll() {
+    console.debug(
+      "Notifying %d registry cache listener(s) for %s",
+      this.listeners.length,
+      [...this.kinds].join(", ")
+    );
+
     for (const listener of this.listeners) {
       listener.onCacheChanged();
     }
@@ -135,7 +149,7 @@ export class Registry<
   }
 
   /**
-   * Reloads all brick configurations, and returns all bricks in the registry.
+   * Reloads all brick configurations from IDB, and returns all bricks in the registry.
    * @deprecated requires all data to be parsed
    * @see cached
    */
@@ -155,6 +169,12 @@ export class Registry<
           }
         }
       })
+    );
+
+    console.debug(
+      "Parsed %d registry item(s) from IDB for %s",
+      parsedItems.length,
+      [...this.kinds].join(", ")
     );
 
     // Perform as single call to register so listeners are notified once
@@ -211,7 +231,7 @@ export class Registry<
       throw new Error(`Expected array from ${this.remoteResourcePath}`);
     }
 
-    const packages = [];
+    const packages: Package[] = [];
 
     for (const item of data) {
       const [major, minor, patch] = item.metadata.version
@@ -228,8 +248,6 @@ export class Registry<
         );
       }
 
-      this.cache.delete(item.metadata.id);
-
       packages.push({
         id: item.metadata.id,
         version: { major, minor, patch },
@@ -239,19 +257,31 @@ export class Registry<
         rawConfig: undefined,
         timestamp,
       });
-
-      this.remote.add(item.metadata.id);
     }
 
-    await Promise.all(
+    // Persist in IDB
+    await Promise.allSettled(
       Object.entries(groupBy(packages, (x) => x.kind)).map(
         async ([kind, kindPackages]) => {
+          console.debug(
+            "Syncing %d %s package(s) with IDB",
+            kindPackages.length,
+            kind
+          );
           await registry.syncRemote(kind as Kind, kindPackages);
         }
       )
     );
 
-    this.notifyAll();
+    // Mark as being from the remote server
+    for (const item of packages) {
+      this.remote.add(item.id as RegistryId);
+    }
+
+    // Force reload of all items from IDB. To avoid hitting IDB, we could just re-register the items that were retrieved
+    // locally. However, the idea of syncRemote is that it might also remove bricks that are no longer
+    // available/accessible to the user.
+    await this.all();
   }
 
   /**

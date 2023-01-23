@@ -93,7 +93,7 @@ const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
             className={styles.illustration}
             src={workshopImage}
             alt=""
-            width={"100%"}
+            width="100%"
           />
         </Col>
       </Row>

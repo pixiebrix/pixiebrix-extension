@@ -4,7 +4,7 @@ import {
   isCommunityControlRoom,
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
-import { type Activity } from "@/contrib/automationanywhere/contract";
+import { type Execution } from "@/contrib/automationanywhere/contract";
 
 describe("isCommunityControlRoom", () => {
   test.each([
@@ -129,8 +129,7 @@ describe("interfaceToInputSchema", () => {
 
 describe("selectBotOutput", () => {
   test("select outputs", () => {
-    const activity: Activity = {
-      status: "COMPLETED",
+    const activity: Execution = {
       botOutVariables: {
         values: {
           out_String: {

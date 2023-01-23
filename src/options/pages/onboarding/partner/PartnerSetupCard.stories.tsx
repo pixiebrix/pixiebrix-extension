@@ -70,7 +70,7 @@ const Template: Story<{
       services: servicesSlice.getInitialState(),
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware({
         // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
         serializableCheck: {

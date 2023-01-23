@@ -17,10 +17,10 @@
 
 import { useDebounce } from "use-debounce";
 import { type MessageContext, type RawConfig } from "@/core";
-import { useAsyncEffect } from "use-async-effect";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { useDispatch } from "react-redux";
 import { logActions } from "@/components/logViewer/logSlice";
+import { useEffect } from "react";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 
@@ -36,8 +36,7 @@ function useLogContext(config: string | null) {
 
   const dispatch = useDispatch();
 
-  // Use async so we don't block the main render loop (is that actually needed?)
-  useAsyncEffect(async () => {
+  useEffect(() => {
     let json: RawConfig;
     try {
       json = loadBrickYaml(debouncedConfig) as RawConfig;
@@ -77,7 +76,7 @@ function useLogContext(config: string | null) {
     }
 
     dispatch(logActions.setContext(messageContext));
-  }, [debouncedConfig]);
+  }, [debouncedConfig, dispatch]);
 }
 
 export default useLogContext;

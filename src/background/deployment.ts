@@ -26,7 +26,7 @@ import {
 } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
-import { refreshRegistries } from "@/hooks/useRefresh";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { type RegistryId, type UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
