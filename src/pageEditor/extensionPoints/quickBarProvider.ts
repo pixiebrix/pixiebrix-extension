@@ -58,7 +58,7 @@ function fromNativeElement(
 
   const isAvailable = makeIsAvailable(url);
 
-  const title = "Quick Bar Action Provider";
+  const title = "Dynamic Quick Bar";
 
   return {
     type: "quickBarProvider",
@@ -159,7 +159,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<QuickBarProviderDefinition>
 ): Promise<QuickBarProviderFormState> {
   if (extensionPoint.definition.type !== "quickBarProvider") {
-    throw new Error("Expected quickBar extension point type");
+    throw new Error("Expected quickBarProvider extension point type");
   }
 
   const {
@@ -174,7 +174,7 @@ async function fromExtensionPoint(
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type,
-    label: `My ${getDomain(url)} quick bar item`,
+    label: `My ${getDomain(url)} dynamic Quick Bar`,
 
     services: [],
     permissions: makeEmptyPermissions(),
@@ -205,7 +205,7 @@ function asDynamicElement(
   element: QuickBarProviderFormState
 ): DynamicDefinition {
   return {
-    type: "quickBar",
+    type: "quickBarProvider",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPointConfig: selectExtensionPointConfig(element),
   };
@@ -214,7 +214,7 @@ function asDynamicElement(
 const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   displayOrder: 1,
   elementType: "quickBarProvider",
-  label: "Quick Bar Provider",
+  label: "Dynamic Quick Bar",
   baseClass: QuickBarProviderExtensionPoint,
   EditorNode: QuickBarProviderConfiguration,
   selectNativeElement: undefined,

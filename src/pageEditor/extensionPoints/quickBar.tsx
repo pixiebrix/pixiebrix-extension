@@ -294,7 +294,7 @@ export const InsertModeHelpText: React.FunctionComponent = () => {
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
-  label: "Quick Bar",
+  label: "Quick Bar Action",
   baseClass: QuickBarExtensionPoint,
   EditorNode: QuickBarConfiguration,
   selectNativeElement: undefined,
