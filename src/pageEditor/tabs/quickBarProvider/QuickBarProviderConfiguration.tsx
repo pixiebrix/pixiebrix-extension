@@ -74,6 +74,7 @@ const QuickBarProviderConfiguration: React.FC<{
               setFieldValue("extension.rootAction", {
                 title: null,
                 icon: null,
+                requireActiveRoot: false,
               });
             } else {
               setFieldValue("extension.rootAction", null);
@@ -91,9 +92,16 @@ const QuickBarProviderConfiguration: React.FC<{
 
             <ConnectedFieldTemplate
               name="extension.rootAction.icon"
-              label="Icon"
+              label="Action Icon"
               as={IconWidget}
-              description="Icon to show in the menu"
+              description="Icon to show in the Quick Bar for the action"
+            />
+
+            <ConnectedFieldTemplate
+              name="extension.rootAction.requireActiveRoot"
+              label="Require Active Root"
+              as={SwitchButtonWidget}
+              description="Toggle on to only generate actions when the parent action is selected"
             />
           </>
         )}

@@ -47,8 +47,11 @@ class QuickBarRegistry {
   private readonly actionGenerators: ActionGenerator[] = [];
 
   /**
-   * Mapping from action generator to the rootActionId. Used to determine whether to nest a generated action under
-   * a root action.
+   * Mapping from action generator to the rootActionId.
+   *
+   * Used to determine whether to nest a generated action under a root action because the AddQuickBarAction doesn't
+   * have access to the generator.
+   *
    * @private
    * @see AddQuickBarAction
    * @see knownGeneratorRootIds

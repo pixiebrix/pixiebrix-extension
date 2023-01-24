@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   type Action,
@@ -39,7 +39,7 @@ import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
-import useDebouncedEffect from "@/hooks/useDebouncedEffect";
+import useActionGenerators from "@/components/quickBar/useActionGenerators";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -51,45 +51,6 @@ let autoShow = false;
  * Window event name to programmatically trigger quick bar
  */
 const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
-
-function useActionGenerators(): void {
-  // Use the query directly for updating while the page editor is open. The useRegisterActions hook doesn't seem to
-  // work for that 🤷 even if actions are in the dependency list
-  const { searchQuery, currentRootActionId } = useKBar(
-    ({ searchQuery, currentRootActionId }) => ({
-      searchQuery,
-      currentRootActionId,
-    })
-  );
-
-  useEffect(
-    () => {
-      void quickBarRegistry.generateActions({
-        query: searchQuery,
-        rootActionId: currentRootActionId,
-      });
-    },
-    // eslint-disable-next-line -- fire immediately when root changes
-    [currentRootActionId]
-  );
-
-  const searchArgs = useMemo(
-    () => ({ searchQuery, currentRootActionId }),
-    [searchQuery, currentRootActionId]
-  );
-
-  useDebouncedEffect(
-    searchArgs,
-    (values) => {
-      void quickBarRegistry.generateActions({
-        query: values.searchQuery,
-        rootActionId: values.currentRootActionId,
-      });
-    },
-    150,
-    750
-  );
-}
 
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled

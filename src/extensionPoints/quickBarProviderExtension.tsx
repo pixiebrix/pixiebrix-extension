@@ -74,6 +74,11 @@ export type QuickBarProviderConfig = {
      * (Optional) the icon to show in the Quick Bar
      */
     icon?: IconConfig;
+
+    /**
+     * (Optional) only generate actions if the root element is selected/active.
+     */
+    requireActiveRoot?: boolean;
   };
 
   /**
@@ -107,6 +112,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
         properties: {
           title: { type: "string" },
           icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+          requireActiveRoot: { type: "boolean" },
         },
       },
       generator: {
@@ -228,7 +234,11 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
       // Remove the old results since they'll no longer relevant
       quickBarRegistry.removeExtensionActions(extension.id);
 
-      if (rootActionId && rootActionId !== currentRootActionId) {
+      if (
+        rootActionId &&
+        rootActionId !== currentRootActionId &&
+        rootAction.requireActiveRoot
+      ) {
         // User is not drilled into the current action, so skip generation
         return;
       }

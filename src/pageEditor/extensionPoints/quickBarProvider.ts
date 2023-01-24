@@ -219,6 +219,7 @@ const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   EditorNode: QuickBarProviderConfiguration,
   selectNativeElement: undefined,
   icon: faPlusSquare,
+  flag: "pageeditor-quickbar-provider",
   fromNativeElement,
   fromExtensionPoint,
   asDynamicElement,
