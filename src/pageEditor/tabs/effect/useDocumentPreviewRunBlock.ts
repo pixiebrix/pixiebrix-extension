@@ -180,9 +180,9 @@ export default function useDocumentPreviewRunBlock(
           ? extensionPoint.definition.rootSelector
           : undefined;
 
-      const location = parentBlockInfo
-        ? parentBlockInfo.blockConfig.config.location
-        : "panel";
+      // `panel` was the default before we added the location field
+      const location: Location =
+        (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
         await runRendererBlock(
@@ -199,7 +199,7 @@ export default function useDocumentPreviewRunBlock(
             context,
             rootSelector,
           },
-          location as Location
+          location
         );
         dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
+import { Transformer, type UnknownObject } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -28,9 +28,8 @@ import {
 } from "@/contentScript/sidebarController";
 import { type PanelPayload } from "@/sidebar/types";
 import {
-  waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
-  type PanelAction,
+  waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { CancelError, PropError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
@@ -103,7 +102,7 @@ class DisplayTemporaryInfo extends Transformer {
       runPipeline,
       runRendererPipeline,
     }: BlockOptions
-  ): Promise<PanelAction | Record<string, unknown> | null> {
+  ): Promise<UnknownObject | null> {
     expectContext("contentScript");
 
     const nonce = uuidv4();

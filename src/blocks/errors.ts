@@ -125,23 +125,11 @@ export class SubmitPanelAction extends CancelError {
   override name = "SubmitPanelAction";
 
   /**
-   * A custom action type to resolve the panel with, e.g., "submit" or "cancel".
-   */
-  type: string;
-
-  /**
-   * Extra data to resolve the panel with.
-   */
-  detail: JsonObject;
-
-  /**
    * Create a throwable action for a temporary panel that resolves the panel.
    * @param type A custom action type to resolve the panel with, e.g., "submit" or "cancel".
    * @param detail Extra data to resolve the panel with.
    */
-  constructor(type: string, detail: JsonObject = {}) {
+  constructor(readonly type: string, readonly detail: JsonObject = {}) {
     super(`Submitted panel with action: ${type}`);
-    this.type = type;
-    this.detail = detail;
   }
 }
