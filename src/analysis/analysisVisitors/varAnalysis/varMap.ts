@@ -263,15 +263,16 @@ class VarMap {
       // Usually there is one brick providing the output key and the vars from traces
       (x) => x[pathParts[0]] != null
     )) {
+      const pathPartsCopy = [...pathParts];
       let bag = sourceMap;
-      while (pathParts.length > 0) {
-        const part = pathParts.shift();
+      while (pathPartsCopy.length > 0) {
+        const part = pathPartsCopy.shift();
 
         // Handle the array case (allow only numeric keys)
         const isNumberPart = numberReges.test(part);
         if (isNumberPart && bag[IS_ARRAY]) {
           // Dealing with array of primitives or array of unknown objects
-          if (pathParts.length === 0 || bag[ALLOW_ANY_CHILD]) {
+          if (pathPartsCopy.length === 0 || bag[ALLOW_ANY_CHILD]) {
             return true;
           }
 

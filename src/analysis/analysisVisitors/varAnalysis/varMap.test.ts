@@ -343,6 +343,29 @@ describe("setExistenceFromValues", () => {
 
     expect(varMap.isVariableDefined("bar.baz.qux")).toBeTrue();
   });
+
+  test("one source does not override another one (traces do not hide schema vars)", () => {
+    const varMap = new VarMap();
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo.bar.baz",
+      existence: VarExistence.DEFINITELY,
+    });
+
+    varMap.setExistenceFromValues({
+      source: "traces",
+      values: {
+        "@foo": {
+          qux: {
+            quux: true,
+          },
+        },
+      },
+    });
+
+    expect(varMap.isVariableDefined("@foo.bar.baz")).toBeTrue();
+    expect(varMap.isVariableDefined("@foo.qux.quux")).toBeTrue();
+  });
 });
 
 describe("cloning", () => {
