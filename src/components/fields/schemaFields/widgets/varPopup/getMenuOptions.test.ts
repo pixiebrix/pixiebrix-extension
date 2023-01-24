@@ -24,104 +24,144 @@ import VarMap, {
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import getMenuOptions from "./getMenuOptions";
 
-let knownVars: VarMap;
-let trace: any;
-beforeEach(() => {
-  knownVars = new VarMap();
-  knownVars.setExistenceFromValues({
-    source: "input:Array Composite Reader",
-    values: {
-      description: "foo",
-      icon: "bar",
-      image: "baz",
-    },
-    parentPath: "@input",
+describe("setting values", () => {
+  let knownVars: VarMap;
+  let trace: any;
+  beforeEach(() => {
+    knownVars = new VarMap();
+    knownVars.setExistenceFromValues({
+      source: "input:Array Composite Reader",
+      values: {
+        description: "foo",
+        icon: "bar",
+        image: "baz",
+      },
+      parentPath: "@input",
+    });
+
+    knownVars.setOutputKeyExistence({
+      source: "extension.blockPipeline.0",
+      outputKey: "@jq",
+      existence: VarExistence.DEFINITELY,
+      allowAnyChild: true,
+    });
+
+    trace = {
+      "@input": {
+        icon: "https://pbx.vercel.app/bootstrap-5/favicon.ico",
+        title: "PixieBrix Testing Page",
+      },
+      "@jq": {
+        foo: "bar",
+      },
+    };
   });
 
-  knownVars.setOutputKeyExistence({
-    source: "extension.blockPipeline.0",
-    outputKey: "@jq",
-    existence: VarExistence.DEFINITELY,
-    allowAnyChild: true,
+  test("returns options in correct order when no trace is available", () => {
+    const actual = getMenuOptions(knownVars, null);
+
+    // Validate the order of the options
+    expect(actual.map(([key]) => key)).toEqual([
+      "input:Array Composite Reader",
+      "extension.blockPipeline.0",
+    ]);
   });
 
-  trace = {
-    "@input": {
-      icon: "https://pbx.vercel.app/bootstrap-5/favicon.ico",
-      title: "PixieBrix Testing Page",
-    },
-    "@jq": {
-      foo: "bar",
-    },
-  };
-});
+  test("removes the trace source from VarMap", () => {
+    knownVars.setExistenceFromValues({
+      source: KnownSources.TRACE,
+      values: trace,
+    });
 
-test("returns options in correct order when no trace is available", () => {
-  const actual = getMenuOptions(knownVars, null);
+    const actual = getMenuOptions(knownVars, null);
 
-  // Validate the order of the options
-  expect(actual.map(([key]) => key)).toEqual([
-    "input:Array Composite Reader",
-    "extension.blockPipeline.0",
-  ]);
-});
-
-test("removes the trace source from VarMap", () => {
-  knownVars.setExistenceFromValues({
-    source: KnownSources.TRACE,
-    values: trace,
+    expect(actual.map(([key]) => key)).not.toContain(KnownSources.TRACE);
   });
 
-  const actual = getMenuOptions(knownVars, null);
+  test("returns options in correct order when trace is available", () => {
+    const actual = getMenuOptions(knownVars, trace);
 
-  expect(actual.map(([key]) => key)).not.toContain(KnownSources.TRACE);
-});
+    // Validate the order of the options
+    expect(actual.map(([key]) => key)).toEqual([
+      "input:Array Composite Reader",
+      "extension.blockPipeline.0",
+    ]);
 
-test("returns options in correct order when trace is available", () => {
-  const actual = getMenuOptions(knownVars, trace);
-
-  // Validate the order of the options
-  expect(actual.map(([key]) => key)).toEqual([
-    "input:Array Composite Reader",
-    "extension.blockPipeline.0",
-  ]);
-
-  // Function getMenuOptions produces a mix of VarMap nodes and plain values from the trace
-  // In the objects below you can disregard the VarMap properties (SELF_EXISTENCE and ALLOW_ANY_CHILD)
-  const readerNode = {
-    [SELF_EXISTENCE]: VarExistence.DEFINITELY,
-    [ALLOW_ANY_CHILD]: false,
-    [IS_ARRAY]: false,
-
-    "@input": {
+    // Function getMenuOptions produces a mix of VarMap nodes and plain values from the trace
+    // In the objects below you can disregard the VarMap properties (SELF_EXISTENCE and ALLOW_ANY_CHILD)
+    const readerNode = {
       [SELF_EXISTENCE]: VarExistence.DEFINITELY,
       [ALLOW_ANY_CHILD]: false,
       [IS_ARRAY]: false,
 
-      description: {
+      "@input": {
         [SELF_EXISTENCE]: VarExistence.DEFINITELY,
         [ALLOW_ANY_CHILD]: false,
         [IS_ARRAY]: false,
+
+        description: {
+          [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+          [ALLOW_ANY_CHILD]: false,
+          [IS_ARRAY]: false,
+        },
+        icon: "https://pbx.vercel.app/bootstrap-5/favicon.ico",
+        image: {
+          [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+          [ALLOW_ANY_CHILD]: false,
+          [IS_ARRAY]: false,
+        },
+        title: "PixieBrix Testing Page",
       },
-      icon: "https://pbx.vercel.app/bootstrap-5/favicon.ico",
-      image: {
+    };
+    expect(actual[0][1]).toEqual(readerNode);
+
+    const jqNode = {
+      "@jq": {
         [SELF_EXISTENCE]: VarExistence.DEFINITELY,
-        [ALLOW_ANY_CHILD]: false,
+        [ALLOW_ANY_CHILD]: true,
         [IS_ARRAY]: false,
+
+        foo: "bar",
       },
-      title: "PixieBrix Testing Page",
-    },
-  };
-  expect(actual[0][1]).toEqual(readerNode);
+    };
+    expect(actual[1][1]).toEqual(jqNode);
+  });
+});
 
-  const jqNode = {
-    "@jq": {
-      [SELF_EXISTENCE]: VarExistence.DEFINITELY,
-      [ALLOW_ANY_CHILD]: true,
-      [IS_ARRAY]: false,
+describe("arrays", () => {
+  const source = "test";
+  test("inserts index for array item", () => {
+    const varMap = new VarMap();
+    varMap.setExistence({
+      source,
+      path: "@input.items",
+      existence: VarExistence.DEFINITELY,
+      isArray: true,
+    });
 
-      foo: "bar",
-    },
-  };
-  expect(actual[1][1]).toEqual(jqNode);
+    const actual = getMenuOptions(varMap, null);
+
+    expect(actual).toEqual([
+      [
+        source,
+        {
+          [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+          [ALLOW_ANY_CHILD]: false,
+          [IS_ARRAY]: false,
+          "@input": {
+            [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+            [ALLOW_ANY_CHILD]: false,
+            [IS_ARRAY]: false,
+            items: [
+              {
+                [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+                [ALLOW_ANY_CHILD]: false,
+                [IS_ARRAY]: true,
+              },
+            ],
+          },
+        },
+      ],
+    ]);
+  });
 });

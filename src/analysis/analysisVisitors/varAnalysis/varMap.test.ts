@@ -209,6 +209,36 @@ describe("setExistence", () => {
     // Unknown property of the array is not defined
     expect(varMap.isVariableDefined("@foo.qux")).toBeFalse();
   });
+
+  test("sets allowAnyChild and isArray flags only on the leaf", () => {
+    const varMap = new VarMap();
+
+    varMap.setExistence({
+      source: "brick1",
+      path: "@foo.bar",
+      existence: VarExistence.DEFINITELY,
+      allowAnyChild: true,
+      isArray: true,
+    });
+
+    expect(varMap.getMap()).toEqual({
+      brick1: {
+        [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+        [ALLOW_ANY_CHILD]: false,
+        [IS_ARRAY]: false,
+        "@foo": {
+          bar: {
+            [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+            [ALLOW_ANY_CHILD]: true,
+            [IS_ARRAY]: true,
+          },
+          [SELF_EXISTENCE]: VarExistence.DEFINITELY,
+          [ALLOW_ANY_CHILD]: false,
+          [IS_ARRAY]: false,
+        },
+      },
+    });
+  });
 });
 
 describe("setting output key", () => {

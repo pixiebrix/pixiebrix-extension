@@ -17,20 +17,54 @@
 
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import {
+  IS_ARRAY,
+  type ExistenceNode,
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { isEmpty, merge } from "lodash";
 import { type JsonObject } from "type-fest";
+import { type UnknownRecord } from "type-fest/source/internal";
 
-function getMenuOptions(knownVars: VarMap, contextValues: JsonObject) {
+/**
+ * Convert every node in the existence tree which IS_ARRAY to an array
+ * @param node The node to convert
+ */
+function convertArrayNodesToArrays(node: ExistenceNode): void {
+  for (const [key, childNode] of Object.entries(node)) {
+    if (childNode[IS_ARRAY]) {
+      (node as UnknownRecord)[key] = [childNode];
+    }
+
+    convertArrayNodesToArrays(childNode);
+  }
+}
+
+/**
+ *
+ * @param knownVars The map of known variables
+ * @param contextValues Object containing the actual values of the context variables (e.g. the traces)
+ */
+function getMenuOptions(
+  knownVars: VarMap,
+  contextValues: JsonObject
+): Array<[string, unknown]> {
   const varMap = knownVars.getMap();
 
   // We don't show traces as a separate source
   delete varMap[KnownSources.TRACE];
 
-  if (isEmpty(contextValues)) {
-    return Object.entries(varMap);
+  const varMapEntries = Object.entries(varMap);
+
+  // Map nodes which represent arrays to actual arrays
+  for (const existenceTree of Object.values(varMap)) {
+    convertArrayNodesToArrays(existenceTree);
   }
 
-  const varMapEntries = Object.entries(varMap);
+  // Skip setting context values if there are none
+  if (isEmpty(contextValues)) {
+    return varMapEntries;
+  }
+
   const visitedOutputs = new Set<string>();
 
   // Merging the context values into the varMapEntries
@@ -38,13 +72,13 @@ function getMenuOptions(knownVars: VarMap, contextValues: JsonObject) {
   // This is important for the case where the same output key is used multiple times in a pipeline
   for (let index = varMapEntries.length - 1; index >= 0; index--) {
     // eslint-disable-next-line security/detect-object-injection -- accessing array item by index
-    const [, existenceMap] = varMapEntries[index];
+    const [, existenceTree] = varMapEntries[index];
 
-    for (const [outputKey] of Object.entries(existenceMap)) {
+    for (const [outputKey] of Object.entries(existenceTree)) {
       // eslint-disable-next-line security/detect-object-injection -- access via object key
       if (contextValues[outputKey] != null && !visitedOutputs.has(outputKey)) {
         // eslint-disable-next-line security/detect-object-injection -- access via object key
-        merge(existenceMap[outputKey], contextValues[outputKey]);
+        merge(existenceTree[outputKey], contextValues[outputKey]);
         visitedOutputs.add(outputKey);
       }
     }

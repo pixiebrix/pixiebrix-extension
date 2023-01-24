@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cloneDeep, get, setWith, toPath } from "lodash";
+import { cloneDeep, get, set, setWith, toPath } from "lodash";
 
 type SetExistenceArgs = {
   /**
@@ -25,7 +25,7 @@ type SetExistenceArgs = {
 
   /**
    * The path of the variable.
-   * String value will be converted to to a property path array using lodash's toPath function.
+   * String value will be converted to a property path array using lodash's toPath function.
    */
   path: string | string[];
 
@@ -155,12 +155,8 @@ class VarMap {
     allowAnyChild = false,
     isArray = false,
   }: SetExistenceArgs): void {
-    const pathParts = [
-      source,
-      ...(Array.isArray(path) ? path : toPath(path)),
-      SELF_EXISTENCE,
-    ];
-    const currentExistence = get(this.map, pathParts);
+    const pathParts = [source, ...(Array.isArray(path) ? path : toPath(path))];
+    const currentExistence = get(this.map, [...pathParts, SELF_EXISTENCE]);
 
     // Don't overwrite a DEFINITELY existence with a MAYBE existence
     if (
@@ -171,22 +167,35 @@ class VarMap {
       return;
     }
 
-    setWith(this.map, pathParts, existence, (currentNode) => {
-      if (currentNode == null) {
-        return createNode(existence, { allowAnyChild, isArray });
-      }
+    setWith(
+      this.map,
+      [...pathParts, SELF_EXISTENCE],
+      existence,
+      (currentNode) => {
+        if (currentNode == null) {
+          return createNode(existence);
+        }
 
-      if (
-        existence === VarExistence.DEFINITELY &&
-        // eslint-disable-next-line security/detect-object-injection -- accessing a known property
-        currentNode[SELF_EXISTENCE] !== VarExistence.DEFINITELY
-      ) {
-        // eslint-disable-next-line security/detect-object-injection -- accessing a known property
-        currentNode[SELF_EXISTENCE] = VarExistence.DEFINITELY;
-      }
+        if (
+          existence === VarExistence.DEFINITELY &&
+          // eslint-disable-next-line security/detect-object-injection -- accessing a known property
+          currentNode[SELF_EXISTENCE] !== VarExistence.DEFINITELY
+        ) {
+          // eslint-disable-next-line security/detect-object-injection -- accessing a known property
+          currentNode[SELF_EXISTENCE] = VarExistence.DEFINITELY;
+        }
 
-      return currentNode;
-    });
+        return currentNode;
+      }
+    );
+
+    if (allowAnyChild) {
+      set(this.map, [...pathParts, ALLOW_ANY_CHILD], true);
+    }
+
+    if (isArray) {
+      set(this.map, [...pathParts, IS_ARRAY], true);
+    }
   }
 
   /**
