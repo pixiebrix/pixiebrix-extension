@@ -47,7 +47,7 @@ const PARTNER_MAP = new Map<string, Set<RegistryId>>([
   ],
 ]);
 
-export type RequiredPartnerState = {
+type RequiredPartnerState = {
   /**
    * True if the user's is a partner account.
    */

@@ -24,7 +24,7 @@ const VERSION = 1;
 
 // `LOCAL_SCOPE` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
 // but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-export const LOCAL_SCOPE = "@local";
+const LOCAL_SCOPE = "@local";
 
 export const PACKAGE_NAME_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;

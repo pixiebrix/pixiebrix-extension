@@ -41,6 +41,7 @@ export type ReduxStorageKey = string & {
   _reduxStorageKeyBrand: never;
 };
 
+// Used only in the app
 export function setChromeExtensionId(extensionId = ""): void {
   forbidContext("extension");
 
@@ -52,6 +53,7 @@ export function setChromeExtensionId(extensionId = ""): void {
   }
 }
 
+// Used only in the app
 export function getChromeExtensionId(): string {
   forbidContext("extension");
 

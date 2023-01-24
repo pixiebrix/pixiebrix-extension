@@ -43,7 +43,7 @@ const initialModalState: ModalContextProps = {
   },
 };
 
-export const ModalContext = createContext<ModalContextProps>(initialModalState);
+const ModalContext = createContext<ModalContextProps>(initialModalState);
 
 const ConfirmationModal: React.FunctionComponent<
   ModalProps & {

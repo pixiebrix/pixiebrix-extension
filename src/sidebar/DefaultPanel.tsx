@@ -24,7 +24,7 @@ import { isMac } from "@/utils";
 import useFlags from "@/hooks/useFlags";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-export const OnboardingContent: React.FunctionComponent = () => (
+const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>
     <Row className={styles.sidebarRow}>
       <Col>
@@ -84,7 +84,7 @@ export const OnboardingContent: React.FunctionComponent = () => (
   </Container>
 );
 
-export const NoAvailablePanelsContent: React.FunctionComponent = () => (
+const NoAvailablePanelsContent: React.FunctionComponent = () => (
   <Container>
     <Row className="mt-4">
       <Col className="text-center">

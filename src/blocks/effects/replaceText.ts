@@ -46,7 +46,7 @@ export function getTextNodes(roots: Node[]): Text[] {
 /**
  * Recursively replace text in an element and its children, without modifying the structure of the document.
  */
-export function replaceText({
+function replaceText({
   nodes,
   pattern,
   replacement,

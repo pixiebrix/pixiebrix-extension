@@ -42,7 +42,7 @@ import { useHistory } from "react-router";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
-export type ControlRoomConfiguration = {
+type ControlRoomConfiguration = {
   controlRoomUrl: string;
 };
 

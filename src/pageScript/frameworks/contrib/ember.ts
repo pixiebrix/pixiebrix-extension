@@ -71,7 +71,7 @@ export function getVersion(): string | null {
   return window.Ember?.VERSION;
 }
 
-export function getEmberApplication(): EmberApplication {
+function getEmberApplication(): EmberApplication {
   // https://stackoverflow.com/questions/32971707/how-to-access-the-ember-data-store-from-the-console
   if (window.Ember) {
     const { Ember } = window;
@@ -87,7 +87,7 @@ export function getEmberApplication(): EmberApplication {
   return undefined;
 }
 
-export function getEmberComponentById(componentId: string): EmberObject {
+function getEmberComponentById(componentId: string): EmberObject {
   if (isNullOrBlank(componentId)) {
     throw new Error("componentId is required for getEmberComponentById");
   }
@@ -114,7 +114,7 @@ function isMutableCell(cell: unknown): cell is MutableCell {
 //         content: e.EmbeddedMegaMorphicModel[]
 //
 
-export function getProp(value: any, prop: string | number): unknown {
+function getProp(value: any, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
   }
@@ -158,7 +158,7 @@ function pickExternalProps(obj: UnknownObject): UnknownObject {
   );
 }
 
-export function readEmberValueFromCache(
+function readEmberValueFromCache(
   value: any,
   maxDepth = EMBER_MAX_DEPTH,
   depth = 0
@@ -239,7 +239,7 @@ function isEmberElement(node: Node): boolean {
   );
 }
 
-export function findEmberElement(node: Node): Element | null {
+function findEmberElement(node: Node): Element | null {
   let current = node;
 
   while (current && !isEmberElement(current)) {

@@ -118,7 +118,7 @@ export type HandlerOptions = {
   asyncResponse?: boolean;
 };
 
-export type Handler = (...args: unknown[]) => Promise<SerializableResponse>;
+type Handler = (...args: unknown[]) => Promise<SerializableResponse>;
 
 export type HandlerEntry = {
   handler: Handler;

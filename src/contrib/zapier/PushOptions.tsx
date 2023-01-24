@@ -59,7 +59,7 @@ function useHooks(): {
   return { hooks, isPending, error };
 }
 
-export const ZapField: React.FunctionComponent<
+const ZapField: React.FunctionComponent<
   SchemaFieldProps & { hooks: Webhook[]; error: unknown }
 > = ({ hooks, error, ...props }) => {
   const options = useMemo(

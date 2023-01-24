@@ -40,7 +40,7 @@ export type RendererOptions = {
  * Returns true if `literalOrTemplate` includes any template expressions that would be replaced by `context`.
  * @param literalOrTemplate the string literal or Nunjucks/Handlebars template.
  */
-export function containsTemplateExpression(literalOrTemplate: string): boolean {
+function containsTemplateExpression(literalOrTemplate: string): boolean {
   return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
 }
 

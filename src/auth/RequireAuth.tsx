@@ -45,7 +45,7 @@ type RequireAuthProps = {
 /**
  * Hook to determine authentication status. Authentication can be via native PixieBrix token, or partner Bearer JWT.
  */
-export const useRequiredAuth = () => {
+const useRequiredAuth = () => {
   const dispatch = useDispatch();
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
   const { hasToken, tokenLoading, tokenError } = useLinkState();

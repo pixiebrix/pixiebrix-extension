@@ -78,11 +78,7 @@ export const runPendingTimers = async () =>
 // NoInfer is internal type of @reduxjs/toolkit tsHelpers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from @reduxjs/toolkit typings
 declare type NoInfer<T> = [T][T extends any ? 0 : never];
-export type CreateRenderFunctionOptions<
-  TState,
-  TAction extends Action,
-  TProps
-> = {
+type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
   reducer: Reducer<TState, TAction> | ReducersMapObject<TState, TAction>;
   preloadedState?: PreloadedState<CombinedState<NoInfer<TState>>>;
 
