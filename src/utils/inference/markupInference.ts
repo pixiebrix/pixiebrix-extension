@@ -95,7 +95,7 @@ function hasTextNodeChild(element: Element): boolean {
   return [...element.childNodes].some((x) => x.nodeType === Node.TEXT_NODE);
 }
 
-export function commonAttribute(items: Element[], attribute: string) {
+function commonAttribute(items: Element[], attribute: string) {
   const attributeValues = items.map(
     (x) => x.attributes.getNamedItem(attribute)?.value
   );
@@ -400,7 +400,7 @@ function buildBody(proto: HTMLElement): [Element | string, boolean] {
   return [inferred, inserted];
 }
 
-export function buildSinglePanelElement(
+function buildSinglePanelElement(
   proto: HTMLElement,
   { headingInserted = false }: PanelStructureState = {} as PanelStructureState
 ): [Element, PanelStructureState] {
@@ -460,7 +460,7 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
   return outerHTML(common);
 }
 
-export function inferSinglePanelHTML(
+function inferSinglePanelHTML(
   container: HTMLElement,
   selected: HTMLElement
 ): string {

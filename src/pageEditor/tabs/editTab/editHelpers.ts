@@ -15,17 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IBlock,
-  type OutputKey,
-  type RegistryId,
-  type SafeString,
-} from "@/core";
+import { type IBlock, type OutputKey, type SafeString } from "@/core";
 import { freshIdentifier } from "@/utils";
-import { selectReaderIds } from "@/blocks/readers/readerUtils";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   type BlockConfig,
   type BlockPipeline,
@@ -35,15 +28,6 @@ import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
-
-export function collectRegistryIds(form: FormState): RegistryId[] {
-  return [
-    form.extensionPoint.metadata.id,
-    ...selectReaderIds(form.extensionPoint.definition.reader),
-    ...form.services.map((x) => x.id),
-    ...form.extension.blockPipeline.map((x) => x.id),
-  ];
-}
 
 export function showOutputKey(blockType: BlockType): boolean {
   return blockType !== "effect" && blockType !== "renderer";

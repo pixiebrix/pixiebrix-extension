@@ -29,7 +29,7 @@ import { type UnknownObject } from "@/types";
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
  * @since 1.4.10
  */
-export type URLPattern = string | URLPatternInit;
+type URLPattern = string | URLPatternInit;
 
 /**
  * An availability rule. For a rule to match, there must be match from each of the provided entries.

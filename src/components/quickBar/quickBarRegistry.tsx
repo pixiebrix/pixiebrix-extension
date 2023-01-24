@@ -25,11 +25,11 @@ import {
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { type RegistryId, UUID } from "@/core";
+import { type RegistryId, type UUID } from "@/core";
 import { pull, remove } from "lodash";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 

@@ -65,7 +65,6 @@ import {
   isInnerExtensionPoint,
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
-import { type Permissions } from "webextension-polyfill";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 export interface WizardStep {
@@ -260,16 +259,6 @@ export function cleanIsAvailable({
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
     urlPatterns: urlPatterns.filter((x) => isEmpty(x)),
     selectors: selectors.filter((x) => !isNullOrBlank(x)),
-  };
-}
-
-export function cleanExtraPermissions({
-  permissions = [],
-  origins = [],
-}: Permissions.Permissions = {}) {
-  return {
-    permissions: permissions.filter((x) => !isNullOrBlank(x)),
-    origins: origins.filter((x) => !isNullOrBlank(x)),
   };
 }
 

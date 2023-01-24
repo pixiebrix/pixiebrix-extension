@@ -37,7 +37,7 @@ import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";
 export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
 
-export const SelectionToolPopover: React.FC<{
+const SelectionToolPopover: React.FC<{
   onCancel: () => void;
   onDone: () => void;
   onChangeMultiSelection: (value: boolean) => void;

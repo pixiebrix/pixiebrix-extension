@@ -43,7 +43,7 @@ import {
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 
-export type Kind =
+type Kind =
   | "block"
   | "foundation"
   | "service"
@@ -215,7 +215,7 @@ export type MarketplaceListing = Omit<
   fa_icon: IconStringDefinition | null;
 };
 
-export type ProxyResponseSuccessData = {
+type ProxyResponseSuccessData = {
   json: unknown;
   status_code: number;
 };

@@ -92,7 +92,7 @@ export interface ActionFormState
 // SidebarFormState
 type SidebarExtensionState = BaseExtensionState & Except<SidebarConfig, "body">;
 
-export type SidebarExtensionPointState = BaseExtensionPointState & {
+type SidebarExtensionPointState = BaseExtensionPointState & {
   definition: BaseExtensionPointState["definition"] & {
     /**
      * Sidebar trigger (default="load")
@@ -120,7 +120,7 @@ export interface SidebarFormState
 }
 
 // TriggerFormState
-export type TriggerExtensionPointState = BaseExtensionPointState & {
+type TriggerExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     rootSelector: string | null;

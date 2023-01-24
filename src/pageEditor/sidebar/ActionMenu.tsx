@@ -30,7 +30,7 @@ import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
 
-export type ActionMenuProps = {
+type ActionMenuProps = {
   onSave: () => Promise<void>;
   onRemove: () => Promise<void>;
   onClone: () => Promise<void>;

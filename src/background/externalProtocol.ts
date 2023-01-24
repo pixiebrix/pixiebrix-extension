@@ -35,7 +35,7 @@ import {
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
-export const MESSAGE_PREFIX = "@@pixiebrix/background/";
+const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
 const handlers = new Map<string, HandlerEntry>();
 
@@ -43,7 +43,7 @@ const handlers = new Map<string, HandlerEntry>();
  * Return true if a message sender is either the extension itself, or an externally connectable page
  * https://developer.chrome.com/extensions/security#sanitize
  */
-export function allowBackgroundSender(
+function allowBackgroundSender(
   sender: ChromeMessageSender | Runtime.MessageSender
 ): boolean {
   if (sender == null) {

@@ -81,17 +81,17 @@ interface Fiber {
   stateNode: Node | Record<string, unknown>;
 }
 
-export function isManaged(node: Node): boolean {
+function isManaged(node: Node): boolean {
   return Object.keys(node).some((key) =>
     key.startsWith("__reactInternalInstance$")
   );
 }
 
-export function hasReactProps(fiber: Fiber): boolean {
+function hasReactProps(fiber: Fiber): boolean {
   return Object.keys(fiber.memoizedProps).some((x) => x !== "children");
 }
 
-export function readReactProps(fiber: Fiber): Record<string, unknown> {
+function readReactProps(fiber: Fiber): Record<string, unknown> {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 
@@ -106,7 +106,7 @@ function getComponentFiber(fiber: Fiber): Fiber {
   return parentFiber;
 }
 
-export function findReactComponent(node: Node, traverseUp = 0): Fiber {
+function findReactComponent(node: Node, traverseUp = 0): Fiber {
   // https://stackoverflow.com/a/39165137/402560
   const key = Object.keys(node).find((key) =>
     key.startsWith("__reactInternalInstance$")
@@ -141,7 +141,7 @@ export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
   }
 }
 
-export const adapter: ReadableComponentAdapter<Fiber> = {
+const adapter: ReadableComponentAdapter<Fiber> = {
   isManaged,
   getComponent: (node) => ignoreNotFound(() => findReactComponent(node, 0)),
   getParent: getComponentFiber,

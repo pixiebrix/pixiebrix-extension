@@ -79,7 +79,7 @@ export function validateRegistryId(id: string): RegistryId {
   throw new Error("Invalid registry id");
 }
 
-export function isTimestamp(value: string): value is Timestamp {
+function isTimestamp(value: string): value is Timestamp {
   try {
     return !Number.isNaN(Date.parse(value));
   } catch {
