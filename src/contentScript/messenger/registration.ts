@@ -48,15 +48,9 @@ import {
   updateDynamicElement,
 } from "@/contentScript/pageEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
-import {
-  withDetectFrameworkVersions,
-  withSearchWindow,
-} from "@/pageScript/messenger/api";
+import { withDetectFrameworkVersions } from "@/pageScript/messenger/api";
 import {
   runBlock,
-  runReaderBlock,
-  runReader,
-  readSelected,
   resetTab,
   runRendererBlock,
 } from "@/contentScript/pageEditor";
@@ -90,8 +84,8 @@ declare global {
     FORM_CANCEL: typeof cancelForm;
     TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
     TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
-    TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
+    TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_EXTENSION: typeof removeExtension;
@@ -111,13 +105,9 @@ declare global {
     UIPATH_INIT: typeof initRobot;
     UIPATH_GET_PROCESSES: typeof getProcesses;
 
-    SEARCH_WINDOW: typeof withSearchWindow;
     DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
     RUN_SINGLE_BLOCK: typeof runBlock;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
-    RUN_READER_BLOCK: typeof runReaderBlock;
-    RUN_READER: typeof runReader;
-    READ_SELECTED: typeof readSelected;
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
@@ -174,13 +164,9 @@ export default function registerMessenger(): void {
     UIPATH_INIT: initRobot,
     UIPATH_GET_PROCESSES: getProcesses,
 
-    SEARCH_WINDOW: withSearchWindow,
     DETECT_FRAMEWORKS: withDetectFrameworkVersions,
     RUN_SINGLE_BLOCK: runBlock,
     RUN_RENDERER_BLOCK: runRendererBlock,
-    RUN_READER_BLOCK: runReaderBlock,
-    RUN_READER: runReader,
-    READ_SELECTED: readSelected,
 
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
     UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,

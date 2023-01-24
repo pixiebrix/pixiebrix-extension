@@ -23,13 +23,11 @@ import {
   parseDefinitionList,
   getAllDefinitionLists,
 } from "@/utils/parseDefinitionList";
-import { requireSingleElement } from "@/utils/requireSingleElement";
+import { findSingleElement } from "@/utils/requireSingleElement";
 import { lowerCase } from "lodash";
 
-export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
-export const TABLE_READER_ALL_ID = validateRegistryId(
-  "@pixiebrix/table-reader-all"
-);
+const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
+const TABLE_READER_ALL_ID = validateRegistryId("@pixiebrix/table-reader-all");
 
 export class TableReader extends Transformer {
   constructor() {
@@ -87,7 +85,7 @@ export class TableReader extends Transformer {
     { selector, orientation = "infer" }: BlockArg,
     { root }: BlockOptions
   ): Promise<unknown> {
-    const table = selector ? requireSingleElement(selector, root) : root;
+    const table = selector ? findSingleElement(selector, root) : root;
 
     if (table instanceof HTMLDListElement) {
       return parseDefinitionList(table);

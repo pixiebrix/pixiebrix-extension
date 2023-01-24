@@ -24,7 +24,6 @@ import {
   DETECT_FRAMEWORK_VERSIONS,
   type FrameworkMeta,
   READ_WINDOW,
-  SEARCH_WINDOW,
 } from "@/pageScript/messenger/constants";
 import { type ReaderOutput } from "@/core";
 import { type ElementInfo } from "@/pageScript/frameworks";
@@ -76,10 +75,6 @@ type ReadSpec = <T extends Record<string, string>>(arg: {
 export const withReadWindow = createSendScriptMessage(
   READ_WINDOW
 ) as unknown as ReadSpec;
-
-export const withSearchWindow = createSendScriptMessage<{ results: unknown[] }>(
-  SEARCH_WINDOW
-);
 
 export const withDetectFrameworkVersions = createSendScriptMessage<
   FrameworkMeta[]

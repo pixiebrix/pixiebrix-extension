@@ -20,7 +20,7 @@ import { type RecipeDefinition } from "@/types/definitions";
 import { type Except } from "type-fest";
 import { type RecipesRootState } from "./recipesTypes";
 
-export type AllRecipesSelector = Except<
+type AllRecipesSelector = Except<
   UseCachedQueryResult<RecipeDefinition[]>,
   "refetch"
 >;

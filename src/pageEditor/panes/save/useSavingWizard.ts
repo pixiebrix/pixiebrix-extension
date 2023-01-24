@@ -52,7 +52,7 @@ import { useAllRecipes } from "@/recipes/recipesHooks";
 
 const { actions: optionsActions } = extensionsSlice;
 
-export type RecipeConfiguration = {
+type RecipeConfiguration = {
   id: RegistryId;
   name: string;
   version?: SemVerString;

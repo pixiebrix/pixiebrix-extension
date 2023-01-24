@@ -27,8 +27,6 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
-// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
-import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
 import { initPartnerIntegrations } from "@/contentScript/partnerIntegrations";
 import {
@@ -36,7 +34,6 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
-import { type UUID } from "@/core";
 import initSandbox from "@/sandbox/messenger/api";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
@@ -49,13 +46,12 @@ onUncaughtError((error) => {
   }
 });
 
-export async function init(uuid: UUID): Promise<void> {
+export async function init(): Promise<void> {
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBlocks();
   registerContribBlocks();
 
-  addListenerForUpdateSelectedElement();
   initTelemetry();
   initToaster();
   void initSandbox();

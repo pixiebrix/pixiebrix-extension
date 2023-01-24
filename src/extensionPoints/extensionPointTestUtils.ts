@@ -65,8 +65,8 @@ export class RootReader extends Reader {
     super(validateRegistryId("test/root-reader"), "Root Reader");
   }
 
-  async read(root: HTMLElement | Document): Promise<ReaderOutput> {
-    this.ref = getReferenceForElement(root as HTMLElement);
+  async read(root: HTMLElement): Promise<ReaderOutput> {
+    this.ref = getReferenceForElement(root);
     this.readCount++;
     return {
       ref: this.ref,

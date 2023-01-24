@@ -19,7 +19,7 @@ import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
-export type SelectorMatchFieldProps = {
+type SelectorMatchFieldProps = {
   name: string;
   disabled?: boolean;
   label?: React.ReactNode;

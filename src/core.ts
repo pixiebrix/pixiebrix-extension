@@ -187,7 +187,7 @@ export interface Message<
 }
 
 // `ContextName`s from webext-detect-page
-export type ContextName = keyof typeof contextNames | "unknown";
+type ContextName = keyof typeof contextNames | "unknown";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.
@@ -420,11 +420,6 @@ export interface ServiceDependency {
    */
   config?: UUID;
 }
-
-export type ServiceLocator = (
-  serviceId: RegistryId,
-  configurationId?: UUID
-) => Promise<SanitizedServiceConfiguration>;
 
 export type ServiceAuthPair = {
   /**
@@ -817,8 +812,8 @@ export interface IBlock extends Metadata {
  */
 export function isUserDefinedBlock(block: IBlock): boolean {
   // YAML-defined blocks have a .component property added by the ExternalBlock class
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- don't want to introduce circular dependency
-  return Boolean((block as any)?.component);
+  // We don't want to introduce circular dependency
+  return block && "component" in block && Boolean(block.component);
 }
 
 export type ReaderOutput = Record<string, unknown>;

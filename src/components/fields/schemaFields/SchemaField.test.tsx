@@ -297,7 +297,7 @@ describe("SchemaField", () => {
       // Using an empty schema to allow anything, since we're testing toggling, not schema parsing
       render(
         <FormikTemplate>
-          <SchemaField name={"myField"} schema={{}} />
+          <SchemaField name="myField" schema={{}} />
         </FormikTemplate>
       );
 

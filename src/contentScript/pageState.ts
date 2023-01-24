@@ -24,7 +24,7 @@ import { expectContext } from "@/utils/expectContext";
 
 const extensionState = new Map<UUID, UnknownObject>();
 
-export type MergeStrategy = "shallow" | "replace" | "deep";
+type MergeStrategy = "shallow" | "replace" | "deep";
 
 /**
  * The blueprint page state, or null for shared state

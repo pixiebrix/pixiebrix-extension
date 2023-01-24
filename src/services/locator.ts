@@ -53,7 +53,7 @@ enum ServiceLevel {
 }
 
 /** Return config excluding any secrets/keys. */
-export function excludeSecrets(
+function excludeSecrets(
   service: IService,
   config: KeyedConfig
 ): SanitizedConfig {

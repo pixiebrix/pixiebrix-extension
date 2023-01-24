@@ -100,7 +100,7 @@ export const ENTERPRISE_EDITION_COMMON_PROPERTIES: SchemaProperties = {
   },
 };
 
-export const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
+const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
   runAsUserIds: {
     type: "array",
     description: "The user(s) to run the bot",

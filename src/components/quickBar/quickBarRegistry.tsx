@@ -29,7 +29,7 @@ import { type RegistryId } from "@/core";
 import { pull, remove } from "lodash";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 

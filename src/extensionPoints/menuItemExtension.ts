@@ -87,7 +87,7 @@ interface ShadowDOM {
   tag?: string;
 }
 
-export const DATA_ATTR = "data-pb-uuid";
+const DATA_ATTR = "data-pb-uuid";
 
 const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
 
@@ -144,7 +144,7 @@ export type MenuItemExtensionConfig = {
   onSuccess?: MessageConfig | boolean;
 };
 
-export const actionSchema: Schema = {
+const actionSchema: Schema = {
   oneOf: [
     { $ref: "https://app.pixiebrix.com/schemas/effect#" },
     {
@@ -846,7 +846,7 @@ export type MenuPosition =
 /**
  * @since 1.7.16
  */
-export type MenuTargetMode = "document" | "eventTarget";
+type MenuTargetMode = "document" | "eventTarget";
 
 export interface MenuDefinition extends ExtensionPointDefinition {
   type: "menuItem";

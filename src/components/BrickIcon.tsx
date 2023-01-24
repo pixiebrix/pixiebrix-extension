@@ -43,10 +43,7 @@ import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
 
-export function getDefaultBrickIcon(
-  brick: IBrick,
-  blockType: BlockType
-): IconProp {
+function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }

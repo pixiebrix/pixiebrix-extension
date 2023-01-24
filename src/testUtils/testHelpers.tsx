@@ -51,6 +51,17 @@ export const neverPromise = async (...args: unknown[]): Promise<never> => {
   throw new Error("This method should not have been called");
 };
 
+/**
+ * Generate mocked listeners for browser.*.onEvent objects
+ * @example browser.permissions.onAdded = getChromeEventMocks();
+ */
+export const getChromeEventMocks = () => ({
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+});
+
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update
@@ -67,11 +78,7 @@ export const runPendingTimers = async () =>
 // NoInfer is internal type of @reduxjs/toolkit tsHelpers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from @reduxjs/toolkit typings
 declare type NoInfer<T> = [T][T extends any ? 0 : never];
-export type CreateRenderFunctionOptions<
-  TState,
-  TAction extends Action,
-  TProps
-> = {
+type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
   reducer: Reducer<TState, TAction> | ReducersMapObject<TState, TAction>;
   preloadedState?: PreloadedState<CombinedState<NoInfer<TState>>>;
 

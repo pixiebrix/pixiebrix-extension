@@ -18,7 +18,7 @@
 import { boolean } from "@/utils";
 import { type Schema } from "@/core";
 import {
-  type Activity,
+  type Execution,
   type Interface,
   type OutputValue,
   type Variable,
@@ -147,7 +147,7 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
-export function mapBotOutput(value: OutputValue): Primitive {
+function mapBotOutput(value: OutputValue): Primitive {
   switch (value.type) {
     case "STRING": {
       return value.string;
@@ -168,8 +168,10 @@ export function mapBotOutput(value: OutputValue): Primitive {
   }
 }
 
-export function selectBotOutput(activity: Activity): Record<string, Primitive> {
-  return mapValues(activity.botOutVariables?.values ?? {}, (value) =>
+export function selectBotOutput(
+  execution: Pick<Execution, "botOutVariables">
+): Record<string, Primitive> {
+  return mapValues(execution.botOutVariables?.values ?? {}, (value) =>
     mapBotOutput(value)
   );
 }

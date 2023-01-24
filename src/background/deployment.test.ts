@@ -29,7 +29,7 @@ import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
 import { reportEvent } from "@/telemetry/events";
 import { isLinked, readAuthData } from "@/auth/token";
-import { refreshRegistries } from "@/hooks/useRefresh";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";
 import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 
@@ -37,12 +37,14 @@ browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
 const axiosMock = new MockAdapter(axios);
 
+jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+
 jest.mock("@/store/settingsStorage", () => ({
   getSettingsState: jest.fn(),
   saveSettingsState: jest.fn(),
 }));
 
-jest.mock("@/hooks/useRefresh", () => ({
+jest.mock("@/hooks/useRefreshRegistries", () => ({
   refreshRegistries: jest.fn(),
 }));
 

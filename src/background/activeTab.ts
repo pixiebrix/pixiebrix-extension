@@ -1,37 +1,21 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
 import { updatePageEditor } from "@/pageEditor/messenger/api";
-import { isScriptableUrl } from "@/utils/permissions";
-import { browserAction, type Tab } from "@/mv3/api";
+import {
+  type ActiveTab,
+  addActiveTabListener,
+  possiblyActiveTabs,
+} from "webext-dynamic-content-scripts/distribution/active-tab";
 
 type TabId = number;
-type Origin = string;
-export const possiblyActiveTabs = new Map<TabId, Origin>();
 
-function track(tab: Tab): void {
-  if (tab.url && isScriptableUrl(tab.url)) {
-    console.debug("ActiveTab added:", tab.id, tab.url);
-    possiblyActiveTabs.set(tab.id, new URL(tab.url).origin);
-
-    // Inform pageEditor that it now has the ActiveTab permission, if it's open
-    updatePageEditor({ page: `/pageEditor.html?tabId=${tab.id}` });
-  }
+function updateUI(tab: ActiveTab): void {
+  // Inform pageEditor that it now has the ActiveTab permission, if it's open
+  updatePageEditor({ page: `/pageEditor.html?tabId=${tab.id}` });
 }
 
 export default function initActiveTabTracking() {
-  browserAction.onClicked.addListener(track);
-  browser.contextMenus.onClicked.addListener((_, tab) => {
-    track(tab);
-  });
-
-  browser.commands.onCommand.addListener((_, tab) => {
-    track(tab);
-  });
-
-  browser.tabs.onRemoved.addListener((tabId) => {
-    console.debug("ActiveTab removed:", tabId);
-    possiblyActiveTabs.delete(tabId);
-  });
+  addActiveTabListener(updateUI);
 }
 
 export async function getTabsWithAccess(): Promise<TabId[]> {

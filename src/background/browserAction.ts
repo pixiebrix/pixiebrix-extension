@@ -48,6 +48,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   // want to catch each error separately.
   const sidebarTogglePromise = executeScript({
     tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
     files: ["browserActionInstantHandler.js"],
   });
   const contentScriptPromise = ensureContentScript({

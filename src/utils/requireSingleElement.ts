@@ -16,6 +16,7 @@
  */
 
 import {
+  BusinessError,
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
@@ -23,14 +24,29 @@ import {
 /**
  * Returns exactly one HTMLElement corresponding to the given selector.
  * @param selector the jQuery selector
+ * @param parent an optional parent element to search within
  * @throws NoElementsFoundError if not elements are found
  * @throws MultipleElementsFoundError if multiple elements are found
  */
-export function requireSingleElement<Element extends HTMLElement>(
+export function findSingleElement<Element extends HTMLElement>(
   selector: string,
   parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
 ): Element {
   const $elements = $(parent).find<Element>(selector);
+  return assertSingleElement($elements, selector);
+}
+
+/**
+ * Returns exactly one HTMLElement from the JQuery collection.
+ * @param $elements the JQuery collection
+ * @param selector the jQuery selector that generated the collection
+ * @throws NoElementsFoundError if not elements are found
+ * @throws MultipleElementsFoundError if multiple elements are found
+ */
+export function assertSingleElement<Element extends HTMLElement>(
+  $elements: JQuery<HTMLElement | Document>,
+  selector?: string
+): Element {
   if ($elements.length === 0) {
     throw new NoElementsFoundError(selector);
   }
@@ -39,5 +55,11 @@ export function requireSingleElement<Element extends HTMLElement>(
     throw new MultipleElementsFoundError(selector);
   }
 
-  return $elements.get(0);
+  const element = $elements.get(0);
+
+  if (element === document) {
+    throw new BusinessError("Expected an element, received the document");
+  }
+
+  return element as Element;
 }

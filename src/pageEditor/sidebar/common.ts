@@ -18,7 +18,7 @@
 import { type IExtension } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
-export type SidebarItem = IExtension | FormState;
+type SidebarItem = IExtension | FormState;
 
 export function getLabel(extension: FormState): string {
   return extension.label ?? extension.extensionPoint.metadata.name;

@@ -47,7 +47,7 @@ export type SidebarState = SidebarEntries & {
   pendingActivePanel: ActivatePanelOptions | null;
 };
 
-export const emptySidebarState: SidebarState = {
+const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],

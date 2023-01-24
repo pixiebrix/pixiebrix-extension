@@ -46,7 +46,7 @@ export type RequestPacket = {
   payload: Payload;
 };
 
-export type ResponsePacket = { response: Payload } | { error: SerializedError };
+type ResponsePacket = { response: Payload } | { error: SerializedError };
 
 export interface PostMessageInfo {
   type: string;
@@ -54,7 +54,7 @@ export interface PostMessageInfo {
   recipient: Window;
 }
 
-export type PostMessageListener = (payload: Payload) => Promise<Payload>;
+type PostMessageListener = (payload: Payload) => Promise<Payload>;
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage({

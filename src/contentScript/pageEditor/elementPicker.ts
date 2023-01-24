@@ -26,7 +26,7 @@ import {
 import { type Framework } from "@/pageScript/messenger/constants";
 import { uniq, compact, difference } from "lodash";
 import * as pageScript from "@/pageScript/messenger/api";
-import { requireSingleElement } from "@/utils/requireSingleElement";
+import { findSingleElement } from "@/utils/requireSingleElement";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import {
   type SelectionHandlerType,
@@ -45,7 +45,7 @@ function setSelectionHandler(handler: SelectionHandlerType) {
   selectionHandler = handler;
 }
 
-export function hideOverlay(): void {
+function hideOverlay(): void {
   overlay?.remove();
   overlay = null;
   expandOverlay?.remove();
@@ -400,7 +400,7 @@ export async function selectElement({
   excludeRandomClasses?: boolean;
   enableSelectionTools?: boolean;
 }) {
-  const rootElement = root == null ? undefined : requireSingleElement(root);
+  const rootElement = root == null ? undefined : findSingleElement(root);
   const { elements, isMulti, shouldSelectSimilar } = await userSelectElement({
     root: rootElement,
     enableSelectionTools,
@@ -415,7 +415,7 @@ export async function selectElement({
 
       const { selectors } = findContainer(elements);
 
-      requireSingleElement(selectors[0]);
+      findSingleElement(selectors[0]);
 
       return pageScript.getElementInfo({
         selector: selectors[0],
@@ -455,7 +455,7 @@ export async function selectElement({
       }
 
       // Double-check we have a valid selector
-      const element = requireSingleElement(selector);
+      const element = findSingleElement(selector);
 
       // We're using pageScript getElementInfo only when specific framework is used.
 

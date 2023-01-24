@@ -24,7 +24,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Schema } from "@/core";
 
-export const selectorMatchItemSchema: Schema = {
+const selectorMatchItemSchema: Schema = {
   items: {
     type: "string",
     format: "selector",

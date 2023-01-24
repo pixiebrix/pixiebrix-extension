@@ -43,7 +43,7 @@ const UrlMatchShortcut: React.FC<{
   </LinkButton>
 );
 
-export const DEFAULT_SHORTCUTS: Shortcut[] = [
+const DEFAULT_SHORTCUTS: Shortcut[] = [
   {
     caption: "Site",
     async getPattern() {

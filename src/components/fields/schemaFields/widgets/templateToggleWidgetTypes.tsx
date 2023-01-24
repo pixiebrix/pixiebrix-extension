@@ -37,19 +37,19 @@ interface InputModeOptionBase<
 export type StringOption = InputModeOptionBase<"string" | "select" | "var"> & {
   interpretValue: (oldValue: unknown) => string | Expression;
 };
-export type NumberOption = InputModeOptionBase<"number"> & {
+type NumberOption = InputModeOptionBase<"number"> & {
   interpretValue: (oldValue: unknown) => number;
 };
-export type BooleanOption = InputModeOptionBase<"boolean"> & {
+type BooleanOption = InputModeOptionBase<"boolean"> & {
   interpretValue: (oldValue: unknown) => boolean;
 };
-export type ArrayOption = InputModeOptionBase<"array"> & {
+type ArrayOption = InputModeOptionBase<"array"> & {
   interpretValue: (oldValue: unknown) => JSONSchema7Array;
 };
-export type DatabaseOption = InputModeOptionBase<"database"> & {
+type DatabaseOption = InputModeOptionBase<"database"> & {
   interpretValue: (oldValue: unknown) => string | null;
 };
-export type ObjectOption = InputModeOptionBase<"object"> & {
+type ObjectOption = InputModeOptionBase<"object"> & {
   interpretValue: (oldValue: unknown) => UnknownObject;
 };
 export type OmitOption = InputModeOptionBase<"omit">;

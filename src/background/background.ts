@@ -24,7 +24,7 @@ import "@/development/errorsBadge";
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
-import "webext-dynamic-content-scripts";
+import "webext-dynamic-content-scripts/including-active-tab";
 
 import registerMessenger from "@/background/messenger/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";

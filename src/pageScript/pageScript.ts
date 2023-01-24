@@ -32,13 +32,11 @@ import {
   GET_COMPONENT_INFO,
   READ_WINDOW,
   SCRIPT_LOADED,
-  SEARCH_WINDOW,
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
 } from "@/pageScript/messenger/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
-import { globalSearch } from "@/vendors/globalSearch";
 import {
   type ReadPayload,
   type PathSpec,
@@ -51,7 +49,7 @@ import {
   traverse,
 } from "@/pageScript/frameworks/component";
 import { elementInfo } from "@/pageScript/frameworks";
-import { requireSingleElement } from "@/utils/requireSingleElement";
+import { findSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,
   noopProxy,
@@ -85,13 +83,6 @@ window[PAGESCRIPT_SYMBOL] = uuidv4();
 const MAX_READ_DEPTH = 5;
 
 const attachListener = initialize();
-
-attachListener(SEARCH_WINDOW, async ({ query }) => {
-  console.debug("Searching window for query: %s", query);
-  return {
-    results: globalSearch(window, query),
-  };
-});
 
 attachListener(DETECT_FRAMEWORK_VERSIONS, async () => detectLibraries());
 
@@ -163,7 +154,7 @@ async function read<TComponent>(
   let element: HTMLElement;
 
   try {
-    element = requireSingleElement(selector);
+    element = findSingleElement(selector);
   } catch (error) {
     console.debug("read: error calling requireSingleElement", {
       error,
@@ -251,7 +242,7 @@ attachListener(
       throw new Error(`No write adapter available for ${framework}`);
     }
 
-    const element = requireSingleElement(selector);
+    const element = findSingleElement(selector);
     const component = adapter.getComponent(element);
     adapter.setData(component, valueMap);
   }
@@ -273,7 +264,7 @@ attachListener(
     traverseUp: number;
   }) => {
     console.debug("GET_COMPONENT_INFO", { selector, framework, traverseUp });
-    const element = requireSingleElement(selector);
+    const element = findSingleElement(selector);
     const info = await elementInfo(element, framework, [selector], traverseUp);
     console.debug("Element info", { element, selector, info });
     return info;
