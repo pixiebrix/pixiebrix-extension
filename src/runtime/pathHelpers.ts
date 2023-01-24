@@ -155,6 +155,10 @@ export function getPathFromArray(parts: Array<string | number>): string {
         return `["${part}"]`;
       }
 
+      if (typeof part === "number" || /^\d+$/.test(part)) {
+        return `[${part}]`;
+      }
+
       return index === 0 ? part : `.${part}`;
     })
     .join("");

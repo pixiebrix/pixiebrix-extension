@@ -17,11 +17,11 @@
 
 import React from "react";
 import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
-import { type ExistenceNode } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { type Theme } from "react-base16-styling";
+import { UnknownRecord } from "type-fest/source/internal";
 
 const theme = {
   extend: jsonTreeTheme,
@@ -138,7 +138,7 @@ const NodeLabel: React.FunctionComponent<NodeLabelProps> = ({
 };
 
 type VariablesTreeProps = {
-  vars: ExistenceNode;
+  vars: UnknownRecord;
   onVarSelect: (selectedPath: string[]) => void;
 };
 

@@ -47,7 +47,7 @@ function convertArrayNodesToArrays(node: ExistenceNode): void {
 function getMenuOptions(
   knownVars: VarMap,
   contextValues: JsonObject
-): Array<[string, unknown]> {
+): Array<[string, UnknownRecord]> {
   const varMap = knownVars.getMap();
 
   // We don't show traces as a separate source

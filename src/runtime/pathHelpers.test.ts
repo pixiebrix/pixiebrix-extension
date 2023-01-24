@@ -138,17 +138,17 @@ test("getPathFromArray", () => {
   };
 
   expectMatch(["user"], "user");
-  expectMatch(["users", 0], "users.0");
-  expectMatch(["users", 0, "name"], "users.0.name");
+  expectMatch(["users", 0], "users[0]");
+  expectMatch(["users", 0, "name"], "users[0].name");
   expectMatch(["users", ""], 'users[""]');
   expectMatch(["names", "Dante Alighieri"], 'names["Dante Alighieri"]');
   expectMatch(
     ["Ugo Foscolo", "User Location"],
     '["Ugo Foscolo"]["User Location"]'
   );
-  expectMatch(["User List", 100, "id"], '["User List"].100.id');
+  expectMatch(["User List", 100, "id"], '["User List"][100].id');
   expectMatch(
     ["User List", 100_000_000, "The name"],
-    '["User List"].100000000["The name"]'
+    '["User List"][100000000]["The name"]'
   );
 });
