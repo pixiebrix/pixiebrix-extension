@@ -198,6 +198,7 @@ export const initQuickBarApp = once(() => {
   expectContext("contentScript");
 
   const container = document.createElement("div");
+  container.id = "pixiebrix-quickbar-container";
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
 

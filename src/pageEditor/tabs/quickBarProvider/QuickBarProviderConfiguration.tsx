@@ -25,7 +25,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { type QuickBarProviderConfig } from "@/extensionPoints/quickBarProvider";
+import { type QuickBarProviderConfig } from "@/extensionPoints/quickBarProviderExtension";
 import { type QuickBarProviderFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,

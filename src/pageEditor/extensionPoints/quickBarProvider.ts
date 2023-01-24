@@ -46,7 +46,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
   QuickBarProviderExtensionPoint,
-} from "@/extensionPoints/quickBarProvider";
+} from "@/extensionPoints/quickBarProviderExtension";
 import { InsertModeHelpText } from "@/pageEditor/extensionPoints/quickBar";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 
@@ -212,7 +212,7 @@ function asDynamicElement(
 }
 
 const config: ElementConfig<undefined, QuickBarProviderFormState> = {
-  displayOrder: 6,
+  displayOrder: 1,
   elementType: "quickBarProvider",
   label: "Quick Bar Provider",
   baseClass: QuickBarProviderExtensionPoint,

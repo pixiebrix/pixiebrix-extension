@@ -65,6 +65,7 @@ describe("AddQuickBarAction", () => {
       perform: expect.toBeFunction(),
       section: undefined,
       subtitle: undefined,
+      priority: 1,
     });
   });
 });

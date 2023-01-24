@@ -58,7 +58,7 @@ import {
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
-} from "@/extensionPoints/quickBarProvider";
+} from "@/extensionPoints/quickBarProviderExtension";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
