@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
+import { Transformer, type UnknownObject } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -28,8 +28,8 @@ import {
 } from "@/contentScript/sidebarController";
 import { type PanelPayload } from "@/sidebar/types";
 import {
-  waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
+  waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { CancelError, PropError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
@@ -102,7 +102,7 @@ class DisplayTemporaryInfo extends Transformer {
       runPipeline,
       runRendererPipeline,
     }: BlockOptions
-  ): Promise<unknown> {
+  ): Promise<UnknownObject | null> {
     expectContext("contentScript");
 
     const nonce = uuidv4();
@@ -150,8 +150,10 @@ class DisplayTemporaryInfo extends Transformer {
       );
     }
 
+    let result = null;
+
     try {
-      await waitForTemporaryPanel(nonce, {
+      result = await waitForTemporaryPanel(nonce, {
         heading: title,
         extensionId,
         nonce,
@@ -171,7 +173,7 @@ class DisplayTemporaryInfo extends Transformer {
       controller.abort();
     }
 
-    return {};
+    return result ?? {};
   }
 }
 

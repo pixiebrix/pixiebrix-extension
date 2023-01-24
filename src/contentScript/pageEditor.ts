@@ -44,7 +44,7 @@ import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
-type RunBlockArgs = {
+export type RunBlockArgs = {
   apiVersion: ApiVersion;
   blockConfig: BlockConfig;
   /**
