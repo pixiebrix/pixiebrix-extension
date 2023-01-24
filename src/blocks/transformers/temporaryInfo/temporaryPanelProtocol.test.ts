@@ -20,6 +20,7 @@ import {
   getPanelDefinition,
   stopWaitingForTemporaryPanels,
   waitForTemporaryPanel,
+  resolveTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { uuidv4 } from "@/types/helpers";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
@@ -49,6 +50,27 @@ describe("temporaryPanelProtocol", () => {
     await stopWaitingForTemporaryPanels([nonce]);
 
     await expect(promise).resolves.toBeUndefined();
+  });
+
+  it("resolveTemporaryPanel resolves promise", async () => {
+    const nonce = uuidv4();
+    const extensionId = uuidv4();
+    const definition: TemporaryPanelEntry = {
+      nonce,
+      heading: "Test",
+      extensionId,
+      payload: {} as any,
+    };
+
+    const promise = waitForTemporaryPanel(nonce, definition);
+
+    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
+
+    const action = { type: "submit", detail: { foo: "bar" } };
+
+    await resolveTemporaryPanel(nonce, action);
+
+    await expect(promise).resolves.toStrictEqual(action);
   });
 
   it("cancelTemporaryPanels rejects promise", async () => {
