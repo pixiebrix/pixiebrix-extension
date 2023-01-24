@@ -29,7 +29,7 @@ export type FieldAnnotation = BaseAnnotation & {
 
 export function basicErrorAnnotation(message: string): FieldAnnotation {
   if (isNullOrBlank(message)) {
-    throw new Error("Cannot create an error annotation with a blank message.");
+    throw new Error("Cannot create an annotation with a blank message.");
   }
 
   return {
@@ -39,6 +39,10 @@ export function basicErrorAnnotation(message: string): FieldAnnotation {
 }
 
 export function basicWarningAnnotation(message: string): FieldAnnotation {
+  if (isNullOrBlank(message)) {
+    throw new Error("Cannot create an annotation with a blank message.");
+  }
+
   return {
     message,
     type: AnnotationType.Warning,

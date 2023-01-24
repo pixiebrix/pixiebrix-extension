@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection -- working with records a lot */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *

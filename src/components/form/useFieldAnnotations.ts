@@ -33,11 +33,14 @@ import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { isNullOrBlank } from "@/utils";
+import { getCallbackForAnalysisAction } from "@/analysis/analysisAnnotationActions";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
   formik: FormikContextType<FormState>
 ): FieldAnnotationAction {
+  const callback = getCallbackForAnalysisAction(action.annotationActionId);
+
   return {
     caption: action.caption,
     async action() {
@@ -50,6 +53,8 @@ function makeFieldActionForAnnotationAction(
       });
 
       formik.setValues(newValues);
+
+      await callback?.();
     },
   };
 }
@@ -57,6 +62,7 @@ function makeFieldActionForAnnotationAction(
 function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
   const { shouldUseAnalysis, showUntouchedErrors, showFieldActions } =
     useFormErrorSettings();
+  const formik = useFormikContext<FormState>();
 
   if (shouldUseAnalysis) {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
@@ -78,8 +84,6 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     });
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
-  const formik = useFormikContext<FormState>();
   const { error, touched } = formik.getFieldMeta(fieldPath);
   const showFormikError =
     (showUntouchedErrors || touched) &&

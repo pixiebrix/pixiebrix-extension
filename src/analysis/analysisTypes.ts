@@ -26,6 +26,7 @@ export enum AnalysisAnnotationActionType {
 }
 
 export type AnalysisAnnotationAction = {
+  annotationActionId: UUID;
   caption: string;
   type: AnalysisAnnotationActionType;
   path: string;

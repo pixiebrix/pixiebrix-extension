@@ -27,6 +27,8 @@ import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
+import { createAnalysisAnnotationAction } from "@/analysis/analysisAnnotationActions";
+import { requestPermissions } from "@/utils/permissions";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -99,6 +101,8 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
         return;
       }
 
+      const permissionsValue = `${parsedURL.origin}/*`;
+
       const permissionCheckPromise = browser.permissions
         .contains({
           origins: [parsedURL.href],
@@ -113,12 +117,19 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
               analysisId: this.id,
               type: AnnotationType.Error,
               actions: [
-                {
-                  caption: "Add Extra Permission",
-                  type: AnalysisAnnotationActionType.AddValueToArray,
-                  path: "permissions.origins",
-                  value: `${parsedURL.origin}/*`,
-                },
+                createAnalysisAnnotationAction(
+                  {
+                    caption: "Add Extra Permission",
+                    type: AnalysisAnnotationActionType.AddValueToArray,
+                    path: "permissions.origins",
+                    value: permissionsValue,
+                  },
+                  async () => {
+                    await requestPermissions({
+                      origins: [permissionsValue],
+                    });
+                  }
+                ),
               ],
             });
           }
