@@ -64,7 +64,7 @@ function useActionGenerators(): void {
 
   useEffect(
     () => {
-      quickBarRegistry.generateActions({
+      void quickBarRegistry.generateActions({
         query: searchQuery,
         rootActionId: currentRootActionId,
       });
@@ -81,7 +81,7 @@ function useActionGenerators(): void {
   useDebouncedEffect(
     searchArgs,
     (values) => {
-      quickBarRegistry.generateActions({
+      void quickBarRegistry.generateActions({
         query: values.searchQuery,
         rootActionId: values.currentRootActionId,
       });

@@ -24,12 +24,11 @@ import {
 } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
-import quickBarRegistry, {
-  type CustomAction,
-} from "@/components/quickBar/quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import React from "react";
 import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 
 type ActionConfig = {
   title: string;
@@ -37,19 +36,22 @@ type ActionConfig = {
   section?: string;
   icon: IconConfig;
   action: PipelineExpression;
+
+  priority?: number;
 };
 
 /**
  * An effect that adds an action to the PixieBrix Quick Bar.
+ * @see QuickBarProviderExtensionPoint
  */
 class AddQuickBarAction extends Effect {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/quickbar/add-action");
+  static BLOCK_ID = validateRegistryId("@pixiebrix/quickbar/add");
 
   constructor() {
     super(
       AddQuickBarAction.BLOCK_ID,
       "Add Quick Bar Action",
-      "Add an Action to the PixieBrix Quick Bar"
+      "Add an action to the PixieBrix Quick Bar"
     );
   }
 
@@ -82,6 +84,12 @@ class AddQuickBarAction extends Effect {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
         description: "The action to perform when the Quick Bar Action is run",
       },
+      priority: {
+        description:
+          "The priority of the action: HIGH = 1, MEDIUM = 0, LOW = -1",
+        type: "number",
+        default: 1,
+      },
     },
     ["title", "action"]
   );
@@ -93,10 +101,11 @@ class AddQuickBarAction extends Effect {
       section,
       icon: iconConfig,
       action: actionPipeline,
+      priority = 1,
     }: BlockArg<ActionConfig>,
     { root, logger, runPipeline }: BlockOptions
   ): Promise<void> {
-    // Keep track of run for tracing
+    // Keep track of run number for tracing
     let counter = 0;
 
     // Expected parent id from QuickBarProviderExtensionPoint
@@ -105,6 +114,7 @@ class AddQuickBarAction extends Effect {
     const action: CustomAction = {
       // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
       id: `${logger.context.extensionId}-${title}`,
+      // Additional metadata, for enabling clearing out old actions
       extensionPointId: logger.context.extensionPointId,
       extensionId: logger.context.extensionId,
       // Can only provide a parent if the parent exists
@@ -114,16 +124,23 @@ class AddQuickBarAction extends Effect {
       name: title,
       subtitle,
       section,
+      priority,
+      // Defaults to a box
       icon: iconConfig ? (
         <Icon icon={iconConfig.id} library={iconConfig.library} />
       ) : (
         <Icon />
-      ), // Defaults to a box
+      ),
       async perform() {
-        const pipelinePromise = runPipeline(actionPipeline.__value__ ?? [], {
-          key: "action",
-          counter,
-        });
+        const pipelinePromise = runPipeline(
+          actionPipeline.__value__ ?? [],
+          {
+            key: "action",
+            counter,
+          },
+          {},
+          root
+        );
 
         counter += 1;
 

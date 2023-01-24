@@ -46,9 +46,7 @@ import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
-import quickBarRegistry, {
-  type ActionGenerator,
-} from "@/components/quickBar/quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { CancelError } from "@/errors/businessErrors";
@@ -60,6 +58,7 @@ import {
 } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { isSpecificError } from "@/errors/errorHelpers";
+import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
 
 export type QuickBarProviderConfig = {
   /**
@@ -226,13 +225,13 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
       query,
       rootActionId: currentRootActionId,
     }) => {
+      // Remove the old results since they'll be replaced anyway
+      quickBarRegistry.removeExtensionActions(extension.id);
+
       if (rootActionId && rootActionId !== currentRootActionId) {
         // User is not drilled into the current action, so skip generation
         return;
       }
-
-      // Remove the old results since they'll be replaced anyway
-      quickBarRegistry.removeExtensionActions(extension.id);
 
       const reader = await this.getBaseReader();
       const serviceContext = await makeServiceContext(extension.services);
