@@ -33,9 +33,7 @@ import { isInnerExtensionPoint } from "@/registry/internal";
 /**
  * Infer optionsSchema from the options provided to the extension.
  */
-export function inferOptionsSchema(
-  optionsArgs: UserOptions
-): OptionsDefinition {
+function inferOptionsSchema(optionsArgs: UserOptions): OptionsDefinition {
   if (isEmpty(optionsArgs)) {
     return undefined;
   }

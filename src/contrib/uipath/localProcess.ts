@@ -28,7 +28,7 @@ import { BusinessError } from "@/errors/businessErrors";
 
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 
-export const UIPATH_PROPERTIES: SchemaProperties = {
+const UIPATH_PROPERTIES: SchemaProperties = {
   releaseKey: {
     type: "string",
     description: "The local UiPath process id",

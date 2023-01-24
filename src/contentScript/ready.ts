@@ -41,9 +41,7 @@ import { executeFunction } from "webext-content-scripts";
 const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`
-export const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
-  "content-script-injected"
-);
+const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
 export const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
 
 /** Communicates readiness to `ensureContentScript` */

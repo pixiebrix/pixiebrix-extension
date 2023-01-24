@@ -19,7 +19,6 @@ import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
-import { type OptionsState } from "@/store/extensionsTypes";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
@@ -31,10 +30,6 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
-
-export type RootState = {
-  options: OptionsState;
-};
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {

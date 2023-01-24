@@ -34,7 +34,7 @@ import { useAsyncState } from "@/hooks/common";
 import { type Organization } from "@/types/contract";
 import { type Sharing, type UUID } from "@/core";
 
-export const SharingTag: React.FunctionComponent<{
+const SharingTag: React.FunctionComponent<{
   block: ReferenceEntry;
   organizations: Organization[];
 }> = ({ block, organizations }) => {

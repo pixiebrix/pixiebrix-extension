@@ -122,7 +122,7 @@ export function isBadRequestObjectData(
   );
 }
 
-export function isClientErrorData(data: unknown): data is ClientErrorData {
+function isClientErrorData(data: unknown): data is ClientErrorData {
   // We could check for status > 400 and < 500 here, but might as well just go with duck typing on the body
   return isObject(data) && typeof data.detail === "string";
 }
@@ -131,7 +131,7 @@ export function isClientErrorData(data: unknown): data is ClientErrorData {
  * Return true if response is a 400 Bad Request from the PixieBrix API.
  * @param response the API response
  */
-export function isBadRequestResponse(
+function isBadRequestResponse(
   response: AxiosResponse
 ): response is AxiosResponse<BadRequestData> {
   if (response.status !== 400) {
@@ -168,7 +168,7 @@ export function isSingleObjectBadRequestError(
  * @param response the API response
  * @see isBadRequestResponse
  */
-export function isClientErrorResponse(
+function isClientErrorResponse(
   response: AxiosResponse
 ): response is AxiosResponse<ClientErrorData> {
   return isClientErrorData(response.data);
@@ -191,9 +191,7 @@ export function isClientErrorResponse(
  * @see getErrorMessage
  * @see enrichBusinessRequestError
  */
-export function selectServerErrorMessage(
-  response: AxiosResponse
-): string | null {
+function selectServerErrorMessage(response: AxiosResponse): string | null {
   if (response == null) {
     throw new Error("Expected response to be defined");
   }

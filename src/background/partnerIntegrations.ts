@@ -33,7 +33,7 @@ import axios from "axios";
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
  */
-export type PartnerPrincipal = {
+type PartnerPrincipal = {
   /**
    * The hostname of the remote service, e.g., the Automation Anywhere Control Room.
    */

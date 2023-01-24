@@ -67,7 +67,7 @@ export type VisitPipelineExtra = {
    */
   pipelinePropName?: string | undefined;
 };
-export type VisitRootPipelineExtra = {
+type VisitRootPipelineExtra = {
   extensionPointType: ExtensionPointType;
 };
 

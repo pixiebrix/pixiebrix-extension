@@ -25,7 +25,7 @@ import PipelineVisitor, {
 } from "./PipelineVisitor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
-export type VisitDocumentElementArgs = {
+type VisitDocumentElementArgs = {
   position: BlockPosition;
   blockConfig: BlockConfig;
   element: DocumentElement;

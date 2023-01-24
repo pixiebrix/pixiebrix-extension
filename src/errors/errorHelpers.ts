@@ -49,7 +49,7 @@ export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
  *
  * @see matchesAnyPattern
  */
-export const IGNORED_ERROR_PATTERNS = [
+const IGNORED_ERROR_PATTERNS = [
   "ResizeObserver loop limit exceeded",
   "Network Error",
   "Promise was cancelled",
@@ -174,7 +174,7 @@ const BUSINESS_ERROR_NAMES = new Set([
   "InvalidSelectorError",
 ]);
 
-export function isBusinessError(error: unknown): boolean {
+function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
@@ -192,7 +192,7 @@ const CLIENT_REQUEST_ERROR_NAMES = new Set([
  * Returns true if the error was a ClientRequestError
  * @see CLIENT_REQUEST_ERROR_NAMES
  */
-export function isClientRequestError(error: unknown): boolean {
+function isClientRequestError(error: unknown): boolean {
   return isErrorObject(error) && CLIENT_REQUEST_ERROR_NAMES.has(error.name);
 }
 
@@ -241,7 +241,7 @@ export function getErrorMessageWithCauses(
 /**
  * Return chain of error causes (including the top-level error)
  */
-export function getErrorCauseList(error: unknown): unknown[] {
+function getErrorCauseList(error: unknown): unknown[] {
   const errors = [];
 
   while (error != null) {
@@ -310,7 +310,7 @@ export function selectErrorFromRejectionEvent(
 /**
  * Extracts error from ErrorEvent and PromiseRejectionEvent
  */
-export function selectErrorFromEvent(
+function selectErrorFromEvent(
   event: ErrorEvent | PromiseRejectionEvent
 ): Error {
   return event instanceof PromiseRejectionEvent

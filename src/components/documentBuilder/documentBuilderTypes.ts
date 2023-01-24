@@ -52,7 +52,7 @@ export type DocumentElement<
   children?: DocumentElement[];
 };
 
-export type ListDocumentConfig = {
+type ListDocumentConfig = {
   array: Expression;
   elementKey?: string;
   element: DeferExpression<DocumentElement>;
@@ -69,7 +69,7 @@ export type PipelineDocumentConfig = {
   label: string;
   pipeline: PipelineExpression;
 };
-export type PipelineDocumentElement = DocumentElement<
+type PipelineDocumentElement = DocumentElement<
   "pipeline",
   PipelineDocumentConfig
 >;
