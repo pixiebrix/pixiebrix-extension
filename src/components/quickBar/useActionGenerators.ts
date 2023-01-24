@@ -53,8 +53,8 @@ function useActionGenerators(): void {
       // Chain requests to avoid old requests overwriting newer requests
       // In the future, we'll want to set a nonce on the generator run, and ignore actions for the old nonce. However,
       // currently there's no great way to pass that through to the AddQuickBarAction brick
-      // eslint-disable-next-line promise/prefer-await-to-then -- creating a new promise
       queryPromise = new WeakRef<Promise<void>>(
+        // eslint-disable-next-line promise/prefer-await-to-then -- creating a new promise
         promise.then(async () =>
           quickBarRegistry.generateActions({
             query: values.searchQuery,
