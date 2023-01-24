@@ -22,10 +22,23 @@ import { CancelError } from "@/errors/businessErrors";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { type JsonObject } from "type-fest";
 
-type PanelAction = {
-  name: string;
+/**
+ * An action to resolve a panel with a type and detail.
+ *
+ * Interface matches CustomEvent
+ *
+ * @see CustomEvent
+ */
+export type PanelAction = {
+  /**
+   * A custom type for the action, e.g., "submit", "cancel", etc.
+   */
+  type: string;
 
-  data?: JsonObject;
+  /**
+   * Optional payload for the action.
+   */
+  detail?: JsonObject;
 };
 
 type RegisteredPanel = {

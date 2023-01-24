@@ -127,14 +127,23 @@ async function cancelPanels(nonces: UUID[]): Promise<void> {
   cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
+/**
+ * Resolve panels without action/data.
+ * @param nonces panel nonces
+ */
 async function closePanels(nonces: UUID[]): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   closeTemporaryPanel(topLevelFrame, nonces);
 }
 
+/**
+ * Resolve a panel with an action and optional detail
+ * @param nonce the panel nonce
+ * @param action the action to resolve the panel with
+ */
 async function resolvePanel(
   nonce: UUID,
-  action: SubmitPanelAction
+  action: Pick<SubmitPanelAction, "type" | "detail">
 ): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   resolveTemporaryPanel(topLevelFrame, nonce, action);

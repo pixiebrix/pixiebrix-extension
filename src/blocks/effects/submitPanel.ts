@@ -50,7 +50,7 @@ export class SubmitPanelEffect extends Effect {
 
   async effect({
     type,
-    detail,
+    detail = {},
   }: BlockArg<{
     type: string;
     detail: JsonObject;

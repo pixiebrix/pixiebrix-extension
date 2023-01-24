@@ -30,6 +30,7 @@ import { type PanelPayload } from "@/sidebar/types";
 import {
   waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
+  type PanelAction,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { CancelError, PropError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
@@ -102,7 +103,7 @@ class DisplayTemporaryInfo extends Transformer {
       runPipeline,
       runRendererPipeline,
     }: BlockOptions
-  ): Promise<unknown> {
+  ): Promise<PanelAction | Record<string, unknown> | null> {
     expectContext("contentScript");
 
     const nonce = uuidv4();

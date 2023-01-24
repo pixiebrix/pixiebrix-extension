@@ -113,18 +113,33 @@ export class RemoteExecutionError extends BusinessError {
 }
 
 /**
- * Error for providing control flow for the temporary panel.
+ * Throwable for providing control flow for the temporary panel.
+ *
+ * Like "CancelError", it is not an error, but needs to subclass Error for our exceptional control flow to work.
+ *
+ * Uses type and detail fields to match the CustomEvent interface.
+ *
+ * @see CustomEvent
  */
 export class SubmitPanelAction extends CancelError {
   override name = "SubmitPanelAction";
 
-  // Use type and detail to match the naming of CustomEvent
-
+  /**
+   * A custom action type to resolve the panel with, e.g., "submit" or "cancel".
+   */
   type: string;
 
+  /**
+   * Extra data to resolve the panel with.
+   */
   detail: JsonObject;
 
-  constructor(type: string, detail: JsonObject) {
+  /**
+   * Create a throwable action for a temporary panel that resolves the panel.
+   * @param type A custom action type to resolve the panel with, e.g., "submit" or "cancel".
+   * @param detail Extra data to resolve the panel with.
+   */
+  constructor(type: string, detail: JsonObject = {}) {
     super(`Submitted panel with action: ${type}`);
     this.type = type;
     this.detail = detail;
