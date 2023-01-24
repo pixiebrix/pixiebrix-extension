@@ -21,7 +21,7 @@ import { jsonTreeTheme } from "@/themes/light";
 import { type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { type Theme } from "react-base16-styling";
-import { UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord } from "type-fest/source/internal";
 
 const theme = {
   extend: jsonTreeTheme,
