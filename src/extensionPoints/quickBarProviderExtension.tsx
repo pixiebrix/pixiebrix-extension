@@ -231,7 +231,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
       query,
       rootActionId: currentRootActionId,
     }) => {
-      // Remove the old results since they'll no longer relevant
+      // Remove the old results since they're no longer relevant
       quickBarRegistry.removeExtensionActions(extension.id);
 
       if (

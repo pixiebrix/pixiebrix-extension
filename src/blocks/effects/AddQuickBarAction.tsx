@@ -40,6 +40,9 @@ type ActionConfig = {
   priority?: number;
 };
 
+// Default priority used by KBar: https://kbar.vercel.app/docs/concepts/priority
+const DEFAULT_PRIORITY = 1;
+
 /**
  * An effect that adds an action to the PixieBrix Quick Bar.
  * @see QuickBarProviderExtensionPoint
@@ -90,7 +93,7 @@ class AddQuickBarAction extends Effect {
         description:
           "The priority of the action. Higher priority actions appear first. (HIGH = 1, MEDIUM = 0, LOW = -1)",
         type: "number",
-        default: 1,
+        default: DEFAULT_PRIORITY,
       },
     },
     ["title", "action"]
@@ -103,7 +106,8 @@ class AddQuickBarAction extends Effect {
       section,
       icon: iconConfig,
       action: actionPipeline,
-      priority = 1,
+      // Be explicit about the default priority if non is provided
+      priority = DEFAULT_PRIORITY,
     }: BlockArg<ActionConfig>,
     { root, logger, runPipeline }: BlockOptions
   ): Promise<void> {
@@ -127,7 +131,7 @@ class AddQuickBarAction extends Effect {
       subtitle,
       section,
       priority,
-      // Defaults to a box
+      // Defaults to a box; match behavior from Quick Bar Action extension point
       icon: iconConfig ? (
         <Icon icon={iconConfig.id} library={iconConfig.library} />
       ) : (
