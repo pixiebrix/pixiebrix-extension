@@ -24,6 +24,7 @@ import {
 } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
+import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
 
 export const isAppServiceField = createTypePredicate(
@@ -55,4 +56,8 @@ export function isKeyStringField(schema: Schema): boolean {
 
 export function isDatabaseField(schema: Schema): boolean {
   return schema.$ref === databaseSchema.$id;
+}
+
+export function isIconField(schema: Schema): boolean {
+  return schema.$ref === iconSchema.$id;
 }

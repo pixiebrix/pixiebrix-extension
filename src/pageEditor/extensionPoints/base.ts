@@ -393,7 +393,7 @@ export function getImplicitReader(
     ]);
   }
 
-  if (type === "quickBar") {
+  if (type === "quickBar" || type === "quickBarProvider") {
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),
       validateRegistryId("@pixiebrix/selection"),

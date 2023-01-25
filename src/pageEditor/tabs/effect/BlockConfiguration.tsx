@@ -147,9 +147,13 @@ const BlockConfiguration: React.FunctionComponent<{
   // the user has configured the extension point to use the document as the target.
   const showRootMode =
     isRootAware &&
-    ["trigger", "contextMenu", "quickBar", "menuItem"].includes(
-      context.values.type
-    );
+    [
+      "trigger",
+      "contextMenu",
+      "quickBar",
+      "quickBarProvider",
+      "menuItem",
+    ].includes(context.values.type);
   const showIfAndTarget = blockType && blockType !== "renderer";
   const noAdvancedOptions = !showRootMode && !showIfAndTarget;
 

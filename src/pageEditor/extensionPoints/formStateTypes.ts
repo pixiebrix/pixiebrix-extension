@@ -55,6 +55,10 @@ import {
   type SingleLayerReaderConfig,
   type BaseFormState,
 } from "./elementConfig";
+import {
+  type QuickBarProviderConfig,
+  type QuickBarProviderDefaultOptions,
+} from "@/extensionPoints/quickBarProviderExtension";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
@@ -216,15 +220,40 @@ type QuickBarExtensionPointState = BaseExtensionPointState & {
   };
 };
 
+// QuickBarFormState
+type QuickBarProviderExtensionState = BaseExtensionState &
+  Except<QuickBarProviderConfig, "generator"> & {
+    rootAction?: QuickBarProviderConfig["rootAction"];
+  };
+type QuickBarProviderExtensionPointState = BaseExtensionPointState & {
+  definition: {
+    type: ExtensionPointType;
+    defaultOptions: QuickBarProviderDefaultOptions;
+    documentUrlPatterns: string[];
+    reader: SingleLayerReaderConfig;
+    isAvailable: NormalizedAvailability;
+  };
+};
+
 export function isQuickBarExtensionPoint(
   extensionPoint: BaseExtensionPointState
 ): extensionPoint is QuickBarExtensionPointState {
-  return extensionPoint.definition.type === "quickBar";
+  return ["quickBar", "quickBarProvider"].includes(
+    extensionPoint.definition.type
+  );
 }
 
 export interface QuickBarFormState
   extends BaseFormState<QuickBarExtensionState, QuickBarExtensionPointState> {
   type: "quickBar";
+}
+
+export interface QuickBarProviderFormState
+  extends BaseFormState<
+    QuickBarProviderExtensionState,
+    QuickBarProviderExtensionPointState
+  > {
+  type: "quickBarProvider";
 }
 
 export type FormState =
@@ -233,4 +262,5 @@ export type FormState =
   | TriggerFormState
   | PanelFormState
   | ContextMenuFormState
-  | QuickBarFormState;
+  | QuickBarFormState
+  | QuickBarProviderFormState;

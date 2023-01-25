@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -35,79 +34,66 @@ import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
-import {
-  faExclamationTriangle,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
-import { Alert } from "react-bootstrap";
-import {
-  type QuickBarConfig,
-  type QuickBarDefinition,
-  QuickBarExtensionPoint,
-} from "@/extensionPoints/quickBarExtension";
-import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type QuickBarFormState } from "./formStateTypes";
-import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { type QuickBarProviderFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
+import {
+  type QuickBarProviderConfig,
+  type QuickBarProviderDefinition,
+  QuickBarProviderExtensionPoint,
+} from "@/extensionPoints/quickBarProviderExtension";
+import { InsertModeHelpText } from "@/pageEditor/extensionPoints/quickBar";
+import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 
-function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
+function fromNativeElement(
+  url: string,
+  metadata: Metadata
+): QuickBarProviderFormState {
   const base = makeInitialBaseState();
 
   const isAvailable = makeIsAvailable(url);
 
-  const title = "Quick Bar item";
+  const title = "Dynamic Quick Bar";
 
   return {
-    type: "quickBar",
+    type: "quickBarProvider",
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
     extensionPoint: {
       metadata,
       definition: {
-        type: "quickBar",
-        reader: getImplicitReader("quickBar"),
+        type: "quickBarProvider",
+        reader: getImplicitReader("quickBarProvider"),
         documentUrlPatterns: isAvailable.matchPatterns,
-        contexts: ["all"],
-        targetMode: "eventTarget",
         defaultOptions: {},
         isAvailable,
       },
     },
     extension: {
-      title,
+      rootAction: undefined,
       blockPipeline: [],
     },
   };
 }
 
 function selectExtensionPointConfig(
-  formState: QuickBarFormState
-): ExtensionPointConfig<QuickBarDefinition> {
+  formState: QuickBarProviderFormState
+): ExtensionPointConfig<QuickBarProviderDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: {
-      isAvailable,
-      documentUrlPatterns,
-      reader,
-      targetMode,
-      contexts = ["all"],
-    },
+    definition: { isAvailable, documentUrlPatterns, reader },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "quickBar",
+      type: "quickBarProvider",
       documentUrlPatterns,
-      contexts,
-      targetMode,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
     },
@@ -115,14 +101,13 @@ function selectExtensionPointConfig(
 }
 
 function selectExtension(
-  state: QuickBarFormState,
+  state: QuickBarProviderFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<QuickBarConfig> {
+): IExtension<QuickBarProviderConfig> {
   const { extension } = state;
-  const config: QuickBarConfig = {
-    title: extension.title,
-    icon: extension.icon,
-    action: options.includeInstanceIds
+  const config: QuickBarProviderConfig = {
+    rootAction: extension.rootAction,
+    generator: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
   };
@@ -133,21 +118,21 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: IExtension<QuickBarConfig>
-): Promise<QuickBarFormState> {
+  config: IExtension<QuickBarProviderConfig>
+): Promise<QuickBarProviderFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    QuickBarDefinition,
-    QuickBarConfig,
-    "quickBar"
-  >(config, "quickBar");
+    QuickBarProviderDefinition,
+    QuickBarProviderConfig,
+    "quickBarProvider"
+  >(config, "quickBarProvider");
 
-  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
+  const { documentUrlPatterns, defaultOptions, reader } =
     extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "action"
+    "generator"
   );
 
   return {
@@ -158,11 +143,9 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        type: "quickBar",
+        type: "quickBarProvider",
         documentUrlPatterns,
         defaultOptions,
-        targetMode,
-        contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
@@ -173,16 +156,15 @@ async function fromExtension(
 
 async function fromExtensionPoint(
   url: string,
-  extensionPoint: ExtensionPointConfig<QuickBarDefinition>
-): Promise<QuickBarFormState> {
-  if (extensionPoint.definition.type !== "quickBar") {
-    throw new Error("Expected quickBar extension point type");
+  extensionPoint: ExtensionPointConfig<QuickBarProviderDefinition>
+): Promise<QuickBarProviderFormState> {
+  if (extensionPoint.definition.type !== "quickBarProvider") {
+    throw new Error("Expected quickBarProvider extension point type");
   }
 
   const {
     defaultOptions = {},
     documentUrlPatterns = [],
-    targetMode = "eventTarget",
     type,
     reader,
   } = extensionPoint.definition;
@@ -192,14 +174,14 @@ async function fromExtensionPoint(
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type,
-    label: `My ${getDomain(url)} quick bar item`,
+    label: `My ${getDomain(url)} dynamic Quick Bar`,
 
     services: [],
     permissions: makeEmptyPermissions(),
     optionsArgs: {},
 
     extension: {
-      title: defaultOptions.title ?? "Custom Action",
+      rootAction: undefined,
       blockPipeline: [],
     },
 
@@ -209,7 +191,6 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         defaultOptions,
         documentUrlPatterns,
-        targetMode,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
@@ -220,85 +201,25 @@ async function fromExtensionPoint(
   };
 }
 
-function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
+function asDynamicElement(
+  element: QuickBarProviderFormState
+): DynamicDefinition {
   return {
-    type: "quickBar",
+    type: "quickBarProvider",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
-export const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
-  const { isConfigured } = useQuickbarShortcut();
-
-  if (!isConfigured) {
-    return (
-      <Alert variant="warning">
-        <FontAwesomeIcon icon={faExclamationTriangle} />
-        &nbsp;You have not{" "}
-        <a
-          href="chrome://extensions/shortcuts"
-          onClick={(event) => {
-            event.preventDefault();
-            void browser.tabs.create({ url: event.currentTarget.href });
-          }}
-        >
-          configured a Quick Bar shortcut
-        </a>
-      </Alert>
-    );
-  }
-
-  return null;
-};
-
-export const InsertModeHelpText: React.FunctionComponent = () => {
-  const { isConfigured, shortcut } = useQuickbarShortcut();
-
-  return (
-    <div className="text-center pb-2">
-      {isConfigured ? (
-        <p>
-          You&apos;ve configured&nbsp;
-          <kbd style={{ fontFamily: "system" }}>{shortcut}</kbd>&nbsp; to open
-          the Quick Bar.{" "}
-          <a
-            href="chrome://extensions/shortcuts"
-            onClick={(event) => {
-              event.preventDefault();
-              void browser.tabs.create({ url: event.currentTarget.href });
-            }}
-          >
-            Change your Quick Bar shortcut
-          </a>
-        </p>
-      ) : (
-        <Alert variant="warning">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;You have not{" "}
-          <a
-            href="chrome://extensions/shortcuts"
-            onClick={(event) => {
-              event.preventDefault();
-              void browser.tabs.create({ url: event.currentTarget.href });
-            }}
-          >
-            configured a Quick Bar shortcut
-          </a>
-        </Alert>
-      )}
-    </div>
-  );
-};
-
-const config: ElementConfig<undefined, QuickBarFormState> = {
+const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   displayOrder: 1,
-  elementType: "quickBar",
-  label: "Quick Bar Action",
-  baseClass: QuickBarExtensionPoint,
-  EditorNode: QuickBarConfiguration,
+  elementType: "quickBarProvider",
+  label: "Dynamic Quick Bar",
+  baseClass: QuickBarProviderExtensionPoint,
+  EditorNode: QuickBarProviderConfiguration,
   selectNativeElement: undefined,
-  icon: faThLarge,
+  icon: faPlusSquare,
+  flag: "pageeditor-quickbar-provider",
   fromNativeElement,
   fromExtensionPoint,
   asDynamicElement,

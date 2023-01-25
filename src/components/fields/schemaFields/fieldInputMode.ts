@@ -19,7 +19,7 @@ import { type UnknownObject } from "@/types";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { type Schema } from "@/core";
 import { isEmpty } from "lodash";
-import { isDatabaseField } from "./fieldTypeCheckers";
+import { isDatabaseField, isIconField } from "./fieldTypeCheckers";
 
 export type FieldInputMode =
   | "string"
@@ -30,6 +30,7 @@ export type FieldInputMode =
   | "object"
   | "select"
   | "database"
+  | "icon"
   | "omit"; // An input option to remove a property
 
 /**
@@ -53,6 +54,10 @@ export function inferInputMode(
 
   if (isDatabaseField(fieldSchema)) {
     return isVarExpression(value) ? "var" : "database";
+  }
+
+  if (isIconField(fieldSchema)) {
+    return isVarExpression(value) ? "var" : "icon";
   }
 
   const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
