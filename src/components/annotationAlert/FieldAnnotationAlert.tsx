@@ -54,19 +54,22 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
   }
 
   return (
+    // eslint-disable-next-line security/detect-object-injection -- annotation type, not user input
     <div className={cx(styles.root, styles[type])}>
-      {Icon && <Icon className={styles.icon} />}
-      <div className={styles.message}>
-        <span>{message}</span>
+      <div className={styles.alert}>
+        {Icon && <Icon className={styles.icon} />}
+        <div className={styles.message}>
+          <span>{message}</span>
+        </div>
       </div>
       {!isEmpty(actions) && (
-        <span>
+        <div className={styles.actions}>
           {actions.map(({ caption, action }) => (
             <AsyncButton key={caption} onClick={action}>
               {caption}
             </AsyncButton>
           ))}
-        </span>
+        </div>
       )}
     </div>
   );
