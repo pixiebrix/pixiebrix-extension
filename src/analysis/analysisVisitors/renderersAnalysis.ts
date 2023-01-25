@@ -26,7 +26,7 @@ import { AnnotationType } from "@/types";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more other renderers configured for this extension.";
-export const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
+const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
   "A renderer must be the last brick.";
 
 class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {

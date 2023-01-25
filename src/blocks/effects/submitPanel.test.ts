@@ -15,18 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { useMemo } from "react";
-import { type IExtension, type UUID } from "@/core";
+import SubmitPanelEffect from "@/blocks/effects/submitPanel";
+import { SubmitPanelAction } from "@/blocks/errors";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
-function useExtensionMeta(): { lookup: Map<UUID, IExtension> } {
-  const extensions = useSelector(selectExtensions);
-  const lookup = useMemo(
-    () => new Map(extensions.map((x) => [x.id, x])),
-    [extensions]
-  );
-  return { lookup };
-}
+describe("SubmitPanelEffect", () => {
+  test("defaults detail to empty object", async () => {
+    const brick = new SubmitPanelEffect();
 
-export default useExtensionMeta;
+    try {
+      await brick.effect(unsafeAssumeValidArg({ type: "submit" }) as any);
+    } catch (error) {
+      expect(error).toBeInstanceOf(SubmitPanelAction);
+      expect((error as SubmitPanelAction).detail).toEqual({});
+      expect((error as SubmitPanelAction).type).toEqual("submit");
+    }
+  });
+});

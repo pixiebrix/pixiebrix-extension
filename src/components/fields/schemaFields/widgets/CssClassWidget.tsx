@@ -75,7 +75,7 @@ type ClassFlag = {
   implies?: string[];
 };
 
-export const flags = {
+const flags = {
   bold: {
     className: "font-weight-bold",
     title: <FontAwesomeIcon icon={faBold} />,

@@ -123,7 +123,7 @@ export const TruncatedCell: React.VoidFunctionComponent<{
   children: React.ReactNode;
 }> = ({ children }) => <div className={styles.truncatedCell}>{children}</div>;
 
-export function findPageIndex<TRow extends Record<string, unknown>>({
+function findPageIndex<TRow extends Record<string, unknown>>({
   record,
   rows,
   pageSize,

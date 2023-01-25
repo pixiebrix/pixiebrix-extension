@@ -21,6 +21,7 @@ import { Modal } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   getPanelDefinition,
+  resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -106,6 +107,9 @@ const EphemeralPanel: React.FC = () => {
             isRootPanel={false}
             payload={entry.payload}
             context={{ extensionId: entry.extensionId }}
+            onAction={(action) => {
+              resolveTemporaryPanel(target, nonce, action);
+            }}
           />
         </ErrorBoundary>
       </Modal.Body>

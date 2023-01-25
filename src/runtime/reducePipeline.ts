@@ -81,7 +81,7 @@ type CommonOptions = ApiVersionOptions & {
   headless: boolean;
 };
 
-export type RunMetadata = {
+type RunMetadata = {
   /**
    * The extension UUID to correlate trace records for a brick.
    */

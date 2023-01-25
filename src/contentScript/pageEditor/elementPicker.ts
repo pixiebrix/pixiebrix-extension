@@ -45,7 +45,7 @@ function setSelectionHandler(handler: SelectionHandlerType) {
   selectionHandler = handler;
 }
 
-export function hideOverlay(): void {
+function hideOverlay(): void {
   overlay?.remove();
   overlay = null;
   expandOverlay?.remove();

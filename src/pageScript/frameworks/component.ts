@@ -32,32 +32,6 @@ export function traverse<T = unknown>(
   return current;
 }
 
-// Object required for WeakSet
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function traverseUntil<T extends object>(
-  source: T,
-  match: (element: T) => boolean,
-  next: (current: T) => T | null,
-  maxTraverse: number = Number.POSITIVE_INFINITY
-): T | null {
-  let current = source;
-  // Detect cycles
-  const visited = new WeakSet<T>();
-  let cnt = 0;
-  while (
-    current != null &&
-    !match(current) &&
-    !visited.has(current) &&
-    cnt <= maxTraverse
-  ) {
-    visited.add(current);
-    current = next(current);
-    cnt++;
-  }
-
-  return current;
-}
-
 export interface TreeAdapter<TComponent = unknown> {
   /**
    * Return the parent instance, or null for root components.

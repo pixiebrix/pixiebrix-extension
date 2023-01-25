@@ -18,8 +18,8 @@
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { type JsonObject } from "type-fest";
 
-export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
-export const KEY_PREFIX = "@@";
+const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
+const KEY_PREFIX = "@@";
 
 export async function getRecord(primaryKey: string): Promise<unknown> {
   const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});

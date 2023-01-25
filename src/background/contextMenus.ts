@@ -41,7 +41,7 @@ const MENU_PREFIX = "pixiebrix-";
 // >= 1 seconds because it also waits for the content script to be ready
 const CONTEXT_SCRIPT_INSTALL_MS = 5000;
 
-export type SelectionMenuOptions = {
+type SelectionMenuOptions = {
   extensionId: UUID;
   title: string;
   contexts: Menus.ContextType[];

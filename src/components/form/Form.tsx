@@ -46,7 +46,7 @@ export type RenderSubmit = (state: {
   values: FormikValues;
 }) => ReactElement;
 
-export type RenderStatus = (state: { status: string }) => ReactElement;
+type RenderStatus = (state: { status: string }) => ReactElement;
 
 type FormProps = {
   /**

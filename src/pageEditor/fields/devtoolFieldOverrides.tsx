@@ -22,7 +22,7 @@ import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
 
-export const ClearableSelectorWidget: React.FunctionComponent<{
+const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => <SelectorSelectorWidget isClearable sort name={name} />;
 

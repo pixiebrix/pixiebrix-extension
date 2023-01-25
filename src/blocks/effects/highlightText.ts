@@ -28,7 +28,7 @@ const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
 /**
  * Recursively wrap text in an element and its children.
  */
-export function wrapText({
+function wrapText({
   nodes,
   pattern,
   color,

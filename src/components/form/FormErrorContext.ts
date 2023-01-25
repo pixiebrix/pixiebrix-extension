@@ -17,7 +17,7 @@
 
 import { createContext, useContext } from "react";
 
-export type FormErrorContextProps = {
+type FormErrorContextProps = {
   shouldUseAnalysis: boolean;
   showUntouchedErrors: boolean;
   showFieldActions: boolean;

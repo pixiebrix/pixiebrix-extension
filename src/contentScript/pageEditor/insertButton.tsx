@@ -26,7 +26,7 @@ import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import { inferButtonHTML } from "@/utils/inference/markupInference";
 
-export const DEFAULT_ACTION_CAPTION = "Action";
+const DEFAULT_ACTION_CAPTION = "Action";
 
 export async function insertButton(
   useNewFilter = false

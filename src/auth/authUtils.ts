@@ -19,6 +19,7 @@ import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
 import { type UUID } from "@/core";
 
+// Used by the app
 export function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]
 ): AuthState["organizations"] {

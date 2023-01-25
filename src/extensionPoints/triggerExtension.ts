@@ -128,7 +128,7 @@ export type Trigger =
  * @see ReportMode
  * @see getDefaultReportModeForTrigger
  */
-export const USER_ACTION_TRIGGERS: Trigger[] = [
+const USER_ACTION_TRIGGERS: Trigger[] = [
   "click",
   "dblclick",
   "blur",

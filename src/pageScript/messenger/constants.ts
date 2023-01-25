@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const SEARCH_WINDOW = "@@pixiebrix/script/SEARCH_WINDOW";
 export const READ_WINDOW = "@@pixiebrix/script/READ_WINDOW";
 export const SCRIPT_LOADED = "@@pixiebrix/script/SCRIPT_LOADED";
 export const CONNECT_EXTENSION = "@@pixiebrix/script/CONNECT_EXTENSION";
@@ -28,7 +27,7 @@ export const GET_COMPONENT_INFO = "@@pixiebrix/script/GET_COMPONENT_INFO";
 
 type UNKNOWN_VERSION = null;
 
-export const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
+const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
 export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
 
 export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];

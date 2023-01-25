@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import { type Milestone } from "@/types/contract";
 import { useGetMeQuery } from "@/services/api";
 
-export type MilestoneHelpers = {
+type MilestoneHelpers = {
   getMilestone: (milestoneKey: string) => Milestone;
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
