@@ -52,9 +52,15 @@ function makeFieldActionForAnnotationAction(
         }
       });
 
-      formik.setValues(newValues);
-
       await callback?.();
+
+      // Order here matters at the moment. The first implemented action needs
+      // to request browser permissions in the callback before setting form
+      // state, so that after the Effect handler syncs formik with redux, the
+      // browser permissions are present when the app re-renders
+      // (analysis runs again, permissions toolbar updates, etc.).
+      // TBD if this is the correct long-term approach or not.
+      formik.setValues(newValues, true);
     },
   };
 }
