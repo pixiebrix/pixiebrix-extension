@@ -16,6 +16,7 @@
  */
 
 import {
+  addPathPart,
   getFieldNamesFromPathString,
   getPathFromArray,
   getPropByPath,
@@ -151,4 +152,16 @@ test("getPathFromArray", () => {
     ["User List", 100_000_000, "The name"],
     '["User List"][100000000]["The name"]'
   );
+});
+
+test.each([
+  { path: "", part: "name", expected: "name" },
+  { path: "auth.user", part: "name", expected: "auth.user.name" },
+  { path: "auth", part: "user.name", expected: 'auth["user.name"]' },
+  { path: "links", part: 10, expected: "links[10]" },
+  { path: "links", part: "10", expected: "links[10]" },
+])('addPathPart: "$path" and "$part"', ({ path, part, expected }) => {
+  const actual = addPathPart(path, part);
+
+  expect(actual).toBe(expected);
 });

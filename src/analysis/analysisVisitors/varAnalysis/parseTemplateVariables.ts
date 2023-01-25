@@ -18,7 +18,7 @@
 // The logic here is heavily based on the nunjucks-variable-parser
 // https://github.com/archersado/nunjucks-variable-parser
 
-import { joinName } from "@/utils";
+import { addPathPart } from "@/runtime/pathHelpers";
 import * as nunjucks from "nunjucks";
 
 // The typings of nunjucks do not expose parser and nodes
@@ -315,7 +315,7 @@ function parseFor(node: any) {
 }
 
 function getVariableName(variable: Variable, path = ""): string {
-  const joinedName = joinName(path, String(variable.value));
+  const joinedName = addPathPart(path, variable.value);
   if (variable.children.length > 0) {
     return getVariableName(variable.children[0], joinedName);
   }

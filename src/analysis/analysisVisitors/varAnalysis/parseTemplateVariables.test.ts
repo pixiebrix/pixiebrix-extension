@@ -46,10 +46,10 @@ describe("parseTemplateVariables", () => {
     expect(result[0]).toBe('@foo["bar baz"]');
   });
 
-  test("indexed access", () => {
+  test("numeric index access", () => {
     const template = "Hello {{ @foo[0] }}";
     const result = parseTemplateVariables(template);
-    expect(result[0]).toBe("@foo.0");
+    expect(result[0]).toBe("@foo[0]");
   });
 
   test("works with filters", () => {
