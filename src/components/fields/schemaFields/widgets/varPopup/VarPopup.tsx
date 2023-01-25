@@ -24,9 +24,9 @@ import {
 import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { joinName } from "@/utils";
 import fitTextarea from "fit-textarea";
 import { type UnknownObject } from "@/types";
+import { getPathFromArray } from "@/runtime/pathHelpers";
 
 type VarPopupProps = {
   inputMode: FieldInputMode;
@@ -113,7 +113,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   };
 
   const onVarSelect = (selectedPath: string[]) => {
-    const fullVariableName = joinName(null, ...selectedPath);
+    const fullVariableName = getPathFromArray(selectedPath);
     if (inputMode === "var") {
       setValue(fullVariableName);
     } else if (inputMode === "string") {

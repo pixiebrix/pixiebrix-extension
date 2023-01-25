@@ -58,10 +58,10 @@ async function setServiceVars(extension: FormState, contextVars: VarMap) {
   for (const service of extension.services ?? []) {
     // eslint-disable-next-line no-await-in-loop
     const serviceContext = await makeServiceContext([service]);
-    contextVars.setExistenceFromValues(
-      `${KnownSources.SERVICE}:${service.id}`,
-      serviceContext
-    );
+    contextVars.setExistenceFromValues({
+      source: `${KnownSources.SERVICE}:${service.id}`,
+      values: serviceContext,
+    });
   }
 }
 
@@ -85,11 +85,11 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
     inputContextShape[key] = true;
   }
 
-  contextVars.setExistenceFromValues(
-    `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
-    inputContextShape,
-    "@input"
-  );
+  contextVars.setExistenceFromValues({
+    source: `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
+    values: inputContextShape,
+    parentPath: "@input",
+  });
 }
 
 type SetVarsFromSchemaArgs = {
@@ -155,16 +155,38 @@ function setVarsFromSchema({
           ? VarExistence.DEFINITELY
           : VarExistence.MAYBE;
 
-      // Parent node do not allow arbitrary children
-      contextVars.setExistence({ source, path: parentPath, existence });
+      const nodePath = [...parentPath, key];
 
-      // The array property can have any child
+      // If the items is an array, then we allow any child to simplify the validation logic
+      const allowAnyChild =
+        Array.isArray(propertySchema.items) ||
+        !isEmpty(propertySchema.additionalItems);
+
+      // Setting existence for the current node
       contextVars.setExistence({
         source,
-        path: [...parentPath, key],
+        path: nodePath,
         existence,
-        allowAnyChild: true,
+        isArray: true,
+        allowAnyChild,
       });
+
+      if (allowAnyChild) {
+        continue;
+      }
+
+      if (
+        typeof propertySchema.items == "object" &&
+        !Array.isArray(propertySchema.items) &&
+        propertySchema.items.type === "object"
+      ) {
+        setVarsFromSchema({
+          schema: propertySchema.items,
+          contextVars,
+          source,
+          parentPath: nodePath,
+        });
+      }
     } else {
       contextVars.setExistence({
         source,
@@ -254,10 +276,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         x.templateContext != null
     );
     if (traceRecord != null) {
-      this.currentBlockKnownVars.setExistenceFromValues(
-        KnownSources.TRACE,
-        traceRecord.templateContext
-      );
+      this.currentBlockKnownVars.setExistenceFromValues({
+        source: KnownSources.TRACE,
+        values: traceRecord.templateContext,
+      });
     }
 
     this.knownVars.set(position.path, this.currentBlockKnownVars);
@@ -274,12 +296,15 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         ?.outputSchema;
 
       if (outputSchema == null) {
-        currentBlockOutput.setOutputKeyExistence(
-          position.path,
-          outputVarName,
-          blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
-          true
-        );
+        currentBlockOutput.setOutputKeyExistence({
+          source: position.path,
+          outputKey: outputVarName,
+          existence:
+            blockConfig.if == null
+              ? VarExistence.DEFINITELY
+              : VarExistence.MAYBE,
+          allowAnyChild: true,
+        });
       } else {
         setVarsFromSchema({
           schema: outputSchema,
@@ -389,12 +414,12 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     let subPipelineVars: VarMap;
     if (subPipelineInput) {
       subPipelineVars = new VarMap();
-      subPipelineVars.setOutputKeyExistence(
-        position.path,
-        `@${subPipelineInput}`,
-        VarExistence.DEFINITELY,
-        false
-      );
+      subPipelineVars.setOutputKeyExistence({
+        source: position.path,
+        outputKey: `@${subPipelineInput}`,
+        existence: VarExistence.DEFINITELY,
+        allowAnyChild: false,
+      });
     }
 
     // Creating context for the sub pipeline

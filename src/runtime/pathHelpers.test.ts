@@ -16,6 +16,7 @@
  */
 
 import {
+  addPathPart,
   getFieldNamesFromPathString,
   getPathFromArray,
   getPropByPath,
@@ -138,17 +139,29 @@ test("getPathFromArray", () => {
   };
 
   expectMatch(["user"], "user");
-  expectMatch(["users", 0], "users.0");
-  expectMatch(["users", 0, "name"], "users.0.name");
+  expectMatch(["users", 0], "users[0]");
+  expectMatch(["users", 0, "name"], "users[0].name");
   expectMatch(["users", ""], 'users[""]');
   expectMatch(["names", "Dante Alighieri"], 'names["Dante Alighieri"]');
   expectMatch(
     ["Ugo Foscolo", "User Location"],
     '["Ugo Foscolo"]["User Location"]'
   );
-  expectMatch(["User List", 100, "id"], '["User List"].100.id');
+  expectMatch(["User List", 100, "id"], '["User List"][100].id');
   expectMatch(
     ["User List", 100_000_000, "The name"],
-    '["User List"].100000000["The name"]'
+    '["User List"][100000000]["The name"]'
   );
+});
+
+test.each([
+  { path: "", part: "name", expected: "name" },
+  { path: "auth.user", part: "name", expected: "auth.user.name" },
+  { path: "auth", part: "user.name", expected: 'auth["user.name"]' },
+  { path: "links", part: 10, expected: "links[10]" },
+  { path: "links", part: "10", expected: "links[10]" },
+])('addPathPart: "$path" and "$part"', ({ path, part, expected }) => {
+  const actual = addPathPart(path, part);
+
+  expect(actual).toBe(expected);
 });
