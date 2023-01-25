@@ -19,8 +19,11 @@ import React from "react";
 import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
+import { type JsonObject } from "type-fest";
 
 type DocumentState = {
+  onAction: (action: { type: string; detail: JsonObject }) => void;
+
   meta: {
     runId: UUID;
     extensionId: UUID;
@@ -34,6 +37,9 @@ const blankContext = {
 } as BlockArgContext;
 
 export const initialValue: DocumentState = {
+  onAction() {
+    throw new BusinessError("Panel actions not available for panel type");
+  },
   meta: {
     runId: null,
     extensionId: null,

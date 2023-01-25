@@ -51,6 +51,7 @@ const specialCharsRegex = /[\s.[\]]/;
 /**
  * Create a Formik field name, validating the individual path parts.
  * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
+ * Stringifies numeric property access as "foo.0.bar"
  * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
