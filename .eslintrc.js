@@ -63,6 +63,7 @@ module.exports = {
           "webext-dynamic-content-scripts/including-active-tab", // Automatic registration
           "regenerator-runtime/runtime", // Automatic registration
           "@/vendors/hoverintent/hoverintent", // JQuery plugin
+          "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
         ],
       },
     ],
