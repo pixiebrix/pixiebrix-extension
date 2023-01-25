@@ -1,6 +1,13 @@
 import { createPopper } from "@popperjs/core";
+import { iframeResizer } from "iframe-resizer";
+import { trimEnd } from "lodash";
 
-// https://popper.js.org/docs/v2/performance/#attaching-elements-to-the-dom
+/**
+ * Attaches a tooltip container to the DOM.
+ *
+ * Having a separate container instead of attaching to the body directly improves performance, see:
+ * https://popper.js.org/docs/v2/performance/#attaching-elements-to-the-dom
+ */
 function ensureTooltipsContainer(): Element {
   let container = document.querySelector("#pb-tooltips-container");
   if (!container) {
@@ -21,7 +28,7 @@ export function showPopover(
   const nonce = url.searchParams.get("nonce");
 
   const $tooltip = $(
-    `<div role="tooltip"><iframe src="${url.href}" title="Popover content" style="border: 0; flex-grow: 1; color-scheme: normal;" /></div>`
+    `<div role="tooltip" data-popover-id="${nonce}"><iframe id="${nonce}" src="${url.href}" title="Popover content" scrolling="no" style="border: 0; color-scheme: normal;" /></div>`
   );
   const tooltip: HTMLElement = $tooltip.get()[0];
 
@@ -40,14 +47,35 @@ export function showPopover(
     ],
   });
 
-  const updateListener = (event: Event) => {
+  const [resizer] = iframeResizer(
+    {
+      id: nonce,
+      // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
+      // observer used by iframeResizer can't see it
+      autoResize: false,
+      sizeWidth: true,
+      sizeHeight: true,
+      checkOrigin: [trimEnd(chrome.runtime.getURL(""), "/")],
+      // Looks for data-iframe-height in PopoverLayout
+      heightCalculationMethod: "taggedElement",
+    },
+    tooltip.querySelector("iframe")
+  );
+
+  // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
+  // observer used by iframeResizer can't see it
+  const interval = setInterval(() => {
+    resizer.iFrameResizer.resize();
+  }, 25);
+
+  const mountListener = (event: Event) => {
     if (event instanceof CustomEvent && event.detail.nonce === nonce) {
-      // Force popper resize
+      // Force popper position update
       void popper.update();
     }
   };
 
-  document.addEventListener("@@pixiebrix/PANEL_MOUNTED", updateListener);
+  document.addEventListener("@@pixiebrix/PANEL_MOUNTED", mountListener);
 
   const outsideClickListener = (event: JQuery.TriggeredEvent) => {
     if ($(event.target).closest(tooltip).length === 0) {
@@ -59,9 +87,10 @@ export function showPopover(
   $body.on("click touchend", outsideClickListener);
 
   abortController.signal.addEventListener("abort", () => {
+    clearInterval(interval);
     tooltip.remove();
     popper.destroy();
-    document.removeEventListener("panelMounted", updateListener);
+    document.removeEventListener("panelMounted", mountListener);
     $body.off("click touchend", outsideClickListener);
   });
 }

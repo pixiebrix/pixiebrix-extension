@@ -47,7 +47,10 @@ const PopoverLayout: React.FC<{ className?: string }> = ({
   children,
 }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
-  <div className={cx("popover", className)}>{children}</div>
+  // data-iframe-height is used by iframe-resizer
+  <div className={cx("popover", className)} data-iframe-height="">
+    {children}
+  </div>
 );
 
 /**

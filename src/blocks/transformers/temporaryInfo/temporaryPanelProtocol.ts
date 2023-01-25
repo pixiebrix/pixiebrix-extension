@@ -134,7 +134,10 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
  * @param nonce The nonce of the panels to resolve
  * @param action The action to resolve the panel with
  */
-export async function resolveTemporaryPanel(nonce: UUID, action: PanelAction) {
+export async function resolveTemporaryPanel(
+  nonce: UUID,
+  action: PanelAction
+): Promise<void> {
   expectContext("contentScript");
 
   panels.get(nonce)?.registration.resolve(action);
@@ -145,7 +148,7 @@ export async function resolveTemporaryPanel(nonce: UUID, action: PanelAction) {
  * Cancel some temporary panels' deferred promises
  * @param nonces The nonces of the panels to reject with a CancelError
  */
-export async function cancelTemporaryPanels(nonces: UUID[]) {
+export async function cancelTemporaryPanels(nonces: UUID[]): Promise<void> {
   expectContext("contentScript");
 
   for (const nonce of nonces) {

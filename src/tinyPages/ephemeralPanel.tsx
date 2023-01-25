@@ -25,6 +25,8 @@ import { render } from "react-dom";
 import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+// eslint-disable-next-line import/no-unassigned-import -- import for side-effect
+import "iframe-resizer/js/iframeResizer.contentWindow";
 
 function init(): void {
   render(<EphemeralPanel />, document.querySelector("#container"));
