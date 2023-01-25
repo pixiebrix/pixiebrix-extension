@@ -42,6 +42,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   const {
     meta,
     options: { ctxt, logger },
+    onAction,
   } = useContext(DocumentContext);
 
   const [payload, isLoading, error] =
@@ -65,13 +66,16 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
     }, [pipeline]);
 
   if (isLoading) {
-    return <PanelBody payload={null} context={logger.context} />;
+    return (
+      <PanelBody payload={null} context={logger.context} onAction={onAction} />
+    );
   }
 
   if (error) {
     return (
       <PanelBody
         context={logger.context}
+        onAction={onAction}
         payload={{
           key: `error-${getErrorMessage(error)}`,
           error: serializeError(error),
@@ -81,7 +85,9 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
     );
   }
 
-  return <PanelBody context={logger.context} payload={payload} />;
+  return (
+    <PanelBody context={logger.context} payload={payload} onAction={onAction} />
+  );
 };
 
 export default BlockElement;

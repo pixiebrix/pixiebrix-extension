@@ -71,6 +71,7 @@ import { getPageState, setPageState } from "@/contentScript/pageState";
 import {
   cancelTemporaryPanels,
   getPanelDefinition,
+  resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 
@@ -84,6 +85,7 @@ declare global {
     TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
     TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
+    TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_EXTENSION: typeof removeExtension;
@@ -140,6 +142,7 @@ export default function registerMessenger(): void {
 
     TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
     TEMPORARY_PANEL_CANCEL: cancelTemporaryPanels,
+    TEMPORARY_PANEL_RESOLVE: resolveTemporaryPanel,
     PANEL_GET_DEFINITION: getPanelDefinition,
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,

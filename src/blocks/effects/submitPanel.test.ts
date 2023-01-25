@@ -15,22 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import SubmitPanelEffect from "@/blocks/effects/submitPanel";
+import { SubmitPanelAction } from "@/blocks/errors";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
-export type DocumentViewProps = {
-  /**
-   * Action handler for submitting or closing the panel from a button handler.
-   */
-  onAction?: (action: SubmitPanelAction) => void;
-  /**
-   * Top-level elements in the document.
-   */
-  body: DocumentElement[];
-  options: BlockOptions<BlockArgContext>;
-  meta: {
-    runId: UUID;
-    extensionId: UUID;
-  };
-};
+describe("SubmitPanelEffect", () => {
+  test("defaults detail to empty object", async () => {
+    const brick = new SubmitPanelEffect();
+
+    try {
+      await brick.effect(unsafeAssumeValidArg({ type: "submit" }) as any);
+    } catch (error) {
+      expect(error).toBeInstanceOf(SubmitPanelAction);
+      expect((error as SubmitPanelAction).detail).toEqual({});
+      expect((error as SubmitPanelAction).type).toEqual("submit");
+    }
+  });
+});

@@ -24,7 +24,12 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { joinPathParts } from "@/utils";
 import { Stylesheets } from "@/components/Stylesheets";
 
-const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
+const DocumentView: React.FC<DocumentViewProps> = ({
+  body,
+  options,
+  meta,
+  onAction,
+}) => {
   if (!meta?.runId) {
     // The sidebar panel should dynamically pass the prop through
     throw new Error("meta.runId is required for DocumentView");
@@ -38,7 +43,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options, meta }) => {
   return (
     // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
     // ReactShadowRoot needs to be inside an HTMLElement to attach to something
-    <DocumentContext.Provider value={{ options, meta }}>
+    <DocumentContext.Provider value={{ options, meta, onAction }}>
       <div className="h-100">
         <ReactShadowRoot>
           <Stylesheets href={bootstrap}>
