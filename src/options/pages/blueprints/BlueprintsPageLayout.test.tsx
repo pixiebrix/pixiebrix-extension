@@ -237,6 +237,10 @@ describe("Serializable Data Test", () => {
     });
 
     await waitForEffect();
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining("A non-serializable value was detected"),
+      expect.toBeFunction(),
+      expect.toBeString()
+    );
   });
 });
