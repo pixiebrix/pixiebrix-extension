@@ -85,8 +85,10 @@ class AddQuickBarAction extends Effect {
         description: "The action to perform when the Quick Bar Action is run",
       },
       priority: {
+        // By default in KBar, each action has a base priority value of 1. So we're just keeping the default
+        // https://kbar.vercel.app/docs/concepts/priority
         description:
-          "The priority of the action: HIGH = 1, MEDIUM = 0, LOW = -1",
+          "The priority of the action. Higher priority actions appear first. (HIGH = 1, MEDIUM = 0, LOW = -1)",
         type: "number",
         default: 1,
       },

@@ -19,14 +19,16 @@ import { validateRegistryId } from "@/types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { type UnknownObject } from "@/types";
 import { define } from "cooky-cutter";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   fromJS,
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
 } from "@/extensionPoints/quickBarProviderExtension";
-import { type Metadata, type ResolvedExtension, RunReason } from "@/core";
-import { uuidSequence } from "@/testUtils/factories";
+import { type ResolvedExtension, RunReason } from "@/core";
+import {
+  extensionPointDefinitionFactory as genericExtensionPointFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
 import { type BlockPipeline } from "@/blocks/types";
 import {
   getDocument,
@@ -54,14 +56,7 @@ const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<ExtensionPointConfig<QuickBarProviderDefinition>>({
-    apiVersion: "v3",
-    kind: "extensionPoint",
-    metadata: (n: number) =>
-      ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
-      } as Metadata),
+  genericExtensionPointFactory({
     definition: define<QuickBarProviderDefinition>({
       type: "quickBarProvider",
       isAvailable: () => ({
@@ -107,7 +102,7 @@ describe("quickBarProviderExtension", () => {
   it("quick bar provider adds root action instantly", async () => {
     const user = userEvent.setup();
 
-    const extensionPoint = fromJS(extensionPointFactory()());
+    const extensionPoint = fromJS(extensionPointFactory());
 
     extensionPoint.addExtension(
       extensionFactory({
@@ -155,7 +150,7 @@ describe("quickBarProviderExtension", () => {
   it("runs the generator on query change", async () => {
     const user = userEvent.setup();
 
-    const extensionPoint = fromJS(extensionPointFactory()());
+    const extensionPoint = fromJS(extensionPointFactory());
 
     extensionPoint.addExtension(
       extensionFactory({
