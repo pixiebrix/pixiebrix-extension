@@ -89,6 +89,8 @@ const FormRendererOptions: React.FC<{
     editorActions.setNodePreviewActiveElement
   );
 
+  const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
   const storageType = storage?.type;
@@ -174,11 +176,13 @@ const FormRendererOptions: React.FC<{
         schema={customFormRendererSchema.properties.autoSave as Schema}
       />
 
-      <SchemaField
-        name={makeName("submitCaption")}
-        label="Submit Caption"
-        schema={customFormRendererSchema.properties.submitCaption as Schema}
-      />
+      {!autoSave && (
+        <SchemaField
+          name={makeName("submitCaption")}
+          label="Submit Caption"
+          schema={customFormRendererSchema.properties.submitCaption as Schema}
+        />
+      )}
 
       <SchemaField
         name={makeName("successMessage")}
