@@ -16,7 +16,6 @@
  */
 
 import {
-  basicErrorAnnotation,
   type FieldAnnotation,
   type FieldAnnotationAction,
 } from "@/components/form/FieldAnnotation";
@@ -34,6 +33,7 @@ import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { isNullOrBlank } from "@/utils";
 import { getCallbackForAnalysisAction } from "@/analysis/analysisAnnotationActions";
+import { AnnotationType } from "@/types";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
@@ -95,7 +95,11 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     (showUntouchedErrors || touched) &&
     typeof error === "string" &&
     !isNullOrBlank(error);
-  return showFormikError ? [basicErrorAnnotation(error)] : [];
+  const annotation: FieldAnnotation = {
+    message: error,
+    type: AnnotationType.Error,
+  };
+  return showFormikError ? [annotation] : [];
 }
 
 export default useFieldAnnotations;

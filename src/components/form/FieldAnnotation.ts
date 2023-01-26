@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnnotationType, type BaseAnnotation } from "@/types";
-import { isNullOrBlank } from "@/utils";
+import { type BaseAnnotation } from "@/types";
 
 export type FieldAnnotationAction = {
   caption: string;
@@ -26,25 +25,3 @@ export type FieldAnnotationAction = {
 export type FieldAnnotation = BaseAnnotation & {
   actions?: FieldAnnotationAction[];
 };
-
-export function basicErrorAnnotation(message: string): FieldAnnotation {
-  if (isNullOrBlank(message)) {
-    throw new Error("Cannot create an annotation with a blank message.");
-  }
-
-  return {
-    message,
-    type: AnnotationType.Error,
-  };
-}
-
-export function basicWarningAnnotation(message: string): FieldAnnotation {
-  if (isNullOrBlank(message)) {
-    throw new Error("Cannot create an annotation with a blank message.");
-  }
-
-  return {
-    message,
-    type: AnnotationType.Warning,
-  };
-}
