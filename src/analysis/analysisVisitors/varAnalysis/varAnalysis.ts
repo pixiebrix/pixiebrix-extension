@@ -415,10 +415,11 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (subPipelineInput) {
       subPipelineVars = new VarMap();
       subPipelineVars.setOutputKeyExistence({
-        source: position.path,
+        // The source of the element key is the parent block
+        source: extra.parentPosition.path,
         outputKey: `@${subPipelineInput}`,
         existence: VarExistence.DEFINITELY,
-        allowAnyChild: false,
+        allowAnyChild: true,
       });
     }
 
