@@ -48,8 +48,8 @@ import { uniq } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
-import { basicErrorAnnotation } from "@/components/form/FieldAnnotation";
 import { isNullOrBlank } from "@/utils";
+import { AnnotationType } from "@/types";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -82,7 +82,7 @@ const FieldEditor: React.FC<{
     () =>
       isNullOrBlank(propertyNameError)
         ? []
-        : [basicErrorAnnotation(propertyNameError)],
+        : [{ message: propertyNameError, type: AnnotationType.Error }],
     [propertyNameError]
   );
 
