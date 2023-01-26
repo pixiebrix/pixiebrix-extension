@@ -169,6 +169,12 @@ const FormRendererOptions: React.FC<{
       )}
 
       <SchemaField
+        name={makeName("autoSave")}
+        label="Auto Save"
+        schema={customFormRendererSchema.properties.autoSave as Schema}
+      />
+
+      <SchemaField
         name={makeName("submitCaption")}
         label="Submit Caption"
         schema={customFormRendererSchema.properties.submitCaption as Schema}
