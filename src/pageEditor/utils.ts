@@ -39,6 +39,7 @@ import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RecipeDefinition } from "@/types/definitions";
+import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -100,6 +101,10 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
 
     case TryExcept.BLOCK_ID: {
       return ["try", "except"];
+    }
+
+    case AddQuickBarAction.BLOCK_ID: {
+      return ["action"];
     }
 
     default: {

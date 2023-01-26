@@ -16,6 +16,7 @@ import {
   isKeyStringField,
   isSelectField,
   isDatabaseField,
+  isIconField,
 } from "./fieldTypeCheckers";
 
 type ToggleOptionInputs = {
@@ -162,6 +163,21 @@ export function getToggleOptions({
         typeof fieldSchema.default === "string"
           ? String(fieldSchema.default)
           : null,
+    });
+
+    handleVarOption();
+    handleOptionalValue();
+
+    return options;
+  }
+
+  if (isIconField(fieldSchema)) {
+    pushOptions({
+      label: "Icon",
+      value: "icon",
+      symbol: <OptionIcon icon="select" />,
+      Widget: widgetsRegistry.IconWidget,
+      interpretValue: () => null,
     });
 
     handleVarOption();

@@ -49,6 +49,9 @@ type ArrayOption = InputModeOptionBase<"array"> & {
 type DatabaseOption = InputModeOptionBase<"database"> & {
   interpretValue: (oldValue: unknown) => string | null;
 };
+type IconOption = InputModeOptionBase<"icon"> & {
+  interpretValue: (oldValue: unknown) => UnknownObject;
+};
 type ObjectOption = InputModeOptionBase<"object"> & {
   interpretValue: (oldValue: unknown) => UnknownObject;
 };
@@ -61,6 +64,7 @@ export type InputModeOption =
   | ArrayOption
   | ObjectOption
   | DatabaseOption
+  | IconOption
   | OmitOption;
 
 export type TemplateToggleWidgetProps = SchemaFieldProps & {

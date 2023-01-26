@@ -21,6 +21,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 
 const documentBlockId = validateRegistryId("@pixiebrix/document");
+const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
 
 export function getExampleBlockPipeline(
   type: ExtensionPointType
@@ -28,6 +29,18 @@ export function getExampleBlockPipeline(
   if (type === "actionPanel") {
     const documentBuilderBlock = createNewBlock(documentBlockId);
     return [documentBuilderBlock];
+  }
+
+  if (type === "quickBarProvider") {
+    const quickbarActionBlock = createNewBlock(quickbarActionId);
+    quickbarActionBlock.config = {
+      title: "Example Action",
+      action: {
+        __type__: "pipeline",
+        __value__: [],
+      },
+    };
+    return [quickbarActionBlock];
   }
 
   return [];

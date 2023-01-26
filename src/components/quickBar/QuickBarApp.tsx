@@ -39,6 +39,7 @@ import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
+import useActionGenerators from "@/components/quickBar/useActionGenerators";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -59,11 +60,11 @@ function useActions(): void {
   // https://github.com/timc1/kbar/blob/main/src/useRegisterActions.tsx#L19
   useRegisterActions(quickBarRegistry.currentActions, []);
 
-  // Use the query directly for updating while the page editor is open. The useRegisterActions hook doesn't seem to
-  // work for that 🤷 even if actions are in the dependency list
   const { query } = useKBar();
 
-  // Listen for changes while the kbar is mounted (e.g., the user is making edits in the page editor)
+  // Listen for changes while the kbar is mounted:
+  // - The user is making edits in the Page Editor
+  // - Generators are producing new actions in response to the search query changing
   useEffect(() => {
     const handler = (nextActions: Action[]) => {
       query.registerActions(nextActions);
@@ -101,6 +102,8 @@ const AutoShow: React.FC = () => {
 
 const KBarComponent: React.FC = () => {
   useActions();
+  useActionGenerators();
+
   const { showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
@@ -132,7 +135,11 @@ const KBarComponent: React.FC = () => {
 
 const QuickBarApp: React.FC = () => (
   /* Disable exit animation due to #3724. `enterMs` is required too */
-  <KBarProvider options={{ animations: { enterMs: 300, exitMs: 0 } }}>
+  <KBarProvider
+    options={{
+      animations: { enterMs: 300, exitMs: 0 },
+    }}
+  >
     <AutoShow />
     <KBarComponent />
   </KBarProvider>
@@ -152,6 +159,7 @@ export const initQuickBarApp = once(() => {
   expectContext("contentScript");
 
   const container = document.createElement("div");
+  container.id = "pixiebrix-quickbar-container";
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
 

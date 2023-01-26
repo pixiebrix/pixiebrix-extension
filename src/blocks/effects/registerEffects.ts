@@ -45,8 +45,10 @@ import InsertHtml from "@/blocks/effects/insertHtml";
 import CustomEventEffect from "@/blocks/effects/customEvent";
 import ReplaceTextEffect from "@/blocks/effects/replaceText";
 import HighlightText from "@/blocks/effects/highlightText";
-import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import ScrollIntoViewEffect from "@/blocks/effects/scrollIntoView";
+import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
+import ToggleQuickbarEffect from "@/blocks/effects/ToggleQuickbarEffect";
+import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -85,6 +87,8 @@ function registerEffects(): void {
   registerBlock(new ReplaceTextEffect());
   registerBlock(new HighlightText());
   registerBlock(new ScrollIntoViewEffect());
+  registerBlock(new AddQuickBarAction());
+  registerBlock(new ToggleQuickbarEffect());
   registerBlock(new SubmitPanelEffect());
 }
 
