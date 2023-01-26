@@ -40,8 +40,10 @@ import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 
 type Location = "panel" | "modal" | "popover";
+// Match naming of the sidebar panel extension point
 type RenderTrigger = "manual" | "statechange";
 
 export async function createFrameSource(
@@ -91,10 +93,10 @@ class DisplayTemporaryInfo extends Transformer {
         default: "panel",
         description: "The location of the information (default='panel')",
       },
-      renderTrigger: {
+      refreshTrigger: {
         type: "string",
         enum: ["manual", "statechange"],
-        description: "The trigger for re-rendering the document",
+        description: "An optional trigger for refreshing the document",
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
@@ -106,12 +108,12 @@ class DisplayTemporaryInfo extends Transformer {
       title,
       body: bodyPipeline,
       location = "panel",
-      renderTrigger = "manual",
+      refreshTrigger = "manual",
       isRootAware = false,
     }: BlockArg<{
       title: string;
       location: Location;
-      renderTrigger: RenderTrigger;
+      refreshTrigger: RenderTrigger;
       body: PipelineExpression;
       isRootAware: boolean;
     }>,
@@ -211,7 +213,6 @@ class DisplayTemporaryInfo extends Transformer {
       // Increment branch counter for tracing
       counter += 1;
 
-      // TODO: throttle the re-rendering
       try {
         const payload = (await runRendererPipeline(
           bodyPipeline?.__value__ ?? [],
@@ -223,23 +224,20 @@ class DisplayTemporaryInfo extends Transformer {
           target
         )) as PanelPayload;
 
-        console.debug("Re-rendering temporary panel", { nonce, payload });
-
-        updatePanelDefinition({
+        const newEntry = {
+          extensionId,
           nonce,
           heading: title,
-          extensionId,
-          payload,
-        });
+          // Force a re-render by changing the key
+          payload: { ...payload, key: uuidv4() },
+        };
+
+        updatePanelDefinition(newEntry);
 
         if (location === "panel") {
-          updateTemporarySidebarPanel({
-            extensionId,
-            nonce,
-            heading: title,
-            // Force a re-render by changing the key
-            payload: { ...payload, key: uuidv4() },
-          });
+          updateTemporarySidebarPanel(newEntry);
+        } else {
+          updateTemporaryOverlayPanel(newEntry);
         }
       } catch (error) {
         // XXX: in the future, we may want to updatePanelDefinition with the error
@@ -247,7 +245,7 @@ class DisplayTemporaryInfo extends Transformer {
       }
     };
 
-    if (renderTrigger === "statechange") {
+    if (refreshTrigger === "statechange") {
       $(document).on("statechange", rerender);
     }
 

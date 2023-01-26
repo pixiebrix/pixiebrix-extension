@@ -20,6 +20,12 @@ import { getPanelDefinition } from "@/contentScript/messenger/api";
 import { type UUID } from "@/core";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { type Target } from "@/types";
+import { useEffect } from "react";
+import {
+  addListener,
+  type PanelListener,
+  removeListener,
+} from "@/blocks/transformers/temporaryInfo/receiverProtocol";
 
 type PanelDefinition = {
   /**
@@ -45,10 +51,29 @@ function useTemporaryPanelDefinition(
   target: Target,
   nonce: UUID
 ): PanelDefinition {
-  const [entry, isLoading, error] = useAsyncState(
+  const [entry, isLoading, error, recalculate] = useAsyncState(
     async () => getPanelDefinition(target, nonce),
     [nonce]
   );
+
+  useEffect(() => {
+    const listener: PanelListener = {
+      onUpdateTemporaryPanel(newEntry) {
+        // Need to verify we're the panel of interest, because messenger broadcasts to all ephemeral panels
+        if (newEntry.nonce === nonce) {
+          // Slight inefficient to getPanelDefinition since the entry is available in the message. However, this
+          // is the cleaner use of useAsyncState
+          void recalculate();
+        }
+      },
+    };
+
+    addListener(listener);
+
+    return () => {
+      removeListener(listener);
+    };
+  }, [nonce, recalculate]);
 
   return {
     entry,
