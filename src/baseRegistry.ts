@@ -90,12 +90,6 @@ export class Registry<
   }
 
   private notifyAll() {
-    console.debug(
-      "Notifying %d registry cache listener(s) for %s",
-      this.listeners.length,
-      [...this.kinds].join(", ")
-    );
-
     for (const listener of this.listeners) {
       listener.onCacheChanged();
     }
