@@ -55,6 +55,9 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
     onActivatePanel(options: ActivatePanelOptions) {
       dispatch(sidebarSlice.actions.activatePanel(options));
     },
+    onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
+      dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
+    },
     onShowTemporaryPanel(panel: TemporaryPanelEntry) {
       dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
     },

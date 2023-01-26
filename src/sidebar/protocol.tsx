@@ -35,6 +35,15 @@ export type SidebarListener = {
   onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
   onActivatePanel: (options: ActivatePanelOptions) => void;
+  /**
+   * Update an existing temporary panel, or NOP if the panel nonce doesn't exist.
+   * @param panel the updated panel entry
+   */
+  onUpdateTemporaryPanel: (panel: TemporaryPanelEntry) => void;
+  /**
+   * Show a panel, and cancel any existing temporary panel for the same extension.
+   * @param panel the new panel entry
+   */
   onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
 };
@@ -126,6 +135,13 @@ export async function showTemporaryPanel(
   entry: TemporaryPanelEntry
 ) {
   runListeners("onShowTemporaryPanel", sequence, entry);
+}
+
+export async function updateTemporaryPanel(
+  sequence: number,
+  entry: TemporaryPanelEntry
+) {
+  runListeners("onUpdateTemporaryPanel", sequence, entry);
 }
 
 export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
