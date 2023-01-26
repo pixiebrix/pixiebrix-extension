@@ -31,6 +31,7 @@ import { validateUUID } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
+import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
 
 type Mode = "modal" | "popover";
 
@@ -75,7 +76,7 @@ const EphemeralPanel: React.FC = () => {
 
   useEffect(() => {
     document.dispatchEvent(
-      new CustomEvent("@@pixiebrix/PANEL_MOUNTED", { detail: nonce })
+      new CustomEvent(PANEL_MOUNTED_EVENT_TYPE, { detail: nonce })
     );
   }, [nonce]);
 

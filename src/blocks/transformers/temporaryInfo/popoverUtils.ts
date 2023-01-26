@@ -1,6 +1,7 @@
 import { createPopper } from "@popperjs/core";
 import { iframeResizer } from "iframe-resizer";
 import { trimEnd } from "lodash";
+import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
 
 /**
  * Attaches a tooltip container to the DOM.
@@ -75,7 +76,7 @@ export function showPopover(
     }
   };
 
-  document.addEventListener("@@pixiebrix/PANEL_MOUNTED", mountListener);
+  document.addEventListener(PANEL_MOUNTED_EVENT_TYPE, mountListener);
 
   const outsideClickListener = (event: JQuery.TriggeredEvent) => {
     if ($(event.target).closest(tooltip).length === 0) {
