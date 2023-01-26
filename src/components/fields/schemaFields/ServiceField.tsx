@@ -54,6 +54,7 @@ import {
 } from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 import { AnnotationType } from "@/types";
+import { FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -181,9 +182,13 @@ const ServiceField: React.FunctionComponent<
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, { touched, error }, helpers] =
     useField<Expression<ServiceKeyVar>>(props);
-  const annotations = isNullOrBlank(error)
-    ? []
-    : [{ message: error, type: AnnotationType.Error }];
+  const annotations = useMemo<FieldAnnotation[]>(
+    () =>
+      isNullOrBlank(error)
+        ? []
+        : [{ message: error, type: AnnotationType.Error }],
+    [error]
+  );
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
