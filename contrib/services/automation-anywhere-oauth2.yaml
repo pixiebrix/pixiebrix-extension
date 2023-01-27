@@ -11,7 +11,7 @@ inputSchema:
   properties:
     authConfigOrigin:
       type: string
-      description: "The AuthConfigApp origin"
+      description: "The AuthConfig App origin"
       format: uri
       default: "https://oauthconfigapp.automationanywhere.digital"
     clientId:
@@ -27,10 +27,10 @@ inputSchema:
 authentication:
   baseURL: "{{{ controlRoomUrl }}}"
   oauth2:
-    authorizeUrl: "{{{ authConfigOrigin }}}/client/oauth/authorize?hosturl={{{ controlRoomUrl }}}&audience=https://controlroom"
-    tokenUrl: "{{{ authConfigOrigin }}}/client/oauth/token"
+    authorizeUrl: "{{#authConfigOrigin}}{{{.}}}{{/authConfigOrigin}}{{^authConfigOrigin}}https://oauthconfigapp.automationanywhere.digital{{/authConfigOrigin}}/client/oauth/authorize?hosturl={{{ controlRoomUrl }}}&audience=https://controlroom"
+    tokenUrl: "{{#authConfigOrigin}}{{{.}}}{{/authConfigOrigin}}{{^authConfigOrigin}}https://oauthconfigapp.automationanywhere.digital{{/authConfigOrigin}}/client/oauth/token"
     code_challenge_method: S256
     scope: "openid userprofile offline_access"
-    client_id: "{{{ clientId }}}"
+    client_id: "{{#clientId}}{{{.}}}{{/clientId}}{{^clientId}}g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM{{/clientId}}"
   headers:
     Authorization: "Bearer {{{ access_token }}}"
