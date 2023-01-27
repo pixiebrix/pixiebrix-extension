@@ -21,7 +21,7 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import styles from "./TagSearchInput.module.scss";
 import { useDebouncedCallback } from "use-debounce";
-import useAutoFocus from "@/hooks/useAutoFocus";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
 const TagBadge: React.VFC<{
   tag: string;
@@ -52,7 +52,7 @@ const TagSearchInput: React.VFC<{
   className,
 }) => {
   const inputRef = useRef<HTMLInputElement>();
-  useAutoFocus({ elementRef: inputRef, focus: focusInput });
+  useAutoFocusConfiguration({ elementRef: inputRef, focus: focusInput });
 
   const [internalValue, setInternalValue] = useState(value);
   const handleChangeDebounced = useDebouncedCallback(onValueChange, 150);

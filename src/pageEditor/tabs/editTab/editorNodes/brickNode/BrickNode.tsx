@@ -16,7 +16,7 @@
  */
 
 import React, { useRef } from "react";
-import useAutoFocus from "@/hooks/useAutoFocus";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
 import MoveBrickControl from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
@@ -50,7 +50,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
 
-  useAutoFocus({ elementRef: nodeRef, focus: active });
+  useAutoFocusConfiguration({ elementRef: nodeRef, focus: active });
 
   return (
     <>

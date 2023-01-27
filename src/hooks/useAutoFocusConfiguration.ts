@@ -34,17 +34,17 @@ const semiSyncTimeout = (
   };
 };
 
-type AutoFocusInputs = {
+type AutoFocusConfiguration = {
   elementRef: React.MutableRefObject<HTMLElement>;
   focus?: boolean;
   delayMillis?: number;
 };
 
-export default function useAutoFocus({
+export default function useAutoFocusConfiguration({
   elementRef,
   focus,
   delayMillis = 0,
-}: AutoFocusInputs) {
+}: AutoFocusConfiguration) {
   useEffect(() => {
     if (!focus) {
       return;

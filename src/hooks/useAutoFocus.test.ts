@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@testing-library/react-hooks";
-import useAutoFocus from "./useAutoFocus";
+import useAutoFocusConfiguration from "./useAutoFocusConfiguration";
 
 jest.useFakeTimers();
 
@@ -24,7 +24,7 @@ describe("useAutoFocus", () => {
   test("basic usage", async () => {
     const ref = { current: { focus: jest.fn() } };
     renderHook(() => {
-      useAutoFocus({ elementRef: ref as any, focus: true });
+      useAutoFocusConfiguration({ elementRef: ref as any, focus: true });
     });
 
     expect(ref.current.focus).toHaveBeenCalledOnce();
@@ -33,7 +33,7 @@ describe("useAutoFocus", () => {
   test("basic usage, disabled", async () => {
     const ref = { current: { focus: jest.fn() } };
     renderHook(() => {
-      useAutoFocus({ elementRef: ref as any, focus: false });
+      useAutoFocusConfiguration({ elementRef: ref as any, focus: false });
     });
 
     expect(ref.current.focus).not.toHaveBeenCalled();
@@ -42,7 +42,11 @@ describe("useAutoFocus", () => {
   test("timer usage", async () => {
     const ref = { current: { focus: jest.fn() } };
     renderHook(() => {
-      useAutoFocus({ elementRef: ref as any, focus: true, delayMillis: 100 });
+      useAutoFocusConfiguration({
+        elementRef: ref as any,
+        focus: true,
+        delayMillis: 100,
+      });
     });
 
     expect(ref.current.focus).not.toHaveBeenCalled();
