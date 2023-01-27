@@ -67,6 +67,10 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     useFormErrorSettings();
   const formik = useFormikContext<FormState>();
 
+  // TODO: We can probably split this into two hooks, one for analysis and one for formik,
+  //  and then it might be possible to decouple the analysis one from formik. Need to
+  //  investigate if that causes re-rendering issues in the page editor config panel.
+
   if (shouldUseAnalysis) {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
     const analysisAnnotations = useSelector(
