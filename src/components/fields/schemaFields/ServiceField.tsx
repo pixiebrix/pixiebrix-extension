@@ -54,7 +54,7 @@ import {
 } from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 import { AnnotationType } from "@/types";
-import { FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
