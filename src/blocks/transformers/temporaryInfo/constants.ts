@@ -15,22 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./ephemeralModal.scss";
-
-import "@/extensionContext";
-
-import React from "react";
-import { render } from "react-dom";
-import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import "iframe-resizer/js/iframeResizer.contentWindow";
-
-function init(): void {
-  render(<EphemeralPanel />, document.querySelector("#container"));
-}
-
-registerContribBlocks();
-registerBuiltinBlocks();
-init();
+export const PANEL_MOUNTED_EVENT_TYPE = "@@pixiebrix/PANEL_MOUNTED";

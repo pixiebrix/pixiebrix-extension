@@ -34,7 +34,10 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
-import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import {
+  cancelTemporaryPanelsForExtension,
+  waitForTemporaryPanel,
+} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
@@ -65,6 +68,7 @@ jest.mock("@/contentScript/sidebarController", () => ({
 jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
   waitForTemporaryPanel: jest.fn(),
   stopWaitingForTemporaryPanels: jest.fn(),
+  cancelTemporaryPanelsForExtension: jest.fn(),
 }));
 
 const showTemporarySidebarPanelMock =
@@ -75,6 +79,10 @@ const showModalMock = showModal as jest.MockedFunction<typeof showModal>;
 const waitForTemporaryPanelMock = waitForTemporaryPanel as jest.MockedFunction<
   typeof waitForTemporaryPanel
 >;
+const cancelTemporaryPanelsForExtensionMock =
+  cancelTemporaryPanelsForExtension as jest.MockedFunction<
+    typeof cancelTemporaryPanelsForExtension
+  >;
 
 describe("DisplayTemporaryInfo", () => {
   const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
@@ -91,6 +99,11 @@ describe("DisplayTemporaryInfo", () => {
 
     showTemporarySidebarPanelMock.mockReset();
     showModalMock.mockReset();
+    cancelTemporaryPanelsForExtensionMock.mockReset();
+  });
+
+  test("isRootAware", async () => {
+    await expect(displayTemporaryInfoBlock.isRootAware()).resolves.toBe(true);
   });
 
   test("it returns payload", async () => {
@@ -182,5 +195,66 @@ describe("DisplayTemporaryInfo", () => {
         payload: expect.toBeObject(),
       })
     );
+  });
+
+  test("requires target for popover", async () => {
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "popover",
+        isRootAware: true,
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    await expect(
+      reducePipeline(pipeline, simpleInput({}), options)
+    ).rejects.toThrow("Target must be an element for popover");
+  });
+
+  test("it registers a popover panel", async () => {
+    document.body.innerHTML = '<div><div id="target"></div></div>';
+
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        isRootAware: true,
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "popover",
+      },
+    };
+
+    const extensionId = uuidv4();
+    const root = document.querySelector<HTMLElement>("#target");
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    await reducePipeline(pipeline, { ...simpleInput({}), root }, options);
+
+    expect(showModalMock).not.toHaveBeenCalled();
+    expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
+    expect(cancelTemporaryPanelsForExtensionMock).toHaveBeenCalled();
+
+    expect(
+      document.body.querySelector("#pb-tooltips-container")
+    ).not.toBeNull();
   });
 });
