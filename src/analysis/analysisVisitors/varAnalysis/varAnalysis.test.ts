@@ -670,7 +670,7 @@ describe("Collecting available vars", () => {
       await analysis.run(extension);
     });
 
-    test("adds for-each output after the brick", async () => {
+    test("adds for-each output after the brick", () => {
       expect(
         analysis
           .getKnownVars()
@@ -682,19 +682,16 @@ describe("Collecting available vars", () => {
     test.each([
       "extension.blockPipeline.0.config.body.__value__.0",
       "extension.blockPipeline.0.config.body.__value__.1",
-    ])(
-      "doesn't add for-each output to sub pipelines (%s)",
-      async (blockPath) => {
-        expect(
-          analysis
-            .getKnownVars()
-            .get(blockPath)
-            .isVariableDefined("@forEachOutput")
-        ).toBeFalse();
-      }
-    );
+    ])("doesn't add for-each output to sub pipelines (%s)", (blockPath) => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get(blockPath)
+          .isVariableDefined("@forEachOutput")
+      ).toBeFalse();
+    });
 
-    test("doesn't leak sub pipeline outputs", async () => {
+    test("doesn't leak sub pipeline outputs", () => {
       expect(
         analysis
           .getKnownVars()
@@ -703,7 +700,7 @@ describe("Collecting available vars", () => {
       ).toBeFalse();
     });
 
-    test("adds the element key to the sub pipeline", async () => {
+    test("adds the element key to the sub pipeline", () => {
       expect(
         analysis
           .getKnownVars()
@@ -712,13 +709,29 @@ describe("Collecting available vars", () => {
       ).toBeTrue();
     });
 
-    test("doesn't leak the sub pipeline element key", async () => {
+    test("doesn't leak the sub pipeline element key", () => {
       expect(
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
           .isVariableDefined("@element")
       ).toBeFalse();
+    });
+
+    test.each([
+      "extension.blockPipeline.0.config.body.__value__.0",
+      "extension.blockPipeline.0.config.body.__value__.1",
+    ])("source of the @element key if the For-Each block (%s)", (blockPath) => {
+      const blockVars = analysis.getKnownVars().get(blockPath).getMap();
+
+      const expectedForEachBlockPath = "extension.blockPipeline.0";
+
+      // Find the source that provided the @element variable
+      const actualForEachBlockPath = Object.entries(blockVars).find(
+        ([, node]) => "@element" in node
+      )[0];
+
+      expect(actualForEachBlockPath).toBe(expectedForEachBlockPath);
     });
   });
 });
