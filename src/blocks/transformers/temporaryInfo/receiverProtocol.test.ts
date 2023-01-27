@@ -17,7 +17,7 @@
 
 import {
   addListener,
-  PanelListener,
+  type PanelListener,
   removeListener,
   updateTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/receiverProtocol";
