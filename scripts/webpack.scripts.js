@@ -33,6 +33,7 @@ module.exports = mergeWithShared({
     // Exclude some troublesome/unnecessary dependencies
     "webextension-polyfill": "{}",
     rollbar: "{init(){}}",
+    "@/vendors/hoverintent/hoverintent": "{}",
   },
   resolve: {
     // Mock any modules that appear in __mocks__

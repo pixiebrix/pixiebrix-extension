@@ -126,6 +126,7 @@ export function getExampleBlockConfig(
       title: "Example Info",
       location: "panel",
       body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
+      isRootAware: true,
     };
   }
 }

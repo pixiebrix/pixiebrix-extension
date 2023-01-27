@@ -113,6 +113,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     : "";
 
   const options = getMenuOptions(knownVars, trace?.templateContext);
+  const blocksInfo = Object.values(pipelineMap);
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
@@ -121,7 +122,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
           <SourceLabel
             source={source}
             extensionPointLabel={extensionPointLabel}
-            blocksInfo={Object.values(pipelineMap)}
+            blocksInfo={blocksInfo}
             allBlocks={allBlocks}
           />
           <VariablesTree vars={vars} onVarSelect={onVarSelect} />
