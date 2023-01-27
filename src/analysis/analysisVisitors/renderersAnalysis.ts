@@ -16,13 +16,13 @@
  */
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { AnnotationType } from "@/analysis/analysisTypes";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import {
   nestedPosition,
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { AnnotationType } from "@/types";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more other renderers configured for this extension.";

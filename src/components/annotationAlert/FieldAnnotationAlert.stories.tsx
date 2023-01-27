@@ -15,24 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext, useContext } from "react";
+import React from "react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import FieldAnnotationAlert from "./FieldAnnotationAlert";
+import { AnnotationType } from "@/types";
 
-type FormErrorContextProps = {
-  shouldUseAnalysis: boolean;
-  showUntouchedErrors: boolean;
-  showFieldActions: boolean;
+export default {
+  title: "Common/FieldAnnotationAlert",
+  component: FieldAnnotationAlert,
+} as ComponentMeta<typeof FieldAnnotationAlert>;
+
+export const Default: ComponentStory<typeof FieldAnnotationAlert> = (args) => (
+  <FieldAnnotationAlert {...args} />
+);
+Default.args = {
+  message: "This is an error message",
+  type: AnnotationType.Error,
 };
-
-const defaultValue: FormErrorContextProps = {
-  shouldUseAnalysis: false,
-  showUntouchedErrors: false,
-  showFieldActions: false,
-};
-
-export const FormErrorContext =
-  createContext<FormErrorContextProps>(defaultValue);
-
-export function useFormErrorSettings(): FormErrorContextProps {
-  const errorContext = useContext(FormErrorContext);
-  return errorContext ?? defaultValue;
-}

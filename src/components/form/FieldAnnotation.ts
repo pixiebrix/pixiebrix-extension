@@ -15,20 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import AnnotationAlert from "./AnnotationAlert";
-import { AnnotationType } from "@/analysis/analysisTypes";
+import { type BaseAnnotation } from "@/types";
 
-export default {
-  title: "Common/AnnotationAlert",
-  component: AnnotationAlert,
-} as ComponentMeta<typeof AnnotationAlert>;
+export type FieldAnnotationAction = {
+  caption: string;
+  action: () => Promise<void>;
+};
 
-export const Default: ComponentStory<typeof AnnotationAlert> = (args) => (
-  <AnnotationAlert {...args} />
-);
-Default.args = {
-  message: "This is an error message",
-  type: AnnotationType.Error,
+export type FieldAnnotation = BaseAnnotation & {
+  actions?: FieldAnnotationAction[];
 };

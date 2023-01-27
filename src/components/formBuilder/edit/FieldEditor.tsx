@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React, { type ChangeEvent, useEffect, useState } from "react";
+import React, { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import {
   type RJSFSchema,
@@ -48,6 +48,8 @@ import { uniq } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
+import { isNullOrBlank } from "@/utils";
+import { AnnotationType } from "@/types";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -75,6 +77,14 @@ const FieldEditor: React.FC<{
     setInternalPropertyName(propertyName);
     setPropertyNameError(null);
   }, [propertyName, schema]);
+
+  const propertyNameAnnotations = useMemo(
+    () =>
+      isNullOrBlank(propertyNameError)
+        ? []
+        : [{ message: propertyNameError, type: AnnotationType.Error }],
+    [propertyNameError]
+  );
 
   const validatePropertyName = (nextName: string) => {
     const error = validateNextPropertyName(schema, propertyName, nextName);
@@ -244,7 +254,7 @@ const FieldEditor: React.FC<{
         onChange={onPropertyNameChange}
         onBlur={updatePropertyName}
         touched
-        error={propertyNameError}
+        annotations={propertyNameAnnotations}
         description="Enter a name to refer to this value in the output later"
       />
       <SchemaField {...labelFieldProps} />

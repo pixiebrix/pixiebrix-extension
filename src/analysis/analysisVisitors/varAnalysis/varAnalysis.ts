@@ -29,8 +29,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import {
   type Analysis,
-  type Annotation,
-  AnnotationType,
+  type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
@@ -38,6 +37,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/recipes/registry";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import { AnnotationType } from "@/types";
 
 const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -238,14 +238,14 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private currentBlockKnownVars: VarMap;
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
-  protected readonly annotations: Annotation[] = [];
+  protected readonly annotations: AnalysisAnnotation[] = [];
   private allBlocks: TypedBlockMap;
 
   get id() {
     return "var";
   }
 
-  getAnnotations(): Annotation[] {
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 

@@ -457,23 +457,6 @@ exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
 </div>
 `;
 
-exports[`Storyshots Common/AnnotationAlert Default 1`] = `
-<div
-  className="root error"
->
-  <test-file-stub
-    className="icon"
-  />
-  <div
-    className="message"
-  >
-    <span>
-      This is an error message
-    </span>
-  </div>
-</div>
-`;
-
 exports[`Storyshots Common/AsyncButton Info 1`] = `
 <button
   className="btn btn-info btn-lg"
@@ -494,6 +477,27 @@ exports[`Storyshots Common/AsyncButton Primary 1`] = `
 >
   Primary
 </button>
+`;
+
+exports[`Storyshots Common/FieldAnnotationAlert Default 1`] = `
+<div
+  className="root error"
+>
+  <div
+    className="alert"
+  >
+    <test-file-stub
+      className="icon"
+    />
+    <div
+      className="message"
+    >
+      <span>
+        This is an error message
+      </span>
+    </div>
+  </div>
+</div>
 `;
 
 exports[`Storyshots Common/LinkButton Link 1`] = `

@@ -101,6 +101,11 @@ type FormProps = {
    * Should we show errors on fields that are not marked touched yet?
    */
   showUntouchedErrors?: boolean;
+
+  /**
+   * Should we show actions for errors and warnings?
+   */
+  showFieldActions?: boolean;
 };
 
 const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
@@ -128,11 +133,13 @@ const Form: React.FC<FormProps> = ({
   validationSchema,
   enableAnalysisFieldErrors,
   showUntouchedErrors,
+  showFieldActions,
 }) => (
   <FormErrorContext.Provider
     value={{
       shouldUseAnalysis: enableAnalysisFieldErrors,
       showUntouchedErrors,
+      showFieldActions,
     }}
   >
     <Formik

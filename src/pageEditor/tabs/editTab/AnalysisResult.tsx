@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AnnotationAlert from "@/components/annotationAlert/AnnotationAlert";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import {
   selectActiveNodeInfo,
   selectAnnotationsForPath,
@@ -35,7 +35,7 @@ const AnalysisResult: React.FunctionComponent = () => {
     <Row className="mb-3">
       <Col>
         {annotations.map(({ message, type }, index) => (
-          <AnnotationAlert
+          <FieldAnnotationAlert
             key={`${message}-${index}`}
             message={message}
             type={type}

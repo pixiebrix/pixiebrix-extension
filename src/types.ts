@@ -191,3 +191,20 @@ export type Target = {
   tabId: number;
   frameId: number;
 };
+
+export enum AnnotationType {
+  Error = "error",
+  Warning = "warning",
+  Info = "info",
+}
+
+export type BaseAnnotation = {
+  /**
+   * A user-readable message for the annotation
+   */
+  message: string;
+  /**
+   * The type of annotation
+   */
+  type: AnnotationType;
+};

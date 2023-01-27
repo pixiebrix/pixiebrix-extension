@@ -33,7 +33,7 @@ import { joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray } from "lodash";
-import { type Annotation } from "@/analysis/analysisTypes";
+import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
@@ -190,8 +190,8 @@ export function getDocumentPipelinePaths(block: BlockConfig): string[] {
 }
 
 export function getFoundationNodeAnnotations(
-  annotations: Annotation[]
-): Annotation[] {
+  annotations: AnalysisAnnotation[]
+): AnalysisAnnotation[] {
   return annotations.filter(
     (annotation) =>
       !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
@@ -200,8 +200,8 @@ export function getFoundationNodeAnnotations(
 
 export function getBlockAnnotations(
   blockPath: string,
-  annotations: Annotation[]
-): Annotation[] {
+  annotations: AnalysisAnnotation[]
+): AnalysisAnnotation[] {
   const pathLength = blockPath.length;
 
   const relatedAnnotations = annotations.filter((annotation) =>
