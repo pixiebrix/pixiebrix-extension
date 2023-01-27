@@ -9,6 +9,15 @@ inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
   properties:
+    authConfigOrigin:
+      type: string
+      description: "The AuthConfigApp origin"
+      format: uri
+      default: "https://oauthconfigapp.automationanywhere.digital"
+    clientId:
+      type: string
+      description: "The client ID"
+      default: "g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM"
     controlRoomUrl:
       type: string
       description: "The Control Room URL, including https://"
@@ -18,10 +27,10 @@ inputSchema:
 authentication:
   baseURL: "{{{ controlRoomUrl }}}"
   oauth2:
-    authorizeUrl: "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl={{{ controlRoomUrl }}}&audience=https://controlroom"
-    tokenUrl: "https://oauthconfigapp.automationanywhere.digital/client/oauth/token"
+    authorizeUrl: "{{{ authConfigOrigin }}}/client/oauth/authorize?hosturl={{{ controlRoomUrl }}}&audience=https://controlroom"
+    tokenUrl: "{{{ authConfigOrigin }}}/client/oauth/token"
     code_challenge_method: S256
     scope: "openid userprofile offline_access"
-    client_id: "g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM"
+    client_id: "{{{ clientId }}}"
   headers:
     Authorization: "Bearer {{{ access_token }}}"
