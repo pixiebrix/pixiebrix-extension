@@ -192,7 +192,7 @@ function ActualModal<T extends IBrick>({
   const brickResultSizePx = 87;
 
   // Auto-focus search input upon opening Modal
-  useAutoFocus(searchInput);
+  useAutoFocus({ elementRef: searchInput, focus: true });
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 

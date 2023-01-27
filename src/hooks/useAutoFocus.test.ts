@@ -24,7 +24,7 @@ describe("useAutoFocus", () => {
   test("basic usage", async () => {
     const ref = { current: { focus: jest.fn() } };
     renderHook(() => {
-      useAutoFocus(ref as any);
+      useAutoFocus({ elementRef: ref as any, focus: true });
     });
 
     expect(ref.current.focus).toHaveBeenCalledOnce();
@@ -33,7 +33,7 @@ describe("useAutoFocus", () => {
   test("basic usage, disabled", async () => {
     const ref = { current: { focus: jest.fn() } };
     renderHook(() => {
-      useAutoFocus(ref as any, false);
+      useAutoFocus({ elementRef: ref as any, focus: false });
     });
 
     expect(ref.current.focus).not.toHaveBeenCalled();
@@ -42,7 +42,7 @@ describe("useAutoFocus", () => {
   test("timer usage", async () => {
     const ref = { current: { focus: jest.fn() } };
     renderHook(() => {
-      useAutoFocus(ref as any, true, 100);
+      useAutoFocus({ elementRef: ref as any, focus: true, delayMillis: 100 });
     });
 
     expect(ref.current.focus).not.toHaveBeenCalled();

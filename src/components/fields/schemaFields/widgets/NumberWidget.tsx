@@ -58,7 +58,7 @@ const NumberWidget: React.VFC<
 
   const inputRef = useRef<HTMLInputElement>();
 
-  useAutoFocus(inputRef, focusInput);
+  useAutoFocus({ elementRef: inputRef, focus: focusInput });
 
   useEffect(() => {
     // Sync the ref values

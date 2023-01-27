@@ -52,7 +52,7 @@ const TagSearchInput: React.VFC<{
   className,
 }) => {
   const inputRef = useRef<HTMLInputElement>();
-  useAutoFocus(inputRef, focusInput);
+  useAutoFocus({ elementRef: inputRef, focus: focusInput });
 
   const [internalValue, setInternalValue] = useState(value);
   const handleChangeDebounced = useDebouncedCallback(onValueChange, 150);

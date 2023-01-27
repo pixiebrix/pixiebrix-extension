@@ -50,7 +50,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
 
-  useAutoFocus(nodeRef, active);
+  useAutoFocus({ elementRef: nodeRef, focus: active });
 
   return (
     <>

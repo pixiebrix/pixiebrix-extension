@@ -46,7 +46,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   const [show, setShow] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>();
-  useAutoFocus(inputRef, focusInput);
+  useAutoFocus({ elementRef: inputRef, focus: focusInput });
 
   useEffect(() => {
     // Sync the ref values
