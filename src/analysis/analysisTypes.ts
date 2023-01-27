@@ -26,11 +26,11 @@ export enum AnalysisAnnotationActionType {
 }
 
 export type AnalysisAnnotationAction = {
-  annotationActionId: UUID;
   caption: string;
   type: AnalysisAnnotationActionType;
   path: string;
   value?: unknown;
+  extraCallback?: () => Promise<void>;
 };
 
 export type AnalysisAnnotation = BaseAnnotation & {

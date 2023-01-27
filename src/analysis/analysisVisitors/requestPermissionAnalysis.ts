@@ -27,7 +27,6 @@ import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
-import { createAnalysisAnnotationAction } from "@/analysis/analysisAnnotationActions";
 import { requestPermissions } from "@/utils/permissions";
 
 /**
@@ -117,19 +116,17 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
               analysisId: this.id,
               type: AnnotationType.Error,
               actions: [
-                createAnalysisAnnotationAction(
-                  {
-                    caption: "Add Extra Permission",
-                    type: AnalysisAnnotationActionType.AddValueToArray,
-                    path: "permissions.origins",
-                    value: permissionsValue,
-                  },
-                  async () => {
+                {
+                  caption: "Add Extra Permission",
+                  type: AnalysisAnnotationActionType.AddValueToArray,
+                  path: "permissions.origins",
+                  value: permissionsValue,
+                  async extraCallback() {
                     await requestPermissions({
                       origins: [permissionsValue],
                     });
-                  }
-                ),
+                  },
+                },
               ],
             });
           }

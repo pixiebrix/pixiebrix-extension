@@ -32,15 +32,12 @@ import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { isNullOrBlank } from "@/utils";
-import { getCallbackForAnalysisAction } from "@/analysis/analysisAnnotationActions";
 import { AnnotationType } from "@/types";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
   formik: FormikContextType<FormState>
 ): FieldAnnotationAction {
-  const callback = getCallbackForAnalysisAction(action.annotationActionId);
-
   return {
     caption: action.caption,
     async action() {
@@ -52,7 +49,7 @@ function makeFieldActionForAnnotationAction(
         }
       });
 
-      await callback?.();
+      await action.extraCallback?.();
 
       // Order here matters at the moment. The first implemented action needs
       // to request browser permissions in the callback before setting form
