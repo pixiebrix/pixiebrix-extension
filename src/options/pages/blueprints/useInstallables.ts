@@ -86,7 +86,8 @@ function useInstallables(): InstallablesState {
 
   const extensionsWithoutRecipe = useMemo(
     () =>
-      resolvedExtensions.filter((extension) =>
+      // Can be undefined if resolveDefinitions errors above
+      (resolvedExtensions ?? []).filter((extension) =>
         extension._recipe?.id
           ? !installedRecipeIds.has(extension._recipe?.id)
           : true

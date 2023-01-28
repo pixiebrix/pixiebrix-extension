@@ -22,7 +22,7 @@ import {
   isWebPage,
 } from "webext-detect-page";
 
-export function isBrowserSidebar(): boolean {
+function isBrowserSidebar(): boolean {
   return isExtensionContext() && location.pathname === "/sidebar.html";
 }
 

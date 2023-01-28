@@ -21,7 +21,6 @@ import {
 } from "@/runtime/reducePipeline";
 import {
   type IBlock,
-  type IExtension,
   type IExtensionPoint,
   type ReaderOutput,
   type ReaderRoot,
@@ -38,15 +37,7 @@ import {
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
-import {
-  castArray,
-  cloneDeep,
-  compact,
-  debounce,
-  isEmpty,
-  noop,
-  stubTrue,
-} from "lodash";
+import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
@@ -70,6 +61,7 @@ import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
+import "@/vendors/hoverintent/hoverintent";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -108,6 +100,8 @@ export type Trigger =
   | "click"
   | "dblclick"
   | "mouseover"
+  // https://ux.stackexchange.com/questions/109288/how-long-in-milliseconds-is-long-enough-to-decide-a-user-is-actually-hovering
+  | "hover"
   | "keydown"
   | "keyup"
   | "keypress"
@@ -128,11 +122,12 @@ export type Trigger =
  * @see ReportMode
  * @see getDefaultReportModeForTrigger
  */
-export const USER_ACTION_TRIGGERS: Trigger[] = [
+const USER_ACTION_TRIGGERS: Trigger[] = [
   "click",
   "dblclick",
   "blur",
   "mouseover",
+  "hover",
 ];
 
 type IntervalArgs = {
@@ -217,6 +212,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get customTriggerOptions(): CustomEventOptions;
 
   abstract get triggerSelector(): string | null;
+
+  /**
+   * Map from extension ID to elements a trigger is currently running on.
+   * @private
+   */
+  private readonly runningExtensionElements = new Map<
+    UUID,
+    WeakSet<Document | HTMLElement>
+  >();
 
   /**
    * Installed DOM event listeners, e.g., `click`
@@ -409,6 +413,21 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   };
 
   /**
+   * Mark a run as in-progress for an extension. Used to enforce synchronous execution of an
+   * extension on a particular element.
+   * @param extensionId the UUID of the extension
+   * @param element the element the extension is running against
+   * @private
+   */
+  private markRun(extensionId: UUID, element: Document | HTMLElement): void {
+    if (this.runningExtensionElements.has(extensionId)) {
+      this.runningExtensionElements.get(extensionId).add(element);
+    } else {
+      this.runningExtensionElements.set(extensionId, new Set([element]));
+    }
+  }
+
+  /**
    * Run all extensions for a given root (i.e., handle the trigger firing).
    *
    * DO NOT CALL DIRECTLY: should only be called from runTriggersAndNotify
@@ -421,15 +440,19 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     {
       nativeEvent,
-      shouldRunExtension = stubTrue,
     }: {
       nativeEvent: Event | null;
-      shouldRunExtension?: (extension: IExtension) => boolean;
     }
   ): Promise<unknown[]> {
-    const extensionsToRun = this.extensions.filter((extension) =>
-      shouldRunExtension(extension)
-    );
+    let extensionsToRun = this.extensions;
+
+    if (this.trigger === "hover") {
+      // Enforce synchronous behavior for `hover` event
+      extensionsToRun = extensionsToRun.filter(
+        (extension) =>
+          !this.runningExtensionElements.get(extension.id)?.has(root)
+      );
+    }
 
     // Don't bother running the reader if no extensions match
     if (extensionsToRun.length === 0) {
@@ -450,6 +473,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           selectExtensionContext(extension)
         );
         try {
+          this.markRun(extension.id, root);
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
           if (this.shouldReportError(extension.id)) {
@@ -457,6 +481,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           }
 
           return error;
+        } finally {
+          // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
+          // the `delete` could be called while another extension run is still in progress
+          this.runningExtensionElements.get(extension.id).delete(root);
+          console.debug("Cleaning up runningExtensionElements", extension.id, {
+            root,
+          });
         }
 
         if (this.shouldReportEvent(extension.id)) {
@@ -683,11 +714,23 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       "Removing existing %s handler for extension point",
       this.trigger
     );
-    $elements.off(domTrigger, this.eventHandler);
 
-    // Install the DOM trigger
-    $elements.on(domTrigger, this.eventHandler);
+    if (domTrigger === "hover") {
+      // `hoverIntent` JQuery plugin has custom event names
+      $elements.off("mouseenter.hoverIntent");
+      $elements.off("mouseleave.hoverIntent");
+      $elements.hoverIntent({
+        over: this.eventHandler,
+        // If `out` is not provided, over is called on both mouseenter and mouseleave
+        out: noop,
+      });
+    } else {
+      $elements.off(domTrigger, this.eventHandler);
+      $elements.on(domTrigger, this.eventHandler);
+    }
+
     this.installedEvents.add(domTrigger);
+
     console.debug(
       "Installed %s event handler on %d elements",
       domTrigger,

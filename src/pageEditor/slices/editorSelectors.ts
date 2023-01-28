@@ -28,19 +28,25 @@ import {
   type RootState,
 } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { flatMap, isEmpty, uniqBy } from "lodash";
+import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type ElementUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
+import { AnnotationType } from "@/types";
 
-export const selectActiveElementId = ({ editor }: EditorRootState) =>
-  editor.activeElementId;
+export const selectActiveElementId = ({ editor }: EditorRootState) => {
+  if (editor == null) {
+    console.warn("selectActiveElementId called without editor redux slice");
+    return null;
+  }
+
+  return editor.activeElementId;
+};
 
 export const selectElements = ({ editor }: EditorRootState) => editor.elements;
 
@@ -75,7 +81,7 @@ export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 export const selectDeletedElements = ({ editor }: EditorRootState) =>
   editor.deletedElementsByRecipeId;
 
-export const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
+const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedElementsByRecipeId).map((formState) => formState.uuid)
   );
@@ -186,9 +192,6 @@ export const selectRecipeIsDirty =
   (recipeId?: RegistryId) => (state: EditorRootState) =>
     Boolean(recipeId) && recipeIsDirtySelector(state, recipeId);
 
-export const selectIsAddToRecipeModalVisible = ({ editor }: EditorRootState) =>
-  editor.visibleModalKey === ModalKey.ADD_TO_RECIPE;
-
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
   isAddToRecipeModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_RECIPE,
   isRemoveFromRecipeModalVisible:
@@ -237,7 +240,7 @@ export function selectActiveElementUIState({
   return editor.elementUIStates[editor.activeElementId];
 }
 
-export const selectActiveNodeUIState = createSelector(
+const selectActiveNodeUIState = createSelector(
   selectActiveElementUIState,
   (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
 );
@@ -322,19 +325,36 @@ export function selectNodePreviewActiveElement(state: EditorRootState): string {
     .activeElement;
 }
 
-export const selectAddBlockLocation = ({ editor }: RootState) =>
+export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
   editor.addBlockLocation;
 
 const annotationsForPathSelector = createSelector(
-  [
-    (state: RootState) => {
-      const activeElementId = selectActiveElementId(state);
-      return selectExtensionAnnotations(activeElementId)(state);
-    },
-    (state, path: string) => path,
-  ],
-  (extensionAnnotations, path) =>
-    extensionAnnotations.filter((x) => x.position.path === path)
+  selectActiveElementId,
+  // Null-safe access here so this doesn't break with the options redux store
+  (state: RootState) => state.analysis?.extensionAnnotations,
+  (state: RootState, path: string) => path,
+  (activeElementId, annotations, path) => {
+    // eslint-disable-next-line security/detect-object-injection -- UUID
+    const elementAnnotations = annotations?.[activeElementId] ?? [];
+    const pathAnnotations = elementAnnotations.filter(
+      (x) => x.position.path === path
+    );
+    return sortBy(pathAnnotations, (annotation) => {
+      switch (annotation.type) {
+        case AnnotationType.Error: {
+          return 2;
+        }
+
+        case AnnotationType.Warning: {
+          return 1;
+        }
+
+        default: {
+          return 0;
+        }
+      }
+    });
+  }
 );
 
 /**

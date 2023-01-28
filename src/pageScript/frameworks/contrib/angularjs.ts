@@ -57,7 +57,7 @@ export function getVersion(): string | null {
   return window.angular?.version?.full;
 }
 
-export function getComponent(node: Node): AngularElement | null {
+function getComponent(node: Node): AngularElement | null {
   if (!window.angular) {
     throw new FrameworkNotFound("Angular not found");
   }
@@ -65,7 +65,7 @@ export function getComponent(node: Node): AngularElement | null {
   return window.angular.element(node);
 }
 
-export function isManaged(element: HTMLElement): boolean {
+function isManaged(element: HTMLElement): boolean {
   return Boolean(ignoreNotFound(() => getComponent(element)));
 }
 

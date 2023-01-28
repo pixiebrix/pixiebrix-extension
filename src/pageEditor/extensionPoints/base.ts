@@ -65,7 +65,6 @@ import {
   isInnerExtensionPoint,
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
-import { type Permissions } from "webextension-polyfill";
 import { makeEmptyPermissions } from "@/utils/permissions";
 
 export interface WizardStep {
@@ -263,16 +262,6 @@ export function cleanIsAvailable({
   };
 }
 
-export function cleanExtraPermissions({
-  permissions = [],
-  origins = [],
-}: Permissions.Permissions = {}) {
-  return {
-    permissions: permissions.filter((x) => !isNullOrBlank(x)),
-    origins: origins.filter((x) => !isNullOrBlank(x)),
-  };
-}
-
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
   TConfig extends EmptyConfig,
@@ -404,7 +393,7 @@ export function getImplicitReader(
     ]);
   }
 
-  if (type === "quickBar") {
+  if (type === "quickBar" || type === "quickBarProvider") {
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),
       validateRegistryId("@pixiebrix/selection"),

@@ -26,10 +26,11 @@ import {
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
-import { castArray, isPlainObject } from "lodash";
-import AnnotationAlert from "@/components/annotationAlert/AnnotationAlert";
-import { AnnotationType } from "@/analysis/analysisTypes";
+import { isEmpty, isPlainObject } from "lodash";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import LinkifiedString from "@/components/LinkifiedString";
+import { AnnotationType } from "@/types";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
@@ -39,8 +40,7 @@ export type FieldProps<As extends React.ElementType = React.ElementType> =
       fitLabelWidth?: boolean;
       widerLabel?: boolean;
       description?: ReactNode;
-      warning?: string | string[];
-      error?: string | string[];
+      annotations?: FieldAnnotation[];
       touched?: boolean;
 
       /**
@@ -69,17 +69,6 @@ export type CustomFieldWidget<
     TInputElement
   > = CustomFieldWidgetProps<TValue, TInputElement>
 > = React.ComponentType<TFieldWidgetProps>;
-
-function hasOwnError(error: unknown) {
-  // Support string and array of strings.
-  // Don't support Formik nested errors.
-  return (
-    typeof error === "string" ||
-    (Array.isArray(error) &&
-      error.length > 0 &&
-      error.every((x) => typeof x === "string"))
-  );
-}
 
 type ComputeLabelAndColSizeArgs = {
   fitLabelWidth: boolean;
@@ -119,8 +108,7 @@ const FieldTemplate: React.FC<FieldProps> = ({
   fitLabelWidth,
   widerLabel,
   description,
-  warning,
-  error,
+  annotations: untypedAnnotations,
   touched,
   value,
   children,
@@ -129,7 +117,12 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  const isInvalid = hasOwnError(error);
+  const annotations: FieldAnnotation[] = untypedAnnotations;
+  const isInvalid = !isEmpty(
+    annotations?.filter(
+      (annotation) => annotation.type === AnnotationType.Error
+    )
+  );
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = value === undefined ? blankValue : value;
@@ -188,24 +181,14 @@ const FieldTemplate: React.FC<FieldProps> = ({
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
-      {isInvalid && (
+      {!isEmpty(annotations) && (
         <Col xs="12" className="mb-2">
-          {castArray(error).map((errorMessage, index) => (
-            <AnnotationAlert
-              key={`${errorMessage}-${index}`}
-              message={errorMessage}
-              type={AnnotationType.Error}
-            />
-          ))}
-        </Col>
-      )}
-      {warning && (
-        <Col xs="12" className="mb-2">
-          {castArray(warning).map((warningMessage, index) => (
-            <AnnotationAlert
-              key={`${warningMessage}-${index}`}
-              message={warningMessage}
-              type={AnnotationType.Warning}
+          {annotations.map(({ message, type, actions }) => (
+            <FieldAnnotationAlert
+              key={`${type}-${message.slice(0, 10)}`}
+              message={message}
+              type={type}
+              actions={actions}
             />
           ))}
         </Col>

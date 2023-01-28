@@ -25,16 +25,11 @@ $colorInfoBackground: #e8f3fc;
 $colorInfoIcon: #0b3a5f;
 
 .root {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   border-radius: 4px;
   padding: 10px 12px;
-  display: flex;
-  font-weight: 500;
-  line-height: 120%;
-  color: #31214d;
-
-  & + & {
-    margin-top: 5px;
-  }
 
   &.error {
     background-color: $colorErrorBackground;
@@ -59,6 +54,18 @@ $colorInfoIcon: #0b3a5f;
   }
 }
 
+.alert {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  line-height: 120%;
+  color: #31214d;
+
+  & + & {
+    margin-top: 5px;
+  }
+}
+
 .icon {
   margin-right: 10px;
   height: 24px;
@@ -68,4 +75,12 @@ $colorInfoIcon: #0b3a5f;
 .message {
   display: flex;
   align-items: center;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1em;
+  margin-left: 34px;
 }

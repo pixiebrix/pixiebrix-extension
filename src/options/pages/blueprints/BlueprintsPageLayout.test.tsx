@@ -222,3 +222,25 @@ describe("BlueprintsPageLayout", () => {
     expect(screen.getByTestId("bot-games-blueprint-tab")).toHaveClass("active");
   });
 });
+
+describe("Serializable Data Test", () => {
+  test("Pushes unserializable data to redux", async () => {
+    const spy = jest.spyOn(console, "error");
+    render(<BlueprintsPageLayout installables={installables} />, {
+      setupRedux(dispatch) {
+        dispatch(
+          blueprintsSlice.actions.setSearchQuery(
+            (() => {}) as unknown as string
+          )
+        );
+      },
+    });
+
+    await waitForEffect();
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining("A non-serializable value was detected"),
+      expect.toBeFunction(),
+      expect.toBeString()
+    );
+  });
+});

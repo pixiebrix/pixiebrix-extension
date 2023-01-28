@@ -260,18 +260,14 @@ describe("expandedCssSelector", () => {
   /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectRoundtripSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
-    const elements = [
-      ...document.body.querySelectorAll(selector),
-    ] as HTMLElement[];
+    const elements = [...document.body.querySelectorAll<HTMLElement>(selector)];
     const commonSelector = expandedCssSelector(elements);
     expect(commonSelector).toBe(selector);
   };
 
   const expectSelector = (selector: string, expected: string, body: string) => {
     document.body.innerHTML = body;
-    const elements = [
-      ...document.body.querySelectorAll(selector),
-    ] as HTMLElement[];
+    const elements = [...document.body.querySelectorAll<HTMLElement>(selector)];
     const commonSelector = expandedCssSelector(elements);
     expect(commonSelector).toBe(expected);
   };
@@ -283,16 +279,16 @@ describe("expandedCssSelector", () => {
   ) => {
     document.body.innerHTML = body;
     const manualElements = manualElementSelectors.map((x) =>
-      document.body.querySelector(x)
+      document.body.querySelector<HTMLElement>(x)
     );
     const otherElements = otherElementSelectors.map((x) =>
-      document.body.querySelector(x)
+      document.body.querySelector<HTMLElement>(x)
     );
 
-    const commonSelector = expandedCssSelector(manualElements as HTMLElement[]);
+    const commonSelector = expandedCssSelector(manualElements);
     const commonElements = [
-      ...document.body.querySelectorAll(commonSelector),
-    ] as HTMLElement[];
+      ...document.body.querySelectorAll<HTMLElement>(commonSelector),
+    ];
 
     const expectedElements = [...manualElements, ...otherElements];
 

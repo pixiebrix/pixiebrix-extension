@@ -55,6 +55,9 @@ export type VisitResolvedBlockExtra = VisitBlockExtra & {
   typedBlock: TypedBlock;
 };
 export type VisitPipelineExtra = {
+  /**
+   * The pipeline flavor
+   */
   flavor: PipelineFlavor;
 
   /**
@@ -63,11 +66,16 @@ export type VisitPipelineExtra = {
   parentNode?: BlockConfig | undefined;
 
   /**
+   * Parent block of the pipeline, if any
+   */
+  parentPosition?: BlockPosition | undefined;
+
+  /**
    * Name (e.g., body/action) of the parent block's property that contains the pipeline
    */
   pipelinePropName?: string | undefined;
 };
-export type VisitRootPipelineExtra = {
+type VisitRootPipelineExtra = {
   extensionPointType: ExtensionPointType;
 };
 
@@ -105,6 +113,7 @@ class PipelineVisitor {
         this.visitPipeline(pipelinePosition, value.__value__, {
           flavor: pipelineFlavor,
           parentNode: blockConfig,
+          parentPosition: position,
           pipelinePropName: prop,
         });
       }
@@ -132,11 +141,18 @@ class PipelineVisitor {
         this.visitPipeline(pipelinePosition, subPipeline, {
           flavor: pipelineFlavor,
           parentNode: blockConfig,
+          parentPosition: position,
         });
       }
     }
   }
 
+  /**
+   * Run the visitor on a pipeline; loop over the blocks
+   * @param position Position of the pipeline in the extension
+   * @param pipeline The pipeline to analyze
+   * @param extra Extra information about the pipeline
+   */
   public visitPipeline(
     position: BlockPosition,
     pipeline: BlockConfig[],

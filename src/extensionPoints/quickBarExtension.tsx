@@ -133,7 +133,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
   removeExtensions(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
-      quickBarRegistry.remove(extensionId);
+      quickBarRegistry.removeAction(extensionId);
     }
   }
 
@@ -213,7 +213,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
       selectExtensionContext(extension)
     );
 
-    quickBarRegistry.add({
+    quickBarRegistry.addAction({
       id: extension.id,
       extensionPointId: this.id,
       name,

@@ -14,3 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { type BaseAnnotation } from "@/types";
+
+export type FieldAnnotationAction = {
+  caption: string;
+  action: () => Promise<void>;
+};
+
+export type FieldAnnotation = BaseAnnotation & {
+  actions?: FieldAnnotationAction[];
+};

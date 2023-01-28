@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnnotationType } from "@/analysis/analysisTypes";
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
+import { AnnotationType } from "@/types";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 

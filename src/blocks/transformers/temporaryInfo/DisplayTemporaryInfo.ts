@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
+import { Transformer, type UnknownObject } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -28,14 +28,18 @@ import {
 } from "@/contentScript/sidebarController";
 import { type PanelPayload } from "@/sidebar/types";
 import {
-  waitForTemporaryPanel,
   stopWaitingForTemporaryPanels,
+  cancelTemporaryPanelsForExtension,
+  cancelTemporaryPanels,
+  waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { CancelError, PropError } from "@/errors/businessErrors";
+import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
+import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 
-type Location = "panel" | "modal";
+type Location = "panel" | "modal" | "popover";
 
 export async function createFrameSource(
   nonce: string,
@@ -62,6 +66,10 @@ class DisplayTemporaryInfo extends Transformer {
     );
   }
 
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
   inputSchema: Schema = {
     type: "object",
     properties: {
@@ -76,10 +84,11 @@ class DisplayTemporaryInfo extends Transformer {
       },
       location: {
         type: "string",
-        enum: ["panel", "modal"],
+        enum: ["panel", "modal", "popover"],
         default: "panel",
         description: "The location of the information (default='panel')",
       },
+      ...IS_ROOT_AWARE_BRICK_PROPS,
     },
     required: ["body"],
   };
@@ -89,69 +98,107 @@ class DisplayTemporaryInfo extends Transformer {
       title,
       body: bodyPipeline,
       location = "panel",
+      isRootAware = false,
     }: BlockArg<{
       title: string;
       location: Location;
       body: PipelineExpression;
+      isRootAware: boolean;
     }>,
     {
       logger: {
         context: { extensionId },
       },
+      root,
       ctxt,
       runPipeline,
       runRendererPipeline,
     }: BlockOptions
-  ): Promise<unknown> {
+  ): Promise<UnknownObject | null> {
     expectContext("contentScript");
+
+    const target = isRootAware ? root : document;
 
     const nonce = uuidv4();
     const controller = new AbortController();
 
-    const payload = (await runRendererPipeline(bodyPipeline?.__value__ ?? [], {
-      key: "body",
-      counter: 0,
-    })) as PanelPayload;
+    const payload = (await runRendererPipeline(
+      bodyPipeline?.__value__ ?? [],
+      {
+        key: "body",
+        counter: 0,
+      },
+      {},
+      target
+    )) as PanelPayload;
 
-    if (location === "panel") {
-      await ensureSidebar();
+    switch (location) {
+      case "panel": {
+        await ensureSidebar();
 
-      showTemporarySidebarPanel({
-        extensionId,
-        nonce,
-        heading: title,
-        payload,
-      });
+        showTemporarySidebarPanel({
+          extensionId,
+          nonce,
+          heading: title,
+          payload,
+        });
 
-      window.addEventListener(
-        PANEL_HIDING_EVENT,
-        () => {
-          controller.abort();
-        },
-        {
-          signal: controller.signal,
+        window.addEventListener(
+          PANEL_HIDING_EVENT,
+          () => {
+            controller.abort();
+          },
+          {
+            signal: controller.signal,
+          }
+        );
+
+        controller.signal.addEventListener("abort", () => {
+          hideTemporarySidebarPanel(nonce);
+          void stopWaitingForTemporaryPanels([nonce]);
+        });
+
+        break;
+      }
+
+      case "modal": {
+        const frameSource = await createFrameSource(nonce, location);
+        showModal(frameSource, controller);
+        break;
+      }
+
+      case "popover": {
+        const frameSource = await createFrameSource(nonce, location);
+        if (target === document) {
+          throw new BusinessError("Target must be an element for popover");
         }
-      );
 
-      controller.signal.addEventListener("abort", () => {
-        hideTemporarySidebarPanel(nonce);
-        void stopWaitingForTemporaryPanels([nonce]);
-      });
-    } else if (location === "modal") {
-      const frameSource = await createFrameSource(nonce, location);
-      showModal(frameSource, controller);
-    } else {
-      throw new PropError(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for validated value
-        `Invalid location: ${location}`,
-        this.id,
-        "location",
-        location
-      );
+        await cancelTemporaryPanelsForExtension(extensionId);
+
+        const onHide = async () => {
+          await cancelTemporaryPanels([nonce]);
+        };
+
+        showPopover(frameSource, target as HTMLElement, onHide, controller);
+
+        break;
+      }
+
+      default: {
+        throw new PropError(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for validated value
+          `Invalid location: ${location}`,
+          this.id,
+          "location",
+          location
+        );
+      }
     }
 
+    let result = null;
+
     try {
-      await waitForTemporaryPanel(nonce, {
+      result = await waitForTemporaryPanel(nonce, {
         heading: title,
         extensionId,
         nonce,
@@ -171,7 +218,7 @@ class DisplayTemporaryInfo extends Transformer {
       controller.abort();
     }
 
-    return {};
+    return result ?? {};
   }
 }
 

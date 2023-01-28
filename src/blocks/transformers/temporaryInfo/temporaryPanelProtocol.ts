@@ -20,13 +20,35 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 import { CancelError } from "@/errors/businessErrors";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { type JsonObject } from "type-fest";
+
+/**
+ * An action to resolve a panel with a type and detail.
+ *
+ * Interface matches CustomEvent
+ *
+ * @see CustomEvent
+ */
+export type PanelAction = {
+  /**
+   * A custom type for the action, e.g., "submit", "cancel", etc.
+   */
+  type: string;
+
+  /**
+   * Optional payload for the action.
+   */
+  detail?: JsonObject;
+};
 
 type RegisteredPanel = {
   entry: TemporaryPanelEntry;
-  registration: DeferredPromise<void>;
+  registration: DeferredPromise<PanelAction | null>;
 };
 
 const panels = new Map<UUID, RegisteredPanel>();
+// Mapping from extensionId to active panel nonces
+const extensionNonces = new Map<UUID, Set<UUID>>();
 
 /**
  * Get panel definition, or error if panel is not defined for nonce.
@@ -54,10 +76,10 @@ export async function getPanelDefinition(
 export async function waitForTemporaryPanel(
   nonce: UUID,
   entry: TemporaryPanelEntry
-): Promise<void> {
+): Promise<PanelAction | null> {
   expectContext("contentScript");
 
-  const registration = pDefer<void>();
+  const registration = pDefer<PanelAction | null>();
 
   if (panels.has(nonce)) {
     console.warn(
@@ -70,27 +92,63 @@ export async function waitForTemporaryPanel(
     registration,
   });
 
+  if (!extensionNonces.has(entry.extensionId)) {
+    extensionNonces.set(entry.extensionId, new Set());
+  }
+
+  extensionNonces.get(entry.extensionId).add(nonce);
+
   return registration.promise;
+}
+
+/**
+ * Helper method to remove panel from panels and extensionNonces.
+ * @param panelNonce
+ */
+function removePanelEntry(panelNonce: UUID): void {
+  const panel = panels.get(panelNonce);
+  if (panel) {
+    const { extensionId } = panel.entry;
+    extensionNonces.get(extensionId).delete(panelNonce);
+  }
+
+  panels.delete(panelNonce);
 }
 
 /**
  * Resolve some temporary panels' deferred promises
  * @param nonces The nonces of the panels to resolve
+ * @see resolveTemporaryPanel
  */
 export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
   expectContext("contentScript");
 
   for (const nonce of nonces) {
     panels.get(nonce)?.registration.resolve();
-    panels.delete(nonce);
+    removePanelEntry(nonce);
   }
+}
+
+/**
+ * Resolve some temporary panel with an action.
+ * @param nonce The nonce of the panels to resolve
+ * @param action The action to resolve the panel with
+ */
+export async function resolveTemporaryPanel(
+  nonce: UUID,
+  action: PanelAction
+): Promise<void> {
+  expectContext("contentScript");
+
+  panels.get(nonce)?.registration.resolve(action);
+  panels.delete(nonce);
 }
 
 /**
  * Cancel some temporary panels' deferred promises
  * @param nonces The nonces of the panels to reject with a CancelError
  */
-export async function cancelTemporaryPanels(nonces: UUID[]) {
+export async function cancelTemporaryPanels(nonces: UUID[]): Promise<void> {
   expectContext("contentScript");
 
   for (const nonce of nonces) {
@@ -99,6 +157,17 @@ export async function cancelTemporaryPanels(nonces: UUID[]) {
       ?.registration?.reject(
         new CancelError("Temporary panel was replaced with another panel")
       );
-    panels.delete(nonce);
+    removePanelEntry(nonce);
   }
+}
+
+/**
+ * Cancel all temporary panels for a given extension.
+ * @see cancelTemporaryPanels
+ */
+export async function cancelTemporaryPanelsForExtension(
+  extensionId: UUID
+): Promise<void> {
+  const nonces = extensionNonces.get(extensionId) ?? new Set();
+  await cancelTemporaryPanels([...nonces]);
 }

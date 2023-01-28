@@ -15,24 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectorSelectorWidget from "@/pageEditor/fields/SelectorSelectorWidget";
-import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { Effect } from "@/types";
+import { type Schema } from "@/core";
+import { propertiesToSchema } from "@/validators/generic";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
-const SelectorSelectorField: React.FunctionComponent<SchemaFieldProps> = (
-  props
-) => {
-  const { schema } = props;
-  return (
-    <ConnectedFieldTemplate
-      label={makeLabelForSchemaField(props)}
-      description={schema.description}
-      as={SelectorSelectorWidget}
-      {...props}
-    />
-  );
-};
+class ToggleQuickbarEffect extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/quickbar/toggle",
+      "Toggle Quick Bar",
+      "Show/Hide the PixieBrix Quick Bar"
+    );
+  }
 
-export default SelectorSelectorField;
+  override async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
+  // In the future, we'll expose a "mode" with: "toggle", "show", and "hide" options
+  inputSchema: Schema = propertiesToSchema({}, []);
+
+  async effect(): Promise<void> {
+    toggleQuickBar();
+  }
+}
+
+export default ToggleQuickbarEffect;

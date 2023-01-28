@@ -24,6 +24,7 @@ export const cancelForm = getNotifier("FORM_CANCEL");
 export const getPanelDefinition = getMethod("PANEL_GET_DEFINITION");
 export const cancelTemporaryPanel = getNotifier("TEMPORARY_PANEL_CANCEL");
 export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
+export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const removeExtension = getNotifier("REMOVE_EXTENSION");
@@ -41,14 +42,10 @@ export const insertButton = getMethod("INSERT_BUTTON");
 
 export const initRobot = getMethod("UIPATH_INIT");
 export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
-export const searchWindow = getMethod("SEARCH_WINDOW");
 export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
-export const runReaderBlock = getMethod("RUN_READER_BLOCK");
-export const runReader = getMethod("RUN_READER");
-export const readSelected = getMethod("READ_SELECTED");
 
 export const clearDynamicElements = getMethod("CLEAR_DYNAMIC_ELEMENTS");
 export const updateDynamicElement = getMethod("UPDATE_DYNAMIC_ELEMENT");

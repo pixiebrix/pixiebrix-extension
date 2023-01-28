@@ -36,7 +36,7 @@ import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { freshIdentifier } from "@/utils";
+import { freshIdentifier, isNullOrBlank } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -53,6 +53,8 @@ import {
   type ServiceSlice,
 } from "./serviceFieldUtils";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
+import { AnnotationType } from "@/types";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -178,8 +180,15 @@ const ServiceField: React.FunctionComponent<
   const [authOptions, refreshOptions] = useAuthOptions();
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
-  const [{ value, ...field }, meta, helpers] =
+  const [{ value, ...field }, { touched, error }, helpers] =
     useField<Expression<ServiceKeyVar>>(props);
+  const annotations = useMemo<FieldAnnotation[]>(
+    () =>
+      isNullOrBlank(error)
+        ? []
+        : [{ message: error, type: AnnotationType.Error }],
+    [error]
+  );
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -292,8 +301,8 @@ const ServiceField: React.FunctionComponent<
       refreshOptions={refreshOptions}
       value={selectedValue}
       onChange={onChange}
-      error={meta.error}
-      touched={meta.touched}
+      annotations={annotations}
+      touched={touched}
     />
   );
 };

@@ -16,13 +16,13 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { AnnotationType } from "@/analysis/analysisTypes";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { joinPathParts } from "@/utils";
+import { AnnotationType } from "@/types";
 
 function containsTemplateExpression(literalOrTemplate: string): boolean {
   return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");

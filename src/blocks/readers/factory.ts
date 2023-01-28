@@ -81,17 +81,6 @@ export function registerFactory(readerType: string, read: Read): void {
   _readerFactories.set(readerType, read);
 }
 
-export function makeRead(
-  config: ReaderTypeConfig
-): (root: ReaderRoot) => Promise<ReaderOutput> {
-  const doRead = _readerFactories.get(config.type);
-  if (!doRead) {
-    throw new Error(`Reader type ${config.type} not implemented`);
-  }
-
-  return async (root: ReaderRoot) => doRead(config, root);
-}
-
 export function readerFactory(component: unknown): IReader {
   validateReaderDefinition(component);
 

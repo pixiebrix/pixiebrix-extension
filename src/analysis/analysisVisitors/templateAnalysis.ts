@@ -18,8 +18,7 @@
 import { type Expression } from "@/core";
 import {
   type Analysis,
-  type Annotation,
-  AnnotationType,
+  type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import { type BlockPosition } from "@/blocks/types";
 import { isNunjucksExpression, isTemplateExpression } from "@/runtime/mapArgs";
@@ -27,6 +26,7 @@ import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { AnnotationType } from "@/types";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
@@ -42,8 +42,8 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return "template";
   }
 
-  protected readonly annotations: Annotation[] = [];
-  getAnnotations(): Annotation[] {
+  protected readonly annotations: AnalysisAnnotation[] = [];
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 

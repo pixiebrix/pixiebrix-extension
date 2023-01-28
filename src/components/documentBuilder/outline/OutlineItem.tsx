@@ -62,6 +62,7 @@ const OutlineItem: React.FunctionComponent<
 
   return (
     <div
+      // eslint-disable-next-line jsx-a11y/role-has-required-aria-props -- TODO: Add aria-selected where expected
       role="treeitem"
       style={{ paddingLeft: depth * LEVEL_PADDING_PX }}
       className={cx(styles.item, {

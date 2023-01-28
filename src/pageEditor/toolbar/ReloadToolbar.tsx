@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { useAsyncEffect } from "use-async-effect";
 import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
@@ -88,14 +87,14 @@ const ReloadToolbar: React.FunctionComponent<{
   const isLoadTrigger = isAutomaticTrigger(element);
   const automaticUpdate = !(isLoadTrigger || isPanel);
 
-  useAsyncEffect(async () => {
+  useEffect(() => {
     if (!automaticUpdate && !element.autoReload) {
       // By default, don't automatically trigger (because it might be doing expensive
       // operations such as hitting an API)
       return;
     }
 
-    await debouncedRun();
+    void debouncedRun();
   }, [debouncedRun, automaticUpdate, element]);
 
   if (automaticUpdate) {

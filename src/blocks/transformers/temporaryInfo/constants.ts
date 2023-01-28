@@ -15,18 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { useMemo } from "react";
-import { type IExtension, type UUID } from "@/core";
-
-function useExtensionMeta(): { lookup: Map<UUID, IExtension> } {
-  const extensions = useSelector(selectExtensions);
-  const lookup = useMemo(
-    () => new Map(extensions.map((x) => [x.id, x])),
-    [extensions]
-  );
-  return { lookup };
-}
-
-export default useExtensionMeta;
+export const PANEL_MOUNTED_EVENT_TYPE = "@@pixiebrix/PANEL_MOUNTED";

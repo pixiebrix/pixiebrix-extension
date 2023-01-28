@@ -26,7 +26,7 @@ export class RandomNumber extends Transformer {
     super(
       "@pixiebrix/random",
       "Random Number",
-      "Generate a random number",
+      "Generate a random integer or decimal number",
       "faCode"
     );
   }
@@ -46,7 +46,7 @@ export class RandomNumber extends Transformer {
       },
       upper: {
         type: "number",
-        description: "The upper bound (exclusive)",
+        description: "The upper bound (inclusive)",
         default: 1,
       },
       floating: {

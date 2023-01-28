@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Modal } from "react-bootstrap";
-import Loader from "@/components/Loader";
+import SubmitPanelEffect from "@/blocks/effects/submitPanel";
+import { SubmitPanelAction } from "@/blocks/errors";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
-const SavingInProgressModal: React.FC = () => (
-  <Modal show backdrop="static" keyboard={false}>
-    <Modal.Header>
-      <Modal.Title>Saving extension...</Modal.Title>
-    </Modal.Header>
+describe("SubmitPanelEffect", () => {
+  test("defaults detail to empty object", async () => {
+    const brick = new SubmitPanelEffect();
 
-    <Modal.Body>
-      <Loader />
-    </Modal.Body>
-  </Modal>
-);
-
-export default SavingInProgressModal;
+    try {
+      await brick.effect(unsafeAssumeValidArg({ type: "submit" }) as any);
+    } catch (error) {
+      expect(error).toBeInstanceOf(SubmitPanelAction);
+      expect((error as SubmitPanelAction).detail).toEqual({});
+      expect((error as SubmitPanelAction).type).toEqual("submit");
+    }
+  });
+});

@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Analysis, type Annotation } from "@/analysis/analysisTypes";
+import {
+  type Analysis,
+  type AnalysisAnnotation,
+} from "@/analysis/analysisTypes";
 import PipelineVisitor from "@/blocks/PipelineVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
@@ -29,8 +32,8 @@ export abstract class AnalysisVisitor
 {
   abstract readonly id: string;
 
-  protected readonly annotations: Annotation[] = [];
-  getAnnotations(): Annotation[] {
+  protected readonly annotations: AnalysisAnnotation[] = [];
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 

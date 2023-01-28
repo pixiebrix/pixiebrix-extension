@@ -15,20 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import AnnotationAlert from "./AnnotationAlert";
-import { AnnotationType } from "@/analysis/analysisTypes";
+import { type Action } from "kbar";
+import { type RegistryId, type UUID } from "@/core";
 
-export default {
-  title: "Common/AnnotationAlert",
-  component: AnnotationAlert,
-} as ComponentMeta<typeof AnnotationAlert>;
-
-export const Default: ComponentStory<typeof AnnotationAlert> = (args) => (
-  <AnnotationAlert {...args} />
-);
-Default.args = {
-  message: "This is an error message",
-  type: AnnotationType.Error,
+/**
+ * `kbar` action with additional metadata about the source of the action.
+ */
+export type CustomAction = Action & {
+  /**
+   * The extension point that added this action.
+   */
+  extensionPointId?: RegistryId;
+  /**
+   * The IExtension that added the action.
+   * @see IExtension
+   */
+  extensionId?: UUID;
 };
+
+export type ChangeHandler = (actions: CustomAction[]) => void;
+
+export type GeneratorArgs = { query: string; rootActionId: string | null };
+
+/**
+ * An action generator. The generator is expected to make calls QuickBarRegistry.addAction
+ */
+export type ActionGenerator = (args: GeneratorArgs) => Promise<void>;

@@ -72,6 +72,8 @@ import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 
+jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
+
 let clock: sinonTimers.InstalledClock;
 async function tickAsyncEffects() {
   return act(async () => {

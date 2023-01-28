@@ -51,6 +51,7 @@ const specialCharsRegex = /[\s.[\]]/;
 /**
  * Create a Formik field name, validating the individual path parts.
  * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
+ * Stringifies numeric property access as "foo.0.bar"
  * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
@@ -345,27 +346,6 @@ export function excludeUndefined(obj: unknown): unknown {
   return obj;
 }
 
-export function evaluableFunction(
-  function_: (...parameters: unknown[]) => unknown
-): string {
-  return "(" + function_.toString() + ")()";
-}
-
-/**
- * Lift a unary function to pass through null/undefined.
- */
-export function optional<T extends (arg: unknown) => unknown>(
-  fn: T
-): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
-  return (arg: Parameters<T>[0]) => {
-    if (arg == null) {
-      return null;
-    }
-
-    return fn(arg) as ReturnType<T>;
-  };
-}
-
 /**
  * Returns true if `url` is an absolute URL, based on whether the URL contains a schema
  */
@@ -373,7 +353,7 @@ export function isAbsoluteUrl(url: string): boolean {
   return /(^|:)\/\//.test(url);
 }
 
-export const SPACE_ENCODED_VALUE = "%20";
+const SPACE_ENCODED_VALUE = "%20";
 
 // Preserve the previous default for backwards compatibility
 // https://github.com/pixiebrix/pixiebrix-extension/pull/3076#discussion_r844564894

@@ -17,14 +17,16 @@
 
 import { createContext, useContext } from "react";
 
-export type FormErrorContextProps = {
+type FormErrorContextProps = {
   shouldUseAnalysis: boolean;
   showUntouchedErrors: boolean;
+  showFieldActions: boolean;
 };
 
 const defaultValue: FormErrorContextProps = {
   shouldUseAnalysis: false,
   showUntouchedErrors: false,
+  showFieldActions: false,
 };
 
 export const FormErrorContext =

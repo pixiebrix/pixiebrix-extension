@@ -81,7 +81,7 @@ type CommonOptions = ApiVersionOptions & {
   headless: boolean;
 };
 
-export type RunMetadata = {
+type RunMetadata = {
   /**
    * The extension UUID to correlate trace records for a brick.
    */
@@ -416,10 +416,6 @@ async function renderBlockArg(
   if (type === "reader") {
     // `reducePipeline` is responsible for passing the correct root into runStage based on the BlockConfig
     if ((config.window ?? "self") === "self") {
-      logger.debug(
-        `Passed root to reader ${config.id} (window=${config.window ?? "self"})`
-      );
-
       return { root: state.root } as unknown as RenderedArgs;
     }
 

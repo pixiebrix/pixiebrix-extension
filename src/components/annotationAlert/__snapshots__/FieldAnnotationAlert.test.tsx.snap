@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FieldAnnotationAlert renders error 1`] = `
+<DocumentFragment>
+  <div
+    class="root error"
+  >
+    <div
+      class="alert"
+    >
+      <test-file-stub
+        classname="icon"
+      />
+      <div
+        class="message"
+      >
+        <span>
+          Error annotation
+        </span>
+      </div>
+    </div>
+    <div
+      class="actions"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Test Action
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FieldAnnotationAlert renders info 1`] = `
+<DocumentFragment>
+  <div
+    class="root info"
+  >
+    <div
+      class="alert"
+    >
+      <test-file-stub
+        classname="icon"
+      />
+      <div
+        class="message"
+      >
+        <span>
+          Info annotation
+        </span>
+      </div>
+    </div>
+    <div
+      class="actions"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Test Action
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FieldAnnotationAlert renders warning 1`] = `
+<DocumentFragment>
+  <div
+    class="root warning"
+  >
+    <div
+      class="alert"
+    >
+      <test-file-stub
+        classname="icon"
+      />
+      <div
+        class="message"
+      >
+        <span>
+          Warning annotation
+        </span>
+      </div>
+    </div>
+    <div
+      class="actions"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Test Action
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

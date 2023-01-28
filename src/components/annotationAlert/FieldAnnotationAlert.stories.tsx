@@ -16,21 +16,19 @@
  */
 
 import React from "react";
-import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import FieldAnnotationAlert from "./FieldAnnotationAlert";
+import { AnnotationType } from "@/types";
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps> = (props) => {
-  const { name, schema } = props;
-  return (
-    <ConnectedFieldTemplate
-      name={name}
-      as={SwitchButtonWidget}
-      label={makeLabelForSchemaField(props)}
-      description={schema.description}
-    />
-  );
+export default {
+  title: "Common/FieldAnnotationAlert",
+  component: FieldAnnotationAlert,
+} as ComponentMeta<typeof FieldAnnotationAlert>;
+
+export const Default: ComponentStory<typeof FieldAnnotationAlert> = (args) => (
+  <FieldAnnotationAlert {...args} />
+);
+Default.args = {
+  message: "This is an error message",
+  type: AnnotationType.Error,
 };
-
-export default BooleanField;

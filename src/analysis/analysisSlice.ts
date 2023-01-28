@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection -- working with records a lot */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -16,7 +17,10 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type AnalysisState, type Annotation } from "@/analysis/analysisTypes";
+import {
+  type AnalysisState,
+  type AnalysisAnnotation,
+} from "@/analysis/analysisTypes";
 import { type UUID } from "@/core";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 
@@ -41,7 +45,7 @@ const analysisSlice = createSlice({
       action: PayloadAction<{
         extensionId: UUID;
         analysisId: string;
-        annotations: Annotation[];
+        annotations: AnalysisAnnotation[];
       }>
     ) {
       const { extensionId, analysisId, annotations } = action.payload;

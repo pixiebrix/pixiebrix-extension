@@ -34,6 +34,7 @@ import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { type SubmitPanelAction } from "@/blocks/errors";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -41,18 +42,23 @@ type BodyProps = {
   meta: PanelRunMeta;
 };
 
-const BodyContainer: React.FC<BodyProps & { isFetching: boolean }> = ({
-  blockId,
-  body,
-  isFetching,
-  meta,
-}) => (
+const BodyContainer: React.FC<
+  BodyProps & {
+    isFetching: boolean;
+    onAction: (action: SubmitPanelAction) => void;
+  }
+> = ({ blockId, body, isFetching, onAction, meta }) => (
   <>
     {isFetching && <Loader />}
 
     <div className="full-height" data-block-id={blockId}>
       <ReactShadowRoot>
-        <RendererComponent body={body} meta={meta} />
+        <RendererComponent
+          blockId={blockId}
+          body={body}
+          meta={meta}
+          onAction={onAction}
+        />
       </ReactShadowRoot>
     </div>
   </>
@@ -112,69 +118,77 @@ const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
   payload: PanelPayload;
   context: MessageContext;
-}> = ({ payload, context, isRootPanel = false }) => {
+  onAction: (action: SubmitPanelAction) => void;
+}> = ({ payload, context, isRootPanel = false, onAction }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
 
-  useAsyncEffect(async () => {
-    if (payload == null) {
-      dispatch(slice.actions.reactivate());
-      return;
-    }
-
-    if ("error" in payload) {
-      dispatch(slice.actions.failure({ error: payload.error }));
-      return;
-    }
-
-    try {
-      // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
-      dispatch(slice.actions.reactivate());
-
-      const { blockId, ctxt, args, runId, extensionId } = payload;
-
-      console.debug("Running panel body for panel payload", payload);
-
-      const block = await blockRegistry.lookup(blockId);
-      // In the future, the renderer brick should run in the contentScript, not the panel frame
-      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
-      const body = await block.run(args as BlockArg, {
-        ctxt,
-        root: null,
-        logger: new BackgroundLogger({
-          ...context,
-          blockId,
-        }),
-        async runPipeline() {
-          throw new BusinessError(
-            "Support for running pipelines in panels not implemented"
-          );
-        },
-        async runRendererPipeline() {
-          throw new BusinessError(
-            "Support for running pipelines in panels not implemented"
-          );
-        },
-      });
-
-      if (!runId || !extensionId) {
-        console.warn("PanelBody requires runId in RendererPayload", {
-          payload,
-        });
+  useAsyncEffect(
+    async (isMounted) => {
+      if (payload == null) {
+        dispatch(slice.actions.reactivate());
+        return;
       }
 
-      dispatch(
-        slice.actions.success({
-          data: {
+      if ("error" in payload) {
+        dispatch(slice.actions.failure({ error: payload.error }));
+        return;
+      }
+
+      try {
+        // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
+        dispatch(slice.actions.reactivate());
+
+        const { blockId, ctxt, args, runId, extensionId } = payload;
+
+        console.debug("Running panel body for panel payload", payload);
+
+        const block = await blockRegistry.lookup(blockId);
+        // In the future, the renderer brick should run in the contentScript, not the panel frame
+        // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
+        const body = await block.run(args as BlockArg, {
+          ctxt,
+          root: null,
+          logger: new BackgroundLogger({
+            ...context,
             blockId,
-            body: body as RendererOutput,
-            meta: { runId, extensionId },
+          }),
+          async runPipeline() {
+            throw new BusinessError(
+              "Support for running pipelines in panels not implemented"
+            );
           },
-        })
-      );
-    } catch (error) {
-      dispatch(slice.actions.failure({ error }));
-    }
-  }, [payload?.key, dispatch]);
+          async runRendererPipeline() {
+            throw new BusinessError(
+              "Support for running pipelines in panels not implemented"
+            );
+          },
+        });
+
+        if (!runId || !extensionId) {
+          console.warn("PanelBody requires runId in RendererPayload", {
+            payload,
+          });
+        }
+
+        if (!isMounted()) {
+          return;
+        }
+
+        dispatch(
+          slice.actions.success({
+            data: {
+              blockId,
+              body: body as RendererOutput,
+              meta: { runId, extensionId },
+            },
+          })
+        );
+      } catch (error) {
+        dispatch(slice.actions.failure({ error }));
+      }
+    },
+    [payload?.key, dispatch]
+  );
 
   // Only show loader on initial render. Otherwise, just overlay a loading indicator over the other panel to
   // avoid remounting the whole generated component. Some components maybe have long initialization times. E.g., our
@@ -215,7 +229,13 @@ const PanelBody: React.FunctionComponent<{
     );
   }
 
-  return <BodyContainer {...state.component} isFetching={state.isFetching} />;
+  return (
+    <BodyContainer
+      {...state.component}
+      isFetching={state.isFetching}
+      onAction={onAction}
+    />
+  );
 };
 
 export default PanelBody;
