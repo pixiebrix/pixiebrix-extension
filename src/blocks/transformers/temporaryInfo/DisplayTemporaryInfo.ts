@@ -113,6 +113,7 @@ class DisplayTemporaryInfo extends Transformer {
       ctxt,
       runPipeline,
       runRendererPipeline,
+      abortSignal,
     }: BlockOptions
   ): Promise<UnknownObject | null> {
     expectContext("contentScript");
@@ -121,6 +122,10 @@ class DisplayTemporaryInfo extends Transformer {
 
     const nonce = uuidv4();
     const controller = new AbortController();
+
+    abortSignal?.addEventListener("abort", () => {
+      void cancelTemporaryPanels([nonce]);
+    });
 
     const payload = (await runRendererPipeline(
       bodyPipeline?.__value__ ?? [],

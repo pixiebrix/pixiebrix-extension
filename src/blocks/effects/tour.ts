@@ -120,7 +120,7 @@ export class TourEffect extends Effect {
       steps = [] as Step[],
       isRootAware = false,
     }: BlockArg,
-    { root }: BlockOptions
+    { root, abortSignal }: BlockOptions
   ): Promise<void> {
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
@@ -155,7 +155,7 @@ export class TourEffect extends Effect {
 
       tourInProgress = true;
 
-      introJs()
+      const tour = introJs()
         .setOptions({
           showProgress,
           showBullets,
@@ -176,6 +176,10 @@ export class TourEffect extends Effect {
           reject(new CancelError("User cancelled the tour"));
         })
         .start();
+
+      abortSignal?.addEventListener("abort", () => {
+        tour.exit(true);
+      });
 
       await tourPromise;
     } finally {

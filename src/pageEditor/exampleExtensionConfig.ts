@@ -19,9 +19,11 @@ import { type BlockPipeline } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 const documentBlockId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
+const tourStepBlockId = validateRegistryId("@pixiebrix/tour/step");
 
 export function getExampleBlockPipeline(
   type: ExtensionPointType
@@ -41,6 +43,17 @@ export function getExampleBlockPipeline(
       },
     };
     return [quickbarActionBlock];
+  }
+
+  if (type === "tour") {
+    const tourStepBlock = createNewBlock(tourStepBlockId);
+    tourStepBlock.outputKey = validateOutputKey("step");
+    tourStepBlock.config = {
+      title: "Example Step",
+      body: "Example step with **markdown**",
+    };
+
+    return [tourStepBlock];
   }
 
   return [];

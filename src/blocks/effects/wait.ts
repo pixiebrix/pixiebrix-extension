@@ -16,7 +16,12 @@
  */
 
 import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type ReaderRoot,
+  type Schema,
+} from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -54,6 +59,48 @@ export class WaitEffect extends Effect {
     } else {
       logger.debug("Skipping wait/sleep");
     }
+  }
+}
+
+/**
+ * @param selector the element selector
+ * @param $root the root element/document to search within
+ * @param maxWaitMillis maximum time to wait for the element, or 0 to wait indefinitely
+ * @param abortSignal an optional abort signal to cancel the wait
+ * @throws BusinessError if the element is not found within the timeout
+ */
+export async function awaitElement({
+  selector,
+  $root,
+  maxWaitMillis = 0,
+  abortSignal,
+}: {
+  selector: string;
+  $root: JQuery<ReaderRoot>;
+  maxWaitMillis: number;
+  abortSignal?: AbortSignal;
+}): Promise<JQuery<HTMLElement | Document>> {
+  if (maxWaitMillis > 0) {
+    const [promise, cancel] = awaitElementOnce(selector, $root);
+    abortSignal?.addEventListener("abort", cancel);
+
+    try {
+      return await pTimeout(promise, { milliseconds: maxWaitMillis });
+    } catch (error) {
+      cancel();
+
+      if (error instanceof TimeoutError) {
+        throw new BusinessError(
+          `Element not available in ${maxWaitMillis} milliseconds`
+        );
+      }
+
+      throw error ?? new Error("Unknown error waiting for element");
+    }
+  } else {
+    const [promise, cancel] = awaitElementOnce(selector, $root);
+    abortSignal?.addEventListener("abort", cancel);
+    return promise;
   }
 }
 
@@ -99,7 +146,7 @@ export class WaitElementEffect extends Effect {
       maxWaitMillis: number | undefined;
       isRootAware: boolean;
     }>,
-    { logger, root }: BlockOptions
+    { logger, root, abortSignal }: BlockOptions
   ): Promise<void> {
     // Single string for logging, the exact format isn't that important
     const combinedSelector = Array.isArray(selector)
@@ -115,25 +162,12 @@ export class WaitElementEffect extends Effect {
 
     logger.debug(`Waiting for element: ${combinedSelector}`);
 
-    if (maxWaitMillis > 0) {
-      const [promise, cancel] = awaitElementOnce(selector, $root);
-      try {
-        await pTimeout(promise, { milliseconds: maxWaitMillis });
-      } catch (error) {
-        cancel();
-
-        if (error instanceof TimeoutError) {
-          throw new BusinessError(
-            `Element not available in ${maxWaitMillis} milliseconds`
-          );
-        }
-
-        throw error ?? new Error("Unknown error waiting for element");
-      }
-    } else {
-      const [promise] = awaitElementOnce(selector, $root);
-      await promise;
-    }
+    await awaitElement({
+      selector: combinedSelector,
+      $root,
+      abortSignal,
+      maxWaitMillis,
+    });
 
     logger.debug(`Found element: ${combinedSelector}`);
   }

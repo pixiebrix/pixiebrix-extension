@@ -19,7 +19,10 @@ import {
   type IBlock,
   type IExtensionPoint,
   type ResolvedExtension,
+  type RunArgs,
+  RunReason,
   type Schema,
+  type UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -35,6 +38,20 @@ import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent/hoverintent";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
+import {
+  type InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
+import { makeServiceContext } from "@/services/serviceUtils";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import {
+  cancelAllTours,
+  isTourInProgress,
+  type RegisteredTour,
+  registerTour,
+  unregisterTours,
+} from "@/extensionPoints/tourController";
 
 export type TourConfig = {
   tour: BlockPipeline | BlockConfig;
@@ -44,6 +61,8 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   public get kind(): "tour" {
     return "tour";
   }
+
+  readonly extensionTours = new Map<UUID, RegisteredTour>();
 
   async install(): Promise<boolean> {
     return this.isAvailable();
@@ -60,6 +79,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     console.debug("tourExtension:uninstall", {
       id: this.id,
     });
+    unregisterTours([...this.extensionTours.keys()]);
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -72,8 +92,86 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     return blockList(extension.config.tour);
   }
 
-  async run(): Promise<void> {
-    // NOP
+  private async runExtensionTour(
+    extension: ResolvedExtension<TourConfig>,
+    abortController: AbortController
+  ): Promise<void> {
+    const reader = await this.defaultReader();
+    const { tour: tourConfig } = extension.config;
+    const ctxt = await reader.read(document);
+
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
+
+    const initialValues: InitialValues = {
+      input: ctxt,
+      root: document,
+      serviceContext: await makeServiceContext(extension.services),
+      optionsArgs: extension.optionsArgs,
+    };
+
+    await reduceExtensionPipeline(tourConfig, initialValues, {
+      logger: extensionLogger,
+      ...apiVersionOptions(extension.apiVersion),
+      abortSignal: abortController.signal,
+    });
+  }
+
+  /**
+   * Register a tour with the tour controller.
+   * @param extension the tour extension
+   * @private
+   */
+  private registerTour(extension: ResolvedExtension<TourConfig>): void {
+    const tour = registerTour({
+      blueprintId: extension._recipe?.id,
+      extension,
+      run: () => {
+        const abortController = new AbortController();
+        const promise = this.runExtensionTour(extension, abortController);
+        return { promise, abortController };
+      },
+    });
+
+    this.extensionTours.set(extension.id, tour);
+  }
+
+  /**
+   * Decide which tour to run.
+   *
+   * TODO: implement logic to decide which tour to run
+   */
+  decideTour(): ResolvedExtension<TourConfig> {
+    if (this.extensions.length > 0) {
+      return this.extensions[0];
+    }
+
+    return null;
+  }
+
+  async run({ reason }: RunArgs): Promise<void> {
+    // User/brick requested tour run. Cancel any others in progress.
+    if (reason === RunReason.MANUAL) {
+      cancelAllTours();
+    }
+
+    // Always ensure all tours are registered
+    for (const extension of this.extensions) {
+      this.registerTour(extension);
+    }
+
+    if (isTourInProgress()) {
+      // XXX: this logic needs to account for sub-tour calls. Use RunReason?
+      console.debug("Tour already in progress, skipping %s", this.id);
+      return;
+    }
+
+    const extension = this.decideTour();
+
+    if (extension) {
+      this.extensionTours.get(extension.id).run();
+    }
   }
 }
 

@@ -33,20 +33,20 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { uuidv4 } from "@/types/helpers";
-import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TourFormState } from "./formStateTypes";
 import { makeEmptyPermissions } from "@/utils/permissions";
 import {
   type TourConfig,
   type TourDefinition,
+  TourExtensionPoint,
 } from "@/extensionPoints/tourExtension";
+import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
 
 function fromNativeElement(
   url: string,
@@ -187,8 +187,8 @@ const config: ElementConfig<undefined, TourFormState> = {
   displayOrder: 8,
   elementType: "tour",
   label: "Tour",
-  baseClass: TriggerExtensionPoint,
-  EditorNode: TriggerConfiguration,
+  baseClass: TourExtensionPoint,
+  EditorNode: TourConfiguration,
   selectNativeElement: undefined,
   icon: faMapSigns,
   fromNativeElement,

@@ -49,6 +49,7 @@ import ScrollIntoViewEffect from "@/blocks/effects/scrollIntoView";
 import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import ToggleQuickbarEffect from "@/blocks/effects/ToggleQuickbarEffect";
 import SubmitPanelEffect from "@/blocks/effects/submitPanel";
+import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -90,6 +91,7 @@ function registerEffects(): void {
   registerBlock(new AddQuickBarAction());
   registerBlock(new ToggleQuickbarEffect());
   registerBlock(new SubmitPanelEffect());
+  registerBlock(new RunSubTourEffect());
 }
 
 export default registerEffects;

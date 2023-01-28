@@ -310,6 +310,12 @@ export type BlockOptions<
     extraContext?: Record<string, unknown>,
     root?: ReaderRoot
   ) => Promise<unknown>; // Should be PanelPayload
+
+  /**
+   * A signal to abort the current block's execution.
+   * @since 1.7.19
+   */
+  abortSignal?: AbortSignal;
 };
 
 /**

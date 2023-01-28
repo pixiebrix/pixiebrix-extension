@@ -40,6 +40,7 @@ import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RecipeDefinition } from "@/types/definitions";
 import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
+import TourStepTransformer from "@/blocks/transformers/tourStep";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -105,6 +106,10 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
 
     case AddQuickBarAction.BLOCK_ID: {
       return ["action"];
+    }
+
+    case TourStepTransformer.BLOCK_ID: {
+      return ["body", "onBeforeShow", "onAfterShow"];
     }
 
     default: {
