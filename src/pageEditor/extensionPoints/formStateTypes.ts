@@ -256,11 +256,25 @@ export interface QuickBarProviderFormState
   type: "quickBarProvider";
 }
 
+// TourFormState
+type TourExtensionPointState = BaseExtensionPointState & {
+  definition: {
+    type: ExtensionPointType;
+    isAvailable: NormalizedAvailability;
+  };
+};
+
+export interface TourFormState
+  extends BaseFormState<BaseExtensionState, TourExtensionPointState> {
+  type: "tour";
+}
+
 export type FormState =
   | ActionFormState
-  | SidebarFormState
   | TriggerFormState
+  | SidebarFormState
   | PanelFormState
   | ContextMenuFormState
   | QuickBarFormState
-  | QuickBarProviderFormState;
+  | QuickBarProviderFormState
+  | TourFormState;
