@@ -18,7 +18,10 @@
 import { type BlockPipeline } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
-import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import {
+  createNewBlock,
+  getExampleBlockConfig,
+} from "@/pageEditor/exampleBlockConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 const documentBlockId = validateRegistryId("@pixiebrix/document");
@@ -48,10 +51,7 @@ export function getExampleBlockPipeline(
   if (type === "tour") {
     const tourStepBlock = createNewBlock(tourStepBlockId);
     tourStepBlock.outputKey = validateOutputKey("step");
-    tourStepBlock.config = {
-      title: "Example Step",
-      body: "Step content. **Markdown** is supported.",
-    };
+    tourStepBlock.config = getExampleBlockConfig(tourStepBlockId);
 
     return [tourStepBlock];
   }

@@ -35,6 +35,8 @@ import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { DocumentRenderer } from "@/blocks/renderers/document";
 
 const brick = new TourStep();
 
@@ -92,7 +94,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
           if (target.value) {
             setFieldValue(configName("body"), {
               __type__: "pipeline",
-              __value__: [],
+              __value__: [createNewBlock(DocumentRenderer.BLOCK_ID)],
             });
           } else {
             setFieldValue(configName("body"), {
@@ -116,16 +118,35 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       )}
 
-      <Section title="Target Behavior">
-        <SchemaField
-          name={configName("appearance", "wait", "maxWaitMillis")}
-          label="Max Wait Time (ms)"
-          schema={{
-            type: "integer",
-            description:
-              "Maximum time to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
+      <Section title="Targeting Behavior">
+        <FieldTemplate
+          as={SwitchButtonWidget}
+          label="Wait for Target"
+          description="Wait for the target element to be added to the page"
+          name={configName("appearance", "wait")}
+          value={Boolean(appearance?.wait)}
+          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            if (target.value) {
+              setFieldValue(configName("appearance", "wait"), {
+                maxWaitMillis: 0,
+              });
+            } else {
+              setFieldValue(configName("appearance", "wait"), null);
+            }
           }}
         />
+
+        {appearance.wait && (
+          <SchemaField
+            name={configName("appearance", "wait", "maxWaitMillis")}
+            label="Max Wait Time (ms)"
+            schema={{
+              type: "integer",
+              description:
+                "Maximum time to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
+            }}
+          />
+        )}
 
         <SchemaField
           name={configName("appearance", "skippable")}

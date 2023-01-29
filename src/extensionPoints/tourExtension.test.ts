@@ -27,7 +27,7 @@ import {
   type TourDefinition,
   fromJS,
 } from "@/extensionPoints/tourExtension";
-import { RootReader } from "@/extensionPoints/extensionPointTestUtils";
+import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 
 const rootReader = new RootReader();
@@ -95,6 +95,8 @@ describe("tourExtension", () => {
 
     await extensionPoint.install();
     await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    await tick();
 
     expect(rootReader.readCount).toBe(1);
 

@@ -909,7 +909,7 @@ export async function reducePipeline(
       logger: await getStepLogger(blockConfig, pipelineLogger),
     };
 
-    if (abortSignal.aborted) {
+    if (abortSignal?.aborted) {
       throwBlockError(
         blockConfig,
         state,

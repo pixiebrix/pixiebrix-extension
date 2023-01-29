@@ -32,6 +32,8 @@ import { isEmpty } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import sanitize from "@/utils/sanitize";
+import { displayTemporaryInfo } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { PanelEntry, PanelPayload } from "@/sidebar/types";
 
 export type StepInputs = {
   title: string;
@@ -46,13 +48,13 @@ export type StepInputs = {
     disableInteraction?: boolean;
     skippable?: boolean;
     wait?: {
-      maxWaitMillis: number;
+      maxWaitMillis?: number;
     };
     highlight?: {
-      backgroundColor: string;
+      backgroundColor?: string;
     };
     scroll?: {
-      behavior: "auto" | "smooth";
+      behavior?: "auto" | "smooth";
     };
     popover?: {
       position?:
@@ -85,6 +87,45 @@ export class TourStepTransformer extends Transformer {
 
   override async isPure(): Promise<boolean> {
     return false;
+  }
+
+  async showInfoStep(
+    element: HTMLElement | Document,
+    { appearance, title, body }: StepInputs,
+    {
+      abortSignal,
+      logger: {
+        context: { extensionId, extensionPointId, blueprintId },
+      },
+      runRendererPipeline,
+    }: BlockOptions
+  ): Promise<unknown> {
+    const location = element === document ? "modal" : "popover";
+
+    const payload = (await runRendererPipeline(
+      (body as PipelineExpression)?.__value__ ?? [],
+      {
+        key: "body",
+        counter: 0,
+      },
+      {},
+      element
+    )) as PanelPayload;
+
+    const entry: PanelEntry = {
+      extensionId,
+      extensionPointId,
+      blueprintId,
+      heading: title,
+      payload,
+    };
+
+    return displayTemporaryInfo({
+      entry,
+      target: element,
+      location,
+      abortSignal,
+    });
   }
 
   async showIntroJsStep(
@@ -171,7 +212,7 @@ export class TourStepTransformer extends Transformer {
     element: HTMLElement,
     config: StepInputs["appearance"]["highlight"]
   ): void {
-    if (config == null) {
+    if (isEmpty(config)) {
       return;
     }
 
@@ -300,15 +341,6 @@ export class TourStepTransformer extends Transformer {
 
     const target = selector ? await this.locateElement(args, options) : root;
 
-    if (target === document) {
-      throw new PropError(
-        "Tour step cannot target the document",
-        this.id,
-        "selector",
-        selector
-      );
-    }
-
     if (target == null) {
       if (appearance.skippable) {
         // Skip because not found
@@ -321,9 +353,13 @@ export class TourStepTransformer extends Transformer {
       );
     }
 
-    const targetElement = target as HTMLElement;
-
-    this.highlightTarget(targetElement, appearance.highlight);
+    if (target !== document) {
+      const targetElement = target as HTMLElement;
+      this.highlightTarget(targetElement, appearance.highlight);
+      targetElement.scrollIntoView({
+        behavior: appearance.scroll?.behavior,
+      });
+    }
 
     try {
       if (!isEmpty(onBeforeShow?.__value__)) {
@@ -334,14 +370,23 @@ export class TourStepTransformer extends Transformer {
             counter: 0,
           },
           {},
-          targetElement
+          target
         );
       }
 
       if (typeof body === "string") {
-        await this.showIntroJsStep(targetElement, args, options);
+        if (target === document) {
+          throw new PropError(
+            "Simple step cannot target the document",
+            this.id,
+            "selector",
+            selector
+          );
+        }
+
+        await this.showIntroJsStep(target as HTMLElement, args, options);
       } else {
-        throw new TypeError("Not implemented yet.");
+        await this.showInfoStep(target, args, options);
       }
 
       if (!isEmpty(onAfterShow?.__value__)) {
@@ -352,11 +397,14 @@ export class TourStepTransformer extends Transformer {
             counter: 0,
           },
           {},
-          targetElement
+          target
         );
       }
     } finally {
-      this.unhighlightTarget(targetElement);
+      if (target !== document) {
+        const targetElement = target as HTMLElement;
+        this.unhighlightTarget(targetElement);
+      }
     }
 
     return {};
