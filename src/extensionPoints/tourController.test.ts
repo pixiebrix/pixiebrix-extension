@@ -30,11 +30,11 @@ describe("tourController", () => {
   test("ad-hoc tour", () => {
     const nonce = uuidv4();
     const extensionId = uuidv4();
-    const controller = new AbortController();
+    const abortController = new AbortController();
     markTourStart(
       nonce,
       { id: extensionId, label: "Ad-hoc", _recipe: null },
-      controller
+      { abortController }
     );
 
     expect(isTourInProgress()).toBe(true);
@@ -47,11 +47,11 @@ describe("tourController", () => {
   test("cancel all tours", () => {
     const nonce = uuidv4();
     const extensionId = uuidv4();
-    const controller = new AbortController();
+    const abortController = new AbortController();
     markTourStart(
       nonce,
       { id: extensionId, label: "Ad-hoc", _recipe: null },
-      controller
+      { abortController }
     );
 
     expect(isTourInProgress()).toBe(true);

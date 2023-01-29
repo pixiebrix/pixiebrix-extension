@@ -169,7 +169,7 @@ export class TourEffect extends Effect {
           label: label ?? extensionLabel,
           _recipe: { id: blueprintId },
         },
-        abortController
+        { abortController }
       );
 
       // XXX: :sad: can't mark individual steps via markTourStep because intro.js doesn't provide a way to hook into

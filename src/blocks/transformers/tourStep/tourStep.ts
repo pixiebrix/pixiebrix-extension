@@ -30,7 +30,7 @@ import { findSingleElement } from "@/utils/requireSingleElement";
 import sanitize from "@/utils/sanitize";
 import { displayTemporaryInfo } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
-import { markTourStep } from "@/extensionPoints/tourController";
+import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 
 export type StepInputs = {
   title: string;
@@ -392,7 +392,7 @@ export class TourStepTransformer extends Transformer {
       // XXX: use title here? Or use the label from the block? Probably best to use title, since that's what
       // the user sees. The benefit of using block label is that for advanced use cases, the creator could duplicate
       // step names in order to group steps. That's probably better served by an explicit step key though.
-      markTourStep(null, { id: extensionId }, title);
+      markTourStep(getCurrentTour().nonce, { id: extensionId }, title);
 
       if (typeof body === "string") {
         await this.showIntroJsStep(target, args, options);

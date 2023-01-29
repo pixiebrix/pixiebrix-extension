@@ -29,37 +29,31 @@ import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
 import { reportEvent } from "@/telemetry/events";
 
 /**
- * Stack of in-progress tours (by IExtension.id)
- * @see IExtension.id
- */
-const tourStack: UUID[] = [];
-
-/**
- * Abort Controllers to cancel tour(s) in progress.
- * @see IExtension.id
- */
-const tourAbortControllers: Map<UUID, AbortController> = new Map<
-  UUID,
-  AbortController
->();
-
-/**
  * A run of a tour.
  */
 type TourRun = {
   /**
-   * Tour run nonce for debugging.
+   * Tour run nonce for debugging and telemetry
    */
   nonce: UUID;
   /**
+   * The extensionId that ran the tour.
+   */
+  extensionId: UUID;
+  /**
    * Promise that resolves when the tour completes.
    */
-  promise: Promise<void>;
+  promise?: Promise<void>;
   /**
    * Abort controller to cancel the tour.
    */
   abortController: AbortController;
 };
+
+/**
+ * Stack of tours in progress, with nested tours appearing toward the end of the array.
+ */
+const tourStack: TourRun[] = [];
 
 export type RegisteredTour = {
   /**
@@ -91,13 +85,12 @@ const blueprintTourRegistry = new Map<
  */
 export function cancelAllTours(): void {
   // Cancel tours, starting with the most recently started
-  for (const tourId of reverse(tourStack)) {
-    tourAbortControllers.get(tourId)?.abort();
+  for (const { abortController } of reverse(tourStack)) {
+    abortController.abort();
   }
 
-  // Explicitly clear the stack. The tours should clean themselves up, but this is a failsafe
+  // Explicitly clear the stack. The tours should clean themselves up on abort, but this is a failsafe
   remove(tourStack, () => true);
-  tourAbortControllers.clear();
 }
 
 /**
@@ -108,10 +101,18 @@ export function isTourInProgress(): boolean {
 }
 
 /**
+ * Return the currently executing tour, or none if no tour is in progress.
+ */
+export function getCurrentTour(): TourRun | null {
+  return tourStack.at(-1);
+}
+
+/**
  * Mark that a tour is started
  * @param nonce the tour run nonce
  * @param extension the tour extension
  * @param abortController the abort controller for the tour to abort the tour
+ * @param promise (optional) the promise that resolves when the tour completes
  * @private
  */
 export function markTourStart(
@@ -121,14 +122,21 @@ export function markTourStart(
     label: ResolvedExtension["label"];
     _recipe?: Pick<ResolvedExtension["_recipe"], "id">;
   },
-  abortController: AbortController
+  {
+    promise,
+    abortController,
+  }: { promise?: Promise<void>; abortController: AbortController }
 ): void {
-  if (tourStack.includes(extension.id)) {
+  if (tourStack.some((x) => x.extensionId === extension.id)) {
     throw new BusinessError(`Tour already in progress: ${extension.id}`);
   }
 
-  tourStack.push(extension.id);
-  tourAbortControllers.set(extension.id, abortController);
+  tourStack.push({
+    nonce,
+    extensionId: extension.id,
+    promise,
+    abortController,
+  });
 
   void recordStart({
     id: nonce,
@@ -146,7 +154,7 @@ export function markTourStart(
 }
 
 /**
- * Mark that a user is shown a tour step.
+ * Mark that a user is shown a tour step. Currently, tour steps are only recorded in remote telemetry.
  * @param nonce the tour run nonce
  * @param extension the tour extension
  * @param step the step name
@@ -180,7 +188,9 @@ export function markTourEnd(
 ) {
   let skipped = false;
 
-  if (tourStack.includes(extension.id)) {
+  const tourInstance = tourStack.find((x) => x.nonce === nonce);
+
+  if (tourInstance) {
     if (error) {
       if (isSpecificError(error, CancelError)) {
         skipped = true;
@@ -203,10 +213,10 @@ export function markTourEnd(
       completed: !error,
     });
 
-    let tourId: UUID;
-    while ((tourId = tourStack.pop()) !== extension.id) {
-      tourAbortControllers.get(tourId)?.abort();
-      tourAbortControllers.delete(tourId);
+    // Cancel other tours nested within this tour
+    let otherTour: TourRun;
+    while ((otherTour = tourStack.pop())?.nonce !== nonce) {
+      otherTour.abortController.abort();
     }
   }
 }
@@ -252,13 +262,13 @@ export function registerTour({
 
   const blueprintTours = blueprintTourRegistry.get(blueprintId);
 
-  const tour = {
+  const tour: RegisteredTour = {
     blueprintId,
     extensionId: extension.id,
     run() {
       const nonce = uuidv4();
       const { promise, abortController } = run();
-      markTourStart(nonce, extension, abortController);
+      markTourStart(nonce, extension, { promise, abortController });
 
       // Decorate the extension promise with tour tracking
       const runPromise = promise
@@ -271,7 +281,12 @@ export function registerTour({
           markTourEnd(nonce, extension, { error });
         });
 
-      return { promise: runPromise, abortController, nonce };
+      return {
+        nonce,
+        extensionId: extension.id,
+        promise: runPromise,
+        abortController,
+      };
     },
   };
 
