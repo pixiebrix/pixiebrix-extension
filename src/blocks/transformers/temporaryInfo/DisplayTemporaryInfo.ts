@@ -26,7 +26,7 @@ import {
   PANEL_HIDING_EVENT,
   showTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
-import { PanelEntry, type PanelPayload } from "@/sidebar/types";
+import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
 import {
   cancelTemporaryPanels,
   cancelTemporaryPanelsForExtension,
@@ -233,7 +233,7 @@ class DisplayTemporaryInfo extends Transformer {
       extensionPointId,
     };
 
-    return await displayTemporaryInfo({
+    return displayTemporaryInfo({
       entry,
       location,
       abortSignal,

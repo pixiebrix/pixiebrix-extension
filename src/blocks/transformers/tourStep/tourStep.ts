@@ -33,7 +33,7 @@ import { awaitElement } from "@/blocks/effects/wait";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import sanitize from "@/utils/sanitize";
 import { displayTemporaryInfo } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { PanelEntry, PanelPayload } from "@/sidebar/types";
+import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
 
 export type StepInputs = {
   title: string;
