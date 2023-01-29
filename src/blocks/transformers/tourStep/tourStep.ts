@@ -30,6 +30,7 @@ import { findSingleElement } from "@/utils/requireSingleElement";
 import sanitize from "@/utils/sanitize";
 import { displayTemporaryInfo } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
+import { markTourStep } from "@/extensionPoints/tourController";
 
 export type StepInputs = {
   title: string;
@@ -338,8 +339,20 @@ export class TourStepTransformer extends Transformer {
     args: BlockArg<StepInputs>,
     options: BlockOptions
   ): Promise<unknown> {
-    const { root } = options;
-    const { body, selector, onAfterShow, onBeforeShow, appearance = {} } = args;
+    const {
+      root,
+      logger: {
+        context: { extensionId },
+      },
+    } = options;
+    const {
+      title,
+      body,
+      selector,
+      onAfterShow,
+      onBeforeShow,
+      appearance = {},
+    } = args;
 
     const target = selector ? await this.locateElement(args, options) : root;
 
@@ -375,6 +388,11 @@ export class TourStepTransformer extends Transformer {
           target
         );
       }
+
+      // XXX: use title here? Or use the label from the block? Probably best to use title, since that's what
+      // the user sees. The benefit of using block label is that for advanced use cases, the creator could duplicate
+      // step names in order to group steps. That's probably better served by an explicit step key though.
+      markTourStep(null, { id: extensionId }, title);
 
       if (typeof body === "string") {
         await this.showIntroJsStep(target, args, options);

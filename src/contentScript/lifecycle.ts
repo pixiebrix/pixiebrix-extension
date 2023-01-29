@@ -243,6 +243,7 @@ export async function runDynamic(
   _dynamic.set(elementId, extensionPoint);
 
   await runExtensionPoint(extensionPoint, {
+    // The Page Editor is the only caller for runDynamic
     reason: RunReason.PAGE_EDITOR,
     extensionIds: [elementId],
     isCancelled: makeCancelOnNavigate(),

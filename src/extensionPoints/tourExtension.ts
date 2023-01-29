@@ -91,18 +91,16 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     return this.isAvailable();
   }
 
-  removeExtensions(): void {
-    // NOP: the removeExtensions method doesn't need to unregister anything from the page because the
-    // observers/handlers are installed for the extensionPoint itself, not the extensions. I.e., there's a single
-    // load/click/etc. trigger that's shared by all extensions using this extension point.
+  removeExtensions(extensionIds: UUID[]): void {
     console.debug("tourExtension:removeExtensions");
+    unregisterTours(this.extensions.map((x) => x.id));
   }
 
   override uninstall(): void {
     console.debug("tourExtension:uninstall", {
       id: this.id,
     });
-    unregisterTours([...this.extensionTours.keys()]);
+    unregisterTours(this.extensions.map((x) => x.id));
   }
 
   inputSchema: Schema = propertiesToSchema({

@@ -38,7 +38,7 @@ import {
   activateExtensionPanel,
   ensureSidebar,
 } from "@/contentScript/sidebarController";
-import { TourDefinition } from "@/extensionPoints/tourExtension";
+import { type TourDefinition } from "@/extensionPoints/tourExtension";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions = new Map<string, IExtensionPoint>();
@@ -59,7 +59,7 @@ export async function clearDynamicElements({
 }
 
 /**
- * An "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
+ * A "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
  */
 const contextMenuReaderShim = {
   isAvailable: async () => true,

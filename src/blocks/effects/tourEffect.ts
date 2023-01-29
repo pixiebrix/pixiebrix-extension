@@ -172,6 +172,8 @@ export class TourEffect extends Effect {
         abortController
       );
 
+      // XXX: :sad: can't mark individual steps via markTourStep because intro.js doesn't provide a way to hook into
+      // the individual step. There's a PR that pending: https://github.com/usablica/intro.js/pull/1266/files
       const tour = introJs()
         .setOptions({
           showProgress,

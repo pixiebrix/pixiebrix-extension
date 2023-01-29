@@ -26,6 +26,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
+import { reportEvent } from "@/telemetry/events";
 
 /**
  * Stack of in-progress tours (by IExtension.id)
@@ -108,6 +109,7 @@ export function isTourInProgress(): boolean {
 
 /**
  * Mark that a tour is started
+ * @param nonce the tour run nonce
  * @param extension the tour extension
  * @param abortController the abort controller for the tour to abort the tour
  * @private
@@ -133,6 +135,31 @@ export function markTourStart(
     extensionId: extension.id,
     tourName: extension.label,
     packageId: extension._recipe?.id,
+  });
+
+  reportEvent("TourStart", {
+    id: nonce,
+    extensionId: extension.id,
+    tourName: extension.label,
+    packageId: extension._recipe?.id,
+  });
+}
+
+/**
+ * Mark that a user is shown a tour step.
+ * @param nonce the tour run nonce
+ * @param extension the tour extension
+ * @param step the step name
+ */
+export function markTourStep(
+  nonce: UUID,
+  extension: Pick<ResolvedExtension, "id">,
+  step: string
+): void {
+  reportEvent("TourStep", {
+    nonce,
+    extensionId: extension.id,
+    step,
   });
 }
 
@@ -163,6 +190,14 @@ export function markTourEnd(
     }
 
     void recordEnd(nonce, {
+      errored: Boolean(error) && !skipped,
+      skipped,
+      completed: !error,
+    });
+
+    reportEvent("TourEnd", {
+      id: nonce,
+      extensionId: extension.id,
       errored: Boolean(error) && !skipped,
       skipped,
       completed: !error,
@@ -243,6 +278,7 @@ export function registerTour({
   blueprintTours.set(extension.label, tour);
 
   if (allowUserRun) {
+    // Register a quick bar action to run the tour if the user is allowed to manually run the tour
     quickBarRegistry.addAction({
       id: `tour-${extension.id}`,
       extensionId: extension.id,
