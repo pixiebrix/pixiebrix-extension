@@ -4,7 +4,7 @@ name: Rainforest QA Run
 # event triggers in the future. These will require potentially cleanly dealing with concurrent runs
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
 # https://frontside.com/blog/2020-05-26-github-actions-pull_request/
-on: workflow_dispatch
+on: [push]
 
 jobs:
   rainforestqa:
