@@ -50,7 +50,7 @@ export function getExampleBlockPipeline(
     tourStepBlock.outputKey = validateOutputKey("step");
     tourStepBlock.config = {
       title: "Example Step",
-      body: "Example step with **markdown**",
+      body: "Step content. **Markdown** is supported.",
     };
 
     return [tourStepBlock];

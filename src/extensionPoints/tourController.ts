@@ -23,7 +23,7 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import notify from "@/utils/notify";
 
 /**
- * Stack of in-progress tours (by IExtension.id). Only a single top-level tour can be active at a time.
+ * Stack of in-progress tours (by IExtension.id)
  * @see IExtension.id
  */
 const tourStack: UUID[] = [];
@@ -104,28 +104,45 @@ export function isTourInProgress(): boolean {
 /**
  * Mark that a tour is started
  * @param extension the tour extension
+ * @param abortController the abort controller for the tour to abort the tour
  * @private
  */
-function markTourStart(extension: ResolvedExtension): void {
+export function markTourStart(
+  extension: Pick<ResolvedExtension, "id">,
+  abortController: AbortController
+): void {
+  if (tourStack.includes(extension.id)) {
+    throw new BusinessError(`Tour already in progress: ${extension.id}`);
+  }
+
   tourStack.push(extension.id);
+  tourAbortControllers.set(extension.id, abortController);
 }
 
 /**
- * Mark that a tour completed, cancelled, or errored
+ * Mark that a tour completed, cancelled, or errored.
+ *
+ * Cancels all sub-tours nested within the tour.
+ *
  * @param extension the tour extension
  * @param error the error, or undefined if the tour completed successfully
  * @private
  */
-function markTourEnd(
-  extension: ResolvedExtension,
+export function markTourEnd(
+  extension: Pick<ResolvedExtension, "id">,
   { error }: { error?: unknown } = {}
 ) {
-  if (error && !isSpecificError(error, CancelError)) {
-    notify.error({ message: "Error running tour", error });
-  }
+  if (tourStack.includes(extension.id)) {
+    if (error && !isSpecificError(error, CancelError)) {
+      notify.error({ message: "Error running tour", error });
+    }
 
-  remove(tourStack, (x) => x === extension.id);
-  tourAbortControllers.delete(extension.id);
+    let tourId: UUID;
+    while ((tourId = tourStack.pop()) !== extension.id) {
+      tourAbortControllers.get(tourId)?.abort();
+      tourAbortControllers.delete(tourId);
+    }
+  }
 }
 
 /**
@@ -134,8 +151,6 @@ function markTourEnd(
  */
 export function unregisterTours(extensionIds: UUID[]): void {
   for (const extensionId of extensionIds) {
-    tourAbortControllers.delete(extensionId);
-
     for (const tours of blueprintTourRegistry.values()) {
       for (const [label, tour] of tours) {
         if (tour.extensionId === extensionId) {
@@ -146,6 +161,12 @@ export function unregisterTours(extensionIds: UUID[]): void {
   }
 }
 
+/**
+ * Register a tour on the page.
+ * @param blueprintId the blueprint that contains the tour
+ * @param extension the extension corresponding to the tour
+ * @param run method to execute the tour content
+ */
 export function registerTour({
   blueprintId,
   extension,
@@ -166,8 +187,8 @@ export function registerTour({
     extensionId: extension.id,
     run() {
       const nonce = uuidv4();
-      markTourStart(extension);
       const { promise, abortController } = run();
+      markTourStart(extension, abortController);
 
       // Decorate the extension promise with tour tracking
       const runPromise = promise
@@ -190,7 +211,7 @@ export function registerTour({
 }
 
 /**
- * Run a sub-tour by name. Returns a promise of tour completion.
+ * Run a sub-tour by name in a blueprint. Returns a promise of tour completion.
  * @param tour the IExtension.label of the tour to run
  * @param blueprintId the blueprint id containing the tours
  * @throws BusinessError if the tour does not exist

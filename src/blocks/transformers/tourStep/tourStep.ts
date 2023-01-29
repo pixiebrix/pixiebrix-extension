@@ -31,8 +31,9 @@ import { validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import { findSingleElement } from "@/utils/requireSingleElement";
+import sanitize from "@/utils/sanitize";
 
-type Step = {
+export type StepInputs = {
   title: string;
   body: string | PipelineExpression;
 
@@ -49,6 +50,9 @@ type Step = {
     };
     highlight?: {
       backgroundColor: string;
+    };
+    scroll?: {
+      behavior: "auto" | "smooth";
     };
     popover?: {
       position?:
@@ -85,7 +89,7 @@ export class TourStepTransformer extends Transformer {
 
   async showIntroJsStep(
     element: HTMLElement,
-    { appearance, title, body }: Step,
+    { appearance, title, body }: StepInputs,
     { abortSignal }: BlockOptions
   ): Promise<unknown> {
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
@@ -98,20 +102,22 @@ export class TourStepTransformer extends Transformer {
       /* webpackChunkName: "intro.js" */ "intro.js"
     );
 
+    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
+
     const { resolve, reject, promise: tourPromise } = pDefer();
 
     const tour = introJs()
       .setOptions({
         showProgress: false,
         showBullets: false,
-        disableInteraction: appearance.disableInteraction,
+        disableInteraction: appearance?.disableInteraction,
         // Scroll is implemented by the brick
         scrollToElement: false,
         steps: [
           {
             element,
             title,
-            intro: body as string,
+            intro: sanitize(marked(body as string)),
           },
         ],
       })
@@ -139,7 +145,10 @@ export class TourStepTransformer extends Transformer {
    */
   originalStyle: Record<string, string> = undefined;
 
-  async locateElement(args: Step, options: BlockOptions): Promise<HTMLElement> {
+  async locateElement(
+    args: StepInputs,
+    options: BlockOptions
+  ): Promise<HTMLElement> {
     if (args.appearance?.wait) {
       try {
         const $elements = await awaitElement({
@@ -160,7 +169,7 @@ export class TourStepTransformer extends Transformer {
 
   highlightTarget(
     element: HTMLElement,
-    config: Step["appearance"]["highlight"]
+    config: StepInputs["appearance"]["highlight"]
   ): void {
     if (config == null) {
       return;
@@ -195,6 +204,7 @@ export class TourStepTransformer extends Transformer {
           {
             type: "string",
             description: "Content of the step, supports markdown",
+            default: "Step content. **Markdown** is supported.",
             format: "markdown",
           },
           {
@@ -240,7 +250,8 @@ export class TourStepTransformer extends Transformer {
             properties: {
               backgroundColor: {
                 type: "string",
-                description: "An optional color to highlight the element with",
+                description:
+                  "Color to highlight the element with when the step is active",
               },
             },
           },
@@ -281,7 +292,7 @@ export class TourStepTransformer extends Transformer {
   );
 
   async transform(
-    args: BlockArg<Step>,
+    args: BlockArg<StepInputs>,
     options: BlockOptions
   ): Promise<unknown> {
     const { root } = options;

@@ -24,6 +24,11 @@ import { $safeFind } from "@/helpers";
 import pDefer from "p-defer";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
+import {
+  isTourInProgress,
+  markTourEnd,
+  markTourStart,
+} from "@/extensionPoints/tourController";
 
 type Step = {
   title: string;
@@ -39,9 +44,6 @@ type Step = {
     | "bottom-right-aligned"
     | "auto";
 };
-
-// `true` if there is currently a tour in progress on the page
-let tourInProgress = false;
 
 export class TourEffect extends Effect {
   constructor() {
@@ -120,8 +122,10 @@ export class TourEffect extends Effect {
       steps = [] as Step[],
       isRootAware = false,
     }: BlockArg,
-    { root, abortSignal }: BlockOptions
+    { root, abortSignal: brickAbortSignal, logger }: BlockOptions
   ): Promise<void> {
+    const { extensionId } = logger.context;
+    const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
     // NOTE: we're not using $safeFindElementsWithRootMode in this method because:
@@ -142,7 +146,7 @@ export class TourEffect extends Effect {
     const { resolve, reject, promise: tourPromise } = pDefer();
 
     try {
-      if (tourInProgress) {
+      if (isTourInProgress()) {
         throw new BusinessError("A tour is already in progress");
       }
 
@@ -153,7 +157,7 @@ export class TourEffect extends Effect {
         );
       }
 
-      tourInProgress = true;
+      markTourStart({ id: extensionId }, abortController);
 
       const tour = introJs()
         .setOptions({
@@ -177,13 +181,18 @@ export class TourEffect extends Effect {
         })
         .start();
 
-      abortSignal?.addEventListener("abort", () => {
+      abortController.signal.addEventListener("abort", () => {
+        tour.exit(true);
+      });
+
+      brickAbortSignal?.addEventListener("abort", () => {
         tour.exit(true);
       });
 
       await tourPromise;
-    } finally {
-      tourInProgress = false;
+      markTourEnd({ id: extensionId });
+    } catch (error) {
+      markTourEnd({ id: extensionId }, { error });
     }
   }
 }

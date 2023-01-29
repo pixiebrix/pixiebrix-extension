@@ -48,7 +48,7 @@ import { RandomNumber } from "@/blocks/transformers/randomNumber";
 import Retry from "@/blocks/transformers/controlFlow/Retry";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import TraverseElements from "@/blocks/transformers/traverseElements";
-import TourStepTransformer from "@/blocks/transformers/tourStep";
+import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());

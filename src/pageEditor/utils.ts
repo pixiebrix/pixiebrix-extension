@@ -35,12 +35,12 @@ import Retry from "@/blocks/transformers/controlFlow/Retry";
 import { castArray } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
-import { isExpression } from "@/runtime/mapArgs";
+import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RecipeDefinition } from "@/types/definitions";
 import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
-import TourStepTransformer from "@/blocks/transformers/tourStep";
+import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -78,6 +78,13 @@ export function getRecipeById(
   return recipes.find((recipe) => recipe.metadata.id === id);
 }
 
+/**
+ * Return pipeline prop names for a configured block.
+ *
+ * Returns prop names in the order they should be displayed in the layout.
+ *
+ * @param block the configured block
+ */
 export function getPipelinePropNames(block: BlockConfig): string[] {
   switch (block.id) {
     case ForEach.BLOCK_ID: {
@@ -109,7 +116,24 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
     }
 
     case TourStepTransformer.BLOCK_ID: {
-      return ["body", "onBeforeShow", "onAfterShow"];
+      const propNames = [];
+
+      // Only show onBeforeShow if it's provided, to avoid cluttering the UI
+      if (block.config.onBeforeShow != null) {
+        propNames.push("onBeforeShow");
+      }
+
+      // `body` can be a markdown value, or a pipeline
+      if (isPipelineExpression(block.config.body)) {
+        propNames.push("body");
+      }
+
+      // Only show onAfterShow if it's provided, to avoid cluttering the UI
+      if (block.config.onAfterShow != null) {
+        propNames.push("onAfterShow");
+      }
+
+      return propNames;
     }
 
     default: {
