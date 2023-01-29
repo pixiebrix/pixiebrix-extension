@@ -17,6 +17,7 @@
 
 import {
   cancelAllTours,
+  getCurrentTour,
   isTourInProgress,
   markTourEnd,
   markTourStart,
@@ -76,10 +77,12 @@ describe("tourController", () => {
       }),
     });
 
-    const { promise: subTourPromise } = await runSubTour({
+    const { promise: subTourPromise, nonce } = await runSubTour({
       tour: "Test Tour",
       blueprintId,
     });
+
+    expect(getCurrentTour().nonce).toBe(nonce);
 
     tourPromise.resolve();
 

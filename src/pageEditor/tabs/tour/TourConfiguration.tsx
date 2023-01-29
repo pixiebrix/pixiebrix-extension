@@ -22,7 +22,6 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const TourConfiguration: React.FC<{
@@ -46,7 +45,7 @@ const TourConfiguration: React.FC<{
         <option value="always">Always</option>
       </ConnectedFieldTemplate>
 
-      <SchemaField
+      <ConnectedFieldTemplate
         name="extensionPoint.definition.allowUserRun"
         schema={{
           type: "boolean",
