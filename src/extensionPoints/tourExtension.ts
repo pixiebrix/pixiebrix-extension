@@ -139,8 +139,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
 
   /**
    * Decide which tour to run.
-   *
-   * TODO: implement logic to decide which tour to run
+   * TODO: implement logic to decide which tour to run by referencing schedule and user's tour history.
    */
   decideTour(): ResolvedExtension<TourConfig> {
     if (this.extensions.length > 0) {
@@ -151,8 +150,9 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   }
 
   async run({ reason }: RunArgs): Promise<void> {
-    // User/brick requested tour run. Cancel any others in progress.
-    if (reason === RunReason.MANUAL) {
+    // User requested the tour run from the Page Editor
+    // XXX: do we need to do any extra logic in decideTour to force the tour they're editing?
+    if (reason === RunReason.PAGE_EDITOR) {
       cancelAllTours();
     }
 

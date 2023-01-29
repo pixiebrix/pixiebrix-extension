@@ -241,7 +241,7 @@ export async function runDynamic(
 
   await runExtensionPoint(
     extensionPoint,
-    RunReason.MANUAL,
+    RunReason.PAGE_EDITOR,
     makeCancelOnNavigate()
   );
 }
