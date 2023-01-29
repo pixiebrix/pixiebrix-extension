@@ -173,7 +173,7 @@ export function registerTour({
   run,
 }: {
   blueprintId: RegistryId;
-  extension: ResolvedExtension;
+  extension: Pick<ResolvedExtension, "id" | "label">;
   run: () => { promise: Promise<void>; abortController: AbortController };
 }): RegisteredTour {
   if (!blueprintTourRegistry.has(blueprintId)) {
