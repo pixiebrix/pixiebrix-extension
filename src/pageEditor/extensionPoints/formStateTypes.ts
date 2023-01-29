@@ -59,6 +59,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
 } from "@/extensionPoints/quickBarProviderExtension";
+import { type TourDefinition } from "@/extensionPoints/tourExtension";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
@@ -261,6 +262,8 @@ type TourExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     isAvailable: NormalizedAvailability;
+    allowUserRun?: TourDefinition["allowUserRun"];
+    autoRunSchedule?: TourDefinition["autoRunSchedule"];
   };
 };
 

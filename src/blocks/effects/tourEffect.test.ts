@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TourEffect } from "@/blocks/effects/tour";
+import { TourEffect } from "@/blocks/effects/tourEffect";
 
 const brick = new TourEffect();
 

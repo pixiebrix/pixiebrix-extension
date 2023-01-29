@@ -63,6 +63,20 @@ const Controls: React.FunctionComponent<{
 );
 
 /**
+ * Return true if the element should be automatically updated on the page.
+ * @param element the Page Editor form element
+ */
+export function shouldAutoRun(element: FormState): boolean {
+  // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
+  const isPanel = isPanelElement(element);
+  const isTrigger = isAutomaticTrigger(element);
+  const isTour = element.type === "tour";
+  const automaticUpdate = !(isTrigger || isPanel || isTour);
+
+  return automaticUpdate || element.autoReload;
+}
+
+/**
  * Element reload controls for the page editor toolbar.
  *
  * Automatically update elements that are safe to update because they require user interaction to trigger. For others,
@@ -105,17 +119,14 @@ const ReloadToolbar: React.FunctionComponent<{
   const isPanel = isPanelElement(element);
   const isTrigger = isAutomaticTrigger(element);
   const isTour = element.type === "tour";
-  const automaticUpdate = !(isTrigger || isPanel || isTour);
 
   useEffect(() => {
-    if (!automaticUpdate && !element.autoReload) {
-      // By default, don't automatically trigger (because it might be doing expensive
-      // operations such as hitting an API)
+    if (shouldAutoRun(element)) {
       return;
     }
 
     void debouncedRun();
-  }, [debouncedRun, automaticUpdate, element]);
+  }, [debouncedRun, element]);
 
   if (isPanel) {
     return (

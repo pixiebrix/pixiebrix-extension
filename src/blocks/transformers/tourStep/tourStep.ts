@@ -21,11 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import pDefer from "p-defer";
-import {
-  CancelError,
-  NoElementsFoundError,
-  PropError,
-} from "@/errors/businessErrors";
+import { CancelError, NoElementsFoundError } from "@/errors/businessErrors";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
@@ -46,6 +42,7 @@ export type StepInputs = {
   selector: string;
   appearance?: {
     disableInteraction?: boolean;
+    showOverlay?: boolean;
     skippable?: boolean;
     wait?: {
       maxWaitMillis?: number;
@@ -129,7 +126,7 @@ export class TourStepTransformer extends Transformer {
   }
 
   async showIntroJsStep(
-    element: HTMLElement,
+    element: HTMLElement | Document,
     { appearance, title, body }: StepInputs,
     { abortSignal }: BlockOptions
   ): Promise<unknown> {
@@ -156,7 +153,7 @@ export class TourStepTransformer extends Transformer {
         scrollToElement: false,
         steps: [
           {
-            element,
+            element: element === document ? null : (element as HTMLElement),
             title,
             intro: sanitize(marked(body as string)),
           },
@@ -286,6 +283,11 @@ export class TourStepTransformer extends Transformer {
             description:
               "When an element is highlighted, users can interact with the underlying element. To disable this behavior set disableInteraction to true",
           },
+          showOverlay: {
+            type: "boolean",
+            default: true,
+            description: "Apply an overlay to the page when the step is active",
+          },
           highlight: {
             type: "object",
             properties: {
@@ -375,16 +377,7 @@ export class TourStepTransformer extends Transformer {
       }
 
       if (typeof body === "string") {
-        if (target === document) {
-          throw new PropError(
-            "Simple step cannot target the document",
-            this.id,
-            "selector",
-            selector
-          );
-        }
-
-        await this.showIntroJsStep(target as HTMLElement, args, options);
+        await this.showIntroJsStep(target, args, options);
       } else {
         await this.showInfoStep(target, args, options);
       }

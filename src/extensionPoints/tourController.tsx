@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { type RegistryId, type ResolvedExtension, type UUID } from "@/core";
 import { remove, reverse } from "lodash";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import notify from "@/utils/notify";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
+import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
 
 /**
  * Stack of in-progress tours (by IExtension.id)
@@ -108,7 +113,12 @@ export function isTourInProgress(): boolean {
  * @private
  */
 export function markTourStart(
-  extension: Pick<ResolvedExtension, "id">,
+  nonce: UUID,
+  extension: {
+    id: ResolvedExtension["id"];
+    label: ResolvedExtension["label"];
+    _recipe?: Pick<ResolvedExtension["_recipe"], "id">;
+  },
   abortController: AbortController
 ): void {
   if (tourStack.includes(extension.id)) {
@@ -117,6 +127,13 @@ export function markTourStart(
 
   tourStack.push(extension.id);
   tourAbortControllers.set(extension.id, abortController);
+
+  void recordStart({
+    id: nonce,
+    extensionId: extension.id,
+    tourName: extension.label,
+    packageId: extension._recipe?.id,
+  });
 }
 
 /**
@@ -124,18 +141,32 @@ export function markTourStart(
  *
  * Cancels all sub-tours nested within the tour.
  *
+ * @param nonce the tour run nonce
  * @param extension the tour extension
  * @param error the error, or undefined if the tour completed successfully
  * @private
  */
 export function markTourEnd(
+  nonce: UUID,
   extension: Pick<ResolvedExtension, "id">,
   { error }: { error?: unknown } = {}
 ) {
+  let skipped = false;
+
   if (tourStack.includes(extension.id)) {
-    if (error && !isSpecificError(error, CancelError)) {
-      notify.error({ message: "Error running tour", error });
+    if (error) {
+      if (isSpecificError(error, CancelError)) {
+        skipped = true;
+      } else {
+        notify.error({ message: "Error running tour", error });
+      }
     }
+
+    void recordEnd(nonce, {
+      errored: Boolean(error) && !skipped,
+      skipped,
+      completed: !error,
+    });
 
     let tourId: UUID;
     while ((tourId = tourStack.pop()) !== extension.id) {
@@ -155,6 +186,7 @@ export function unregisterTours(extensionIds: UUID[]): void {
       for (const [label, tour] of tours) {
         if (tour.extensionId === extensionId) {
           tours.delete(label);
+          quickBarRegistry.removeAction(`tour-${tour.extensionId}`);
         }
       }
     }
@@ -165,15 +197,18 @@ export function unregisterTours(extensionIds: UUID[]): void {
  * Register a tour on the page.
  * @param blueprintId the blueprint that contains the tour
  * @param extension the extension corresponding to the tour
+ * @param allowUserRun whether the user can manually run the tour
  * @param run method to execute the tour content
  */
 export function registerTour({
   blueprintId,
   extension,
+  allowUserRun,
   run,
 }: {
   blueprintId: RegistryId;
-  extension: Pick<ResolvedExtension, "id" | "label">;
+  extension: Pick<ResolvedExtension, "id" | "label" | "_recipe">;
+  allowUserRun?: boolean;
   run: () => { promise: Promise<void>; abortController: AbortController };
 }): RegisteredTour {
   if (!blueprintTourRegistry.has(blueprintId)) {
@@ -188,17 +223,17 @@ export function registerTour({
     run() {
       const nonce = uuidv4();
       const { promise, abortController } = run();
-      markTourStart(extension, abortController);
+      markTourStart(nonce, extension, abortController);
 
       // Decorate the extension promise with tour tracking
       const runPromise = promise
         // eslint-disable-next-line promise/prefer-await-to-then -- avoid separate method
         .then(() => {
-          markTourEnd(extension);
+          markTourEnd(nonce, extension);
         })
         // eslint-disable-next-line promise/prefer-await-to-then -- avoid separate method
         .catch((error) => {
-          markTourEnd(extension, { error });
+          markTourEnd(nonce, extension, { error });
         });
 
       return { promise: runPromise, abortController, nonce };
@@ -206,6 +241,18 @@ export function registerTour({
   };
 
   blueprintTours.set(extension.label, tour);
+
+  if (allowUserRun) {
+    quickBarRegistry.addAction({
+      id: `tour-${extension.id}`,
+      extensionId: extension.id,
+      name: `Run Tour ${extension.label}`,
+      icon: <FontAwesomeIcon icon={faMapSigns} />,
+      perform() {
+        tour.run();
+      },
+    });
+  }
 
   return tour;
 }

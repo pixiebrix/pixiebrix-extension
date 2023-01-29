@@ -31,7 +31,15 @@ import {
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep } from "lodash";
+import {
+  castArray,
+  cloneDeep,
+  groupBy,
+  mapValues,
+  max,
+  minBy,
+  partition,
+} from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { blockList } from "@/blocks/util";
@@ -52,8 +60,13 @@ import {
   registerTour,
   unregisterTours,
 } from "@/extensionPoints/tourController";
+import { getAll } from "@/tours/tourRunDatabase";
 
 export type TourConfig = {
+  /**
+   * The tour pipeline to run
+   * @since 1.7.19
+   */
   tour: BlockPipeline | BlockConfig;
 };
 
@@ -63,6 +76,16 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   }
 
   readonly extensionTours = new Map<UUID, RegisteredTour>();
+
+  /**
+   * Allow the user to manually run the tour, e.g., via the Quick Bar.
+   */
+  abstract get allowUserRun(): boolean;
+
+  /**
+   * Schedule for automatically running the tour.
+   */
+  abstract get autoRunSchedule(): TourDefinition["autoRunSchedule"];
 
   async install(): Promise<boolean> {
     return this.isAvailable();
@@ -127,6 +150,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     const tour = registerTour({
       blueprintId: extension._recipe?.id,
       extension,
+      allowUserRun: this.allowUserRun,
       run: () => {
         const abortController = new AbortController();
         const promise = this.runExtensionTour(extension, abortController);
@@ -138,22 +162,59 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   }
 
   /**
-   * Decide which tour to run.
-   * TODO: implement logic to decide which tour to run by referencing schedule and user's tour history.
+   * Decide which tour to run based on the autoRunSchedule and the tour history.
+   *
+   * Prefer:
+   * - If "once", only consider tours that haven't finished before.
+   * - If "always", consider all tours
+   * - Choose the tour that hasn't been run in the longest time
+   *
+   * @see autoRunSchedule
    */
-  decideTour(): ResolvedExtension<TourConfig> {
-    if (this.extensions.length > 0) {
-      return this.extensions[0];
+  async decideAutoRunTour(): Promise<ResolvedExtension<TourConfig>> {
+    const extensionIds = new Set(this.extensions.map((x) => x.id));
+
+    const runs = await getAll();
+
+    // Try to group by extensionId, otherwise fall back to blueprintId+label
+    const matching = groupBy(runs, (tour) => {
+      if (extensionIds.has(tour.extensionId)) {
+        return tour.extensionId;
+      }
+
+      for (const extension of this.extensions) {
+        if (
+          extension._recipe?.id === tour.packageId &&
+          extension.label === tour.tourName
+        ) {
+          return extension.id;
+        }
+      }
+
+      return null;
+    });
+
+    const latest = mapValues(matching, (xs) =>
+      max(xs.map((x) => Date.parse(x.updatedAt)))
+    );
+
+    const [someRun, neverRun] = partition(this.extensions, (x) => latest[x.id]);
+
+    if (neverRun.length > 0) {
+      return neverRun[0];
     }
 
-    return null;
+    if (this.autoRunSchedule === "once") {
+      return null;
+    }
+
+    return minBy(someRun, (x) => latest[x.id]);
   }
 
-  async run({ reason }: RunArgs): Promise<void> {
-    // User requested the tour run from the Page Editor
-    // XXX: do we need to do any extra logic in decideTour to force the tour they're editing?
-    if (reason === RunReason.PAGE_EDITOR) {
-      cancelAllTours();
+  async run({ reason, extensionIds }: RunArgs): Promise<void> {
+    if (this.extensions.length === 0) {
+      // NOP
+      return;
     }
 
     // Always ensure all tours are registered
@@ -161,24 +222,49 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
       this.registerTour(extension);
     }
 
+    // User requested the tour run from the Page Editor or manually
+    if (reason === RunReason.PAGE_EDITOR || reason === RunReason.MANUAL) {
+      cancelAllTours();
+      const extensionPool = extensionIds ?? this.extensions.map((x) => x.id);
+      this.extensionTours.get(extensionPool[0])?.run();
+      return;
+    }
+
     if (isTourInProgress()) {
-      // XXX: this logic needs to account for sub-tour calls. Use RunReason?
       console.debug("Tour already in progress, skipping %s", this.id);
       return;
     }
 
-    const extension = this.decideTour();
+    if (this.autoRunSchedule === "never") {
+      // Don't auto-run tours from this extension point. They must be run via the tourController run method
+      return;
+    }
 
-    if (extension) {
+    // Have to re-check isTourInProgress to avoid race condition with other instances of this extension point
+    // returning from decideAutoRunTour
+    const extension = await this.decideAutoRunTour();
+    if (extension && !isTourInProgress()) {
       this.extensionTours.get(extension.id).run();
     }
   }
 }
 
-type TourDefinitionOptions = Record<string, string>;
+type TourDefinitionOptions = Record<string, unknown>;
 
 export interface TourDefinition extends ExtensionPointDefinition {
   defaultOptions?: TourDefinitionOptions;
+
+  /**
+   * Automatically run the tour on matching pages.
+   * @since 1.7.19
+   */
+  autoRunSchedule?: "never" | "once" | "always";
+
+  /**
+   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
+   * @since 1.7.19
+   */
+  allowUserRun?: boolean;
 }
 
 class RemoteTourExtensionPoint extends TourExtensionPoint {
@@ -188,8 +274,8 @@ class RemoteTourExtensionPoint extends TourExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<TourDefinition>;
 
-  public override get defaultOptions(): Record<string, string> {
-    return this._definition.defaultOptions ?? {};
+  public override get defaultOptions(): Record<string, unknown> {
+    return this._definition.defaultOptions ?? { allowUserRun: true };
   }
 
   constructor(config: ExtensionPointConfig<TourDefinition>) {
@@ -207,6 +293,14 @@ class RemoteTourExtensionPoint extends TourExtensionPoint {
 
   override async defaultReader() {
     return mergeReaders(this._definition.reader);
+  }
+
+  override get allowUserRun(): boolean {
+    return this._definition.allowUserRun ?? true;
+  }
+
+  override get autoRunSchedule(): TourDefinition["autoRunSchedule"] {
+    return this._definition.autoRunSchedule ?? "never";
   }
 
   async isAvailable(): Promise<boolean> {

@@ -29,6 +29,7 @@ import {
   markTourEnd,
   markTourStart,
 } from "@/extensionPoints/tourController";
+import { uuidv4 } from "@/types/helpers";
 
 type Step = {
   title: string;
@@ -124,7 +125,8 @@ export class TourEffect extends Effect {
     }: BlockArg,
     { root, abortSignal: brickAbortSignal, logger }: BlockOptions
   ): Promise<void> {
-    const { extensionId } = logger.context;
+    const { extensionId, label, extensionLabel, blueprintId } = logger.context;
+    const nonce = uuidv4();
     const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
@@ -157,7 +159,18 @@ export class TourEffect extends Effect {
         );
       }
 
-      markTourStart({ id: extensionId }, abortController);
+      // Try to identify the tour via step name. If step name is not provided, identify via IExtension.label.
+      // The Show Tour Brick is run as part of buttons/triggers, so the label won't affect the auto-run behavior
+      // for tour extensions.
+      markTourStart(
+        nonce,
+        {
+          id: extensionId,
+          label: label ?? extensionLabel,
+          _recipe: { id: blueprintId },
+        },
+        abortController
+      );
 
       const tour = introJs()
         .setOptions({
@@ -190,9 +203,10 @@ export class TourEffect extends Effect {
       });
 
       await tourPromise;
-      markTourEnd({ id: extensionId });
+      markTourEnd(nonce, { id: extensionId });
     } catch (error) {
-      markTourEnd({ id: extensionId }, { error });
+      markTourEnd(nonce, { id: extensionId }, { error });
+      throw error;
     }
   }
 }

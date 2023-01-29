@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable filenames/match-exported */
 import { type IExtension, type Metadata } from "@/core";
 import {
   baseFromExtension,
@@ -61,6 +60,8 @@ function fromNativeElement(
       metadata,
       definition: {
         type: "tour",
+        allowUserRun: true,
+        autoRunSchedule: "never",
         reader: getImplicitReader("tour"),
         isAvailable: makeIsAvailable(url),
       },
@@ -175,7 +176,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        type: extensionPoint.definition.type,
+        ...extensionPoint.definition,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
@@ -188,6 +189,7 @@ const config: ElementConfig<undefined, TourFormState> = {
   elementType: "tour",
   label: "Tour",
   baseClass: TourExtensionPoint,
+  flag: "pageeditor-tour",
   EditorNode: TourConfiguration,
   selectNativeElement: undefined,
   icon: faMapSigns,

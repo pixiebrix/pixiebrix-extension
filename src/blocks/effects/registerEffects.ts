@@ -35,7 +35,7 @@ import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { TelemetryEffect } from "./telemetry";
 import { ConfettiEffect } from "./confetti";
-import { TourEffect } from "./tour";
+import { TourEffect } from "./tourEffect";
 import { AttachAutocomplete } from "./attachAutocomplete";
 import { ReactivateEffect } from "./reactivate";
 import { SoundEffect } from "./sound";

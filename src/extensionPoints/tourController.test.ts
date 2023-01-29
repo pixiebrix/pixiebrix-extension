@@ -28,21 +28,31 @@ import pDefer from "p-defer";
 
 describe("tourController", () => {
   test("ad-hoc tour", () => {
-    const id = uuidv4();
+    const nonce = uuidv4();
+    const extensionId = uuidv4();
     const controller = new AbortController();
-    markTourStart({ id }, controller);
+    markTourStart(
+      nonce,
+      { id: extensionId, label: "Ad-hoc", _recipe: null },
+      controller
+    );
 
     expect(isTourInProgress()).toBe(true);
 
-    markTourEnd({ id });
+    markTourEnd(nonce, { id: extensionId });
 
     expect(isTourInProgress()).toBe(false);
   });
 
   test("cancel all tours", () => {
-    const id = uuidv4();
+    const nonce = uuidv4();
+    const extensionId = uuidv4();
     const controller = new AbortController();
-    markTourStart({ id }, controller);
+    markTourStart(
+      nonce,
+      { id: extensionId, label: "Ad-hoc", _recipe: null },
+      controller
+    );
 
     expect(isTourInProgress()).toBe(true);
 
@@ -58,7 +68,8 @@ describe("tourController", () => {
 
     registerTour({
       blueprintId,
-      extension: { id: uuidv4(), label: "Test Tour" },
+      extension: { id: uuidv4(), label: "Test Tour", _recipe: null },
+      allowUserRun: false,
       run: () => ({
         promise: tourPromise.promise,
         abortController: new AbortController(),
