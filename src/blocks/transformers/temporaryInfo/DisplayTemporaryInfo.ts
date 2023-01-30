@@ -25,6 +25,7 @@ import {
   hideTemporarySidebarPanel,
   PANEL_HIDING_EVENT,
   showTemporarySidebarPanel,
+  updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import { type PanelPayload } from "@/sidebar/types";
 import {
@@ -32,14 +33,18 @@ import {
   cancelTemporaryPanelsForExtension,
   cancelTemporaryPanels,
   waitForTemporaryPanel,
+  updatePanelDefinition,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 
 type Location = "panel" | "modal" | "popover";
+// Match naming of the sidebar panel extension point
+type RenderTrigger = "manual" | "statechange";
 
 export async function createFrameSource(
   nonce: string,
@@ -88,6 +93,11 @@ class DisplayTemporaryInfo extends Transformer {
         default: "panel",
         description: "The location of the information (default='panel')",
       },
+      refreshTrigger: {
+        type: "string",
+        enum: ["manual", "statechange"],
+        description: "An optional trigger for refreshing the document",
+      },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
     required: ["body"],
@@ -98,10 +108,12 @@ class DisplayTemporaryInfo extends Transformer {
       title,
       body: bodyPipeline,
       location = "panel",
+      refreshTrigger = "manual",
       isRootAware = false,
     }: BlockArg<{
       title: string;
       location: Location;
+      refreshTrigger: RenderTrigger;
       body: PipelineExpression;
       isRootAware: boolean;
     }>,
@@ -117,6 +129,8 @@ class DisplayTemporaryInfo extends Transformer {
   ): Promise<UnknownObject | null> {
     expectContext("contentScript");
 
+    let counter = 0;
+
     const target = isRootAware ? root : document;
 
     const nonce = uuidv4();
@@ -126,7 +140,7 @@ class DisplayTemporaryInfo extends Transformer {
       bodyPipeline?.__value__ ?? [],
       {
         key: "body",
-        counter: 0,
+        counter,
       },
       {},
       target
@@ -195,6 +209,46 @@ class DisplayTemporaryInfo extends Transformer {
       }
     }
 
+    const rerender = async () => {
+      // Increment branch counter for tracing
+      counter += 1;
+
+      try {
+        const payload = (await runRendererPipeline(
+          bodyPipeline?.__value__ ?? [],
+          {
+            key: "body",
+            counter,
+          },
+          {},
+          target
+        )) as PanelPayload;
+
+        const newEntry = {
+          extensionId,
+          nonce,
+          heading: title,
+          // Force a re-render by changing the key
+          payload: { ...payload, key: uuidv4() },
+        };
+
+        updatePanelDefinition(newEntry);
+
+        if (location === "panel") {
+          updateTemporarySidebarPanel(newEntry);
+        } else {
+          updateTemporaryOverlayPanel(newEntry);
+        }
+      } catch (error) {
+        // XXX: in the future, we may want to updatePanelDefinition with the error
+        console.warn("Ignoring error re-rendering temporary panel", error);
+      }
+    };
+
+    if (refreshTrigger === "statechange") {
+      $(document).on("statechange", rerender);
+    }
+
     let result = null;
 
     try {
@@ -216,6 +270,7 @@ class DisplayTemporaryInfo extends Transformer {
       }
     } finally {
       controller.abort();
+      $(document).off("statechange", rerender);
     }
 
     return result ?? {};
