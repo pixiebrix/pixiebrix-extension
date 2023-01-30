@@ -145,6 +145,7 @@ const BlockConfiguration: React.FunctionComponent<{
   // it's root-aware if multiple menu items are added to the page.
   // Technically trigger/quickBar/etc. allow the user to pick the target mode. But for now, show the field even if
   // the user has configured the extension point to use the document as the target.
+  // Include tour because the Show Tour Step brick passes the target through to its pipeline
   const showRootMode =
     isRootAware &&
     [
@@ -153,6 +154,7 @@ const BlockConfiguration: React.FunctionComponent<{
       "quickBar",
       "quickBarProvider",
       "menuItem",
+      "tour",
     ].includes(context.values.type);
   const showIfAndTarget = blockType && blockType !== "renderer";
   const noAdvancedOptions = !showRootMode && !showIfAndTarget;

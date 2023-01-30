@@ -57,11 +57,18 @@ import { type UnknownObject } from "@/types";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
-import { BusinessError, NoRendererError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  NoRendererError,
+} from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/sidebar/types";
 import { getLoggingConfig } from "@/telemetry/logging";
 
+/**
+ * CommonOptions for running pipelines and blocks
+ */
 type CommonOptions = ApiVersionOptions & {
   /**
    * `true` to log all block inputs to the context-aware logger.
@@ -79,6 +86,11 @@ type CommonOptions = ApiVersionOptions & {
    * data over to be rendered in a PixieBrix sidebar.
    */
   headless: boolean;
+  /**
+   * An optional signal to abort the pipeline.
+   * @since 1.7.19
+   */
+  abortSignal?: AbortSignal;
 };
 
 type RunMetadata = {
@@ -865,7 +877,7 @@ export async function reducePipeline(
 
   const { input, root, serviceContext, optionsArgs } = initialValues;
 
-  const { explicitDataFlow, logger: pipelineLogger } = options;
+  const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
   let context: BlockArgContext = {
     // Put serviceContext first to prevent overriding the input/options
@@ -896,6 +908,15 @@ export async function reducePipeline(
       // eslint-disable-next-line no-await-in-loop -- see comment above
       logger: await getStepLogger(blockConfig, pipelineLogger),
     };
+
+    if (abortSignal?.aborted) {
+      throwBlockError(
+        blockConfig,
+        state,
+        new CancelError("Run automatically cancelled"),
+        stepOptions
+      );
+    }
 
     try {
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step

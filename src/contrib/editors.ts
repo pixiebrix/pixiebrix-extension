@@ -51,6 +51,8 @@ import DocumentOptions, {
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
+import { TourStepTransformer } from "@/blocks/transformers/tourStep/tourStep";
+import TourStepOptions from "@/blocks/transformers/tourStep/TourStepOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -73,4 +75,5 @@ export default function registerEditors() {
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
   optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
   optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
+  optionsRegistry.set(TourStepTransformer.BLOCK_ID, TourStepOptions);
 }

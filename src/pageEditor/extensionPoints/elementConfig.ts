@@ -91,7 +91,7 @@ export interface BaseFormState<
 
   /**
    * True if the extension should be allowed to auto-reload. In general, only extensions that require user
-   * interaction to trigger should be allowed to auto-reload. Otherwise, PixieBrix might end up spamming a API
+   * interaction to trigger should be allowed to auto-reload. Otherwise, PixieBrix might end up spamming an API
    */
   autoReload?: boolean;
 
