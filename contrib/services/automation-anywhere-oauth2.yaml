@@ -2,7 +2,7 @@ apiVersion: v1
 kind: service
 metadata:
   id: "automation-anywhere/oauth2"
-  version: 4.0.0
+  version: 3.1.0
   name: Automation Anywhere OAuth2 (Preview)
   description: Preview/test integration of OAuth2 authentication for Automation Anywhere
 inputSchema:
