@@ -44,6 +44,24 @@ describe("LocalDefinedService", () => {
     ]);
   });
 
+  test("get origins from oauth2 service using custom authConfigOrigin", () => {
+    const authConfigOrigin = "https://authconfig.example.com";
+
+    const service = fromJS(
+      automationAnywhereOAuth2 as unknown as ServiceDefinition
+    );
+    const origins = service.getOrigins({
+      controlRoomUrl: "https://controlroom.example.com",
+      authConfigOrigin,
+    } as unknown as SanitizedConfig);
+
+    expect(origins).toEqual([
+      "https://controlroom.example.com/*",
+      `${authConfigOrigin}/client/oauth/authorize?hosturl=https://controlroom.example.com&audience=https://controlroom`,
+      `${authConfigOrigin}/client/oauth/token`,
+    ]);
+  });
+
   test("excludes invalid base URL", () => {
     const service = fromJS(
       automationAnywhereOAuth2 as unknown as ServiceDefinition
@@ -57,6 +75,26 @@ describe("LocalDefinedService", () => {
       "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl=&audience=https://controlroom",
       "https://oauthconfigapp.automationanywhere.digital/client/oauth/token",
     ]);
+  });
+
+  test("default client ID", () => {
+    const service = fromJS(
+      automationAnywhereOAuth2 as unknown as ServiceDefinition
+    );
+    const oauth2 = service.getOAuth2Context({} as unknown as ServiceConfig);
+    expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
+  });
+
+  test("custom client ID", () => {
+    const clientId = "12345";
+
+    const service = fromJS(
+      automationAnywhereOAuth2 as unknown as ServiceDefinition
+    );
+    const oauth2 = service.getOAuth2Context({
+      clientId,
+    } as unknown as ServiceConfig);
+    expect(oauth2.client_id).toBe(clientId);
   });
 });
 
