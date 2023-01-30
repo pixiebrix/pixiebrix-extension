@@ -36,6 +36,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { selectActiveElement } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./extensionPoints/adapter";
+import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ const PanelContent: React.FC = () => {
   useTabEventListener(thisTab.tabId, navigationEvent, () => {
     dispatch(tabStateActions.connectToContentScript());
 
-    if (activeElement != null) {
+    if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
       void updateDynamicElement(thisTab, dynamicElement);
     }

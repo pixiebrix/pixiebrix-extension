@@ -87,6 +87,7 @@ describe("Listen to navigationEvent", () => {
     navigationEvent.emit(thisTab.tabId);
 
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
-    expect(updateDynamicElement).toHaveBeenCalledTimes(1);
+    // Panels are not automatically updated on navigation
+    expect(updateDynamicElement).toHaveBeenCalledTimes(0);
   });
 });

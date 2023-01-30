@@ -44,6 +44,38 @@ function isAutomaticTrigger(element: FormState): boolean {
   );
 }
 
+const Controls: React.FunctionComponent<{
+  autoLabel?: string;
+  manualRun: () => void;
+  buttonCaption: string;
+}> = ({ autoLabel, manualRun, buttonCaption }) => (
+  <>
+    {autoLabel && (
+      <>
+        <label className="small my-auto mx-2 text-center">{autoLabel}</label>
+        <ToggleField name="autoReload" />
+      </>
+    )}
+    <Button className="mx-2" size="sm" variant="info" onClick={manualRun}>
+      {buttonCaption}
+    </Button>
+  </>
+);
+
+/**
+ * Return true if the element should be automatically updated on the page.
+ * @param element the Page Editor form element
+ */
+export function shouldAutoRun(element: FormState): boolean {
+  // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
+  const isPanel = isPanelElement(element);
+  const isTrigger = isAutomaticTrigger(element);
+  const isTour = element.type === "tour";
+  const automaticUpdate = !(isTrigger || isPanel || isTour);
+
+  return automaticUpdate || element.autoReload;
+}
+
 /**
  * Element reload controls for the page editor toolbar.
  *
@@ -53,6 +85,7 @@ function isAutomaticTrigger(element: FormState): boolean {
  * - element appear triggers
  * - panels
  * - sidebar panels
+ * - tours
  */
 const ReloadToolbar: React.FunctionComponent<{
   element: FormState;
@@ -84,34 +117,42 @@ const ReloadToolbar: React.FunctionComponent<{
   });
 
   const isPanel = isPanelElement(element);
-  const isLoadTrigger = isAutomaticTrigger(element);
-  const automaticUpdate = !(isLoadTrigger || isPanel);
+  const isTrigger = isAutomaticTrigger(element);
+  const isTour = element.type === "tour";
 
   useEffect(() => {
-    if (!automaticUpdate && !element.autoReload) {
-      // By default, don't automatically trigger (because it might be doing expensive
-      // operations such as hitting an API)
+    if (!shouldAutoRun(element)) {
       return;
     }
 
     void debouncedRun();
-  }, [debouncedRun, automaticUpdate, element]);
+  }, [debouncedRun, element]);
 
-  if (automaticUpdate) {
-    return null;
+  if (isPanel) {
+    return (
+      <Controls
+        autoLabel="Auto-Render"
+        manualRun={manualRun}
+        buttonCaption="Render Panel"
+      />
+    );
   }
 
-  return (
-    <>
-      <label className="small my-auto mx-2 text-center">
-        {isPanel ? "Auto-Render" : "Auto-Run"}
-      </label>
-      <ToggleField name="autoReload" />
-      <Button className="mx-2" size="sm" variant="info" onClick={manualRun}>
-        {isPanel ? "Render Panel" : "Run Trigger"}
-      </Button>
-    </>
-  );
+  if (isTrigger) {
+    return (
+      <Controls
+        autoLabel="Auto-Run"
+        manualRun={manualRun}
+        buttonCaption="Run Trigger"
+      />
+    );
+  }
+
+  if (isTour) {
+    return <Controls manualRun={manualRun} buttonCaption="Run Tour" />;
+  }
+
+  return null;
 };
 
 export default ReloadToolbar;

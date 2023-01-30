@@ -27,15 +27,15 @@ import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
-import { type PanelPayload } from "@/sidebar/types";
+import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
 import {
-  stopWaitingForTemporaryPanels,
-  cancelTemporaryPanelsForExtension,
   cancelTemporaryPanels,
+  cancelTemporaryPanelsForExtension,
+  stopWaitingForTemporaryPanels,
   waitForTemporaryPanel,
   updatePanelDefinition,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
@@ -43,8 +43,8 @@ import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 
 type Location = "panel" | "modal" | "popover";
-// Match naming of the sidebar panel extension point
-type RenderTrigger = "manual" | "statechange";
+// Match naming of the sidebar panel extension point triggers
+export type RefreshTrigger = "manual" | "statechange";
 
 export async function createFrameSource(
   nonce: string,
@@ -57,6 +57,148 @@ export async function createFrameSource(
   frameSource.searchParams.set("opener", JSON.stringify(target));
   frameSource.searchParams.set("mode", mode);
   return frameSource;
+}
+
+type TemporaryDisplayInputs = {
+  /**
+   * The initial panel entry.
+   */
+  entry: PanelEntry;
+  /**
+   * The location to display the panel.
+   */
+  location: Location;
+  /**
+   * Target element for popover.
+   */
+  target: HTMLElement | Document;
+  /**
+   * An optional abortSignal to cancel the panel.
+   */
+  abortSignal?: AbortSignal;
+
+  /**
+   * An optional trigger to trigger a panel refresh.
+   */
+  refreshTrigger?: RefreshTrigger;
+
+  /**
+   * Factory method to refresh the panel.
+   */
+  refreshEntry?: () => Promise<PanelEntry>;
+};
+
+export async function displayTemporaryInfo({
+  entry,
+  location,
+  abortSignal,
+  target,
+  refreshEntry,
+  refreshTrigger,
+}: TemporaryDisplayInputs): Promise<UnknownObject> {
+  const nonce = uuidv4();
+  const controller = new AbortController();
+
+  abortSignal?.addEventListener("abort", () => {
+    void cancelTemporaryPanels([nonce]);
+  });
+
+  switch (location) {
+    case "panel": {
+      await ensureSidebar();
+
+      showTemporarySidebarPanel({ ...entry, nonce });
+
+      window.addEventListener(
+        PANEL_HIDING_EVENT,
+        () => {
+          controller.abort();
+        },
+        {
+          signal: controller.signal,
+        }
+      );
+
+      controller.signal.addEventListener("abort", () => {
+        hideTemporarySidebarPanel(nonce);
+        void stopWaitingForTemporaryPanels([nonce]);
+      });
+
+      break;
+    }
+
+    case "modal": {
+      const frameSource = await createFrameSource(nonce, location);
+      showModal(frameSource, controller);
+      break;
+    }
+
+    case "popover": {
+      const frameSource = await createFrameSource(nonce, location);
+      if (target === document) {
+        throw new BusinessError("Target must be an element for popover");
+      }
+
+      await cancelTemporaryPanelsForExtension(entry.extensionId);
+
+      const onHide = async () => {
+        await cancelTemporaryPanels([nonce]);
+      };
+
+      showPopover(frameSource, target as HTMLElement, onHide, controller);
+
+      break;
+    }
+
+    default: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+      throw new BusinessError(`Invalid location: ${location}`);
+    }
+  }
+
+  const rerender = async () => {
+    try {
+      const newEntry = { ...(await refreshEntry()), nonce };
+      // Force a re-render by changing the key
+      newEntry.payload.key = uuidv4();
+
+      updatePanelDefinition(newEntry);
+
+      if (location === "panel") {
+        updateTemporarySidebarPanel(newEntry);
+      } else {
+        updateTemporaryOverlayPanel(newEntry);
+      }
+    } catch (error) {
+      // XXX: in the future, we may want to updatePanelDefinition with the error
+      console.warn("Ignoring error re-rendering temporary panel", error);
+    }
+  };
+
+  if (refreshTrigger === "statechange") {
+    $(document).on("statechange", rerender);
+  }
+
+  let result = null;
+
+  try {
+    result = await waitForTemporaryPanel(nonce, { ...entry, nonce });
+  } catch (error) {
+    if (error instanceof CancelError) {
+      // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915
+      // For temporary forms, we throw the CancelError because typically the form is input to additional bricks.
+      // For temporary information, typically the information is displayed as the last brick in the action.
+      // Given that this brick doesn't return any values currently, we'll just swallow the error and return normally
+      // NOP
+    } else {
+      throw error;
+    }
+  } finally {
+    controller.abort();
+    $(document).off("statechange", rerender);
+  }
+
+  return result ?? {};
 }
 
 class DisplayTemporaryInfo extends Transformer {
@@ -113,167 +255,60 @@ class DisplayTemporaryInfo extends Transformer {
     }: BlockArg<{
       title: string;
       location: Location;
-      refreshTrigger: RenderTrigger;
+      refreshTrigger: RefreshTrigger;
       body: PipelineExpression;
       isRootAware: boolean;
     }>,
     {
       logger: {
-        context: { extensionId },
+        context: { extensionId, blueprintId, extensionPointId },
       },
       root,
       ctxt,
       runPipeline,
       runRendererPipeline,
+      abortSignal,
     }: BlockOptions
   ): Promise<UnknownObject | null> {
     expectContext("contentScript");
 
-    let counter = 0;
-
     const target = isRootAware ? root : document;
 
-    const nonce = uuidv4();
-    const controller = new AbortController();
+    // Counter for tracking branch execution
+    let counter = 0;
 
-    const payload = (await runRendererPipeline(
-      bodyPipeline?.__value__ ?? [],
-      {
-        key: "body",
-        counter,
-      },
-      {},
-      target
-    )) as PanelPayload;
+    const refreshEntry = async () => {
+      const payload = (await runRendererPipeline(
+        bodyPipeline?.__value__ ?? [],
+        {
+          key: "body",
+          counter,
+        },
+        {},
+        target
+      )) as PanelPayload;
 
-    switch (location) {
-      case "panel": {
-        await ensureSidebar();
+      counter++;
 
-        showTemporarySidebarPanel({
-          extensionId,
-          nonce,
-          heading: title,
-          payload,
-        });
-
-        window.addEventListener(
-          PANEL_HIDING_EVENT,
-          () => {
-            controller.abort();
-          },
-          {
-            signal: controller.signal,
-          }
-        );
-
-        controller.signal.addEventListener("abort", () => {
-          hideTemporarySidebarPanel(nonce);
-          void stopWaitingForTemporaryPanels([nonce]);
-        });
-
-        break;
-      }
-
-      case "modal": {
-        const frameSource = await createFrameSource(nonce, location);
-        showModal(frameSource, controller);
-        break;
-      }
-
-      case "popover": {
-        const frameSource = await createFrameSource(nonce, location);
-        if (target === document) {
-          throw new BusinessError("Target must be an element for popover");
-        }
-
-        await cancelTemporaryPanelsForExtension(extensionId);
-
-        const onHide = async () => {
-          await cancelTemporaryPanels([nonce]);
-        };
-
-        showPopover(frameSource, target as HTMLElement, onHide, controller);
-
-        break;
-      }
-
-      default: {
-        throw new PropError(
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for validated value
-          `Invalid location: ${location}`,
-          this.id,
-          "location",
-          location
-        );
-      }
-    }
-
-    const rerender = async () => {
-      // Increment branch counter for tracing
-      counter += 1;
-
-      try {
-        const payload = (await runRendererPipeline(
-          bodyPipeline?.__value__ ?? [],
-          {
-            key: "body",
-            counter,
-          },
-          {},
-          target
-        )) as PanelPayload;
-
-        const newEntry = {
-          extensionId,
-          nonce,
-          heading: title,
-          // Force a re-render by changing the key
-          payload: { ...payload, key: uuidv4() },
-        };
-
-        updatePanelDefinition(newEntry);
-
-        if (location === "panel") {
-          updateTemporarySidebarPanel(newEntry);
-        } else {
-          updateTemporaryOverlayPanel(newEntry);
-        }
-      } catch (error) {
-        // XXX: in the future, we may want to updatePanelDefinition with the error
-        console.warn("Ignoring error re-rendering temporary panel", error);
-      }
+      return {
+        heading: title,
+        payload,
+        extensionId,
+        blueprintId,
+        extensionPointId,
+      };
     };
 
-    if (refreshTrigger === "statechange") {
-      $(document).on("statechange", rerender);
-    }
+    const initialEntry = await refreshEntry();
 
-    let result = null;
-
-    try {
-      result = await waitForTemporaryPanel(nonce, {
-        heading: title,
-        extensionId,
-        nonce,
-        payload,
-      });
-    } catch (error) {
-      if (error instanceof CancelError) {
-        // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915
-        // For temporary forms, we throw the CancelError because typically the form is input to additional bricks.
-        // For temporary information, typically the information is displayed as the last brick in the action.
-        // Given that this brick doesn't return any values currently, we'll just swallow the error and return normally
-        // NOP
-      } else {
-        throw error;
-      }
-    } finally {
-      controller.abort();
-      $(document).off("statechange", rerender);
-    }
-
-    return result ?? {};
+    return displayTemporaryInfo({
+      entry: initialEntry,
+      location,
+      abortSignal,
+      target,
+      refreshEntry,
+      refreshTrigger,
+    });
   }
 }
 
