@@ -63,7 +63,6 @@ export function getSubPipelineFlavor(
   }
 
   if (parentNodeId === TourStepTransformer.BLOCK_ID) {
-    console.log(pipelinePath);
     const pathParts = pipelinePath.split(".");
     if (pathParts.at(-2) === "body") {
       // Tour step body should have no side effects
