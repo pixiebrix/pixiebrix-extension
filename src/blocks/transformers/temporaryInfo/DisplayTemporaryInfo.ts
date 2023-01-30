@@ -44,7 +44,7 @@ import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelContr
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
-type RefreshTrigger = "manual" | "statechange";
+export type RefreshTrigger = "manual" | "statechange";
 
 export async function createFrameSource(
   nonce: string,

@@ -32,7 +32,10 @@ import { isEmpty } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import sanitize from "@/utils/sanitize";
-import { displayTemporaryInfo } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import {
+  displayTemporaryInfo,
+  type RefreshTrigger,
+} from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 
@@ -48,6 +51,10 @@ export type StepInputs = {
 
   selector: string;
   appearance?: {
+    /**
+     * An optional trigger to trigger a panel refresh.
+     */
+    refreshTrigger?: RefreshTrigger;
     disableInteraction?: boolean;
     showOverlay?: boolean;
     skippable?: boolean;
@@ -135,6 +142,8 @@ export class TourStepTransformer extends Transformer {
       target: element,
       location,
       abortSignal,
+      refreshTrigger: appearance.refreshTrigger,
+      refreshEntry,
     });
   }
 
@@ -285,6 +294,11 @@ export class TourStepTransformer extends Transformer {
       appearance: {
         type: "object",
         properties: {
+          refreshTrigger: {
+            type: "string",
+            enum: ["manual", "statechange"],
+            description: "An optional trigger for refreshing the panel",
+          },
           wait: {
             type: "object",
             properties: {

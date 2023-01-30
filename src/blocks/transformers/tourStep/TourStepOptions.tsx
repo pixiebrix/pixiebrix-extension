@@ -112,6 +112,20 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
           }}
         />
 
+        {isPipelineExpression(body) && (
+          <SchemaField
+            label="Auto Refresh"
+            name={configName("appearance", "refreshTrigger")}
+            isRequired
+            schema={{
+              type: "string",
+              format: "markdown",
+              enum: ["manual", "statechange"],
+              description: "An optional trigger to refresh the panel",
+            }}
+          />
+        )}
+
         {!isPipelineExpression(body) && (
           <SchemaField
             label="Body"
