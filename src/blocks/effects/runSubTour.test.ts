@@ -20,7 +20,7 @@ import {
   registerTour,
 } from "@/extensionPoints/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { BlockOptions, RecipeMetadata } from "@/core";
+import { type BlockOptions, type RecipeMetadata } from "@/core";
 import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
