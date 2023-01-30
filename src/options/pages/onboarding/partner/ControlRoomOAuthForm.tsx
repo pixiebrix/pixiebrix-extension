@@ -48,12 +48,6 @@ type ControlRoomConfiguration = {
   clientId: string;
 };
 
-// TODO: apply or remove
-// type AdvancedControlRoomConfiguration = ControlRoomConfiguration & {
-//   authConfigOrigin: string;
-//   clientId: string;
-// }
-
 const validationSchema = Yup.object().shape({
   controlRoomUrl: Yup.string()
     .required()
@@ -62,7 +56,6 @@ const validationSchema = Yup.object().shape({
       is: () => process.env.NODE_ENV === "development",
       otherwise: (schema) => schema.url(),
     }),
-  // TODO: should authConfigOrigin and/or clientId be in a dropdown?
   authConfigOrigin: Yup.string().url(),
   clientId: Yup.string(),
 });
