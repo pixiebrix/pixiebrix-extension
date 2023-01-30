@@ -21,7 +21,11 @@ import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import pDefer from "p-defer";
-import { CancelError, NoElementsFoundError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
@@ -35,6 +39,8 @@ import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 export type StepInputs = {
   title: string;
   body: string | PipelineExpression;
+
+  isLastStep?: boolean;
 
   onBeforeShow?: PipelineExpression;
 
@@ -128,7 +134,7 @@ export class TourStepTransformer extends Transformer {
 
   async showIntroJsStep(
     element: HTMLElement | Document,
-    { appearance, title, body }: StepInputs,
+    { appearance, title, body, isLastStep }: StepInputs,
     { abortSignal }: BlockOptions
   ): Promise<unknown> {
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
@@ -147,8 +153,10 @@ export class TourStepTransformer extends Transformer {
 
     const tour = introJs()
       .setOptions({
+        tooltipPosition: appearance?.popover?.position,
         showProgress: false,
         showBullets: false,
+        doneLabel: isLastStep ? "Done" : "Next",
         disableInteraction: appearance?.disableInteraction,
         // Scroll is implemented by the brick
         scrollToElement: false,
@@ -184,6 +192,9 @@ export class TourStepTransformer extends Transformer {
    */
   originalStyle: Record<string, string> = undefined;
 
+  /**
+   * Wait for the target element to appear on the page according to the `wait` configuration.
+   */
   async locateElement(
     args: StepInputs,
     options: BlockOptions
@@ -237,6 +248,11 @@ export class TourStepTransformer extends Transformer {
         type: "string",
         format: "selector",
         description: "An optional selector for the target element",
+      },
+      isLastStep: {
+        type: "boolean",
+        description: "True if this is the last step in the tour",
+        default: false,
       },
       body: {
         oneOf: [
@@ -356,6 +372,12 @@ export class TourStepTransformer extends Transformer {
 
     const target = selector ? await this.locateElement(args, options) : root;
 
+    const nonce = getCurrentTour()?.nonce;
+
+    if (!nonce) {
+      throw new BusinessError("This brick can only be called from a tour");
+    }
+
     if (target == null) {
       if (appearance.skippable) {
         // Skip because not found
@@ -371,9 +393,12 @@ export class TourStepTransformer extends Transformer {
     if (target !== document) {
       const targetElement = target as HTMLElement;
       this.highlightTarget(targetElement, appearance.highlight);
-      targetElement.scrollIntoView({
-        behavior: appearance.scroll?.behavior,
-      });
+
+      if (appearance.scroll) {
+        targetElement.scrollIntoView({
+          behavior: appearance.scroll?.behavior,
+        });
+      }
     }
 
     try {
@@ -392,7 +417,7 @@ export class TourStepTransformer extends Transformer {
       // XXX: use title here? Or use the label from the block? Probably best to use title, since that's what
       // the user sees. The benefit of using block label is that for advanced use cases, the creator could duplicate
       // step names in order to group steps. That's probably better served by an explicit step key though.
-      markTourStep(getCurrentTour().nonce, { id: extensionId }, title);
+      markTourStep(nonce, { id: extensionId }, title);
 
       if (typeof body === "string") {
         await this.showIntroJsStep(target, args, options);

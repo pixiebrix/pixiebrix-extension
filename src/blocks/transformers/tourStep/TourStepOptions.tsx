@@ -84,39 +84,47 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={brick.inputSchema.properties.selector as Schema}
       />
 
-      <FieldTemplate
-        as={SwitchButtonWidget}
-        label="Custom Body"
-        description="Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel"
-        name={configName("body")}
-        value={isPipelineExpression(body)}
-        onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-          if (target.value) {
-            setFieldValue(configName("body"), {
-              __type__: "pipeline",
-              __value__: [createNewBlock(DocumentRenderer.BLOCK_ID)],
-            });
-          } else {
-            setFieldValue(configName("body"), {
-              __type__: "nunjucks",
-              __value__: "Enter step content, supports **markdown**",
-            });
-          }
-        }}
+      <SchemaField
+        label="Last Step?"
+        name={configName("isLastStep")}
+        schema={brick.inputSchema.properties.isLastStep as Schema}
       />
 
-      {!isPipelineExpression(body) && (
-        <SchemaField
-          label="Body"
+      <Section title="Step Body">
+        <FieldTemplate
+          as={SwitchButtonWidget}
+          label="Custom Body"
+          description="Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel"
           name={configName("body")}
-          isRequired
-          schema={{
-            type: "string",
-            format: "markdown",
-            description: "Content of the step, supports markdown",
+          value={isPipelineExpression(body)}
+          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            if (target.value) {
+              setFieldValue(configName("body"), {
+                __type__: "pipeline",
+                __value__: [createNewBlock(DocumentRenderer.BLOCK_ID)],
+              });
+            } else {
+              setFieldValue(configName("body"), {
+                __type__: "nunjucks",
+                __value__: "Enter step content, supports **markdown**",
+              });
+            }
           }}
         />
-      )}
+
+        {!isPipelineExpression(body) && (
+          <SchemaField
+            label="Body"
+            name={configName("body")}
+            isRequired
+            schema={{
+              type: "string",
+              format: "markdown",
+              description: "Content of the step, supports markdown",
+            }}
+          />
+        )}
+      </Section>
 
       <Section title="Targeting Behavior">
         <FieldTemplate

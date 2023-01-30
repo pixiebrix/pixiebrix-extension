@@ -129,11 +129,15 @@ export async function recordEnd(
   const db = await getDB();
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const value = await tx.store.get(nonce);
-  await tx.store.put({
-    ...value,
-    ...update,
-    updatedAt: new Date().toISOString(),
-  });
+
+  if (value) {
+    await tx.store.put({
+      ...value,
+      ...update,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
   await tx.done;
 }
 

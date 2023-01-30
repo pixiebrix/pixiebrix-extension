@@ -29,6 +29,9 @@ import {
 } from "@/extensionPoints/tourExtension";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
+import { isTourInProgress } from "@/extensionPoints/tourController";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import defaultActions from "@/components/quickBar/defaultActions";
 
 const rootReader = new RootReader();
 
@@ -84,7 +87,7 @@ beforeEach(() => {
 });
 
 describe("tourExtension", () => {
-  test("install tour", async () => {
+  test("install tour manually", async () => {
     const extensionPoint = fromJS(extensionPointFactory()());
 
     extensionPoint.addExtension(
@@ -98,8 +101,36 @@ describe("tourExtension", () => {
 
     await tick();
 
+    expect(isTourInProgress()).toBe(false);
     expect(rootReader.readCount).toBe(1);
 
     extensionPoint.uninstall();
+  });
+
+  test("register tour with quick bar", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({ allowUserRun: true, autoRunSchedule: "never" })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.INITIAL_LOAD });
+
+    await tick();
+
+    // Shouldn't be run because autoRunSchedule: never
+    expect(isTourInProgress()).toBe(false);
+    expect(rootReader.readCount).toBe(0);
+
+    expect(quickBarRegistry.currentActions).toHaveLength(
+      defaultActions.length + 1
+    );
+    extensionPoint.uninstall();
+    expect(quickBarRegistry.currentActions).toHaveLength(defaultActions.length);
   });
 });

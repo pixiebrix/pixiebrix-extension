@@ -23,6 +23,7 @@ import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldPro
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const TourConfiguration: React.FC<{
   isLocked: boolean;
@@ -47,10 +48,12 @@ const TourConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.allowUserRun"
+        as={SwitchButtonWidget}
         schema={{
           type: "boolean",
           description:
             "Toggle on to enable the user manually run the tour from the Quick Bar",
+          default: true,
         }}
         {...makeLockableFieldProps("Allow User Run", isLocked)}
       />

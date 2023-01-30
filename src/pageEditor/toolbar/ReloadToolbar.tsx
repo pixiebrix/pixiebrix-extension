@@ -121,7 +121,7 @@ const ReloadToolbar: React.FunctionComponent<{
   const isTour = element.type === "tour";
 
   useEffect(() => {
-    if (shouldAutoRun(element)) {
+    if (!shouldAutoRun(element)) {
       return;
     }
 

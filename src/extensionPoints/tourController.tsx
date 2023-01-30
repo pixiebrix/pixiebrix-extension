@@ -21,7 +21,6 @@ import { remove, reverse } from "lodash";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
-import notify from "@/utils/notify";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
@@ -191,12 +190,8 @@ export function markTourEnd(
   const tourInstance = tourStack.find((x) => x.nonce === nonce);
 
   if (tourInstance) {
-    if (error) {
-      if (isSpecificError(error, CancelError)) {
-        skipped = true;
-      } else {
-        notify.error({ message: "Error running tour", error });
-      }
+    if (error && isSpecificError(error, CancelError)) {
+      skipped = true;
     }
 
     void recordEnd(nonce, {
