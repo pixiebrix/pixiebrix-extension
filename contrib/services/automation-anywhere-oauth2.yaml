@@ -3,8 +3,8 @@ kind: service
 metadata:
   id: "automation-anywhere/oauth2"
   version: 3.1.0
-  name: Automation Anywhere OAuth2 (Preview)
-  description: Preview/test integration of OAuth2 authentication for Automation Anywhere
+  name: Automation Anywhere (OAuth2)
+  description: OAuth2 Authentication for Automation Anywhere
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
