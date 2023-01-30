@@ -15,24 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./ephemeralModal.scss";
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+import { registerMethods } from "webext-messenger";
+import { updateTemporaryPanel } from "@/blocks/transformers/temporaryInfo/receiverProtocol";
+import { expectContext } from "@/utils/expectContext";
 
-import "@/extensionContext";
+expectContext("extension");
 
-import React from "react";
-import { render } from "react-dom";
-import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerMessenger from "@/blocks/transformers/temporaryInfo/messenger/registration";
-import "iframe-resizer/js/iframeResizer.contentWindow";
-
-function init(): void {
-  render(<EphemeralPanel />, document.querySelector("#container"));
+declare global {
+  interface MessengerMethods {
+    EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
+  }
 }
 
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBlocks();
-init();
+export default function registerMessenger(): void {
+  registerMethods({
+    EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
+  });
+}

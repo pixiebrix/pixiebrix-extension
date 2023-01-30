@@ -15,10 +15,6 @@ updates:
       timezone: Etc/UTC
     versioning-strategy: increase # Update package.json too https://stackoverflow.com/a/66819358/288906
     open-pull-requests-limit: 30
-    reviewers:
-      - fregante
-    assignees:
-      - fregante
     ignore:
       # Update it manually instead https://github.com/pixiebrix/pixiebrix-extension/issues/4436
       - dependency-name: "@storybook/*"
@@ -30,7 +26,3 @@ updates:
       time: "08:42"
       timezone: Etc/UTC
     open-pull-requests-limit: 30
-    reviewers:
-      - fregante
-    assignees:
-      - fregante

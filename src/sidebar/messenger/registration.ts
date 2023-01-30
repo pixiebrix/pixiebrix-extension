@@ -24,6 +24,7 @@ import {
   renderPanels,
   showForm,
   showTemporaryPanel,
+  updateTemporaryPanel,
 } from "@/sidebar/protocol";
 import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
@@ -38,6 +39,7 @@ declare global {
     SIDEBAR_HIDE_FORM: typeof hideForm;
     SIDEBAR_PING: typeof noop;
     SIDEBAR_SHOW_TEMPORARY_PANEL: typeof showTemporaryPanel;
+    SIDEBAR_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
   }
 }
@@ -50,6 +52,7 @@ export default function registerMessenger(): void {
     SIDEBAR_HIDE_FORM: hideForm,
     SIDEBAR_PING: noop,
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,
+    SIDEBAR_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,
   });
 }

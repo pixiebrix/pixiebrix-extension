@@ -15,24 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./ephemeralModal.scss";
+import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { expectContext } from "@/utils/expectContext";
+import panelInThisTab from "@/blocks/transformers/temporaryInfo/messenger/api";
 
-import "@/extensionContext";
+/**
+ * Sequence number for ensuring render requests are handled in order
+ */
+let renderSequenceNumber = 0;
 
-import React from "react";
-import { render } from "react-dom";
-import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerMessenger from "@/blocks/transformers/temporaryInfo/messenger/registration";
-import "iframe-resizer/js/iframeResizer.contentWindow";
+/**
+ * Update a modal/popover panel.
+ *
+ * For sidebar panels, see updateTemporarySidebarPanel.
+ *
+ * @param entry the new panel content
+ * @see updateTemporarySidebarPanel
+ */
+export function updateTemporaryOverlayPanel(entry: TemporaryPanelEntry): void {
+  expectContext("contentScript");
 
-function init(): void {
-  render(<EphemeralPanel />, document.querySelector("#container"));
+  const sequence = renderSequenceNumber++;
+  panelInThisTab.updateTemporaryPanel(sequence, entry);
 }
-
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBlocks();
-init();
