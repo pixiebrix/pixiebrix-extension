@@ -42,7 +42,6 @@ const logger = new ConsoleLogger({
 
 const brick = new TourStepTransformer();
 
-// XXX: can't figure out how to test intro.js with jest; debugger segfaults in showIntroJsStep
 describe("tourStep", () => {
   beforeEach(() => {
     (Element.prototype.scrollIntoView as jest.Mock).mockReset();
