@@ -48,6 +48,10 @@ jest.mock("@/contentScript/messenger/api", () => ({
   cancelTemporaryPanel: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock("@/blocks/transformers/temporaryInfo/messenger/api", () => ({
+  updateTemporaryPanel: jest.fn().mockResolvedValue(undefined),
+}));
+
 const cancelTemporaryPanelMock = cancelTemporaryPanel as jest.MockedFunction<
   typeof cancelTemporaryPanel
 >;

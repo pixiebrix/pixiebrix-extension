@@ -17,11 +17,9 @@
 
 import cx from "classnames";
 import React, { useEffect } from "react";
-import { useAsyncState } from "@/hooks/common";
 import { Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
-  getPanelDefinition,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
@@ -32,6 +30,7 @@ import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
+import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
 
 type Mode = "modal" | "popover";
 
@@ -69,9 +68,9 @@ const EphemeralPanel: React.FC = () => {
 
   const Layout = mode === "modal" ? ModalLayout : PopoverLayout;
 
-  const [entry, isLoading, error] = useAsyncState(
-    async () => getPanelDefinition(target, nonce),
-    [nonce]
+  const { entry, isLoading, error } = useTemporaryPanelDefinition(
+    target,
+    nonce
   );
 
   useEffect(() => {

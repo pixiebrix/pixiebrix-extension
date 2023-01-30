@@ -69,6 +69,28 @@ export async function getPanelDefinition(
 }
 
 /**
+ * Update a panel definition. NOTE: the caller is responsible for notifying the container to refetch the
+ * panel definition.
+ * @param entry the panel definition
+ */
+export function updatePanelDefinition(entry: TemporaryPanelEntry): void {
+  expectContext("contentScript");
+
+  const panel = panels.get(entry.nonce);
+
+  if (!panel) {
+    console.warn("Unknown panel: %s", entry.nonce);
+    return;
+  }
+
+  if (panel.entry.extensionId !== entry.extensionId) {
+    throw new Error("extensionId mismatch");
+  }
+
+  panel.entry = entry;
+}
+
+/**
  * Register a temporary display panel
  * @param nonce The instance nonce for the panel to register
  * @param entry the panel definition

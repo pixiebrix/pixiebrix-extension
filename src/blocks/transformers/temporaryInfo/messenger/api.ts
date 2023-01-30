@@ -16,18 +16,14 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getMethod, getNotifier } from "webext-messenger";
+import { getNotifier } from "webext-messenger";
 
-const target = { tabId: "this", page: "/sidebar.html" } as const;
-const sidebarInThisTab = {
-  renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),
-  activatePanel: getMethod("SIDEBAR_ACTIVATE_PANEL", target),
-  showForm: getMethod("SIDEBAR_SHOW_FORM", target),
-  hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
-  pingSidebar: getMethod("SIDEBAR_PING", target),
-  showTemporaryPanel: getMethod("SIDEBAR_SHOW_TEMPORARY_PANEL", target),
-  updateTemporaryPanel: getNotifier("SIDEBAR_UPDATE_TEMPORARY_PANEL", target),
-  hideTemporaryPanel: getMethod("SIDEBAR_HIDE_TEMPORARY_PANEL", target),
+const target = { tabId: "this", page: "/ephemeralPanel.html" } as const;
+const panelInThisTab = {
+  updateTemporaryPanel: getNotifier(
+    "EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL",
+    target
+  ),
 };
 
-export default sidebarInThisTab;
+export default panelInThisTab;

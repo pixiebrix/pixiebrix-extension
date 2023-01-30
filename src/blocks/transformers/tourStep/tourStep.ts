@@ -33,7 +33,7 @@ import { awaitElement } from "@/blocks/effects/wait";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import sanitize from "@/utils/sanitize";
 import { displayTemporaryInfo } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 
 export type StepInputs = {
@@ -104,28 +104,34 @@ export class TourStepTransformer extends Transformer {
       runRendererPipeline,
     }: BlockOptions
   ): Promise<unknown> {
+    let counter = 0;
+
     const location = element === document ? "modal" : "popover";
 
-    const payload = (await runRendererPipeline(
-      (body as PipelineExpression)?.__value__ ?? [],
-      {
-        key: "body",
-        counter: 0,
-      },
-      {},
-      element
-    )) as PanelPayload;
+    const refreshEntry = async () => {
+      const payload = (await runRendererPipeline(
+        (body as PipelineExpression)?.__value__ ?? [],
+        {
+          key: "body",
+          counter,
+        },
+        {},
+        element
+      )) as PanelPayload;
 
-    const entry: PanelEntry = {
-      extensionId,
-      extensionPointId,
-      blueprintId,
-      heading: title,
-      payload,
+      counter++;
+
+      return {
+        extensionId,
+        extensionPointId,
+        blueprintId,
+        heading: title,
+        payload,
+      };
     };
 
     return displayTemporaryInfo({
-      entry,
+      entry: await refreshEntry(),
       target: element,
       location,
       abortSignal,

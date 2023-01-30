@@ -220,6 +220,19 @@ export function showTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
   void sidebarInThisTab.showTemporaryPanel(sequence, entry);
 }
 
+export function updateTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    throw new Error(
+      "Cannot add temporary sidebar panel if the sidebar is not visible"
+    );
+  }
+
+  const sequence = renderSequenceNumber++;
+  sidebarInThisTab.updateTemporaryPanel(sequence, entry);
+}
+
 export function hideTemporarySidebarPanel(nonce: UUID): void {
   expectContext("contentScript");
 

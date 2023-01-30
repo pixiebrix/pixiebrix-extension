@@ -25,6 +25,7 @@ import {
   hideTemporarySidebarPanel,
   PANEL_HIDING_EVENT,
   showTemporarySidebarPanel,
+  updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
 import {
@@ -32,14 +33,18 @@ import {
   cancelTemporaryPanelsForExtension,
   stopWaitingForTemporaryPanels,
   waitForTemporaryPanel,
+  updatePanelDefinition,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 
 type Location = "panel" | "modal" | "popover";
+// Match naming of the sidebar panel extension point triggers
+type RefreshTrigger = "manual" | "statechange";
 
 export async function createFrameSource(
   nonce: string,
@@ -55,12 +60,32 @@ export async function createFrameSource(
 }
 
 type TemporaryDisplayInputs = {
+  /**
+   * The initial panel entry.
+   */
   entry: PanelEntry;
+  /**
+   * The location to display the panel.
+   */
   location: Location;
-
+  /**
+   * Target element for popover.
+   */
   target: HTMLElement | Document;
-
+  /**
+   * An optional abortSignal to cancel the panel.
+   */
   abortSignal?: AbortSignal;
+
+  /**
+   * An optional trigger to trigger a panel refresh.
+   */
+  refreshTrigger?: RefreshTrigger;
+
+  /**
+   * Factory method to refresh the panel.
+   */
+  refreshEntry?: () => Promise<PanelEntry>;
 };
 
 export async function displayTemporaryInfo({
@@ -68,6 +93,8 @@ export async function displayTemporaryInfo({
   location,
   abortSignal,
   target,
+  refreshEntry,
+  refreshTrigger,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
   const controller = new AbortController();
@@ -124,8 +151,32 @@ export async function displayTemporaryInfo({
     }
 
     default: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
       throw new BusinessError(`Invalid location: ${location}`);
     }
+  }
+
+  const rerender = async () => {
+    try {
+      const newEntry = { ...(await refreshEntry()), nonce };
+      // Force a re-render by changing the key
+      newEntry.payload.key = uuidv4();
+
+      updatePanelDefinition(newEntry);
+
+      if (location === "panel") {
+        updateTemporarySidebarPanel(newEntry);
+      } else {
+        updateTemporaryOverlayPanel(newEntry);
+      }
+    } catch (error) {
+      // XXX: in the future, we may want to updatePanelDefinition with the error
+      console.warn("Ignoring error re-rendering temporary panel", error);
+    }
+  };
+
+  if (refreshTrigger === "statechange") {
+    $(document).on("statechange", rerender);
   }
 
   let result = null;
@@ -144,6 +195,7 @@ export async function displayTemporaryInfo({
     }
   } finally {
     controller.abort();
+    $(document).off("statechange", rerender);
   }
 
   return result ?? {};
@@ -183,6 +235,11 @@ class DisplayTemporaryInfo extends Transformer {
         default: "panel",
         description: "The location of the information (default='panel')",
       },
+      refreshTrigger: {
+        type: "string",
+        enum: ["manual", "statechange"],
+        description: "An optional trigger for refreshing the document",
+      },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
     required: ["body"],
@@ -193,10 +250,12 @@ class DisplayTemporaryInfo extends Transformer {
       title,
       body: bodyPipeline,
       location = "panel",
+      refreshTrigger = "manual",
       isRootAware = false,
     }: BlockArg<{
       title: string;
       location: Location;
+      refreshTrigger: RefreshTrigger;
       body: PipelineExpression;
       isRootAware: boolean;
     }>,
@@ -215,29 +274,40 @@ class DisplayTemporaryInfo extends Transformer {
 
     const target = isRootAware ? root : document;
 
-    const payload = (await runRendererPipeline(
-      bodyPipeline?.__value__ ?? [],
-      {
-        key: "body",
-        counter: 0,
-      },
-      {},
-      target
-    )) as PanelPayload;
+    // Counter for tracking branch execution
+    let counter = 0;
 
-    const entry: PanelEntry = {
-      payload,
-      heading: title,
-      extensionId,
-      blueprintId,
-      extensionPointId,
+    const refreshEntry = async () => {
+      const payload = (await runRendererPipeline(
+        bodyPipeline?.__value__ ?? [],
+        {
+          key: "body",
+          counter,
+        },
+        {},
+        target
+      )) as PanelPayload;
+
+      counter++;
+
+      return {
+        heading: title,
+        payload,
+        extensionId,
+        blueprintId,
+        extensionPointId,
+      };
     };
 
+    const initialEntry = await refreshEntry();
+
     return displayTemporaryInfo({
-      entry,
+      entry: initialEntry,
       location,
       abortSignal,
       target,
+      refreshEntry,
+      refreshTrigger,
     });
   }
 }
