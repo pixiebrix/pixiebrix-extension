@@ -149,6 +149,9 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     controlRoomUrl,
     username: "",
     password: "",
+    authConfigOrigin:
+      "https://stagingoauthconfigapp.automationanywhere.digital",
+    clientId: "pPKQkwemq9HIKcRBRAPFcC4nGEienNEY",
   };
 
   useEffect(() => {
