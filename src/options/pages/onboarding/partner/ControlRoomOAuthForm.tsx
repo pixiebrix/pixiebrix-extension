@@ -42,10 +42,12 @@ import { useHistory, useLocation } from "react-router";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
+const AA_STAGING_ENVIRONMENT = "staging";
+
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
-  authConfigOrigin: string;
-  clientId: string;
+  authConfigOrigin?: string;
+  clientId?: string;
 };
 
 const validationSchema = Yup.object().shape({
@@ -70,6 +72,15 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
   const searchParams = new URLSearchParams(location.search);
   const env = searchParams.get("env");
+
+  if (env === AA_STAGING_ENVIRONMENT) {
+    initialValues = {
+      ...initialValues,
+      authConfigOrigin:
+        "https://stagingoauthconfigapp.automationanywhere.digital",
+      clientId: "pPKQkwemq9HIKcRBRAPFcC4nGEienNEY",
+    };
+  }
 
   const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
 
@@ -144,7 +155,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         type="text"
         description="Your Automation Anywhere Control Room URL, including https://"
       />
-      {env === "staging" && (
+      {env === AA_STAGING_ENVIRONMENT && (
         <>
           <ConnectedFieldTemplate
             name="authConfigOrigin"
