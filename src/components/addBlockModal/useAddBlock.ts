@@ -71,7 +71,9 @@ function useAddBlock(): AddBlock {
           ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
         ])
       );
-      const newBlock = createNewBlock(block.id, block.inputSchema);
+      const newBlock = createNewBlock(block.id, {
+        blockInputSchema: block.inputSchema,
+      });
       if (outputKey) {
         newBlock.outputKey = outputKey;
       }

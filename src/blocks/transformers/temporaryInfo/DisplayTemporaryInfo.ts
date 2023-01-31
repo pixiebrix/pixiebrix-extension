@@ -39,7 +39,10 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
-import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import {
+  Placement,
+  showPopover,
+} from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 
 type Location = "panel" | "modal" | "popover";
@@ -86,6 +89,13 @@ type TemporaryDisplayInputs = {
    * Factory method to refresh the panel.
    */
   refreshEntry?: () => Promise<PanelEntry>;
+
+  /**
+   * Optional placement options for popovers.
+   */
+  popoverOptions?: {
+    placement?: Placement;
+  };
 };
 
 export async function displayTemporaryInfo({
@@ -95,6 +105,7 @@ export async function displayTemporaryInfo({
   target,
   refreshEntry,
   refreshTrigger,
+  popoverOptions,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
   const controller = new AbortController();
@@ -145,7 +156,13 @@ export async function displayTemporaryInfo({
         await cancelTemporaryPanels([nonce]);
       };
 
-      showPopover(frameSource, target as HTMLElement, onHide, controller);
+      showPopover(
+        frameSource,
+        target as HTMLElement,
+        onHide,
+        controller,
+        popoverOptions
+      );
 
       break;
     }

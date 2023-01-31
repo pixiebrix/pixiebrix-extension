@@ -1,0 +1,131 @@
+/*!
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// https://popper.js.org/docs/v2/tutorial/
+// Based on boostrap styling: https://github.com/twbs/bootstrap/blob/main/scss/_popover.scss
+
+$arrow-width: 24px;
+$arrow-height: 16px;
+$arrow-border-color: rgba(0, 0, 0, 0.2);
+$border-width: 1px;
+$panel-bg-color: white;
+
+[data-popover-id] {
+  [data-popper-arrow] {
+    display: block;
+    width: $arrow-width;
+    height: $arrow-height;
+
+    &::before,
+    &::after {
+      position: absolute;
+      display: block;
+      content: "";
+      border-color: transparent;
+      border-style: solid;
+      border-width: 0;
+    }
+  }
+}
+
+[data-popover-id][data-popper-placement^="top"] > [data-popper-arrow] {
+  bottom: calc(-1 * $arrow-height - $border-width);
+
+  &::before,
+  &::after {
+    border-width: $arrow-height calc($arrow-width * 0.5) 0; // stylelint-disable-line function-disallowed-list
+  }
+
+  &::before {
+    bottom: 0;
+    border-top-color: $arrow-border-color;
+  }
+
+  &::after {
+    bottom: $border-width;
+    border-top-color: $panel-bg-color;
+  }
+}
+
+[data-popover-id][data-popper-placement^="bottom"] > [data-popper-arrow] {
+  top: calc(
+    -1 * $arrow-height - $border-width
+  ); // stylelint-disable-line function-disallowed-list
+
+  &::before,
+  &::after {
+    border-width: 0 calc($arrow-width * 0.5) $arrow-height; // stylelint-disable-line function-disallowed-list
+  }
+
+  &::before {
+    top: 0;
+    border-bottom-color: $arrow-border-color;
+  }
+
+  &::after {
+    top: $border-width;
+    border-bottom-color: $panel-bg-color;
+  }
+}
+
+[data-popover-id][data-popper-placement^="left"] > [data-popper-arrow] {
+  right: calc(
+    -1 * $arrow-height - $border-width
+  ); // stylelint-disable-line function-disallowed-list
+  width: $arrow-height;
+  height: $arrow-width;
+
+  &::before,
+  &::after {
+    border-width: calc($arrow-width * 0.5) 0 calc($arrow-width * 0.5)
+      $arrow-height; // stylelint-disable-line function-disallowed-list
+  }
+
+  &::before {
+    right: 0;
+    border-left-color: $arrow-border-color;
+  }
+
+  &::after {
+    right: $border-width;
+    border-left-color: $panel-bg-color;
+  }
+}
+
+[data-popover-id][data-popper-placement^="right"] > [data-popper-arrow] {
+  left: calc(
+    -1 * $arrow-height - $border-width
+  ); // stylelint-disable-line function-disallowed-list
+  width: $arrow-height;
+  height: $arrow-width;
+
+  &::before,
+  &::after {
+    border-width: calc($arrow-width * 0.5) $arrow-height
+      calc($arrow-width * 0.5) 0; // stylelint-disable-line function-disallowed-list
+  }
+
+  &::before {
+    left: 0;
+    border-right-color: $arrow-border-color;
+  }
+
+  &::after {
+    left: $border-width;
+    border-right-color: $panel-bg-color;
+  }
+}

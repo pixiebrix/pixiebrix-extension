@@ -25,6 +25,7 @@ import {
   markTourStart,
 } from "@/extensionPoints/tourController";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { MultipleElementsFoundError } from "@/errors/businessErrors";
 
 Element.prototype.scrollIntoView = jest.fn();
 
@@ -41,6 +42,23 @@ const logger = new ConsoleLogger({
 });
 
 const brick = new TourStepTransformer();
+
+function startTour() {
+  const nonce = uuidv4();
+  const abortController = new AbortController();
+
+  markTourStart(
+    nonce,
+    {
+      id: uuidv4(),
+      label: "Test Tour",
+      _recipe: null,
+    },
+    { abortController }
+  );
+
+  return { nonce, abortController };
+}
 
 describe("tourStep", () => {
   beforeEach(() => {
@@ -61,21 +79,49 @@ describe("tourStep", () => {
     );
   });
 
-  it("renders simple step over document", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
+  it("skippable", async () => {
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
+    startTour();
+
+    const promise = brick.run(
+      unsafeAssumeValidArg({
+        title: "Test",
+        body: "**markdown**",
+        appearance: { skippable: true },
+        selector: "button",
+      }),
+      { logger, root: document } as BlockOptions
     );
+
+    await expect(promise).resolves.toEqual({});
+
+    cancelAllTours();
+  });
+
+  it("throws on multiple matches", async () => {
+    document.body.innerHTML = "<div><div>Test</div></div>";
+
+    startTour();
+
+    const promise = brick.run(
+      unsafeAssumeValidArg({
+        title: "Test",
+        body: "**markdown**",
+        selector: "div",
+      }),
+      { logger, root: document } as BlockOptions
+    );
+
+    await expect(promise).rejects.toThrow(MultipleElementsFoundError);
+
+    cancelAllTours();
+  });
+
+  it("renders simple step over document", async () => {
+    document.body.innerHTML = "<div>Test</div>";
+
+    startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
@@ -98,20 +144,9 @@ describe("tourStep", () => {
   });
 
   it("highlights element", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({
@@ -139,20 +174,9 @@ describe("tourStep", () => {
   });
 
   it("don't scroll to element by default", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
@@ -172,20 +196,9 @@ describe("tourStep", () => {
   });
 
   it("scrolls to element", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({
@@ -209,20 +222,9 @@ describe("tourStep", () => {
   });
 
   it("waits for element to initialize on page", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({

@@ -22,6 +22,7 @@ import { joinName } from "@/utils";
 import { Card } from "react-bootstrap";
 import TourStep, {
   type StepInputs,
+  TourStepTransformer,
 } from "@/blocks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
 import {
@@ -101,7 +102,11 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             if (target.value) {
               setFieldValue(configName("body"), {
                 __type__: "pipeline",
-                __value__: [createNewBlock(DocumentRenderer.BLOCK_ID)],
+                __value__: [
+                  createNewBlock(DocumentRenderer.BLOCK_ID, {
+                    parentBlockId: TourStepTransformer.BLOCK_ID,
+                  }),
+                ],
               });
             } else {
               setFieldValue(configName("body"), {
@@ -259,6 +264,35 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             type: "string",
             description:
               "Color to highlight the element with when the step is active. Can be any valid CSS color value",
+          }}
+        />
+      </Section>
+
+      <Section title="Popover Behavior">
+        <SchemaField
+          name={configName("appearance", "popover", "placement")}
+          label="Placement"
+          description="Location to place the popover relative to the target element"
+          schema={{
+            type: "string",
+            enum: [
+              "auto",
+              "auto-start",
+              "auto-end",
+              "top",
+              "top-start",
+              "top-end",
+              "bottom",
+              "bottom-start",
+              "bottom-end",
+              "right",
+              "right-start",
+              "right-end",
+              "left",
+              "left-start",
+              "left-end",
+            ],
+            default: "auto",
           }}
         />
       </Section>

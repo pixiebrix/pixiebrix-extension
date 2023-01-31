@@ -18,26 +18,22 @@
 import { Transformer } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import injectStylesheet from "@/utils/injectStylesheet";
-import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
-import pDefer from "p-defer";
 import {
   BusinessError,
-  CancelError,
+  MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
-import { findSingleElement } from "@/utils/requireSingleElement";
-import sanitize from "@/utils/sanitize";
 import {
   displayTemporaryInfo,
   type RefreshTrigger,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
+import { $safeFind } from "@/helpers";
 
 export type StepInputs = {
   title: string;
@@ -68,18 +64,34 @@ export type StepInputs = {
       behavior?: "auto" | "smooth";
     };
     popover?: {
-      position?:
-        | "right"
-        | "left"
-        | "bottom"
+      placement?:
+        | "auto"
+        | "auto-start"
+        | "auto-end"
         | "top"
-        | "bottom-left-aligned"
-        | "bottom-middle-aligned"
-        | "bottom-right-aligned"
-        | "auto";
+        | "top-start"
+        | "top-end"
+        | "bottom"
+        | "bottom-start"
+        | "bottom-end"
+        | "right"
+        | "right-start"
+        | "right-end"
+        | "left"
+        | "left-start"
+        | "left-end";
     };
   };
 };
+
+function markdownPipeline(markdown: string): PipelineExpression {
+  return {
+    __type__: "pipeline",
+    __value__: [
+      { id: validateRegistryId("@pixiebrix/markdown"), config: { markdown } },
+    ],
+  };
+}
 
 export class TourStepTransformer extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/tour/step");
@@ -100,7 +112,7 @@ export class TourStepTransformer extends Transformer {
     return false;
   }
 
-  async showInfoStep(
+  async displayStep(
     element: HTMLElement | Document,
     { appearance, title, body }: StepInputs,
     {
@@ -144,62 +156,8 @@ export class TourStepTransformer extends Transformer {
       abortSignal,
       refreshTrigger: appearance.refreshTrigger,
       refreshEntry,
+      popoverOptions: appearance.popover,
     });
-  }
-
-  async showIntroJsStep(
-    element: HTMLElement | Document,
-    { appearance, title, body, isLastStep }: StepInputs,
-    { abortSignal }: BlockOptions
-  ): Promise<unknown> {
-    const stylesheetLink = await injectStylesheet(stylesheetUrl);
-
-    const removeStylesheet = () => {
-      stylesheetLink.remove();
-    };
-
-    const { default: introJs } = await import(
-      /* webpackChunkName: "intro.js" */ "intro.js"
-    );
-
-    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-
-    const { resolve, reject, promise: tourPromise } = pDefer();
-
-    const tour = introJs()
-      .setOptions({
-        tooltipPosition: appearance?.popover?.position,
-        showProgress: false,
-        showBullets: false,
-        doneLabel: isLastStep ? "Done" : "Next",
-        disableInteraction: appearance?.disableInteraction,
-        // Scroll is implemented by the brick
-        scrollToElement: false,
-        steps: [
-          {
-            element: element === document ? null : (element as HTMLElement),
-            title,
-            intro: sanitize(marked(body as string)),
-          },
-        ],
-      })
-      .oncomplete(() => {
-        // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
-        removeStylesheet();
-        resolve();
-      })
-      .onexit(() => {
-        // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
-        removeStylesheet();
-        reject(new CancelError("User cancelled the tour"));
-      })
-      .start();
-
-    abortSignal?.addEventListener("abort", () => {
-      tour.exit(true);
-    });
-
-    return tourPromise;
   }
 
   /**
@@ -214,22 +172,29 @@ export class TourStepTransformer extends Transformer {
     args: StepInputs,
     options: BlockOptions
   ): Promise<HTMLElement> {
-    if (args.appearance?.wait) {
+    let $elements: JQuery<Document | HTMLElement> = $safeFind(
+      args.selector,
+      options.root
+    );
+
+    if ($elements.length === 0 && args.appearance?.wait) {
       try {
-        const $elements = await awaitElement({
+        $elements = await awaitElement({
           selector: args.selector,
           $root: $(options.root),
           maxWaitMillis: args.appearance.wait.maxWaitMillis,
           abortSignal: options.abortSignal,
         });
-
-        return $elements.get(0) as HTMLElement;
       } catch {
-        return null;
+        // NOP
       }
     }
 
-    return findSingleElement(args.selector, options.root);
+    if ($elements.length > 1) {
+      throw new MultipleElementsFoundError(args.selector);
+    }
+
+    return $elements.get(0) as HTMLElement;
   }
 
   highlightTarget(
@@ -349,17 +314,24 @@ export class TourStepTransformer extends Transformer {
           popover: {
             type: "object",
             properties: {
-              position: {
+              placement: {
                 type: "string",
                 enum: [
-                  "right",
-                  "left",
-                  "bottom",
-                  "top",
-                  "bottom-left-aligned",
-                  "bottom-middle-aligned",
-                  "bottom-right-aligned",
                   "auto",
+                  "auto-start",
+                  "auto-end",
+                  "top",
+                  "top-start",
+                  "top-end",
+                  "bottom",
+                  "bottom-start",
+                  "bottom-end",
+                  "right",
+                  "right-start",
+                  "right-end",
+                  "left",
+                  "left-start",
+                  "left-end",
                 ],
                 default: "auto",
               },
@@ -381,6 +353,7 @@ export class TourStepTransformer extends Transformer {
         context: { extensionId },
       },
     } = options;
+
     const {
       title,
       body,
@@ -390,13 +363,13 @@ export class TourStepTransformer extends Transformer {
       appearance = {},
     } = args;
 
-    const target = selector ? await this.locateElement(args, options) : root;
-
     const nonce = getCurrentTour()?.nonce;
 
     if (!nonce) {
       throw new BusinessError("This brick can only be called from a tour");
     }
+
+    const target = selector ? await this.locateElement(args, options) : root;
 
     if (target == null) {
       if (appearance.skippable) {
@@ -439,11 +412,12 @@ export class TourStepTransformer extends Transformer {
       // step names in order to group steps. That's probably better served by an explicit step key though.
       markTourStep(nonce, { id: extensionId }, title);
 
-      if (typeof body === "string") {
-        await this.showIntroJsStep(target, args, options);
-      } else {
-        await this.showInfoStep(target, args, options);
-      }
+      // If passing markdown, wrap in Markdown brick
+      const modifiedArgs: BlockArg<StepInputs> =
+        typeof body === "string"
+          ? { ...args, body: markdownPipeline(body) }
+          : args;
+      await this.displayStep(target, modifiedArgs, options);
 
       if (!isEmpty(onAfterShow?.__value__)) {
         await options.runPipeline(
