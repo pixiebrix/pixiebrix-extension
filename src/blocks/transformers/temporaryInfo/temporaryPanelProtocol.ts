@@ -19,27 +19,7 @@ import { type UUID } from "@/core";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 import { CancelError } from "@/errors/businessErrors";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
-import { type JsonObject } from "type-fest";
-
-/**
- * An action to resolve a panel with a type and detail.
- *
- * Interface matches CustomEvent
- *
- * @see CustomEvent
- */
-export type PanelAction = {
-  /**
-   * A custom type for the action, e.g., "submit", "cancel", etc.
-   */
-  type: string;
-
-  /**
-   * Optional payload for the action.
-   */
-  detail?: JsonObject;
-};
+import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";
 
 type RegisteredPanel = {
   entry: TemporaryPanelEntry;

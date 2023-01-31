@@ -17,7 +17,7 @@
 
 import cx from "classnames";
 import React, { useEffect } from "react";
-import { Modal, Popover } from "react-bootstrap";
+import { Button, Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
@@ -31,6 +31,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
+
+import styles from "./EphemeralPanel.module.scss";
 
 type Mode = "modal" | "popover";
 
@@ -117,20 +119,56 @@ const EphemeralPanel: React.FC = () => {
     );
   }
 
+  if (mode === "popover") {
+    return (
+      <Layout>
+        <Popover.Title>{entry.heading}</Popover.Title>
+        <Popover.Content>
+          <ErrorBoundary>
+            <PanelBody
+              isRootPanel={false}
+              payload={entry.payload}
+              context={{ extensionId: entry.extensionId }}
+              onAction={(action) => {
+                resolveTemporaryPanel(target, nonce, action);
+              }}
+            />
+          </ErrorBoundary>
+
+          {entry.actions.length > 0 && (
+            <>
+              <hr className={styles.actionDivider} />
+              <div className="d-flex justify-content-end">
+                {entry.actions.map((action) => (
+                  <Button
+                    key={action.caption}
+                    variant={action.variant}
+                    size="sm"
+                    onClick={() => {
+                      resolveTemporaryPanel(target, nonce, action);
+                    }}
+                  >
+                    {action.caption}
+                  </Button>
+                ))}
+              </div>
+            </>
+          )}
+        </Popover.Content>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      {mode === "popover" ? (
-        <Popover.Title>{entry.heading}</Popover.Title>
-      ) : (
-        <Modal.Header
-          closeButton
-          onHide={() => {
-            cancelTemporaryPanel(target, [nonce]);
-          }}
-        >
-          <Modal.Title>{entry.heading}</Modal.Title>
-        </Modal.Header>
-      )}
+      <Modal.Header
+        closeButton
+        onHide={() => {
+          cancelTemporaryPanel(target, [nonce]);
+        }}
+      >
+        <Modal.Title>{entry.heading}</Modal.Title>
+      </Modal.Header>
       <Modal.Body>
         <ErrorBoundary>
           <PanelBody
@@ -143,6 +181,22 @@ const EphemeralPanel: React.FC = () => {
           />
         </ErrorBoundary>
       </Modal.Body>
+
+      {entry.actions.length > 0 && (
+        <Modal.Footer>
+          {entry.actions.map((action) => (
+            <Button
+              key={action.caption}
+              variant={action.variant}
+              onClick={() => {
+                resolveTemporaryPanel(target, nonce, action);
+              }}
+            >
+              {action.caption}
+            </Button>
+          ))}
+        </Modal.Footer>
+      )}
     </Layout>
   );
 };

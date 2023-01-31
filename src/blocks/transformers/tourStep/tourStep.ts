@@ -31,7 +31,7 @@ import {
   displayTemporaryInfo,
   type RefreshTrigger,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type PanelPayload } from "@/sidebar/types";
+import { type PanelButton, type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 import { $safeFind } from "@/helpers";
 
@@ -104,6 +104,8 @@ export class TourStepTransformer extends Transformer {
     );
   }
 
+  defaultOutputKey = "step";
+
   override async isRootAware(): Promise<boolean> {
     return true;
   }
@@ -114,7 +116,7 @@ export class TourStepTransformer extends Transformer {
 
   async displayStep(
     element: HTMLElement | Document,
-    { appearance, title, body }: StepInputs,
+    { appearance, title, body, isLastStep }: StepInputs,
     {
       abortSignal,
       logger: {
@@ -146,6 +148,13 @@ export class TourStepTransformer extends Transformer {
         blueprintId,
         heading: title,
         payload,
+        actions: [
+          {
+            caption: isLastStep ? "Done" : "Next",
+            type: "submit",
+            variant: "light",
+          },
+        ] as PanelButton[],
       };
     };
 
