@@ -26,6 +26,7 @@ import {
 } from "@/contentScript/ready";
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
@@ -60,6 +61,9 @@ async function initContentScript() {
     unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });
+
+  const activatingBlueprint = getActivatingBlueprint();
+  console.log("activatingBlueprint", activatingBlueprint);
 }
 
 if (location.protocol === "https:") {
