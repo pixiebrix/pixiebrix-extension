@@ -15,12 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TourEffect } from "@/blocks/effects/tour";
+import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { expectContext } from "@/utils/expectContext";
+import panelInThisTab from "@/blocks/transformers/temporaryInfo/messenger/api";
 
-const brick = new TourEffect();
+/**
+ * Sequence number for ensuring render requests are handled in order
+ */
+let renderSequenceNumber = 0;
 
-describe("TourEffect", () => {
-  test("isRootAware", async () => {
-    await expect(brick.isRootAware()).resolves.toBe(true);
-  });
-});
+/**
+ * Update a modal/popover panel.
+ *
+ * For sidebar panels, see updateTemporarySidebarPanel.
+ *
+ * @param entry the new panel content
+ * @see updateTemporarySidebarPanel
+ */
+export function updateTemporaryOverlayPanel(entry: TemporaryPanelEntry): void {
+  expectContext("contentScript");
+
+  const sequence = renderSequenceNumber++;
+  panelInThisTab.updateTemporaryPanel(sequence, entry);
+}

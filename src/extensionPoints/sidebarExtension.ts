@@ -355,7 +355,11 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     // On the initial run or a manual run, run directly
     if (
       this.trigger === "load" ||
-      [RunReason.MANUAL, RunReason.INITIAL_LOAD].includes(reason)
+      [
+        RunReason.MANUAL,
+        RunReason.INITIAL_LOAD,
+        RunReason.PAGE_EDITOR,
+      ].includes(reason)
     ) {
       void this.debouncedRefreshPanels({
         shouldRunExtension: stubTrue,

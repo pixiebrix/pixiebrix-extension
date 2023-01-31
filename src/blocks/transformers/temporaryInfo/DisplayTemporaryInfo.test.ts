@@ -33,7 +33,10 @@ import {
   type RendererError,
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
-import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
+import {
+  showTemporarySidebarPanel,
+  updateTemporarySidebarPanel,
+} from "@/contentScript/sidebarController";
 import {
   cancelTemporaryPanelsForExtension,
   waitForTemporaryPanel,
@@ -41,6 +44,8 @@ import {
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
+import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import pDefer from "p-defer";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
@@ -63,12 +68,14 @@ jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
   showTemporarySidebarPanel: jest.fn(),
+  updateTemporarySidebarPanel: jest.fn(),
 }));
 
 jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
   waitForTemporaryPanel: jest.fn(),
   stopWaitingForTemporaryPanels: jest.fn(),
   cancelTemporaryPanelsForExtension: jest.fn(),
+  updatePanelDefinition: jest.fn(),
 }));
 
 const showTemporarySidebarPanelMock =
@@ -82,6 +89,10 @@ const waitForTemporaryPanelMock = waitForTemporaryPanel as jest.MockedFunction<
 const cancelTemporaryPanelsForExtensionMock =
   cancelTemporaryPanelsForExtension as jest.MockedFunction<
     typeof cancelTemporaryPanelsForExtension
+  >;
+const updateTemporarySidebarPanelMock =
+  updateTemporarySidebarPanel as jest.MockedFunction<
+    typeof updateTemporarySidebarPanel
   >;
 
 describe("DisplayTemporaryInfo", () => {
@@ -100,6 +111,7 @@ describe("DisplayTemporaryInfo", () => {
     showTemporarySidebarPanelMock.mockReset();
     showModalMock.mockReset();
     cancelTemporaryPanelsForExtensionMock.mockReset();
+    updateTemporarySidebarPanelMock.mockReset();
   });
 
   test("isRootAware", async () => {
@@ -256,5 +268,48 @@ describe("DisplayTemporaryInfo", () => {
     expect(
       document.body.querySelector("#pb-tooltips-container")
     ).not.toBeNull();
+  });
+
+  test("it listens for statechange", async () => {
+    document.body.innerHTML = '<div><div id="target"></div></div>';
+
+    const deferredPromise = pDefer<any>();
+    waitForTemporaryPanelMock.mockImplementation(
+      async () => deferredPromise.promise
+    );
+
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "panel",
+        refreshTrigger: "statechange",
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    void reducePipeline(pipeline, simpleInput({}), options);
+
+    await tick();
+
+    expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
+
+    $(document).trigger("statechange");
+
+    await tick();
+
+    expect(updateTemporarySidebarPanelMock).toHaveBeenCalled();
+
+    deferredPromise.resolve();
   });
 });

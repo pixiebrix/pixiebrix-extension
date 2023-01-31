@@ -27,6 +27,7 @@ import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { type BlockConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
+import TourStep from "@/blocks/transformers/tourStep/tourStep";
 
 export function getExampleBlockConfig(
   blockId: RegistryId
@@ -127,6 +128,22 @@ export function getExampleBlockConfig(
       location: "panel",
       body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
       isRootAware: true,
+    };
+  }
+
+  if (blockId === TourStep.BLOCK_ID) {
+    return {
+      title: "Example Step",
+      body: "Step content. **Markdown** is supported.",
+      appearance: {
+        scroll: {
+          behavior: "smooth",
+        },
+        // Supply empty appearance configs to avoid rendering errors
+        wait: {},
+        highlight: {},
+        popover: {},
+      },
     };
   }
 }

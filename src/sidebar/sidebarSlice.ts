@@ -185,6 +185,19 @@ const sidebarSlice = createSlice({
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
     },
+    updateTemporaryPanel(
+      state,
+      action: PayloadAction<{ panel: TemporaryPanelEntry }>
+    ) {
+      const { panel } = action.payload;
+
+      const index = state.temporaryPanels.findIndex(
+        (x) => x.nonce === panel.nonce
+      );
+      if (index >= 0) {
+        state.temporaryPanels[index] = panel;
+      }
+    },
     addTemporaryPanel(
       state,
       action: PayloadAction<{ panel: TemporaryPanelEntry }>

@@ -16,7 +16,7 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getMethod } from "webext-messenger";
+import { getMethod, getNotifier } from "webext-messenger";
 
 const target = { tabId: "this", page: "/sidebar.html" } as const;
 const sidebarInThisTab = {
@@ -26,6 +26,7 @@ const sidebarInThisTab = {
   hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
   pingSidebar: getMethod("SIDEBAR_PING", target),
   showTemporaryPanel: getMethod("SIDEBAR_SHOW_TEMPORARY_PANEL", target),
+  updateTemporaryPanel: getNotifier("SIDEBAR_UPDATE_TEMPORARY_PANEL", target),
   hideTemporaryPanel: getMethod("SIDEBAR_HIDE_TEMPORARY_PANEL", target),
 };
 

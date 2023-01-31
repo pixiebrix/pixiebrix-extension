@@ -41,7 +41,8 @@ export type ExtensionPointType =
   | "contextMenu"
   | "actionPanel"
   | "quickBar"
-  | "quickBarProvider";
+  | "quickBarProvider"
+  | "tour";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce

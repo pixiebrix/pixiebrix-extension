@@ -20,11 +20,11 @@ import { validateRegistryId } from "@/types/helpers";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
-import { type BlockConfig } from "@/blocks/types";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RegistryId } from "@/core";
+import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -62,27 +62,23 @@ export function getSubPipelineFlavor(
     return PipelineFlavor.NoEffect;
   }
 
+  if (parentNodeId === TourStepTransformer.BLOCK_ID) {
+    const pathParts = pipelinePath.split(".");
+    if (pathParts.at(-2) === "body") {
+      // Tour step body should have no side effects
+      return PipelineFlavor.NoEffect;
+    }
+
+    // Don't allow renderer in onBeforeShow/onAfterShow
+    return PipelineFlavor.NoRenderer;
+  }
+
   return PipelineFlavor.NoRenderer;
 }
 
-type GetPipelineFlavorArgs = {
-  extensionPointType: ExtensionPointType;
-  pipelinePath: string;
-  parentNode: BlockConfig;
-};
-export function getPipelineFlavor({
-  extensionPointType,
-  parentNode,
-  pipelinePath,
-}: GetPipelineFlavorArgs): PipelineFlavor {
-  if (parentNode == null) {
-    return getRootPipelineFlavor(extensionPointType);
-  }
-
-  return getSubPipelineFlavor(parentNode.id, pipelinePath);
-}
-
-export function makeIsBlockAllowedForPipeline(pipelineFlavor: PipelineFlavor) {
+export function makeIsBlockAllowedForPipeline(
+  pipelineFlavor: PipelineFlavor
+): IsBlockAllowedPredicate {
   if (pipelineFlavor === PipelineFlavor.AllBlocks) {
     return stubTrue;
   }

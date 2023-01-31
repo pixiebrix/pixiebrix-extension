@@ -32,7 +32,7 @@ class QuickBarRegistry {
    * @see addAction
    * @private
    */
-  private readonly actions: CustomAction[] = defaultActions;
+  private readonly actions: CustomAction[] = [...defaultActions];
 
   /**
    * Registry of action listeners, called when the set of actions changes.

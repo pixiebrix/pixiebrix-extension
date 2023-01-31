@@ -104,7 +104,7 @@ export class FormTransformer extends Transformer {
       submitCaption = "Submit",
       location = "modal",
     }: BlockArg,
-    { logger }: BlockOptions
+    { logger, abortSignal }: BlockOptions
   ): Promise<unknown> {
     expectContext("contentScript");
 
@@ -120,6 +120,10 @@ export class FormTransformer extends Transformer {
       cancelable,
       submitCaption,
     };
+
+    abortSignal?.addEventListener("abort", () => {
+      void cancelForm(frameNonce);
+    });
 
     const controller = new AbortController();
 
