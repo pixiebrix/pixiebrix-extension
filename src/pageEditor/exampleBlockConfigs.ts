@@ -36,7 +36,7 @@ import TourStep from "@/blocks/transformers/tourStep/tourStep";
  */
 export function getExampleBlockConfig(
   blockId: RegistryId,
-  { parentBlockId }: { parentBlockId?: RegistryId } = { parentBlockId: null }
+  { parentBlockId }: { parentBlockId?: RegistryId } = {}
 ): UnknownObject | null {
   if (blockId === COMPONENT_READER_ID) {
     return {

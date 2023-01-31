@@ -89,6 +89,9 @@ function popoverFactory(initialUrl: URL): HTMLElement {
         checkOrigin: [trimEnd(chrome.runtime.getURL(""), "/")],
         // Looks for data-iframe-height in PopoverLayout
         heightCalculationMethod: "taggedElement",
+        resizedCallback() {
+          void popperMap.get(tooltip)?.update();
+        },
       },
       tooltip.querySelector("iframe")
     );
@@ -169,15 +172,27 @@ function attachPopover({
 
   const popper = createPopper(element, tooltip, {
     placement: placement ?? "auto",
+    strategy: "fixed",
     modifiers: [
       {
         name: "offset",
         options: {
-          offset: [16, 16],
+          // The first number, skidding, displaces the popper along the reference element.
+          // The second number, distance, displaces the popper away from, or toward, the reference element
+          // in the direction of its placement. A positive number displaces it further away, while a negative
+          // number lets it overlap the reference.
+          offset: [0, 24],
         },
       },
       {
         name: "arrow",
+      },
+      {
+        name: "computeStyles",
+        options: {
+          // Adaptive was breaking top positioning :shrug:
+          adaptive: false,
+        },
       },
     ],
   });

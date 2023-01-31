@@ -25,6 +25,10 @@ $border-width: 1px;
 $panel-bg-color: white;
 $popover-z-index: 9999;
 
+// https://popper.js.org/docs/v2/faq/
+// Additionally, make sure your popper element (tooltip, popover, etc...) CSS doesn't include some positioning
+// styles (such as top, left, right, bottom, and transform) because they could interfere with the Popper
+// positioning logic.
 [data-popover-id] {
   z-index: $popover-z-index;
 
