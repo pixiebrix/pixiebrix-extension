@@ -1,7 +1,6 @@
 import { createPopper } from "@popperjs/core";
 import { iframeResizer } from "iframe-resizer";
 import { trimEnd } from "lodash";
-import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
 import popoverStyleUrl from "./popover.scss?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
 
@@ -99,15 +98,6 @@ export function showPopover(
     resizer.iFrameResizer.resize();
   }, 25);
 
-  const mountListener = (event: Event) => {
-    if (event instanceof CustomEvent && event.detail.nonce === nonce) {
-      // Force popper position update
-      void popper.update();
-    }
-  };
-
-  document.addEventListener(PANEL_MOUNTED_EVENT_TYPE, mountListener);
-
   const outsideClickListener = (event: JQuery.TriggeredEvent) => {
     if ($(event.target).closest(tooltip).length === 0) {
       onHide();
@@ -121,7 +111,6 @@ export function showPopover(
     clearInterval(interval);
     tooltip.remove();
     popper.destroy();
-    document.removeEventListener("panelMounted", mountListener);
     $body.off("click touchend", outsideClickListener);
   });
 }

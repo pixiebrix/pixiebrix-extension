@@ -29,7 +29,6 @@ import { validateUUID } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
-import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
 
 import styles from "./EphemeralPanel.module.scss";
@@ -74,12 +73,6 @@ const EphemeralPanel: React.FC = () => {
     target,
     nonce
   );
-
-  useEffect(() => {
-    document.dispatchEvent(
-      new CustomEvent(PANEL_MOUNTED_EVENT_TYPE, { detail: nonce })
-    );
-  }, [nonce]);
 
   // Report error once
   useEffect(() => {
