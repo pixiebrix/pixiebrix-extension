@@ -74,10 +74,12 @@ export function updatePanelDefinition(entry: TemporaryPanelEntry): void {
  * Register a temporary display panel
  * @param nonce The instance nonce for the panel to register
  * @param entry the panel definition
+ * @param onRegister callback to run after the panel is registered
  */
 export async function waitForTemporaryPanel(
   nonce: UUID,
-  entry: TemporaryPanelEntry
+  entry: TemporaryPanelEntry,
+  { onRegister }: { onRegister?: () => void } = {}
 ): Promise<PanelAction | null> {
   expectContext("contentScript");
 
@@ -99,6 +101,8 @@ export async function waitForTemporaryPanel(
   }
 
   extensionNonces.get(entry.extensionId).add(nonce);
+
+  onRegister?.();
 
   return registration.promise;
 }

@@ -440,6 +440,7 @@ export class TourStepTransformer extends Transformer {
         typeof body === "string"
           ? { ...args, body: markdownPipeline(body) }
           : args;
+
       await this.displayStep(target, modifiedArgs, options);
 
       if (!isEmpty(onAfterShow?.__value__)) {

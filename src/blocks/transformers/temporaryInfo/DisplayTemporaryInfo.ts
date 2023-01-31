@@ -32,18 +32,19 @@ import {
   cancelTemporaryPanels,
   cancelTemporaryPanelsForExtension,
   stopWaitingForTemporaryPanels,
-  waitForTemporaryPanel,
   updatePanelDefinition,
+  waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 import {
-  Placement,
+  type Placement,
   showPopover,
 } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
+import { once } from "lodash";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
@@ -108,6 +109,8 @@ export async function displayTemporaryInfo({
   popoverOptions,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
+  let onReady: () => void;
+
   const controller = new AbortController();
 
   abortSignal?.addEventListener("abort", () => {
@@ -156,13 +159,17 @@ export async function displayTemporaryInfo({
         await cancelTemporaryPanels([nonce]);
       };
 
-      showPopover(
+      const popover = showPopover(
         frameSource,
         target as HTMLElement,
         onHide,
         controller,
         popoverOptions
       );
+
+      onReady = once(() => {
+        popover.onReady();
+      });
 
       break;
     }
@@ -199,7 +206,11 @@ export async function displayTemporaryInfo({
   let result = null;
 
   try {
-    result = await waitForTemporaryPanel(nonce, { ...entry, nonce });
+    result = await waitForTemporaryPanel(
+      nonce,
+      { ...entry, nonce },
+      { onRegister: onReady }
+    );
   } catch (error) {
     if (error instanceof CancelError) {
       // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915

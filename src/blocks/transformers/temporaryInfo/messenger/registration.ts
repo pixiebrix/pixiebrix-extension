@@ -17,7 +17,10 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { updateTemporaryPanel } from "@/blocks/transformers/temporaryInfo/receiverProtocol";
+import {
+  setTemporaryPanelNonce,
+  updateTemporaryPanel,
+} from "@/blocks/transformers/temporaryInfo/receiverProtocol";
 import { expectContext } from "@/utils/expectContext";
 
 expectContext("extension");
@@ -25,11 +28,13 @@ expectContext("extension");
 declare global {
   interface MessengerMethods {
     EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
+    EPHEMERAL_PANEL_SET_TEMPORARY_PANEL: typeof setTemporaryPanelNonce;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
     EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
+    EPHEMERAL_PANEL_SET_TEMPORARY_PANEL: setTemporaryPanelNonce,
   });
 }

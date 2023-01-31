@@ -30,6 +30,7 @@ import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
+import { type UUID } from "@/core";
 
 import styles from "./EphemeralPanel.module.scss";
 
@@ -59,7 +60,7 @@ const PopoverLayout: React.FC<{ className?: string }> = ({
  */
 const EphemeralPanel: React.FC = () => {
   const params = new URLSearchParams(location.search);
-  const nonce = validateUUID(params.get("nonce"));
+  const initialNonce: UUID | undefined = validateUUID(params.get("nonce"));
   const opener = JSON.parse(params.get("opener")) as Target;
   const mode = params.get("mode") as Mode;
 
@@ -71,7 +72,7 @@ const EphemeralPanel: React.FC = () => {
 
   const { entry, isLoading, error } = useTemporaryPanelDefinition(
     target,
-    nonce
+    initialNonce
   );
 
   // Report error once
@@ -102,7 +103,7 @@ const EphemeralPanel: React.FC = () => {
             className="btn btn-primary"
             type="button"
             onClick={() => {
-              cancelTemporaryPanel(target, [nonce]);
+              cancelTemporaryPanel(target, [entry.nonce]);
             }}
           >
             Close
@@ -110,6 +111,11 @@ const EphemeralPanel: React.FC = () => {
         </div>
       </Layout>
     );
+  }
+
+  // Panel was pre-allocated for performance
+  if (entry == null) {
+    return <Layout />;
   }
 
   if (mode === "popover") {
@@ -121,7 +127,7 @@ const EphemeralPanel: React.FC = () => {
             className="close"
             data-dismiss="alert"
             onClick={() => {
-              cancelTemporaryPanel(target, [nonce]);
+              cancelTemporaryPanel(target, [entry.nonce]);
             }}
           >
             &times;
@@ -134,7 +140,7 @@ const EphemeralPanel: React.FC = () => {
               payload={entry.payload}
               context={{ extensionId: entry.extensionId }}
               onAction={(action) => {
-                resolveTemporaryPanel(target, nonce, action);
+                resolveTemporaryPanel(target, entry.nonce, action);
               }}
             />
           </ErrorBoundary>
@@ -149,7 +155,7 @@ const EphemeralPanel: React.FC = () => {
                     variant={action.variant}
                     size="sm"
                     onClick={() => {
-                      resolveTemporaryPanel(target, nonce, action);
+                      resolveTemporaryPanel(target, entry.nonce, action);
                     }}
                   >
                     {action.caption}
@@ -168,7 +174,7 @@ const EphemeralPanel: React.FC = () => {
       <Modal.Header
         closeButton
         onHide={() => {
-          cancelTemporaryPanel(target, [nonce]);
+          cancelTemporaryPanel(target, [entry.nonce]);
         }}
       >
         <Modal.Title>{entry.heading}</Modal.Title>
@@ -180,7 +186,7 @@ const EphemeralPanel: React.FC = () => {
             payload={entry.payload}
             context={{ extensionId: entry.extensionId }}
             onAction={(action) => {
-              resolveTemporaryPanel(target, nonce, action);
+              resolveTemporaryPanel(target, entry.nonce, action);
             }}
           />
         </ErrorBoundary>
@@ -193,7 +199,7 @@ const EphemeralPanel: React.FC = () => {
               key={action.caption}
               variant={action.variant}
               onClick={() => {
-                resolveTemporaryPanel(target, nonce, action);
+                resolveTemporaryPanel(target, entry.nonce, action);
               }}
             >
               {action.caption}

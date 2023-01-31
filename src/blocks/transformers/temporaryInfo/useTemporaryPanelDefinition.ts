@@ -20,12 +20,13 @@ import { getPanelDefinition } from "@/contentScript/messenger/api";
 import { type UUID } from "@/core";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { type Target } from "@/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   addListener,
   type PanelListener,
   removeListener,
 } from "@/blocks/transformers/temporaryInfo/receiverProtocol";
+import { validateUUID } from "@/types/helpers";
 
 type PanelDefinition = {
   /**
@@ -45,25 +46,47 @@ type PanelDefinition = {
 /**
  * Hook to get the panel definition for a given nonce, and watch for definition updates.
  * @param target The target contentScript managing the panel
- * @param nonce the panel nonce
+ * @param initialNonce the initial panelNonce to show
  */
 function useTemporaryPanelDefinition(
   target: Target,
-  nonce: UUID
+  initialNonce: UUID
 ): PanelDefinition {
-  const [entry, isLoading, error, recalculate] = useAsyncState(
-    async () => getPanelDefinition(target, nonce),
-    [nonce]
-  );
+  const params = new URLSearchParams(location.search);
+  const frameNonce = validateUUID(params.get("frameNonce"));
+
+  const [panelNonce, setNonce] = useState(initialNonce);
+
+  const [entry, isLoading, error, recalculate] = useAsyncState(async () => {
+    if (panelNonce) {
+      return getPanelDefinition(target, panelNonce);
+    }
+
+    // Blank panel, e.g., pre-allocated iframe
+    return null;
+  }, [panelNonce]);
 
   useEffect(() => {
     const listener: PanelListener = {
       onUpdateTemporaryPanel(newEntry) {
+        console.debug("onUpdateTemporaryPanel", newEntry);
         // Need to verify we're the panel of interest, because messenger broadcasts to all ephemeral panels
-        if (newEntry.nonce === nonce) {
-          // Slight inefficient to getPanelDefinition since the entry is available in the message. However, this
+        if (newEntry.nonce === panelNonce) {
+          // Slightly inefficient to getPanelDefinition because the entry is available in the message. However, this
           // is the cleaner use of useAsyncState
           void recalculate();
+        }
+      },
+      onSetPanelNonce(payload) {
+        // Need to verify we're the panel of interest, because messenger broadcasts to all ephemeral panels
+        if (
+          frameNonce &&
+          payload.frameNonce === frameNonce &&
+          panelNonce !== payload.panelNonce
+        ) {
+          // Changing the nonce will cause useAsyncState to recalculate
+          console.debug("onSetPanelNonce", payload);
+          setNonce(payload.panelNonce);
         }
       },
     };
@@ -73,7 +96,7 @@ function useTemporaryPanelDefinition(
     return () => {
       removeListener(listener);
     };
-  }, [nonce, recalculate]);
+  }, [frameNonce, panelNonce, recalculate]);
 
   return {
     entry,

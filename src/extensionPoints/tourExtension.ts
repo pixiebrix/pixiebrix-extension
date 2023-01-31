@@ -61,6 +61,7 @@ import {
   unregisterTours,
 } from "@/extensionPoints/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
+import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 
 export type TourConfig = {
   /**
@@ -88,7 +89,10 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   abstract get autoRunSchedule(): TourDefinition["autoRunSchedule"];
 
   async install(): Promise<boolean> {
-    return this.isAvailable();
+    if (await this.isAvailable()) {
+      await initPopoverPool();
+      return true;
+    }
   }
 
   removeExtensions(extensionIds: UUID[]): void {

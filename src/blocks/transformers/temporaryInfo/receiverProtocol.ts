@@ -18,6 +18,7 @@
 import reportError from "@/telemetry/reportError";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { remove } from "lodash";
+import { type UUID } from "@/core";
 
 let lastMessageSeen = -1;
 
@@ -27,6 +28,19 @@ export type PanelListener = {
    * @param panel the updated panel entry
    */
   onUpdateTemporaryPanel: (panel: TemporaryPanelEntry) => void;
+
+  /**
+   * Update the panel nonce for an existing frame.
+   * @param frameNonce
+   * @param panelNonce
+   */
+  onSetPanelNonce: ({
+    frameNonce,
+    panelNonce,
+  }: {
+    frameNonce: UUID;
+    panelNonce: UUID;
+  }) => void;
 };
 
 const listeners: PanelListener[] = [];
@@ -69,7 +83,7 @@ function runListeners<Method extends keyof PanelListener>(
   for (const listener of listeners) {
     try {
       // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
-      listener[method](data);
+      listener[method](data as any);
     } catch (error) {
       reportError(error);
     }
@@ -81,4 +95,11 @@ export async function updateTemporaryPanel(
   entry: TemporaryPanelEntry
 ) {
   runListeners("onUpdateTemporaryPanel", sequence, entry);
+}
+
+export async function setTemporaryPanelNonce(
+  sequence: number,
+  payload: { frameNonce: UUID; panelNonce: UUID }
+) {
+  runListeners("onSetPanelNonce", sequence, payload);
 }

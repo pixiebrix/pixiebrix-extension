@@ -17,6 +17,11 @@
 
 // Adapted from https://github.com/shipshapecode/shepherd/blob/master/src/js/utils/overlay-path.js
 
+// Other possible approaches:
+// - https://stackoverflow.com/questions/48184793/how-to-darken-background-except-of-one-element
+// - https://stackoverflow.com/questions/24706934/style-all-but-one-element-to-dim-background
+// - https://www.webtips.dev/webtips/css/how-to-darken-background-to-give-focus
+
 /**
  * Generates the svg path data for a rounded rectangle overlay
  * @param {Object} dimension - Dimensions of rectangle.
