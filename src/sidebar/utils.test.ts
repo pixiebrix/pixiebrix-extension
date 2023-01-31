@@ -26,6 +26,7 @@ describe("defaultEventKey", () => {
         forms: [],
         panels: [],
         temporaryPanels: [],
+        recipeToActivate: null,
       })
     ).toBe(null);
   });

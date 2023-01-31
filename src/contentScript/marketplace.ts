@@ -18,7 +18,7 @@
 import notify from "@/utils/notify";
 import { type RegistryId } from "@/core";
 import { loadOptions } from "@/store/extensionsStorage";
-import { compact, isEmpty } from "lodash";
+import { compact, isEmpty, startsWith } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
@@ -26,60 +26,105 @@ import {
   PANEL_HIDING_EVENT,
   showActivateRecipeInSidebar,
 } from "@/contentScript/sidebarController";
+import { getAuthHeaders } from "@/auth/token";
+
+function getActivateButtonLinks(): HTMLAnchorElement[] {
+  return [
+    ...document.querySelectorAll<HTMLAnchorElement>(
+      "a[href^='https://app.pixiebrix.com/activate']"
+    ),
+  ];
+}
 
 async function getInstalledRecipeIds(): Promise<RegistryId[]> {
   const options = await loadOptions();
   return compact(options.extensions.map((extension) => extension._recipe?.id));
 }
 
+async function isUserLoggedIn(): Promise<boolean> {
+  const authHeaders = await getAuthHeaders();
+  return Boolean(authHeaders);
+}
+
+function getInProgressRecipeActivation(): RegistryId | null {
+  return null;
+}
+
+async function showSidebarActivationForRecipe(recipeId: RegistryId) {
+  notify.info(`Showing activation for ${recipeId}`);
+
+  const controller = new AbortController();
+
+  await ensureSidebar();
+  showActivateRecipeInSidebar({
+    recipeId,
+    heading: `Activate blueprint ${recipeId}`,
+  });
+  window.addEventListener(
+    PANEL_HIDING_EVENT,
+    () => {
+      controller.abort();
+    },
+    {
+      signal: controller.signal,
+    }
+  );
+  controller.signal.addEventListener("abort", () => {
+    hideActivateRecipeInSidebar(recipeId);
+  });
+}
+
 export async function initMarketplaceEnhancements() {
-  if (window.location.href !== "https://www.pixiebrix.com/marketplace/") {
+  if (
+    !startsWith(window.location.href, "https://www.pixiebrix.com/marketplace")
+  ) {
     return;
   }
 
+  if (!(await isUserLoggedIn())) {
+    notify.info("User not logged in");
+    return;
+  }
+
+  window.addEventListener("focus", async () => {
+    notify.info("Marketplace tab focused");
+    const recipeId = getInProgressRecipeActivation();
+    if (recipeId) {
+      await showSidebarActivationForRecipe(recipeId);
+    }
+  });
+
   notify.info("Marketplace enhancements loading...");
 
-  const activateLinkButtons = $(
-    "a[href^='https://app.pixiebrix.com/activate']"
-  );
-
-  if (isEmpty(activateLinkButtons)) {
+  const activateButtonLinks = getActivateButtonLinks();
+  if (isEmpty(activateButtonLinks)) {
     return;
   }
 
   const installedRecipeIds = await getInstalledRecipeIds();
 
-  for (const button of activateLinkButtons) {
-    const { href } = button as HTMLAnchorElement;
-    const url = new URL(href);
-    const recipeId = validateRegistryId(url.searchParams.get("id"));
+  for (const button of activateButtonLinks) {
+    const url = new URL(button.href);
+    let recipeId: RegistryId;
+    try {
+      recipeId = validateRegistryId(url.searchParams.get("id"));
+    } catch {
+      continue;
+    }
 
-    const controller = new AbortController();
-
-    // Check if blueprint is activated
+    // Check if recipe is already activated
     if (installedRecipeIds.includes(recipeId)) {
       button.innerHTML = '<i class="fas fa-sync-alt"></i> Reactivate';
     }
 
     button.addEventListener("click", async (event) => {
       event.preventDefault();
-      await ensureSidebar();
-      showActivateRecipeInSidebar({
-        recipeId,
-        heading: `Activate blueprint ${recipeId}`,
-      });
-      window.addEventListener(
-        PANEL_HIDING_EVENT,
-        () => {
-          controller.abort();
-        },
-        {
-          signal: controller.signal,
-        }
-      );
-      controller.signal.addEventListener("abort", () => {
-        hideActivateRecipeInSidebar(recipeId);
-      });
+
+      if (!(await isUserLoggedIn())) {
+        window.open(button.href, "_blank", "noopener,noreferrer");
+      }
+
+      await showSidebarActivationForRecipe(recipeId);
     });
   }
 }
