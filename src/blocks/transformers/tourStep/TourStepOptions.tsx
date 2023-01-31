@@ -262,8 +262,21 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
           label="Highlight Color"
           schema={{
             type: "string",
+            examples: ["yellow", "red", "green"],
             description:
               "Color to highlight the element with when the step is active. Can be any valid CSS color value",
+          }}
+        />
+      </Section>
+
+      <Section title="Overlay Behavior">
+        <SchemaField
+          name={configName("appearance", "showOverlay")}
+          label="Show Overlay"
+          schema={{
+            type: "boolean",
+            default: true,
+            description: "Toggle on to show an overlay/backdrop over the page",
           }}
         />
       </Section>

@@ -50,17 +50,17 @@ export function showPopover(
   abortController: AbortController,
   { placement }: PopoverOptions = {}
 ): void {
+  void injectStylesheet(popoverStyleUrl);
+  const $body = $(document.body);
   const nonce = url.searchParams.get("nonce");
 
   const $tooltip = $(
     `<div role="tooltip" data-popover-id="${nonce}"><iframe id="${nonce}" src="${url.href}" title="Popover content" scrolling="no" style="border: 0; color-scheme: normal;"></iframe><div data-popper-arrow></div></div>`
   );
+
   const tooltip: HTMLElement = $tooltip.get()[0];
 
-  void injectStylesheet(popoverStyleUrl);
-
   ensureTooltipsContainer().append(tooltip);
-  const $body = $(document.body);
 
   const popper = createPopper(element, tooltip, {
     placement: placement ?? "auto",
@@ -93,7 +93,7 @@ export function showPopover(
   );
 
   // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
-  // observer used by iframeResizer can't see it
+  // observer built into iframeResizer can't see it
   const interval = setInterval(() => {
     resizer.iFrameResizer.resize();
   }, 25);

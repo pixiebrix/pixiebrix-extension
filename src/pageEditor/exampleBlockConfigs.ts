@@ -156,6 +156,7 @@ export function getExampleBlockConfig(
       title: "Example Step",
       body: "Step content. **Markdown** is supported.",
       appearance: {
+        showOverlay: true,
         scroll: {
           behavior: "smooth",
         },

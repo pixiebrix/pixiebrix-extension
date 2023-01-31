@@ -25,7 +25,7 @@ import {
 } from "@/errors/businessErrors";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
-import { isEmpty } from "lodash";
+import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
@@ -34,6 +34,7 @@ import {
 import { type PanelButton, type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 import { $safeFind } from "@/helpers";
+import { addOverlay } from "@/blocks/transformers/tourStep/overlay";
 
 export type StepInputs = {
   title: string;
@@ -129,6 +130,16 @@ export class TourStepTransformer extends Transformer {
 
     const location = element === document ? "modal" : "popover";
 
+    let removeOverlay: () => void = noop;
+
+    if (element !== document && appearance?.showOverlay) {
+      // Our modal already adds a backdrop
+      removeOverlay = addOverlay(
+        element as HTMLElement,
+        appearance.highlight?.backgroundColor
+      );
+    }
+
     const refreshEntry = async () => {
       const payload = (await runRendererPipeline(
         (body as PipelineExpression)?.__value__ ?? [],
@@ -158,15 +169,19 @@ export class TourStepTransformer extends Transformer {
       };
     };
 
-    return displayTemporaryInfo({
-      entry: await refreshEntry(),
-      target: element,
-      location,
-      abortSignal,
-      refreshTrigger: appearance.refreshTrigger,
-      refreshEntry,
-      popoverOptions: appearance.popover,
-    });
+    try {
+      return await displayTemporaryInfo({
+        entry: await refreshEntry(),
+        target: element,
+        location,
+        abortSignal,
+        refreshTrigger: appearance.refreshTrigger,
+        refreshEntry,
+        popoverOptions: appearance.popover,
+      });
+    } finally {
+      removeOverlay();
+    }
   }
 
   /**
@@ -399,6 +414,8 @@ export class TourStepTransformer extends Transformer {
       if (appearance.scroll) {
         targetElement.scrollIntoView({
           behavior: appearance.scroll?.behavior,
+          block: "nearest",
+          inline: "nearest",
         });
       }
     }
