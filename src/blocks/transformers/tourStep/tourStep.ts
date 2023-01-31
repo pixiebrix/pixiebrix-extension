@@ -117,7 +117,7 @@ export class TourStepTransformer extends Transformer {
 
   async displayStep(
     element: HTMLElement | Document,
-    { appearance, title, body, isLastStep }: StepInputs,
+    { appearance = {}, title, body, isLastStep }: StepInputs,
     {
       abortSignal,
       logger: {

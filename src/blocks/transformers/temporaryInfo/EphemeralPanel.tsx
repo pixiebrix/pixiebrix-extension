@@ -115,7 +115,20 @@ const EphemeralPanel: React.FC = () => {
 
   // Panel was pre-allocated for performance
   if (entry == null) {
-    return <Layout />;
+    if (mode === "popover") {
+      return (
+        <Layout>
+          <Popover.Title></Popover.Title>
+          <Popover.Content>&nbsp;</Popover.Content>
+        </Layout>
+      );
+    }
+
+    return (
+      <Layout>
+        <div>&nbsp;</div>
+      </Layout>
+    );
   }
 
   if (mode === "popover") {
@@ -145,7 +158,7 @@ const EphemeralPanel: React.FC = () => {
             />
           </ErrorBoundary>
 
-          {entry.actions.length > 0 && (
+          {entry.actions?.length > 0 && (
             <>
               <hr className={styles.actionDivider} />
               <div className="d-flex justify-content-end">

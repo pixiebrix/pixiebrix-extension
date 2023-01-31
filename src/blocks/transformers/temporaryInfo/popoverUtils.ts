@@ -1,5 +1,5 @@
-import { createPopper } from "@popperjs/core";
-import { iframeResizer } from "iframe-resizer";
+import { createPopper, type Instance as PopperInstance } from "@popperjs/core";
+import { type IFrameComponent, iframeResizer } from "iframe-resizer";
 import { once, trimEnd } from "lodash";
 import popoverStyleUrl from "./popover.scss?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
@@ -51,10 +51,12 @@ type PopoverOptions = {
  * Pool of available popovers that can be re-used to avoid frame cold-start.
  */
 const popoverPool: HTMLElement[] = [];
+const popperMap = new WeakMap<HTMLElement, PopperInstance>();
+const resizerMap = new WeakMap<HTMLElement, IFrameComponent>();
 
 /**
- * Creates a new frame, or reuses an existing one.
- * @param initialUrl the original frame URL
+ * Creates a new popover toolip/frame, or reuses an existing one.
+ * @param initialUrl the original iframe URL
  */
 function popoverFactory(initialUrl: URL): HTMLElement {
   const $container = $(ensureTooltipsContainer());
@@ -72,8 +74,26 @@ function popoverFactory(initialUrl: URL): HTMLElement {
     );
 
     $container.append($tooltip);
+    const tooltip = $tooltip.get(0);
 
-    popoverPool.push($tooltip.get()[0]);
+    popoverPool.push(tooltip);
+
+    const [resizer] = iframeResizer(
+      {
+        id: frameNonce,
+        // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
+        // observer used by iframeResizer can't see it
+        autoResize: false,
+        sizeWidth: true,
+        sizeHeight: true,
+        checkOrigin: [trimEnd(chrome.runtime.getURL(""), "/")],
+        // Looks for data-iframe-height in PopoverLayout
+        heightCalculationMethod: "taggedElement",
+      },
+      tooltip.querySelector("iframe")
+    );
+
+    resizerMap.set(tooltip, resizer);
   } else {
     console.debug("Using existing frame from frame pool");
   }
@@ -104,24 +124,34 @@ export const initPopoverPool = once(async () => {
 
 /**
  * Reclaim a popover for the popover pool
- * @param popover the popover element.
+ * @param tooltip the popover element.
  */
-function reclaimPopover(popover: HTMLElement): void {
-  const $popover = $(popover);
+function reclaimTooltip(tooltip: HTMLElement): void {
+  const $popover = $(tooltip);
 
   // Hide, but keep in DOM tree so iframe doesn't have to reload
   $popover.hide();
 
+  // Set popper to null before destroying to avoid deleting the tooltip
+  const popper = popperMap.get(tooltip);
+  // https://github.com/floating-ui/floating-ui/issues/538
+  popper.state.elements.popper = null;
+  popper.destroy();
+  popperMap.delete(tooltip);
+
   // Clear content from the panel
   setTemporaryOverlayPanel({
-    frameNonce: validateUUID(popover.dataset.popoverId),
+    frameNonce: validateUUID(tooltip.dataset.popoverId),
     panelNonce: null,
   });
 
   // Mark as available in the popover pool
-  popoverPool.push(popover);
+  popoverPool.push(tooltip);
 }
 
+/**
+ * Attach a popover to an element on the page
+ */
 function attachPopover({
   url,
   element,
@@ -152,6 +182,8 @@ function attachPopover({
     ],
   });
 
+  popperMap.set(tooltip, popper);
+
   return {
     popper,
     tooltip,
@@ -159,15 +191,21 @@ function attachPopover({
   };
 }
 
-export function showPopover(
-  url: URL,
-  element: HTMLElement,
-  onHide: () => void,
-  abortController: AbortController,
-  { placement }: PopoverOptions = {}
-): {
+export function showPopover({
+  url,
+  element,
+  onOutsideClick,
+  abortController,
+  options: { placement } = {},
+}: {
+  url: URL;
+  element: HTMLElement;
+  onOutsideClick: () => void;
+  abortController: AbortController;
+  options: PopoverOptions;
+}): {
   /**
-   * Callback to be called when the popover content ready to be shown.
+   * Callback to be called when the popover content ready to be shown, i.e., it's initial panel definition is registered
    */
   onReady: () => void;
 } {
@@ -182,33 +220,18 @@ export function showPopover(
     placement,
   });
 
-  const [resizer] = iframeResizer(
-    {
-      id: nonce,
-      // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
-      // observer used by iframeResizer can't see it
-      autoResize: false,
-      sizeWidth: true,
-      sizeHeight: true,
-      checkOrigin: [trimEnd(chrome.runtime.getURL(""), "/")],
-      // Looks for data-iframe-height in PopoverLayout
-      heightCalculationMethod: "taggedElement",
-    },
-    tooltip.querySelector("iframe")
-  );
-
   // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
   // observer built into iframeResizer can't see it
   void setAnimationFrameInterval(
     () => {
-      resizer.iFrameResizer.resize();
+      resizerMap.get(tooltip)?.iFrameResizer.resize();
     },
     { signal: abortController.signal }
   );
 
   const outsideClickListener = (event: JQuery.TriggeredEvent) => {
     if ($(event.target).closest(tooltip).length === 0) {
-      onHide();
+      onOutsideClick();
     }
   };
 
@@ -217,10 +240,7 @@ export function showPopover(
 
   abortController.signal.addEventListener("abort", () => {
     // Must be done before removing the tooltip, otherwise the iframe will be removed from the DOM
-    reclaimPopover(tooltip);
-
-    // Don't destroy popper: it also removes the iframe from the DOM
-    // popper.destroy();
+    reclaimTooltip(tooltip);
 
     $body.off("click touchend", outsideClickListener);
   });

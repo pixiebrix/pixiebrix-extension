@@ -92,6 +92,11 @@ type TemporaryDisplayInputs = {
   refreshEntry?: () => Promise<PanelEntry>;
 
   /**
+   * Optional callback when the user clicks outside the panel.
+   */
+  onOutsideClick?: () => void;
+
+  /**
    * Optional placement options for popovers.
    */
   popoverOptions?: {
@@ -155,18 +160,19 @@ export async function displayTemporaryInfo({
 
       await cancelTemporaryPanelsForExtension(entry.extensionId);
 
-      const onHide = async () => {
+      const onOutsideClick = async () => {
         await cancelTemporaryPanels([nonce]);
       };
 
-      const popover = showPopover(
-        frameSource,
-        target as HTMLElement,
-        onHide,
-        controller,
-        popoverOptions
-      );
+      const popover = showPopover({
+        url: frameSource,
+        element: target as HTMLElement,
+        abortController: controller,
+        onOutsideClick,
+        options: popoverOptions,
+      });
 
+      // Wrap in once so it's safe for refresh callback
       onReady = once(() => {
         popover.onReady();
       });
