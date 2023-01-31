@@ -23,8 +23,11 @@ $arrow-height: 16px;
 $arrow-border-color: rgba(0, 0, 0, 0.2);
 $border-width: 1px;
 $panel-bg-color: white;
+$popover-z-index: 9999;
 
 [data-popover-id] {
+  z-index: $popover-z-index;
+
   [data-popper-arrow] {
     display: block;
     width: $arrow-width;
@@ -47,7 +50,7 @@ $panel-bg-color: white;
 
   &::before,
   &::after {
-    border-width: $arrow-height calc($arrow-width * 0.5) 0; // stylelint-disable-line function-disallowed-list
+    border-width: $arrow-height calc($arrow-width * 0.5) 0;
   }
 
   &::before {
@@ -62,13 +65,11 @@ $panel-bg-color: white;
 }
 
 [data-popover-id][data-popper-placement^="bottom"] > [data-popper-arrow] {
-  top: calc(
-    -1 * $arrow-height - $border-width
-  ); // stylelint-disable-line function-disallowed-list
+  top: calc(-1 * $arrow-height - $border-width);
 
   &::before,
   &::after {
-    border-width: 0 calc($arrow-width * 0.5) $arrow-height; // stylelint-disable-line function-disallowed-list
+    border-width: 0 calc($arrow-width * 0.5) $arrow-height;
   }
 
   &::before {
@@ -127,5 +128,30 @@ $panel-bg-color: white;
   &::after {
     left: $border-width;
     border-right-color: $panel-bg-color;
+  }
+}
+
+// Adapted from https://github.com/shipshapecode/shepherd/blob/master/src/js/utils/overlay-path.js
+.pixiebrix-modal-overlay-container {
+  height: 0;
+  left: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  transition: all 0.3s ease-out, height 0ms 0.3s, opacity 0.3s 0ms;
+  width: 100vw;
+  z-index: calc($popover-z-index - 1);
+
+  &.pixiebrix-modal-is-visible {
+    height: 100vh;
+    opacity: 0.5;
+    transition: all 0.3s ease-out, height 0s 0s, opacity 0.3s 0s;
+    transform: translateZ(0);
+
+    path {
+      pointer-events: all;
+    }
   }
 }

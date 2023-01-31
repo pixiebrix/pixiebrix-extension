@@ -15,60 +15,193 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function addOverlay(
+// Adapted from https://github.com/shipshapecode/shepherd/blob/master/src/js/utils/overlay-path.js
+
+/**
+ * Generates the svg path data for a rounded rectangle overlay
+ * @param {Object} dimension - Dimensions of rectangle.
+ * @param {number} width - Width.
+ * @param {number} height - Height.
+ * @param {number} [x=0] - Offset from top left corner in x axis. default 0.
+ * @param {number} [y=0] - Offset from top left corner in y axis. default 0.
+ * @param {number | { topLeft: number, topRight: number, bottomRight: number, bottomLeft: number }} [r=0] - Corner Radius. Keep this smaller than half of width or height.
+ * @returns {string} - Rounded rectangle overlay path data.
+ */
+export function makeOverlayPath({
+  width,
+  height,
+  x = 0,
+  y = 0,
+  r = 0,
+}: {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  r:
+    | number
+    | {
+        topLeft: number;
+        topRight: number;
+        bottomRight: number;
+        bottomLeft: number;
+      };
+}) {
+  const { innerWidth: w, innerHeight: h } = window;
+  const {
+    topLeft = 0,
+    topRight = 0,
+    bottomRight = 0,
+    bottomLeft = 0,
+  } = typeof r === "number"
+    ? { topLeft: r, topRight: r, bottomRight: r, bottomLeft: r }
+    : r;
+
+  return `M${w},${h}\
+H0\
+V0\
+H${w}\
+V${h}\
+Z\
+M${x + topLeft},${y}\
+a${topLeft},${topLeft},0,0,0-${topLeft},${topLeft}\
+V${height + y - bottomLeft}\
+a${bottomLeft},${bottomLeft},0,0,0,${bottomLeft},${bottomLeft}\
+H${width + x - bottomRight}\
+a${bottomRight},${bottomRight},0,0,0,${bottomRight}-${bottomRight}\
+V${y + topRight}\
+a${topRight},${topRight},0,0,0-${topRight}-${topRight}\
+Z`;
+}
+
+/**
+ * Get the visible height of the target element relative to its scrollParent.
+ * If there is no scroll parent, the height of the element is returned.
+ *
+ * @param {HTMLElement} element The target element
+ * @param {HTMLElement} [scrollParent] The scrollable parent element
+ * @returns {{y: number, height: number}}
+ * @private
+ */
+function _getVisibleHeight(
   element: HTMLElement,
-  highlightColor: string
+  scrollParent: HTMLElement = null
+) {
+  const elementRect = element.getBoundingClientRect();
+  let top = elementRect.y || elementRect.top;
+  let bottom = elementRect.bottom || top + elementRect.height;
+  if (scrollParent) {
+    const scrollRect = scrollParent.getBoundingClientRect();
+    const scrollTop = scrollRect.y || scrollRect.top;
+    const scrollBottom = scrollRect.bottom || scrollTop + scrollRect.height;
+    top = Math.max(top, scrollTop);
+    bottom = Math.min(bottom, scrollBottom);
+  }
+
+  const height = Math.max(bottom - top, 0); // Default to 0 if height is negative
+  return { y: top, height };
+}
+
+/**
+ * Find the closest scrollable parent element
+ * @param {HTMLElement} element The target element
+ * @returns {HTMLElement}
+ * @private
+ */
+function _getScrollParent(element: HTMLElement): HTMLElement | null {
+  if (!element) {
+    return null;
+  }
+
+  const isHtmlElement = element instanceof HTMLElement;
+  const overflowY = isHtmlElement && window.getComputedStyle(element).overflowY;
+  const isScrollable = overflowY !== "hidden" && overflowY !== "visible";
+  if (isScrollable && element.scrollHeight >= element.clientHeight) {
+    return element;
+  }
+
+  return _getScrollParent(element.parentElement);
+}
+
+/**
+ * Uses the bounds of the element we want the opening overtop of to set the dimensions of the opening and position it
+ * @param {Number} modalOverlayOpeningPadding An amount of padding to add around the modal overlay opening
+ * @param {Number | { topLeft: Number, bottomLeft: Number, bottomRight: Number, topRight: Number }} modalOverlayOpeningRadius An amount of border radius to add around the modal overlay opening
+ * @param {HTMLElement} scrollParent The scrollable parent of the target element
+ * @param {HTMLElement} targetElement The element the opening will expose
+ */
+export function positionModal(
+  modalOverlayOpeningPadding: number,
+  modalOverlayOpeningRadius: number,
+  scrollParent: HTMLElement,
+  targetElement: HTMLElement
+) {
+  const { y, height } = _getVisibleHeight(targetElement, scrollParent);
+  const { x, width, left } = targetElement.getBoundingClientRect();
+
+  // `getBoundingClientRect` is not consistent. Some browsers use x and y, while others use left and top
+  return {
+    width: width + modalOverlayOpeningPadding * 2,
+    height: height + modalOverlayOpeningPadding * 2,
+    x: (x || left) - modalOverlayOpeningPadding,
+    y: y - modalOverlayOpeningPadding,
+    r: modalOverlayOpeningRadius,
+  };
+}
+
+export function addOverlay(
+  target: HTMLElement,
+  {
+    modalOverlayOpeningPadding = 5,
+    modalOverlayOpeningRadius = 5,
+  }: {
+    modalOverlayOpeningPadding?: number;
+    modalOverlayOpeningRadius?: number;
+  } = {}
 ): () => void {
-  if (element === document.body) {
+  if (target === document.body) {
     throw new Error("Cannot add overlay to body");
   }
 
-  // eslint-disable-next-line unicorn/prevent-abbreviations -- known to be single element
-  const $element = $(element);
+  const scrollParent = _getScrollParent(target);
 
-  if (
-    $element.css("display") === "block" ||
-    $element.css("display") === "table-cell"
-  ) {
-    const originalCss = $element.css(["boxShadow", "position"]);
+  const path = makeOverlayPath(
+    positionModal(
+      modalOverlayOpeningPadding,
+      modalOverlayOpeningRadius,
+      scrollParent,
+      target
+    )
+  );
+  const $svg = $(
+    `<svg class="pixiebrix-modal-overlay-container pixiebrix-modal-is-visible"><path d="${path}"</svg>`
+  );
 
-    $element.css({
-      position: "relative",
-      boxShadow: "0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)",
-    });
+  // Setup recursive function to call requestAnimationFrame to update the modal opening position (e.g. due to scroll)
+  let rafId: number | undefined;
 
-    return () => {
-      // $overlay.remove();
-      $element.css(originalCss);
-    };
-  }
+  const rafLoop = () => {
+    rafId = undefined;
+    const path = makeOverlayPath(
+      positionModal(
+        modalOverlayOpeningPadding,
+        modalOverlayOpeningRadius,
+        scrollParent,
+        target
+      )
+    );
 
-  // https://geniuskouta.com/overlay-page-content-except-one-element/
+    $svg.find("path").attr("d", path);
 
-  const $overlay = $('<div data-pb-backdrop aria-hidden="true">');
+    rafId = requestAnimationFrame(rafLoop);
+  };
 
-  $overlay.css({
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    position: "fixed",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  });
+  rafLoop();
 
-  const originalCss = $element.css(["position", "zIndex", "backgroundColor"]);
-
-  $element.css({
-    position: "relative",
-    zIndex: 1,
-    // FIXME: should automatically be based on the parent
-    backgroundColor: highlightColor ?? "white",
-  });
-
-  $(document.body).prepend($overlay);
+  $(document.body).append($svg);
 
   return () => {
-    $overlay.remove();
-    $element.css(originalCss);
+    $svg.remove();
+    cancelAnimationFrame(rafId);
   };
 }

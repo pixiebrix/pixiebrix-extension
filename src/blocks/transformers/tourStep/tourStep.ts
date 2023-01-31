@@ -134,10 +134,7 @@ export class TourStepTransformer extends Transformer {
 
     if (element !== document && appearance?.showOverlay) {
       // Our modal already adds a backdrop
-      removeOverlay = addOverlay(
-        element as HTMLElement,
-        appearance.highlight?.backgroundColor
-      );
+      removeOverlay = addOverlay(element as HTMLElement);
     }
 
     const refreshEntry = async () => {
@@ -255,7 +252,7 @@ export class TourStepTransformer extends Transformer {
       },
       isLastStep: {
         type: "boolean",
-        description: "True if this is the last step in the tour",
+        description: "Toggle on to indicate this is the last step in the tour",
         default: false,
       },
       body: {
