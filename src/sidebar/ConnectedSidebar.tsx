@@ -25,6 +25,7 @@ import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
+  ActivateRecipeEntry,
   type FormEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
@@ -37,6 +38,7 @@ import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import DelayedRender from "@/components/DelayedRender";
 import { isEmpty } from "lodash";
+import { type RegistryId } from "@/core";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -63,6 +65,12 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
     },
     onHideTemporaryPanel({ nonce }) {
       dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+    },
+    onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
+      dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
+    },
+    onHideActivateRecipe(recipeId: RegistryId) {
+      dispatch(sidebarSlice.actions.hideActivateRecipe());
     },
   };
 }
@@ -91,7 +99,8 @@ const ConnectedSidebar: React.VFC = () => {
   const showTabs =
     !isEmpty(sidebarState.panels) ||
     !isEmpty(sidebarState.forms) ||
-    !isEmpty(sidebarState.temporaryPanels);
+    !isEmpty(sidebarState.temporaryPanels) ||
+    sidebarState.recipeToActivate != null;
 
   return (
     <div className="full-height">

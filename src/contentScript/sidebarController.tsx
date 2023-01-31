@@ -31,6 +31,7 @@ import type {
   RendererError,
   ActivatePanelOptions,
   TemporaryPanelEntry,
+  ActivateRecipeEntry,
 } from "@/sidebar/types";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
@@ -373,4 +374,28 @@ export function upsertPanel(
   }
 
   renderPanelsIfVisible();
+}
+
+export function showActivateRecipeInSidebar(entry: ActivateRecipeEntry): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    throw new Error(
+      "Cannot activate a recipe in the sidebar if the sidebar is not visible"
+    );
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.showActivateRecipe(sequence, entry);
+}
+
+export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    return;
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }

@@ -120,6 +120,11 @@ export type FormEntry = {
   form: FormDefinition;
 };
 
+export type ActivateRecipeEntry = {
+  recipeId: RegistryId;
+  heading: string;
+};
+
 /**
  * The entries currently added to the sidebar
  */
@@ -127,6 +132,7 @@ export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
   temporaryPanels: TemporaryPanelEntry[];
+  recipeToActivate: ActivateRecipeEntry | null;
 };
 
 /**
