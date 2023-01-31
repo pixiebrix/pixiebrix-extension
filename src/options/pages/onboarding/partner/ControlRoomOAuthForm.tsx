@@ -43,6 +43,9 @@ import { useHistory, useLocation } from "react-router";
 const { updateServiceConfig } = servicesSlice.actions;
 
 const AA_STAGING_ENVIRONMENT = "staging";
+const AA_STAGING_AUTHCONFIG_ORIGIN =
+  "https://stagingoauthconfigapp.automationanywhere.digital";
+const AA_STAGING_CLIENT_ID = "pPKQkwemq9HIKcRBRAPFcC4nGEienNEY";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -76,9 +79,8 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   if (env === AA_STAGING_ENVIRONMENT) {
     initialValues = {
       ...initialValues,
-      authConfigOrigin:
-        "https://stagingoauthconfigapp.automationanywhere.digital",
-      clientId: "pPKQkwemq9HIKcRBRAPFcC4nGEienNEY",
+      authConfigOrigin: AA_STAGING_AUTHCONFIG_ORIGIN,
+      clientId: AA_STAGING_CLIENT_ID,
     };
   }
 
