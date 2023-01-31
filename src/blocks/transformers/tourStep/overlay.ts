@@ -19,6 +19,32 @@ export function addOverlay(
   element: HTMLElement,
   highlightColor: string
 ): () => void {
+  if (element === document.body) {
+    throw new Error("Cannot add overlay to body");
+  }
+
+  // eslint-disable-next-line unicorn/prevent-abbreviations -- known to be single element
+  const $element = $(element);
+
+  if (
+    $element.css("display") === "block" ||
+    $element.css("display") === "table-cell"
+  ) {
+    const originalCss = $element.css(["boxShadow", "position"]);
+
+    $element.css({
+      position: "relative",
+      boxShadow: "0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)",
+    });
+
+    return () => {
+      // $overlay.remove();
+      $element.css(originalCss);
+    };
+  }
+
+  // https://geniuskouta.com/overlay-page-content-except-one-element/
+
   const $overlay = $('<div data-pb-backdrop aria-hidden="true">');
 
   $overlay.css({
@@ -30,10 +56,7 @@ export function addOverlay(
     backgroundColor: "rgba(0,0,0,0.5)",
   });
 
-  const originalCss = $(element).css(["position", "zIndex", "backgroundColor"]);
-
-  // eslint-disable-next-line unicorn/prevent-abbreviations -- known to be single element
-  const $element = $(element);
+  const originalCss = $element.css(["position", "zIndex", "backgroundColor"]);
 
   $element.css({
     position: "relative",
@@ -42,8 +65,7 @@ export function addOverlay(
     backgroundColor: highlightColor ?? "white",
   });
 
-  // https://geniuskouta.com/overlay-page-content-except-one-element/
-  $overlay.insertBefore($element);
+  $(document.body).prepend($overlay);
 
   return () => {
     $overlay.remove();
