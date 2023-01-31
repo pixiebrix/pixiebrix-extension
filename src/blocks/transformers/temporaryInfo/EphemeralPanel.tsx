@@ -122,7 +122,18 @@ const EphemeralPanel: React.FC = () => {
   if (mode === "popover") {
     return (
       <Layout>
-        <Popover.Title>{entry.heading}</Popover.Title>
+        <Popover.Title>
+          {entry.heading}
+          <Button
+            className="close"
+            data-dismiss="alert"
+            onClick={() => {
+              cancelTemporaryPanel(target, [nonce]);
+            }}
+          >
+            &times;
+          </Button>
+        </Popover.Title>
         <Popover.Content>
           <ErrorBoundary>
             <PanelBody
