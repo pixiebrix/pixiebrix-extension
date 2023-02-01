@@ -30,7 +30,7 @@ import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
-import ReactShadowRoot from "react-shadow-root";
+import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
@@ -190,14 +190,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               eventKey={`activate-${recipeToActivate.recipeId}`}
             >
               <ErrorBoundary>
-                <ReactShadowRoot>
-                  <div>
-                    <h3>
-                      Hello from sidebar, activating blueprint{" "}
-                      {recipeToActivate.recipeId}
-                    </h3>
-                  </div>
-                </ReactShadowRoot>
+                <ActivateRecipePanel recipeId={recipeToActivate.recipeId} />
               </ErrorBoundary>
             </Tab.Pane>
           )}

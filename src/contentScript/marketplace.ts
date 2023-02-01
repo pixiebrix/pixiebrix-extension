@@ -44,10 +44,11 @@ async function getInstalledRecipeIds(): Promise<RegistryId[]> {
 let loggedIn = false;
 
 async function isUserLoggedIn(): Promise<boolean> {
-  if (!loggedIn) {
-    loggedIn = true;
-    return false;
-  }
+  // Dev mode
+  // if (!loggedIn) {
+  //   loggedIn = true;
+  //   return false;
+  // }
 
   const authHeaders = await getAuthHeaders();
   return Boolean(authHeaders);
