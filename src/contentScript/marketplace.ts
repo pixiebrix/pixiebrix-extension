@@ -41,15 +41,7 @@ async function getInstalledRecipeIds(): Promise<RegistryId[]> {
   return compact(options.extensions.map((extension) => extension._recipe?.id));
 }
 
-let loggedIn = false;
-
 async function isUserLoggedIn(): Promise<boolean> {
-  // Dev mode
-  // if (!loggedIn) {
-  //   loggedIn = true;
-  //   return false;
-  // }
-
   const authHeaders = await getAuthHeaders();
   return Boolean(authHeaders);
 }

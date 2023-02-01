@@ -58,8 +58,8 @@ const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
     return <Loader />;
   }
 
-  const recipeOptions = recipe.options?.schema?.properties;
-
+  // TODO: check for recipe options and show the options view
+  // const recipeOptions = recipe.options?.schema?.properties;
   // if (hasOptions) {
   //   return <ActivateWizard blueprint={recipe} />;
   // }
