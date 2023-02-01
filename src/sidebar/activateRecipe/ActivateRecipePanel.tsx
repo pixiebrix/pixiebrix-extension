@@ -37,7 +37,8 @@ const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
   const dispatch = useDispatch();
 
   const {
-    data: recipe,
+    // TODO: use this for recipe options / activation
+    // data: recipe,
     isLoading: isLoadingRecipe,
     error: recipeError,
   } = useRecipe(recipeId);
