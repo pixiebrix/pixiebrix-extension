@@ -31,6 +31,8 @@ import {
   setActivatingBlueprint,
 } from "@/background/messenger/external/_implementation";
 
+const MARKETPLACE_URL = "https://6jfjvg.csb.app";
+
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
   const context = top === self ? "" : `in frame ${location.href}`;
@@ -65,10 +67,10 @@ async function initContentScript() {
     console.debug("contentScript: invalidated", uuid);
   });
 
-  const activatingBlueprint = getActivatingBlueprint();
-  if (activatingBlueprint) {
-    alert(`Activating blueprint: ${activatingBlueprint}`);
-    setActivatingBlueprint(null);
+  const blueprintId = await getActivatingBlueprint();
+  if (blueprintId != null && location.href.startsWith(MARKETPLACE_URL)) {
+    alert(`Activating blueprint: ${blueprintId}`);
+    await setActivatingBlueprint({ blueprintId: null });
   }
 }
 

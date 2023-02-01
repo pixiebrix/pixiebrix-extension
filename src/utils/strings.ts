@@ -18,7 +18,8 @@
 /**
  * Link to the marketplace with trailing slash
  */
-export const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
+// export const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
+export const MARKETPLACE_URL = "https://6jfjvg.csb.app/";
 
 export const FieldDescriptions = {
   BLUEPRINT_ID: "A unique id for the blueprint",
