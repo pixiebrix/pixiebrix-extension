@@ -44,7 +44,7 @@ import {
   showPopover,
 } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
-import { once } from "lodash";
+import { noop, once } from "lodash";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
@@ -79,7 +79,7 @@ type TemporaryDisplayInputs = {
   /**
    * An optional abortSignal to cancel the panel.
    */
-  abortSignal?: AbortSignal;
+  signal?: AbortSignal;
 
   /**
    * An optional trigger to trigger a panel refresh.
@@ -92,14 +92,17 @@ type TemporaryDisplayInputs = {
   refreshEntry?: () => Promise<PanelEntry>;
 
   /**
-   * Optional callback when the user clicks outside the panel.
+   * True to cancel on outside click.
    */
-  onOutsideClick?: () => void;
+  cancelOnOutsideClick?: boolean;
 
   /**
    * Optional placement options for popovers.
    */
   popoverOptions?: {
+    /**
+     * The placement of the popover, default 'auto'
+     */
     placement?: Placement;
   };
 };
@@ -107,18 +110,19 @@ type TemporaryDisplayInputs = {
 export async function displayTemporaryInfo({
   entry,
   location,
-  abortSignal,
+  signal,
   target,
   refreshEntry,
   refreshTrigger,
   popoverOptions,
+  cancelOnOutsideClick = true,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
   let onReady: () => void;
 
   const controller = new AbortController();
 
-  abortSignal?.addEventListener("abort", () => {
+  signal?.addEventListener("abort", () => {
     void cancelTemporaryPanels([nonce]);
   });
 
@@ -160,14 +164,16 @@ export async function displayTemporaryInfo({
 
       await cancelTemporaryPanelsForExtension(entry.extensionId);
 
-      const onOutsideClick = async () => {
-        await cancelTemporaryPanels([nonce]);
-      };
+      const onOutsideClick = cancelOnOutsideClick
+        ? async () => {
+            await cancelTemporaryPanels([nonce]);
+          }
+        : noop;
 
       const popover = showPopover({
         url: frameSource,
         element: target as HTMLElement,
-        abortController: controller,
+        signal: controller.signal,
         onOutsideClick,
         options: popoverOptions,
       });
@@ -338,7 +344,7 @@ class DisplayTemporaryInfo extends Transformer {
     return displayTemporaryInfo({
       entry: initialEntry,
       location,
-      abortSignal,
+      signal: abortSignal,
       target,
       refreshEntry,
       refreshTrigger,

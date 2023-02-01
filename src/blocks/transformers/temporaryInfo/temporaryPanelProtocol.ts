@@ -160,9 +160,8 @@ export async function cancelTemporaryPanels(nonces: UUID[]): Promise<void> {
   for (const nonce of nonces) {
     panels
       .get(nonce)
-      ?.registration?.reject(
-        new CancelError("Temporary panel was replaced with another panel")
-      );
+      ?.registration?.reject(new CancelError("The panel was cancelled"));
+
     removePanelEntry(nonce);
   }
 }

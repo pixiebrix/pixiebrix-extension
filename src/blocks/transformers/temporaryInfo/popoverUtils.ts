@@ -210,13 +210,26 @@ export function showPopover({
   url,
   element,
   onOutsideClick,
-  abortController,
+  signal,
   options: { placement } = {},
 }: {
+  /**
+   * The source of the URL
+   * @see createFrameSource
+   */
   url: URL;
+  /**
+   * The target element
+   */
   element: HTMLElement;
-  onOutsideClick: () => void;
-  abortController: AbortController;
+  /**
+   * Callback to be called when the user clicks outside the popover, e.g., skip a tour, or go to next step.
+   */
+  onOutsideClick?: () => void;
+  /**
+   * AbortSignal to cancel the popover
+   */
+  signal: AbortSignal;
   options: PopoverOptions;
 }): {
   /**
@@ -241,19 +254,19 @@ export function showPopover({
     () => {
       resizerMap.get(tooltip)?.iFrameResizer.resize();
     },
-    { signal: abortController.signal }
+    { signal }
   );
 
   const outsideClickListener = (event: JQuery.TriggeredEvent) => {
     if ($(event.target).closest(tooltip).length === 0) {
-      onOutsideClick();
+      onOutsideClick?.();
     }
   };
 
   // Hide tooltip on click outside
   $body.on("click touchend", outsideClickListener);
 
-  abortController.signal.addEventListener("abort", () => {
+  signal.addEventListener("abort", () => {
     // Must be done before removing the tooltip, otherwise the iframe will be removed from the DOM
     reclaimTooltip(tooltip);
 

@@ -160,10 +160,11 @@ export function getExampleBlockConfig(
         scroll: {
           behavior: "smooth",
         },
-        // Supply empty appearance configs to avoid rendering errors
+        // Supply empty appearance configs to avoid errors when rendering
         wait: {},
         highlight: {},
         popover: {},
+        controls: {},
       },
     };
   }

@@ -48,13 +48,14 @@ export type StepInputs = {
 
   selector: string;
   appearance?: {
-    /**
-     * An optional trigger to trigger a panel refresh.
-     */
     refreshTrigger?: RefreshTrigger;
     disableInteraction?: boolean;
     showOverlay?: boolean;
     skippable?: boolean;
+    controls?: {
+      outsideClick?: "none" | "submit" | "cancel";
+      closeButton?: "none" | "submit" | "cancel";
+    };
     wait?: {
       maxWaitMillis?: number;
     };
@@ -171,9 +172,10 @@ export class TourStepTransformer extends Transformer {
         entry: await refreshEntry(),
         target: element,
         location,
-        abortSignal,
+        signal: abortSignal,
         refreshTrigger: appearance.refreshTrigger,
         refreshEntry,
+        cancelOnOutsideClick: appearance?.controls?.outsideClick !== "none",
         popoverOptions: appearance.popover,
       });
     } finally {
@@ -310,6 +312,22 @@ export class TourStepTransformer extends Transformer {
             type: "boolean",
             default: true,
             description: "Apply an overlay to the page when the step is active",
+          },
+          controls: {
+            type: "object",
+            properties: {
+              outsideClick: {
+                type: "string",
+                enum: ["none", "submit", "cancel"],
+                description:
+                  'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
+              },
+              closeButton: {
+                type: "string",
+                enum: ["none", "submit", "cancel"],
+                description: "Action to take when the user clicks close button",
+              },
+            },
           },
           highlight: {
             type: "object",

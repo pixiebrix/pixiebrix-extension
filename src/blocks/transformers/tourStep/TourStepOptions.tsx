@@ -224,6 +224,19 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       </Section>
 
+      <Section title="Step Controls">
+        <SchemaField
+          label="Outside Click Behavior"
+          name={configName("appearance", "controls", "outsideClick")}
+          schema={{
+            type: "string",
+            enum: ["none", "next"],
+            description:
+              'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
+          }}
+        />
+      </Section>
+
       <Section title="Scroll Behavior">
         <FieldTemplate
           as={SwitchButtonWidget}
