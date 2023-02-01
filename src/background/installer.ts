@@ -131,7 +131,7 @@ export async function openInstallPage() {
     //
     // Open a new Admin Console tab which will automatically "links" the extension (by passing the native PixieBrix
     // token to the extension).
-    await browser.tabs.create({ url: `${appBaseUrl}/accounts/profile` });
+    await browser.tabs.create({ url: appBaseUrl });
   }
 }
 
