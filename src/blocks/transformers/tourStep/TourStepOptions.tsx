@@ -230,7 +230,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
           name={configName("appearance", "controls", "outsideClick")}
           schema={{
             type: "string",
-            enum: ["none", "next"],
+            enum: ["none", "submit"],
             description:
               'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
           }}
