@@ -205,7 +205,7 @@ const EphemeralPanel: React.FC = () => {
         </ErrorBoundary>
       </Modal.Body>
 
-      {entry.actions.length > 0 && (
+      {entry.actions?.length > 0 && (
         <Modal.Footer>
           {entry.actions.map((action) => (
             <Button
