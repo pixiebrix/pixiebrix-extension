@@ -128,6 +128,17 @@ export async function waitAnimationFrame(): Promise<void> {
   });
 }
 
+export async function setAnimationFrameInterval(
+  callback: () => void,
+  { signal }: { signal: AbortSignal }
+): Promise<void> {
+  while (!signal.aborted) {
+    // eslint-disable-next-line no-await-in-loop -- intentional
+    await waitAnimationFrame();
+    callback();
+  }
+}
+
 export async function waitForBody(): Promise<void> {
   while (!document.body) {
     // eslint-disable-next-line no-await-in-loop -- Polling pattern
