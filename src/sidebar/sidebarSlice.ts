@@ -21,7 +21,7 @@ import {
   type PanelEntry,
   type ActivatePanelOptions,
   type TemporaryPanelEntry,
-  ActivateRecipeEntry,
+  type ActivateRecipeEntry,
 } from "@/sidebar/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/core";

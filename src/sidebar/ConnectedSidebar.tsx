@@ -25,7 +25,7 @@ import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
-  ActivateRecipeEntry,
+  type ActivateRecipeEntry,
   type FormEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
