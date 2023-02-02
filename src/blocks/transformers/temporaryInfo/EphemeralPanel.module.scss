@@ -19,3 +19,12 @@
   margin-top: 0.75em;
   margin-bottom: 0.75em;
 }
+
+.actionToolbar {
+  display: flex;
+  justify-content: flex-end;
+
+  button:not(:last-child) {
+    margin-right: 0.5em;
+  }
+}

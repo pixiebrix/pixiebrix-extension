@@ -1,0 +1,1166 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TourStepOptions should render example config 1`] = `
+<DocumentFragment>
+  <div
+    class="formGroup form-group row"
+  >
+    <label
+      class="label form-label col-form-label col-xl-2 col-lg-3"
+      for="extension.blockPipeline.0.config.title"
+    >
+      Step Title
+    </label>
+    <div
+      class="col-xl-10 col-lg-9"
+    >
+      <div
+        class="root"
+      >
+        <div
+          class="field"
+        >
+          <textarea
+            class="form-control"
+            id="extension.blockPipeline.0.config.title"
+            name="extension.blockPipeline.0.config.title"
+            rows="1"
+          >
+            Example Step
+          </textarea>
+        </div>
+        <div
+          class="dropdown dropdown"
+          data-test-selected="Text"
+          data-testid="toggle-extension.blockPipeline.0.config.title"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="dropdown-toggle btn btn-link"
+            type="button"
+          >
+            <span
+              class="symbol"
+            >
+              <test-file-stub
+                classname="root"
+              />
+            </span>
+          </button>
+        </div>
+      </div>
+      <small
+        class="text-muted form-text"
+      >
+        <span>
+          Step title
+        </span>
+      </small>
+    </div>
+  </div>
+  <div
+    class="formGroup form-group row"
+  >
+    <label
+      class="label form-label col-form-label col-xl-2 col-lg-3"
+      for="extension.blockPipeline.0.config.selector"
+    >
+      Target Selector
+    </label>
+    <div
+      class="col-xl-10 col-lg-9"
+    >
+      <div
+        class="root"
+      >
+        <div
+          class="field"
+        >
+          <input
+            class="form-control"
+            id="extension.blockPipeline.0.config.selector"
+            name="extension.blockPipeline.0.config.selector"
+            readonly=""
+            value=""
+          />
+        </div>
+        <div
+          class="dropdown dropdown"
+          data-test-selected="Exclude"
+          data-testid="toggle-extension.blockPipeline.0.config.selector"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="dropdown-toggle btn btn-link"
+            type="button"
+          >
+            <span
+              class="symbol"
+            >
+              <test-file-stub
+                classname="root"
+              />
+            </span>
+          </button>
+        </div>
+      </div>
+      <small
+        class="text-muted form-text"
+      >
+        <span>
+          An optional selector for the target element
+        </span>
+      </small>
+    </div>
+  </div>
+  <div
+    class="formGroup form-group row"
+  >
+    <label
+      class="label form-label col-form-label col-xl-2 col-lg-3"
+      for="extension.blockPipeline.0.config.isLastStep"
+    >
+      Last Step?
+    </label>
+    <div
+      class="col-xl-10 col-lg-9"
+    >
+      <div
+        class="root"
+      >
+        <div
+          class="field"
+        >
+          <input
+            class="form-control"
+            id="extension.blockPipeline.0.config.isLastStep"
+            name="extension.blockPipeline.0.config.isLastStep"
+            readonly=""
+            value=""
+          />
+        </div>
+        <div
+          class="dropdown dropdown"
+          data-test-selected="Exclude"
+          data-testid="toggle-extension.blockPipeline.0.config.isLastStep"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="dropdown-toggle btn btn-link"
+            type="button"
+          >
+            <span
+              class="symbol"
+            >
+              <test-file-stub
+                classname="root"
+              />
+            </span>
+          </button>
+        </div>
+      </div>
+      <small
+        class="text-muted form-text"
+      >
+        <span>
+          Toggle on to indicate this is the last step in the tour
+        </span>
+      </small>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Step Body
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.body"
+        >
+          Custom Body
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="switch btn off btn-light"
+            >
+              <div
+                class="switch-group"
+              >
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.body"
+        >
+          Body
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <textarea
+                class="form-control"
+                id="extension.blockPipeline.0.config.body"
+                name="extension.blockPipeline.0.config.body"
+                rows="1"
+              >
+                Step content. **Markdown** is supported.
+              </textarea>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Text"
+              data-testid="toggle-extension.blockPipeline.0.config.body"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Content of the step, supports markdown
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Targeting Behavior
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.wait"
+        >
+          Wait for Target
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="switch btn on btn-primary"
+            >
+              <div
+                class="switch-group"
+              >
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Wait for the target element to be added to the page
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.wait.maxWaitMillis"
+        >
+          Max Wait Time (ms)
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.appearance.wait.maxWaitMillis"
+                name="extension.blockPipeline.0.config.appearance.wait.maxWaitMillis"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.wait.maxWaitMillis"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Maximum time to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.skippable"
+        >
+          Skippable
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <div
+                class="switch btn off btn-light"
+              >
+                <div
+                  class="switch-group"
+                >
+                  <span
+                    class="switch-on btn btn-primary"
+                  >
+                     
+                  </span>
+                  <span
+                    class="switch-off btn btn-light"
+                  >
+                     
+                  </span>
+                  <span
+                    class="switch-handle btn btn-light"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Toggle"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.skippable"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Skip the step if the target element is not found
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Step Actions
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.onBeforeShow"
+        >
+          Pre-Step Actions
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="switch btn off btn-light"
+            >
+              <div
+                class="switch-group"
+              >
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.onAfterShow"
+        >
+          Post-Step Actions
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="switch btn off btn-light"
+            >
+              <div
+                class="switch-group"
+              >
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Toggle on to run actions after the step is completed. Edit the actions in the Outline Panel
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Step Controls
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.controls.outsideClick"
+        >
+          Outside Click Behavior
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.appearance.controls.outsideClick"
+                name="extension.blockPipeline.0.config.appearance.controls.outsideClick"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.controls.outsideClick"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.controls.closeButton"
+        >
+          Cancel Button Behavior
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.appearance.controls.closeButton"
+                name="extension.blockPipeline.0.config.appearance.controls.closeButton"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.controls.closeButton"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Action to take when the user clicks close button. Set to "none" to hide the close button
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.controls.actions"
+        >
+          Actions
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.appearance.controls.actions"
+                name="extension.blockPipeline.0.config.appearance.controls.actions"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.controls.actions"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Scroll Behavior
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.scroll"
+        >
+          Scroll to Element
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="switch btn on btn-primary"
+            >
+              <div
+                class="switch-group"
+              >
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Toggle on to automatically scroll to the element
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.scroll.behavior"
+        >
+          Scroll Behavior
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <div
+                class=" css-b62m3t-container"
+              >
+                <span
+                  class="css-1f43avz-a11yText-A11yText"
+                  id="react-select-2-live-region"
+                />
+                <span
+                  aria-atomic="false"
+                  aria-live="polite"
+                  aria-relevant="additions text"
+                  class="css-1f43avz-a11yText-A11yText"
+                />
+                <div
+                  class=" css-1s2u09g-control"
+                >
+                  <div
+                    class=" css-319lph-ValueContainer"
+                  >
+                    <div
+                      class=" css-qc6sy-singleValue"
+                    >
+                      smooth
+                    </div>
+                    <div
+                      class=" css-6j8wv5-Input"
+                      data-value=""
+                    >
+                      <input
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        class=""
+                        id="react-select-2-input"
+                        role="combobox"
+                        spellcheck="false"
+                        style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                        tabindex="0"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class=" css-1hb7zxy-IndicatorsContainer"
+                  >
+                    <div
+                      aria-hidden="true"
+                      class=" css-tlfecz-indicatorContainer"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="css-tj5bde-Svg"
+                        focusable="false"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        width="20"
+                      >
+                        <path
+                          d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"
+                        />
+                      </svg>
+                    </div>
+                    <span
+                      class=" css-1okebmr-indicatorSeparator"
+                    />
+                    <div
+                      aria-hidden="true"
+                      class=" css-tlfecz-indicatorContainer"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="css-tj5bde-Svg"
+                        focusable="false"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        width="20"
+                      >
+                        <path
+                          d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Select..."
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.scroll.behavior"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Defines the transition animation
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Highlight Behavior
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.highlight.backgroundColor"
+        >
+          Highlight Color
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.appearance.highlight.backgroundColor"
+                name="extension.blockPipeline.0.config.appearance.highlight.backgroundColor"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.highlight.backgroundColor"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Color to highlight the element with when the step is active
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Overlay Behavior
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.showOverlay"
+        >
+          Show Overlay
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <div
+                class="switch btn on btn-primary"
+              >
+                <div
+                  class="switch-group"
+                >
+                  <span
+                    class="switch-on btn btn-primary"
+                  >
+                     
+                  </span>
+                  <span
+                    class="switch-off btn btn-light"
+                  >
+                     
+                  </span>
+                  <span
+                    class="switch-handle btn btn-light"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Toggle"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.showOverlay"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Apply an overlay to the page when the step is active
+            </span>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card"
+  >
+    <div
+      class="card-header"
+    >
+      Popover Behavior
+    </div>
+    <div
+      class="card-body"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.appearance.popover.placement"
+        >
+          Placement
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.appearance.popover.placement"
+                name="extension.blockPipeline.0.config.appearance.popover.placement"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.appearance.popover.placement"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

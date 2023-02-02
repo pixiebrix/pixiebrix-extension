@@ -40,7 +40,12 @@ import {
   zip,
 } from "lodash";
 import { type JsonObject, type Primitive } from "type-fest";
-import { type ApiVersion, type RegistryId, type SafeString } from "@/core";
+import {
+  type ApiVersion,
+  type RegistryId,
+  type SafeString,
+  type Schema,
+} from "@/core";
 import { type UnknownObject } from "@/types";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
@@ -92,6 +97,35 @@ export function joinName(
 export function joinPathParts(...nameParts: Array<string | number>): string {
   // Don't use lodash.compact and lodash.isEmpty since they treat 0 as falsy
   return nameParts.filter((x) => x != null && x !== "").join(".");
+}
+
+/**
+ * Helper method to get the schema of a sub-property. Does not currently handle array indexes or allOf/oneOf/anyOf.
+ * @param schema the JSON Schema
+ * @param path the property path
+ */
+export function getSubSchema(schema: Schema, path: string): Schema {
+  const parts = split(path, ".");
+  let subSchema: Schema | boolean = schema;
+
+  for (const part of parts) {
+    if (typeof subSchema === "boolean") {
+      throw new TypeError(`Invalid property path: ${path}`);
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- expected that this is called locally
+    subSchema = subSchema.properties?.[part];
+  }
+
+  if (subSchema == null) {
+    throw new TypeError(`Invalid property path: ${path}`);
+  }
+
+  if (typeof subSchema === "boolean") {
+    throw new TypeError(`Invalid property path: ${path}`);
+  }
+
+  return subSchema;
 }
 
 export function mostCommonElement<T>(items: T[]): T {

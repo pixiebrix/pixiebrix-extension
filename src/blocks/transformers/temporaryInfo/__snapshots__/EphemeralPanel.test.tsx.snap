@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EphemeralPanel renders blank: modal 1`] = `
+<DocumentFragment>
+  <div
+    class="popover"
+    data-iframe-height=""
+  >
+    <div>
+       
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`EphemeralPanel renders blank: popover 1`] = `
+<DocumentFragment>
+  <div
+    class="popover"
+    data-iframe-height=""
+  >
+    <div>
+       
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`EphemeralPanel renders error state: modal 1`] = `
+<DocumentFragment>
+  <div
+    class="popover"
+    data-iframe-height=""
+  >
+    <div>
+      Panel Error
+    </div>
+    <div
+      class="text-danger my-3"
+    >
+      test error
+    </div>
+    <div>
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`EphemeralPanel renders error state: popover 1`] = `
+<DocumentFragment>
+  <div
+    class="popover"
+    data-iframe-height=""
+  >
+    <div>
+      Panel Error
+    </div>
+    <div
+      class="text-danger my-3"
+    >
+      test error
+    </div>
+    <div>
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

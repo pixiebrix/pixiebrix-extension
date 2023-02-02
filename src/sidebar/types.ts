@@ -80,7 +80,7 @@ export type PanelButton = PanelAction & {
   /**
    * Action caption/label
    */
-  caption: string;
+  caption?: string;
 
   /**
    * Bootstrap button variant.

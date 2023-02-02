@@ -31,6 +31,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
 import { type UUID } from "@/core";
+import { startCase } from "lodash";
+import { type PanelButton } from "@/sidebar/types";
 
 import styles from "./EphemeralPanel.module.scss";
 
@@ -52,6 +54,27 @@ const PopoverLayout: React.FC<{ className?: string }> = ({
   // data-iframe-height is used by iframe-resizer
   <div className={cx("popover", className)} data-iframe-height="">
     {children}
+  </div>
+);
+
+const ActionToolbar: React.FC<{
+  actions: PanelButton[];
+  buttonSize: "sm" | "lg";
+  onClick: (action: PanelButton) => void;
+}> = ({ actions, onClick, buttonSize }) => (
+  <div className={styles.actionToolbar}>
+    {actions.map((action, index) => (
+      <Button
+        key={action.caption ?? action.type ?? index}
+        variant={action.variant}
+        size={buttonSize}
+        onClick={() => {
+          onClick(action);
+        }}
+      >
+        {action.caption ?? startCase(action.type)}
+      </Button>
+    ))}
   </div>
 );
 
@@ -161,20 +184,13 @@ const EphemeralPanel: React.FC = () => {
           {entry.actions?.length > 0 && (
             <>
               <hr className={styles.actionDivider} />
-              <div className="d-flex justify-content-end">
-                {entry.actions.map((action) => (
-                  <Button
-                    key={action.caption}
-                    variant={action.variant}
-                    size="sm"
-                    onClick={() => {
-                      resolveTemporaryPanel(target, entry.nonce, action);
-                    }}
-                  >
-                    {action.caption}
-                  </Button>
-                ))}
-              </div>
+              <ActionToolbar
+                actions={entry.actions}
+                buttonSize="sm"
+                onClick={(action) => {
+                  resolveTemporaryPanel(target, entry.nonce, action);
+                }}
+              />
             </>
           )}
         </Popover.Content>
@@ -207,17 +223,13 @@ const EphemeralPanel: React.FC = () => {
 
       {entry.actions?.length > 0 && (
         <Modal.Footer>
-          {entry.actions.map((action) => (
-            <Button
-              key={action.caption}
-              variant={action.variant}
-              onClick={() => {
-                resolveTemporaryPanel(target, entry.nonce, action);
-              }}
-            >
-              {action.caption}
-            </Button>
-          ))}
+          <ActionToolbar
+            actions={entry.actions}
+            buttonSize="lg"
+            onClick={(action) => {
+              resolveTemporaryPanel(target, entry.nonce, action);
+            }}
+          />
         </Modal.Footer>
       )}
     </Layout>

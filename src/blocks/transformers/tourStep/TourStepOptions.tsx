@@ -18,10 +18,11 @@
 import React, { type ChangeEvent } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
-import { joinName } from "@/utils";
+import { getSubSchema, joinName } from "@/utils";
 import { Card } from "react-bootstrap";
-import TourStep, {
+import {
   type StepInputs,
+  StepSchema,
   TourStepTransformer,
 } from "@/blocks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
@@ -29,7 +30,7 @@ import {
   isPipelineExpression,
   type PipelineExpression,
 } from "@/runtime/mapArgs";
-import { type Expression, type Schema } from "@/core";
+import { type Expression } from "@/core";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import SwitchButtonWidget, {
@@ -38,8 +39,6 @@ import SwitchButtonWidget, {
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
-
-const brick = new TourStep();
 
 const Section: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -58,6 +57,10 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
   const { setFieldValue } = useFormikContext<FormState>();
 
   const configName = partial(joinName, name, configKey);
+  const schemaFieldProps = (...parts: string[]) => ({
+    name: configName(...parts),
+    schema: getSubSchema(StepSchema, joinName(null, ...parts)),
+  });
 
   const [{ value: body }] = useField<Expression>(configName("body"));
   const [{ value: onBeforeShow }] = useField<PipelineExpression | null>(
@@ -75,21 +78,13 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
       <SchemaField
         name={configName("title")}
         label="Step Title"
-        schema={brick.inputSchema.properties.title as Schema}
+        {...schemaFieldProps("title")}
         isRequired
       />
 
-      <SchemaField
-        label="Target Selector"
-        name={configName("selector")}
-        schema={brick.inputSchema.properties.selector as Schema}
-      />
+      <SchemaField label="Target Selector" {...schemaFieldProps("selector")} />
 
-      <SchemaField
-        label="Last Step?"
-        name={configName("isLastStep")}
-        schema={brick.inputSchema.properties.isLastStep as Schema}
-      />
+      <SchemaField label="Last Step?" {...schemaFieldProps("isLastStep")} />
 
       <Section title="Step Body">
         <FieldTemplate
@@ -120,14 +115,8 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
         {isPipelineExpression(body) && (
           <SchemaField
             label="Auto Refresh"
-            name={configName("appearance", "refreshTrigger")}
+            {...schemaFieldProps("appearance", "refreshTrigger")}
             isRequired
-            schema={{
-              type: "string",
-              format: "markdown",
-              enum: ["manual", "statechange"],
-              description: "An optional trigger to refresh the panel",
-            }}
           />
         )}
 
@@ -165,24 +154,15 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
 
         {appearance.wait && (
           <SchemaField
-            name={configName("appearance", "wait", "maxWaitMillis")}
             label="Max Wait Time (ms)"
-            schema={{
-              type: "integer",
-              description:
-                "Maximum time to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
-            }}
+            {...schemaFieldProps("appearance", "wait", "maxWaitMillis")}
           />
         )}
 
         <SchemaField
-          name={configName("appearance", "skippable")}
           label="Skippable"
+          {...schemaFieldProps("appearance", "skippable")}
           isRequired
-          schema={{
-            type: "boolean",
-            description: "Skip the step if the target element is not found",
-          }}
         />
       </Section>
 
@@ -227,13 +207,17 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
       <Section title="Step Controls">
         <SchemaField
           label="Outside Click Behavior"
-          name={configName("appearance", "controls", "outsideClick")}
-          schema={{
-            type: "string",
-            enum: ["none", "submit"],
-            description:
-              'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
-          }}
+          {...schemaFieldProps("appearance", "controls", "outsideClick")}
+        />
+
+        <SchemaField
+          label="Cancel Button Behavior"
+          {...schemaFieldProps("appearance", "controls", "closeButton")}
+        />
+
+        <SchemaField
+          label="Actions"
+          {...schemaFieldProps("appearance", "controls", "actions")}
         />
       </Section>
 
@@ -257,69 +241,30 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
 
         {appearance?.scroll && (
           <SchemaField
-            name={configName("appearance", "scroll", "behavior")}
             label="Scroll Behavior"
-            schema={{
-              type: "string",
-              enum: ["auto", "smooth"],
-              default: "auto",
-              description: "Defines the transition animation",
-            }}
+            {...schemaFieldProps("appearance", "scroll", "behavior")}
           />
         )}
       </Section>
 
       <Section title="Highlight Behavior">
         <SchemaField
-          name={configName("appearance", "highlight", "backgroundColor")}
           label="Highlight Color"
-          schema={{
-            type: "string",
-            examples: ["yellow", "red", "green"],
-            description:
-              "Color to highlight the element with when the step is active. Can be any valid CSS color value",
-          }}
+          {...schemaFieldProps("appearance", "highlight", "backgroundColor")}
         />
       </Section>
 
       <Section title="Overlay Behavior">
         <SchemaField
-          name={configName("appearance", "showOverlay")}
           label="Show Overlay"
-          schema={{
-            type: "boolean",
-            default: true,
-            description: "Toggle on to show an overlay/backdrop over the page",
-          }}
+          {...schemaFieldProps("appearance", "showOverlay")}
         />
       </Section>
 
       <Section title="Popover Behavior">
         <SchemaField
-          name={configName("appearance", "popover", "placement")}
           label="Placement"
-          description="Location to place the popover relative to the target element"
-          schema={{
-            type: "string",
-            enum: [
-              "auto",
-              "auto-start",
-              "auto-end",
-              "top",
-              "top-start",
-              "top-end",
-              "bottom",
-              "bottom-start",
-              "bottom-end",
-              "right",
-              "right-start",
-              "right-end",
-              "left",
-              "left-start",
-              "left-end",
-            ],
-            default: "auto",
-          }}
+          {...schemaFieldProps("appearance", "popover", "placement")}
         />
       </Section>
     </>
