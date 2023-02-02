@@ -69,7 +69,7 @@ async function initContentScript() {
 
   const blueprintId = await getActivatingBlueprint();
   if (blueprintId != null && location.href.startsWith(MARKETPLACE_URL)) {
-    alert(`Activating blueprint: ${blueprintId}`);
+    console.log("Activating blueprint:", blueprintId);
     await setActivatingBlueprint({ blueprintId: null });
   }
 }

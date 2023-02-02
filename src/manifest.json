@@ -42,7 +42,7 @@
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {
-    "matches": ["https://*.pixiebrix.com/*", "http://127.0.0.1/*"]
+    "matches": ["https://*.pixiebrix.com/*"]
   },
   "storage": {
     "managed_schema": "managedStorageSchema.json"
