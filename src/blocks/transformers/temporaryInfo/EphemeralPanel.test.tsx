@@ -36,12 +36,6 @@ const useTemporaryPanelDefinitionMock =
   >;
 
 describe("EphemeralPanel", () => {
-  beforeAll(() => {
-    const { location } = window;
-    delete global.window.location;
-    global.window.location = { ...location };
-  });
-
   beforeEach(() => {
     useTemporaryPanelDefinitionMock.mockReset();
   });
