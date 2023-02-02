@@ -93,7 +93,7 @@ const EphemeralPanel: React.FC = () => {
 
   const Layout = mode === "modal" ? ModalLayout : PopoverLayout;
 
-  const { entry, isLoading, error } = useTemporaryPanelDefinition(
+  const { panelNonce, entry, isLoading, error } = useTemporaryPanelDefinition(
     target,
     initialNonce
   );
@@ -122,15 +122,14 @@ const EphemeralPanel: React.FC = () => {
         <div className="text-danger my-3">{getErrorMessage(error)}</div>
 
         <div>
-          <button
-            className="btn btn-primary"
-            type="button"
+          <Button
+            variant="primary"
             onClick={() => {
-              cancelTemporaryPanel(target, [entry.nonce]);
+              cancelTemporaryPanel(target, [panelNonce]);
             }}
           >
             Close
-          </button>
+          </Button>
         </div>
       </Layout>
     );
@@ -163,7 +162,7 @@ const EphemeralPanel: React.FC = () => {
             className="close"
             data-dismiss="alert"
             onClick={() => {
-              cancelTemporaryPanel(target, [entry.nonce]);
+              cancelTemporaryPanel(target, [panelNonce]);
             }}
           >
             &times;
@@ -176,7 +175,7 @@ const EphemeralPanel: React.FC = () => {
               payload={entry.payload}
               context={{ extensionId: entry.extensionId }}
               onAction={(action) => {
-                resolveTemporaryPanel(target, entry.nonce, action);
+                resolveTemporaryPanel(target, panelNonce, action);
               }}
             />
           </ErrorBoundary>
@@ -188,7 +187,7 @@ const EphemeralPanel: React.FC = () => {
                 actions={entry.actions}
                 buttonSize="sm"
                 onClick={(action) => {
-                  resolveTemporaryPanel(target, entry.nonce, action);
+                  resolveTemporaryPanel(target, panelNonce, action);
                 }}
               />
             </>
@@ -203,7 +202,7 @@ const EphemeralPanel: React.FC = () => {
       <Modal.Header
         closeButton
         onHide={() => {
-          cancelTemporaryPanel(target, [entry.nonce]);
+          cancelTemporaryPanel(target, [panelNonce]);
         }}
       >
         <Modal.Title>{entry.heading}</Modal.Title>
@@ -215,7 +214,7 @@ const EphemeralPanel: React.FC = () => {
             payload={entry.payload}
             context={{ extensionId: entry.extensionId }}
             onAction={(action) => {
-              resolveTemporaryPanel(target, entry.nonce, action);
+              resolveTemporaryPanel(target, panelNonce, action);
             }}
           />
         </ErrorBoundary>
@@ -227,7 +226,7 @@ const EphemeralPanel: React.FC = () => {
             actions={entry.actions}
             buttonSize="lg"
             onClick={(action) => {
-              resolveTemporaryPanel(target, entry.nonce, action);
+              resolveTemporaryPanel(target, panelNonce, action);
             }}
           />
         </Modal.Footer>

@@ -1,5 +1,101 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`EphemeralPanel renders action buttons: modal 1`] = `
+<DocumentFragment>
+  <div
+    class="modal-content"
+  >
+    <div
+      class="modal-header"
+    >
+      <div
+        class="modal-title h4"
+      >
+        Test Title
+      </div>
+      <button
+        class="close"
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+        >
+          ×
+        </span>
+        <span
+          class="sr-only"
+        >
+          Close
+        </span>
+      </button>
+    </div>
+    <div
+      class="modal-body"
+    >
+      <div
+        data-test-id="panel-body"
+      />
+    </div>
+    <div
+      class="modal-footer"
+    >
+      <div
+        class="actionToolbar"
+      >
+        <button
+          class="btn btn-light btn-lg"
+          type="button"
+        >
+          Test Click
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`EphemeralPanel renders action buttons: popover 1`] = `
+<DocumentFragment>
+  <div
+    class="popover"
+    data-iframe-height=""
+  >
+    <div
+      class="popover-header"
+    >
+      Test Title
+      <button
+        class="close btn btn-primary"
+        data-dismiss="alert"
+        type="button"
+      >
+        ×
+      </button>
+    </div>
+    <div
+      class="popover-body"
+    >
+      <div
+        data-test-id="panel-body"
+      />
+      <hr
+        class="actionDivider"
+      />
+      <div
+        class="actionToolbar"
+      >
+        <button
+          class="btn btn-light btn-sm"
+          type="button"
+        >
+          Test Click
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`EphemeralPanel renders blank: modal 1`] = `
 <DocumentFragment>
   <div
