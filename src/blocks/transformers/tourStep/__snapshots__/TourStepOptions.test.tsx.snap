@@ -116,66 +116,10 @@ exports[`TourStepOptions should render example config 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
-  >
-    <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
-      for="extension.blockPipeline.0.config.isLastStep"
-    >
-      Last Step?
-    </label>
-    <div
-      class="col-xl-10 col-lg-9"
-    >
-      <div
-        class="root"
-      >
-        <div
-          class="field"
-        >
-          <input
-            class="form-control"
-            id="extension.blockPipeline.0.config.isLastStep"
-            name="extension.blockPipeline.0.config.isLastStep"
-            readonly=""
-            value=""
-          />
-        </div>
-        <div
-          class="dropdown dropdown"
-          data-test-selected="Exclude"
-          data-testid="toggle-extension.blockPipeline.0.config.isLastStep"
-        >
-          <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="dropdown-toggle btn btn-link"
-            type="button"
-          >
-            <span
-              class="symbol"
-            >
-              <test-file-stub
-                classname="root"
-              />
-            </span>
-          </button>
-        </div>
-      </div>
-      <small
-        class="text-muted form-text"
-      >
-        <span>
-          Toggle on to indicate this is the last step in the tour
-        </span>
-      </small>
-    </div>
-  </div>
-  <div
     class="card"
   >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Step Body
     </div>
@@ -286,12 +230,8 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Targeting Behavior
     </div>
@@ -471,12 +411,8 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Step Actions
     </div>
@@ -576,12 +512,8 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Step Controls
     </div>
@@ -705,6 +637,62 @@ exports[`TourStepOptions should render example config 1`] = `
       >
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="extension.blockPipeline.0.config.isLastStep"
+        >
+          Last Step?
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="extension.blockPipeline.0.config.isLastStep"
+                name="extension.blockPipeline.0.config.isLastStep"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-extension.blockPipeline.0.config.isLastStep"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Toggle on to indicate this is the last step in the tour
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.controls.actions"
         >
           Actions
@@ -750,12 +738,8 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Scroll Behavior
     </div>
@@ -941,18 +925,14 @@ exports[`TourStepOptions should render example config 1`] = `
             class="text-muted form-text"
           >
             <span>
-              Defines the transition animation
+              The scroll transition animation
             </span>
           </small>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Highlight Behavior
     </div>
@@ -1016,12 +996,8 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Overlay Behavior
     </div>
@@ -1099,12 +1075,8 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
     </div>
-  </div>
-  <div
-    class="card"
-  >
     <div
-      class="card-header"
+      class="sectionHeader card-header"
     >
       Popover Behavior
     </div>
@@ -1158,6 +1130,13 @@ exports[`TourStepOptions should render example config 1`] = `
               </button>
             </div>
           </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              Placement of the popover relative to the target
+            </span>
+          </small>
         </div>
       </div>
     </div>

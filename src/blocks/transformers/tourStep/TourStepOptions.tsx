@@ -40,14 +40,16 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 
+import styles from "./TourStepOptions.module.scss";
+
 const Section: React.FunctionComponent<{ title: string }> = ({
   title,
   children,
 }) => (
-  <Card>
-    <Card.Header>{title}</Card.Header>
+  <>
+    <Card.Header className={styles.sectionHeader}>{title}</Card.Header>
     <Card.Body>{children}</Card.Body>
-  </Card>
+  </>
 );
 
 const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
@@ -84,193 +86,195 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
 
       <SchemaField label="Target Selector" {...schemaFieldProps("selector")} />
 
-      <SchemaField label="Last Step?" {...schemaFieldProps("isLastStep")} />
-
-      <Section title="Step Body">
-        <FieldTemplate
-          as={SwitchButtonWidget}
-          label="Custom Body"
-          description="Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel"
-          name={configName("body")}
-          value={isPipelineExpression(body)}
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue(configName("body"), {
-                __type__: "pipeline",
-                __value__: [
-                  createNewBlock(DocumentRenderer.BLOCK_ID, {
-                    parentBlockId: TourStepTransformer.BLOCK_ID,
-                  }),
-                ],
-              });
-              setFieldValue(
-                configName("appearance", "refreshTrigger"),
-                "manual"
-              );
-            } else {
-              setFieldValue(configName("body"), {
-                __type__: "nunjucks",
-                __value__: "Enter step content, supports **markdown**",
-              });
-            }
-          }}
-        />
-
-        {isPipelineExpression(body) && (
-          <SchemaField
-            label="Auto Refresh"
-            {...schemaFieldProps("appearance", "refreshTrigger")}
-            isRequired
-          />
-        )}
-
-        {!isPipelineExpression(body) && (
-          <SchemaField
-            label="Body"
+      <Card>
+        <Section title="Step Body">
+          <FieldTemplate
+            as={SwitchButtonWidget}
+            label="Custom Body"
+            description="Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel"
             name={configName("body")}
-            isRequired
-            schema={{
-              type: "string",
-              format: "markdown",
-              description: "Content of the step, supports markdown",
+            value={isPipelineExpression(body)}
+            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+              if (target.value) {
+                setFieldValue(configName("body"), {
+                  __type__: "pipeline",
+                  __value__: [
+                    createNewBlock(DocumentRenderer.BLOCK_ID, {
+                      parentBlockId: TourStepTransformer.BLOCK_ID,
+                    }),
+                  ],
+                });
+                setFieldValue(
+                  configName("appearance", "refreshTrigger"),
+                  "manual"
+                );
+              } else {
+                setFieldValue(configName("body"), {
+                  __type__: "nunjucks",
+                  __value__: "Enter step content, supports **markdown**",
+                });
+              }
             }}
           />
-        )}
-      </Section>
 
-      <Section title="Targeting Behavior">
-        <FieldTemplate
-          as={SwitchButtonWidget}
-          label="Wait for Target"
-          description="Wait for the target element to be added to the page"
-          name={configName("appearance", "wait")}
-          value={Boolean(appearance?.wait)}
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue(configName("appearance", "wait"), {
-                maxWaitMillis: 0,
-              });
-            } else {
-              setFieldValue(configName("appearance", "wait"), null);
-            }
-          }}
-        />
+          {isPipelineExpression(body) && (
+            <SchemaField
+              label="Auto Refresh"
+              {...schemaFieldProps("appearance", "refreshTrigger")}
+              isRequired
+            />
+          )}
 
-        {appearance.wait && (
-          <SchemaField
-            label="Max Wait Time (ms)"
-            {...schemaFieldProps("appearance", "wait", "maxWaitMillis")}
+          {!isPipelineExpression(body) && (
+            <SchemaField
+              label="Body"
+              name={configName("body")}
+              isRequired
+              schema={{
+                type: "string",
+                format: "markdown",
+                description: "Content of the step, supports markdown",
+              }}
+            />
+          )}
+        </Section>
+
+        <Section title="Targeting Behavior">
+          <FieldTemplate
+            as={SwitchButtonWidget}
+            label="Wait for Target"
+            description="Wait for the target element to be added to the page"
+            name={configName("appearance", "wait")}
+            value={Boolean(appearance?.wait)}
+            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+              if (target.value) {
+                setFieldValue(configName("appearance", "wait"), {
+                  maxWaitMillis: 0,
+                });
+              } else {
+                setFieldValue(configName("appearance", "wait"), null);
+              }
+            }}
           />
-        )}
 
-        <SchemaField
-          label="Skippable"
-          {...schemaFieldProps("appearance", "skippable")}
-          isRequired
-        />
-      </Section>
+          {appearance.wait && (
+            <SchemaField
+              label="Max Wait Time (ms)"
+              {...schemaFieldProps("appearance", "wait", "maxWaitMillis")}
+            />
+          )}
 
-      <Section title="Step Actions">
-        <FieldTemplate
-          as={SwitchButtonWidget}
-          label="Pre-Step Actions"
-          description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
-          name={configName("onBeforeShow")}
-          value={onBeforeShow != null}
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue(configName("onBeforeShow"), {
-                __type__: "pipeline",
-                __value__: [],
-              });
-            } else {
-              setFieldValue(configName("onBeforeShow"), null);
-            }
-          }}
-        />
-
-        <FieldTemplate
-          as={SwitchButtonWidget}
-          label="Post-Step Actions"
-          description="Toggle on to run actions after the step is completed. Edit the actions in the Outline Panel"
-          name={configName("onAfterShow")}
-          value={onAfterShow != null}
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue(configName("onAfterShow"), {
-                __type__: "pipeline",
-                __value__: [],
-              });
-            } else {
-              setFieldValue(configName("onAfterShow"), null);
-            }
-          }}
-        />
-      </Section>
-
-      <Section title="Step Controls">
-        <SchemaField
-          label="Outside Click Behavior"
-          {...schemaFieldProps("appearance", "controls", "outsideClick")}
-        />
-
-        <SchemaField
-          label="Cancel Button Behavior"
-          {...schemaFieldProps("appearance", "controls", "closeButton")}
-        />
-
-        <SchemaField
-          label="Actions"
-          {...schemaFieldProps("appearance", "controls", "actions")}
-        />
-      </Section>
-
-      <Section title="Scroll Behavior">
-        <FieldTemplate
-          as={SwitchButtonWidget}
-          label="Scroll to Element"
-          description="Toggle on to automatically scroll to the element"
-          name={configName("appearance", "scroll")}
-          value={Boolean(appearance?.scroll)}
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue(configName("appearance", "scroll"), {
-                behavior: "auto",
-              });
-            } else {
-              setFieldValue(configName("appearance", "scroll"), null);
-            }
-          }}
-        />
-
-        {appearance?.scroll && (
           <SchemaField
-            label="Scroll Behavior"
-            {...schemaFieldProps("appearance", "scroll", "behavior")}
+            label="Skippable"
+            {...schemaFieldProps("appearance", "skippable")}
+            isRequired
           />
-        )}
-      </Section>
+        </Section>
 
-      <Section title="Highlight Behavior">
-        <SchemaField
-          label="Highlight Color"
-          {...schemaFieldProps("appearance", "highlight", "backgroundColor")}
-        />
-      </Section>
+        <Section title="Step Actions">
+          <FieldTemplate
+            as={SwitchButtonWidget}
+            label="Pre-Step Actions"
+            description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
+            name={configName("onBeforeShow")}
+            value={onBeforeShow != null}
+            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+              if (target.value) {
+                setFieldValue(configName("onBeforeShow"), {
+                  __type__: "pipeline",
+                  __value__: [],
+                });
+              } else {
+                setFieldValue(configName("onBeforeShow"), null);
+              }
+            }}
+          />
 
-      <Section title="Overlay Behavior">
-        <SchemaField
-          label="Show Overlay"
-          {...schemaFieldProps("appearance", "showOverlay")}
-        />
-      </Section>
+          <FieldTemplate
+            as={SwitchButtonWidget}
+            label="Post-Step Actions"
+            description="Toggle on to run actions after the step is completed. Edit the actions in the Outline Panel"
+            name={configName("onAfterShow")}
+            value={onAfterShow != null}
+            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+              if (target.value) {
+                setFieldValue(configName("onAfterShow"), {
+                  __type__: "pipeline",
+                  __value__: [],
+                });
+              } else {
+                setFieldValue(configName("onAfterShow"), null);
+              }
+            }}
+          />
+        </Section>
 
-      <Section title="Popover Behavior">
-        <SchemaField
-          label="Placement"
-          {...schemaFieldProps("appearance", "popover", "placement")}
-        />
-      </Section>
+        <Section title="Step Controls">
+          <SchemaField
+            label="Outside Click Behavior"
+            {...schemaFieldProps("appearance", "controls", "outsideClick")}
+          />
+
+          <SchemaField
+            label="Cancel Button Behavior"
+            {...schemaFieldProps("appearance", "controls", "closeButton")}
+          />
+
+          <SchemaField label="Last Step?" {...schemaFieldProps("isLastStep")} />
+
+          <SchemaField
+            label="Actions"
+            {...schemaFieldProps("appearance", "controls", "actions")}
+          />
+        </Section>
+
+        <Section title="Scroll Behavior">
+          <FieldTemplate
+            as={SwitchButtonWidget}
+            label="Scroll to Element"
+            description="Toggle on to automatically scroll to the element"
+            name={configName("appearance", "scroll")}
+            value={Boolean(appearance?.scroll)}
+            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+              if (target.value) {
+                setFieldValue(configName("appearance", "scroll"), {
+                  behavior: "auto",
+                });
+              } else {
+                setFieldValue(configName("appearance", "scroll"), null);
+              }
+            }}
+          />
+
+          {appearance?.scroll && (
+            <SchemaField
+              label="Scroll Behavior"
+              {...schemaFieldProps("appearance", "scroll", "behavior")}
+            />
+          )}
+        </Section>
+
+        <Section title="Highlight Behavior">
+          <SchemaField
+            label="Highlight Color"
+            {...schemaFieldProps("appearance", "highlight", "backgroundColor")}
+          />
+        </Section>
+
+        <Section title="Overlay Behavior">
+          <SchemaField
+            label="Show Overlay"
+            {...schemaFieldProps("appearance", "showOverlay")}
+          />
+        </Section>
+
+        <Section title="Popover Behavior">
+          <SchemaField
+            label="Placement"
+            {...schemaFieldProps("appearance", "popover", "placement")}
+          />
+        </Section>
+      </Card>
     </>
   );
 };

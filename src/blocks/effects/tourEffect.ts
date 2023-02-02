@@ -30,7 +30,7 @@ import {
   markTourStart,
   markTourStep,
 } from "@/extensionPoints/tourController";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 
 type Step = {
@@ -49,8 +49,10 @@ type Step = {
 };
 
 export class TourEffect extends Effect {
+  static readonly BLOCK_ID = validateRegistryId("@pixiebrix/tour");
+
   constructor() {
-    super("@pixiebrix/tour", "Show Tour", "Show step-by-step tour");
+    super(TourEffect.BLOCK_ID, "Show Tour", "Show step-by-step tour");
   }
 
   override async isRootAware(): Promise<boolean> {
