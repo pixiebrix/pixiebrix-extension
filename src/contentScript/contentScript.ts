@@ -31,7 +31,7 @@ import {
   setActivatingBlueprint,
 } from "@/background/messenger/external/_implementation";
 
-const MARKETPLACE_URL = "https://6jfjvg.csb.app";
+const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
