@@ -18,6 +18,7 @@
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { expectContext } from "@/utils/expectContext";
 import panelInThisTab from "@/blocks/transformers/temporaryInfo/messenger/api";
+import { type UUID } from "@/core";
 
 /**
  * Sequence number for ensuring render requests are handled in order
@@ -37,4 +38,14 @@ export function updateTemporaryOverlayPanel(entry: TemporaryPanelEntry): void {
 
   const sequence = renderSequenceNumber++;
   panelInThisTab.updateTemporaryPanel(sequence, entry);
+}
+
+export function setTemporaryOverlayPanel(args: {
+  frameNonce: UUID;
+  panelNonce: UUID;
+}): void {
+  expectContext("contentScript");
+
+  const sequence = renderSequenceNumber++;
+  panelInThisTab.setTemporaryPanelNonce(sequence, args);
 }

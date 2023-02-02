@@ -29,6 +29,7 @@ import registerMessenger from "@/blocks/transformers/temporaryInfo/messenger/reg
 import "iframe-resizer/js/iframeResizer.contentWindow";
 
 function init(): void {
+  console.debug("Initializing ephemeral panel", { location: window.location });
   render(<EphemeralPanel />, document.querySelector("#container"));
 }
 

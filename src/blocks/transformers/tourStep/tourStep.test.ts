@@ -25,13 +25,29 @@ import {
   markTourStart,
 } from "@/extensionPoints/tourController";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { MultipleElementsFoundError } from "@/errors/businessErrors";
+import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 
 Element.prototype.scrollIntoView = jest.fn();
+browser.runtime.getURL = jest
+  .fn()
+  .mockImplementation((path) => `chrome-extension://abc/${path}`);
 
 jest.mock("@/utils/injectStylesheet", () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue({
     remove: jest.fn(),
+  }),
+}));
+
+jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
+  showModal: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("@/blocks/transformers/temporaryInfo/popoverUtils", () => ({
+  showPopover: jest.fn().mockReturnValue({
+    onReady: jest.fn(),
   }),
 }));
 
@@ -42,9 +58,51 @@ const logger = new ConsoleLogger({
 
 const brick = new TourStepTransformer();
 
+const showModalMock = showModal as jest.MockedFn<typeof showModal>;
+const showPopoverMock = showPopover as jest.MockedFn<typeof showPopover>;
+
+function startTour() {
+  const nonce = uuidv4();
+  const abortController = new AbortController();
+
+  markTourStart(
+    nonce,
+    {
+      id: uuidv4(),
+      label: "Test Tour",
+      _recipe: null,
+    },
+    { abortController }
+  );
+
+  return { nonce, abortController };
+}
+
+function makeOptions({
+  root = document,
+  signal = undefined,
+}: { root?: HTMLElement | Document; signal?: AbortSignal } = {}): BlockOptions {
+  return {
+    logger,
+    root,
+    runRendererPipeline: jest.fn().mockResolvedValue(undefined),
+    runPipeline: jest.fn().mockImplementation(async () => {
+      throw new Error("Not implemented");
+    }),
+    ctxt: {},
+    abortSignal: signal,
+  };
+}
+
 describe("tourStep", () => {
   beforeEach(() => {
     (Element.prototype.scrollIntoView as jest.Mock).mockReset();
+    showModalMock.mockReset();
+    showPopoverMock.mockReset();
+
+    showPopoverMock.mockReturnValue({
+      onReady: jest.fn(),
+    });
   });
 
   test("isRootAware", async () => {
@@ -54,64 +112,74 @@ describe("tourStep", () => {
   it("requires tour", async () => {
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
-      { logger, root: document } as BlockOptions
+      makeOptions()
     );
     await expect(promise).rejects.toThrow(
       "This brick can only be called from a tour"
     );
   });
 
-  it("renders simple step over document", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
+  it("skippable", async () => {
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    startTour();
 
     const promise = brick.run(
-      unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
-      { logger, root: document } as BlockOptions
+      unsafeAssumeValidArg({
+        title: "Test",
+        body: "**markdown**",
+        appearance: { skippable: true },
+        selector: "button",
+      }),
+      makeOptions()
     );
-
-    await tick();
-
-    expect(document.body.innerHTML).toContain("markdown");
-
-    $(document).find(".introjs-donebutton").click();
-
-    await tick();
-
-    expect(document.body.innerHTML).not.toContain("markdown");
 
     await expect(promise).resolves.toEqual({});
 
     cancelAllTours();
   });
 
-  it("highlights element", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
+  it("throws on multiple matches", async () => {
+    document.body.innerHTML = "<div><div>Test</div></div>";
 
+    startTour();
+
+    const promise = brick.run(
+      unsafeAssumeValidArg({
+        title: "Test",
+        body: "**markdown**",
+        selector: "div",
+      }),
+      makeOptions()
+    );
+
+    await expect(promise).rejects.toThrow(MultipleElementsFoundError);
+
+    cancelAllTours();
+  });
+
+  it("renders simple step over document", async () => {
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
+    const { abortController } = startTour();
+
+    const promise = brick.run(
+      unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
+      makeOptions({ signal: abortController.signal })
     );
+
+    await tick();
+
+    expect(showModalMock).toHaveBeenCalled();
+
+    cancelAllTours();
+    await expect(promise).resolves.toEqual({});
+  });
+
+  it("highlights element", async () => {
+    document.body.innerHTML = "<div>Test</div>";
+
+    const { abortController } = startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({
@@ -119,73 +187,54 @@ describe("tourStep", () => {
         body: "**markdown**",
         appearance: { highlight: { backgroundColor: "yellow" } },
       }),
-      { logger, root: document.querySelector("div") } as unknown as BlockOptions
+      makeOptions({
+        root: document.querySelector("div"),
+        signal: abortController.signal,
+      })
     );
 
     await tick();
 
     expect(document.querySelector("div").style.backgroundColor).toBe("yellow");
 
-    $(document).find(".introjs-donebutton").click();
+    await tick();
+    expect(showPopoverMock).toHaveBeenCalled();
+    cancelAllTours();
+
+    await expect(promise).resolves.toEqual({});
 
     await tick();
 
     expect(document.querySelector("div").style.backgroundColor).not.toBe(
       "yellow"
     );
-
-    await expect(promise).resolves.toEqual({});
-    cancelAllTours();
   });
 
   it("don't scroll to element by default", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    const { abortController } = startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
-      { logger, root: document.querySelector("div") } as unknown as BlockOptions
+      makeOptions({
+        root: document.querySelector("div"),
+        signal: abortController.signal,
+      })
     );
 
     await tick();
 
-    $(document).find(".introjs-donebutton").click();
-
-    await tick();
-
-    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+    cancelAllTours();
 
     await expect(promise).resolves.toEqual({});
-    cancelAllTours();
+    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
   });
 
   it("scrolls to element", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    const { abortController } = startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({
@@ -193,36 +242,24 @@ describe("tourStep", () => {
         body: "**markdown**",
         appearance: { scroll: {} },
       }),
-      { logger, root: document.querySelector("div") } as unknown as BlockOptions
+      makeOptions({
+        root: document.querySelector("div"),
+        signal: abortController.signal,
+      })
     );
 
     await tick();
 
-    $(document).find(".introjs-donebutton").click();
-
-    await tick();
-
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+    cancelAllTours();
 
     await expect(promise).resolves.toEqual({});
-    cancelAllTours();
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
   });
 
   it("waits for element to initialize on page", async () => {
-    const nonce = uuidv4();
-    const abortController = new AbortController();
-
     document.body.innerHTML = "<div>Test</div>";
 
-    markTourStart(
-      nonce,
-      {
-        id: uuidv4(),
-        label: "Test Tour",
-        _recipe: null,
-      },
-      { abortController }
-    );
+    const { abortController } = startTour();
 
     const promise = brick.run(
       unsafeAssumeValidArg({
@@ -231,7 +268,7 @@ describe("tourStep", () => {
         body: "**markdown**",
         appearance: { wait: { maxWaitMillis: 0 } },
       }),
-      { logger, root: document } as unknown as BlockOptions
+      makeOptions({ signal: abortController.signal })
     );
 
     await tick();
@@ -243,11 +280,7 @@ describe("tourStep", () => {
 
     await tick();
 
-    $(document).find(".introjs-donebutton").click();
-
-    await tick();
-
-    await expect(promise).resolves.toEqual({});
     cancelAllTours();
+    await expect(promise).resolves.toEqual({});
   });
 });

@@ -22,6 +22,7 @@ import { joinName } from "@/utils";
 import { Card } from "react-bootstrap";
 import TourStep, {
   type StepInputs,
+  TourStepTransformer,
 } from "@/blocks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
 import {
@@ -101,7 +102,11 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             if (target.value) {
               setFieldValue(configName("body"), {
                 __type__: "pipeline",
-                __value__: [createNewBlock(DocumentRenderer.BLOCK_ID)],
+                __value__: [
+                  createNewBlock(DocumentRenderer.BLOCK_ID, {
+                    parentBlockId: TourStepTransformer.BLOCK_ID,
+                  }),
+                ],
               });
             } else {
               setFieldValue(configName("body"), {
@@ -219,6 +224,19 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       </Section>
 
+      <Section title="Step Controls">
+        <SchemaField
+          label="Outside Click Behavior"
+          name={configName("appearance", "controls", "outsideClick")}
+          schema={{
+            type: "string",
+            enum: ["none", "submit"],
+            description:
+              'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
+          }}
+        />
+      </Section>
+
       <Section title="Scroll Behavior">
         <FieldTemplate
           as={SwitchButtonWidget}
@@ -257,8 +275,50 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
           label="Highlight Color"
           schema={{
             type: "string",
+            examples: ["yellow", "red", "green"],
             description:
               "Color to highlight the element with when the step is active. Can be any valid CSS color value",
+          }}
+        />
+      </Section>
+
+      <Section title="Overlay Behavior">
+        <SchemaField
+          name={configName("appearance", "showOverlay")}
+          label="Show Overlay"
+          schema={{
+            type: "boolean",
+            default: true,
+            description: "Toggle on to show an overlay/backdrop over the page",
+          }}
+        />
+      </Section>
+
+      <Section title="Popover Behavior">
+        <SchemaField
+          name={configName("appearance", "popover", "placement")}
+          label="Placement"
+          description="Location to place the popover relative to the target element"
+          schema={{
+            type: "string",
+            enum: [
+              "auto",
+              "auto-start",
+              "auto-end",
+              "top",
+              "top-start",
+              "top-end",
+              "bottom",
+              "bottom-start",
+              "bottom-end",
+              "right",
+              "right-start",
+              "right-end",
+              "left",
+              "left-start",
+              "left-end",
+            ],
+            default: "auto",
           }}
         />
       </Section>

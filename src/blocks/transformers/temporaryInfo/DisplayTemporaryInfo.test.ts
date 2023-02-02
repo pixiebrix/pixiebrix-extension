@@ -205,7 +205,8 @@ describe("DisplayTemporaryInfo", () => {
         heading: "Test Temp Panel",
         nonce: expect.toBeString(),
         payload: expect.toBeObject(),
-      })
+      }),
+      { onRegister: undefined }
     );
   });
 

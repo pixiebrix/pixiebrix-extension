@@ -26,6 +26,7 @@ describe("receiverProtocol", () => {
   test("add/remove listener", async () => {
     const listener: PanelListener = {
       onUpdateTemporaryPanel: jest.fn(),
+      onSetPanelNonce: jest.fn(),
     };
 
     addListener(listener);
@@ -46,6 +47,7 @@ describe("receiverProtocol", () => {
   test("ignore stale messages", async () => {
     const listener: PanelListener = {
       onUpdateTemporaryPanel: jest.fn(),
+      onSetPanelNonce: jest.fn(),
     };
 
     addListener(listener);
