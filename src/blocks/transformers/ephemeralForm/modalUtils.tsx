@@ -2,7 +2,15 @@ import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
 
-export function showModal(url: URL, abortController: AbortController): void {
+export function showModal({
+  url,
+  controller,
+  onOutsideClick,
+}: {
+  url: URL;
+  controller: AbortController;
+  onOutsideClick?: () => void;
+}): void {
   // Using `<style>` will avoid overriding the site’s inline styles
   const style = document.createElement("style");
 
@@ -26,7 +34,7 @@ export function showModal(url: URL, abortController: AbortController): void {
         dialog.addEventListener(
           "close",
           () => {
-            abortController.abort();
+            controller.abort();
           },
           { once: true }
         );
@@ -52,7 +60,16 @@ export function showModal(url: URL, abortController: AbortController): void {
     shadowRoot
   );
 
-  abortController.signal.addEventListener("abort", () => {
+  const dialog = shadowRoot.querySelector("dialog");
+
+  // This doesn't work below the modal, because the Shadow Root extends
+  dialog.addEventListener("click", () => {
+    // Normally you'd check for event.target = dialog. But given the shadow root, the target ends up being
+    // somewhere on the page, not the dialog itself
+    onOutsideClick?.();
+  });
+
+  controller.signal.addEventListener("abort", () => {
     unmountComponentAtNode(container);
     style.remove();
     container.remove();

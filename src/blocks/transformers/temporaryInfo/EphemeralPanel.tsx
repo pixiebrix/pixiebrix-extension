@@ -33,7 +33,7 @@ import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/use
 import { type UUID } from "@/core";
 import { startCase } from "lodash";
 import { type PanelButton } from "@/sidebar/types";
-
+import { ClosePanelAction } from "@/blocks/errors";
 import styles from "./EphemeralPanel.module.scss";
 
 type Mode = "modal" | "popover";
@@ -59,15 +59,14 @@ const PopoverLayout: React.FC<{ className?: string }> = ({
 
 const ActionToolbar: React.FC<{
   actions: PanelButton[];
-  buttonSize: "sm" | "lg";
   onClick: (action: PanelButton) => void;
-}> = ({ actions, onClick, buttonSize }) => (
+}> = ({ actions, onClick }) => (
   <div className={styles.actionToolbar}>
     {actions.map((action, index) => (
       <Button
         key={action.caption ?? action.type ?? index}
         variant={action.variant}
-        size={buttonSize}
+        size="sm"
         onClick={() => {
           onClick(action);
         }}
@@ -79,7 +78,8 @@ const ActionToolbar: React.FC<{
 );
 
 /**
- * @see DisplayTemporaryInfo
+ * A modal or popover panel that displays temporary information.
+ * @see displayTemporaryInfo
  */
 const EphemeralPanel: React.FC = () => {
   const params = new URLSearchParams(location.search);
@@ -148,7 +148,8 @@ const EphemeralPanel: React.FC = () => {
 
     return (
       <Layout>
-        <div>&nbsp;</div>
+        <Modal.Header></Modal.Header>
+        <Modal.Body></Modal.Body>
       </Layout>
     );
   }
@@ -158,15 +159,21 @@ const EphemeralPanel: React.FC = () => {
       <Layout>
         <Popover.Title>
           {entry.heading}
-          <Button
-            className="close"
-            data-dismiss="alert"
-            onClick={() => {
-              cancelTemporaryPanel(target, [panelNonce]);
-            }}
-          >
-            &times;
-          </Button>
+          {(entry.showCloseButton ?? true) && (
+            <Button
+              className="close"
+              data-dismiss="alert"
+              onClick={() => {
+                cancelTemporaryPanel(
+                  target,
+                  [panelNonce],
+                  new ClosePanelAction("User closed the panel")
+                );
+              }}
+            >
+              &times;
+            </Button>
+          )}
         </Popover.Title>
         <Popover.Content>
           <ErrorBoundary>
@@ -185,7 +192,6 @@ const EphemeralPanel: React.FC = () => {
               <hr className={styles.actionDivider} />
               <ActionToolbar
                 actions={entry.actions}
-                buttonSize="sm"
                 onClick={(action) => {
                   resolveTemporaryPanel(target, panelNonce, action);
                 }}
@@ -200,9 +206,13 @@ const EphemeralPanel: React.FC = () => {
   return (
     <Layout>
       <Modal.Header
-        closeButton
+        closeButton={entry.showCloseButton ?? true}
         onHide={() => {
-          cancelTemporaryPanel(target, [panelNonce]);
+          cancelTemporaryPanel(
+            target,
+            [panelNonce],
+            new ClosePanelAction("User closed the panel")
+          );
         }}
       >
         <Modal.Title>{entry.heading}</Modal.Title>
@@ -224,7 +234,6 @@ const EphemeralPanel: React.FC = () => {
         <Modal.Footer>
           <ActionToolbar
             actions={entry.actions}
-            buttonSize="lg"
             onClick={(action) => {
               resolveTemporaryPanel(target, panelNonce, action);
             }}

@@ -103,6 +103,10 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                   }),
                 ],
               });
+              setFieldValue(
+                configName("appearance", "refreshTrigger"),
+                "manual"
+              );
             } else {
               setFieldValue(configName("body"), {
                 __type__: "nunjucks",

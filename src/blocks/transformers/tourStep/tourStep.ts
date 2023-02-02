@@ -30,11 +30,14 @@ import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
   type RefreshTrigger,
+  type TemporaryDisplayInputs,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelButton, type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 import { $safeFind } from "@/helpers";
 import { addOverlay } from "@/blocks/transformers/tourStep/overlay";
+import { cancelTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { AbortPanelAction } from "@/blocks/errors";
 
 export type StepInputs = {
   title: string;
@@ -351,8 +354,32 @@ export class TourStepTransformer extends Transformer {
         heading: title,
         payload,
         actions,
+        showCloseButton: appearance?.controls?.closeButton !== "none",
       };
     };
+
+    // Outside click handler
+    let onOutsideClick: TemporaryDisplayInputs["onOutsideClick"] = noop;
+    if (appearance.controls?.outsideClick === "cancel") {
+      onOutsideClick = async (nonce) => {
+        await cancelTemporaryPanels([nonce], new AbortPanelAction());
+      };
+    } else if (appearance.controls?.outsideClick === "submit") {
+      onOutsideClick = async (nonce) => {
+        await cancelTemporaryPanels([nonce]);
+      };
+    }
+
+    // Close button handler
+    let onCloseClick: TemporaryDisplayInputs["onCloseClick"] = null;
+    if (appearance.controls?.closeButton === "cancel") {
+      onCloseClick = () => {
+        throw new AbortPanelAction("User closed the panel");
+      };
+    } else if (appearance.controls?.closeButton === "submit") {
+      // Allow the panel to close normally
+      onCloseClick = noop;
+    }
 
     try {
       return await displayTemporaryInfo({
@@ -362,7 +389,8 @@ export class TourStepTransformer extends Transformer {
         signal: abortSignal,
         refreshTrigger: appearance.refreshTrigger,
         refreshEntry,
-        cancelOnOutsideClick: appearance?.controls?.outsideClick !== "none",
+        onOutsideClick,
+        onCloseClick,
         popoverOptions: appearance.popover,
       });
     } finally {

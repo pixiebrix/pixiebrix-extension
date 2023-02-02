@@ -43,7 +43,7 @@ exports[`EphemeralPanel renders action buttons: modal 1`] = `
         class="actionToolbar"
       >
         <button
-          class="btn btn-light btn-lg"
+          class="btn btn-light btn-sm"
           type="button"
         >
           Test Click
@@ -101,9 +101,12 @@ exports[`EphemeralPanel renders blank: modal 1`] = `
   <div
     class="modal-content"
   >
-    <div>
-       
-    </div>
+    <div
+      class="modal-header"
+    />
+    <div
+      class="modal-body"
+    />
   </div>
 </DocumentFragment>
 `;

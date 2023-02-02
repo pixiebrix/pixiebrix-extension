@@ -186,7 +186,7 @@ export async function runRendererBlock(
       const controller = new AbortController();
       const url = await createFrameSource(nonce, "modal");
 
-      showModal(url, controller);
+      showModal({ url, controller });
 
       try {
         await waitForTemporaryPanel(nonce, {

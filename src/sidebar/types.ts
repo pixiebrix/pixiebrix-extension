@@ -137,6 +137,12 @@ export type TemporaryPanelEntry = BasePanelEntry & {
    * Unique identifier for the temporary panel instance. Used to correlate panel-close action.
    */
   nonce: UUID;
+
+  /**
+   * True if the panel has an "x" to be closed by the user (default=true)
+   * @since 1.7.19
+   */
+  showCloseButton?: boolean;
 };
 
 /**
