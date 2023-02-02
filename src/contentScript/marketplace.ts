@@ -36,9 +36,11 @@ function getActivateButtonLinks(): HTMLAnchorElement[] {
   ];
 }
 
-async function getInstalledRecipeIds(): Promise<RegistryId[]> {
+async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
   const options = await loadOptions();
-  return compact(options.extensions.map((extension) => extension._recipe?.id));
+  return new Set(
+    compact(options.extensions.map((extension) => extension._recipe?.id))
+  );
 }
 
 async function isUserLoggedIn(): Promise<boolean> {
@@ -104,7 +106,7 @@ async function loadPageEnhancements(): Promise<void> {
     }
 
     // Check if recipe is already activated
-    if (installedRecipeIds.includes(recipeId)) {
+    if (installedRecipeIds.has(recipeId)) {
       button.innerHTML = '<i class="fas fa-sync-alt"></i> Reactivate';
     }
 
@@ -121,9 +123,7 @@ async function loadPageEnhancements(): Promise<void> {
 }
 
 export async function initMarketplaceEnhancements() {
-  if (
-    !startsWith(window.location.href, "https://www.pixiebrix.com/marketplace")
-  ) {
+  if (!startsWith(location.href, "https://www.pixiebrix.com/marketplace")) {
     return;
   }
 
