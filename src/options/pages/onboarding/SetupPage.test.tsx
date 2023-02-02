@@ -143,16 +143,6 @@ describe("SetupPage", () => {
     location.href =
       "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com";
 
-    const history = createHashHistory();
-    // Hostname comes as hostname, not URL
-    history.push("/start?hostname=mycontrolroom.com");
-
-    // Not sure why, but listening here is necessary to get the final `history.location.pathname` assertion to
-    // pass :shrug:
-    history.listen((location) => {
-      console.debug(location);
-    });
-
     // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
     // given the URL structure above
     render(
@@ -173,12 +163,20 @@ describe("SetupPage", () => {
       // Schema get pre-pended automatically
     ).toStrictEqual("https://mycontrolroom.com");
 
+    // Sanity check we haven't redirected away from the start page yet
+    expect(location.href).toStrictEqual(
+      "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com"
+    );
+
     const button = screen.getByText("Connect AARI");
     await user.click(button);
 
     await waitForEffect();
 
-    expect(history.location.pathname).toStrictEqual("/");
+    // Should have redirected away from the start page
+    expect(location.href).toStrictEqual(
+      "chrome-extension://abc123/options.html#/"
+    );
   });
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
