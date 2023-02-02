@@ -140,6 +140,9 @@ describe("SetupPage", () => {
       data: {},
     }));
 
+    location.href =
+      "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com";
+
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
     history.push("/start?hostname=mycontrolroom.com");

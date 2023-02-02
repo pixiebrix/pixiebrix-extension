@@ -3,8 +3,7 @@
 exports[`EphemeralPanel renders blank: modal 1`] = `
 <DocumentFragment>
   <div
-    class="popover"
-    data-iframe-height=""
+    class="modal-content"
   >
     <div>
        
@@ -19,7 +18,12 @@ exports[`EphemeralPanel renders blank: popover 1`] = `
     class="popover"
     data-iframe-height=""
   >
-    <div>
+    <div
+      class="popover-header"
+    />
+    <div
+      class="popover-body"
+    >
        
     </div>
   </div>
@@ -29,8 +33,7 @@ exports[`EphemeralPanel renders blank: popover 1`] = `
 exports[`EphemeralPanel renders error state: modal 1`] = `
 <DocumentFragment>
   <div
-    class="popover"
-    data-iframe-height=""
+    class="modal-content"
   >
     <div>
       Panel Error

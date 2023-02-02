@@ -19,7 +19,6 @@ import React from "react";
 import { render } from "@testing-library/react";
 import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
 import { uuidv4 } from "@/types/helpers";
-import { JSDOM } from "jsdom";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
@@ -37,15 +36,18 @@ const useTemporaryPanelDefinitionMock =
   >;
 
 describe("EphemeralPanel", () => {
+  beforeAll(() => {
+    const { location } = window;
+    delete global.window.location;
+    global.window.location = { ...location };
+  });
+
   beforeEach(() => {
     useTemporaryPanelDefinitionMock.mockReset();
   });
 
   test.each(["modal", "popover"])("renders blank: %s", async (mode) => {
-    const dom = new JSDOM();
-    dom.reconfigure({
-      url: `chrome-extension://abc/ephemeralPanel.html?mode=${mode}&frameNonce=${uuidv4()}`,
-    });
+    location.href = `chrome-extension://abc/ephemeralPanel.html?mode=${mode}&frameNonce=${uuidv4()}`;
 
     useTemporaryPanelDefinitionMock.mockReturnValue({
       entry: null,
@@ -61,10 +63,7 @@ describe("EphemeralPanel", () => {
   });
 
   test.each(["modal", "popover"])("renders error state: %s", async (mode) => {
-    const dom = new JSDOM();
-    dom.reconfigure({
-      url: `chrome-extension://abc/ephemeralPanel.html?mode=${mode}&frameNonce=${uuidv4()}`,
-    });
+    location.href = `chrome-extension://abc/ephemeralPanel.html?mode=${mode}&frameNonce=${uuidv4()}`;
 
     useTemporaryPanelDefinitionMock.mockReturnValue({
       entry: null,
