@@ -513,6 +513,8 @@ export class TourStepTransformer extends Transformer {
       }
     }
 
+    let result;
+
     try {
       if (!isEmpty(onBeforeShow?.__value__)) {
         await options.runPipeline(
@@ -537,7 +539,7 @@ export class TourStepTransformer extends Transformer {
           ? { ...args, body: markdownPipeline(body) }
           : args;
 
-      await this.displayStep(target, modifiedArgs, options);
+      result = await this.displayStep(target, modifiedArgs, options);
 
       if (!isEmpty(onAfterShow?.__value__)) {
         await options.runPipeline(
@@ -557,7 +559,7 @@ export class TourStepTransformer extends Transformer {
       }
     }
 
-    return {};
+    return result ?? {};
   }
 }
 

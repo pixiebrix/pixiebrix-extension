@@ -216,7 +216,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
           />
 
           <SchemaField
-            label="Cancel Button Behavior"
+            label="Close Button Behavior"
             {...schemaFieldProps("appearance", "controls", "closeButton")}
           />
 

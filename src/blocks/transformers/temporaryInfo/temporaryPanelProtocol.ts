@@ -172,8 +172,6 @@ export async function cancelTemporaryPanels(
     error.name === "ClosePanelAction"
   ) {
     rejectError = new ClosePanelAction("User closed the panel");
-  } else if (error != null) {
-    throw new Error("Unexpected error payload for cancelTemporaryPanels");
   }
 
   for (const nonce of nonces) {
