@@ -440,7 +440,7 @@ export interface paths {
   "/api/invitations/{id}/": {
     delete: operations["destroyInvitation"];
   };
-  "/api/tests/accounts/social/reset/": {
+  "/api/tests/accounts/social/": {
     delete: operations["destroySocialTestAccount"];
   };
 }

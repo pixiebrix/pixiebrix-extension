@@ -122,7 +122,7 @@ export const authStateFactory = define<AuthState>({
   scope: (n: number) => `@user${n}`,
   isLoggedIn: true,
   isOnboarded: true,
-  isTestAccount: true,
+  isTestAccount: false,
   extension: true,
   enforceUpdateMillis: null,
   organizations() {
