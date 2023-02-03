@@ -5,6 +5,7 @@ name: Rainforest QA Run
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
 # https://frontside.com/blog/2020-05-26-github-actions-pull_request/
 on:
+  workflow_dispatch
   push:
     branches:
       - release/*
