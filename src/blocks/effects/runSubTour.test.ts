@@ -23,7 +23,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import {
   type BlockOptions,
   type RecipeMetadata,
-  ResolvedExtension,
+  type ResolvedExtension,
 } from "@/core";
 import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";

@@ -17,7 +17,7 @@
 
 import React from "react";
 import {
-  MessageContext,
+  type MessageContext,
   type RegistryId,
   type ResolvedExtension,
   type UUID,
