@@ -20,7 +20,11 @@ import {
   registerTour,
 } from "@/extensionPoints/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type BlockOptions, type RecipeMetadata } from "@/core";
+import {
+  type BlockOptions,
+  type RecipeMetadata,
+  ResolvedExtension,
+} from "@/core";
 import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
@@ -40,7 +44,7 @@ describe("runSubTour", () => {
         id: uuidv4(),
         label: "Test Extension",
         _recipe: { id: blueprintId } as RecipeMetadata,
-      },
+      } as ResolvedExtension,
       allowUserRun: false,
       run: () => ({
         promise: deferredTour.promise,

@@ -466,9 +466,7 @@ export class TourStepTransformer extends Transformer {
   ): Promise<unknown> {
     const {
       root,
-      logger: {
-        context: { extensionId },
-      },
+      logger: { context },
     } = options;
 
     const {
@@ -531,7 +529,7 @@ export class TourStepTransformer extends Transformer {
       // XXX: use title here? Or use the label from the block? Probably best to use title, since that's what
       // the user sees. The benefit of using block label is that for advanced use cases, the creator could duplicate
       // step names in order to group steps. That's probably better served by an explicit step key though.
-      markTourStep(nonce, { id: extensionId }, title);
+      markTourStep(nonce, { step: title, context });
 
       // If passing markdown, wrap in Markdown brick
       const modifiedArgs: BlockArg<StepInputs> =

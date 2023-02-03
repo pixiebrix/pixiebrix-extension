@@ -26,6 +26,7 @@ import {
 } from "@/extensionPoints/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
+import { ResolvedExtension } from "@/core";
 
 describe("tourController", () => {
   test("ad-hoc tour", () => {
@@ -35,12 +36,12 @@ describe("tourController", () => {
     markTourStart(
       nonce,
       { id: extensionId, label: "Ad-hoc", _recipe: null },
-      { abortController }
+      { abortController, context: { extensionId } }
     );
 
     expect(isTourInProgress()).toBe(true);
 
-    markTourEnd(nonce, { id: extensionId });
+    markTourEnd(nonce, { context: { extensionId } });
 
     expect(isTourInProgress()).toBe(false);
   });
@@ -52,7 +53,7 @@ describe("tourController", () => {
     markTourStart(
       nonce,
       { id: extensionId, label: "Ad-hoc", _recipe: null },
-      { abortController }
+      { abortController, context: { extensionId } }
     );
 
     expect(isTourInProgress()).toBe(true);
@@ -69,7 +70,11 @@ describe("tourController", () => {
 
     registerTour({
       blueprintId,
-      extension: { id: uuidv4(), label: "Test Tour", _recipe: null },
+      extension: {
+        id: uuidv4(),
+        label: "Test Tour",
+        _recipe: null,
+      } as ResolvedExtension,
       allowUserRun: false,
       run: () => ({
         promise: tourPromise.promise,
