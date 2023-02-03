@@ -27,6 +27,7 @@ import {
   showActivateRecipeInSidebar,
 } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 function getActivateButtonLinks(): HTMLAnchorElement[] {
   return [
@@ -134,9 +135,7 @@ async function loadPageEnhancements(): Promise<void> {
 }
 
 export async function initMarketplaceEnhancements() {
-  if (
-    !startsWith(window.location.href, "https://www.pixiebrix.com/marketplace")
-  ) {
+  if (!startsWith(window.location.href, MARKETPLACE_URL)) {
     return;
   }
 

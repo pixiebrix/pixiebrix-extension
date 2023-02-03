@@ -72,7 +72,6 @@ const activateButtonsHtml = `
 
 describe("marketplace enhancements", () => {
   beforeEach(() => {
-    window.document.body.innerHTML = "";
     document.body.innerHTML = "";
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
   });
