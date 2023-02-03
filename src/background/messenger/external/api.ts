@@ -49,6 +49,11 @@ export const setExtensionAuth = liftExternal(
   local.setExtensionAuth
 );
 
+export const setActivatingBlueprint = liftExternal(
+  "SET_ACTIVATING_BLUEPRINT",
+  local.setActivatingBlueprint
+);
+
 export const openMarketplace = liftExternal(
   "OPEN_MARKETPLACE",
   local.openMarketplace

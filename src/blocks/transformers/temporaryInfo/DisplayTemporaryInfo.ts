@@ -32,15 +32,19 @@ import {
   cancelTemporaryPanels,
   cancelTemporaryPanelsForExtension,
   stopWaitingForTemporaryPanels,
-  waitForTemporaryPanel,
   updatePanelDefinition,
+  waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
-import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import {
+  type Placement,
+  showPopover,
+} from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
+import { noop, once } from "lodash";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
@@ -75,7 +79,7 @@ type TemporaryDisplayInputs = {
   /**
    * An optional abortSignal to cancel the panel.
    */
-  abortSignal?: AbortSignal;
+  signal?: AbortSignal;
 
   /**
    * An optional trigger to trigger a panel refresh.
@@ -86,20 +90,39 @@ type TemporaryDisplayInputs = {
    * Factory method to refresh the panel.
    */
   refreshEntry?: () => Promise<PanelEntry>;
+
+  /**
+   * True to cancel on outside click.
+   */
+  cancelOnOutsideClick?: boolean;
+
+  /**
+   * Optional placement options for popovers.
+   */
+  popoverOptions?: {
+    /**
+     * The placement of the popover, default 'auto'
+     */
+    placement?: Placement;
+  };
 };
 
 export async function displayTemporaryInfo({
   entry,
   location,
-  abortSignal,
+  signal,
   target,
   refreshEntry,
   refreshTrigger,
+  popoverOptions,
+  cancelOnOutsideClick = true,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
+  let onReady: () => void;
+
   const controller = new AbortController();
 
-  abortSignal?.addEventListener("abort", () => {
+  signal?.addEventListener("abort", () => {
     void cancelTemporaryPanels([nonce]);
   });
 
@@ -141,11 +164,24 @@ export async function displayTemporaryInfo({
 
       await cancelTemporaryPanelsForExtension(entry.extensionId);
 
-      const onHide = async () => {
-        await cancelTemporaryPanels([nonce]);
-      };
+      const onOutsideClick = cancelOnOutsideClick
+        ? async () => {
+            await cancelTemporaryPanels([nonce]);
+          }
+        : noop;
 
-      showPopover(frameSource, target as HTMLElement, onHide, controller);
+      const popover = showPopover({
+        url: frameSource,
+        element: target as HTMLElement,
+        signal: controller.signal,
+        onOutsideClick,
+        options: popoverOptions,
+      });
+
+      // Wrap in once so it's safe for refresh callback
+      onReady = once(() => {
+        popover.onReady();
+      });
 
       break;
     }
@@ -182,7 +218,11 @@ export async function displayTemporaryInfo({
   let result = null;
 
   try {
-    result = await waitForTemporaryPanel(nonce, { ...entry, nonce });
+    result = await waitForTemporaryPanel(
+      nonce,
+      { ...entry, nonce },
+      { onRegister: onReady }
+    );
   } catch (error) {
     if (error instanceof CancelError) {
       // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915
@@ -304,7 +344,7 @@ class DisplayTemporaryInfo extends Transformer {
     return displayTemporaryInfo({
       entry: initialEntry,
       location,
-      abortSignal,
+      signal: abortSignal,
       target,
       refreshEntry,
       refreshTrigger,

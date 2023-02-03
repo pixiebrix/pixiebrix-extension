@@ -24,6 +24,10 @@ const panelInThisTab = {
     "EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL",
     target
   ),
+  setTemporaryPanelNonce: getNotifier(
+    "EPHEMERAL_PANEL_SET_TEMPORARY_PANEL",
+    target
+  ),
 };
 
 export default panelInThisTab;

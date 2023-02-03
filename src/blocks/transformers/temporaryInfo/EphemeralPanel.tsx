@@ -17,7 +17,7 @@
 
 import cx from "classnames";
 import React, { useEffect } from "react";
-import { Modal, Popover } from "react-bootstrap";
+import { Button, Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
@@ -29,8 +29,10 @@ import { validateUUID } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
-import { PANEL_MOUNTED_EVENT_TYPE } from "@/blocks/transformers/temporaryInfo/constants";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
+import { type UUID } from "@/core";
+
+import styles from "./EphemeralPanel.module.scss";
 
 type Mode = "modal" | "popover";
 
@@ -58,7 +60,7 @@ const PopoverLayout: React.FC<{ className?: string }> = ({
  */
 const EphemeralPanel: React.FC = () => {
   const params = new URLSearchParams(location.search);
-  const nonce = validateUUID(params.get("nonce"));
+  const initialNonce: UUID | undefined = validateUUID(params.get("nonce"));
   const opener = JSON.parse(params.get("opener")) as Target;
   const mode = params.get("mode") as Mode;
 
@@ -70,14 +72,8 @@ const EphemeralPanel: React.FC = () => {
 
   const { entry, isLoading, error } = useTemporaryPanelDefinition(
     target,
-    nonce
+    initialNonce
   );
-
-  useEffect(() => {
-    document.dispatchEvent(
-      new CustomEvent(PANEL_MOUNTED_EVENT_TYPE, { detail: nonce })
-    );
-  }, [nonce]);
 
   // Report error once
   useEffect(() => {
@@ -107,7 +103,7 @@ const EphemeralPanel: React.FC = () => {
             className="btn btn-primary"
             type="button"
             onClick={() => {
-              cancelTemporaryPanel(target, [nonce]);
+              cancelTemporaryPanel(target, [entry.nonce]);
             }}
           >
             Close
@@ -117,20 +113,85 @@ const EphemeralPanel: React.FC = () => {
     );
   }
 
+  // Panel was pre-allocated for performance
+  if (entry == null) {
+    if (mode === "popover") {
+      return (
+        <Layout>
+          <Popover.Title></Popover.Title>
+          <Popover.Content>&nbsp;</Popover.Content>
+        </Layout>
+      );
+    }
+
+    return (
+      <Layout>
+        <div>&nbsp;</div>
+      </Layout>
+    );
+  }
+
+  if (mode === "popover") {
+    return (
+      <Layout>
+        <Popover.Title>
+          {entry.heading}
+          <Button
+            className="close"
+            data-dismiss="alert"
+            onClick={() => {
+              cancelTemporaryPanel(target, [entry.nonce]);
+            }}
+          >
+            &times;
+          </Button>
+        </Popover.Title>
+        <Popover.Content>
+          <ErrorBoundary>
+            <PanelBody
+              isRootPanel={false}
+              payload={entry.payload}
+              context={{ extensionId: entry.extensionId }}
+              onAction={(action) => {
+                resolveTemporaryPanel(target, entry.nonce, action);
+              }}
+            />
+          </ErrorBoundary>
+
+          {entry.actions?.length > 0 && (
+            <>
+              <hr className={styles.actionDivider} />
+              <div className="d-flex justify-content-end">
+                {entry.actions.map((action) => (
+                  <Button
+                    key={action.caption}
+                    variant={action.variant}
+                    size="sm"
+                    onClick={() => {
+                      resolveTemporaryPanel(target, entry.nonce, action);
+                    }}
+                  >
+                    {action.caption}
+                  </Button>
+                ))}
+              </div>
+            </>
+          )}
+        </Popover.Content>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      {mode === "popover" ? (
-        <Popover.Title>{entry.heading}</Popover.Title>
-      ) : (
-        <Modal.Header
-          closeButton
-          onHide={() => {
-            cancelTemporaryPanel(target, [nonce]);
-          }}
-        >
-          <Modal.Title>{entry.heading}</Modal.Title>
-        </Modal.Header>
-      )}
+      <Modal.Header
+        closeButton
+        onHide={() => {
+          cancelTemporaryPanel(target, [entry.nonce]);
+        }}
+      >
+        <Modal.Title>{entry.heading}</Modal.Title>
+      </Modal.Header>
       <Modal.Body>
         <ErrorBoundary>
           <PanelBody
@@ -138,11 +199,27 @@ const EphemeralPanel: React.FC = () => {
             payload={entry.payload}
             context={{ extensionId: entry.extensionId }}
             onAction={(action) => {
-              resolveTemporaryPanel(target, nonce, action);
+              resolveTemporaryPanel(target, entry.nonce, action);
             }}
           />
         </ErrorBoundary>
       </Modal.Body>
+
+      {entry.actions?.length > 0 && (
+        <Modal.Footer>
+          {entry.actions.map((action) => (
+            <Button
+              key={action.caption}
+              variant={action.variant}
+              onClick={() => {
+                resolveTemporaryPanel(target, entry.nonce, action);
+              }}
+            >
+              {action.caption}
+            </Button>
+          ))}
+        </Modal.Footer>
+      )}
     </Layout>
   );
 };

@@ -19,27 +19,7 @@ import { type UUID } from "@/core";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 import { CancelError } from "@/errors/businessErrors";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
-import { type JsonObject } from "type-fest";
-
-/**
- * An action to resolve a panel with a type and detail.
- *
- * Interface matches CustomEvent
- *
- * @see CustomEvent
- */
-export type PanelAction = {
-  /**
-   * A custom type for the action, e.g., "submit", "cancel", etc.
-   */
-  type: string;
-
-  /**
-   * Optional payload for the action.
-   */
-  detail?: JsonObject;
-};
+import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";
 
 type RegisteredPanel = {
   entry: TemporaryPanelEntry;
@@ -94,10 +74,12 @@ export function updatePanelDefinition(entry: TemporaryPanelEntry): void {
  * Register a temporary display panel
  * @param nonce The instance nonce for the panel to register
  * @param entry the panel definition
+ * @param onRegister callback to run after the panel is registered
  */
 export async function waitForTemporaryPanel(
   nonce: UUID,
-  entry: TemporaryPanelEntry
+  entry: TemporaryPanelEntry,
+  { onRegister }: { onRegister?: () => void } = {}
 ): Promise<PanelAction | null> {
   expectContext("contentScript");
 
@@ -119,6 +101,8 @@ export async function waitForTemporaryPanel(
   }
 
   extensionNonces.get(entry.extensionId).add(nonce);
+
+  onRegister?.();
 
   return registration.promise;
 }
@@ -176,9 +160,8 @@ export async function cancelTemporaryPanels(nonces: UUID[]): Promise<void> {
   for (const nonce of nonces) {
     panels
       .get(nonce)
-      ?.registration?.reject(
-        new CancelError("Temporary panel was replaced with another panel")
-      );
+      ?.registration?.reject(new CancelError("The panel was cancelled"));
+
     removePanelEntry(nonce);
   }
 }

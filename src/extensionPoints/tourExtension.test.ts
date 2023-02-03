@@ -45,6 +45,10 @@ jest.mock("@/telemetry/logging", () => {
   };
 });
 
+browser.runtime.getURL = jest
+  .fn()
+  .mockImplementation((path) => `chrome-extension://abc/${path}`);
+
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
   define<ExtensionPointConfig<TourDefinition>>({
     apiVersion: "v3",

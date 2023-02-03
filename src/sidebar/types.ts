@@ -18,6 +18,7 @@
 import { type RegistryId, type UUID } from "@/core";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
+import { type JsonObject } from "type-fest";
 
 export type RendererError = {
   /**
@@ -56,6 +57,37 @@ export type EntryType = "panel" | "form" | "temporaryPanel";
  */
 export type PanelPayload = RendererPayload | RendererError | null;
 
+/**
+ * An action to resolve a panel with a type and detail.
+ *
+ * Interface matches CustomEvent
+ *
+ * @see CustomEvent
+ */
+export type PanelAction = {
+  /**
+   * A custom type for the action, e.g., "submit", "cancel", etc.
+   */
+  type: string;
+
+  /**
+   * Optional payload for the action.
+   */
+  detail?: JsonObject;
+};
+
+export type PanelButton = PanelAction & {
+  /**
+   * Action caption/label
+   */
+  caption: string;
+
+  /**
+   * Bootstrap button variant.
+   */
+  variant: string;
+};
+
 type BasePanelEntry = {
   /**
    * The id of the extension that added the panel
@@ -69,6 +101,12 @@ type BasePanelEntry = {
    * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
    */
   payload: PanelPayload;
+
+  /**
+   * Actions to show for the panel
+   * @since 1.7.19
+   */
+  actions?: PanelButton[];
 };
 
 /**

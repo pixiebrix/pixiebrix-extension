@@ -33,7 +33,8 @@ const runtimeSlice = createSlice({
       { payload }: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>
     ) {
       const { extensionId, records } = payload;
-      state.extensionTraces[extensionId] = records;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Immer's writable draft in combination with TraceRecord[] produce TS error: type instantiation is excessively deep and possibly infinite
+      state.extensionTraces[extensionId] = records as any;
     },
   },
 });

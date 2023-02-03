@@ -29,8 +29,14 @@ import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import TourStep from "@/blocks/transformers/tourStep/tourStep";
 
+/**
+ * Get a default block config for a block
+ * @param blockId the block id to add
+ * @param parentBlockId the parent block id, or null if in the root pipeline
+ */
 export function getExampleBlockConfig(
-  blockId: RegistryId
+  blockId: RegistryId,
+  { parentBlockId }: { parentBlockId?: RegistryId } = {}
 ): UnknownObject | null {
   if (blockId === COMPONENT_READER_ID) {
     return {
@@ -95,6 +101,20 @@ export function getExampleBlockConfig(
   }
 
   if (blockId === "@pixiebrix/document") {
+    if (parentBlockId === "@pixiebrix/tour/step") {
+      // Single row with text markdown
+      const container = createNewElement("container");
+
+      // Adding text to the second row
+      const text = createNewElement("text");
+      text.config.text = "Example step content. **Markdown** is supported.";
+      container.children[0].children[0].children.push(text);
+
+      return {
+        body: [container],
+      };
+    }
+
     // Creating container with 2 rows and 1 column in each row
     const container = createNewElement("container");
     container.children.push(createNewElement("row"));
@@ -136,13 +156,15 @@ export function getExampleBlockConfig(
       title: "Example Step",
       body: "Step content. **Markdown** is supported.",
       appearance: {
+        showOverlay: true,
         scroll: {
           behavior: "smooth",
         },
-        // Supply empty appearance configs to avoid rendering errors
+        // Supply empty appearance configs to avoid errors when rendering
         wait: {},
         highlight: {},
         popover: {},
+        controls: {},
       },
     };
   }
@@ -150,7 +172,10 @@ export function getExampleBlockConfig(
 
 export function createNewBlock(
   blockId: RegistryId,
-  blockInputSchema?: Schema
+  {
+    parentBlockId,
+    blockInputSchema,
+  }: { parentBlockId?: RegistryId; blockInputSchema?: Schema } = {}
 ): BlockConfig {
   return {
     id: blockId,
@@ -158,7 +183,7 @@ export function createNewBlock(
     // @since 1.7.16 -- use "document" as the default root mode because it's the easiest to understand
     rootMode: "document",
     config:
-      getExampleBlockConfig(blockId) ??
+      getExampleBlockConfig(blockId, { parentBlockId }) ??
       (blockInputSchema == null ? {} : defaultBlockConfig(blockInputSchema)),
   };
 }
