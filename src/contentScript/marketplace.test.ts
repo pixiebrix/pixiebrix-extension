@@ -104,6 +104,7 @@ describe("marketplace enhancements", () => {
     await waitForEffect();
 
     // User is not logged in, so current page should navigate away from marketplace
+    // @ts-expect-error -- some typing weirdness with jest-location-mock
     expect(window.location).not.toBeAt(MARKETPLACE_URL);
   });
 
@@ -190,6 +191,7 @@ describe("marketplace enhancements", () => {
     await waitForEffect();
 
     // The current page should not navigate away from the marketplace
+    // @ts-expect-error -- some typing weirdness with jest-location-mock
     expect(window.location).toBeAt(MARKETPLACE_URL);
     // The show-sidebar function should be called
     expect(showFunctionMock).toHaveBeenCalledOnce();
