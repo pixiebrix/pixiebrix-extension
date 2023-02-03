@@ -30,7 +30,7 @@ import {
   markTourStart,
   markTourStep,
 } from "@/extensionPoints/tourController";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 
 type Step = {
@@ -49,8 +49,10 @@ type Step = {
 };
 
 export class TourEffect extends Effect {
+  static readonly BLOCK_ID = validateRegistryId("@pixiebrix/tour");
+
   constructor() {
-    super("@pixiebrix/tour", "Show Tour", "Show step-by-step tour");
+    super(TourEffect.BLOCK_ID, "Show Tour", "Show step-by-step tour");
   }
 
   override async isRootAware(): Promise<boolean> {
@@ -183,7 +185,7 @@ export class TourEffect extends Effect {
           label: label ?? extensionLabel,
           _recipe: { id: blueprintId },
         },
-        { abortController }
+        { abortController, context: logger.context }
       );
 
       const tour = introJs()
@@ -206,7 +208,7 @@ export class TourEffect extends Effect {
           // @ts-expect-error -- need to look inside the callback instance
           const title = this._introItems[currentStep]?.title;
           const label = isEmpty(title) ? `Step ${currentStep}` : title;
-          markTourStep(nonce, { id: extensionId }, label);
+          markTourStep(nonce, { step: label, context: logger.context });
         })
         .oncomplete(() => {
           // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
@@ -232,9 +234,9 @@ export class TourEffect extends Effect {
       blockAbortSignal?.addEventListener("abort", handleAbort);
 
       await tourPromise;
-      markTourEnd(nonce, { id: extensionId });
+      markTourEnd(nonce, { context: logger.context });
     } catch (error) {
-      markTourEnd(nonce, { id: extensionId }, { error });
+      markTourEnd(nonce, { error, context: logger.context });
       throw error;
     }
   }

@@ -91,7 +91,7 @@ beforeEach(() => {
 });
 
 describe("tourExtension", () => {
-  test("install tour manually", async () => {
+  test("install tour via Page Editor", async () => {
     const extensionPoint = fromJS(extensionPointFactory()());
 
     extensionPoint.addExtension(
@@ -101,7 +101,7 @@ describe("tourExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.run({ reason: RunReason.PAGE_EDITOR });
 
     await tick();
 

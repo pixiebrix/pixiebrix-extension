@@ -20,7 +20,8 @@ import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
 import $ from "jquery";
 import crypto from "node:crypto";
-// eslint-disable-next-line import/no-unassigned-import -- mock window.location for tests
+// Mock `window.location` with Jest spies and extend expect
+// https://github.com/evelynhathaway/jest-location-mock
 import "jest-location-mock";
 
 global.$ = $;

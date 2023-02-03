@@ -917,7 +917,7 @@ describe("validation", () => {
       const blockType = await getType(disallowedBlock);
       expectEditorError(
         rendered.container,
-        `Block of type "${blockType}" is not allowed in this pipeline`
+        `Brick of type "${blockType}" is not allowed in this pipeline`
       );
     }
   );

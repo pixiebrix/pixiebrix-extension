@@ -60,6 +60,7 @@ module.exports = {
           "@/background/axiosFetch", // Must be run before other code
           "@/telemetry/reportUncaughtErrors",
           "@testing-library/jest-dom",
+          "jest-location-mock",
           "webext-dynamic-content-scripts/including-active-tab", // Automatic registration
           "regenerator-runtime/runtime", // Automatic registration
           "@/vendors/hoverintent/hoverintent", // JQuery plugin

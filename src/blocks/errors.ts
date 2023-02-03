@@ -133,3 +133,21 @@ export class SubmitPanelAction extends CancelError {
     super(`Submitted panel with action: ${type}`);
   }
 }
+
+/**
+ * Cancel out of panel, and throw an error from the brick that showed the panel.
+ *
+ * Corresponds to a user clicking "skip" on a tour.
+ *
+ * @see TourStepTransformer
+ */
+export class AbortPanelAction extends CancelError {
+  override name = "AbortPanelAction";
+}
+
+/**
+ * Cancel out of a panel, because the user clicked the "close" button.
+ */
+export class ClosePanelAction extends CancelError {
+  override name = "ClosePanelAction";
+}

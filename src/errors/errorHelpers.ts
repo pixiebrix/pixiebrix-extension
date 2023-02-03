@@ -158,6 +158,8 @@ const BUSINESS_ERROR_NAMES = new Set([
   "BusinessError",
   "CancelError",
   "SubmitPanelAction",
+  "AbortPanelAction",
+  "ClosePanelAction",
   "NoRendererError",
   "NoElementsFoundError",
   "MultipleElementsFoundError",

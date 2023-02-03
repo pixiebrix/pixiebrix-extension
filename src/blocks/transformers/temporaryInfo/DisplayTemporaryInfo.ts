@@ -17,7 +17,12 @@
 
 import { Transformer, type UnknownObject } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type Schema,
+  type UUID,
+} from "@/core";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import {
@@ -44,7 +49,9 @@ import {
   showPopover,
 } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
-import { noop, once } from "lodash";
+import { once } from "lodash";
+import { AbortPanelAction, ClosePanelAction } from "@/blocks/errors";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
@@ -63,7 +70,7 @@ export async function createFrameSource(
   return frameSource;
 }
 
-type TemporaryDisplayInputs = {
+export type TemporaryDisplayInputs = {
   /**
    * The initial panel entry.
    */
@@ -92,9 +99,14 @@ type TemporaryDisplayInputs = {
   refreshEntry?: () => Promise<PanelEntry>;
 
   /**
-   * True to cancel on outside click.
+   * Handler when the user clicks outside the modal/popover.
    */
-  cancelOnOutsideClick?: boolean;
+  onOutsideClick?: (nonce: UUID) => void;
+
+  /**
+   * Handler when the user clicks the close button on the modal/popover. If not provided, don't show the button.
+   */
+  onCloseClick?: (nonce: UUID) => void;
 
   /**
    * Optional placement options for popovers.
@@ -107,6 +119,18 @@ type TemporaryDisplayInputs = {
   };
 };
 
+/**
+ * Display a brick in a temporary panel: sidebar, modal, or popover.
+ * @param entry the panel entry
+ * @param location the location to show the panel
+ * @param signal abort signal
+ * @param target target element, if location is popover
+ * @param refreshEntry factory to re-generate the panel entry
+ * @param refreshTrigger optional trigger to refresh the panel
+ * @param popoverOptions optional popover options
+ * @param onOutsideClick optional callback to invoke when the user clicks outside the popover/modal
+ * @param onCloseClick optional callback to invoke when the user clicks the close button on the popover/modal
+ */
 export async function displayTemporaryInfo({
   entry,
   location,
@@ -115,7 +139,8 @@ export async function displayTemporaryInfo({
   refreshEntry,
   refreshTrigger,
   popoverOptions,
-  cancelOnOutsideClick = true,
+  onOutsideClick,
+  onCloseClick,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
   let onReady: () => void;
@@ -152,7 +177,16 @@ export async function displayTemporaryInfo({
 
     case "modal": {
       const frameSource = await createFrameSource(nonce, location);
-      showModal(frameSource, controller);
+      showModal({
+        url: frameSource,
+        controller,
+        onOutsideClick() {
+          // Unlike popover, the default behavior for modal is to force interaction
+          if (onOutsideClick) {
+            onOutsideClick(nonce);
+          }
+        },
+      });
       break;
     }
 
@@ -164,18 +198,19 @@ export async function displayTemporaryInfo({
 
       await cancelTemporaryPanelsForExtension(entry.extensionId);
 
-      const onOutsideClick = cancelOnOutsideClick
-        ? async () => {
-            await cancelTemporaryPanels([nonce]);
-          }
-        : noop;
-
       const popover = showPopover({
         url: frameSource,
         element: target as HTMLElement,
         signal: controller.signal,
-        onOutsideClick,
         options: popoverOptions,
+        onOutsideClick() {
+          if (onOutsideClick) {
+            onOutsideClick(nonce);
+          } else {
+            // Default behavior is to resolve the panel without an action
+            void cancelTemporaryPanels([nonce]);
+          }
+        },
       });
 
       // Wrap in once so it's safe for refresh callback
@@ -224,7 +259,12 @@ export async function displayTemporaryInfo({
       { onRegister: onReady }
     );
   } catch (error) {
-    if (error instanceof CancelError) {
+    if (isSpecificError(error, ClosePanelAction)) {
+      onCloseClick?.(nonce);
+    } else if (isSpecificError(error, AbortPanelAction)) {
+      // Must be before isSpecificError(error, CancelError) because CancelError is a subclass of AbortPanelAction
+      throw error;
+    } else if (isSpecificError(error, CancelError)) {
       // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/4915
       // For temporary forms, we throw the CancelError because typically the form is input to additional bricks.
       // For temporary information, typically the information is displayed as the last brick in the action.

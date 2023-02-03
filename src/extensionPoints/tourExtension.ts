@@ -224,8 +224,9 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
       this.registerTour(extension);
     }
 
-    // User requested the tour run from the Page Editor or manually
-    if (reason === RunReason.PAGE_EDITOR || reason === RunReason.MANUAL) {
+    // User requested the tour run from the Page Editor. Ignore RunReason.MANUAL here, since we don't want
+    // tours re-running on Page Editor close/open or "Reactivate All" unless they have a matching autoRunSchedule
+    if (reason === RunReason.PAGE_EDITOR) {
       cancelAllTours();
       const extensionPool = extensionIds ?? this.extensions.map((x) => x.id);
       this.extensionTours.get(extensionPool[0])?.run();
