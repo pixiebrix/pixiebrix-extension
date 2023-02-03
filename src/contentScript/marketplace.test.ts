@@ -17,9 +17,11 @@
 
 import { showActivateRecipeInSidebar } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
-import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
+import {
+  initMarketplaceEnhancements,
+  unloadMarketplaceEnhancements,
+} from "@/contentScript/marketplace";
 import { loadOptions } from "@/store/extensionsStorage";
-import { fireEvent } from "@testing-library/react";
 import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -53,16 +55,6 @@ jest.mock("@/store/extensionsStorage", () => ({
 
 const loadOptionsMock = loadOptions as jest.MockedFunction<typeof loadOptions>;
 
-const windowListenerSpy = jest.spyOn(window, "addEventListener");
-
-function expectListenerAdded() {
-  expect(windowListenerSpy).toHaveBeenCalledWith("focus", expect.any(Function));
-}
-
-function expectFocusListenerNotAdded() {
-  expect(windowListenerSpy).not.toHaveBeenCalled();
-}
-
 const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
 const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
 
@@ -79,57 +71,7 @@ const activateButtonsHtml = `
 
 const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace";
 
-// Patch window.addEventListener for cleanup between test cases
-//  See: https://stackoverflow.com/questions/42805128
-type refType = {
-  type: string;
-  listener: EventListenerOrEventListenerObject;
-  options?: boolean | AddEventListenerOptions;
-};
-const refs: refType[] = [];
-
-beforeAll(() => {
-  const originalAddEventListener = window.addEventListener;
-
-  function addEventListenerSpy(
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
-  ) {
-    // Store listener reference so it can be removed during reset
-    refs.push({ type, listener, options });
-    // Call original window.addEventListener
-    originalAddEventListener(type, listener, options);
-  }
-
-  global.window.addEventListener = addEventListenerSpy;
-});
-
-beforeEach(() => {
-  while (refs.length > 0) {
-    const ref = refs.pop();
-    global.window.removeEventListener(ref.type, ref.listener, ref.options);
-  }
-});
-
 describe("marketplace enhancements", () => {
-  beforeAll(() => {
-    const originalAddEventListener = window.addEventListener;
-
-    function addEventListenerSpy(
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: boolean | AddEventListenerOptions
-    ) {
-      // Store listener reference so it can be removed during reset
-      refs.push({ type, listener, options });
-      // Call original window.addEventListener
-      originalAddEventListener(type, listener, options);
-    }
-
-    global.window.addEventListener = addEventListenerSpy;
-  });
-
   beforeEach(() => {
     window.document.body.innerHTML = "";
     document.body.innerHTML = "";
@@ -138,20 +80,21 @@ describe("marketplace enhancements", () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+    unloadMarketplaceEnhancements();
   });
 
-  test("given a non-marketplace page, when loaded", async () => {
+  test("given a non-marketplace page, when loaded, then don't run enhancements", async () => {
     window.location.assign("https://www.google.com/");
 
     await initMarketplaceEnhancements();
 
-    expectFocusListenerNotAdded();
     // The checks for auth state and installed recipes should not be called
     expect(getAuthHeadersMock).not.toHaveBeenCalled();
     expect(loadOptionsMock).not.toHaveBeenCalled();
+    // TODO: the in progress recipe activation also should not be called
   });
 
-  test("given user is not logged in, when activation button clicked, should open admin console", async () => {
+  test("given user is not logged in, when activation button clicked, then open admin console", async () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
@@ -166,26 +109,20 @@ describe("marketplace enhancements", () => {
     expect(window.location).not.toBeAt(MARKETPLACE_URL);
   });
 
-  test("given user is not logged in, when window is re-focused, should not resume activation in progress", async () => {
+  test("given user is not logged in, when loaded, then don't resume activation in progress", async () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
     await initMarketplaceEnhancements();
 
-    // Window focus listener added
-    expectListenerAdded();
     // The loadPageEnhancements function calls getInstalledRecipeIds,
-    // which calls isUserLoggedIn, which calls getAuthHeaders
-    expect(getAuthHeadersMock).toHaveBeenCalledOnce();
+    // which calls isUserLoggedIn, which calls getAuthHeaders. Then
+    // there is another login check before loading the in progress
+    // recipe activation.
+    expect(getAuthHeadersMock).toHaveBeenCalledTimes(2);
     // The getInstalledRecipeIds function should not call loadOptions
     // when the user is not logged in
     expect(loadOptionsMock).not.toHaveBeenCalled();
-
-    fireEvent.focus(window);
-    await waitForEffect();
-
-    // The window focus listener should check login state again
-    expect(getAuthHeadersMock).toHaveBeenCalledTimes(2);
     // TODO: check that the function to load in-progress recipe
     //  activation is not called
   });

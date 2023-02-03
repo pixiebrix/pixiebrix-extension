@@ -140,23 +140,22 @@ export async function initMarketplaceEnhancements() {
     return;
   }
 
-  window.addEventListener("focus", async () => {
-    notify.info("Marketplace tab focused");
-
-    await loadPageEnhancements();
-
-    if (!(await isUserLoggedIn())) {
-      notify.info(
-        "User not logged in - skipping in progress recipe activation"
-      );
-      return;
-    }
-
-    const recipeId = getInProgressRecipeActivation();
-    if (recipeId) {
-      await showSidebarActivationForRecipe(recipeId);
-    }
-  });
-
   await loadPageEnhancements();
+
+  if (!(await isUserLoggedIn())) {
+    notify.info("User not logged in - skipping in progress recipe activation");
+    return;
+  }
+
+  const recipeId = getInProgressRecipeActivation();
+  if (recipeId) {
+    await showSidebarActivationForRecipe(recipeId);
+  }
+}
+
+/**
+ * This should only be used for testing purposes
+ */
+export function unloadMarketplaceEnhancements() {
+  enhancementsLoaded = false;
 }
