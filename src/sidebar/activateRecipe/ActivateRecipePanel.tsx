@@ -65,14 +65,7 @@ const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
   //   return <ActivateWizard blueprint={recipe} />;
   // }
 
-  const finishButtonCaption = listing.example_page_url
-    ? "Try it now"
-    : "Start using PixieBrix";
   const onClickFinish = async () => {
-    if (listing.example_page_url) {
-      window.open(listing.example_page_url, "_blank", "noopener,noreferrer");
-    }
-
     dispatch(actions.hideActivateRecipe());
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
@@ -94,7 +87,7 @@ const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
       </div>
       <div className={styles.footer}>
         <AsyncButton className={styles.finishButton} onClick={onClickFinish}>
-          {finishButtonCaption}
+          Ok
         </AsyncButton>
       </div>
     </div>
