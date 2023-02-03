@@ -37,7 +37,17 @@ function getActivateButtonLinks(): HTMLAnchorElement[] {
 }
 
 async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
+  if (!(await isUserLoggedIn())) {
+    notify.info("User not logged in, not loading installed recipes");
+    return new Set();
+  }
+
   const options = await loadOptions();
+
+  if (!options) {
+    return new Set();
+  }
+
   return new Set(
     compact(options.extensions.map((extension) => extension._recipe?.id))
   );
@@ -86,9 +96,6 @@ async function loadPageEnhancements(): Promise<void> {
 
   notify.info("Marketplace enhancements loading...");
 
-  // Change flag early to prevent multiple calls
-  enhancementsLoaded = true;
-
   const activateButtonLinks = getActivateButtonLinks();
   if (isEmpty(activateButtonLinks)) {
     return;
@@ -105,7 +112,7 @@ async function loadPageEnhancements(): Promise<void> {
       continue;
     }
 
-    // Check if recipe is already activated
+    // Check if recipe is already activated, and change button to Reactivate
     if (installedRecipeIds.has(recipeId)) {
       button.innerHTML = '<i class="fas fa-sync-alt"></i> Reactivate';
     }
@@ -114,39 +121,42 @@ async function loadPageEnhancements(): Promise<void> {
       event.preventDefault();
 
       if (!(await isUserLoggedIn())) {
-        window.open(button.href, "_blank", "noopener,noreferrer");
+        // Open the activate link in the current browser tab
+        window.location.assign(button.href);
+        return;
       }
 
       await showSidebarActivationForRecipe(recipeId);
     });
   }
+
+  enhancementsLoaded = true;
 }
 
 export async function initMarketplaceEnhancements() {
-  if (!startsWith(location.href, "https://www.pixiebrix.com/marketplace")) {
+  if (
+    !startsWith(window.location.href, "https://www.pixiebrix.com/marketplace")
+  ) {
     return;
   }
 
   window.addEventListener("focus", async () => {
     notify.info("Marketplace tab focused");
 
+    await loadPageEnhancements();
+
     if (!(await isUserLoggedIn())) {
-      notify.info("User not logged in");
+      notify.info(
+        "User not logged in - skipping in progress recipe activation"
+      );
       return;
     }
-
-    await loadPageEnhancements();
 
     const recipeId = getInProgressRecipeActivation();
     if (recipeId) {
       await showSidebarActivationForRecipe(recipeId);
     }
   });
-
-  if (!(await isUserLoggedIn())) {
-    notify.info("User not logged in");
-    return;
-  }
 
   await loadPageEnhancements();
 }
