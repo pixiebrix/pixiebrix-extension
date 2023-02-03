@@ -30,6 +30,7 @@ import {
 } from "@/testUtils/factories";
 import { type PersistedExtension } from "@/core";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
@@ -68,8 +69,6 @@ const activateButtonsHtml = `
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
 </div>
 `;
-
-const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace";
 
 describe("marketplace enhancements", () => {
   beforeEach(() => {
