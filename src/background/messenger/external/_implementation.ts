@@ -22,6 +22,7 @@
 import { linkExtension } from "@/auth/token";
 import { type TokenAuthData } from "@/auth/authTypes";
 import { reportEvent } from "@/telemetry/events";
+import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -63,6 +64,24 @@ export async function openMarketplace({ newTab = true }: OpenOptionsOptions) {
   }
 
   return true;
+}
+
+type SetActivatingBlueprintOptions = {
+  /**
+   * The id of a blueprint to activate
+   */
+  blueprintId: string;
+};
+
+const STORAGE_BLUEPRINT_ID = "activatingBlueprintId" as ManualStorageKey;
+export async function setActivatingBlueprint({
+  blueprintId,
+}: SetActivatingBlueprintOptions) {
+  return setStorage(STORAGE_BLUEPRINT_ID, blueprintId);
+}
+
+export async function getActivatingBlueprint() {
+  return readStorage(STORAGE_BLUEPRINT_ID);
 }
 
 type ActivateBlueprintOptions = {
