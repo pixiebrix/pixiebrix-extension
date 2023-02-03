@@ -32,12 +32,16 @@ export abstract class AnalysisVisitor
 {
   abstract readonly id: string;
 
+  protected extension: FormState;
+
   protected readonly annotations: AnalysisAnnotation[] = [];
   getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 
   run(extension: FormState): void {
+    this.extension = extension;
+
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });

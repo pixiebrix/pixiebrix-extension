@@ -16,7 +16,12 @@
  */
 
 import React from "react";
-import { type RegistryId, type ResolvedExtension, type UUID } from "@/core";
+import {
+  type MessageContext,
+  type RegistryId,
+  type ResolvedExtension,
+  type UUID,
+} from "@/core";
 import { remove, reverse } from "lodash";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
@@ -26,6 +31,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
 import { reportEvent } from "@/telemetry/events";
+import { selectEventData } from "@/telemetry/deployments";
 
 /**
  * A run of a tour.
@@ -112,6 +118,7 @@ export function getCurrentTour(): TourRun | null {
  * @param extension the tour extension
  * @param abortController the abort controller for the tour to abort the tour
  * @param promise (optional) the promise that resolves when the tour completes
+ * @param context additional data to include in the event
  * @private
  */
 export function markTourStart(
@@ -124,7 +131,12 @@ export function markTourStart(
   {
     promise,
     abortController,
-  }: { promise?: Promise<void>; abortController: AbortController }
+    context,
+  }: {
+    promise?: Promise<void>;
+    abortController: AbortController;
+    context: MessageContext;
+  }
 ): void {
   if (tourStack.some((x) => x.extensionId === extension.id)) {
     throw new BusinessError(`Tour already in progress: ${extension.id}`);
@@ -146,27 +158,25 @@ export function markTourStart(
 
   reportEvent("TourStart", {
     id: nonce,
-    extensionId: extension.id,
     tourName: extension.label,
-    packageId: extension._recipe?.id,
+    ...context,
   });
 }
 
 /**
  * Mark that a user is shown a tour step. Currently, tour steps are only recorded in remote telemetry.
  * @param nonce the tour run nonce
- * @param extension the tour extension
  * @param step the step name
+ * @param eventData additional data to include in the event
  */
 export function markTourStep(
   nonce: UUID,
-  extension: Pick<ResolvedExtension, "id">,
-  step: string
+  { step, context }: { step: string; context: MessageContext }
 ): void {
   reportEvent("TourStep", {
     nonce,
-    extensionId: extension.id,
     step,
+    ...context,
   });
 }
 
@@ -176,14 +186,13 @@ export function markTourStep(
  * Cancels all sub-tours nested within the tour.
  *
  * @param nonce the tour run nonce
- * @param extension the tour extension
  * @param error the error, or undefined if the tour completed successfully
+ * @param context additional data to include in the event
  * @private
  */
 export function markTourEnd(
   nonce: UUID,
-  extension: Pick<ResolvedExtension, "id">,
-  { error }: { error?: unknown } = {}
+  { error, context }: { error?: unknown; context: MessageContext }
 ) {
   let skipped = false;
 
@@ -202,7 +211,7 @@ export function markTourEnd(
 
     reportEvent("TourEnd", {
       id: nonce,
-      extensionId: extension.id,
+      ...context,
       errored: Boolean(error) && !skipped,
       skipped,
       completed: !error,
@@ -247,7 +256,7 @@ export function registerTour({
   run,
 }: {
   blueprintId: RegistryId;
-  extension: Pick<ResolvedExtension, "id" | "label" | "_recipe">;
+  extension: ResolvedExtension;
   allowUserRun?: boolean;
   run: () => { promise: Promise<void>; abortController: AbortController };
 }): RegisteredTour {
@@ -256,6 +265,7 @@ export function registerTour({
   }
 
   const blueprintTours = blueprintTourRegistry.get(blueprintId);
+  const context = selectEventData(extension);
 
   const tour: RegisteredTour = {
     blueprintId,
@@ -263,17 +273,17 @@ export function registerTour({
     run() {
       const nonce = uuidv4();
       const { promise, abortController } = run();
-      markTourStart(nonce, extension, { promise, abortController });
+      markTourStart(nonce, extension, { promise, abortController, context });
 
       // Decorate the extension promise with tour tracking
       const runPromise = promise
         // eslint-disable-next-line promise/prefer-await-to-then -- avoid separate method
         .then(() => {
-          markTourEnd(nonce, extension);
+          markTourEnd(nonce, { context });
         })
         // eslint-disable-next-line promise/prefer-await-to-then -- avoid separate method
         .catch((error) => {
-          markTourEnd(nonce, extension, { error });
+          markTourEnd(nonce, { error, context });
         });
 
       return {

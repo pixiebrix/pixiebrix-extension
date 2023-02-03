@@ -18,8 +18,9 @@
 import { type UUID } from "@/core";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
-import { CancelError } from "@/errors/businessErrors";
 import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";
+import { ClosePanelAction } from "@/blocks/errors";
+import { CancelError } from "@/errors/businessErrors";
 
 type RegisteredPanel = {
   entry: TemporaryPanelEntry;
@@ -153,15 +154,28 @@ export async function resolveTemporaryPanel(
 /**
  * Cancel some temporary panels' deferred promises
  * @param nonces The nonces of the panels to reject with a CancelError
+ * @param error The error to reject the panels with
  */
-export async function cancelTemporaryPanels(nonces: UUID[]): Promise<void> {
+export async function cancelTemporaryPanels(
+  nonces: UUID[],
+  error?: unknown
+): Promise<void> {
   expectContext("contentScript");
 
-  for (const nonce of nonces) {
-    panels
-      .get(nonce)
-      ?.registration?.reject(new CancelError("The panel was cancelled"));
+  let rejectError = error ?? new CancelError("User closed the panel");
 
+  // :shrug: the error doesn't get deserialized by the messenger because it's not a rejection and the messenger
+  // doesn't attempt to deserialize it. So we have to do it manually
+  if (
+    typeof error === "object" &&
+    "name" in error &&
+    error.name === "ClosePanelAction"
+  ) {
+    rejectError = new ClosePanelAction("User closed the panel");
+  }
+
+  for (const nonce of nonces) {
+    panels.get(nonce)?.registration?.reject(rejectError);
     removePanelEntry(nonce);
   }
 }

@@ -30,11 +30,14 @@ import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
   type RefreshTrigger,
+  type TemporaryDisplayInputs,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelButton, type PanelPayload } from "@/sidebar/types";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 import { $safeFind } from "@/helpers";
 import { addOverlay } from "@/blocks/transformers/tourStep/overlay";
+import { cancelTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { AbortPanelAction } from "@/blocks/errors";
 
 export type StepInputs = {
   title: string;
@@ -55,6 +58,7 @@ export type StepInputs = {
     controls?: {
       outsideClick?: "none" | "submit" | "cancel";
       closeButton?: "none" | "submit" | "cancel";
+      actions?: PanelButton[];
     };
     wait?: {
       maxWaitMillis?: number;
@@ -85,6 +89,192 @@ export type StepInputs = {
     };
   };
 };
+
+export const StepSchema: Schema = propertiesToSchema(
+  {
+    title: {
+      type: "string",
+      description: "Step title",
+    },
+    selector: {
+      type: "string",
+      format: "selector",
+      description: "An optional selector for the target element",
+    },
+    isLastStep: {
+      type: "boolean",
+      description: "Toggle on to indicate this is the last step in the tour",
+      default: false,
+    },
+    body: {
+      oneOf: [
+        {
+          type: "string",
+          description: "Content of the step, supports markdown",
+          default: "Step content. **Markdown** is supported.",
+          format: "markdown",
+        },
+        {
+          $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+          description: "A renderer pipeline to generate the step content",
+        },
+      ],
+    },
+    onBeforeShow: {
+      $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+      description: "Actions to perform before showing the step",
+    },
+    onAfterShow: {
+      $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+      description: "Actions to perform after showing the step",
+    },
+    appearance: {
+      type: "object",
+      properties: {
+        refreshTrigger: {
+          type: "string",
+          enum: ["manual", "statechange"],
+          description: "An optional trigger for refreshing the panel",
+        },
+        wait: {
+          type: "object",
+          properties: {
+            maxWaitMillis: {
+              type: "number",
+              description:
+                "Maximum time to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
+            },
+          },
+        },
+        skippable: {
+          type: "boolean",
+          default: false,
+          description: "Skip the step if the target element is not found",
+        },
+        disableInteraction: {
+          type: "boolean",
+          default: false,
+          description:
+            "When an element is highlighted, users can interact with the underlying element. To disable this behavior set disableInteraction to true",
+        },
+        showOverlay: {
+          type: "boolean",
+          default: true,
+          description: "Apply an overlay to the page when the step is active",
+        },
+        controls: {
+          type: "object",
+          properties: {
+            outsideClick: {
+              type: "string",
+              enum: ["none", "submit", "cancel"],
+              description:
+                'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
+            },
+            closeButton: {
+              type: "string",
+              enum: ["none", "submit", "cancel"],
+              description:
+                'Action to take when the user clicks close button. Set to "none" to hide the close button',
+            },
+            actions: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  type: {
+                    type: "string",
+                    examples: ["submit", "cancel"],
+                    description: "Action type to resolve the tour step with",
+                    default: "submit",
+                  },
+                  caption: {
+                    type: "string",
+                    description: "Button caption, or exclude to use the type",
+                  },
+                  // Leave off for now. Our ObjectWidget doesn't support nested objects
+                  // detail: {
+                  //   type: "object",
+                  //   properties: {},
+                  //   additionalProperties: true,
+                  //   description: "Additional details/data to resolve with the action",
+                  // },
+                  variant: {
+                    type: "string",
+                    enum: [
+                      "primary",
+                      "secondary",
+                      "success",
+                      "danger",
+                      "warning",
+                      "info",
+                      "light",
+                      "dark",
+                      "link",
+                    ],
+                    description: "The button variant/style",
+                    default: "light",
+                  },
+                },
+                required: ["type"],
+              },
+            },
+          },
+        },
+        highlight: {
+          type: "object",
+          properties: {
+            backgroundColor: {
+              type: "string",
+              description:
+                "Color to highlight the element with when the step is active",
+              examples: ["yellow", "red", "green"],
+            },
+          },
+        },
+        scroll: {
+          type: "object",
+          properties: {
+            behavior: {
+              type: "string",
+              enum: ["auto", "smooth"],
+              default: "auto",
+              description: "The scroll transition animation",
+            },
+          },
+        },
+        popover: {
+          type: "object",
+          properties: {
+            placement: {
+              type: "string",
+              enum: [
+                "auto",
+                "auto-start",
+                "auto-end",
+                "top",
+                "top-start",
+                "top-end",
+                "bottom",
+                "bottom-start",
+                "bottom-end",
+                "right",
+                "right-start",
+                "right-end",
+                "left",
+                "left-start",
+                "left-end",
+              ],
+              description: "Placement of the popover relative to the target",
+              default: "auto",
+            },
+          },
+        },
+      },
+    },
+  },
+  ["title", "body"]
+);
 
 function markdownPipeline(markdown: string): PipelineExpression {
   return {
@@ -151,21 +341,47 @@ export class TourStepTransformer extends Transformer {
 
       counter++;
 
+      const actions: PanelButton[] = appearance?.controls?.actions ?? [
+        {
+          caption: isLastStep ? "Done" : "Next",
+          type: "submit",
+          variant: "light",
+        },
+      ];
+
       return {
         extensionId,
         extensionPointId,
         blueprintId,
         heading: title,
         payload,
-        actions: [
-          {
-            caption: isLastStep ? "Done" : "Next",
-            type: "submit",
-            variant: "light",
-          },
-        ] as PanelButton[],
+        actions,
+        showCloseButton: appearance?.controls?.closeButton !== "none",
       };
     };
+
+    // Outside click handler
+    let onOutsideClick: TemporaryDisplayInputs["onOutsideClick"] = noop;
+    if (appearance.controls?.outsideClick === "cancel") {
+      onOutsideClick = async (nonce) => {
+        await cancelTemporaryPanels([nonce], new AbortPanelAction());
+      };
+    } else if (appearance.controls?.outsideClick === "submit") {
+      onOutsideClick = async (nonce) => {
+        await cancelTemporaryPanels([nonce]);
+      };
+    }
+
+    // Close button handler
+    let onCloseClick: TemporaryDisplayInputs["onCloseClick"] = null;
+    if (appearance.controls?.closeButton === "cancel") {
+      onCloseClick = () => {
+        throw new AbortPanelAction("User closed the panel");
+      };
+    } else if (appearance.controls?.closeButton === "submit") {
+      // Allow the panel to close normally
+      onCloseClick = noop;
+    }
 
     try {
       return await displayTemporaryInfo({
@@ -175,7 +391,8 @@ export class TourStepTransformer extends Transformer {
         signal: abortSignal,
         refreshTrigger: appearance.refreshTrigger,
         refreshEntry,
-        cancelOnOutsideClick: appearance?.controls?.outsideClick !== "none",
+        onOutsideClick,
+        onCloseClick,
         popoverOptions: appearance.popover,
       });
     } finally {
@@ -241,146 +458,7 @@ export class TourStepTransformer extends Transformer {
     }
   }
 
-  inputSchema: Schema = propertiesToSchema(
-    {
-      title: {
-        type: "string",
-        description: "Step title",
-      },
-      selector: {
-        type: "string",
-        format: "selector",
-        description: "An optional selector for the target element",
-      },
-      isLastStep: {
-        type: "boolean",
-        description: "Toggle on to indicate this is the last step in the tour",
-        default: false,
-      },
-      body: {
-        oneOf: [
-          {
-            type: "string",
-            description: "Content of the step, supports markdown",
-            default: "Step content. **Markdown** is supported.",
-            format: "markdown",
-          },
-          {
-            $ref: "https://app.pixiebrix.com/schemas/pipeline#",
-            description: "A renderer pipeline to generate the step content",
-          },
-        ],
-      },
-      onBeforeShow: {
-        $ref: "https://app.pixiebrix.com/schemas/pipeline#",
-        description: "Actions to perform before showing the step",
-      },
-      onAfterShow: {
-        $ref: "https://app.pixiebrix.com/schemas/pipeline#",
-        description: "Actions to perform after showing the step",
-      },
-      appearance: {
-        type: "object",
-        properties: {
-          refreshTrigger: {
-            type: "string",
-            enum: ["manual", "statechange"],
-            description: "An optional trigger for refreshing the panel",
-          },
-          wait: {
-            type: "object",
-            properties: {
-              maxWaitMillis: {
-                type: "number",
-                description:
-                  "Maximum time to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
-              },
-            },
-          },
-          skippable: {
-            type: "boolean",
-            default: false,
-            description: "Skip the step if the target element is not found",
-          },
-          disableInteraction: {
-            type: "boolean",
-            default: false,
-            description:
-              "When an element is highlighted, users can interact with the underlying element. To disable this behavior set disableInteraction to true",
-          },
-          showOverlay: {
-            type: "boolean",
-            default: true,
-            description: "Apply an overlay to the page when the step is active",
-          },
-          controls: {
-            type: "object",
-            properties: {
-              outsideClick: {
-                type: "string",
-                enum: ["none", "submit", "cancel"],
-                description:
-                  'Action to take when the user clicks outside the step. Set to "none" to allow interaction with the target element',
-              },
-              closeButton: {
-                type: "string",
-                enum: ["none", "submit", "cancel"],
-                description: "Action to take when the user clicks close button",
-              },
-            },
-          },
-          highlight: {
-            type: "object",
-            properties: {
-              backgroundColor: {
-                type: "string",
-                description:
-                  "Color to highlight the element with when the step is active",
-              },
-            },
-          },
-          scroll: {
-            type: "object",
-            properties: {
-              behavior: {
-                type: "string",
-                enum: ["auto", "smooth"],
-                default: "auto",
-                description: "Defines the transition animation",
-              },
-            },
-          },
-          popover: {
-            type: "object",
-            properties: {
-              placement: {
-                type: "string",
-                enum: [
-                  "auto",
-                  "auto-start",
-                  "auto-end",
-                  "top",
-                  "top-start",
-                  "top-end",
-                  "bottom",
-                  "bottom-start",
-                  "bottom-end",
-                  "right",
-                  "right-start",
-                  "right-end",
-                  "left",
-                  "left-start",
-                  "left-end",
-                ],
-                default: "auto",
-              },
-            },
-          },
-        },
-      },
-    },
-    ["title", "body"]
-  );
+  inputSchema: Schema = StepSchema;
 
   async transform(
     args: BlockArg<StepInputs>,
@@ -388,9 +466,7 @@ export class TourStepTransformer extends Transformer {
   ): Promise<unknown> {
     const {
       root,
-      logger: {
-        context: { extensionId },
-      },
+      logger: { context },
     } = options;
 
     const {
@@ -435,6 +511,8 @@ export class TourStepTransformer extends Transformer {
       }
     }
 
+    let result;
+
     try {
       if (!isEmpty(onBeforeShow?.__value__)) {
         await options.runPipeline(
@@ -451,7 +529,7 @@ export class TourStepTransformer extends Transformer {
       // XXX: use title here? Or use the label from the block? Probably best to use title, since that's what
       // the user sees. The benefit of using block label is that for advanced use cases, the creator could duplicate
       // step names in order to group steps. That's probably better served by an explicit step key though.
-      markTourStep(nonce, { id: extensionId }, title);
+      markTourStep(nonce, { step: title, context });
 
       // If passing markdown, wrap in Markdown brick
       const modifiedArgs: BlockArg<StepInputs> =
@@ -459,7 +537,7 @@ export class TourStepTransformer extends Transformer {
           ? { ...args, body: markdownPipeline(body) }
           : args;
 
-      await this.displayStep(target, modifiedArgs, options);
+      result = await this.displayStep(target, modifiedArgs, options);
 
       if (!isEmpty(onAfterShow?.__value__)) {
         await options.runPipeline(
@@ -479,7 +557,7 @@ export class TourStepTransformer extends Transformer {
       }
     }
 
-    return {};
+    return result ?? {};
   }
 }
 

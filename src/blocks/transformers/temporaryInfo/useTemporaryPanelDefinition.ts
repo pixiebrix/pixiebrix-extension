@@ -30,6 +30,11 @@ import { validateUUID } from "@/types/helpers";
 
 type PanelDefinition = {
   /**
+   * The current panel nonce.
+   */
+  panelNonce: UUID | null;
+
+  /**
    * The current panel entry.
    */
   entry: TemporaryPanelEntry;
@@ -99,6 +104,7 @@ function useTemporaryPanelDefinition(
   }, [frameNonce, panelNonce, recalculate]);
 
   return {
+    panelNonce,
     entry,
     isLoading,
     error,

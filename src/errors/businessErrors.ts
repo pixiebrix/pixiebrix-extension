@@ -49,7 +49,7 @@ export class InvalidDefinitionError extends BusinessError {
 }
 
 /**
- * Base class for "Error" of cancelling out of a flow that's in progress
+ * Base class for "Error" of cancelling out of a flow that's in progress.
  */
 export class CancelError extends BusinessError {
   override name = "CancelError";

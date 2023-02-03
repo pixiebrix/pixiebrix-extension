@@ -15,16 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.actionDivider {
-  margin-top: 0.75em;
-  margin-bottom: 0.75em;
-}
-
-.actionToolbar {
-  display: flex;
-  justify-content: flex-end;
-
-  button:not(:last-child) {
-    margin-right: 0.5em;
-  }
+.sectionHeader {
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
 }

@@ -64,15 +64,16 @@ const showPopoverMock = showPopover as jest.MockedFn<typeof showPopover>;
 function startTour() {
   const nonce = uuidv4();
   const abortController = new AbortController();
+  const extensionId = uuidv4();
 
   markTourStart(
     nonce,
     {
-      id: uuidv4(),
+      id: extensionId,
       label: "Test Tour",
       _recipe: null,
     },
-    { abortController }
+    { abortController, context: { extensionId } }
   );
 
   return { nonce, abortController };
