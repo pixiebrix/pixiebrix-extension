@@ -26,12 +26,6 @@ import {
 } from "@/contentScript/ready";
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
-import {
-  getActivatingBlueprint,
-  setActivatingBlueprint,
-} from "@/background/messenger/external/_implementation";
-
-const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace";
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
@@ -66,12 +60,6 @@ async function initContentScript() {
     unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });
-
-  const blueprintId = await getActivatingBlueprint();
-  if (blueprintId != null && location.href.startsWith(MARKETPLACE_URL)) {
-    console.log("Activating blueprint:", blueprintId);
-    await setActivatingBlueprint({ blueprintId: null });
-  }
 }
 
 if (location.protocol === "https:") {
