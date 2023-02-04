@@ -25,6 +25,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/localRegistry";
 import pDefer from "p-defer";
+import { recipeDefinitionFactory } from "@/testUtils/factories";
 
 jest.mock("@/services/apiClient");
 const getApiClientMock = getApiClient as jest.Mock;
@@ -41,57 +42,7 @@ jest.mock("@/components/ConfirmationModal", () => ({
 // It verifies the proper API calls and the recipe schema "sent" to the server
 test("load recipes and save one", async () => {
   // This is the shape of a recipe that we get from the API /api/recipes/ endpoint
-  const sourceRecipe = {
-    kind: "recipe",
-    metadata: {
-      id: "@pixies/confetti-everywhere",
-      name: "Confetti double click",
-      version: "1.0.2",
-      description: "Double click to get confetti on any website",
-    },
-    apiVersion: "v2",
-    definitions: {
-      extensionPoint: {
-        kind: "extensionPoint",
-        definition: {
-          type: "trigger",
-          reader: [
-            "@pixiebrix/document-metadata",
-            {
-              element: "@pixiebrix/html/element",
-            },
-          ],
-          trigger: "dblclick",
-          isAvailable: {
-            selectors: [] as any,
-            urlPatterns: [] as any,
-            matchPatterns: ["*://*/*"],
-          },
-          rootSelector: "body",
-        },
-      },
-    },
-    extensionPoints: [
-      {
-        id: "extensionPoint",
-        label: "Confetti double click",
-        config: {
-          action: [
-            {
-              id: "@pixiebrix/confetti",
-              config: {},
-            },
-          ],
-        },
-        services: {},
-      },
-    ],
-    sharing: {
-      public: false,
-      organizations: ["0557cdab-7246-4a73-a644-12a2249f02b9"],
-    },
-    updated_at: "2022-01-12T05:21:40.390064Z",
-  };
+  const sourceRecipe = recipeDefinitionFactory();
 
   const packageId = uuidv4();
   const recipeId = validateRegistryId(sourceRecipe.metadata.id);

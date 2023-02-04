@@ -132,7 +132,7 @@ async function latestTimestamp(): Promise<Date> {
   const cursor = tx.store.index("timestamp").iterate(null, "prev");
   const result = await cursor.next();
   await tx.done;
-  return result.value.value.timestamp;
+  return result.value?.value.timestamp;
 }
 
 /**
