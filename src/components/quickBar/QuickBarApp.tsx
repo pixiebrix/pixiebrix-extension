@@ -55,6 +55,8 @@ const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
 
+  const uninstallRef = React.useRef<() => void | null>(null);
+
   // The kbar useRegisterActions hook uses an "unregister" affordance that's not available in the types
   // https://github.com/timc1/kbar/blob/main/src/useStore.tsx#L63
   // https://github.com/timc1/kbar/blob/main/src/useRegisterActions.tsx#L19
@@ -67,7 +69,8 @@ function useActions(): void {
   // - Generators are producing new actions in response to the search query changing
   useEffect(() => {
     const handler = (nextActions: Action[]) => {
-      query.registerActions(nextActions);
+      uninstallRef.current?.();
+      uninstallRef.current = query.registerActions(nextActions);
     };
 
     quickBarRegistry.addListener(handler);
