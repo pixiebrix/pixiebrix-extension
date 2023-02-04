@@ -43,11 +43,7 @@ module.exports = mergeWithShared({
     alias: {
       // Mock any LOCAL modules that appear in __mocks__
       // e.g. src/__mocks__/@/telemetry/reportErrors.ts
-      "@": [
-        path.resolve("scripts/__mocks__/@"),
-        path.resolve("src/__mocks__/@"),
-        path.resolve("src"),
-      ],
+      "@": [path.resolve("src/__mocks__/@"), path.resolve("src")],
     },
   },
   plugins: [

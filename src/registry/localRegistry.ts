@@ -20,6 +20,7 @@ import { sortBy, groupBy, flatten } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
+import { memoizeUntilSettled } from "@/utils";
 
 const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -170,9 +171,12 @@ function parsePackage(item: RegistryPackage): Except<Package, "timestamp"> {
 
 /**
  * Fetch all new packages from the registry and put them in the local database.
+ *
+ * Memoized to avoid multiple network requests across tabs.
+ *
  * @returns true if the registry was updated, false otherwise
  */
-export async function fetchNewPackages(): Promise<boolean> {
+export const fetchNewPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
@@ -199,12 +203,14 @@ export async function fetchNewPackages(): Promise<boolean> {
   await putAll(packages);
 
   return packages.length > 0;
-}
+});
 
 /**
  * Replace the local database with the packages from the registry.
+ *
+ * Memoized to avoid multiple network requests across tabs.
  */
-export async function syncPackages(): Promise<void> {
+export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
@@ -223,7 +229,7 @@ export async function syncPackages(): Promise<void> {
   await clear();
   await putAll(packages);
   await tx.done;
-}
+});
 
 /**
  * Return the latest version of a brick, or null if it's not found.

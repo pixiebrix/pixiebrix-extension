@@ -52,7 +52,6 @@ function notifyDatabaseListeners() {
   }
 }
 
-// XXX: should this be throttled instead?
 /**
  * Fetch new remote packages and notify listeners.
  */
@@ -64,6 +63,16 @@ export const fetchNewPackages = memoizeUntilSettled(async () => {
   if (changed) {
     notifyDatabaseListeners();
   }
+});
+
+/**
+ * Replace IDB with remote packages and notify listeners.
+ */
+export const syncRemotePackages = memoizeUntilSettled(async () => {
+  expectContext("extension");
+
+  await backgroundRegistry.syncRemote();
+  notifyDatabaseListeners();
 });
 
 /**
