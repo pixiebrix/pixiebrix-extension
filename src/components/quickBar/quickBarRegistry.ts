@@ -78,7 +78,8 @@ class QuickBarRegistry {
    * Get the current actions registered with the Quick Bar.
    */
   get currentActions(): CustomAction[] {
-    return this.actions;
+    // Return a copy, since this.actions is mutated in-place
+    return [...this.actions];
   }
 
   /**

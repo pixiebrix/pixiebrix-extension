@@ -25,7 +25,6 @@ import {
   KBarPortal,
   KBarSearch,
   useKBar,
-  useRegisterActions,
   VisualState,
 } from "kbar";
 import ReactShadowRoot from "react-shadow-root";
@@ -55,23 +54,23 @@ const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
 
-  const uninstallRef = React.useRef<() => void | null>(null);
-
-  // The kbar useRegisterActions hook uses an "unregister" affordance that's not available in the types
-  // https://github.com/timc1/kbar/blob/main/src/useStore.tsx#L63
-  // https://github.com/timc1/kbar/blob/main/src/useRegisterActions.tsx#L19
-  useRegisterActions(quickBarRegistry.currentActions, []);
-
   const { query } = useKBar();
+  const uninstallActionsRef = React.useRef<() => void | null>(null);
 
   // Listen for changes while the kbar is mounted:
   // - The user is making edits in the Page Editor
   // - Generators are producing new actions in response to the search query changing
   useEffect(() => {
     const handler = (nextActions: Action[]) => {
-      uninstallRef.current?.();
-      uninstallRef.current = query.registerActions(nextActions);
+      uninstallActionsRef.current?.();
+      // Potential improvement: to avoid flickering, we could register actions individually and keep track of
+      // their uninstall handlers by id.
+      uninstallActionsRef.current = query.registerActions(nextActions);
     };
+
+    // Don't use useRegisterActions, because then we aren't able to unregister actions that were around
+    // from the initial mount
+    handler(quickBarRegistry.currentActions);
 
     quickBarRegistry.addListener(handler);
     return () => {
