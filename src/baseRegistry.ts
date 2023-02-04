@@ -16,7 +16,7 @@
  */
 
 import { type Kind } from "@/registry/localRegistry";
-import { registry } from "@/background/messenger/api";
+import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type RegistryId } from "@/core";
 import { expectContext } from "@/utils/expectContext";
@@ -59,7 +59,7 @@ function notifyDatabaseListeners() {
 export const fetchNewPackages = memoizeUntilSettled(async () => {
   expectContext("extension");
 
-  const changed = await registry.fetch();
+  const changed = await backgroundRegistry.fetch();
 
   if (changed) {
     notifyDatabaseListeners();
@@ -72,7 +72,7 @@ export const fetchNewPackages = memoizeUntilSettled(async () => {
 export const clearPackages = async () => {
   expectContext("extension");
 
-  await registry.clear();
+  await backgroundRegistry.clear();
   notifyDatabaseListeners();
 };
 
@@ -129,7 +129,7 @@ export class Registry<
    * @param id the registry id
    */
   async exists(id: Id): Promise<boolean> {
-    return this.cache.has(id) || (await registry.find(id)) != null;
+    return this.cache.has(id) || (await backgroundRegistry.find(id)) != null;
   }
 
   /**
@@ -150,7 +150,7 @@ export class Registry<
     }
 
     // Look up in IDB
-    const raw = await registry.find(id);
+    const raw = await backgroundRegistry.find(id);
 
     if (!raw) {
       console.debug(`Cannot find ${id as string} in registry`);
@@ -181,13 +181,15 @@ export class Registry<
 
   /**
    * Reloads all brick configurations from IDB, and returns all bricks in the registry.
-   * @deprecated requires all data to be parsed
+   * @deprecated requires all data to be fetched/parsed
    * @see cached
    */
   async all(): Promise<Item[]> {
     const parsedItems: Item[] = [];
 
-    const packages = await registry.getByKinds([...this.kinds.values()]);
+    const packages = await backgroundRegistry.getByKinds([
+      ...this.kinds.values(),
+    ]);
 
     for (const raw of packages) {
       try {

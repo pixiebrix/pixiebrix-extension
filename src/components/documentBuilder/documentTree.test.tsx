@@ -30,14 +30,13 @@ import { type DocumentElementType } from "./documentBuilderTypes";
 import DocumentContext, {
   initialValue,
 } from "@/components/documentBuilder/render/DocumentContext";
-import * as telemetry from "@/telemetry/logging";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandled rejection errors since we call
+// Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
-(telemetry.getLoggingConfig as any) = jest.fn().mockResolvedValue({
-  logValues: true,
-});
+jest.mock("@/telemetry/logging", () => ({
+  getLoggingConfig: jest.fn().mockResolvedValue({ logValues: true }),
+}));
 
 const markdownBlock = new MarkdownRenderer();
 
