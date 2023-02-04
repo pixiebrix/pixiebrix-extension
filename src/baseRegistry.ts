@@ -46,21 +46,38 @@ type DatabaseChangeListener = {
 
 const databaseChangeListeners: DatabaseChangeListener[] = [];
 
+function notifyDatabaseListeners() {
+  for (const listener of databaseChangeListeners) {
+    listener.onChanged();
+  }
+}
+
 // XXX: should this be throttled instead?
+/**
+ * Fetch new remote packages and notify listeners.
+ */
 export const fetchNewPackages = memoizeUntilSettled(async () => {
   expectContext("extension");
 
   const changed = await registry.fetch();
 
   if (changed) {
-    for (const listener of databaseChangeListeners) {
-      listener.onChanged();
-    }
+    notifyDatabaseListeners();
   }
 });
 
 /**
- * Local brick registry backed by IDB.
+ * Clear packages in the local database, and notify listeners.
+ */
+export const clearPackages = async () => {
+  expectContext("extension");
+
+  await registry.clear();
+  notifyDatabaseListeners();
+};
+
+/**
+ * Brick registry, with remote bricks backed by IDB.
  */
 export class Registry<
   Id extends RegistryId = RegistryId,
@@ -85,10 +102,18 @@ export class Registry<
     });
   }
 
+  /**
+   * Add a change listener
+   * @param listener the change listener
+   */
   addListener(listener: RegistryChangeListener): void {
     this.listeners.push(listener);
   }
 
+  /**
+   * Remove a change listener
+   * @param listener the change listener
+   */
   removeListener(listener: RegistryChangeListener): void {
     this.listeners = this.listeners.filter((x) => x !== listener);
   }
@@ -99,10 +124,20 @@ export class Registry<
     }
   }
 
+  /**
+   * Return true if the registry contains the given item
+   * @param id the registry id
+   */
   async exists(id: Id): Promise<boolean> {
     return this.cache.has(id) || (await registry.find(id)) != null;
   }
 
+  /**
+   * Return the item with the given id, or throw an error if it does not exist
+   * @param id the registry id
+   * @throws DoesNotExistError if the item does not exist
+   * @see exists
+   */
   async lookup(id: Id): Promise<Item> {
     if (!id) {
       throw new Error("id is required");
@@ -152,9 +187,9 @@ export class Registry<
   async all(): Promise<Item[]> {
     const parsedItems: Item[] = [];
 
-    const all = await registry.getByKinds([...this.kinds.values()]);
+    const packages = await registry.getByKinds([...this.kinds.values()]);
 
-    for (const raw of all) {
+    for (const raw of packages) {
       try {
         const parsed = this.parse(raw.config);
         if (parsed) {
@@ -177,6 +212,10 @@ export class Registry<
     return this.cached();
   }
 
+  /**
+   * Add one or more items to the in-memory registry. Does not store the items in IDB.
+   * @param items the items to register
+   */
   register(...items: Item[]): void {
     let changed = false;
 
@@ -209,7 +248,7 @@ export class Registry<
   }
 
   /**
-   * Clear the registry cache.
+   * Clear the registry cache and notify listeners.
    */
   clear(): void {
     this.cache.clear();

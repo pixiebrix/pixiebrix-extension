@@ -18,16 +18,13 @@
 import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
-import { getLinkedApiClient } from "@/services/apiClient";
-import { type JsonObject } from "type-fest";
 import {
-  type MessengerMeta,
-  errorTargetClosedEarly,
   errorTabDoesntExist,
+  errorTargetClosedEarly,
+  type MessengerMeta,
 } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { type Target } from "@/types";
-import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBlock } from "@/contentScript/runBlockTypes";
@@ -210,33 +207,6 @@ export async function activateTab(this: MessengerMeta): Promise<void> {
 export async function closeTab(this: MessengerMeta): Promise<void> {
   // Allow `closeTab` to return before closing the tab or else the Messenger won't be able to respond #2051
   setTimeout(async () => browser.tabs.remove(this.trace[0].tab.id), 100);
-}
-
-interface ServerResponse {
-  data?: JsonObject;
-  error?: JsonObject;
-}
-
-export async function requestRunOnServer({ blockId, blockArgs }: RunBlock) {
-  console.debug(`Running ${blockId} on the server`);
-  const client = await getLinkedApiClient();
-
-  const {
-    data: { data, error },
-  } = await client.post<ServerResponse>("/api/run/", {
-    id: blockId,
-    args: blockArgs,
-  });
-
-  if (error) {
-    throw new RemoteExecutionError(
-      "Error while executing brick remotely",
-      // TODO: Ensure this error is reaching the caller in CS
-      error
-    );
-  }
-
-  return data;
 }
 
 export default initExecutor;

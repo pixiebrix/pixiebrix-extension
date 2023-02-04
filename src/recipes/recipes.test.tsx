@@ -24,32 +24,24 @@ import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/localRegistry";
+import pDefer from "p-defer";
 
 jest.mock("@/services/apiClient", () => ({
-  getApiClient: jest.fn(),
-  getLinkedApiClient: jest.fn(),
+  getApiClient: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getLinkedApiClient: jest.fn().mockRejectedValue(new Error("Not implemented")),
 }));
-jest.mock("@/background/messenger/api", () => ({
-  registry: {
-    getByKinds: jest.fn(),
-    fetch: jest.fn(),
-  },
-}));
-jest.mock("@/components/ConfirmationModal", () => {
-  const originalModule = jest.requireActual("@/components/ConfirmationModal");
 
-  return {
-    ...originalModule,
-    useModals: () => ({
-      showConfirmation: async () => true,
-    }),
-  };
-});
+jest.mock("@/components/ConfirmationModal", () => ({
+  ...jest.requireActual("@/components/ConfirmationModal"),
+  useModals: () => ({
+    showConfirmation: jest.fn().mockResolvedValue(true),
+  }),
+}));
 
 // The test "loads" recipes from server and attempts to save the first (and the only) recipe
 // It verifies the proper API calls and the recipe schema "sent" to the server
 test("load recipes and save one", async () => {
-  // This is the the shape of a recipe that we get from the API /api/recipes/ endpoint
+  // This is the shape of a recipe that we get from the API /api/recipes/ endpoint
   const sourceRecipe = {
     kind: "recipe",
     metadata: {
@@ -138,10 +130,7 @@ test("load recipes and save one", async () => {
     localRegistry.getByKinds
   );
 
-  let resolveFetchingSavingPromise: () => void;
-  const fetchingSavingPromise = new Promise<void>((resolve) => {
-    resolveFetchingSavingPromise = resolve;
-  });
+  const fetchingSavingPromise = pDefer<void>();
 
   const TestComponent: React.FunctionComponent = () => {
     // Internally useSaveRecipe calls useAllRecipes.
@@ -171,13 +160,12 @@ test("load recipes and save one", async () => {
       // - calling RTK Query mutation
       // - saving the recipe to the server
       void saveRecipe(recipeId);
-
       calledSave.current = true;
     }
 
     useEffect(() => {
       if (calledSave.current && calledRefetch.current && !isFetching) {
-        resolveFetchingSavingPromise();
+        fetchingSavingPromise.resolve();
       }
 
       if (isFetching && calledSave.current) {
@@ -198,7 +186,7 @@ test("load recipes and save one", async () => {
   render(<TestComponent />);
 
   // Let the registry and the RTK Query to load and update a recipe
-  await act(async () => fetchingSavingPromise);
+  await act(async () => fetchingSavingPromise.promise);
 
   // 2 calls:
   // - one to load the recipes from the server

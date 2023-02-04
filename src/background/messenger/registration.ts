@@ -29,7 +29,6 @@ import {
   activateTab,
   closeTab,
   openTab,
-  requestRunOnServer,
   requestRunInOpener,
   requestRunInTarget,
   requestRunInBroadcast,
@@ -107,6 +106,7 @@ declare global {
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
     REGISTRY_FETCH: typeof registry.fetchNewPackages;
+    REGISTRY_SYNC: typeof registry.syncPackages;
     REGISTRY_CLEAR: typeof registry.clear;
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
@@ -115,7 +115,6 @@ declare global {
     REFRESH_SERVICES: typeof refreshServices;
     LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
 
-    REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
@@ -183,6 +182,7 @@ export default function registerMessenger(): void {
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
     REGISTRY_FETCH: registry.fetchNewPackages,
+    REGISTRY_SYNC: registry.syncPackages,
     REGISTRY_CLEAR: registry.clear,
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
@@ -191,7 +191,6 @@ export default function registerMessenger(): void {
     LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
     REFRESH_SERVICES: refreshServices,
 
-    REQUEST_RUN_ON_SERVER: requestRunOnServer,
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
     REQUEST_RUN_IN_TOP: requestRunInTop,

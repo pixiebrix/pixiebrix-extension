@@ -19,10 +19,13 @@ import { type DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, groupBy, flatten } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { fetch } from "@/hooks/fetch";
+import { type Except } from "type-fest";
 
 const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
+
+const MS_PER_MINUTE = 60_000;
 
 export const PACKAGE_NAME_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -147,43 +150,79 @@ async function putAll(packages: Package[]): Promise<void> {
   await tx.done;
 }
 
+function parsePackage(item: RegistryPackage): Except<Package, "timestamp"> {
+  const [major, minor, patch] = item.metadata.version
+    .split(".")
+    .map((x) => Number.parseInt(x, 10));
+
+  const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
+
+  return {
+    id: item.metadata.id,
+    version: { major, minor, patch },
+    scope: match.groups.scope,
+    kind: item.kind,
+    config: item,
+    // We don't need to store the raw configs, because the Workshop uses an endpoint vs. the registry version
+    rawConfig: undefined,
+  };
+}
+
+/**
+ * Fetch all new packages from the registry and put them in the local database.
+ * @returns true if the registry was updated, false otherwise
+ */
 export async function fetchNewPackages(): Promise<boolean> {
-  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
   const date = await latestTimestamp();
   const params = new URLSearchParams();
   if (date) {
-    params.set("updated_at__gt", date?.toISOString());
+    // Add a fudge factor of 5 minutes to the timestamp to avoid issues arising from clock being out of sync
+    // between client and server.
+    const lowerBound = new Date(date.getTime() - MS_PER_MINUTE * 5);
+    params.set("updated_at__gt", lowerBound.toISOString());
   }
 
   const data = await fetch<RegistryPackage[]>(
     `/api/registry/bricks/?${params.toString()}`
   );
 
-  const packages: Package[] = [];
-
-  for (const item of data) {
-    const [major, minor, patch] = item.metadata.version
-      .split(".")
-      .map((x) => Number.parseInt(x, 10));
-
-    const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
-
-    packages.push({
-      id: item.metadata.id,
-      version: { major, minor, patch },
-      scope: match.groups.scope,
-      kind: item.kind,
-      config: item,
-      rawConfig: undefined,
-      timestamp,
-    });
-  }
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
 
   await putAll(packages);
 
   return packages.length > 0;
+}
+
+/**
+ * Replace the local database with the packages from the registry.
+ */
+export async function syncPackages(): Promise<void> {
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+  const timestamp = new Date();
+
+  // In the future, use the paginated endpoint?
+  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
+
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
+
+  const db = await getBrickDB();
+  const tx = db.transaction(BRICK_STORE, "readwrite");
+  await clear();
+  await putAll(packages);
+  await tx.done;
 }
 
 /**
