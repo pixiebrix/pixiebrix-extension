@@ -22,6 +22,8 @@ import { type RegistryId } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils";
 
+type Source = "remote" | "builtin";
+
 export interface RegistryItem<T extends RegistryId = RegistryId> {
   id: T;
 }
@@ -44,6 +46,9 @@ type DatabaseChangeListener = {
   onChanged: () => void;
 };
 
+/**
+ * `backgroundRegistry` database change listeners.
+ */
 const databaseChangeListeners: DatabaseChangeListener[] = [];
 
 function notifyDatabaseListeners() {
@@ -92,6 +97,16 @@ export class Registry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>
 > {
+  /**
+   * Registered built-in items. Used to keep track of built-ins across cache clears.
+   * @private
+   */
+  private readonly builtins = new Map<RegistryId, Item>();
+
+  /**
+   * Cache of items in the registry. Contains both built-ins and remote items.
+   * @private
+   */
   private readonly cache = new Map<RegistryId, Item>();
 
   public readonly kinds: Set<Kind>;
@@ -158,6 +173,12 @@ export class Registry<
       return cached;
     }
 
+    const builtin = this.builtins.get(id);
+
+    if (builtin) {
+      return builtin;
+    }
+
     // Look up in IDB
     const raw = await backgroundRegistry.find(id);
 
@@ -175,7 +196,7 @@ export class Registry<
       throw new Error("Unable to parse block");
     }
 
-    this.register(item);
+    this.register([item], { source: "remote" });
 
     return item;
   }
@@ -194,31 +215,25 @@ export class Registry<
    * @see cached
    */
   async all(): Promise<Item[]> {
-    const parsedItems: Item[] = [];
-
     const packages = await backgroundRegistry.getByKinds([
       ...this.kinds.values(),
     ]);
 
-    for (const raw of packages) {
-      try {
-        const parsed = this.parse(raw.config);
-        if (parsed) {
-          parsedItems.push(parsed);
-        }
-      } catch {
-        // NOP
-      }
-    }
+    const remoteItems = packages.map((raw) => this.parse(raw.config));
 
     console.debug(
       "Parsed %d registry item(s) from IDB for %s",
-      parsedItems.length,
+      remoteItems.length,
       [...this.kinds].join(", ")
     );
 
     // Perform as single call to register so listeners are notified once
-    this.register(...parsedItems);
+    this.register(remoteItems, { source: "remote", notify: false });
+    this.register([...this.builtins.values()], {
+      source: "builtin",
+      notify: false,
+    });
+    this.notifyAll();
 
     return this.cached();
   }
@@ -226,8 +241,16 @@ export class Registry<
   /**
    * Add one or more items to the in-memory registry. Does not store the items in IDB.
    * @param items the items to register
+   * @param source the source of the items
+   * @param notify whether to notify listeners
    */
-  register(...items: Item[]): void {
+  register(
+    items: Item[],
+    {
+      source = "builtin",
+      notify = true,
+    }: { source?: Source; notify?: boolean } = {}
+  ): void {
     let changed = false;
 
     for (const item of items) {
@@ -236,11 +259,15 @@ export class Registry<
         continue;
       }
 
+      if (source === "builtin") {
+        this.builtins.set(item.id, item);
+      }
+
       this.cache.set(item.id, item);
       changed = true;
     }
 
-    if (changed) {
+    if (changed && notify) {
       this.notifyAll();
     }
   }
@@ -259,11 +286,20 @@ export class Registry<
   }
 
   /**
-   * Clear the registry cache and notify listeners.
+   * Clear the registry cache completely and notify listeners.
    */
   clear(): void {
+    // Need to clear the whole thing, including built-ins. Listeners will often can all() to repopulate the cache.
     this.cache.clear();
     this.notifyAll();
+  }
+
+  /**
+   * Test-only method to completely reset the registry state.
+   */
+  TEST_reset(): void {
+    this.clear();
+    this.builtins.clear();
   }
 }
 

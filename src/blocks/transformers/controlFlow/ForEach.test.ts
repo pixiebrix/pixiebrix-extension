@@ -42,7 +42,7 @@ const forEachBlock = new ForEach();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, forEachBlock);
+  blockRegistry.register([echoBlock, forEachBlock]);
 });
 
 describe("ForEach", () => {

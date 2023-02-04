@@ -80,7 +80,7 @@ function renderBlockConfiguration(
 
 test("renders", async () => {
   const block = echoBlock;
-  blockRegistry.register(block);
+  blockRegistry.register([block]);
   const initialState = formStateFactory({ apiVersion: "v3" }, [
     blockConfigFactory({ id: block.id }),
   ]);
@@ -103,7 +103,7 @@ describe("shows root mode", () => {
     ["menuItem", menuItemFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
     const block = echoBlock;
-    blockRegistry.register(block);
+    blockRegistry.register([block]);
     const initialState = factory({ apiVersion: "v3" }, [
       blockConfigFactory({ id: block.id }),
     ]);
@@ -124,7 +124,7 @@ describe("shows root mode", () => {
 
   test("don't show root mode for sidebar panel", async () => {
     const block = echoBlock;
-    blockRegistry.register(block);
+    blockRegistry.register([block]);
     const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
       blockConfigFactory({ id: block.id }),
     ]);
@@ -162,7 +162,7 @@ test.each`
       }),
     });
 
-    blockRegistry.register(block);
+    blockRegistry.register([block]);
     const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
       blockConfigFactory({ id: block.id }),
     ]);

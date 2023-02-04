@@ -35,7 +35,7 @@ export type TypedBlock = {
 
 export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
-export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   constructor() {
     super(["block", "component", "effect", "reader"], fromJS);
 
@@ -99,10 +99,6 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
 }
 
 const registry = new BlocksRegistry();
-
-export function registerBlock(block: IBlock): void {
-  registry.register(block);
-}
 
 export default registry;
 

@@ -43,7 +43,7 @@ jest.mock("@/telemetry/logging", () => {
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, contextBlock, throwBlock);
+  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
   (sendDeploymentAlert as any).mockReset();
 });
 

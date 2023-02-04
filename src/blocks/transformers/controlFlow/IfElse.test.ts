@@ -42,7 +42,12 @@ const ifElseBlock = new IfElse();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(teapotBlock, throwBlock, rootAwareBlock, ifElseBlock);
+  blockRegistry.register([
+    teapotBlock,
+    throwBlock,
+    rootAwareBlock,
+    ifElseBlock,
+  ]);
 });
 
 describe("IfElse", () => {

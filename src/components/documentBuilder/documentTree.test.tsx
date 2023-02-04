@@ -43,7 +43,7 @@ const markdownBlock = new MarkdownRenderer();
 describe("When rendered in panel", () => {
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register(markdownBlock);
+    blockRegistry.register([markdownBlock]);
   });
 
   const renderDocument = (config: any) => {

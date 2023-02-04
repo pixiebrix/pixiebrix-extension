@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registerBlock } from "@/blocks/registry";
+import blockRegistry from "@/blocks/registry";
 import { AddUpdateCompany, AddUpdateContact } from "./hubspot/upsert";
 import { AddOrganization, AddPerson } from "./pipedrive/create";
 import { ResolvePerson } from "./pipedrive/resolvers";
@@ -40,41 +40,43 @@ import { RunBot } from "./automationanywhere/RunBot";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
 
 function registerContribBlocks(): void {
-  // Google
-  registerBlock(new GoogleBigQueryQuery());
-  registerBlock(new GoogleSheetsAppend());
-  registerBlock(new GoogleSheetsLookup());
-  registerBlock(new GeocodeTransformer());
+  blockRegistry.register([
+    // Google
+    new GoogleBigQueryQuery(),
+    new GoogleSheetsAppend(),
+    new GoogleSheetsLookup(),
+    new GeocodeTransformer(),
 
-  // HubSpot
-  registerBlock(new AddUpdateContact());
-  registerBlock(new AddUpdateCompany());
-  registerBlock(new AddOrganization());
+    // HubSpot
+    new AddUpdateContact(),
+    new AddUpdateCompany(),
+    new AddOrganization(),
 
-  // Pipedrive
-  registerBlock(new AddPerson());
-  registerBlock(new ResolvePerson());
-  registerBlock(ORGANIZATION_READER);
-  registerBlock(PERSON_READER);
-  registerBlock(DEAL_READER);
+    // Pipedrive
+    new AddPerson(),
+    new ResolvePerson(),
+    ORGANIZATION_READER,
+    PERSON_READER,
+    DEAL_READER,
 
-  // Slack
-  registerBlock(new SendSimpleSlackMessage());
-  registerBlock(new SendAdvancedSlackMessage());
+    // Slack
+    new SendSimpleSlackMessage(),
+    new SendAdvancedSlackMessage(),
 
-  // Salesforce
-  registerBlock(new AddLead());
+    // Salesforce
+    new AddLead(),
 
-  // UiPath
-  registerBlock(new RunProcess());
-  registerBlock(new UiPathAppRenderer());
-  registerBlock(new RunLocalProcess());
+    // UiPath
+    new RunProcess(),
+    new UiPathAppRenderer(),
+    new RunLocalProcess(),
 
-  // Zapier
-  registerBlock(new PushZap());
+    // Zapier
+    new PushZap(),
 
-  // Automation Anywhere
-  registerBlock(new RunBot());
+    // Automation Anywhere
+    new RunBot(),
+  ]);
 }
 
 export default registerContribBlocks;

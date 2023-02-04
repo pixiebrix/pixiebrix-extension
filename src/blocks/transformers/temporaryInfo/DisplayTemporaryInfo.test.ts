@@ -101,12 +101,12 @@ describe("DisplayTemporaryInfo", () => {
 
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register(
+    blockRegistry.register([
       teapotBlock,
       throwBlock,
       renderer,
-      displayTemporaryInfoBlock
-    );
+      displayTemporaryInfoBlock,
+    ]);
 
     showTemporarySidebarPanelMock.mockReset();
     showModalMock.mockReset();

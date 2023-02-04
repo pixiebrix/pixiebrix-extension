@@ -101,7 +101,7 @@ describe("DataPanel state", () => {
 describe("Cloning", () => {
   test("Can clone an extension", async () => {
     blockRegistry.clear();
-    blockRegistry.register(echoBlock, teapotBlock);
+    blockRegistry.register([echoBlock, teapotBlock]);
 
     const source = formStateFactory(
       {
