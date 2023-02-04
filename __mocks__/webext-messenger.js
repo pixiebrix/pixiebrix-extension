@@ -18,5 +18,5 @@
 export const getMethod = jest.fn(() => jest.fn());
 export const getNotifier = jest.fn(() => jest.fn());
 
-export const getTopLevelFrame = async () => ({ tabId: 1234, frameId: 0 });
+export const getTopLevelFrame = async () => ({ tabId: 1, frameId: 0 });
 export const getThisFrame = getTopLevelFrame;

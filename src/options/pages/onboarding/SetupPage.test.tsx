@@ -55,11 +55,6 @@ jest.mock("@/services/api", () => ({
     resetApiState: jest.fn().mockReturnValue({ type: "notarealreset" }),
   },
 }));
-
-jest.mock("@/background/messenger/api", () => ({
-  launchAuthIntegration: jest.fn().mockResolvedValue(undefined),
-}));
-
 jest.mock("@/services/baseService", () => ({
   getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));

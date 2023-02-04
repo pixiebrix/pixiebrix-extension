@@ -35,7 +35,6 @@ import * as telemetry from "@/telemetry/logging";
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
-jest.mock("@/background/messenger/api");
 (telemetry.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });

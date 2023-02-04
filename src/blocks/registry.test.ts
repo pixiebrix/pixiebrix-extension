@@ -19,12 +19,6 @@ import { BlocksRegistry } from "@/blocks/registry";
 import { blockFactory, extensionFactory } from "@/testUtils/factories";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 
-jest.mock("@/background/messenger/api", () => ({
-  registry: {
-    getByKinds: jest.fn(),
-  },
-}));
-
 describe("blocksMap", () => {
   let registry: BlocksRegistry;
 

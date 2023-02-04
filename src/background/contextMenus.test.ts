@@ -36,10 +36,6 @@ import chromeP from "webext-polyfill-kinda";
 
 jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
 
-jest.mock("@/background/messenger/api", () => ({
-  ensureContextMenu: jest.fn().mockResolvedValue(undefined),
-}));
-
 jest.mock("webext-polyfill-kinda", () => ({
   contextMenus: {
     create: jest.fn().mockRejectedValue(new Error("Not Implemented")),

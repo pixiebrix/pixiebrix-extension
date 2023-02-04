@@ -26,6 +26,7 @@ import {
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
+import { uuidv4 } from "@/types/helpers";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -35,7 +36,7 @@ export const containsPermissions = browser.permissions
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
-export const getUID = getMethod("GET_UID", bg);
+export const getUID = jest.fn().mockResolvedValue(uuidv4());
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
