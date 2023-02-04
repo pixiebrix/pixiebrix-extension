@@ -297,6 +297,7 @@ describe("Trace normal execution", () => {
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
+      extensionId,
       runId,
       logger,
     });
