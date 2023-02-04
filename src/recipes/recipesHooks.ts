@@ -23,17 +23,14 @@ import { useMemo } from "react";
 import { recipesActions } from "./recipesSlice";
 
 /**
- * Lookup a recipe from the registry by ID
+ * Lookup a recipe from the registry by ID, or null if it doesn't exist
  */
 export function useRecipe(
   id: RegistryId
-): UseCachedQueryResult<RecipeDefinition> {
+): UseCachedQueryResult<RecipeDefinition | null> {
   const { data: allRecipes, ...rest } = useAllRecipes();
   const recipe = useMemo(
-    () =>
-      allRecipes?.length
-        ? allRecipes.find((x) => x.metadata.id === id)
-        : undefined,
+    () => allRecipes?.find((x) => x.metadata.id === id),
     [id, allRecipes]
   );
 

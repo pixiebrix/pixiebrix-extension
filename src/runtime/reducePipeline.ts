@@ -302,10 +302,6 @@ async function executeBlockWithValidatedProps(
       return requestRun.inAll(request);
     }
 
-    case "remote": {
-      return requestRun.onServer(request);
-    }
-
     case "self": {
       return block.run(args, {
         ...commonOptions,
