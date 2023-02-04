@@ -37,7 +37,7 @@ export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
 export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   constructor() {
-    super(["block", "component", "effect", "reader"], "blocks", fromJS);
+    super(["block", "component", "effect", "reader"], fromJS);
 
     this.addListener({
       onCacheChanged: () => {

@@ -31,8 +31,8 @@ jest.mock("@/services/apiClient", () => ({
 }));
 jest.mock("@/background/messenger/api", () => ({
   registry: {
-    syncRemote: jest.fn(),
-    getKind: jest.fn(),
+    getByKinds: jest.fn(),
+    fetch: jest.fn(),
   },
 }));
 jest.mock("@/components/ConfirmationModal", () => {
@@ -134,11 +134,8 @@ test("load recipes and save one", async () => {
     }
   );
 
-  (messengerRegistry.syncRemote as jest.Mock).mockImplementation(
-    localRegistry.syncRemote
-  );
-  (messengerRegistry.getKind as jest.Mock).mockImplementation(
-    localRegistry.getKind
+  (messengerRegistry.getByKinds as jest.Mock).mockImplementation(
+    localRegistry.getByKinds
   );
 
   let resolveFetchingSavingPromise: () => void;

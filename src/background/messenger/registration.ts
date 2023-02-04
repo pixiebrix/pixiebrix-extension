@@ -106,8 +106,9 @@ declare global {
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    REGISTRY_GET_KIND: typeof registry.getKind;
-    REGISTRY_SYNC: typeof registry.syncRemote;
+    REGISTRY_FETCH: typeof registry.fetchNewPackages;
+    REGISTRY_CLEAR: typeof registry.clear;
+    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
     LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
     LOCATE_SERVICE: typeof locator.locate;
@@ -181,8 +182,9 @@ export default function registerMessenger(): void {
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    REGISTRY_GET_KIND: registry.getKind,
-    REGISTRY_SYNC: registry.syncRemote,
+    REGISTRY_FETCH: registry.fetchNewPackages,
+    REGISTRY_CLEAR: registry.clear,
+    REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
     LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
     LOCATE_SERVICE: locator.locate.bind(locator),

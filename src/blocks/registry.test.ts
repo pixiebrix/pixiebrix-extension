@@ -21,7 +21,7 @@ import { registry as backgroundRegistry } from "@/background/messenger/api";
 
 jest.mock("@/background/messenger/api", () => ({
   registry: {
-    getKind: jest.fn(),
+    getByKinds: jest.fn(),
   },
 }));
 
@@ -61,7 +61,7 @@ describe("blocksMap", () => {
   });
 
   test("caches the typed blocks", async () => {
-    (backgroundRegistry.getKind as jest.Mock).mockResolvedValueOnce([
+    (backgroundRegistry.getByKinds as jest.Mock).mockResolvedValueOnce([
       extensionFactory(),
       extensionFactory(),
     ]);
