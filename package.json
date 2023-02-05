@@ -41,7 +41,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^1.9.2",
     "@rjsf/bootstrap-4": "^4.2.3",
-    "@rjsf/core": "^4.2.3",
+    "@rjsf/core": "^5.0.2",
     "@types/use-sync-external-store": "^0.0.3",
     "@uipath/robot": "1.2.5",
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
