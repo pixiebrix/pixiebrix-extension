@@ -75,7 +75,7 @@
     "htmlparser2": "^8.0.0",
     "http-status-codes": "^2.1.4",
     "idb": "^7.1.1",
-    "iframe-resizer": "^4.3.2",
+    "iframe-resizer": "^4.3.3",
     "immer": "9.0.18",
     "intro.js": "^6.0.0",
     "is-promise": "^4.0.0",
