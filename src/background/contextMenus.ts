@@ -149,12 +149,12 @@ async function _ensureContextMenu({
     throw new Error("extensionId is required");
   }
 
-  const updateProperties: Menus.UpdateUpdatePropertiesType = {
+  const updateProperties = {
     type: "normal",
     title,
     contexts,
     documentUrlPatterns,
-  };
+  } satisfies Menus.UpdateUpdatePropertiesType;
 
   const expectedMenuId = makeMenuId(extensionId);
   try {
@@ -164,11 +164,11 @@ async function _ensureContextMenu({
     // WARNING: Do not remove `chromeP`
     // The standard `contextMenus.create` does not return a Promise in any browser
     // https://github.com/w3c/webextensions/issues/188#issuecomment-1112436359
-    // eslint-disable-next-line @typescript-eslint/await-thenable -- The types don't really match `chromeP`
+    // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression -- The types don't really match `chromeP`
     await chromeP.contextMenus.create({
       ...updateProperties,
       id: expectedMenuId,
-    });
+    } as chrome.contextMenus.CreateProperties);
   }
 }
 

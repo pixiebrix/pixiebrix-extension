@@ -105,8 +105,7 @@ async function callBackground(
 
   // `browser.*` APIs are not polyfilled outside the extension context (`externally_connectable` pages)
   // https://github.com/mozilla/webextension-polyfill/issues/326
-  // Explicit type currently needed due to a "mismatch" in type
-  const sendMessage: typeof browser.runtime.sendMessage = isExtensionContext()
+  const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : chromeP.runtime.sendMessage;
   const extensionId = isExtensionContext() ? null : getChromeExtensionId();
