@@ -155,7 +155,7 @@
     "webext-messenger": "^0.22.0",
     "webext-patterns": "^1.3.0",
     "webext-polyfill-kinda": "^0.10.0",
-    "webext-tools": "^1.1.2",
+    "webext-tools": "^1.1.3",
     "webextension-polyfill": "^0.10.0",
     "whatwg-mimetype": "^3.0.0",
     "yup": "^0.32.11"
