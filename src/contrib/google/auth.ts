@@ -84,7 +84,7 @@ export async function handleRejection(
   }
 
   if ([403, 401].includes(status)) {
-    await browser.identity.removeCachedAuthToken({ token });
+    await chromeP.identity.removeCachedAuthToken({ token });
     console.debug(
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
     );
