@@ -19,7 +19,7 @@ import React from "react";
 import { renderHook } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { Provider } from "react-redux";
-import { appApi, useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";

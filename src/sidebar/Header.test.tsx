@@ -19,7 +19,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { appApi, useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import { type Me } from "@/types/contract";
 
 jest.mock("@/store/optionsStore", () => ({
@@ -67,7 +67,7 @@ describe("Header", () => {
             show_sidebar_logo: true,
           },
         },
-      },
+      } as any,
     });
 
     const rendered = render(<Header />);
@@ -84,7 +84,7 @@ describe("Header", () => {
             show_sidebar_logo: false,
           },
         },
-      },
+      } as any,
     });
 
     render(<Header />);

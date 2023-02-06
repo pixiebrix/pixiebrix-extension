@@ -20,11 +20,7 @@ import { render } from "@/options/testHelpers";
 import BlueprintsPageLayout from "@/options/pages/blueprints/BlueprintsPageLayout";
 import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import {
-  appApi,
-  useGetMeQuery,
-  useGetStarterBlueprintsQuery,
-} from "@/services/api";
+import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
 import { organizationFactory } from "@/testUtils/factories";
 import { configureStore } from "@reduxjs/toolkit";

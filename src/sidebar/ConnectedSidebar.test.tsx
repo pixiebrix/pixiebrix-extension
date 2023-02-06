@@ -91,7 +91,7 @@ describe("SidebarApp", () => {
       data: {
         partner: {},
         ...anonAuth,
-      },
+      } as any,
     });
 
     const rendered = render(
@@ -108,7 +108,7 @@ describe("SidebarApp", () => {
   test("renders", async () => {
     mockMeQuery({
       isLoading: false,
-      data: authStateFactory(),
+      data: authStateFactory() as any,
     });
 
     const rendered = render(
