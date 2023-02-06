@@ -37,8 +37,16 @@ import testMiddleware, {
   resetTestMiddleware,
   actionTypes,
 } from "@/testUtils/testMiddleware";
+import notify from "@/utils/notify";
 
 const axiosMock = new MockAdapter(axios);
+
+jest.mock("@/utils/notify", () => ({
+  __esModule: true,
+  default: {
+    error: jest.fn(),
+  },
+}));
 
 jest.mock("@/options/pages/blueprints/utils/useReinstall", () => ({
   __esModule: true,
@@ -51,6 +59,7 @@ jest.mock("@/services/apiClient", () => ({
 }));
 
 const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
+const errorMock = notify.error as jest.Mock;
 
 getLinkedApiClientMock.mockResolvedValue(axios.create());
 
@@ -126,5 +135,49 @@ describe("useSubmitBrick", () => {
       "appApi/executeMutation/pending",
       "appApi/executeMutation/rejected",
     ]);
+  });
+
+  it("handles non-config 400 field error", async () => {
+    const errorMessage = "Invalid organization pk";
+    const store = testStore();
+
+    resetTestMiddleware();
+
+    const { result } = renderHook(() => useSubmitBrick({ create: false }), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    const resetForm = jest.fn();
+    const setErrors = jest.fn();
+
+    const errorData = {
+      // Handle other 400 field errors, e.g., https://github.com/pixiebrix/pixiebrix-extension/issues/4697
+      organizations: [errorMessage],
+    };
+
+    axiosMock.onPut().reply(400, errorData);
+
+    await act(async () => {
+      // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
+      await result.current.submit(
+        {
+          config: brickToYaml(pipedriveYaml as any),
+          reactivate: false,
+          public: true,
+          organizations: [],
+        },
+        {
+          resetForm,
+          setErrors,
+        } as any
+      );
+    });
+
+    expect(setErrors).not.toHaveBeenCalledWith(errorData);
+    expect(resetForm).not.toHaveBeenCalled();
+    expect(errorMock).toHaveBeenCalledWith({
+      message: "Invalid organizations",
+      error: expect.toBeObject(),
+    });
   });
 });
