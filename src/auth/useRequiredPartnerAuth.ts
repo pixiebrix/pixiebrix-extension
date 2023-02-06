@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { type RegistryId } from "@/core";
@@ -120,7 +120,7 @@ const PARTNER_MANAGED_KEY = "partnerId" as ManualStorageKey;
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
-  const { isLoading, data: me, error } = useGetMeQuery();
+  const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
   const localAuth = useSelector(selectAuth);
   const {
     authServiceId: authServiceIdOverride,

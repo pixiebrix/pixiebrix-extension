@@ -19,7 +19,7 @@ import React from "react";
 import { renderHook } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { Provider } from "react-redux";
-import { useGetMeQuery } from "@/services/api";
+import { appApi, useGetMeQuery } from "@/services/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
@@ -30,10 +30,29 @@ import { type SettingsState } from "@/store/settingsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { type RawServiceConfiguration } from "@/core";
+import { type Me } from "@/types/contract";
 
 jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
+  appApi: {
+    endpoints: {
+      getMe: {
+        useQueryState: jest.fn(() => ({
+          data: {},
+          isLoading: false,
+        })),
+      },
+    },
+  },
 }));
+
+function mockMeQuery(state: {
+  isLoading: boolean;
+  data?: Me;
+  error?: any;
+  isSuccess?: boolean;
+}) {
+  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
+}
 
 function testStore(initialState?: {
   auth: AuthState;
@@ -54,15 +73,15 @@ describe("useRequiredPartnerAuth", () => {
   test("no partner", async () => {
     const store = testStore();
 
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isSuccess: true,
       isLoading: false,
       data: {
         id: uuidv4(),
         partner: null,
         milestones: [],
-      },
-    }));
+      } as any,
+    });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
@@ -91,15 +110,15 @@ describe("useRequiredPartnerAuth", () => {
       },
     });
 
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isSuccess: true,
       isLoading: false,
       data: {
         id: uuidv4(),
         partner: null,
         milestones: [],
-      },
-    }));
+      } as any,
+    });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
@@ -120,7 +139,7 @@ describe("useRequiredPartnerAuth", () => {
   test("requires integration", async () => {
     const store = testStore();
 
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isSuccess: true,
       isLoading: false,
       data: {
@@ -136,8 +155,8 @@ describe("useRequiredPartnerAuth", () => {
             url: "https://control-room.example.com",
           },
         },
-      },
-    }));
+      } as any,
+    });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
@@ -158,7 +177,7 @@ describe("useRequiredPartnerAuth", () => {
   test("requires integration for CE user", async () => {
     const store = testStore();
 
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isSuccess: true,
       isLoading: false,
       data: {
@@ -169,8 +188,8 @@ describe("useRequiredPartnerAuth", () => {
         },
         milestones: [{ key: "aa_community_edition_register" }],
         organization: null,
-      },
-    }));
+      } as any,
+    });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
@@ -191,7 +210,7 @@ describe("useRequiredPartnerAuth", () => {
   test("does not require integration for CE user once partner is removed", async () => {
     const store = testStore();
 
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isSuccess: true,
       isLoading: false,
       data: {
@@ -200,8 +219,8 @@ describe("useRequiredPartnerAuth", () => {
         partner: null,
         milestones: [{ key: "aa_community_edition_register" }],
         organization: null,
-      },
-    }));
+      } as any,
+    });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
@@ -233,7 +252,7 @@ describe("useRequiredPartnerAuth", () => {
       settings: settingsSlice.getInitialState(),
     });
 
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isSuccess: true,
       isLoading: false,
       data: {
@@ -249,8 +268,8 @@ describe("useRequiredPartnerAuth", () => {
             url: "https://control-room.example.com",
           },
         },
-      },
-    }));
+      } as any,
+    });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,

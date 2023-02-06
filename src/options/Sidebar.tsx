@@ -30,14 +30,14 @@ import {
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 
 const Sidebar: React.FunctionComponent = () => {
   const { permit } = useFlags();
-  const { data: me } = useGetMeQuery();
+  const { data: me } = appApi.endpoints.getMe.useQueryState();
   const hasPartner = Boolean(me?.partner);
 
   return (

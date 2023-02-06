@@ -22,7 +22,7 @@ import OnboardingChecklistCard, {
 import ControlRoomOAuthForm from "@/options/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/options/pages/onboarding/partner/ControlRoomTokenForm";
 import { selectSettings } from "@/store/settingsSelectors";
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
@@ -39,7 +39,7 @@ import {
 } from "@/contrib/automationanywhere/aaUtils";
 
 function useInstallUrl() {
-  const { data: me } = useGetMeQuery();
+  const { data: me } = appApi.endpoints.getMe.useQueryState();
 
   const controlRoomUrl = me?.organization?.control_room?.url;
 
@@ -117,7 +117,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
-  const { data: me } = useGetMeQuery();
+  const { data: me } = appApi.endpoints.getMe.useQueryState();
   const { installURL } = useInstallUrl();
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link

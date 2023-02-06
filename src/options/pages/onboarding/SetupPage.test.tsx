@@ -24,7 +24,7 @@ import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import { Provider } from "react-redux";
-import { useGetMeQuery } from "@/services/api";
+import { appApi, useGetMeQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
@@ -33,6 +33,7 @@ import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { type Me } from "@/types/contract";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -50,9 +51,18 @@ jest.mock("@/chrome", () => ({
 }));
 
 jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
   util: {
     resetApiState: jest.fn().mockReturnValue({ type: "notarealreset" }),
+  },
+  appApi: {
+    endpoints: {
+      getMe: {
+        useQueryState: jest.fn(() => ({
+          data: {},
+          isLoading: false,
+        })),
+      },
+    },
   },
 }));
 
@@ -78,12 +88,20 @@ jest.mock("@/permissions", () => ({
   serviceOriginPermissions: jest.fn().mockResolvedValue({ origins: [] }),
 }));
 
+function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
+  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
+}
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SetupPage", () => {
   test("typical user", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
       partner: null,
-    }));
+    } as any);
 
     render(
       <Provider store={optionsStore()}>
@@ -101,7 +119,7 @@ describe("SetupPage", () => {
   });
 
   test("OAuth2 partner user", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
       data: {
         partner: {
@@ -109,8 +127,8 @@ describe("SetupPage", () => {
           name: "Test Partner",
           theme: "automation-anywhere",
         },
-      },
-    }));
+      } as any,
+    });
 
     render(
       <Provider
@@ -135,10 +153,10 @@ describe("SetupPage", () => {
     const user = userEvent.setup();
 
     // User will be unauthenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: {},
-    }));
+      data: {} as any,
+    });
 
     location.href =
       "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com";
@@ -181,10 +199,10 @@ describe("SetupPage", () => {
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
     // User is authenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: {},
-    }));
+      data: {} as any,
+    });
 
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
@@ -212,7 +230,7 @@ describe("SetupPage", () => {
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
     // User is authenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
       data: {
         id: uuidv4(),
@@ -220,8 +238,8 @@ describe("SetupPage", () => {
           id: uuidv4(),
           theme: "automation-anywhere",
         },
-      },
-    }));
+      } as any,
+    });
 
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
@@ -259,10 +277,10 @@ describe("SetupPage", () => {
 
   test("Managed Storage OAuth2 partner user", async () => {
     // User will be unauthenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: {},
-    }));
+      data: {} as any,
+    });
 
     const managedConfiguration: Record<string, string> = {
       partnerId: "automation-anywhere",

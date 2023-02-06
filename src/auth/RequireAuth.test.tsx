@@ -20,11 +20,12 @@ import { render, screen } from "@testing-library/react";
 import RequireAuth from "@/auth/RequireAuth";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import { useGetMeQuery } from "@/services/api";
+import { appApi, useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import settingsSlice from "@/store/settingsSlice";
+import { type Me } from "@/types/contract";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -39,15 +40,31 @@ function optionsStore(initialState?: any) {
 
 jest.mock("@/services/api", () => ({
   useGetMeQuery: jest.fn(),
+  appApi: {
+    endpoints: {
+      getMe: {
+        useQueryState: jest.fn(),
+      },
+    },
+  },
 }));
+
+function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
+  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
+  (useGetMeQuery as jest.Mock).mockReturnValue(state);
+}
 
 const MockLoginPage: React.VFC = () => <div>Login</div>;
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("RequireAuth", () => {
   test("authenticated user", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-    }));
+    });
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
@@ -64,9 +81,10 @@ describe("RequireAuth", () => {
   });
 
   test("unauthenticated user", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
+      isLoading: false,
       error: { response: { status: 401 } },
-    }));
+    });
 
     render(
       <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
@@ -84,9 +102,9 @@ describe("RequireAuth", () => {
   });
 
   test("loading state does not flash content", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: true,
-    }));
+    });
 
     render(
       <Provider store={optionsStore()}>
