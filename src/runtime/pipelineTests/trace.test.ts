@@ -57,7 +57,7 @@ const addExitMock = traces.addExit as jest.MockedFunction<
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, contextBlock, throwBlock);
+  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
 });

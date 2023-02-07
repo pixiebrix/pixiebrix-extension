@@ -134,15 +134,15 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 beforeAll(async () => {
   registerDefaultWidgets();
   blockRegistry.clear();
-  blockRegistry.register(
+  blockRegistry.register([
     echoBlock,
     teapotBlock,
     jqBlock,
     alertBlock,
     forEachBlock,
     markdownBlock,
-    uiPathBlock
-  );
+    uiPathBlock,
+  ]);
   await blockRegistry.allTyped();
 
   const tags = [

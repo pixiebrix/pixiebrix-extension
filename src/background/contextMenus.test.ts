@@ -36,10 +36,6 @@ import chromeP from "webext-polyfill-kinda";
 
 jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
 
-jest.mock("@/background/messenger/api", () => ({
-  ensureContextMenu: jest.fn().mockResolvedValue(undefined),
-}));
-
 jest.mock("webext-polyfill-kinda", () => ({
   contextMenus: {
     create: jest.fn().mockRejectedValue(new Error("Not Implemented")),
@@ -97,7 +93,7 @@ describe("contextMenus", () => {
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register(fromJS(extensionPoint as any));
+    extensionPointRegistry.register([fromJS(extensionPoint as any)]);
 
     const menuExtension = extensionFactory({
       extensionPointId: extensionPoint.metadata.id,

@@ -77,7 +77,7 @@ async function ensureBlock(
     },
   });
 
-  blockRegistry.register(item);
+  blockRegistry.register([item]);
 
   return item;
 }
@@ -162,7 +162,7 @@ async function ensureExtensionPoint(
     },
   } as ExtensionPointConfig);
 
-  extensionPointRegistry.register(item);
+  extensionPointRegistry.register([item]);
   return item;
 }
 
@@ -203,9 +203,10 @@ export async function resolveDefinitions<T extends Config = EmptyConfig>(
     return extension as ResolvedExtension<T>;
   }
 
-  console.debug("Resolving definitions for extension: %s", extension.id, {
-    extension,
-  });
+  // Too noisy since all IExtensions created with Page Editor have definitions
+  // console.debug("Resolving definitions for extension: %s", extension.id, {
+  //   extension,
+  // });
 
   return produce(extension, async (draft) => {
     const ensured = await resolveObj(

@@ -37,7 +37,7 @@ const tableReaderBlock = new TableReader();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(tableReaderBlock);
+  blockRegistry.register([tableReaderBlock]);
 });
 
 describe("TableReader", () => {

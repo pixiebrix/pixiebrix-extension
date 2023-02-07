@@ -94,7 +94,7 @@ const NUM_DEFAULT_QUICKBAR_ACTIONS = defaultActions.length;
 describe("quickBarProviderExtension", () => {
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register(rootReader);
+    blockRegistry.register([rootReader]);
     rootReader.readCount = 0;
     rootReader.ref = undefined;
   });

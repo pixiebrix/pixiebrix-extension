@@ -15,16 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import registerEffects from "./effects/registerEffects";
-import registerTransformers from "./transformers/registerTransformers";
-import registerRenderers from "./renderers/registerRenderers";
-import registerReaders from "@/blocks/readers/registerReaders";
+import getAllEffects from "./effects/getAllEffects";
+import getAllTransformers from "./transformers/getAllTransformers";
+import getAllRenderers from "./renderers/getAllRenderers";
+import getAllReaders, {
+  registerReaderFactories,
+} from "@/blocks/readers/getAllReaders";
+import blockRegistry from "@/blocks/registry";
 
 function registerBuiltinBlocks() {
-  registerTransformers();
-  registerEffects();
-  registerRenderers();
-  registerReaders();
+  blockRegistry.register([
+    ...getAllTransformers(),
+    ...getAllEffects(),
+    ...getAllRenderers(),
+    ...getAllReaders(),
+  ]);
+
+  registerReaderFactories();
 }
 
 export default registerBuiltinBlocks;

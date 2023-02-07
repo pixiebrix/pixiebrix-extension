@@ -43,13 +43,13 @@ jest.mock("@/telemetry/logging", () => {
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(
+  blockRegistry.register([
     echoBlock,
     contextBlock,
     teapotBlock,
     arrayBlock,
-    identityBlock
-  );
+    identityBlock,
+  ]);
 });
 
 describe("apiVersion: v1", () => {

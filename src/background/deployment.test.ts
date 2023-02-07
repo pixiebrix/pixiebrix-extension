@@ -69,17 +69,6 @@ jest.mock("@/contentScript/messenger/api", () => ({
   insertButton: jest.fn(),
 }));
 
-jest.mock("@/background/messenger/api", () => ({
-  traces: {
-    clear: jest.fn().mockResolvedValue(undefined),
-  },
-  uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
-  contextMenus: {
-    preload: jest.fn(),
-  },
-  getUID: async () => "UID",
-}));
-
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
   getAuthHeaders: jest.fn().mockResolvedValue({}),

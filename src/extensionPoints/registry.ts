@@ -21,7 +21,6 @@ import { type IExtensionPoint, type RegistryId } from "@/core";
 
 const registry = new BaseRegistry<RegistryId, IExtensionPoint>(
   ["foundation", "extensionPoint"],
-  "extension-points",
   fromJS
 );
 

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// This mock file provides reasonable defaults for the methods in the background messenger API
+
 /* Do not use `registerMethod` in this file */
 import {
   backgroundTarget as bg,
@@ -24,6 +26,7 @@ import {
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
+import { uuidv4 } from "@/types/helpers";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -33,7 +36,7 @@ export const containsPermissions = browser.permissions
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
-export const getUID = getMethod("GET_UID", bg);
+export const getUID = jest.fn().mockResolvedValue(uuidv4());
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
@@ -47,16 +50,18 @@ export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
+export const readGoogleBigQuery = jest
+  .fn()
+  .mockRejectedValue(new Error("Not implemented"));
 
 export const sheets = {
-  getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
-  getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
-  getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
+  getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getHeaders: jest.fn().mockRejectedValue(new Error("Not implemented")),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
   batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
-  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET", bg),
+  batchGet: jest.fn().mockRejectedValue(new Error("Not implemented")),
 };
 
 /**
@@ -67,15 +72,15 @@ export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
 
 export const registry = {
-  fetch: getMethod("REGISTRY_FETCH", bg),
+  fetch: jest.fn().mockResolvedValue(true),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
-  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
-  find: getMethod("REGISTRY_FIND", bg),
+  getByKinds: jest.fn().mockResolvedValue([]),
+  find: jest.fn().mockRejectedValue(new Error("Find not implemented in mock")),
   clear: getMethod("REGISTRY_CLEAR", bg),
 };
 
 export const dataStore = {
-  get: getMethod("GET_DATA_STORE", bg),
+  get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),
   set: getMethod("SET_DATA_STORE", bg),
 };
 
@@ -91,8 +96,10 @@ export const contextMenus = {
 };
 
 export const services = {
-  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
-  locate: getMethod("LOCATE_SERVICE", bg),
+  locateAllForId: jest.fn().mockResolvedValue([]),
+  locate: jest
+    .fn()
+    .mockRejectedValue(new Error("Locate not implemented in mock")),
   refresh: getMethod("REFRESH_SERVICES", bg),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
 };

@@ -63,7 +63,6 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 jest.mock("@/background/contextMenus");
-jest.mock("@/background/messenger/api");
 jest.mock("@/telemetry/events");
 jest.mock("@/blocks/registry", () => ({
   __esModule: true,

@@ -40,7 +40,7 @@ const tryExceptBlock = new TryExcept();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(teapotBlock, throwBlock, tryExceptBlock);
+  blockRegistry.register([teapotBlock, throwBlock, tryExceptBlock]);
 });
 
 describe("TryExcept", () => {
