@@ -440,6 +440,9 @@ export interface paths {
   "/api/invitations/{id}/": {
     delete: operations["destroyInvitation"];
   };
+  "/api/tests/accounts/social/": {
+    delete: operations["destroySocialTestAccount"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -1175,6 +1178,8 @@ export interface components {
       }[];
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
+      /** @description True if the account is an automated/manual test account */
+      test_account?: boolean;
       partner?: {
         /** Format: uuid */
         readonly id?: string;
@@ -5400,6 +5405,11 @@ export interface operations {
         id: string;
       };
     };
+    responses: {
+      204: never;
+    };
+  };
+  destroySocialTestAccount: {
     responses: {
       204: never;
     };
