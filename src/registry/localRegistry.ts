@@ -137,9 +137,8 @@ async function latestTimestamp(): Promise<Date | null> {
   const result = await cursor.next();
   await tx.done;
 
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/5160 -- can sometimes come back as string
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/5160 -- can come back as string on some versions
   const timestamp: Date | string | null = result.value?.value.timestamp;
-
   return timestamp ? new Date(timestamp) : null;
 }
 
