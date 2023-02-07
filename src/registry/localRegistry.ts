@@ -126,14 +126,21 @@ export async function clear(): Promise<void> {
   await db.clear(BRICK_STORE);
 }
 
-async function latestTimestamp(): Promise<Date> {
+/**
+ * Return the timestamp of the most recent package in the local DB.
+ */
+async function latestTimestamp(): Promise<Date | null> {
   const db = await getBrickDB();
   const tx = db.transaction(BRICK_STORE, "readonly");
   // Iterate from most recent to least recent and take first
   const cursor = tx.store.index("timestamp").iterate(null, "prev");
   const result = await cursor.next();
   await tx.done;
-  return result.value?.value.timestamp;
+
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/5160 -- can sometimes come back as string
+  const timestamp: Date | string | null = result.value?.value.timestamp;
+
+  return timestamp ? new Date(timestamp) : null;
 }
 
 /**
