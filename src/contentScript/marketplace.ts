@@ -27,6 +27,8 @@ import {
 } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
+import reportError from "@/telemetry/reportError";
 
 function getActivateButtonLinks(): HTMLAnchorElement[] {
   return [
@@ -57,8 +59,18 @@ async function isUserLoggedIn(): Promise<boolean> {
   return Boolean(authHeaders);
 }
 
-function getInProgressRecipeActivation(): RegistryId | null {
-  return null;
+async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
+  try {
+    const activatingRecipeId = await getActivatingBlueprint();
+    if (typeof activatingRecipeId !== "string") {
+      return null;
+    }
+
+    return validateRegistryId(activatingRecipeId);
+  } catch (error) {
+    reportError(error);
+    return null;
+  }
 }
 
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
@@ -138,7 +150,7 @@ export async function initMarketplaceEnhancements() {
     return;
   }
 
-  const recipeId = getInProgressRecipeActivation();
+  const recipeId = await getInProgressRecipeActivation();
   if (recipeId) {
     await showSidebarActivationForRecipe(recipeId);
   }
