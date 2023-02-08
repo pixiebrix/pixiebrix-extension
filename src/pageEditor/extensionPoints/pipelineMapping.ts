@@ -47,20 +47,30 @@ class NormalizePipelineVisitor extends PipelineVisitor {
 
     // Initialize empty sub pipelines
     const typedBlock = this.blockMap.get(blockConfig.id);
-    const propertiesSchema = typedBlock.block?.inputSchema?.properties ?? {};
-    const emptySubPipelineProperties = Object.entries(propertiesSchema)
-      .filter(
-        ([prop, fieldSchema]) =>
-          typeof fieldSchema === "object" &&
-          fieldSchema.$ref === pipelineSchema.$id &&
-          !isPipelineExpression(blockConfig.config[prop])
-      )
-      .map(([prop]) => prop);
-    for (const prop of emptySubPipelineProperties) {
-      blockConfig.config[prop] = {
-        __type__: "pipeline",
-        __value__: [],
-      };
+
+    if (typedBlock == null) {
+      console.warn(
+        "Block not found in block map: %s",
+        blockConfig.id,
+        this.blockMap
+      );
+    } else {
+      const propertiesSchema = typedBlock.block?.inputSchema?.properties ?? {};
+      const emptySubPipelineProperties = Object.entries(propertiesSchema)
+        .filter(
+          ([prop, fieldSchema]) =>
+            typeof fieldSchema === "object" &&
+            fieldSchema.$ref === pipelineSchema.$id &&
+            !isPipelineExpression(blockConfig.config[prop])
+        )
+        .map(([prop]) => prop);
+
+      for (const prop of emptySubPipelineProperties) {
+        blockConfig.config[prop] = {
+          __type__: "pipeline",
+          __value__: [],
+        };
+      }
     }
 
     super.visitBlock(position, blockConfig, extra);
