@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import notify from "@/utils/notify";
 import { type RegistryId } from "@/core";
 import { loadOptions } from "@/store/extensionsStorage";
 import { compact, isEmpty, startsWith } from "lodash";
@@ -39,7 +38,6 @@ function getActivateButtonLinks(): HTMLAnchorElement[] {
 
 async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
   if (!(await isUserLoggedIn())) {
-    notify.info("User not logged in, not loading installed recipes");
     return new Set();
   }
 
@@ -64,8 +62,6 @@ function getInProgressRecipeActivation(): RegistryId | null {
 }
 
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
-  notify.info(`Showing activation for ${recipeId}`);
-
   const controller = new AbortController();
 
   await ensureSidebar();
@@ -91,11 +87,8 @@ let enhancementsLoaded = false;
 
 async function loadPageEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
-    notify.info("Enhancements already loaded, skipping");
     return;
   }
-
-  notify.info("Marketplace enhancements loading...");
 
   const activateButtonLinks = getActivateButtonLinks();
   if (isEmpty(activateButtonLinks)) {
@@ -142,7 +135,6 @@ export async function initMarketplaceEnhancements() {
   await loadPageEnhancements();
 
   if (!(await isUserLoggedIn())) {
-    notify.info("User not logged in - skipping in progress recipe activation");
     return;
   }
 
