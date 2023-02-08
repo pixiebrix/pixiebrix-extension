@@ -127,8 +127,8 @@ export class Registry<
 
     databaseChangeListeners.push({
       onChanged: () => {
-        this._cacheInitialized = false;
-        this.cache.clear();
+        // If database changes, clear the cache to force reloading user-defined bricks
+        this.clear();
       },
     });
   }
@@ -320,7 +320,8 @@ export class Registry<
   }
 
   /**
-   * Test-only method to completely reset the registry state.
+   * Test-only method to completely reset the registry state. Does NOT notify listeners
+   * @see clear
    */
   TEST_reset(): void {
     this._cacheInitialized = false;
