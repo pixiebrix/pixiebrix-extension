@@ -157,7 +157,9 @@ async function putAll(packages: Package[]): Promise<void> {
   await tx.done;
 }
 
-function parsePackage(item: RegistryPackage): Except<Package, "timestamp"> {
+export function parsePackage(
+  item: RegistryPackage
+): Except<Package, "timestamp"> {
   const [major, minor, patch] = item.metadata.version
     .split(".")
     .map((x) => Number.parseInt(x, 10));

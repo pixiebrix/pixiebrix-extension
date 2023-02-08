@@ -56,7 +56,7 @@ class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   private async inferAllTypes(): Promise<TypedBlockMap> {
     const typeCache: TypedBlockMap = new Map();
 
-    const items = this.cached().length > 0 ? this.cached() : await this.all();
+    const items = this.isCachedInitialized ? this.cached() : await this.all();
 
     console.debug("Computing block types for %d block(s)", items.length);
 

@@ -16,9 +16,26 @@
  */
 
 import blocksRegistry from "@/blocks/registry";
-import { blockFactory, extensionFactory } from "@/testUtils/factories";
+import {
+  blockFactory,
+  extensionPointDefinitionFactory,
+} from "@/testUtils/factories";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { parsePackage } from "@/registry/localRegistry";
+
+const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<
+  typeof backgroundRegistry.getByKinds
+>;
+const findMock = backgroundRegistry.find as jest.MockedFunction<
+  typeof backgroundRegistry.find
+>;
+
+beforeEach(() => {
+  jest.resetAllMocks();
+  getByKindsMock.mockResolvedValue([]);
+  blocksRegistry.clear();
+});
 
 describe("blocksMap", () => {
   afterEach(() => {
@@ -54,9 +71,15 @@ describe("blocksMap", () => {
   });
 
   test("caches the typed blocks", async () => {
-    (backgroundRegistry.getByKinds as jest.Mock).mockResolvedValueOnce([
-      extensionFactory(),
-      extensionFactory(),
+    getByKindsMock.mockResolvedValueOnce([
+      {
+        ...parsePackage(extensionPointDefinitionFactory() as any),
+        timestamp: new Date(),
+      },
+      {
+        ...parsePackage(extensionPointDefinitionFactory() as any),
+        timestamp: new Date(),
+      },
     ]);
 
     jest.spyOn(blocksRegistry, "all");
@@ -81,13 +104,13 @@ describe("blocksRegistry", () => {
     blocksRegistry.TEST_reset();
   });
 
-  test("reads single block", async () => {
+  test("reads single JS block", async () => {
     blocksRegistry.register([echoBlock]);
     await expect(blocksRegistry.all()).resolves.toEqual([echoBlock]);
     expect(blocksRegistry.cached()).toEqual([echoBlock]);
   });
 
-  test("preserves built-in block on clear", async () => {
+  test("preserves JS block on clear", async () => {
     blocksRegistry.register([echoBlock]);
     blocksRegistry.clear();
     await expect(blocksRegistry.all()).resolves.toEqual([echoBlock]);
@@ -97,5 +120,31 @@ describe("blocksRegistry", () => {
     await expect(blocksRegistry.lookup(echoBlock.id)).resolves.toEqual(
       echoBlock
     );
+  });
+
+  test("throws on invalid cache", async () => {
+    blocksRegistry.register([echoBlock]);
+    blocksRegistry.clear();
+    expect(blocksRegistry.isCachedInitialized).toBe(false);
+    expect(() => blocksRegistry.cached()).toThrow("Cache not initialized");
+  });
+
+  test("cache invalid until all()", async () => {
+    const value = extensionPointDefinitionFactory();
+    const brick = { ...parsePackage(value as any), timestamp: new Date() };
+
+    getByKindsMock.mockResolvedValueOnce([brick]);
+    findMock.mockResolvedValue(brick);
+
+    blocksRegistry.register([echoBlock]);
+
+    await expect(
+      blocksRegistry.lookup(value.metadata.id)
+    ).resolves.not.toThrow();
+
+    expect(blocksRegistry.isCachedInitialized).toBe(false);
+
+    await blocksRegistry.allTyped();
+    expect(blocksRegistry.isCachedInitialized).toBe(true);
   });
 });

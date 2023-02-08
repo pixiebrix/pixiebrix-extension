@@ -109,6 +109,12 @@ export class Registry<
    */
   private readonly cache = new Map<RegistryId, Item>();
 
+  /**
+   * Track the state of the cache
+   * @private
+   */
+  private _cacheInitialized = false;
+
   public readonly kinds: Set<Kind>;
 
   private readonly deserialize: (raw: unknown) => Item;
@@ -121,6 +127,7 @@ export class Registry<
 
     databaseChangeListeners.push({
       onChanged: () => {
+        this._cacheInitialized = false;
         this.cache.clear();
       },
     });
@@ -202,10 +209,25 @@ export class Registry<
   }
 
   /**
+   * Return true if the cache is fully initialized
+   * @see cached
+   */
+  get isCachedInitialized(): boolean {
+    return this._cacheInitialized;
+  }
+
+  /**
+   * Synchronously return all cached bricks.
    * @deprecated needed for header generation; will be removed in future versions
+   * @throws Error if the cache is not initialized
+   * @see isCachedInitialized
    * @see all
    */
   cached(): Item[] {
+    if (!this._cacheInitialized) {
+      throw new Error("Cache not initialized");
+    }
+
     return [...this.cache.values()];
   }
 
@@ -234,6 +256,8 @@ export class Registry<
       notify: false,
     });
     this.notifyAll();
+
+    this._cacheInitialized = true;
 
     return this.cached();
   }
@@ -290,6 +314,7 @@ export class Registry<
    */
   clear(): void {
     // Need to clear the whole thing, including built-ins. Listeners will often can all() to repopulate the cache.
+    this._cacheInitialized = false;
     this.cache.clear();
     this.notifyAll();
   }
@@ -298,6 +323,7 @@ export class Registry<
    * Test-only method to completely reset the registry state.
    */
   TEST_reset(): void {
+    this._cacheInitialized = false;
     this.clear();
     this.builtins.clear();
   }
