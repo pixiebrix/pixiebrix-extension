@@ -16,16 +16,17 @@
  */
 
 .root {
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .content {
   flex-grow: 1;
-  padding-top: 3rem;
+  align-items: center;
+  padding-top: 1rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .textContainer {
@@ -51,4 +52,25 @@
 .finishButton {
   text-wrap: none;
   flex-grow: 1;
+}
+
+.wizardStepRow {
+  padding: 1rem;
+}
+
+.header {
+  padding: 1rem;
+  elevation: above;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.15);
+}
+
+.form {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.formBody {
+  flex-grow: 1;
+  padding: 1rem;
 }

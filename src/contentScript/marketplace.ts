@@ -71,7 +71,7 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   await ensureSidebar();
   showActivateRecipeInSidebar({
     recipeId,
-    heading: `Activate blueprint ${recipeId}`,
+    heading: "Activate Blueprint",
   });
   window.addEventListener(
     PANEL_HIDING_EVENT,

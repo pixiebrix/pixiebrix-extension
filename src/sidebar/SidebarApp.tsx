@@ -24,6 +24,9 @@ import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
 import ErrorBanner from "./ErrorBanner";
 import { MemoryRouter } from "react-router";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+
+registerDefaultWidgets();
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp

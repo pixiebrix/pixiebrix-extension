@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { type RegistryId } from "@/core";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
@@ -23,25 +23,35 @@ import { useRecipe } from "@/recipes/recipesHooks";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateRecipePanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
+import { isEmpty, uniq } from "lodash";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
+import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 
 const { actions } = sidebarSlice;
 
-const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
+type ActivateRecipePanelProps = {
+  recipeId: RegistryId;
+};
+
+const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   recipeId,
 }) => {
   const dispatch = useDispatch();
 
   const {
-    // TODO: use this for recipe options / activation
-    // data: recipe,
-    isLoading: isLoadingRecipe,
+    data: recipe,
+    isLoading,
+    isUninitialized,
     error: recipeError,
   } = useRecipe(recipeId);
+
+  const isLoadingRecipe = isUninitialized || isLoading;
 
   const {
     data: listings,
@@ -55,41 +65,109 @@ const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
     throw recipeError ?? listingError;
   }
 
+  let isReinstall = false;
+  const recipeExtensions = useSelector(selectExtensionsForRecipe(recipeId));
+  if (!isEmpty(recipeExtensions)) {
+    isReinstall = true;
+  }
+
+  const recipeNameComponent = useMemo(
+    () => (
+      <div className={styles.recipeName}>{listing?.package?.verbose_name}</div>
+    ),
+    [listing?.package?.verbose_name]
+  );
+
+  const hasRecipeOptions = !isEmpty(recipe?.options?.schema?.properties);
+  const recipeServiceIds = uniq(
+    recipe?.extensionPoints.flatMap(({ services }) =>
+      services ? Object.values(services) : []
+    ) ?? []
+  );
+  const needsServiceInputs = recipeServiceIds.some(
+    (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+  );
+
+  const submitRef = useRef<HTMLButtonElement>(null);
+  const activateRecipe = () => {
+    submitRef.current?.click();
+  };
+
+  const [recipeActivated, setRecipeActivated] = useState(false);
+
+  useEffect(() => {
+    if (
+      !recipeActivated &&
+      !isLoadingRecipe &&
+      !recipeError &&
+      // If the recipe doesn't have options or services, we can activate immediately
+      !hasRecipeOptions &&
+      !needsServiceInputs
+    ) {
+      activateRecipe();
+    }
+  }, [
+    hasRecipeOptions,
+    isLoadingRecipe,
+    needsServiceInputs,
+    recipeActivated,
+    recipeError,
+  ]);
+
   if (isLoadingRecipe || isLoadingListing) {
     return <Loader />;
   }
 
-  // TODO: check for recipe options and show the options view
-  // const recipeOptions = recipe.options?.schema?.properties;
-  // if (hasOptions) {
-  //   return <ActivateWizard blueprint={recipe} />;
-  // }
-
-  const onClickFinish = async () => {
+  async function onButtonClick() {
     dispatch(actions.hideActivateRecipe());
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
-  };
+  }
 
   return (
     <div className={styles.root}>
-      <div className={cx("scrollable-area", styles.content)}>
-        <h1>Well done!</h1>
-        <img src={activationCompleteImage} alt="" width={300} />
-        <div className={styles.textContainer}>
-          <div className={styles.recipeName}>
-            {listing.package.verbose_name}
+      {recipeActivated ? (
+        <>
+          <div className={cx("scrollable-area", styles.content)}>
+            <h1>Well done!</h1>
+            <img src={activationCompleteImage} alt="" width={300} />
+            <div className={styles.textContainer}>
+              {recipeNameComponent}
+              <div>is ready to use!</div>
+              <br />
+              <div>Go try it out now, or activate another blueprint.</div>
+            </div>
           </div>
-          <div>is ready to use!</div>
-          <br />
-          <div>Go try it out now, or activate another blueprint.</div>
-        </div>
-      </div>
-      <div className={styles.footer}>
-        <AsyncButton className={styles.finishButton} onClick={onClickFinish}>
-          Ok
-        </AsyncButton>
-      </div>
+          <div className={styles.footer}>
+            <AsyncButton
+              className={styles.finishButton}
+              onClick={onButtonClick}
+            >
+              Ok
+            </AsyncButton>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={styles.header}>
+            <h4>{isReinstall ? "Reactivating" : "Activating"}</h4>
+            {recipeNameComponent}
+            <p>
+              {
+                "We're almost there. This blueprint has a few settings to configure before using. You can always change these later."
+              }
+            </p>
+          </div>
+          <ActivateRecipeInputs
+            recipe={recipe}
+            isReinstall={isReinstall}
+            submitButtonRef={submitRef}
+            onSubmitSuccess={() => {
+              setRecipeActivated(true);
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };

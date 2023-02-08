@@ -111,10 +111,12 @@ function useWizard(
       // form submission without errors until we implement error views on ServicesBody.
       // This is a refactoring opportunity
       services: Yup.array().of(
-        Yup.object().shape({
-          id: Yup.string(),
-          config: Yup.string(),
-        })
+        Yup.object()
+          .shape({
+            id: Yup.string(),
+            config: Yup.string(),
+          })
+          .required()
       ),
       optionsArgs: optionsValidationSchema,
       grantPermissions: Yup.boolean(),

@@ -133,10 +133,10 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             </Nav.Link>
           )}
         </Nav>
-        <Tab.Content className="p-0 border-0 full-height scrollable-area">
+        <Tab.Content className="p-0 border-0">
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
-              className={cx("full-height flex-grow", styles.paneOverrides)}
+              className={cx("h-100", styles.paneOverrides)}
               key={panel.extensionId}
               eventKey={mapTabEventKey("panel", panel)}
             >
@@ -156,7 +156,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           ))}
           {forms.map((form) => (
             <Tab.Pane
-              className="full-height flex-grow"
+              className="h-100"
               key={form.nonce}
               eventKey={mapTabEventKey("form", form)}
             >
@@ -167,7 +167,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           ))}
           {temporaryPanels.map((panel) => (
             <Tab.Pane
-              className={cx("full-height flex-grow", styles.paneOverrides)}
+              className={cx("h-100", styles.paneOverrides)}
               key={panel.nonce}
               eventKey={mapTabEventKey("temporaryPanel", panel)}
             >
@@ -185,7 +185,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           ))}
           {recipeToActivate && (
             <Tab.Pane
-              className={cx("full-height flex-grow", styles.paneOverrides)}
+              className={cx("h-100", styles.paneOverrides)}
               key={recipeToActivate.recipeId}
               eventKey={`activate-${recipeToActivate.recipeId}`}
             >
