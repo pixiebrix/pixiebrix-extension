@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import serviceRegistry from "@/services/registry";
 import { refreshServices } from "./locator";
+import { fetchNewPackages } from "@/baseRegistry";
 
 export async function refreshRegistries(): Promise<void> {
   await Promise.all([
-    extensionPointRegistry.fetch(),
-    blockRegistry.fetch(),
-    serviceRegistry.fetch(),
+    // Call the @/baseRegistry copy of fetchNewPackages so it invalidates in-memory registries
+    fetchNewPackages(),
     refreshServices(),
   ]);
 }

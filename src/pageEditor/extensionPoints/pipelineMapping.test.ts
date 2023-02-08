@@ -40,11 +40,13 @@ describe("normalizePipeline", () => {
   let teapotBlockConfig: BlockConfig;
 
   beforeAll(() => {
-    blockRegistry.register(echoBlock);
-    blockRegistry.register(teapotBlock);
-    blockRegistry.register(new ForEach());
-    blockRegistry.register(new IfElse());
-    blockRegistry.register(new TryExcept());
+    blockRegistry.register([
+      echoBlock,
+      teapotBlock,
+      new ForEach(),
+      new IfElse(),
+      new TryExcept(),
+    ]);
   });
 
   beforeEach(() => {

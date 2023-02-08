@@ -21,6 +21,7 @@ import { connect } from "react-redux";
 import notify from "@/utils/notify";
 import extensionsSlice from "@/store/extensionsSlice";
 import servicesSlice from "@/store/servicesSlice";
+import { clearPackages } from "@/baseRegistry";
 
 const { resetOptions } = extensionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -41,6 +42,7 @@ const FactoryResetSettings: React.FunctionComponent<{
           try {
             resetOptions();
             await browser.contextMenus.removeAll();
+            await clearPackages();
             notify.success("Reset all options and service configurations");
           } catch (error) {
             notify.error({

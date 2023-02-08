@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registerBlock } from "@/blocks/registry";
 import { PageMetadataReader } from "./PageMetadataReader";
 import { PageSemanticReader } from "./PageSemanticReader";
 import { BlankReader } from "./BlankReader";
@@ -32,23 +31,28 @@ import ManifestReader from "./ManifestReader";
 import ProfileReader from "./ProfileReader";
 import SessionReader from "./SessionReader";
 import TimestampReader from "./TimestampReader";
+import { type IBlock } from "@/core";
 
-function registerReaders(): void {
-  // Built-in readers
-  registerBlock(new DocumentReader());
-  registerBlock(new ManifestReader());
-  registerBlock(new ProfileReader());
-  registerBlock(new SessionReader());
-  registerBlock(new TimestampReader());
-  registerBlock(new PageMetadataReader());
-  registerBlock(new PageSemanticReader());
-  registerBlock(new BlankReader());
-  registerBlock(new ImageReader());
-  registerBlock(new ImageExifReader());
-  registerBlock(new ElementReader());
-  registerBlock(new HtmlReader());
-  registerBlock(new SelectionReader());
+function getAllReaders(): IBlock[] {
+  return [
+    // Built-in readers
+    new DocumentReader(),
+    new ManifestReader(),
+    new ProfileReader(),
+    new SessionReader(),
+    new TimestampReader(),
+    new PageMetadataReader(),
+    new PageSemanticReader(),
+    new BlankReader(),
+    new ImageReader(),
+    new ImageExifReader(),
+    new ElementReader(),
+    new HtmlReader(),
+    new SelectionReader(),
+  ];
+}
 
+export function registerReaderFactories(): void {
   // Framework readers
   registerFactory("angularjs", frameworkReadFactory("angularjs"));
   registerFactory("emberjs", frameworkReadFactory("emberjs"));
@@ -58,4 +62,4 @@ function registerReaders(): void {
   registerFactory("jquery", readJQuery);
 }
 
-export default registerReaders;
+export default getAllReaders;

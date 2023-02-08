@@ -25,7 +25,8 @@ import { renderHook } from "@testing-library/react-hooks";
 import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
 import { Provider } from "react-redux";
 import { DEFAULT_THEME } from "@/options/types";
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
+import { type Me } from "@/types/contract";
 
 jest.mock("@/store/optionsStore", () => ({
   persistor: {
@@ -34,8 +35,20 @@ jest.mock("@/store/optionsStore", () => ({
 }));
 
 jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
+  appApi: {
+    endpoints: {
+      getMe: {
+        useQueryState: jest.fn(),
+      },
+    },
+  },
 }));
+
+function mockMeQuery(meData: Partial<Me> = null) {
+  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue({
+    data: meData,
+  });
+}
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -49,10 +62,7 @@ function optionsStore(initialState?: any) {
 
 describe("useGetTheme", () => {
   test("has no partner", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      partner: null,
-    }));
+    mockMeQuery();
 
     const {
       result: { current: theme },
@@ -66,10 +76,7 @@ describe("useGetTheme", () => {
   });
 
   test("has partnerId and no me partner", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      partner: null,
-    }));
+    mockMeQuery();
 
     const {
       result: { current: theme },
@@ -89,10 +96,7 @@ describe("useGetTheme", () => {
   });
 
   test("has theme, but no partnerId and no me partner", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      partner: null,
-    }));
+    mockMeQuery();
 
     const {
       result: { current: theme },
@@ -110,10 +114,7 @@ describe("useGetTheme", () => {
   });
 
   test("has cached partner, but no me partner", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      partner: null,
-    }));
+    mockMeQuery();
 
     const {
       result: { current: theme },
@@ -137,14 +138,11 @@ describe("useGetTheme", () => {
   });
 
   test("has partnerId, and me partner", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      data: {
-        partner: {
-          theme: "automation-anywhere",
-        },
-      },
-    }));
+    mockMeQuery({
+      partner: {
+        theme: "automation-anywhere",
+      } as any,
+    });
 
     const {
       result: { current: theme },
@@ -160,14 +158,11 @@ describe("useGetTheme", () => {
   });
 
   test("has me partner, and different cached partner", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      data: {
-        partner: {
-          theme: "automation-anywhere",
-        },
-      },
-    }));
+    mockMeQuery({
+      partner: {
+        theme: "automation-anywhere",
+      } as any,
+    });
 
     const {
       result: { current: theme },
@@ -188,50 +183,16 @@ describe("useGetTheme", () => {
 describe("useGetOrganizationTheme", () => {
   const customTestLogoUrl = "https://test-logo.svg";
 
-  test("no loading flicker with cached organization theme", () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: true,
-      data: null,
-    }));
-
-    const {
-      result: { current: organizationTheme },
-    } = renderHook(() => useGetOrganizationTheme(), {
-      wrapper: ({ children }) => (
-        <Provider
-          store={optionsStore({
-            auth: {
-              organization: {
-                theme: {
-                  show_sidebar_logo: false,
-                  logo: customTestLogoUrl,
-                },
-              },
-            },
-          })}
-        >
-          {children}
-        </Provider>
-      ),
-    });
-
-    expect(organizationTheme.showSidebarLogo).toBe(false);
-    expect(organizationTheme.customSidebarLogo).toBe(customTestLogoUrl);
-  });
-
   test("new organization theme trumps cached organization theme", () => {
     const newTestLogoUrl = "https://new-test-logo.svg";
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-      data: {
-        organization: {
-          theme: {
-            show_sidebar_logo: false,
-            logo: newTestLogoUrl,
-          },
+    mockMeQuery({
+      organization: {
+        theme: {
+          show_sidebar_logo: false,
+          logo: newTestLogoUrl,
         },
-      },
-    }));
+      } as any,
+    });
 
     const {
       result: { current: organizationTheme },

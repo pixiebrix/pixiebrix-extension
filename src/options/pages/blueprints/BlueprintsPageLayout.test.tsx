@@ -20,7 +20,7 @@ import { render } from "@/options/testHelpers";
 import BlueprintsPageLayout from "@/options/pages/blueprints/BlueprintsPageLayout";
 import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
+import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
 import { organizationFactory } from "@/testUtils/factories";
 import { configureStore } from "@reduxjs/toolkit";
@@ -32,6 +32,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import blueprintsSlice, {
   persistBlueprintsConfig,
 } from "@/options/pages/blueprints/blueprintsSlice";
+import { type Me } from "@/types/contract";
 
 const EMPTY_RESPONSE = Object.freeze({
   data: Object.freeze([]),
@@ -41,11 +42,18 @@ const EMPTY_RESPONSE = Object.freeze({
 // Need to return the same object every time, because useInstallableViewItems doesn't destructure the object. Or maybe
 // we just need to make sure the data [] array is the same object?
 jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetCloudExtensionsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetMarketplaceListingsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetOrganizationsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetStarterBlueprintsQuery: jest.fn(() => EMPTY_RESPONSE),
+  appApi: {
+    endpoints: {
+      getMe: {
+        useQueryState: jest.fn(() => EMPTY_RESPONSE),
+      },
+    },
+    useLazyGetMeQuery: jest.fn(() => [jest.fn(), EMPTY_RESPONSE]),
+  },
 }));
 
 jest.mock("@/recipes/recipesHooks", () => ({
@@ -74,6 +82,11 @@ function optionsStore(initialState?: any) {
   });
 }
 
+function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
+  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
+  (appApi.useLazyGetMeQuery as jest.Mock).mockReturnValue([jest.fn(), state]);
+}
+
 const installables: Installable[] = [];
 
 describe("BlueprintsPageLayout", () => {
@@ -82,6 +95,7 @@ describe("BlueprintsPageLayout", () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...env };
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -137,10 +151,10 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("does not show 'Get Started' tab for enterprise users", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: { organization: organizationFactory() },
-    }));
+      data: { organization: organizationFactory() as any } as any,
+    });
 
     render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
@@ -151,9 +165,9 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("shows the bot games tab", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-    }));
+    });
 
     render(
       <Provider
@@ -174,9 +188,9 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("doesn't flash get started tab while loading the bot games tab", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: true,
-    }));
+    });
     (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
       isLoading: false,
     }));

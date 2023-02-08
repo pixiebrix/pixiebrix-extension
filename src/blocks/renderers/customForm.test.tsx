@@ -34,12 +34,6 @@ import { uuidv4 } from "@/types/helpers";
 
 import { dataStore } from "@/background/messenger/api";
 
-jest.mock("@/background/messenger/api", () => ({
-  dataStore: {
-    get: jest.fn(),
-  },
-}));
-
 const dataStoreGetMock = dataStore.get as jest.MockedFunction<
   typeof dataStore.get
 >;

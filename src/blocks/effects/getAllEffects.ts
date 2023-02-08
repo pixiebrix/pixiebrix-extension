@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registerBlock } from "@/blocks/registry";
 import { LogEffect } from "./logger";
 import { NavigateURLEffect, OpenURLEffect } from "./redirectPage";
 import { CopyToClipboard } from "./clipboard";
@@ -50,48 +49,51 @@ import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import ToggleQuickbarEffect from "@/blocks/effects/ToggleQuickbarEffect";
 import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
+import { type IBlock } from "@/core";
 
-function registerEffects(): void {
-  registerBlock(new LogEffect());
-  registerBlock(new OpenURLEffect());
-  registerBlock(new NavigateURLEffect());
-  registerBlock(new CopyToClipboard());
-  registerBlock(new FormFill());
-  registerBlock(new SetInputValue());
-  registerBlock(new CloseTabEffect());
-  registerBlock(new ActivateTabEffect());
-  registerBlock(new HighlightEffect());
-  registerBlock(new SetVueValues());
-  registerBlock(new ElementEvent());
-  registerBlock(new WaitEffect());
-  registerBlock(new WaitElementEffect());
-  registerBlock(new AlertEffect());
-  registerBlock(new GetPageState());
-  registerBlock(new SetPageState());
-  registerBlock(new HideEffect());
-  registerBlock(new ExportCsv());
-  registerBlock(new HideSidebar());
-  registerBlock(new ShowSidebar());
-  registerBlock(new CancelEffect());
-  registerBlock(new ErrorEffect());
-  registerBlock(new ShowEffect());
-  registerBlock(new TelemetryEffect());
-  registerBlock(new ConfettiEffect());
-  registerBlock(new TourEffect());
-  registerBlock(new AttachAutocomplete());
-  registerBlock(new ReactivateEffect());
-  registerBlock(new SoundEffect());
-  registerBlock(new EnableEffect());
-  registerBlock(new DisableEffect());
-  registerBlock(new InsertHtml());
-  registerBlock(new CustomEventEffect());
-  registerBlock(new ReplaceTextEffect());
-  registerBlock(new HighlightText());
-  registerBlock(new ScrollIntoViewEffect());
-  registerBlock(new AddQuickBarAction());
-  registerBlock(new ToggleQuickbarEffect());
-  registerBlock(new SubmitPanelEffect());
-  registerBlock(new RunSubTourEffect());
+function getAllEffects(): IBlock[] {
+  return [
+    new LogEffect(),
+    new OpenURLEffect(),
+    new NavigateURLEffect(),
+    new CopyToClipboard(),
+    new FormFill(),
+    new SetInputValue(),
+    new CloseTabEffect(),
+    new ActivateTabEffect(),
+    new HighlightEffect(),
+    new SetVueValues(),
+    new ElementEvent(),
+    new WaitEffect(),
+    new WaitElementEffect(),
+    new AlertEffect(),
+    new GetPageState(),
+    new SetPageState(),
+    new HideEffect(),
+    new ExportCsv(),
+    new HideSidebar(),
+    new ShowSidebar(),
+    new CancelEffect(),
+    new ErrorEffect(),
+    new ShowEffect(),
+    new TelemetryEffect(),
+    new ConfettiEffect(),
+    new TourEffect(),
+    new AttachAutocomplete(),
+    new ReactivateEffect(),
+    new SoundEffect(),
+    new EnableEffect(),
+    new DisableEffect(),
+    new InsertHtml(),
+    new CustomEventEffect(),
+    new ReplaceTextEffect(),
+    new HighlightText(),
+    new ScrollIntoViewEffect(),
+    new AddQuickBarAction(),
+    new ToggleQuickbarEffect(),
+    new SubmitPanelEffect(),
+    new RunSubTourEffect(),
+  ];
 }
 
-export default registerEffects;
+export default getAllEffects;

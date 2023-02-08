@@ -31,18 +31,6 @@ jest.mock("@/sidebar/messenger/api", () => ({
   renderPanels: jest.fn(),
 }));
 
-jest.mock("@/background/messenger/api", () => ({
-  // :shrug: imported via testUtils/factories
-  getAvailableVersion: jest.fn(),
-}));
-
-jest.mock("webext-messenger", () => ({
-  getTopLevelFrame: jest.fn().mockResolvedValue({
-    tabId: 1,
-    frameId: 0,
-  }),
-}));
-
 jest.mock("@/contentScript/messenger/api", () => ({
   closeTemporaryPanel: jest.fn().mockResolvedValue(undefined),
   cancelTemporaryPanel: jest.fn().mockResolvedValue(undefined),

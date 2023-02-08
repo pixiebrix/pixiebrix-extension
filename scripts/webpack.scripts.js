@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const path = require("path");
+const path = require("node:path");
 const webpack = require("webpack");
 const mergeWithShared = require("../webpack.sharedConfig.js");
 
@@ -56,6 +56,7 @@ module.exports = mergeWithShared({
     }),
     new webpack.ProvidePlugin({
       document: "min-document",
+      jest: "jest-mock",
     }),
     new webpack.EnvironmentPlugin({
       NPM_PACKAGE_VERSION: process.env.npm_package_version,

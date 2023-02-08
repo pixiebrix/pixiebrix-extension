@@ -51,7 +51,6 @@ jest.mock("@/hooks/auth", () => ({
 }));
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
-jest.mock("@/background/messenger/api");
 
 function makeBaseState() {
   const baseFormState = menuItemFormStateFactory();

@@ -40,7 +40,7 @@ jest.mock("@/telemetry/logging", () => {
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, contextBlock);
+  blockRegistry.register([echoBlock, contextBlock]);
 });
 
 const componentBlock = fromJS({
@@ -68,7 +68,7 @@ const componentBlock = fromJS({
 
 describe("component block v1", () => {
   test("v2 pipeline calling v1 block", async () => {
-    blockRegistry.register(componentBlock);
+    blockRegistry.register([componentBlock]);
 
     const pipeline = [
       {
@@ -96,7 +96,7 @@ describe("component block v1", () => {
   });
 
   test("v3 pipeline calling v1 block", async () => {
-    blockRegistry.register(componentBlock);
+    blockRegistry.register([componentBlock]);
 
     const pipeline = [
       {

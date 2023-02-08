@@ -147,11 +147,31 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         console.debug("Got validation error", error);
 
         if (isSingleObjectBadRequestError(error)) {
-          for (const message of castArray(error.response.data.__all__ ?? [])) {
+          // Backend returns non_field_errors for DRF validation errors and __all__ for Django errors. The backend
+          // should not longer be returning __all__ errors, but we keep it here to be defensive
+          const {
+            config: configErrors,
+            non_field_errors = [],
+            __all__ = [],
+            ...otherErrors
+          } = error.response.data;
+
+          for (const message of [...non_field_errors, ...__all__]) {
             notify.error(message);
           }
 
-          setErrors(error.response.data);
+          if (configErrors) {
+            setErrors({ config: configErrors });
+          }
+
+          for (const [field, messages] of Object.entries(otherErrors)) {
+            for (const message of castArray(messages)) {
+              notify.error({
+                message: `Invalid ${field}`,
+                error: new Error(message),
+              });
+            }
+          }
         } else {
           notify.error({ error });
         }

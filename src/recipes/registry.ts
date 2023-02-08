@@ -80,7 +80,6 @@ function fromJS(rawRecipe: UnnormalizedRecipeDefinition) {
 
 const registry = new BaseRegistry<RegistryId, RegistryRecipeDefinition>(
   ["recipe"],
-  "recipes",
   fromJS
 );
 

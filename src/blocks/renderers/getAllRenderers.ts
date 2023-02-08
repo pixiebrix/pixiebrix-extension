@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registerBlock } from "@/blocks/registry";
 import { HtmlRenderer } from "./html";
 import { IFrameRenderer } from "./iframe";
 import { MarkdownRenderer } from "./markdown";
@@ -23,15 +22,18 @@ import { PropertyTableRenderer } from "./propertyTable";
 import { CustomFormRenderer } from "./customForm";
 import { TableRenderer } from "./table";
 import { DocumentRenderer } from "./document";
+import { type IBlock } from "@/core";
 
-function registerRenderers(): void {
-  registerBlock(new HtmlRenderer());
-  registerBlock(new IFrameRenderer());
-  registerBlock(new MarkdownRenderer());
-  registerBlock(new PropertyTableRenderer());
-  registerBlock(new CustomFormRenderer());
-  registerBlock(new TableRenderer());
-  registerBlock(new DocumentRenderer());
+function getAllRenderers(): IBlock[] {
+  return [
+    new HtmlRenderer(),
+    new IFrameRenderer(),
+    new MarkdownRenderer(),
+    new PropertyTableRenderer(),
+    new CustomFormRenderer(),
+    new TableRenderer(),
+    new DocumentRenderer(),
+  ];
 }
 
-export default registerRenderers;
+export default getAllRenderers;

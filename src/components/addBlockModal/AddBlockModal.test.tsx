@@ -34,6 +34,11 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import blocksRegistry from "@/blocks/registry";
+import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+
+// Need at least one item so callers see the registry as initialized
+blocksRegistry.register([echoBlock]);
 
 jest.mock("@/services/api", () => {
   const originalModule = jest.requireActual("@/services/api");

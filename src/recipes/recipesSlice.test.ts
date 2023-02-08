@@ -19,15 +19,25 @@ import { recipeFactory } from "@/testUtils/factories";
 import { serializeError } from "serialize-error";
 import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
 import { type RecipesRootState } from "./recipesTypes";
-import registry from "./registry";
+import recipesRegistry from "./registry";
+import { fetchNewPackages } from "@/baseRegistry";
 
 jest.mock("./registry", () => ({
   __esModule: true,
   default: {
     all: jest.fn(),
-    fetch: jest.fn(),
   },
 }));
+
+jest.mock("@/baseRegistry", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/baseRegistry"),
+  fetchNewPackages: jest.fn(),
+}));
+
+const fetchNewPackagesMock = fetchNewPackages as jest.MockedFn<
+  typeof fetchNewPackages
+>;
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -37,11 +47,11 @@ describe("loadRecipesFromCache", () => {
   test("calls registry and dispatches setRecipesFromCache action", async () => {
     const dispatch = jest.fn();
     const cachedRecipes = [recipeFactory()];
-    (registry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
+    (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
     const thunkFunction = recipesActions.loadRecipesFromCache();
     await thunkFunction(dispatch, () => ({ recipes: initialState }), undefined);
-    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setRecipesFromCache(cachedRecipes)
     );
@@ -51,7 +61,6 @@ describe("loadRecipesFromCache", () => {
 describe("refreshRecipes", () => {
   test("doesn't refresh if already loading", async () => {
     const dispatch = jest.fn();
-    (registry.fetch as jest.Mock).mockResolvedValueOnce(undefined);
 
     const thunkFunction = recipesActions.refreshRecipes();
     await thunkFunction(
@@ -66,15 +75,14 @@ describe("refreshRecipes", () => {
       undefined
     );
 
-    expect(registry.fetch).not.toHaveBeenCalled();
+    expect(fetchNewPackagesMock).not.toHaveBeenCalled();
   });
 
   test("fetches recipes and updates the state", async () => {
     const dispatch = jest.fn();
 
     const cachedRecipes = [recipeFactory()];
-    (registry.fetch as jest.Mock).mockResolvedValueOnce(undefined);
-    (registry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
+    (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
     const thunkFunction = recipesActions.refreshRecipes();
     await thunkFunction(
@@ -84,8 +92,8 @@ describe("refreshRecipes", () => {
     );
 
     expect(dispatch).toHaveBeenCalledWith(recipesActions.startLoading());
-    expect(registry.fetch).toHaveBeenCalledTimes(1);
-    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(fetchNewPackagesMock).toHaveBeenCalledTimes(1);
+    expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setRecipes(cachedRecipes)
     );
@@ -95,7 +103,7 @@ describe("refreshRecipes", () => {
     const dispatch = jest.fn();
 
     const error = new Error("test");
-    (registry.fetch as jest.Mock).mockRejectedValueOnce(error);
+    fetchNewPackagesMock.mockRejectedValueOnce(error);
 
     const thunkFunction = recipesActions.refreshRecipes();
     await thunkFunction(

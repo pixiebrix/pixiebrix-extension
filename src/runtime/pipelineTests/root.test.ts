@@ -90,7 +90,7 @@ const rootReader = new RootAwareReader();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(rootBlock, rootReader, echoBlock);
+  blockRegistry.register([rootBlock, rootReader, echoBlock]);
   // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
   document.querySelectorAll("html")[0].innerHTML = "";
 });

@@ -72,30 +72,30 @@ const { pixieServiceFactory } = jest.requireActual("@/services/locator");
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
 const EXAMPLE_SERVICE_TOKEN_API = validateRegistryId("example/token");
 
-serviceRegistry.register({
-  id: PIXIEBRIX_SERVICE_ID,
-  authenticateRequest: (
-    serviceConfig: ServiceConfig,
-    requestConfig: AxiosRequestConfig
-  ) => requestConfig,
-} as any);
-
-serviceRegistry.register({
-  id: EXAMPLE_SERVICE_API,
-  authenticateRequest: (
-    serviceConfig: ServiceConfig,
-    requestConfig: AxiosRequestConfig
-  ) => requestConfig,
-} as any);
-
-serviceRegistry.register({
-  id: EXAMPLE_SERVICE_TOKEN_API,
-  authenticateRequest: (
-    serviceConfig: ServiceConfig,
-    requestConfig: AxiosRequestConfig
-  ) => requestConfig,
-  isToken: true,
-} as any);
+serviceRegistry.register([
+  {
+    id: PIXIEBRIX_SERVICE_ID,
+    authenticateRequest: (
+      serviceConfig: ServiceConfig,
+      requestConfig: AxiosRequestConfig
+    ) => requestConfig,
+  },
+  {
+    id: EXAMPLE_SERVICE_API,
+    authenticateRequest: (
+      serviceConfig: ServiceConfig,
+      requestConfig: AxiosRequestConfig
+    ) => requestConfig,
+  },
+  {
+    id: EXAMPLE_SERVICE_TOKEN_API,
+    authenticateRequest: (
+      serviceConfig: ServiceConfig,
+      requestConfig: AxiosRequestConfig
+    ) => requestConfig,
+    isToken: true,
+  },
+] as any);
 
 const requestConfig: AxiosRequestConfig = {
   url: "https://www.example.com",

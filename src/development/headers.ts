@@ -36,7 +36,7 @@ Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 
-const blockDefinitions = blockRegistry.cached().map((block) => ({
+const blockDefinitions = blockRegistry.builtins.map((block) => ({
   apiVersion: "v1",
   header: true,
   kind: "read" in block ? "reader" : "component",

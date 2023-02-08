@@ -115,6 +115,9 @@ jest.mock("@/permissions", () => {
 });
 jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn().mockResolvedValue(true),
+  registry: {
+    getByKinds: jest.fn().mockResolvedValue([]),
+  },
 }));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
@@ -133,16 +136,20 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 
 beforeAll(async () => {
   registerDefaultWidgets();
+
   blockRegistry.clear();
-  blockRegistry.register(
+
+  blockRegistry.register([
     echoBlock,
     teapotBlock,
     jqBlock,
     alertBlock,
     forEachBlock,
     markdownBlock,
-    uiPathBlock
-  );
+    uiPathBlock,
+  ]);
+
+  // Force block map to be created
   await blockRegistry.allTyped();
 
   const tags = [
