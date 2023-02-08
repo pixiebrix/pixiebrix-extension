@@ -107,14 +107,14 @@ describe("blocksRegistry", () => {
   test("reads single JS block", async () => {
     blocksRegistry.register([echoBlock]);
     await expect(blocksRegistry.all()).resolves.toEqual([echoBlock]);
-    expect(blocksRegistry.cached()).toEqual([echoBlock]);
+    expect(blocksRegistry.cached).toEqual([echoBlock]);
   });
 
   test("preserves JS block on clear", async () => {
     blocksRegistry.register([echoBlock]);
     blocksRegistry.clear();
     await expect(blocksRegistry.all()).resolves.toEqual([echoBlock]);
-    expect(blocksRegistry.cached()).toEqual([echoBlock]);
+    expect(blocksRegistry.cached).toEqual([echoBlock]);
 
     blocksRegistry.clear();
     await expect(blocksRegistry.lookup(echoBlock.id)).resolves.toEqual(
@@ -126,7 +126,7 @@ describe("blocksRegistry", () => {
     blocksRegistry.register([echoBlock]);
     blocksRegistry.clear();
     expect(blocksRegistry.isCachedInitialized).toBe(false);
-    expect(() => blocksRegistry.cached()).toThrow("Cache not initialized");
+    expect(() => blocksRegistry.cached).toThrow("Cache not initialized");
   });
 
   test("cache invalid until all()", async () => {

@@ -101,13 +101,13 @@ export class Registry<
    * Registered built-in items. Used to keep track of built-ins across cache clears.
    * @private
    */
-  private readonly builtins = new Map<RegistryId, Item>();
+  private readonly _builtins = new Map<RegistryId, Item>();
 
   /**
    * Cache of items in the registry. Contains both built-ins and remote items.
    * @private
    */
-  private readonly cache = new Map<RegistryId, Item>();
+  private readonly _cache = new Map<RegistryId, Item>();
 
   /**
    * Track the state of the cache
@@ -160,7 +160,7 @@ export class Registry<
    * @param id the registry id
    */
   async exists(id: Id): Promise<boolean> {
-    return this.cache.has(id) || (await backgroundRegistry.find(id)) != null;
+    return this._cache.has(id) || (await backgroundRegistry.find(id)) != null;
   }
 
   /**
@@ -174,13 +174,13 @@ export class Registry<
       throw new Error("id is required");
     }
 
-    const cached = this.cache.get(id);
+    const cached = this._cache.get(id);
 
     if (cached) {
       return cached;
     }
 
-    const builtin = this.builtins.get(id);
+    const builtin = this._builtins.get(id);
 
     if (builtin) {
       return builtin;
@@ -217,23 +217,30 @@ export class Registry<
   }
 
   /**
-   * Synchronously return all cached bricks.
-   * @deprecated needed for header generation; will be removed in future versions
+   * Return built-in JS bricks registered
+   */
+  get builtins(): Item[] {
+    return [...this._builtins.values()];
+  }
+
+  /**
+   * Synchronously return all cached bricks
+   * @deprecated requires all data to be parsed
    * @throws Error if the cache is not initialized
    * @see isCachedInitialized
    * @see all
    */
-  cached(): Item[] {
+  get cached(): Item[] {
     if (!this._cacheInitialized) {
       throw new Error("Cache not initialized");
     }
 
-    return [...this.cache.values()];
+    return [...this._cache.values()];
   }
 
   /**
    * Reloads all brick configurations from IDB, and returns all bricks in the registry.
-   * @deprecated requires all data to be fetched/parsed
+   * @deprecated requires all data to be parsed
    * @see cached
    */
   async all(): Promise<Item[]> {
@@ -251,7 +258,7 @@ export class Registry<
 
     // Perform as single call to register so listeners are notified once
     this.register(remoteItems, { source: "remote", notify: false });
-    this.register([...this.builtins.values()], {
+    this.register([...this._builtins.values()], {
       source: "builtin",
       notify: false,
     });
@@ -259,7 +266,7 @@ export class Registry<
 
     this._cacheInitialized = true;
 
-    return this.cached();
+    return this.cached;
   }
 
   /**
@@ -284,10 +291,10 @@ export class Registry<
       }
 
       if (source === "builtin") {
-        this.builtins.set(item.id, item);
+        this._builtins.set(item.id, item);
       }
 
-      this.cache.set(item.id, item);
+      this._cache.set(item.id, item);
       changed = true;
     }
 
@@ -315,7 +322,7 @@ export class Registry<
   clear(): void {
     // Need to clear the whole thing, including built-ins. Listeners will often can all() to repopulate the cache.
     this._cacheInitialized = false;
-    this.cache.clear();
+    this._cache.clear();
     this.notifyAll();
   }
 
@@ -326,7 +333,7 @@ export class Registry<
   TEST_reset(): void {
     this._cacheInitialized = false;
     this.clear();
-    this.builtins.clear();
+    this._builtins.clear();
   }
 }
 
