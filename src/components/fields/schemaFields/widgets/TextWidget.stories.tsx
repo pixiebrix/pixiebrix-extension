@@ -18,55 +18,34 @@
 import React from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import CssClassWidget, { parseValue } from "./CssClassWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik, useField } from "formik";
-import { type Expression } from "@/core";
-import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
+import { Formik } from "formik";
+import { type Expression, type Schema  } from "@/core";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import registerDefaultWidgets from "./registerDefaultWidgets";
-
-registerDefaultWidgets();
 
 export default {
-  title: "Widgets/CssClassWidget",
-  component: CssClassWidget,
-} as ComponentMeta<typeof CssClassWidget>;
+  title: "Widgets/TextWidget",
+  component: TextWidget,
+} as ComponentMeta<typeof TextWidget>;
 
-const Preview: React.VFC = () => {
-  const [{ value }] = useField("cssClass");
-
-  const { classes, isVar, includesTemplate } = parseValue(value);
-
-  if (isVar || includesTemplate) {
-    return <div>Preview not supported</div>;
-  }
-
-  return (
-    <div className={classes.join(" ")}>
-      The quick brown fox jumps over the lazy dog
-    </div>
-  );
+const schema: Schema = {
+  type: "string",
+  description: "this is a test field description"
 };
+const fieldName = "text";
 
 const Template: Story<
-  typeof CssClassWidget & { initialValues: { cssClass: string | Expression } }
+  typeof TextWidget & { initialValues: { text: string | Expression } }
 > = ({ initialValues }) => (
   <Provider store={settingsStore()}>
     <Formik initialValues={initialValues} onSubmit={action("submit")}>
       <>
-        <div className="mb-4">
-          <Preview />
-        </div>
-
         <div>
-          <CssClassWidget
-            inputModeOptions={getCssClassInputFieldOptions()}
-            schema={{
-              type: "string",
-            }}
-            name="cssClass"
+          <TextWidget
+            schema={schema}
+            name={fieldName}
           />
         </div>
       </>
@@ -77,33 +56,55 @@ const Template: Story<
 export const BlankLiteral = Template.bind({});
 BlankLiteral.args = {
   initialValues: {
-    cssClass: "",
+    text: "",
   },
 };
 
 export const Omitted = Template.bind({});
 Omitted.args = {
   initialValues: {
-    cssClass: null,
+    text: null,
   },
 };
 
 export const BlankExpression = Template.bind({});
 BlankExpression.args = {
   initialValues: {
-    cssClass: {
+    text: {
       __type__: "nunjucks",
       __value__: "",
     },
   },
 };
 
-export const VariableExpression = Template.bind({});
-VariableExpression.args = {
+export const TemplateExpression = Template.bind({});
+TemplateExpression.args = {
   initialValues: {
-    cssClass: {
-      __type__: "var",
-      __value__: "@cssClasses",
+    text: {
+      __type__: "nunjucks",
+      __value__: "Hello, {{ @person.firstName }}!",
     },
   },
 };
+
+export const ConditionalExpression = Template.bind({});
+ConditionalExpression.args = {
+  initialValues: {
+    text: {
+      __type__: "nunjucks",
+      __value__: '{% if @animal == "cat" %}\n  Meow!\n{% elif @animal == "dog" %}\n  Woof!\n{% else %}\n  Moo!\n{% endif %}',
+    },
+  },
+};
+
+export const FilterExpression = Template.bind({});
+FilterExpression.args = {
+  initialValues: {
+    text: {
+      __type__: "nunjucks",
+      __value__: '{{ @userPreference.data["favorite color"] | truncate(15) | title }}',
+    },
+  },
+};
+
+

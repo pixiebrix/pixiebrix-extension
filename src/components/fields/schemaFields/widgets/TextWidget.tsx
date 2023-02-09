@@ -27,7 +27,6 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { useField } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
-import fitTextarea from "fit-textarea";
 import { type Schema, type TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
@@ -40,6 +39,7 @@ import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
+import TemplateEditor from "./templateEditor/TemplateEditor";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -74,7 +74,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   inputRef,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
+  const [{ value }, , { setValue }] = useField(name);
 
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
@@ -83,10 +83,6 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   const textAreaRef = useRef<HTMLTextAreaElement>();
 
   useEffect(() => {
-    if (textAreaRef.current) {
-      fitTextarea.watch(textAreaRef.current);
-    }
-
     // Sync the ref values
     if (inputRef) {
       inputRef.current = textAreaRef.current;
@@ -114,8 +110,6 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
         }
 
         current.focus();
-        current.selectionStart = current.textLength;
-        current.selectionEnd = current.textLength;
       }, 150);
     }
   }, [focusInput]);
@@ -125,20 +119,9 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     [schema]
   );
 
-  const undo = useUndo(value, setValue);
-
-  const keyDownHandler: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-      undo();
-    }
-  };
-
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
-      const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
-        target,
-      }) => {
-        const changeValue = target.value;
+      const onChange = (changeValue: string) => {
         // Automatically switch to var if user types "@" in the input
         if (templateEngine !== "var" && isVarValue(changeValue)) {
           setValue(makeVariableExpression(changeValue));
@@ -177,12 +160,9 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     }
 
     const fieldValue = typeof value === "string" ? value : "";
-    const onChange: React.ChangeEventHandler<HTMLInputElement> =
-      allowExpressions
-        ? onChangeForTemplate("nunjucks")
-        : (event) => {
-            setValue(event.target.value);
-          };
+    const onChange = allowExpressions
+      ? onChangeForTemplate("nunjucks")
+      : setValue;
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
@@ -197,15 +177,10 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   }
 
   return (
-    <Form.Control
-      as="textarea"
-      rows="1"
-      {...restInputProps}
-      {...formControlProps}
+    <TemplateEditor
       value={fieldInputValue}
       onChange={fieldOnChange}
       ref={textAreaRef}
-      onKeyDown={keyDownHandler}
     />
   );
 };
