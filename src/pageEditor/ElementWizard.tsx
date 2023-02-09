@@ -22,13 +22,10 @@ import { useFormikContext } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
 import { type WizardStep } from "@/pageEditor/extensionPoints/base";
 import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
 import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
-import { thisTab } from "@/pageEditor/utils";
-import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
 import { useDispatch } from "react-redux";
 import { produce } from "immer";
@@ -67,15 +64,8 @@ const WizardNavItem: React.FunctionComponent<{
  */
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
-  editable: Set<string>;
-}> = ({ element, editable }) => {
+}> = ({ element }) => {
   const [step, setStep] = useState(wizard[0].step);
-
-  const availableDefinition = element.extensionPoint.definition.isAvailable;
-  const [available] = useAsyncState(
-    async () => checkAvailable(thisTab, availableDefinition),
-    [availableDefinition]
-  );
 
   const { isValid, status, handleReset } = useFormikContext<FormState>();
 
@@ -156,12 +146,7 @@ const ElementWizard: React.FunctionComponent<{
           {status && <div className="text-danger">{status}</div>}
           <Tab.Content className={styles.content}>
             {wizardSteps.map(({ Component, step }) => (
-              <Component
-                key={step}
-                eventKey={step}
-                editable={editable}
-                available={available}
-              />
+              <Component key={step} eventKey={step} />
             ))}
           </Tab.Content>
         </BootstrapForm>
