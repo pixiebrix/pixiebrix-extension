@@ -66,8 +66,11 @@ class QuickBarRegistry {
    * @private
    */
   private notifyListeners() {
+    // Need to copy the array because the registry mutates the array in-place, and listeners might be keeping a
+    // reference to the argument passed to them
+    const copy = [...this.actions];
     for (const listener of this.listeners) {
-      listener(this.actions);
+      listener(copy);
     }
   }
 
@@ -75,7 +78,8 @@ class QuickBarRegistry {
    * Get the current actions registered with the Quick Bar.
    */
   get currentActions(): CustomAction[] {
-    return this.actions;
+    // Return a copy, since this.actions is mutated in-place
+    return [...this.actions];
   }
 
   /**
