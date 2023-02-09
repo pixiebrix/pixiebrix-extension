@@ -17,54 +17,28 @@
 
 import { type Deployment } from "@/types/contract";
 import { useCallback, useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
 import { ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { getUID, services } from "@/background/messenger/api";
-import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
+import { services } from "@/background/messenger/api";
+import { reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "redux";
 import { type IExtension } from "@/core";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
   mergeDeploymentServiceConfigurations,
-  selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settingsSlice";
 import { selectDeploymentPermissions } from "@/utils/deploymentPermissionUtils";
+import { useGetDeploymentsQuery } from "@/services/api";
 
 const { actions } = extensionsSlice;
-
-/**
- * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
- */
-async function fetchDeployments(
-  installedExtensions: IExtension[]
-): Promise<Deployment[]> {
-  const client = await maybeGetLinkedApiClient();
-
-  if (!client) {
-    return [];
-  }
-
-  const { data: deployments } = await client.post<Deployment[]>(
-    "/api/deployments/",
-    {
-      uid: await getUID(),
-      version: getExtensionVersion(),
-      active: selectInstalledDeployments(installedExtensions),
-    }
-  );
-
-  return deployments;
-}
 
 async function activateDeployment(
   dispatch: Dispatch,
@@ -163,10 +137,11 @@ function useDeployments(): DeploymentState {
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
 
-  const [deployments, isLoading, fetchError] = useAsyncState(
-    async () => fetchDeployments(installedExtensions),
-    [installedExtensions]
-  );
+  const {
+    data: deployments,
+    isLoading,
+    error: fetchError,
+  } = useGetDeploymentsQuery();
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
     const isUpdated = makeUpdatedFilter(installedExtensions, {

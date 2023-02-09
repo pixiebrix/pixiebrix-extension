@@ -46,6 +46,7 @@ jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetOrganizationsQuery: jest.fn(() => EMPTY_RESPONSE),
   useGetStarterBlueprintsQuery: jest.fn(() => EMPTY_RESPONSE),
+  useGetDeploymentsQuery: jest.fn(() => EMPTY_RESPONSE),
   appApi: {
     endpoints: {
       getMe: {

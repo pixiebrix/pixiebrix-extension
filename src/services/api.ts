@@ -40,6 +40,7 @@ import {
   type PackageVersion,
   type PendingInvitation,
   type SanitizedAuth,
+  type Deployment,
   UserRole,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
@@ -128,6 +129,7 @@ export const appApi = createApi({
     "Package",
     "PackageVersion",
     "StarterBlueprints",
+    "Deployments",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -412,6 +414,13 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
+    getDeployments: builder.query<Deployment[], void>({
+      query: () => ({
+        url: "/api/deployments/",
+        method: "get",
+      }),
+      providesTags: ["Deployments"],
+    }),
   }),
 });
 
@@ -440,5 +449,6 @@ export const {
   useUpdateScopeMutation,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
+  useGetDeploymentsQuery,
   util,
 } = appApi;
