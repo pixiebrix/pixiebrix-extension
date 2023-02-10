@@ -33,7 +33,6 @@ import {
   type Descendant
 } from "slate";
 import { withHistory } from "slate-history";
-
 import {
   tokenize,
   serialize,
@@ -50,97 +49,111 @@ interface Props {
 }
 
 interface LeafProps extends RenderLeafProps {
-  leaf: RenderLeafProps["leaf"] & { variable?: boolean, data?: { active: boolean } }
+  leaf: RenderLeafProps["leaf"] & {
+    variable?: boolean;
+    data?: { active: boolean };
+  };
 }
 
-const TemplateEditor = React.forwardRef(({ value, onChange, placeholder, className }: Props, ref) => {
-  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
-  const [focused, setFocused] = useState(false);
-  const [internalValue, setInternalValue] = useState(value);
-  const renderLeaf = useCallback(
-    (props: RenderLeafProps) => <Leaf {...props} />,
-    []
-  );
-  const decorate = useCallback(
-    ([node, path]: NodeEntry) => {
-      const ranges: Array<(Range & { data: { active: boolean } })> = [];
-      if (!Text.isText(node)) {
-        return ranges;
-      }
-
-      const tokens = tokenize(node.text);
-      let start = 0;
-      for (const token of tokens) {
-        const length: number = (typeof token === "string" ? token.length : token.text?.length) || 0;
-        const end = start + length;
-
-        if (typeof token !== "string") {
-          const range = { anchor: { path, offset: start }, focus: { path, offset: end } };
-          // Save whether the cursor is currently on this decoration
-          const intersection =
-            editor.selection &&
-            focused &&
-            Range.intersection(range, editor.selection);
-
-          ranges.push({
-            ...range,
-            [token.type]: true,
-            data: { active: Boolean(intersection) },
-          });
+const TemplateEditor = React.forwardRef(
+  ({ value, onChange, placeholder, className }: Props, ref) => {
+    const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+    const [focused, setFocused] = useState(false);
+    const [internalValue, setInternalValue] = useState(value);
+    const renderLeaf = useCallback(
+      (props: RenderLeafProps) => <Leaf {...props} />,
+      []
+    );
+    const decorate = useCallback(
+      ([node, path]: NodeEntry) => {
+        const ranges: Array<Range & { data: { active: boolean } }> = [];
+        if (!Text.isText(node)) {
+          return ranges;
         }
 
-        start = end;
+        const tokens = tokenize(node.text);
+        let start = 0;
+        for (const token of tokens) {
+          const length: number =
+            (typeof token === "string" ? token.length : token.text?.length) ||
+            0;
+          const end = start + length;
+
+          if (typeof token !== "string") {
+            const range = {
+              anchor: { path, offset: start },
+              focus: { path, offset: end },
+            };
+
+            // Save whether the cursor is currently on this decoration
+            const intersection =
+              editor.selection &&
+              focused &&
+              Range.intersection(range, editor.selection);
+
+            ranges.push({
+              ...range,
+              [token.type]: true,
+              data: { active: Boolean(intersection) },
+            });
+          }
+
+          start = end;
+        }
+
+        return ranges;
+      },
+      [editor, focused]
+    );
+
+    React.useImperativeHandle(ref, () => ({
+      focus() {
+        ReactEditor.focus(editor);
+        // Set cursor to end
+        Transforms.select(editor, Editor.end(editor, []));
+      },
+      set(value_: string) {
+        resetNodes(editor, { nodes: deserialize(value_) });
+      },
+    }));
+
+    useEffect(() => {
+      // Slate.js is uncontrolled and manages its state internally
+      // Only reset the state if there's a new value to avoid cursor jumping while typing
+      if (internalValue !== value) {
+        resetNodes(editor, { nodes: deserialize(value) });
       }
+    }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
-      return ranges;
-    },
-    [editor, focused]
-  );
-
-  React.useImperativeHandle(ref, () => ({
-    focus() {
-      ReactEditor.focus(editor);
-      // Set cursor to end
-      Transforms.select(editor, Editor.end(editor, []));
-    },
-    set(value_: string) {
-      resetNodes(editor, { nodes: deserialize(value_) });
-    },
-  }));
-
-  useEffect(() => {
-    // Resets slate if new value, this avoids cursor jumping while typing
-    if (internalValue !== value) {
-      resetNodes(editor, { nodes: deserialize(value) });
-    }
-  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <Slate
-      editor={editor}
-      value={deserialize(value)}
-      onChange={(value_: Descendant[]) => {
-        const serialized = serialize(value_);
-        setInternalValue(serialized);
-        onChange(serialized);
-      }}
-    >
-      <Editable
-        spellCheck={false}
-        className={`${styles.textWidget} ${focused ? styles.focus : ""} ${className || ""}`}
-        decorate={decorate}
-        renderLeaf={renderLeaf}
-        placeholder={placeholder || ""}
-        onBlur={() => {
-          setFocused(false);
+    return (
+      <Slate
+        editor={editor}
+        value={deserialize(value)}
+        onChange={(value_: Descendant[]) => {
+          const serialized = serialize(value_);
+          setInternalValue(serialized);
+          onChange(serialized);
         }}
-        onFocus={() => {
-          setFocused(true);
-        }}
-      />
-    </Slate>
-  );
-});
+      >
+        <Editable
+          spellCheck={false}
+          className={`${styles.textWidget} ${focused ? styles.focus : ""} ${
+            className || ""
+          }`}
+          decorate={decorate}
+          renderLeaf={renderLeaf}
+          placeholder={placeholder || ""}
+          onBlur={() => {
+            setFocused(false);
+          }}
+          onFocus={() => {
+            setFocused(true);
+          }}
+        />
+      </Slate>
+    );
+  }
+);
 TemplateEditor.displayName = "TemplateEditor";
 
 const Leaf = ({ attributes, children, leaf }: LeafProps) => {

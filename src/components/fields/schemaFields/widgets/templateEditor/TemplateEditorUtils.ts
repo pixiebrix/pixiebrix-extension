@@ -16,11 +16,11 @@
  */
 
 import nunjucks from "nunjucks";
-import { type Descendant, Editor, Transforms, Node, Point } from "slate";
+import { Editor, Transforms, Node, Point, type Descendant } from "slate";
 
 interface BaseToken {
-  type: string; 
-  value: string
+  type: string;
+  value: string;
 }
 
 const tokenGroups: Record<string, string> = {
@@ -28,14 +28,20 @@ const tokenGroups: Record<string, string> = {
   [nunjucks.lexer.TOKEN_VARIABLE_START]: nunjucks.lexer.TOKEN_VARIABLE_END,
 };
 
+const getTokenValue = (token: BaseToken) =>
+  token.type === "string" ? `"${token.value}"` : token.value;
+
+/**
+ * Tokenize a string template based on things we want to highlight
+ */
 export const tokenize = (text: string) => {
   const tokenizer = nunjucks.lexer.lex(text);
 
-  let tok: BaseToken;
   const buf = [];
+  let token: BaseToken;
 
   function getUntil(endType: string) {
-    const start = tok;
+    const start = token;
     const contents: BaseToken[] = [];
     let next: BaseToken = tokenizer.nextToken();
 
@@ -44,43 +50,37 @@ export const tokenize = (text: string) => {
       next = tokenizer.nextToken();
     }
 
-    return {
-      type: "variable",
-      text: [start, ...contents, next]
-        .filter(Boolean)
-        .map((token) => {
-          if (token.type === "string") {
-            return `"${token.value}"`;
-          }
-
-          return token.value;
-        })
-        .join(""),
-    };
+    return [start, ...contents, next].filter(Boolean);
   }
 
-  while ((tok = tokenizer.nextToken())) {
-    if (tokenGroups[tok.type]) {
-      const group = getUntil(tokenGroups[tok.type]);
-      buf.push(group);
+  while ((token = tokenizer.nextToken())) {
+    if (tokenGroups[token.type]) {
+      // Add groups as a single token
+      const groupTokens = getUntil(tokenGroups[token.type]);
+      buf.push({
+        type: "variable",
+        text: groupTokens.map((t) => getTokenValue(t)).join(""),
+      });
     } else {
-      buf.push(tok.value);
+      buf.push(getTokenValue(token));
     }
   }
 
   return buf;
 };
 
-const toString = (node: Descendant): string => {
+const serializeNode = (node: Descendant): string => {
   if ("text" in node) return node.text;
-  return node.children.map(n => toString(n)).join("");
+  return node.children.map((n) => serializeNode(n)).join("");
 };
 
-export const serialize = (doc: Descendant[]) => doc.map(n => toString(n)).join("\n");
+export const serialize = (doc: Descendant[]) =>
+  doc.map((n) => serializeNode(n)).join("\n");
 
 export const deserialize = (str: string): Descendant[] =>
   str.split("\n").map((s) => ({ type: "paragraph", children: [{ text: s }] }));
 
+// Reset Slate.js's internal state
 // https://github.com/ianstormtaylor/slate/pull/4540#issuecomment-951903419
 export const resetNodes = (
   editor: Editor,
