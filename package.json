@@ -30,7 +30,7 @@
   "license": "AGPL-3.0",
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.9",
+    "@apidevtools/json-schema-ref-parser": "^10.1.0",
     "@atlaskit/tree": "^8.6.3",
     "@cfworker/json-schema": "^1.8.1",
     "@floating-ui/dom": "^1.1.1",
