@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
+import { getDocument, tick } from "@/extensionPoints/extensionPointTestUtils";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 
@@ -36,6 +36,7 @@ describe("awaitElementOnce", () => {
     document.querySelector("#root").classList.add("newClass");
 
     requestIdleCallback.runIdleCallbacks();
+    await tick();
 
     await expect(promise).resolves.toHaveLength(1);
   });
@@ -48,6 +49,7 @@ describe("awaitElementOnce", () => {
     document.querySelector("h1").textContent = "Bar";
 
     requestIdleCallback.runIdleCallbacks();
+    await tick();
 
     await expect(promise).resolves.toHaveLength(1);
   });

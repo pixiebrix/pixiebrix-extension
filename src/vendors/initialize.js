@@ -73,9 +73,9 @@ msobservers.initialize = function (selector, callback, options) {
   var callbackOnce = function () {
     if (!seen.has(this)) {
       seen.add(this);
-      $(this).each(() => {
+      $(this).each((index, element) => {
         // Don't block the page transition/animation frame
-        setTimeout(callback, 0);
+        setTimeout(() => callback(index, element), 0);
       });
     }
   };

@@ -166,10 +166,12 @@ describe("triggerExtension", () => {
 
       // Give the mutation observer time to run
       await tick();
+      await tick();
 
       // Check click handler was not re-attached
       document.querySelector("button").click();
       await tick();
+
       expect(rootReader.readCount).toBe(attachMode === "watch" ? 2 : 1);
 
       extensionPoint.uninstall();

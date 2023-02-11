@@ -289,7 +289,8 @@ describe("tourStep", () => {
     document.body.innerHTML = '<div id="foo">Foo</div>';
 
     requestIdleCallback.runIdleCallbacks();
-
+    // Ticks to allow the setInterval to run
+    await tick();
     await tick();
 
     cancelAllTours();
