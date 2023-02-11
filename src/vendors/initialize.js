@@ -73,14 +73,17 @@ msobservers.initialize = function (selector, callback, options) {
   var callbackOnce = function () {
     if (!seen.has(this)) {
       seen.add(this);
-      $(this).each(callback);
+      $(this).each(() => {
+        // Don't block the page transition/animation frame
+        setTimeout(callback, 0);
+      });
     }
   };
 
-  let idleCallbackHandle = null;
-
+  // Fall back handler to check the entire page for the selector
   // Try to choose timeouts that are long enough to avoid performance bottlenecks, but short enough to provide
   // responsiveness for triggers that depend on ancestor/sibling elements changing
+  let idleCallbackHandle = null;
   var throttledCheckTarget = throttle(
     () => {
       if (isMatchinInProgress) {
