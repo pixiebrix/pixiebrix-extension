@@ -6268,7 +6268,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         >
           <div
             className="my-1"
-            id="root-title"
+            id="root__title"
           >
             <h5>
               A form
@@ -6285,7 +6285,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           <div>
             <div
               className="mb-3"
-              id="root-description"
+              id="root__description"
             >
               A form example with _(you can use markdown)_
             </div>
@@ -6314,6 +6314,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     role="group"
                   >
                     <input
+                      aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
                       autoFocus={false}
                       className="form-control"
                       disabled={false}
@@ -6357,6 +6358,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     role="group"
                   >
                     <input
+                      aria-describedby="root_age__error root_age__description root_age__help"
                       autoFocus={false}
                       className="form-control"
                       disabled={false}
@@ -6401,6 +6403,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     role="group"
                   >
                     <input
+                      aria-describedby="root_telephone__error root_telephone__description root_telephone__help"
                       autoFocus={false}
                       className="form-control"
                       disabled={false}

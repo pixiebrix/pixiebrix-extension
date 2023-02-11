@@ -23,6 +23,7 @@ exports[`form data normalization renders normalized data 1`] = `
               class="form-group"
             >
               <input
+                aria-describedby="root_name__error root_name__description root_name__help"
                 class="form-control"
                 id="root_name"
                 name="root_name"
@@ -45,6 +46,7 @@ exports[`form data normalization renders normalized data 1`] = `
               class="form-group"
             >
               <input
+                aria-describedby="root_age__error root_age__description root_age__help"
                 class="form-control"
                 id="root_age"
                 name="root_age"
@@ -68,6 +70,7 @@ exports[`form data normalization renders normalized data 1`] = `
               class="form-group"
             >
               <div
+                aria-describedby="root_isAdmin__error root_isAdmin__description root_isAdmin__help"
                 class="checkbox  form-group"
               >
                 <div
@@ -103,6 +106,7 @@ exports[`form data normalization renders normalized data 1`] = `
               class="form-group"
             >
               <input
+                aria-describedby="root_rating__error root_rating__description root_rating__help"
                 class="form-control"
                 id="root_rating"
                 name="root_rating"

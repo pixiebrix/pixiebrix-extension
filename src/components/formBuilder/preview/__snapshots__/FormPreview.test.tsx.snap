@@ -20,7 +20,7 @@ exports[`FormPreview it renders markdown in description 1`] = `
     >
       <div
         class="my-1"
-        id="root-title"
+        id="root__title"
       >
         <h5>
           A form
@@ -33,7 +33,7 @@ exports[`FormPreview it renders markdown in description 1`] = `
       <div>
         <div
           class="mb-3"
-          id="root-description"
+          id="root__description"
         >
           _Form description_
         </div>
@@ -57,6 +57,7 @@ exports[`FormPreview it renders markdown in description 1`] = `
                 role="group"
               >
                 <input
+                  aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
                   class="form-control"
                   id="root_firstName"
                   name="root_firstName"
@@ -105,7 +106,7 @@ exports[`FormPreview it renders simple schema 1`] = `
     >
       <div
         class="my-1"
-        id="root-title"
+        id="root__title"
       >
         <h5>
           A form
@@ -118,7 +119,7 @@ exports[`FormPreview it renders simple schema 1`] = `
       <div>
         <div
           class="mb-3"
-          id="root-description"
+          id="root__description"
         >
           A form example.
         </div>
@@ -142,6 +143,7 @@ exports[`FormPreview it renders simple schema 1`] = `
                 role="group"
               >
                 <input
+                  aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
                   class="form-control"
                   id="root_firstName"
                   name="root_firstName"
@@ -169,6 +171,7 @@ exports[`FormPreview it renders simple schema 1`] = `
                 role="group"
               >
                 <input
+                  aria-describedby="root_age__error root_age__description root_age__help"
                   class="form-control"
                   id="root_age"
                   name="root_age"
@@ -197,6 +200,7 @@ exports[`FormPreview it renders simple schema 1`] = `
                 role="group"
               >
                 <input
+                  aria-describedby="root_telephone__error root_telephone__description root_telephone__help"
                   class="form-control"
                   id="root_telephone"
                   name="root_telephone"
