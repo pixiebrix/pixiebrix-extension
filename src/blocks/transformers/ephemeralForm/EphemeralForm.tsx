@@ -53,15 +53,15 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
-function monkeyPatchForm() {
-  // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
+function monkeyPatchFormWidgets() {
   const registry = getDefaultRegistry();
-  const defaultFileWidget = registry.widgets.FileWidget;
-  (Theme as any).widgets.FileWidget = defaultFileWidget;
+  // Use default widget instead of bs4 widget because the bs4 file widget is broken
+  // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
+  (Theme as any).widgets.FileWidget = registry.widgets.FileWidget;
   return withTheme(Theme);
 }
 
-const JsonSchemaForm = monkeyPatchForm();
+const JsonSchemaForm = monkeyPatchFormWidgets();
 
 /**
  * @see FormTransformer
