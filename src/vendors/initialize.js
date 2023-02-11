@@ -65,6 +65,8 @@ var MutationSelectorObserver = function (selector, callback, options) {
 // List of MutationSelectorObservers.
 var msobservers = [];
 msobservers.initialize = function (selector, callback, options) {
+  var isMatchinInProgress = false;
+
   // Wrap the callback so that we can ensure that it is only
   // called once per element.
   var seen = new WeakSet();
@@ -75,14 +77,38 @@ msobservers.initialize = function (selector, callback, options) {
     }
   };
 
+  let idleCallbackHandle = null;
+
+  // Try to choose timeouts that are long enough to avoid performance bottlenecks, but short enough to provide
+  // responsiveness for triggers that depend on ancestor/sibling elements changing
   var throttledCheckTarget = throttle(
     () => {
-      // For UI performance, we might consider wrapping in a requestAnimationFrame in the future
-      $safeFind(selector, options.target).each(callbackOnce);
+      if (isMatchinInProgress) {
+        return;
+      }
+
+      // Don't accumulate idle callbacks
+      if (idleCallbackHandle) {
+        return;
+      }
+
+      // Wrap in requestIdleCallback to prevent impacting performance
+      idleCallbackHandle = requestIdleCallback(
+        () => {
+          console.debug(
+            "requestIdleCallback: checking target for matches",
+            selector
+          );
+
+          requestAnimationFrame(() => {
+            $safeFind(selector, options.target).each(callbackOnce);
+            idleCallbackHandle = null;
+          });
+        },
+        { timeout: 150 }
+      );
     },
-    // Try to choose a wait that is long enough to avoid performance issues, but short enough to provide responsiveness
-    // for triggers that depend on ancestor/sibling elements changing
-    150,
+    100,
     { leading: true, trailing: true }
   );
 
@@ -97,7 +123,6 @@ msobservers.initialize = function (selector, callback, options) {
   );
   this.push(msobserver);
 
-  var isMatchinInProgress = false;
   // The MutationObserver watches for when new elements are added to the DOM.
   var observer = new MutationObserver(function (mutations) {
     // Avoid loop caused by Sizzle changing attributes while querying
