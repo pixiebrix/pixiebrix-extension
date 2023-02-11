@@ -92,17 +92,24 @@ const KBarComponent: React.FC = () => {
   }
 
   // We're using the Shadow DOM to isolate the style. However, that also means keydown events look like they're
-  // coming from the div instead of the search input. Include div.contentEditable to indicate to hotkey libraries
-  // that the user is interacting with the quick bar
+  // coming from the div instead of the search input.
+  //
+  // - Include div.contentEditable to indicate to hotkey libraries that the user is interacting with the quick bar
+  // - Salesforce looks for the `cke_editable` instead of contentEditable, so provide that class
   //
   // Library references:
-  // hotkey: https://github.com/github/hotkey/blob/main/src/utils.ts#L1
+  // - hotkey: https://github.com/github/hotkey/blob/main/src/utils.ts#L1
+  // - Salesforce: https://salesforce.stackexchange.com/questions/183771/disable-keyboard-shortcuts-in-lightning-experience
 
   return (
     <KBarPortal>
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
-          <div contentEditable suppressContentEditableWarning>
+          <div
+            className="cke_editable"
+            contentEditable
+            suppressContentEditableWarning
+          >
             <ReactShadowRoot mode="closed">
               <Stylesheets href={faStyleSheet} mountOnLoad>
                 <FocusLock>
