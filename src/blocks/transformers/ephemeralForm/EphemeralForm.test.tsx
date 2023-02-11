@@ -79,7 +79,7 @@ describe("EphemeralForm", () => {
 
     // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
     expect(result).toMatchSnapshot();
-    expect(result.container.querySelector("b")).not.toBeNull();
+    expect(result.container.querySelector("strong")).not.toBeNull();
   });
 
   it("supports markdown in form description", async () => {
@@ -98,9 +98,10 @@ describe("EphemeralForm", () => {
     const result = render(<EphemeralForm />);
 
     await waitForEffect();
+    await waitForEffect();
 
     // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
     expect(result).toMatchSnapshot();
-    expect(result.container.querySelector("b")).not.toBeNull();
+    expect(result.container.querySelector("strong")).not.toBeNull();
   });
 });

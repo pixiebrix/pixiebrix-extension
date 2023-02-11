@@ -17,7 +17,18 @@ exports[`EphemeralForm shows field titles 1`] = `
             <div
               class="form-group"
             >
-              
+              <div
+                class="my-1"
+                id="root__title"
+              >
+                <h5>
+                  Test Form
+                </h5>
+                <hr
+                  class="border-0 bg-secondary"
+                  style="height: 1px;"
+                />
+              </div>
               <div
                 class="p-0 container-fluid"
               >
@@ -32,6 +43,12 @@ exports[`EphemeralForm shows field titles 1`] = `
                     <div
                       class="form-group"
                     >
+                      <label
+                        class="form-label"
+                        for="root_foo"
+                      >
+                        foo
+                      </label>
                       <input
                         aria-describedby="root_foo__error root_foo__description root_foo__help"
                         class="form-control"
@@ -41,6 +58,7 @@ exports[`EphemeralForm shows field titles 1`] = `
                         type="text"
                         value=""
                       />
+                      
                     </div>
                   </div>
                 </div>
@@ -50,7 +68,9 @@ exports[`EphemeralForm shows field titles 1`] = `
               <button
                 class="btn btn-primary"
                 type="submit"
-              />
+              >
+                Submit
+              </button>
             </div>
           </form>
         </div>
@@ -70,7 +90,18 @@ exports[`EphemeralForm shows field titles 1`] = `
           <div
             class="form-group"
           >
-            
+            <div
+              class="my-1"
+              id="root__title"
+            >
+              <h5>
+                Test Form
+              </h5>
+              <hr
+                class="border-0 bg-secondary"
+                style="height: 1px;"
+              />
+            </div>
             <div
               class="p-0 container-fluid"
             >
@@ -85,6 +116,12 @@ exports[`EphemeralForm shows field titles 1`] = `
                   <div
                     class="form-group"
                   >
+                    <label
+                      class="form-label"
+                      for="root_foo"
+                    >
+                      foo
+                    </label>
                     <input
                       aria-describedby="root_foo__error root_foo__description root_foo__help"
                       class="form-control"
@@ -94,6 +131,7 @@ exports[`EphemeralForm shows field titles 1`] = `
                       type="text"
                       value=""
                     />
+                    
                   </div>
                 </div>
               </div>
@@ -103,7 +141,9 @@ exports[`EphemeralForm shows field titles 1`] = `
             <button
               class="btn btn-primary"
               type="submit"
-            />
+            >
+              Submit
+            </button>
           </div>
         </form>
       </div>
@@ -180,7 +220,18 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
             <div
               class="form-group"
             >
-              
+              <div
+                class="my-1"
+                id="root__title"
+              >
+                <h5>
+                  Test Form
+                </h5>
+                <hr
+                  class="border-0 bg-secondary"
+                  style="height: 1px;"
+                />
+              </div>
               <div
                 class="p-0 container-fluid"
               >
@@ -195,6 +246,12 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
                     <div
                       class="form-group"
                     >
+                      <label
+                        class="form-label"
+                        for="root_foo"
+                      >
+                        Foo
+                      </label>
                       <input
                         aria-describedby="root_foo__error root_foo__description root_foo__help"
                         class="form-control"
@@ -207,7 +264,18 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
                       <div
                         class="field-description text-muted"
                         id="root_foo"
-                      />
+                      >
+                        <div>
+                          <p>
+                            I am 
+                            <strong>
+                              bold
+                            </strong>
+                          </p>
+                          
+
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -217,7 +285,9 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
               <button
                 class="btn btn-primary"
                 type="submit"
-              />
+              >
+                Submit
+              </button>
             </div>
           </form>
         </div>
@@ -237,7 +307,18 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
           <div
             class="form-group"
           >
-            
+            <div
+              class="my-1"
+              id="root__title"
+            >
+              <h5>
+                Test Form
+              </h5>
+              <hr
+                class="border-0 bg-secondary"
+                style="height: 1px;"
+              />
+            </div>
             <div
               class="p-0 container-fluid"
             >
@@ -252,6 +333,12 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
                   <div
                     class="form-group"
                   >
+                    <label
+                      class="form-label"
+                      for="root_foo"
+                    >
+                      Foo
+                    </label>
                     <input
                       aria-describedby="root_foo__error root_foo__description root_foo__help"
                       class="form-control"
@@ -264,7 +351,18 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
                     <div
                       class="field-description text-muted"
                       id="root_foo"
-                    />
+                    >
+                      <div>
+                        <p>
+                          I am 
+                          <strong>
+                            bold
+                          </strong>
+                        </p>
+                        
+
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -274,7 +372,9 @@ exports[`EphemeralForm supports markdown in field descriptions 1`] = `
             <button
               class="btn btn-primary"
               type="submit"
-            />
+            >
+              Submit
+            </button>
           </div>
         </form>
       </div>

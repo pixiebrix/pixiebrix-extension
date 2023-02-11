@@ -22,46 +22,64 @@ import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
 
-// RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
+// RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
   id,
   children,
   displayLabel,
   rawErrors = [],
   rawHelp,
+  hidden,
   rawDescription,
-}: FieldTemplateProps) => (
-  <Form.Group>
-    {children}
-    {displayLabel && (
-      <DescriptionField
-        id={id}
-        className="text-muted"
-        description={rawDescription}
-      />
-    )}
-    {rawErrors.length > 0 && (
-      <ListGroup as="ul">
-        {rawErrors.map((error, index) => (
-          <ListGroup.Item
-            as="li"
-            key={`${error}_${index}`}
-            className="border-0 m-0 p-0"
-          >
-            <small className="m-0 text-danger">{error}</small>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
-    )}
-    {rawHelp && (
-      <Form.Text
-        className={rawErrors.length > 0 ? "text-danger" : "text-muted"}
-        id={id}
-      >
-        {rawHelp}
-      </Form.Text>
-    )}
-  </Form.Group>
-);
+  label,
+  required,
+}: FieldTemplateProps) => {
+  if (hidden) {
+    return <div className="hidden">{children}</div>;
+  }
+
+  return (
+    <Form.Group>
+      {displayLabel && (
+        <Form.Label
+          htmlFor={id}
+          className={rawErrors.length > 0 ? "text-danger" : ""}
+        >
+          {label}
+          {required ? "*" : null}
+        </Form.Label>
+      )}
+      {children}
+      {displayLabel && rawDescription && (
+        <DescriptionField
+          id={id}
+          className="text-muted"
+          description={rawDescription}
+        />
+      )}
+      {rawErrors.length > 0 && (
+        <ListGroup as="ul">
+          {rawErrors.map((error, index) => (
+            <ListGroup.Item
+              as="li"
+              key={`${error}-${index}`}
+              className="border-0 m-0 p-0"
+            >
+              <small className="m-0 text-danger">{error}</small>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      )}
+      {rawHelp && (
+        <Form.Text
+          className={rawErrors.length > 0 ? "text-danger" : "text-muted"}
+          id={id}
+        >
+          {rawHelp}
+        </Form.Text>
+      )}
+    </Form.Group>
+  );
+};
 
 export default FieldTemplate;
