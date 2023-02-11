@@ -95,11 +95,6 @@ msobservers.initialize = function (selector, callback, options) {
       // Wrap in requestIdleCallback to prevent impacting performance
       idleCallbackHandle = requestIdleCallback(
         () => {
-          console.debug(
-            "requestIdleCallback: checking target for matches",
-            selector
-          );
-
           requestAnimationFrame(() => {
             $safeFind(selector, options.target).each(callbackOnce);
             idleCallbackHandle = null;
