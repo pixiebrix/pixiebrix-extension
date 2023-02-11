@@ -100,6 +100,7 @@
     "p-wait-for": "^5.0.0",
     "page-metadata-parser": "^1.1.4",
     "papaparse": "^5.3.1",
+    "path-browserify": "^1.0.1",
     "primeicons": "^6.0.1",
     "primereact": "^7.1.0",
     "prop-types": "^15.7.2",

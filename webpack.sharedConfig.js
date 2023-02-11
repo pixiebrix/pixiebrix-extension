@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const JSON5 = require("json5");
 const { merge } = require("webpack-merge");
 
@@ -49,7 +49,7 @@ const shared = {
       crypto: false,
       console: false,
       vm: false,
-      path: false,
+      path: require.resolve("path-browserify"),
       chokidar: false,
     },
   },
