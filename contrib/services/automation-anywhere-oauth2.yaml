@@ -2,13 +2,22 @@ apiVersion: v1
 kind: service
 metadata:
   id: "automation-anywhere/oauth2"
-  version: 3.0.0
-  name: Automation Anywhere OAuth2 (Preview)
-  description: Preview/test integration of OAuth2 authentication for Automation Anywhere
+  version: 3.1.0
+  name: Automation Anywhere (OAuth2)
+  description: OAuth2 Authentication for Automation Anywhere
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
   properties:
+    authConfigOrigin:
+      type: string
+      description: "The AuthConfig App origin"
+      format: uri
+      default: "https://oauthconfigapp.automationanywhere.digital"
+    clientId:
+      type: string
+      description: "The OAuth 2.0 client ID"
+      default: "g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM"
     controlRoomUrl:
       type: string
       description: "The Control Room URL, including https://"
@@ -18,10 +27,10 @@ inputSchema:
 authentication:
   baseURL: "{{{ controlRoomUrl }}}"
   oauth2:
-    authorizeUrl: "https://oauthconfigapp.automationanywhere.digital/client/oauth/authorize?hosturl={{{ controlRoomUrl }}}&audience=https://controlroom"
-    tokenUrl: "https://oauthconfigapp.automationanywhere.digital/client/oauth/token"
+    authorizeUrl: "{{#authConfigOrigin}}{{{.}}}{{/authConfigOrigin}}{{^authConfigOrigin}}https://oauthconfigapp.automationanywhere.digital{{/authConfigOrigin}}/client/oauth/authorize?hosturl={{{ controlRoomUrl }}}&audience=https://controlroom"
+    tokenUrl: "{{#authConfigOrigin}}{{{.}}}{{/authConfigOrigin}}{{^authConfigOrigin}}https://oauthconfigapp.automationanywhere.digital{{/authConfigOrigin}}/client/oauth/token"
     code_challenge_method: S256
     scope: "openid userprofile offline_access"
-    client_id: "g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM"
+    client_id: "{{#clientId}}{{{.}}}{{/clientId}}{{^clientId}}g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM{{/clientId}}"
   headers:
     Authorization: "Bearer {{{ access_token }}}"

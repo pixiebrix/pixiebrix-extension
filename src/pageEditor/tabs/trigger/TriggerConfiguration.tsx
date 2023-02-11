@@ -120,6 +120,7 @@ const TriggerConfiguration: React.FC<{
           <option value="dblclick">Double Click</option>
           <option value="blur">Blur</option>
           <option value="mouseover">Mouseover</option>
+          <option value="hover">Hover</option>
           <option value="selectionchange">Selection Change</option>
           <option value="keydown">Keydown</option>
           <option value="keyup">Keyup</option>

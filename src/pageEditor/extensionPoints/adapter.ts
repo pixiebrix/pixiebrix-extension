@@ -27,6 +27,8 @@ import triggerExtension from "@/pageEditor/extensionPoints/trigger";
 import panelExtension from "@/pageEditor/extensionPoints/panel";
 import contextMenuExtension from "@/pageEditor/extensionPoints/contextMenu";
 import sidebarExtension from "@/pageEditor/extensionPoints/sidebar";
+import quickBarProviderExtension from "@/pageEditor/extensionPoints/quickBarProvider";
+import tourExtension from "@/pageEditor/extensionPoints/tour";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { hasInnerExtensionPoint } from "@/registry/internal";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -39,6 +41,8 @@ export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["actionPanel", sidebarExtension],
   ["menuItem", menuItemExtension],
   ["quickBar", quickBarExtension],
+  ["quickBarProvider", quickBarProviderExtension],
+  ["tour", tourExtension],
 ]);
 
 export async function selectType(

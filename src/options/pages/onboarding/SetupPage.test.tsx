@@ -24,7 +24,7 @@ import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import { Provider } from "react-redux";
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
@@ -33,6 +33,7 @@ import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { type Me } from "@/types/contract";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -50,16 +51,20 @@ jest.mock("@/chrome", () => ({
 }));
 
 jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
   util: {
     resetApiState: jest.fn().mockReturnValue({ type: "notarealreset" }),
   },
+  appApi: {
+    endpoints: {
+      getMe: {
+        useQueryState: jest.fn(() => ({
+          data: {},
+          isLoading: false,
+        })),
+      },
+    },
+  },
 }));
-
-jest.mock("@/background/messenger/api", () => ({
-  launchAuthIntegration: jest.fn().mockResolvedValue(undefined),
-}));
-
 jest.mock("@/services/baseService", () => ({
   getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
@@ -78,12 +83,20 @@ jest.mock("@/permissions", () => ({
   serviceOriginPermissions: jest.fn().mockResolvedValue({ origins: [] }),
 }));
 
+function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
+  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
+}
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SetupPage", () => {
   test("typical user", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
       partner: null,
-    }));
+    } as any);
 
     render(
       <Provider store={optionsStore()}>
@@ -101,7 +114,7 @@ describe("SetupPage", () => {
   });
 
   test("OAuth2 partner user", async () => {
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
       data: {
         partner: {
@@ -109,8 +122,8 @@ describe("SetupPage", () => {
           name: "Test Partner",
           theme: "automation-anywhere",
         },
-      },
-    }));
+      } as any,
+    });
 
     render(
       <Provider
@@ -135,20 +148,13 @@ describe("SetupPage", () => {
     const user = userEvent.setup();
 
     // User will be unauthenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: {},
-    }));
-
-    const history = createHashHistory();
-    // Hostname comes as hostname, not URL
-    history.push("/start?hostname=mycontrolroom.com");
-
-    // Not sure why, but listening here is necessary to get the final `history.location.pathname` assertion to
-    // pass :shrug:
-    history.listen((location) => {
-      console.debug(location);
+      data: {} as any,
     });
+
+    location.href =
+      "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com";
 
     // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
     // given the URL structure above
@@ -170,20 +176,28 @@ describe("SetupPage", () => {
       // Schema get pre-pended automatically
     ).toStrictEqual("https://mycontrolroom.com");
 
+    // Sanity check we haven't redirected away from the start page yet
+    expect(location.href).toStrictEqual(
+      "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com"
+    );
+
     const button = screen.getByText("Connect AARI");
     await user.click(button);
 
     await waitForEffect();
 
-    expect(history.location.pathname).toStrictEqual("/");
+    // Should have redirected away from the start page
+    expect(location.href).toStrictEqual(
+      "chrome-extension://abc123/options.html#/"
+    );
   });
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
     // User is authenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: {},
-    }));
+      data: {} as any,
+    });
 
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
@@ -211,7 +225,7 @@ describe("SetupPage", () => {
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
     // User is authenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
       data: {
         id: uuidv4(),
@@ -219,8 +233,8 @@ describe("SetupPage", () => {
           id: uuidv4(),
           theme: "automation-anywhere",
         },
-      },
-    }));
+      } as any,
+    });
 
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
@@ -258,10 +272,10 @@ describe("SetupPage", () => {
 
   test("Managed Storage OAuth2 partner user", async () => {
     // User will be unauthenticated
-    (useGetMeQuery as jest.Mock).mockImplementation(() => ({
+    mockMeQuery({
       isLoading: false,
-      data: {},
-    }));
+      data: {} as any,
+    });
 
     const managedConfiguration: Record<string, string> = {
       partnerId: "automation-anywhere",

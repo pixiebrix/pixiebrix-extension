@@ -17,8 +17,16 @@
 
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
+import { type SubmitPanelAction } from "@/blocks/errors";
 
 export type DocumentViewProps = {
+  /**
+   * Action handler for submitting or closing the panel from a button handler.
+   */
+  onAction?: (action: SubmitPanelAction) => void;
+  /**
+   * Top-level elements in the document.
+   */
   body: DocumentElement[];
   options: BlockOptions<BlockArgContext>;
   meta: {

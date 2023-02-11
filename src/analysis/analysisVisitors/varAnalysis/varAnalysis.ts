@@ -21,7 +21,7 @@ import {
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { type BlockPosition, type BlockConfig } from "@/blocks/types";
-import { type Expression, type TemplateEngine } from "@/core";
+import type { Schema, Expression, TemplateEngine } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
 import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
@@ -29,13 +29,15 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import {
   type Analysis,
-  type Annotation,
-  AnnotationType,
+  type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
+import recipesRegistry from "@/recipes/registry";
+import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import { AnnotationType } from "@/types";
 
 const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -56,10 +58,10 @@ async function setServiceVars(extension: FormState, contextVars: VarMap) {
   for (const service of extension.services ?? []) {
     // eslint-disable-next-line no-await-in-loop
     const serviceContext = await makeServiceContext([service]);
-    contextVars.setExistenceFromValues(
-      `${KnownSources.SERVICE}:${service.id}`,
-      serviceContext
-    );
+    contextVars.setExistenceFromValues({
+      source: `${KnownSources.SERVICE}:${service.id}`,
+      values: serviceContext,
+    });
   }
 }
 
@@ -83,21 +85,151 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
     inputContextShape[key] = true;
   }
 
-  contextVars.setExistenceFromValues(
-    `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
-    inputContextShape,
-    "@input"
-  );
+  contextVars.setExistenceFromValues({
+    source: `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
+    values: inputContextShape,
+    parentPath: "@input",
+  });
 }
 
-function setOptionsVars(extension: FormState, contextVars: VarMap) {
-  // TODO: should we check the blueprint definition instead?
+type SetVarsFromSchemaArgs = {
+  /**
+   * The schema of the properties to use to set the variables.
+   */
+  schema: Schema;
+
+  /**
+   * The variable map to set the variables in.
+   */
+  contextVars: VarMap;
+
+  /**
+   * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline).
+   */
+  source: string;
+
+  /**
+   * The parent path of the properties in the schema.
+   */
+  parentPath: string[];
+
+  /**
+   * The existence to set the variables to. If not provided, the existence will be determined by the schema.
+   */
+  existenceOverride?: VarExistence;
+};
+
+function setVarsFromSchema({
+  schema,
+  contextVars,
+  source,
+  parentPath,
+  existenceOverride,
+}: SetVarsFromSchemaArgs) {
+  const { properties, required } = schema;
+  if (properties == null) {
+    contextVars.setExistence({
+      source,
+      path: parentPath,
+      existence: existenceOverride ?? VarExistence.DEFINITELY,
+      allowAnyChild: true,
+    });
+    return;
+  }
+
+  for (const [key, propertySchema] of Object.entries(properties)) {
+    if (typeof propertySchema === "boolean") {
+      continue;
+    }
+
+    if (propertySchema.type === "object") {
+      setVarsFromSchema({
+        schema: propertySchema,
+        contextVars,
+        source,
+        parentPath: [...parentPath, key],
+      });
+    } else if (propertySchema.type === "array") {
+      const existence =
+        existenceOverride ?? required?.includes(key)
+          ? VarExistence.DEFINITELY
+          : VarExistence.MAYBE;
+
+      const nodePath = [...parentPath, key];
+
+      // If the items is an array, then we allow any child to simplify the validation logic
+      const allowAnyChild =
+        Array.isArray(propertySchema.items) ||
+        !isEmpty(propertySchema.additionalItems);
+
+      // Setting existence for the current node
+      contextVars.setExistence({
+        source,
+        path: nodePath,
+        existence,
+        isArray: true,
+        allowAnyChild,
+      });
+
+      if (allowAnyChild) {
+        continue;
+      }
+
+      if (
+        typeof propertySchema.items == "object" &&
+        !Array.isArray(propertySchema.items) &&
+        propertySchema.items.type === "object"
+      ) {
+        setVarsFromSchema({
+          schema: propertySchema.items,
+          contextVars,
+          source,
+          parentPath: nodePath,
+        });
+      }
+    } else {
+      contextVars.setExistence({
+        source,
+        path: [...parentPath, key],
+        existence:
+          existenceOverride ?? required?.includes(key)
+            ? VarExistence.DEFINITELY
+            : VarExistence.MAYBE,
+      });
+    }
+  }
+}
+
+async function setOptionsVars(extension: FormState, contextVars: VarMap) {
+  if (extension.recipe == null) {
+    return;
+  }
+
+  const recipeId = extension.recipe.id;
+  const recipe = await recipesRegistry.lookup(recipeId);
+  const optionsSchema = recipe?.options?.schema;
+  if (isEmpty(optionsSchema)) {
+    return;
+  }
+
+  const source = `${KnownSources.OPTIONS}:${recipeId}`;
+  const optionsOutputKey = "@options";
+
+  setVarsFromSchema({
+    schema: optionsSchema,
+    contextVars,
+    source,
+    parentPath: [optionsOutputKey],
+  });
+
   if (!isEmpty(extension.optionsArgs)) {
-    contextVars.setExistenceFromValues(
-      `${KnownSources.OPTIONS}:${extension.recipe.id}`,
-      extension.optionsArgs,
-      "@options"
-    );
+    for (const optionName of Object.keys(extension.optionsArgs)) {
+      contextVars.setExistence({
+        source,
+        path: [optionsOutputKey, optionName],
+        existence: VarExistence.DEFINITELY,
+      });
+    }
   }
 }
 
@@ -106,13 +238,14 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private currentBlockKnownVars: VarMap;
   private previousVisitedBlock: PreviousVisitedBlock = null;
   private readonly contextStack: PreviousVisitedBlock[] = [];
-  protected readonly annotations: Annotation[] = [];
+  protected readonly annotations: AnalysisAnnotation[] = [];
+  private allBlocks: TypedBlockMap;
 
   get id() {
     return "var";
   }
 
-  getAnnotations(): Annotation[] {
+  getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 
@@ -143,10 +276,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         x.templateContext != null
     );
     if (traceRecord != null) {
-      this.currentBlockKnownVars.setExistenceFromValues(
-        KnownSources.TRACE,
-        traceRecord.templateContext
-      );
+      this.currentBlockKnownVars.setExistenceFromValues({
+        source: KnownSources.TRACE,
+        values: traceRecord.templateContext,
+      });
     }
 
     this.knownVars.set(position.path, this.currentBlockKnownVars);
@@ -159,12 +292,29 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (blockConfig.outputKey) {
       const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-      currentBlockOutput.setOutputKeyExistence(
-        position.path,
-        outputVarName,
-        blockConfig.if == null ? VarExistence.DEFINITELY : VarExistence.MAYBE,
-        true
-      );
+      const outputSchema = this.allBlocks.get(blockConfig.id)?.block
+        ?.outputSchema;
+
+      if (outputSchema == null) {
+        currentBlockOutput.setOutputKeyExistence({
+          source: position.path,
+          outputKey: outputVarName,
+          existence:
+            blockConfig.if == null
+              ? VarExistence.DEFINITELY
+              : VarExistence.MAYBE,
+          allowAnyChild: true,
+        });
+      } else {
+        setVarsFromSchema({
+          schema: outputSchema,
+          contextVars: currentBlockOutput,
+          source: position.path,
+          parentPath: [outputVarName],
+          existenceOverride:
+            blockConfig.if == null ? undefined : VarExistence.MAYBE,
+        });
+      }
 
       this.previousVisitedBlock.output = currentBlockOutput;
     }
@@ -264,12 +414,13 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     let subPipelineVars: VarMap;
     if (subPipelineInput) {
       subPipelineVars = new VarMap();
-      subPipelineVars.setOutputKeyExistence(
-        position.path,
-        `@${subPipelineInput}`,
-        VarExistence.DEFINITELY,
-        false
-      );
+      subPipelineVars.setOutputKeyExistence({
+        // The source of the element key is the parent block
+        source: extra.parentPosition.path,
+        outputKey: `@${subPipelineInput}`,
+        existence: VarExistence.DEFINITELY,
+        allowAnyChild: true,
+      });
     }
 
     // Creating context for the sub pipeline
@@ -285,10 +436,12 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   async run(extension: FormState): Promise<void> {
+    this.allBlocks = await blockRegistry.allTyped();
+
     const contextVars = new VarMap();
 
     // Order of the following calls will determine the order of the sources in the UI
-    setOptionsVars(extension, contextVars);
+    await setOptionsVars(extension, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 

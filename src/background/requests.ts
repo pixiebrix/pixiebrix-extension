@@ -234,9 +234,7 @@ async function proxyRequest<T>(
 
 const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
-export function isAuthenticationError(
-  error: Pick<AxiosError, "response">
-): boolean {
+function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
   // Response should be an object, but be defensive
   if (error.response == null || !isObject(error.response)) {
     return false;

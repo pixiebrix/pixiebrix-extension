@@ -38,7 +38,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import { UNSET_UUID, uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
@@ -57,11 +57,18 @@ import { type UnknownObject } from "@/types";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
-import { BusinessError, NoRendererError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  NoRendererError,
+} from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/sidebar/types";
 import { getLoggingConfig } from "@/telemetry/logging";
 
+/**
+ * CommonOptions for running pipelines and blocks
+ */
 type CommonOptions = ApiVersionOptions & {
   /**
    * `true` to log all block inputs to the context-aware logger.
@@ -79,9 +86,14 @@ type CommonOptions = ApiVersionOptions & {
    * data over to be rendered in a PixieBrix sidebar.
    */
   headless: boolean;
+  /**
+   * An optional signal to abort the pipeline.
+   * @since 1.7.19
+   */
+  abortSignal?: AbortSignal;
 };
 
-export type RunMetadata = {
+type RunMetadata = {
   /**
    * The extension UUID to correlate trace records for a brick.
    */
@@ -290,10 +302,6 @@ async function executeBlockWithValidatedProps(
       return requestRun.inAll(request);
     }
 
-    case "remote": {
-      return requestRun.onServer(request);
-    }
-
     case "self": {
       return block.run(args, {
         ...commonOptions,
@@ -416,10 +424,6 @@ async function renderBlockArg(
   if (type === "reader") {
     // `reducePipeline` is responsible for passing the correct root into runStage based on the BlockConfig
     if ((config.window ?? "self") === "self") {
-      logger.debug(
-        `Passed root to reader ${config.id} (window=${config.window ?? "self"})`
-      );
-
       return { root: state.root } as unknown as RenderedArgs;
     }
 
@@ -556,13 +560,15 @@ export async function runBlock(
 async function applyReduceDefaults({
   logValues,
   runId,
-  logger,
+  extensionId,
+  logger: providedLogger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
   const globalLoggingConfig = await getLoggingConfig();
+  const logger = providedLogger ?? new ConsoleLogger();
 
   return {
-    extensionId: UNSET_UUID,
+    extensionId: extensionId ?? logger.context.extensionId,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -574,9 +580,10 @@ async function applyReduceDefaults({
     // If logValues not provided explicitly, default to the global setting
     logValues: logValues ?? globalLoggingConfig.logValues ?? false,
     // For stylistic consistency, default here instead of destructured parameters
-    runId: runId ?? uuidv4(),
     branches: [],
-    logger: logger ?? new ConsoleLogger(),
+    // Assign a run id, if one is not already provided
+    runId: runId ?? uuidv4(),
+    logger,
     ...overrides,
   };
 }
@@ -602,7 +609,9 @@ export async function blockReducer(
     ...options,
     trace: {
       runId,
-      extensionId,
+      // Be defensive if the call site doesn't provide an extensionId
+      // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3751
+      extensionId: extensionId ?? logger.context.extensionId,
       blockInstanceId: blockConfig.instanceId,
       branches,
     },
@@ -652,11 +661,7 @@ export async function blockReducer(
   }
 
   const preconfiguredTraceExit: TraceExitData = {
-    runId,
-    branches,
-    extensionId: logger.context.extensionId,
-    blockId: blockConfig.id,
-    blockInstanceId: blockConfig.instanceId,
+    ...traceMeta,
     outputKey: blockConfig.outputKey,
     output: null,
     skippedRun: false,
@@ -863,13 +868,13 @@ export async function reduceExtensionPipeline(
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
   initialValues: InitialValues,
-  partialOptions: Partial<ReduceOptions> = {}
+  partialOptions: Partial<ReduceOptions>
 ): Promise<unknown> {
   const options = await applyReduceDefaults(partialOptions);
 
   const { input, root, serviceContext, optionsArgs } = initialValues;
 
-  const { explicitDataFlow, logger: pipelineLogger } = options;
+  const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
   let context: BlockArgContext = {
     // Put serviceContext first to prevent overriding the input/options
@@ -900,6 +905,15 @@ export async function reducePipeline(
       // eslint-disable-next-line no-await-in-loop -- see comment above
       logger: await getStepLogger(blockConfig, pipelineLogger),
     };
+
+    if (abortSignal?.aborted) {
+      throwBlockError(
+        blockConfig,
+        state,
+        new CancelError("Run automatically cancelled"),
+        stepOptions
+      );
+    }
 
     try {
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step

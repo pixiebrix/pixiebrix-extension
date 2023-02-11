@@ -40,7 +40,7 @@ const forEachBlock = new ForEachElement();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, forEachBlock);
+  blockRegistry.register([echoBlock, forEachBlock]);
 });
 
 describe("ForEachElement", () => {

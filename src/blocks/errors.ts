@@ -20,7 +20,7 @@ import { type MessageContext, type RegistryId, type Schema } from "@/core";
 import { type OutputUnit } from "@cfworker/json-schema";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { type JsonObject } from "type-fest";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
@@ -110,4 +110,44 @@ export class RemoteExecutionError extends BusinessError {
   constructor(message: string, readonly error: JsonObject) {
     super(message);
   }
+}
+
+/**
+ * Throwable for providing control flow for the temporary panel.
+ *
+ * Like "CancelError", it is not an error, but needs to subclass Error for our exceptional control flow to work.
+ *
+ * Uses type and detail fields to match the CustomEvent interface.
+ *
+ * @see CustomEvent
+ */
+export class SubmitPanelAction extends CancelError {
+  override name = "SubmitPanelAction";
+
+  /**
+   * Create a throwable action for a temporary panel that resolves the panel.
+   * @param type A custom action type to resolve the panel with, e.g., "submit" or "cancel".
+   * @param detail Extra data to resolve the panel with.
+   */
+  constructor(readonly type: string, readonly detail: JsonObject = {}) {
+    super(`Submitted panel with action: ${type}`);
+  }
+}
+
+/**
+ * Cancel out of panel, and throw an error from the brick that showed the panel.
+ *
+ * Corresponds to a user clicking "skip" on a tour.
+ *
+ * @see TourStepTransformer
+ */
+export class AbortPanelAction extends CancelError {
+  override name = "AbortPanelAction";
+}
+
+/**
+ * Cancel out of a panel, because the user clicked the "close" button.
+ */
+export class ClosePanelAction extends CancelError {
+  override name = "ClosePanelAction";
 }

@@ -25,11 +25,15 @@ import { render } from "react-dom";
 import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerMessenger from "@/blocks/transformers/temporaryInfo/messenger/registration";
+import "iframe-resizer/js/iframeResizer.contentWindow";
 
 function init(): void {
+  console.debug("Initializing ephemeral panel", { location: window.location });
   render(<EphemeralPanel />, document.querySelector("#container"));
 }
 
+registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();
 init();

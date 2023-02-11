@@ -53,12 +53,18 @@ jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(() => ({
     data: [],
   })),
-  useGetMeQuery: jest.fn(() => ({
-    data: [],
-  })),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
   useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
+  appApi: {
+    useLazyGetMeQuery: jest.fn(() => [
+      jest.fn(),
+      {
+        data: Object.freeze({}),
+        isLoading: false,
+      },
+    ]),
+  },
 }));
 
 jest.mock("@/recipes/recipesHooks", () => ({
@@ -66,6 +72,10 @@ jest.mock("@/recipes/recipesHooks", () => ({
 }));
 
 global.chrome.commands.getAll = jest.fn();
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("ActivateWizard", () => {
   test("renders", async () => {

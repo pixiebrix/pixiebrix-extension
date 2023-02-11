@@ -4,7 +4,13 @@ name: Rainforest QA Run
 # event triggers in the future. These will require potentially cleanly dealing with concurrent runs
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
 # https://frontside.com/blog/2020-05-26-github-actions-pull_request/
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release/*
+  schedule:
+    - cron: "0 8 * * *" # 8am UTC -> 3am EST
 
 jobs:
   rainforestqa:
@@ -49,11 +55,11 @@ jobs:
       # https://github.com/rainforestapp/rainforest-cli
       - name: Run Rainforest QA Extension Test Suite
         # Include hash on at end of the URL because Rainforest QA automatically appends a "/" to the end of custom URLs
-        # Can't pass abort for conflict because while we're generating a separate Rainforest QA environment for each run
+        # Can't pass cancel for conflict because while we're generating a separate Rainforest QA environment for each run
         #   they're all using the same server
         # Use --fail-fast so that we're not using GitHub build minutes if not necessary
         run: |
-          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict abort-all --custom-url "https://pixiebrix-extension-builds.s3.us-east-2.amazonaws.com/$BUILD_PATH"
+          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all --custom-url "https://pixiebrix-extension-builds.s3.us-east-2.amazonaws.com/$BUILD_PATH"
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
           # The run group for tests to run during CI

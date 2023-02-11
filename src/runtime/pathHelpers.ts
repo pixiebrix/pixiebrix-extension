@@ -144,9 +144,10 @@ export function getFieldNamesFromPathString(
 // `fromPath` Missing from lodash: https://github.com/lodash/lodash/issues/2169
 /**
  * Stringifies an object path from an array
+ * Stringifies numeric property access as "foo[0].bar"
  *
- * @example getPathFromArray("user", "name") // => "user.name"
- * @example getPathFromArray("title", "Divine Comedy") // => "title["Divine Comedy"]"
+ * @example getPathFromArray(["user", "name"]) // => "user.name"
+ * @example getPathFromArray(["title", "Divine Comedy"]) // => "title["Divine Comedy"]"
  */
 export function getPathFromArray(parts: Array<string | number>): string {
   return parts
@@ -155,7 +156,30 @@ export function getPathFromArray(parts: Array<string | number>): string {
         return `["${part}"]`;
       }
 
+      if (typeof part === "number" || /^\d+$/.test(part)) {
+        return `[${part}]`;
+      }
+
       return index === 0 ? part : `.${part}`;
     })
     .join("");
+}
+
+/**
+ * Adds another part to the path
+ * Stringifies numeric property access as "foo[0]"
+ *
+ * @example addPathPart("auth.user", "name") // => "auth.user.name"
+ * @example addPathPart("metadata.links", "5") // => "metadata.links[5]"
+ */
+export function addPathPart(path: string, part: string | number): string {
+  if (typeof part === "string" && /[ .]/.test(part)) {
+    return `${path}["${part}"]`;
+  }
+
+  if (typeof part === "number" || /^\d+$/.test(part)) {
+    return `${path}[${part}]`;
+  }
+
+  return path === "" ? part : `${path}.${part}`;
 }

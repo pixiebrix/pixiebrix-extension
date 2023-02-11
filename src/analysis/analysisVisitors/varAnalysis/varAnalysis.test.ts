@@ -19,6 +19,7 @@ import {
   blockConfigFactory,
   formStateFactory,
   installedRecipeMetadataFactory,
+  recipeFactory,
 } from "@/testUtils/factories";
 import VarAnalysis from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
@@ -31,6 +32,10 @@ import {
 } from "@/runtime/expressionCreators";
 import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import recipeRegistry from "@/recipes/registry";
+import blockRegistry from "@/blocks/registry";
+import { SELF_EXISTENCE, VarExistence } from "./varMap";
+import { type Schema } from "@/core";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -53,10 +58,28 @@ jest.mock("@/blocks/registry", () => ({
         },
       },
     }),
+    allTyped: jest.fn().mockResolvedValue(new Map()),
+  },
+}));
+
+jest.mock("@/recipes/registry", () => ({
+  __esModule: true,
+  default: {
+    lookup: jest.fn(),
   },
 }));
 
 describe("Collecting available vars", () => {
+  function mockBlueprintWithOptions(optionsSchema: any) {
+    (recipeRegistry.lookup as jest.Mock).mockResolvedValue(
+      recipeFactory({
+        options: {
+          schema: optionsSchema,
+        },
+      })
+    );
+  }
+
   let analysis: VarAnalysis;
   afterEach(() => {
     jest.clearAllMocks();
@@ -68,6 +91,14 @@ describe("Collecting available vars", () => {
     });
 
     test("collects the context vars", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+        },
+      });
+
       const extension = formStateFactory(
         {
           // Let this extension to have a service reference
@@ -159,6 +190,398 @@ describe("Collecting available vars", () => {
     });
   });
 
+  describe("blueprint @options", () => {
+    beforeEach(() => {
+      analysis = new VarAnalysis([]);
+    });
+
+    test.each([{}, null, undefined])("no options", async (optionsSchema) => {
+      mockBlueprintWithOptions(optionsSchema);
+
+      const extension = formStateFactory(
+        {
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const foundationKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+
+      expect(foundationKnownVars.isVariableDefined("@options")).toBeFalse();
+    });
+
+    test("read values from blueprint and extension", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "string",
+          },
+        },
+      });
+
+      const extension = formStateFactory(
+        {
+          // Let this extension to have a service reference
+          optionsArgs: {
+            bar: "qux",
+            baz: "quux",
+          },
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const foundationKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+
+      // A variable defined in the blueprint
+      expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
+      // A variable defined in the blueprint and extension options
+      expect(foundationKnownVars.isVariableDefined("@options.bar")).toBeTrue();
+      // A variable defined in the extension options but not in the blueprint
+      expect(foundationKnownVars.isVariableDefined("@options.baz")).toBeTrue();
+    });
+
+    test("sets DEFINITELY for required options", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "string",
+          },
+        },
+        required: ["foo"],
+      });
+
+      const extension = formStateFactory(
+        {
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const knownVars = analysis.getKnownVars();
+
+      const optionsVars = knownVars.get("extension.blockPipeline.0").getMap()[
+        "options:test/recipe"
+      ]["@options"];
+
+      expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+      expect(optionsVars.bar[SELF_EXISTENCE]).toBe(VarExistence.MAYBE);
+    });
+
+    test("sets DEFINITELY for the actually set values", async () => {
+      mockBlueprintWithOptions({
+        properties: {
+          foo: {
+            type: "string",
+          },
+        },
+      });
+
+      const extension = formStateFactory(
+        {
+          recipe: installedRecipeMetadataFactory({
+            id: validateRegistryId("test/recipe"),
+          }),
+          optionsArgs: {
+            foo: "bar",
+          },
+        },
+        [blockConfigFactory()]
+      );
+
+      await analysis.run(extension);
+
+      const knownVars = analysis.getKnownVars();
+
+      const optionsVars = knownVars.get("extension.blockPipeline.0").getMap()[
+        "options:test/recipe"
+      ]["@options"];
+
+      expect(optionsVars.foo[SELF_EXISTENCE]).toBe(VarExistence.DEFINITELY);
+    });
+  });
+
+  describe("output key schema", () => {
+    const outputKey = validateOutputKey("foo");
+
+    async function runAnalysisWithOutputSchema(outputSchema: Schema) {
+      const extension = formStateFactory(undefined, [
+        blockConfigFactory({
+          outputKey,
+        }),
+        blockConfigFactory(),
+      ]);
+      (blockRegistry.allTyped as jest.Mock).mockResolvedValue(
+        new Map([
+          [
+            extension.extension.blockPipeline[0].id,
+            {
+              block: {
+                // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+                outputSchema,
+              },
+            },
+          ],
+        ])
+      );
+
+      await analysis.run(extension);
+
+      return analysis.getKnownVars().get("extension.blockPipeline.1");
+    }
+
+    test("reads output schema of a block when defined", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema(
+        // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+        {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          type: "object",
+          properties: {
+            innerHTML: {
+              type: "string",
+              description: "The HTML inside the element/document",
+            },
+            outerHTML: {
+              type: "string",
+              description: "The HTML including the element/document",
+            },
+          },
+          required: ["innerHTML", "outerHTML"],
+        }
+      );
+
+      // Knows schema variables are defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.innerHTML`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.outerHTML`)
+      ).toBeTrue();
+
+      // Arbitrary child of the output key is not defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+      ).toBeFalse();
+    });
+
+    test("supports output schema with no properties", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema(
+        // FormData's output schema, see @/blocks/transformers/FormData.ts
+        {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          type: "object",
+          additionalProperties: true,
+        }
+      );
+
+      // The output key allows any property
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+      ).toBeTrue();
+    });
+
+    test("supports nested objects in schema", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          email: {
+            type: "string",
+            format: "email",
+            description: "The email address for the account",
+          },
+          user: {
+            type: "object",
+            required: ["id", "name"],
+            description: "The user id for the account",
+            properties: {
+              id: {
+                type: "string",
+                format: "uuid",
+              },
+              name: {
+                type: "string",
+              },
+            },
+          },
+        },
+        required: ["user"],
+      });
+
+      // Knows schema variables are defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.email`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.id`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.name`)
+      ).toBeTrue();
+
+      // Arbitrary child of the user property is not defined
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.baz`)
+      ).toBeFalse();
+    });
+
+    test("supports array of objects", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema(
+        // PageSemanticReader's output schema, see @/blocks/readers/PageSemanticReader.ts
+        {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          type: "object",
+          properties: {
+            alternate: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  type: {
+                    type: "string",
+                  },
+                  href: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        }
+      );
+
+      // The output key allows only known properties
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`)
+      ).toBeFalse();
+
+      // The array items are known
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+      ).toBeTrue();
+
+      // Non-index access is not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeFalse();
+
+      // Only the known properties of array items are allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.href`)
+      ).toBeTrue();
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.foo`)
+      ).toBeFalse();
+      expect(
+        secondBlockKnownVars.isVariableDefined(
+          `@${outputKey}.alternate.0.href.foo`
+        )
+      ).toBeFalse();
+    });
+
+    test("supports array of primitives", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          alternate: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
+        },
+      });
+
+      // The output key allows only known properties
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`)
+      ).toBeTrue();
+
+      // The array items are known
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+      ).toBeTrue();
+
+      // Non-index access is not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeFalse();
+
+      // Item's properties are not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
+      ).toBeFalse();
+    });
+
+    test("works with additionalItems in an array", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          alternate: {
+            type: "array",
+            items: [
+              {
+                type: "object",
+                properties: {
+                  type: {
+                    type: "string",
+                  },
+                  href: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+            additionalItems: {
+              type: "string",
+            },
+          },
+        },
+      });
+
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+      ).toBeTrue();
+
+      // Non-index access is not allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+      ).toBeFalse();
+
+      // Any item's properties are allowed
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
+      ).toBeTrue();
+    });
+  });
+
   describe("if-else brick", () => {
     beforeAll(async () => {
       const ifElseBlock = {
@@ -247,7 +670,7 @@ describe("Collecting available vars", () => {
       await analysis.run(extension);
     });
 
-    test("adds for-each output after the brick", async () => {
+    test("adds for-each output after the brick", () => {
       expect(
         analysis
           .getKnownVars()
@@ -259,19 +682,16 @@ describe("Collecting available vars", () => {
     test.each([
       "extension.blockPipeline.0.config.body.__value__.0",
       "extension.blockPipeline.0.config.body.__value__.1",
-    ])(
-      "doesn't add for-each output to sub pipelines (%s)",
-      async (blockPath) => {
-        expect(
-          analysis
-            .getKnownVars()
-            .get(blockPath)
-            .isVariableDefined("@forEachOutput")
-        ).toBeFalse();
-      }
-    );
+    ])("doesn't add for-each output to sub pipelines (%s)", (blockPath) => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get(blockPath)
+          .isVariableDefined("@forEachOutput")
+      ).toBeFalse();
+    });
 
-    test("doesn't leak sub pipeline outputs", async () => {
+    test("doesn't leak sub pipeline outputs", () => {
       expect(
         analysis
           .getKnownVars()
@@ -280,7 +700,7 @@ describe("Collecting available vars", () => {
       ).toBeFalse();
     });
 
-    test("adds the element key to the sub pipeline", async () => {
+    test("adds the element key to the sub pipeline", () => {
       expect(
         analysis
           .getKnownVars()
@@ -289,13 +709,29 @@ describe("Collecting available vars", () => {
       ).toBeTrue();
     });
 
-    test("doesn't leak the sub pipeline element key", async () => {
+    test("doesn't leak the sub pipeline element key", () => {
       expect(
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
           .isVariableDefined("@element")
       ).toBeFalse();
+    });
+
+    test.each([
+      "extension.blockPipeline.0.config.body.__value__.0",
+      "extension.blockPipeline.0.config.body.__value__.1",
+    ])("source of the @element key if the For-Each block (%s)", (blockPath) => {
+      const blockVars = analysis.getKnownVars().get(blockPath).getMap();
+
+      const expectedForEachBlockPath = "extension.blockPipeline.0";
+
+      // Find the source that provided the @element variable
+      const actualForEachBlockPath = Object.entries(blockVars).find(
+        ([, node]) => "@element" in node
+      )[0];
+
+      expect(actualForEachBlockPath).toBe(expectedForEachBlockPath);
     });
   });
 });

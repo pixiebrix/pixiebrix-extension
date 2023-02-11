@@ -19,34 +19,37 @@ import { type BlockPosition } from "@/blocks/types";
 import { type UUID } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
+import { type BaseAnnotation } from "@/types";
 
-export enum AnnotationType {
-  Error = "error",
-  Warning = "warning",
-  Info = "info",
+export enum AnalysisAnnotationActionType {
+  AddValueToArray,
 }
 
-export type Annotation = {
+export type AnalysisAnnotationAction = {
+  caption: string;
+  type: AnalysisAnnotationActionType;
+  path: string;
+  value?: unknown;
+  extraCallback?: () => Promise<void>;
+};
+
+export type AnalysisAnnotation = BaseAnnotation & {
   /**
    * Position of the annotation within the extension configuration
    */
   position: BlockPosition;
   /**
-   * A user-readable message for the annotation
-   */
-  message: string;
-  /**
    * Unique identifier for analysis that created this annotation
    */
   analysisId: string;
   /**
-   * The type of annotation
-   */
-  type: AnnotationType;
-  /**
    * Custom data produced by the analysis
    */
   detail?: unknown;
+  /**
+   * Actions that can be taken to fix the issue identified during analysis
+   */
+  actions?: AnalysisAnnotationAction[];
 };
 
 export interface Analysis {
@@ -58,7 +61,7 @@ export interface Analysis {
   /**
    * Return the produced annotations
    */
-  getAnnotations(): Annotation[];
+  getAnnotations(): AnalysisAnnotation[];
 
   /**
    * Run the analysis on the given extension
@@ -71,7 +74,7 @@ export type AnalysisState = {
   /**
    * Annotations stored by extension ID
    */
-  extensionAnnotations: Record<UUID, Annotation[]>;
+  extensionAnnotations: Record<UUID, AnalysisAnnotation[]>;
 
   /**
    * Known variables

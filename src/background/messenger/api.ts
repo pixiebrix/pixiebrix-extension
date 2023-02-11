@@ -67,9 +67,11 @@ export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
 
 export const registry = {
-  getKind: getMethod("REGISTRY_GET_KIND", bg),
+  fetch: getMethod("REGISTRY_FETCH", bg),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
+  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
   find: getMethod("REGISTRY_FIND", bg),
+  clear: getMethod("REGISTRY_CLEAR", bg),
 };
 
 export const dataStore = {
@@ -78,7 +80,6 @@ export const dataStore = {
 };
 
 export const requestRun = {
-  onServer: getMethod("REQUEST_RUN_ON_SERVER", bg),
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
   inTop: getMethod("REQUEST_RUN_IN_TOP", bg),

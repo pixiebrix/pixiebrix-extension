@@ -16,10 +16,12 @@
  */
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { AnnotationType } from "@/analysis/analysisTypes";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
+import { AnnotationType } from "@/types";
+import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
+import { TourEffect } from "@/blocks/effects/tourEffect";
 
 class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
   get id() {
@@ -42,10 +44,32 @@ class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
       typedBlock
     );
 
+    if (
+      blockConfig.id === TourStepTransformer.BLOCK_ID &&
+      this.extension.type !== "tour"
+    ) {
+      this.annotations.push({
+        position,
+        message: "The Show Tour Step brick can only be used in a Tour",
+        analysisId: this.id,
+        type: AnnotationType.Error,
+      });
+    } else if (
+      blockConfig.id === TourEffect.BLOCK_ID &&
+      this.extension.type === "tour"
+    ) {
+      this.annotations.push({
+        position,
+        message: "Use the Show Tour Step brick inside a Tour",
+        analysisId: this.id,
+        type: AnnotationType.Error,
+      });
+    }
+
     if (!isBlockAllowed) {
       this.annotations.push({
         position,
-        message: `Block of type "${typedBlock.type}" is not allowed in this pipeline`,
+        message: `Brick of type "${typedBlock.type}" is not allowed in this pipeline`,
         analysisId: this.id,
         type: AnnotationType.Error,
       });

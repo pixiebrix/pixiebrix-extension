@@ -186,6 +186,10 @@ export interface paths {
     get: operations["listInvitations"];
     post: operations["createInvitation"];
   };
+  "/api/magic-link/": {
+    get: operations["loginMagicLink"];
+    post: operations["createMagicLink"];
+  };
   "/api/marketplace/listings/": {
     get: operations["listMarketplaceListings"];
   };
@@ -355,6 +359,10 @@ export interface paths {
   "/api/support/users/{user_pk}/bricks/{brick_pk}/": {
     get: operations["retrieveSupportUserBricks"];
   };
+  "/api/tours/runs/": {
+    get: operations["listTourRunSummarys"];
+    post: operations["createTourCreate"];
+  };
   "/api/databases/records/jobs/": {
     post: operations["createDatabaseExportJob"];
   };
@@ -416,6 +424,9 @@ export interface paths {
   "/api/organizations/{organization_pk}/compliance-auth-token/": {
     put: operations["complianceAuthTokenOrganization"];
   };
+  "/api/tours/runs/{id}/": {
+    patch: operations["partialUpdateTourUpdate"];
+  };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
   };
@@ -428,6 +439,9 @@ export interface paths {
   };
   "/api/invitations/{id}/": {
     delete: operations["destroyInvitation"];
+  };
+  "/api/tests/accounts/social/": {
+    delete: operations["destroySocialTestAccount"];
   };
 }
 
@@ -1021,7 +1035,7 @@ export interface components {
          * @description The sub-type/category of the tag
          * @enum {string}
          */
-        subtype?: "generic" | "role" | "service" | "other";
+        subtype?: "generic" | "role" | "service" | "category" | "other";
         /** Format: date-time */
         created_at?: string;
         /** Format: date-time */
@@ -1033,6 +1047,11 @@ export interface components {
         /** Format: uri */
         url: string;
       };
+      /**
+       * Format: uri
+       * @description Example web page to try out the package
+       */
+      example_page_url?: string | null;
       /** Format: date-time */
       created_at?: string;
       /** Format: date-time */
@@ -1054,7 +1073,7 @@ export interface components {
        * @description The sub-type/category of the tag
        * @enum {string}
        */
-      subtype?: "generic" | "role" | "service" | "other";
+      subtype?: "generic" | "role" | "service" | "category" | "other";
       /** Format: date-time */
       created_at?: string;
       /** Format: date-time */
@@ -1159,6 +1178,8 @@ export interface components {
       }[];
       /** @description True if the account is an organization API service account */
       service_account?: boolean;
+      /** @description True if the account is an automated/manual test account */
+      test_account?: boolean;
       partner?: {
         /** Format: uuid */
         readonly id?: string;
@@ -1480,6 +1501,29 @@ export interface components {
        */
       timestamp: string;
     };
+    TourRunSummary: {
+      /**
+       * Format: uuid
+       * @description Nonce for the tour run, generated client-side
+       */
+      id?: string;
+      /** @description Name of the tour, corresponds to label of the tour extension */
+      tour_name: string;
+      package_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Extension id on the client
+       */
+      extension_id: string;
+      /** @description True if the user completed the tour successfully */
+      completed?: boolean;
+      /** @description True if the the user skipped the tour */
+      skipped?: boolean;
+      /** @description True if the tour errored out */
+      errored?: boolean;
+      /** Format: date-time */
+      updated_at?: string;
+    };
     DatabaseExportRequest: {
       name: string;
       databases: string[];
@@ -1640,6 +1684,26 @@ export interface components {
       };
       event: string;
     };
+    TourCreate: {
+      /** Format: uuid */
+      id: string;
+      package_id?: string | null;
+      /**
+       * Format: uuid
+       * @description Extension id on the client
+       */
+      extension_id: string;
+      /** @description Name of the tour, corresponds to label of the tour extension */
+      tour_name: string;
+    };
+    TourUpdate: {
+      /** @description True if the user completed the tour successfully */
+      completed?: boolean;
+      /** @description True if the the user skipped the tour */
+      skipped?: boolean;
+      /** @description True if the tour errored out */
+      errored?: boolean;
+    };
   };
   responses: never;
   parameters: never;
@@ -1751,9 +1815,11 @@ export interface operations {
     parameters?: {
       /** @description A page number within the paginated result set. */
       /** @description Number of results to return per page. */
+      /** @description A search term. */
       query?: {
         page?: number;
         page_size?: number;
+        q?: string;
       };
     };
     responses: {
@@ -1792,6 +1858,10 @@ export interface operations {
   };
   retrievePackage: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         id: string;
       };
@@ -1808,6 +1878,10 @@ export interface operations {
   };
   updatePackage: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         id: string;
       };
@@ -1831,6 +1905,10 @@ export interface operations {
   };
   destroyPackage: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         id: string;
       };
@@ -3397,6 +3475,41 @@ export interface operations {
       };
     };
   };
+  loginMagicLink: {
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": Record<string, never>;
+          "application/vnd.pixiebrix.api+json; version=1.0": Record<
+            string,
+            never
+          >;
+        };
+      };
+    };
+  };
+  createMagicLink: {
+    requestBody?: {
+      content: {
+        "application/json": Record<string, never>;
+        "application/x-www-form-urlencoded": Record<string, never>;
+        "multipart/form-data": Record<string, never>;
+      };
+    };
+    responses: {
+      201: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": Record<string, never>;
+          "application/vnd.pixiebrix.api+json; version=1.0": Record<
+            string,
+            never
+          >;
+        };
+      };
+    };
+  };
   listMarketplaceListings: {
     parameters?: {
       /** @description A page number within the paginated result set. */
@@ -3580,9 +3693,10 @@ export interface operations {
   queryInstallationStarterBlueprint: {
     responses: {
       200: {
+        headers: {};
         content: {
-          "application/json": components["schemas"]["StarterBlueprintsInstallation"];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["StarterBlueprintsInstallation"];
+          "application/json; version=1.0": components["schemas"]["StarterBlueprintsInstallation"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["StarterBlueprintsInstallation"];
         };
       };
     };
@@ -3597,9 +3711,10 @@ export interface operations {
     };
     responses: {
       201: {
+        headers: {};
         content: {
-          "application/json": components["schemas"]["StarterBlueprintsInstallation"];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["StarterBlueprintsInstallation"];
+          "application/json; version=1.0": components["schemas"]["StarterBlueprintsInstallation"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["StarterBlueprintsInstallation"];
         };
       };
     };
@@ -3607,9 +3722,10 @@ export interface operations {
   listStarterBlueprints: {
     responses: {
       200: {
+        headers: {};
         content: {
-          "application/json": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+          "application/json; version=1.0": components["schemas"]["PackageConfigList"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageConfigList"][];
         };
       };
     };
@@ -3831,9 +3947,11 @@ export interface operations {
     parameters: {
       /** @description A page number within the paginated result set. */
       /** @description Number of results to return per page. */
+      /** @description A search term. */
       query?: {
         page?: number;
         page_size?: number;
+        q?: string;
       };
       path: {
         organization_pk: string;
@@ -3880,9 +3998,11 @@ export interface operations {
     parameters: {
       /** @description A page number within the paginated result set. */
       /** @description Number of results to return per page. */
+      /** @description A search term. */
       query?: {
         page?: number;
         page_size?: number;
+        q?: string;
       };
       path: {
         organization_pk: string;
@@ -3939,6 +4059,10 @@ export interface operations {
   };
   retrieveDatabase: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         organization_pk: string;
         id: string;
@@ -3956,6 +4080,10 @@ export interface operations {
   };
   updateDatabase: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         organization_pk: string;
         id: string;
@@ -3980,6 +4108,10 @@ export interface operations {
   };
   destroyDatabase: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         organization_pk: string;
         id: string;
@@ -3991,6 +4123,10 @@ export interface operations {
   };
   partialUpdateDatabase: {
     parameters: {
+      /** @description A search term. */
+      query?: {
+        q?: string;
+      };
       path: {
         organization_pk: string;
         id: string;
@@ -4058,9 +4194,11 @@ export interface operations {
     parameters: {
       /** @description A page number within the paginated result set. */
       /** @description Number of results to return per page. */
+      /** @description A search term. */
       query?: {
         page?: number;
         page_size?: number;
+        q?: string;
       };
       path: {
         organization_pk: string;
@@ -4775,6 +4913,49 @@ export interface operations {
       };
     };
   };
+  listTourRunSummarys: {
+    parameters?: {
+      /** @description A page number within the paginated result set. */
+      /** @description Number of results to return per page. */
+      query?: {
+        page?: number;
+        page_size?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/tours/runs/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/tours/runs/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/tours/runs/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/tours/runs/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
+        content: {
+          "application/json; version=1.0": components["schemas"]["TourRunSummary"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["TourRunSummary"][];
+        };
+      };
+    };
+  };
+  createTourCreate: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["TourCreate"];
+        "application/x-www-form-urlencoded": components["schemas"]["TourCreate"];
+        "multipart/form-data": components["schemas"]["TourCreate"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["TourCreate"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["TourCreate"];
+        };
+      };
+    };
+  };
   createDatabaseExportJob: {
     requestBody?: {
       content: {
@@ -5161,6 +5342,29 @@ export interface operations {
       };
     };
   };
+  partialUpdateTourUpdate: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["TourUpdate"];
+        "application/x-www-form-urlencoded": components["schemas"]["TourUpdate"];
+        "multipart/form-data": components["schemas"]["TourUpdate"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["TourUpdate"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["TourUpdate"];
+        };
+      };
+    };
+  };
   destroyDeploymentPermission: {
     parameters: {
       path: {
@@ -5201,6 +5405,11 @@ export interface operations {
         id: string;
       };
     };
+    responses: {
+      204: never;
+    };
+  };
+  destroySocialTestAccount: {
     responses: {
       204: never;
     };

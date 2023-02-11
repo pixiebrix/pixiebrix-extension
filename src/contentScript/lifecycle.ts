@@ -66,8 +66,11 @@ const installScriptOnce = once(async (): Promise<void> => {
 
 async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
-  reason: RunReason,
-  isCancelled: () => boolean
+  {
+    reason,
+    extensionIds,
+    isCancelled,
+  }: { reason: RunReason; extensionIds?: UUID[]; isCancelled: () => boolean }
 ): Promise<void> {
   let installed = false;
 
@@ -101,7 +104,7 @@ async function runExtensionPoint(
   console.debug(`Installed extension: ${extensionPoint.id}`);
   _installedExtensionPoints.push(extensionPoint);
 
-  await extensionPoint.run({ reason });
+  await extensionPoint.run({ reason, extensionIds });
 }
 
 export function getInstalled(): IExtensionPoint[] {
@@ -239,11 +242,12 @@ export async function runDynamic(
 
   _dynamic.set(elementId, extensionPoint);
 
-  await runExtensionPoint(
-    extensionPoint,
-    RunReason.MANUAL,
-    makeCancelOnNavigate()
-  );
+  await runExtensionPoint(extensionPoint, {
+    // The Page Editor is the only caller for runDynamic
+    reason: RunReason.PAGE_EDITOR,
+    extensionIds: [elementId],
+    isCancelled: makeCancelOnNavigate(),
+  });
 }
 
 /**
@@ -411,11 +415,10 @@ export async function handleNavigate({
       extensionPoints.map(async (extensionPoint) => {
         // Don't await each extension point since the extension point may never appear. For example, an
         // extension point that runs on the contact information modal on LinkedIn
-        const runPromise = runExtensionPoint(
-          extensionPoint,
-          runReason,
-          cancel
-        ).catch((error) => {
+        const runPromise = runExtensionPoint(extensionPoint, {
+          reason: runReason,
+          isCancelled: cancel,
+        }).catch((error) => {
           console.error("Error installing/running: %s", extensionPoint.id, {
             error,
           });

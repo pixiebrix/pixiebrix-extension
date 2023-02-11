@@ -97,7 +97,7 @@ beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   blockRegistry.clear();
-  blockRegistry.register(rootReader);
+  blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
 });

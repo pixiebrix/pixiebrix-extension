@@ -19,6 +19,7 @@ import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
 import { type UUID } from "@/core";
 
+// Used by the app
 export function selectOrganizations(
   organizationMemberships: Me["organization_memberships"]
 ): AuthState["organizations"] {
@@ -80,6 +81,7 @@ export function selectExtensionAuthState({
   scope,
   organization,
   is_onboarded: isOnboarded,
+  test_account: isTestAccount,
   flags = [],
   milestones = [],
   organization_memberships: organizationMemberships = [],
@@ -96,6 +98,7 @@ export function selectExtensionAuthState({
     scope,
     isLoggedIn: true,
     isOnboarded,
+    isTestAccount,
     extension: true,
     organization,
     organizations,

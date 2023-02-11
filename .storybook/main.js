@@ -79,6 +79,7 @@ module.exports = {
         new NodePolyfillPlugin(),
         new webpack.ProvidePlugin({
           $: "jquery",
+          jest: "jest-mock",
           jQuery: "jquery",
           browser: [
             path.resolve(rootDir, "src/__mocks__/browserMock.mjs"),

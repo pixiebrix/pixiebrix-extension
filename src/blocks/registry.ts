@@ -35,9 +35,9 @@ export type TypedBlock = {
 
 export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
-export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   constructor() {
-    super(["block", "component", "effect", "reader"], "blocks", fromJS);
+    super(["block", "component", "effect", "reader"], fromJS);
 
     this.addListener({
       onCacheChanged: () => {
@@ -56,7 +56,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   private async inferAllTypes(): Promise<TypedBlockMap> {
     const typeCache: TypedBlockMap = new Map();
 
-    const items = this.cached().length > 0 ? this.cached() : await this.all();
+    const items = this.isCachedInitialized ? this.cached : await this.all();
 
     console.debug("Computing block types for %d block(s)", items.length);
 
@@ -99,10 +99,6 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
 }
 
 const registry = new BlocksRegistry();
-
-export function registerBlock(block: IBlock): void {
-  registry.register(block);
-}
 
 export default registry;
 

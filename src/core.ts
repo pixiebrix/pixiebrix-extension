@@ -187,7 +187,7 @@ export interface Message<
 }
 
 // `ContextName`s from webext-detect-page
-export type ContextName = keyof typeof contextNames | "unknown";
+type ContextName = keyof typeof contextNames | "unknown";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.
@@ -310,6 +310,12 @@ export type BlockOptions<
     extraContext?: Record<string, unknown>,
     root?: ReaderRoot
   ) => Promise<unknown>; // Should be PanelPayload
+
+  /**
+   * A signal to abort the current block's execution.
+   * @since 1.7.19
+   */
+  abortSignal?: AbortSignal;
 };
 
 /**
@@ -420,11 +426,6 @@ export interface ServiceDependency {
    */
   config?: UUID;
 }
-
-export type ServiceLocator = (
-  serviceId: RegistryId,
-  configurationId?: UUID
-) => Promise<SanitizedServiceConfiguration>;
 
 export type ServiceAuthPair = {
   /**
@@ -658,7 +659,6 @@ export enum RunReason {
   NAVIGATE = 2,
   /**
    * A manual run request. One of:
-   * - Page Editor updated the extension
    * - The user toggled the sidebar (sidebar extensions only)
    * - A brick issued a reactivation event
    * - PixieBrix issues a re-activate (e.g., on extension install/uninstall)
@@ -674,6 +674,11 @@ export enum RunReason {
    * The SPA mutated without navigating
    */
   MUTATION = 5,
+  /**
+   * Page Editor updated the extension
+   * @since 1.7.19
+   */
+  PAGE_EDITOR = 6,
 }
 
 /**

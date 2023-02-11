@@ -23,11 +23,7 @@ import { type Service } from "@/types";
 
 const storageKey = "persist:servicesOptions" as ReduxStorageKey;
 
-const registry = new BaseRegistry<RegistryId, Service>(
-  ["service"],
-  "services",
-  fromJS
-);
+const registry = new BaseRegistry<RegistryId, Service>(["service"], fromJS);
 
 // See the ServicesState slice
 type PersistedServicesState = {

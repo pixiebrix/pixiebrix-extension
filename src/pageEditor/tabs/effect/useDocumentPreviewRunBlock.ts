@@ -180,6 +180,7 @@ export default function useDocumentPreviewRunBlock(
           ? extensionPoint.definition.rootSelector
           : undefined;
 
+      // `panel` was the default before we added the location field
       const location: Location =
         (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
 

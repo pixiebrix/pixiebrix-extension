@@ -40,7 +40,12 @@ import {
   zip,
 } from "lodash";
 import { type JsonObject, type Primitive } from "type-fest";
-import { type ApiVersion, type RegistryId, type SafeString } from "@/core";
+import {
+  type ApiVersion,
+  type RegistryId,
+  type SafeString,
+  type Schema,
+} from "@/core";
 import { type UnknownObject } from "@/types";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
@@ -51,6 +56,7 @@ const specialCharsRegex = /[\s.[\]]/;
 /**
  * Create a Formik field name, validating the individual path parts.
  * Wraps parts with special characters in brackets, so Formik treat it as a single property name.
+ * Stringifies numeric property access as "foo.0.bar"
  * @param baseFieldName The base field name
  * @param rest the other Formik field name path parts
  * @throws Error if a path part is invalid
@@ -93,6 +99,35 @@ export function joinPathParts(...nameParts: Array<string | number>): string {
   return nameParts.filter((x) => x != null && x !== "").join(".");
 }
 
+/**
+ * Helper method to get the schema of a sub-property. Does not currently handle array indexes or allOf/oneOf/anyOf.
+ * @param schema the JSON Schema
+ * @param path the property path
+ */
+export function getSubSchema(schema: Schema, path: string): Schema {
+  const parts = split(path, ".");
+  let subSchema: Schema | boolean = schema;
+
+  for (const part of parts) {
+    if (typeof subSchema === "boolean") {
+      throw new TypeError(`Invalid property path: ${path}`);
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- expected that this is called locally
+    subSchema = subSchema.properties?.[part];
+  }
+
+  if (subSchema == null) {
+    throw new TypeError(`Invalid property path: ${path}`);
+  }
+
+  if (typeof subSchema === "boolean") {
+    throw new TypeError(`Invalid property path: ${path}`);
+  }
+
+  return subSchema;
+}
+
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
   return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
@@ -125,6 +160,17 @@ export async function waitAnimationFrame(): Promise<void> {
       resolve();
     });
   });
+}
+
+export async function setAnimationFrameInterval(
+  callback: () => void,
+  { signal }: { signal: AbortSignal }
+): Promise<void> {
+  while (!signal.aborted) {
+    // eslint-disable-next-line no-await-in-loop -- intentional
+    await waitAnimationFrame();
+    callback();
+  }
 }
 
 export async function waitForBody(): Promise<void> {
@@ -345,27 +391,6 @@ export function excludeUndefined(obj: unknown): unknown {
   return obj;
 }
 
-export function evaluableFunction(
-  function_: (...parameters: unknown[]) => unknown
-): string {
-  return "(" + function_.toString() + ")()";
-}
-
-/**
- * Lift a unary function to pass through null/undefined.
- */
-export function optional<T extends (arg: unknown) => unknown>(
-  fn: T
-): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
-  return (arg: Parameters<T>[0]) => {
-    if (arg == null) {
-      return null;
-    }
-
-    return fn(arg) as ReturnType<T>;
-  };
-}
-
 /**
  * Returns true if `url` is an absolute URL, based on whether the URL contains a schema
  */
@@ -373,7 +398,7 @@ export function isAbsoluteUrl(url: string): boolean {
   return /(^|:)\/\//.test(url);
 }
 
-export const SPACE_ENCODED_VALUE = "%20";
+const SPACE_ENCODED_VALUE = "%20";
 
 // Preserve the previous default for backwards compatibility
 // https://github.com/pixiebrix/pixiebrix-extension/pull/3076#discussion_r844564894

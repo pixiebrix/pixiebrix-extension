@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type Schema } from "@/core";
+import { type BlockOptions, type Schema } from "@/core";
 import { render } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
@@ -24,11 +24,20 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@rjsf/validator-ajv6";
 import {
+  CustomFormRenderer,
   normalizeIncomingFormData,
   normalizeOutgoingFormData,
 } from "./customForm";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import { uuidv4 } from "@/types/helpers";
+
+import { dataStore } from "@/background/messenger/api";
+
+const dataStoreGetMock = dataStore.get as jest.MockedFunction<
+  typeof dataStore.get
+>;
 
 describe("form data normalization", () => {
   const normalizationTestCases = [
@@ -183,7 +192,7 @@ describe("form data normalization", () => {
     // Make sure the form renders the data without errors
     expect(rendered.asFragment()).toMatchSnapshot();
 
-    // Submit and make sure there're no validation errors
+    // Submit and make sure there are no validation errors
     await userEvent.click(
       rendered.getByRole("button", {
         name: "Submit",
@@ -191,5 +200,37 @@ describe("form data normalization", () => {
     );
 
     expect(rendered.queryByText("Error")).not.toBeInTheDocument();
+  });
+});
+
+describe("CustomFormRenderer", () => {
+  test("Render autosaved form", async () => {
+    const brick = new CustomFormRenderer();
+
+    dataStoreGetMock.mockResolvedValue({});
+
+    const { Component, props } = await brick.render(
+      {
+        storage: { type: "localStorage" },
+        autoSave: true,
+        recordId: "test",
+        schema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+          },
+        },
+      } as any,
+      {
+        logger: new ConsoleLogger({
+          extensionId: uuidv4(),
+        }),
+      } as BlockOptions
+    );
+
+    const rendered = render(<Component {...props} />);
+
+    expect(rendered.queryByText("Submit")).toBeNull();
+    expect(rendered.container.querySelector("#root_name")).not.toBeNull();
   });
 });

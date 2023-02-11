@@ -79,7 +79,7 @@ const temporaryDisplayBlock = new DisplayTemporaryInfo();
 beforeAll(async () => {
   registerDefaultWidgets();
   blockRegistry.clear();
-  blockRegistry.register(documentBlock, temporaryDisplayBlock);
+  blockRegistry.register([documentBlock, temporaryDisplayBlock]);
 });
 
 describe("Add new element", () => {

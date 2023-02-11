@@ -44,7 +44,7 @@ function defineBlock(schema: Schema): RegistryId {
 
   const block = new DefinedBlock();
 
-  blockRegistry.register(block);
+  blockRegistry.register([block]);
 
   return block.id;
 }
@@ -644,7 +644,7 @@ describe("upgrade overrides", () => {
     );
 
     const block = new GoogleSheetsAppend();
-    blockRegistry.register(block);
+    blockRegistry.register([block]);
 
     const upgraded = await upgradePipelineToV3([
       {
@@ -694,7 +694,7 @@ describe("upgrade overrides", () => {
     );
 
     const block = new GoogleSheetsAppend();
-    blockRegistry.register(block);
+    blockRegistry.register([block]);
 
     const upgraded = await upgradePipelineToV3([
       {
@@ -748,7 +748,7 @@ describe("upgrade overrides", () => {
     );
 
     const block = new ComponentReader();
-    blockRegistry.register(block);
+    blockRegistry.register([block]);
 
     const upgraded = await upgradePipelineToV3([
       {

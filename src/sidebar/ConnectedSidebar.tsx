@@ -55,6 +55,9 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
     onActivatePanel(options: ActivatePanelOptions) {
       dispatch(sidebarSlice.actions.activatePanel(options));
     },
+    onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
+      dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
+    },
     onShowTemporaryPanel(panel: TemporaryPanelEntry) {
       dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
     },
@@ -106,6 +109,11 @@ const ConnectedSidebar: React.VFC = () => {
               }}
               onCloseTemporaryTab={(nonce) => {
                 dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+              }}
+              onResolveTemporaryPanel={(nonce, action) => {
+                dispatch(
+                  sidebarSlice.actions.resolveTemporaryPanel({ nonce, action })
+                );
               }}
             />
           ) : (

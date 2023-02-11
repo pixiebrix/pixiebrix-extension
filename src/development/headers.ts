@@ -27,7 +27,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 109;
+const EXPECTED_HEADER_COUNT = 114;
 
 registerBuiltinBlocks();
 registerContribBlocks();
@@ -36,7 +36,7 @@ Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 
-const blockDefinitions = blockRegistry.cached().map((block) => ({
+const blockDefinitions = blockRegistry.builtins.map((block) => ({
   apiVersion: "v1",
   header: true,
   kind: "read" in block ? "reader" : "component",

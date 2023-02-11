@@ -73,8 +73,9 @@ const CustomFormComponent: React.FunctionComponent<{
   uiSchema: UiSchema;
   submitCaption: string;
   formData: JsonObject;
+  autoSave: boolean;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, submitCaption, formData, onSubmit }) => (
+}> = ({ schema, uiSchema, submitCaption, formData, autoSave, onSubmit }) => (
   <div className="CustomForm p-3">
     <ErrorBoundary>
       <Stylesheets href={[bootstrap, custom]}>
@@ -86,15 +87,24 @@ const CustomFormComponent: React.FunctionComponent<{
           widgets={uiWidgets}
           validator={validator}
           templates={{ FieldTemplate }}
+          onChange={async ({ formData }) => {
+            if (autoSave) {
+              await onSubmit(formData);
+            }
+          }}
           onSubmit={async ({ formData }) => {
             await onSubmit(formData);
           }}
         >
-          <div>
-            <button className="btn btn-primary" type="submit">
-              {submitCaption}
-            </button>
-          </div>
+          {autoSave ? (
+            <div />
+          ) : (
+            <div>
+              <button className="btn btn-primary" type="submit">
+                {submitCaption}
+              </button>
+            </div>
+          )}
         </JsonSchemaForm>
       </Stylesheets>
     </ErrorBoundary>
@@ -265,6 +275,12 @@ export const customFormRendererSchema = {
         },
       ],
     },
+    autoSave: {
+      type: "boolean",
+      description:
+        "Toggle on to automatically save/submit the form on change. If enabled, form will not display a submit button.",
+      default: false,
+    },
     submitCaption: {
       type: "string",
       description: "The submit button caption (default='Submit')",
@@ -342,12 +358,14 @@ export class CustomFormRenderer extends Renderer {
       recordId,
       schema,
       uiSchema,
-      successMessage = "Successfully submitted form",
+      autoSave = false,
+      successMessage,
       submitCaption = "Submit",
     }: BlockArg<{
       storage?: Storage;
       successMessage?: string;
       recordId?: string | null;
+      autoSave?: boolean;
       submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
@@ -392,6 +410,7 @@ export class CustomFormRenderer extends Renderer {
         formData: normalizedData,
         schema,
         uiSchema,
+        autoSave,
         submitCaption,
         async onSubmit(values: JsonObject) {
           try {

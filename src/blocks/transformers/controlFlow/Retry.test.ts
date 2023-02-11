@@ -40,7 +40,7 @@ const retryBlock = new Retry();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(throwBlock, echoBlock, retryBlock);
+  blockRegistry.register([throwBlock, echoBlock, retryBlock]);
 });
 
 describe("Retry", () => {

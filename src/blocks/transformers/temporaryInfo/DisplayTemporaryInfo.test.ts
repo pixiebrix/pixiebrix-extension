@@ -33,11 +33,19 @@ import {
   type RendererError,
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
-import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
-import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import {
+  showTemporarySidebarPanel,
+  updateTemporarySidebarPanel,
+} from "@/contentScript/sidebarController";
+import {
+  cancelTemporaryPanelsForExtension,
+  waitForTemporaryPanel,
+} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
+import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import pDefer from "p-defer";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
@@ -60,11 +68,14 @@ jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
   showTemporarySidebarPanel: jest.fn(),
+  updateTemporarySidebarPanel: jest.fn(),
 }));
 
 jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
   waitForTemporaryPanel: jest.fn(),
   stopWaitingForTemporaryPanels: jest.fn(),
+  cancelTemporaryPanelsForExtension: jest.fn(),
+  updatePanelDefinition: jest.fn(),
 }));
 
 const showTemporarySidebarPanelMock =
@@ -75,6 +86,14 @@ const showModalMock = showModal as jest.MockedFunction<typeof showModal>;
 const waitForTemporaryPanelMock = waitForTemporaryPanel as jest.MockedFunction<
   typeof waitForTemporaryPanel
 >;
+const cancelTemporaryPanelsForExtensionMock =
+  cancelTemporaryPanelsForExtension as jest.MockedFunction<
+    typeof cancelTemporaryPanelsForExtension
+  >;
+const updateTemporarySidebarPanelMock =
+  updateTemporarySidebarPanel as jest.MockedFunction<
+    typeof updateTemporarySidebarPanel
+  >;
 
 describe("DisplayTemporaryInfo", () => {
   const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
@@ -82,15 +101,21 @@ describe("DisplayTemporaryInfo", () => {
 
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register(
+    blockRegistry.register([
       teapotBlock,
       throwBlock,
       renderer,
-      displayTemporaryInfoBlock
-    );
+      displayTemporaryInfoBlock,
+    ]);
 
     showTemporarySidebarPanelMock.mockReset();
     showModalMock.mockReset();
+    cancelTemporaryPanelsForExtensionMock.mockReset();
+    updateTemporarySidebarPanelMock.mockReset();
+  });
+
+  test("isRootAware", async () => {
+    await expect(displayTemporaryInfoBlock.isRootAware()).resolves.toBe(true);
   });
 
   test("it returns payload", async () => {
@@ -180,7 +205,112 @@ describe("DisplayTemporaryInfo", () => {
         heading: "Test Temp Panel",
         nonce: expect.toBeString(),
         payload: expect.toBeObject(),
-      })
+      }),
+      { onRegister: undefined }
     );
+  });
+
+  test("requires target for popover", async () => {
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "popover",
+        isRootAware: true,
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    await expect(
+      reducePipeline(pipeline, simpleInput({}), options)
+    ).rejects.toThrow("Target must be an element for popover");
+  });
+
+  test("it registers a popover panel", async () => {
+    document.body.innerHTML = '<div><div id="target"></div></div>';
+
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        isRootAware: true,
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "popover",
+      },
+    };
+
+    const extensionId = uuidv4();
+    const root = document.querySelector<HTMLElement>("#target");
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    await reducePipeline(pipeline, { ...simpleInput({}), root }, options);
+
+    expect(showModalMock).not.toHaveBeenCalled();
+    expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
+    expect(cancelTemporaryPanelsForExtensionMock).toHaveBeenCalled();
+
+    expect(
+      document.body.querySelector("#pb-tooltips-container")
+    ).not.toBeNull();
+  });
+
+  test("it listens for statechange", async () => {
+    document.body.innerHTML = '<div><div id="target"></div></div>';
+
+    const deferredPromise = pDefer<any>();
+    waitForTemporaryPanelMock.mockImplementation(
+      async () => deferredPromise.promise
+    );
+
+    const config = getExampleBlockConfig(renderer.id);
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: makePipelineExpression([{ id: renderer.id, config }]),
+        location: "panel",
+        refreshTrigger: "statechange",
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    void reducePipeline(pipeline, simpleInput({}), options);
+
+    await tick();
+
+    expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
+
+    $(document).trigger("statechange");
+
+    await tick();
+
+    expect(updateTemporarySidebarPanelMock).toHaveBeenCalled();
+
+    deferredPromise.resolve();
   });
 });

@@ -57,7 +57,10 @@ const GenericInsertPane: React.FunctionComponent<{
         dispatch(addElement(state));
         dispatch(actions.checkActiveElementAvailability());
 
-        await updateDynamicElement(thisTab, config.asDynamicElement(state));
+        // Don't auto-run tours on selection in Page Editor
+        if (config.elementType !== "tour") {
+          await updateDynamicElement(thisTab, config.asDynamicElement(state));
+        }
 
         // TODO: report if created new, or using existing foundation
         reportEvent("PageEditorStart", {

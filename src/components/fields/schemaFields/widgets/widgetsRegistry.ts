@@ -43,6 +43,8 @@ type Widgets = {
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
   DatabaseWidget: React.VFC<{ name: string }>;
   PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+
+  IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
 };
 
 function unsetWidgetFactory(label: string): React.VFC {
@@ -78,6 +80,7 @@ const widgetsRegistry: Widgets = {
   WorkshopMessageWidget: unsetWidgetFactory("WorkshopMessageWidget"),
   DatabaseWidget: unsetWidgetFactory("DatabaseWidget"),
   PasswordWidget: unsetWidgetFactory("PasswordWidget"),
+  IconWidget: unsetWidgetFactory("IconWidget"),
 };
 
 export default widgetsRegistry;

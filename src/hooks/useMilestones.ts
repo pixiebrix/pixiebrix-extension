@@ -19,9 +19,9 @@ import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
 import { type Milestone } from "@/types/contract";
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 
-export type MilestoneHelpers = {
+type MilestoneHelpers = {
   getMilestone: (milestoneKey: string) => Milestone;
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
@@ -32,7 +32,8 @@ export type MilestoneHelpers = {
 
 function useMilestones(): MilestoneHelpers {
   const cachedMilestones = useSelector(selectMilestones);
-  const { data: me, isFetching, isLoading, refetch } = useGetMeQuery();
+  const [refetch, { data: me, isFetching, isLoading }] =
+    appApi.useLazyGetMeQuery();
   const milestones = me ? me.milestones : cachedMilestones;
 
   return useMemo(() => {

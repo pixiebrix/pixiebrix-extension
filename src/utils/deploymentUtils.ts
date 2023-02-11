@@ -142,7 +142,7 @@ export function extractRecipeServiceIds(
 /**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
  */
-export type InstalledDeployment = {
+type InstalledDeployment = {
   deployment: UUID;
   blueprint: RegistryId;
   blueprintVersion: string;

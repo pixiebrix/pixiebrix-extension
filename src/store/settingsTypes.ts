@@ -18,7 +18,7 @@
 import { type Theme } from "@/options/types";
 import { type RegistryId } from "@/core";
 
-export type InstallMode = "local" | "remote";
+type InstallMode = "local" | "remote";
 
 export const AUTH_METHODS = [
   "default",

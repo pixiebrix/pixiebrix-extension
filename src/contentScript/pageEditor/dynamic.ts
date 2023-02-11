@@ -38,6 +38,7 @@ import {
   activateExtensionPanel,
   ensureSidebar,
 } from "@/contentScript/sidebarController";
+import { type TourDefinition } from "@/extensionPoints/tourExtension";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions = new Map<string, IExtensionPoint>();
@@ -58,7 +59,7 @@ export async function clearDynamicElements({
 }
 
 /**
- * An "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
+ * A "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
  */
 const contextMenuReaderShim = {
   isAvailable: async () => true,
@@ -152,15 +153,19 @@ export async function updateDynamicElement({
 }: DynamicDefinition): Promise<void> {
   expectContext("contentScript");
 
-  // HACK: hack so that when using the Page Editor the interval trigger only runs when you manually trigger it
-  //  Otherwise it's hard to work with the interval trigger because you keep losing the trace from the previous run
+  // HACK: adjust behavior when using the Page Editor
   if (extensionPointConfig.definition.type === "trigger") {
+    // Prevent auto-run of interval trigger when using the Page Editor because you lose track of trace across runs
     const triggerDefinition =
       extensionPointConfig.definition as TriggerDefinition;
     if (triggerDefinition.trigger === "interval") {
       // OK to assign directly since the object comes from the messenger (so we have a fresh object)
       triggerDefinition.trigger = "load";
     }
+  } else if (extensionPointConfig.definition.type === "tour") {
+    // Prevent auto-run of tour when using the Page Editor
+    const tourDefinition = extensionPointConfig.definition as TourDefinition;
+    tourDefinition.autoRunSchedule = "never";
   }
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);

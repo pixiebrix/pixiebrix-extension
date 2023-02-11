@@ -38,7 +38,7 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-export type SiteSelectorHint = {
+type SiteSelectorHint = {
   /**
    * Name for the rule hint-set.
    */
@@ -103,7 +103,7 @@ const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
   UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
 );
 
-export const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
+const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
   (attribute) => `[${attribute}]`
 ).join(",");
 
@@ -579,7 +579,7 @@ export function getCommonAncestor(...args: HTMLElement[]): HTMLElement {
   return null;
 }
 
-export function findContainerForElement(element: HTMLElement): {
+function findContainerForElement(element: HTMLElement): {
   container: HTMLElement;
   selectors: string[];
 } {

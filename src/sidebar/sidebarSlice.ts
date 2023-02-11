@@ -29,9 +29,11 @@ import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
+  resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import { partition, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
+import { type SubmitPanelAction } from "@/blocks/errors";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -45,7 +47,7 @@ export type SidebarState = SidebarEntries & {
   pendingActivePanel: ActivatePanelOptions | null;
 };
 
-export const emptySidebarState: SidebarState = {
+const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],
@@ -125,9 +127,26 @@ async function cancelPanels(nonces: UUID[]): Promise<void> {
   cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
-async function resolvePanels(nonces: UUID[]): Promise<void> {
+/**
+ * Resolve panels without action/data.
+ * @param nonces panel nonces
+ */
+async function closePanels(nonces: UUID[]): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   closeTemporaryPanel(topLevelFrame, nonces);
+}
+
+/**
+ * Resolve a panel with an action and optional detail
+ * @param nonce the panel nonce
+ * @param action the action to resolve the panel with
+ */
+async function resolvePanel(
+  nonce: UUID,
+  action: Pick<SubmitPanelAction, "type" | "detail">
+): Promise<void> {
+  const topLevelFrame = await getTopLevelFrame();
+  resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
 const sidebarSlice = createSlice({
@@ -166,6 +185,19 @@ const sidebarSlice = createSlice({
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
     },
+    updateTemporaryPanel(
+      state,
+      action: PayloadAction<{ panel: TemporaryPanelEntry }>
+    ) {
+      const { panel } = action.payload;
+
+      const index = state.temporaryPanels.findIndex(
+        (x) => x.nonce === panel.nonce
+      );
+      if (index >= 0) {
+        state.temporaryPanels[index] = panel;
+      }
+    },
     addTemporaryPanel(
       state,
       action: PayloadAction<{ panel: TemporaryPanelEntry }>
@@ -192,7 +224,28 @@ const sidebarSlice = createSlice({
         (panel) => panel.nonce !== nonce
       );
 
-      void resolvePanels([nonce]);
+      void closePanels([nonce]);
+
+      // Only update the active panel if the panel needs to change
+      // Temporary panels use nonce instead of extensionId, so can pass null for extensionId
+      if (
+        state.activeKey ===
+        mapTabEventKey("temporaryPanel", { nonce, extensionId: undefined })
+      ) {
+        state.activeKey = defaultEventKey(state);
+      }
+    },
+    resolveTemporaryPanel(
+      state,
+      action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>
+    ) {
+      const { nonce, action: panelAction } = action.payload;
+
+      state.temporaryPanels = state.temporaryPanels.filter(
+        (panel) => panel.nonce !== nonce
+      );
+
+      void resolvePanel(nonce, panelAction);
 
       // Only update the active panel if the panel needs to change
       // Temporary panels use nonce instead of extensionId, so can pass null for extensionId

@@ -12,3 +12,9 @@ export function reportError(error: unknown, context?: MessageContext): void {
     `Unexpected call to reportError during test: ${getErrorMessage(error)}`
   );
 }
+
+export async function getLoggingConfig(): Promise<unknown> {
+  return {
+    logValues: false,
+  };
+}

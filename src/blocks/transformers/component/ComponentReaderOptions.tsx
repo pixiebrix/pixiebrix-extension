@@ -19,7 +19,7 @@ type FrameworkOption = {
   detected?: FrameworkMeta;
 };
 
-export const readerOptions: FrameworkOption[] = [
+const readerOptions: FrameworkOption[] = [
   { value: "react", label: "React" },
   {
     // XXX: check if this needs to be vue or vuejs

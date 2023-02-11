@@ -205,6 +205,8 @@ export type AuthState = {
 
   readonly isOnboarded: boolean;
 
+  readonly isTestAccount: boolean;
+
   /**
    * True if running in a browser extension context. (False on the Admin Console app)
    */

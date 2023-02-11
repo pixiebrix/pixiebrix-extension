@@ -31,21 +31,13 @@ jest.mock("@/sidebar/messenger/api", () => ({
   renderPanels: jest.fn(),
 }));
 
-jest.mock("@/background/messenger/api", () => ({
-  // :shrug: imported via testUtils/factories
-  getAvailableVersion: jest.fn(),
-}));
-
-jest.mock("webext-messenger", () => ({
-  getTopLevelFrame: jest.fn().mockResolvedValue({
-    tabId: 1,
-    frameId: 0,
-  }),
-}));
-
 jest.mock("@/contentScript/messenger/api", () => ({
   closeTemporaryPanel: jest.fn().mockResolvedValue(undefined),
   cancelTemporaryPanel: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("@/blocks/transformers/temporaryInfo/messenger/api", () => ({
+  updateTemporaryPanel: jest.fn().mockResolvedValue(undefined),
 }));
 
 const cancelTemporaryPanelMock = cancelTemporaryPanel as jest.MockedFunction<

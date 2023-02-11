@@ -16,13 +16,14 @@
  */
 
 import { useAsyncEffect } from "use-async-effect";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import serviceRegistry from "@/services/registry";
 import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
 import notify from "@/utils/notify";
-import { clearServiceCache, services } from "@/background/messenger/api";
+import {
+  clearServiceCache,
+  services as serviceAuthRegistry,
+} from "@/background/messenger/api";
+import { fetchNewPackages } from "@/baseRegistry";
 
 /**
  * Refresh registries for the current context.
@@ -31,12 +32,7 @@ import { clearServiceCache, services } from "@/background/messenger/api";
  */
 export async function refreshRegistries(): Promise<void> {
   console.debug("Refreshing bricks from the server");
-  await Promise.all([
-    extensionPointRegistry.fetch(),
-    blockRegistry.fetch(),
-    serviceRegistry.fetch(),
-    services.refresh(),
-  ]);
+  await Promise.allSettled([fetchNewPackages(), serviceAuthRegistry.refresh()]);
 
   // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
   // the call to serviceRegistry, because that populates the local IDB definitions.

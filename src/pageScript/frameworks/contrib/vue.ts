@@ -128,14 +128,14 @@ export function getVersion(): string | null {
   return window.Vue?.version;
 }
 
-export function isManaged(
+function isManaged(
   element: HTMLElement
 ): element is HTMLElement & VueHTMLElement {
   return "__vue__" in element;
 }
 
 // https://github.com/vuejs/vue-devtools/blob/ccf6808e78a25ecaef2577d25b1d3643f524b240/packages/app-backend/src/utils.js
-export function findRelatedComponent(element: HTMLElement): Instance | null {
+function findRelatedComponent(element: HTMLElement): Instance | null {
   while (!isManaged(element) && element.parentElement) {
     element = element.parentElement;
   }

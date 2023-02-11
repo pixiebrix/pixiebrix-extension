@@ -62,7 +62,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
 
   const isAvailable = makeIsAvailable(url);
 
-  const title = "Quick bar item";
+  const title = "Quick Bar item";
 
   return {
     type: "quickBar",
@@ -252,10 +252,49 @@ export const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   return null;
 };
 
+export const InsertModeHelpText: React.FunctionComponent = () => {
+  const { isConfigured, shortcut } = useQuickbarShortcut();
+
+  return (
+    <div className="text-center pb-2">
+      {isConfigured ? (
+        <p>
+          You&apos;ve configured&nbsp;
+          <kbd style={{ fontFamily: "system" }}>{shortcut}</kbd>&nbsp; to open
+          the Quick Bar.{" "}
+          <a
+            href="chrome://extensions/shortcuts"
+            onClick={(event) => {
+              event.preventDefault();
+              void browser.tabs.create({ url: event.currentTarget.href });
+            }}
+          >
+            Change your Quick Bar shortcut
+          </a>
+        </p>
+      ) : (
+        <Alert variant="warning">
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          &nbsp;You have not{" "}
+          <a
+            href="chrome://extensions/shortcuts"
+            onClick={(event) => {
+              event.preventDefault();
+              void browser.tabs.create({ url: event.currentTarget.href });
+            }}
+          >
+            configured a Quick Bar shortcut
+          </a>
+        </Alert>
+      )}
+    </div>
+  );
+};
+
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
-  label: "Quick Bar",
+  label: "Quick Bar Action",
   baseClass: QuickBarExtensionPoint,
   EditorNode: QuickBarConfiguration,
   selectNativeElement: undefined,
@@ -266,44 +305,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  InsertModeHelpText() {
-    const { isConfigured, shortcut } = useQuickbarShortcut();
-
-    return (
-      <div className="text-center pb-2">
-        {isConfigured ? (
-          <p>
-            You&apos;ve configured&nbsp;
-            <kbd style={{ fontFamily: "system" }}>{shortcut}</kbd>&nbsp; to open
-            the Quick Bar.{" "}
-            <a
-              href="chrome://extensions/shortcuts"
-              onClick={(event) => {
-                event.preventDefault();
-                void browser.tabs.create({ url: event.currentTarget.href });
-              }}
-            >
-              Change your Quick Bar shortcut
-            </a>
-          </p>
-        ) : (
-          <Alert variant="warning">
-            <FontAwesomeIcon icon={faExclamationTriangle} />
-            &nbsp;You have not{" "}
-            <a
-              href="chrome://extensions/shortcuts"
-              onClick={(event) => {
-                event.preventDefault();
-                void browser.tabs.create({ url: event.currentTarget.href });
-              }}
-            >
-              configured a Quick Bar shortcut
-            </a>
-          </Alert>
-        )}
-      </div>
-    );
-  },
+  InsertModeHelpText,
 };
 
 export default config;

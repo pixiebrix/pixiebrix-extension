@@ -55,6 +55,11 @@ import {
   type SingleLayerReaderConfig,
   type BaseFormState,
 } from "./elementConfig";
+import {
+  type QuickBarProviderConfig,
+  type QuickBarProviderDefaultOptions,
+} from "@/extensionPoints/quickBarProviderExtension";
+import { type TourDefinition } from "@/extensionPoints/tourExtension";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
@@ -88,7 +93,7 @@ export interface ActionFormState
 // SidebarFormState
 type SidebarExtensionState = BaseExtensionState & Except<SidebarConfig, "body">;
 
-export type SidebarExtensionPointState = BaseExtensionPointState & {
+type SidebarExtensionPointState = BaseExtensionPointState & {
   definition: BaseExtensionPointState["definition"] & {
     /**
      * Sidebar trigger (default="load")
@@ -116,7 +121,7 @@ export interface SidebarFormState
 }
 
 // TriggerFormState
-export type TriggerExtensionPointState = BaseExtensionPointState & {
+type TriggerExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     rootSelector: string | null;
@@ -216,10 +221,27 @@ type QuickBarExtensionPointState = BaseExtensionPointState & {
   };
 };
 
+// QuickBarFormState
+type QuickBarProviderExtensionState = BaseExtensionState &
+  Except<QuickBarProviderConfig, "generator"> & {
+    rootAction?: QuickBarProviderConfig["rootAction"];
+  };
+type QuickBarProviderExtensionPointState = BaseExtensionPointState & {
+  definition: {
+    type: ExtensionPointType;
+    defaultOptions: QuickBarProviderDefaultOptions;
+    documentUrlPatterns: string[];
+    reader: SingleLayerReaderConfig;
+    isAvailable: NormalizedAvailability;
+  };
+};
+
 export function isQuickBarExtensionPoint(
   extensionPoint: BaseExtensionPointState
 ): extensionPoint is QuickBarExtensionPointState {
-  return extensionPoint.definition.type === "quickBar";
+  return ["quickBar", "quickBarProvider"].includes(
+    extensionPoint.definition.type
+  );
 }
 
 export interface QuickBarFormState
@@ -227,10 +249,35 @@ export interface QuickBarFormState
   type: "quickBar";
 }
 
+export interface QuickBarProviderFormState
+  extends BaseFormState<
+    QuickBarProviderExtensionState,
+    QuickBarProviderExtensionPointState
+  > {
+  type: "quickBarProvider";
+}
+
+// TourFormState
+type TourExtensionPointState = BaseExtensionPointState & {
+  definition: {
+    type: ExtensionPointType;
+    isAvailable: NormalizedAvailability;
+    allowUserRun?: TourDefinition["allowUserRun"];
+    autoRunSchedule?: TourDefinition["autoRunSchedule"];
+  };
+};
+
+export interface TourFormState
+  extends BaseFormState<BaseExtensionState, TourExtensionPointState> {
+  type: "tour";
+}
+
 export type FormState =
   | ActionFormState
-  | SidebarFormState
   | TriggerFormState
+  | SidebarFormState
   | PanelFormState
   | ContextMenuFormState
-  | QuickBarFormState;
+  | QuickBarFormState
+  | QuickBarProviderFormState
+  | TourFormState;

@@ -34,6 +34,8 @@ import {
   type TriggerDefinition,
 } from "@/extensionPoints/triggerExtension";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import userEvent from "@testing-library/user-event";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -86,7 +88,7 @@ beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   blockRegistry.clear();
-  blockRegistry.register(rootReader);
+  blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
 });
@@ -230,6 +232,40 @@ describe("triggerExtension", () => {
 
     expect(rootReader.readCount).toBe(1);
     expect(rootReader.ref).toBe(divRef);
+
+    extensionPoint.uninstall();
+  });
+
+  it("runs hover trigger", async () => {
+    document.body.innerHTML = getDocument(
+      "<div><button>Hover Me</button></div>"
+    ).body.innerHTML;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "hover",
+        rootSelector: "button",
+      })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    const buttonElement = document.querySelector("button");
+
+    // This causes the hoverintent.js:handleHover handle to fire. But the vendored logic doesn't recognize it as a
+    // hover for purposes of triggering the event
+    await userEvent.hover(buttonElement);
+    await waitForEffect();
+
+    // See comment above, the handler isn't actually run because userEvent.hover isn't enough to trigger hoverintent
+    expect(rootReader.readCount).toBe(0);
 
     extensionPoint.uninstall();
   });

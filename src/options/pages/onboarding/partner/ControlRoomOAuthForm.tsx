@@ -38,12 +38,19 @@ import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
 import { normalizeControlRoomUrl } from "@/options/pages/onboarding/partner/partnerOnboardingUtils";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
-export type ControlRoomConfiguration = {
+const AA_STAGING_ENVIRONMENT = "staging";
+const AA_STAGING_AUTHCONFIG_ORIGIN =
+  "https://stagingoauthconfigapp.automationanywhere.digital";
+const AA_STAGING_CLIENT_ID = "pPKQkwemq9HIKcRBRAPFcC4nGEienNEY";
+
+type ControlRoomConfiguration = {
   controlRoomUrl: string;
+  authConfigOrigin?: string;
+  clientId?: string;
 };
 
 const validationSchema = Yup.object().shape({
@@ -54,6 +61,8 @@ const validationSchema = Yup.object().shape({
       is: () => process.env.NODE_ENV === "development",
       otherwise: (schema) => schema.url(),
     }),
+  authConfigOrigin: Yup.string().url(),
+  clientId: Yup.string(),
 });
 
 const ControlRoomOAuthForm: React.FunctionComponent<{
@@ -61,7 +70,19 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 }> = ({ initialValues }) => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const configuredServices = useSelector(selectConfiguredServices);
+
+  const searchParams = new URLSearchParams(location.search);
+  const env = searchParams.get("env");
+
+  if (env === AA_STAGING_ENVIRONMENT) {
+    initialValues = {
+      ...initialValues,
+      authConfigOrigin: AA_STAGING_AUTHCONFIG_ORIGIN,
+      clientId: AA_STAGING_CLIENT_ID,
+    };
+  }
 
   const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
 
@@ -92,6 +113,8 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
               label: "Primary AARI Account",
               config: {
                 controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
+                authConfigOrigin: values.authConfigOrigin,
+                clientId: values.clientId,
               },
             })
           );
@@ -134,6 +157,22 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         type="text"
         description="Your Automation Anywhere Control Room URL, including https://"
       />
+      {env === AA_STAGING_ENVIRONMENT && (
+        <>
+          <ConnectedFieldTemplate
+            name="authConfigOrigin"
+            label="AuthConfig App URL"
+            type="text"
+            description="The AuthConfig Application URL"
+          />
+          <ConnectedFieldTemplate
+            name="clientId"
+            label="Client ID"
+            type="text"
+            description="The OAuth 2.0 client ID"
+          />
+        </>
+      )}
     </>
   );
 

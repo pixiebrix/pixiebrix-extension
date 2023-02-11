@@ -70,7 +70,6 @@ import {
   type ExtensionPointDefinition as ExtensionPointConfigDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { type TypedBlock, type TypedBlockMap } from "@/blocks/registry";
 import {
   type CloudExtension,
   type Deployment,
@@ -123,6 +122,7 @@ export const authStateFactory = define<AuthState>({
   scope: (n: number) => `@user${n}`,
   isLoggedIn: true,
   isOnboarded: true,
+  isTestAccount: false,
   extension: true,
   enforceUpdateMillis: null,
   organizations() {
@@ -252,7 +252,7 @@ export const cloudExtensionFactory = (
   return extension;
 };
 
-export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
+const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
   timestamp: timestampFactory,
@@ -308,26 +308,6 @@ export const typedBlockFactory = async (
     block,
     type: await getType(block),
   };
-};
-
-export const blocksMapFactory: (
-  blockProps?: FactoryConfig<IBlock> | Array<FactoryConfig<IBlock>>
-) => Promise<TypedBlockMap> = async (blockProps) => {
-  const typedBlocks: TypedBlock[] = [];
-  if (Array.isArray(blockProps)) {
-    for await (const partialBlock of blockProps) {
-      typedBlocks.push(await typedBlockFactory(partialBlock));
-    }
-  } else {
-    typedBlocks.push(
-      await typedBlockFactory(blockProps),
-      await typedBlockFactory(blockProps)
-    );
-  }
-
-  return new Map(
-    typedBlocks.map((typedBlock) => [typedBlock.block.id, typedBlock])
-  );
 };
 
 export const blockConfigFactory = define<BlockConfig>({
@@ -711,7 +691,7 @@ export const sanitizedServiceConfigurationFactory =
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);
 
-export const foundationOutputFactory = define<JsonObject>({
+const foundationOutputFactory = define<JsonObject>({
   "@input": () => ({
     icon: "",
     title: "Test website title | test.com",

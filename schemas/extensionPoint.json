@@ -55,7 +55,9 @@
             "trigger",
             "contextMenu",
             "sidebar",
-            "quickBar"
+            "quickBar",
+            "quickBarProvider",
+            "tour"
           ]
         },
         "reader": {
