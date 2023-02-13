@@ -47,11 +47,11 @@
   padding: 1rem;
   display: flex;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
-}
 
-.finishButton {
-  text-wrap: none;
-  flex-grow: 1;
+  > button {
+    text-wrap: none;
+    flex-grow: 1;
+  }
 }
 
 .wizardStepRow {

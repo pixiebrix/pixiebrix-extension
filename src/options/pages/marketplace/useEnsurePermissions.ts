@@ -76,6 +76,7 @@ function useEnsurePermissions(
         message: "Error granting permissions",
         error,
       });
+      throw error;
       return false;
     }
 

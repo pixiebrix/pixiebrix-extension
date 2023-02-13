@@ -39,13 +39,13 @@ const ErrorComponent: React.FC<{
   fieldIndex: number;
 }> = ({ error, fieldIndex }) => {
   if (!Array.isArray(error)) {
-    return <></>;
+    return null;
   }
 
   // eslint-disable-next-line security/detect-object-injection -- index
   const fieldError = error[fieldIndex];
   if (typeof fieldError !== "string") {
-    return <></>;
+    return null;
   }
 
   return <Alert variant={"danger"}>{fieldError}</Alert>;

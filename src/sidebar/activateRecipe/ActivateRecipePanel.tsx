@@ -122,7 +122,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     throw new Error(`Recipe ${recipeId} not found`);
   }
 
-  async function onButtonClick() {
+  async function onClickOkButton() {
     dispatch(actions.hideActivateRecipe());
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
@@ -143,12 +143,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
             </div>
           </div>
           <div className={styles.footer}>
-            <AsyncButton
-              className={styles.finishButton}
-              onClick={onButtonClick}
-            >
-              Ok
-            </AsyncButton>
+            <AsyncButton onClick={onClickOkButton}>Ok</AsyncButton>
           </div>
         </>
       ) : (

@@ -105,6 +105,8 @@ async function loadPageEnhancements(): Promise<void> {
     return;
   }
 
+  enhancementsLoaded = true;
+
   const activateButtonLinks = getActivateButtonLinks();
   if (isEmpty(activateButtonLinks)) {
     return;
@@ -138,8 +140,6 @@ async function loadPageEnhancements(): Promise<void> {
       await showSidebarActivationForRecipe(recipeId);
     });
   }
-
-  enhancementsLoaded = true;
 }
 
 export async function initMarketplaceEnhancements() {

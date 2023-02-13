@@ -68,7 +68,6 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
       <div className={styles.footer}>
         <Button
           type="submit"
-          className={styles.finishButton}
           disabled={!isValid || isSubmitting}
           ref={submitButtonRef}
         >
