@@ -21,6 +21,15 @@ import { uuidSequence } from "@/testUtils/factories";
 import { type BlockOptions } from "@/core";
 import { WaitElementEffect } from "@/blocks/effects/wait";
 import { BusinessError } from "@/errors/businessErrors";
+import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+
+beforeAll(() => {
+  requestIdleCallback.mock();
+});
+
+beforeEach(() => {
+  ensureMocksReset();
+});
 
 const brick = new WaitElementEffect();
 
