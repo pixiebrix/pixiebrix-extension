@@ -16,22 +16,22 @@
  */
 
 import React from "react";
-import { type ComponentMeta, type ComponentStory } from "@storybook/react";
+import { type ComponentMeta, type Story } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 import Form from "@/components/form/Form";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import { type Expression } from "@/core";
 
 export default {
   title: "Widgets/TextWidget",
   component: TextWidget,
-  args: {
-    value: "",
-  },
+  args: {},
 } as ComponentMeta<typeof TextWidget>;
 
-const Template: ComponentStory<typeof TextWidget> = ({ value }) => (
+const Template: Story<{ value: string | Expression }> = ({ value }) => (
   <Provider store={settingsStore()}>
     <Form
       initialValues={{
@@ -55,24 +55,36 @@ const Template: ComponentStory<typeof TextWidget> = ({ value }) => (
 export const Empty = Template.bind({});
 Empty.args = {};
 
+export const RawText = Template.bind({});
+RawText.args = {
+  value: "The quick brown fox jumps over the lazy dog",
+};
+
 export const SingleLine = Template.bind({});
 SingleLine.args = {
-  value: "The quick brown fox jumps over the lazy dog",
+  value: makeTemplateExpression(
+    "nunjucks",
+    "The quick brown fox jumps over the lazy dog"
+  ),
 };
 
 export const LongLine = Template.bind({});
 LongLine.args = {
-  value:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium.",
+  value: makeTemplateExpression(
+    "nunjucks",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium."
+  ),
 };
 
 export const NunjucksExpression = Template.bind({});
 NunjucksExpression.args = {
-  value: "Hello, {{ @input.name }}!",
+  value: makeTemplateExpression("nunjucks", "Hello, {{ @input.name }}!"),
 };
 
 export const NunjucksTags = Template.bind({});
 NunjucksTags.args = {
-  value:
-    "My favorite color is {% if @input.day == 'Monday' %}red{% else %}blue{% endif %}",
+  value: makeTemplateExpression(
+    "nunjucks",
+    'My favorite color is {% if @input.day == "Monday" %}red{% else %}blue{% endif %}'
+  ),
 };
