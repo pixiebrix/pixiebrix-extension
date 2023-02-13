@@ -71,8 +71,6 @@ export interface WizardStep {
   step: string;
   Component: React.FunctionComponent<{
     eventKey: string;
-    editable?: Set<string>;
-    available?: boolean;
   }>;
 }
 

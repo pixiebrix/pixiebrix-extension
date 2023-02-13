@@ -24,12 +24,13 @@ import { type Schema, type SchemaProperties } from "@/core";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import { isEmpty, pickBy } from "lodash";
+import { type UnknownObject } from "@/types";
 import urljoin from "url-join";
-import $RefParser, {
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+import {
   type FileInfo,
   type ResolverOptions,
-} from "@apidevtools/json-schema-ref-parser";
-
+} from "@apidevtools/json-schema-ref-parser/dist/lib/types";
 import draft07 from "@schemas/draft-07.json";
 import serviceSchema from "@schemas/service.json";
 import readerSchema from "@schemas/reader.json";
@@ -44,7 +45,6 @@ import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
 import databaseSchema from "@schemas/database.json";
 import elementSchema from "@schemas/element.json";
-import { type UnknownObject } from "@/types";
 
 const SCHEMA_URLS: Record<string, UnknownObject> = {
   "http://json-schema.org/draft-07/schema": draft07,

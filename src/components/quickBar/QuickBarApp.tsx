@@ -18,18 +18,15 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
-  type Action,
   KBarAnimator,
+  KBarPortal,
   KBarPositioner,
   KBarProvider,
-  KBarPortal,
   KBarSearch,
   useKBar,
-  useRegisterActions,
   VisualState,
 } from "kbar";
 import ReactShadowRoot from "react-shadow-root";
-import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
@@ -40,6 +37,9 @@ import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
+import useActions from "@/components/quickBar/useActions";
+
+import FocusLock from "react-focus-lock";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -51,32 +51,6 @@ let autoShow = false;
  * Window event name to programmatically trigger quick bar
  */
 const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
-
-function useActions(): void {
-  // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
-
-  // The kbar useRegisterActions hook uses an "unregister" affordance that's not available in the types
-  // https://github.com/timc1/kbar/blob/main/src/useStore.tsx#L63
-  // https://github.com/timc1/kbar/blob/main/src/useRegisterActions.tsx#L19
-  useRegisterActions(quickBarRegistry.currentActions, []);
-
-  const { query } = useKBar();
-
-  // Listen for changes while the kbar is mounted:
-  // - The user is making edits in the Page Editor
-  // - Generators are producing new actions in response to the search query changing
-  useEffect(() => {
-    const handler = (nextActions: Action[]) => {
-      query.registerActions(nextActions);
-    };
-
-    quickBarRegistry.addListener(handler);
-    return () => {
-      quickBarRegistry.removeListener(handler);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- the query is available on initial mount
-  }, []);
-}
 
 function useAutoShow(): void {
   const { query } = useKBar();
@@ -117,16 +91,34 @@ const KBarComponent: React.FC = () => {
     selection.restore();
   }
 
+  // We're using the Shadow DOM to isolate the style. However, that also means keydown events look like they're
+  // coming from the div instead of the search input.
+  //
+  // - Include div.contentEditable to indicate to hotkey libraries that the user is interacting with the quick bar
+  // - Salesforce looks for the `cke_editable` instead of contentEditable, so provide that class
+  //
+  // Library references:
+  // - hotkey: https://github.com/github/hotkey/blob/main/src/utils.ts#L1
+  // - Salesforce: https://salesforce.stackexchange.com/questions/183771/disable-keyboard-shortcuts-in-lightning-experience
+
   return (
     <KBarPortal>
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
-          <ReactShadowRoot mode="open">
-            <Stylesheets href={faStyleSheet} mountOnLoad>
-              <KBarSearch style={searchStyle} />
-              <QuickBarResults />
-            </Stylesheets>
-          </ReactShadowRoot>
+          <div
+            className="cke_editable"
+            contentEditable
+            suppressContentEditableWarning
+          >
+            <ReactShadowRoot mode="closed">
+              <Stylesheets href={faStyleSheet} mountOnLoad>
+                <FocusLock>
+                  <KBarSearch style={searchStyle} />
+                  <QuickBarResults />
+                </FocusLock>
+              </Stylesheets>
+            </ReactShadowRoot>
+          </div>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
