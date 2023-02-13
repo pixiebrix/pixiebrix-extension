@@ -27,7 +27,10 @@ import {
 } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
 import { MARKETPLACE_URL } from "@/utils/strings";
-import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
+import {
+  getActivatingBlueprint,
+  setActivatingBlueprint,
+} from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 
 function getActivateButtonLinks(): HTMLAnchorElement[] {
@@ -152,6 +155,7 @@ export async function initMarketplaceEnhancements() {
 
   const recipeId = await getInProgressRecipeActivation();
   if (recipeId) {
+    await setActivatingBlueprint({ blueprintId: null });
     await showSidebarActivationForRecipe(recipeId);
   }
 }

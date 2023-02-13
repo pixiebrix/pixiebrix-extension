@@ -118,6 +118,10 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     return <Loader />;
   }
 
+  if (recipe == null) {
+    throw new Error(`Recipe ${recipeId} not found`);
+  }
+
   async function onButtonClick() {
     dispatch(actions.hideActivateRecipe());
     const topFrame = await getTopLevelFrame();
