@@ -130,7 +130,9 @@ describe("ActivateRecipePanel", () => {
       },
     });
     useGetMarketplaceListingsQueryMock.mockReturnValue({
-      data: [listing],
+      data: {
+        [listing.package.name]: listing,
+      },
       isLoading: false,
       error: null,
       refetch: jest.fn(),
