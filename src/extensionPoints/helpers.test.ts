@@ -15,8 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
+import { getDocument, tick } from "@/extensionPoints/extensionPointTestUtils";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
+import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+
+beforeAll(() => {
+  requestIdleCallback.mock();
+});
+
+beforeEach(() => {
+  ensureMocksReset();
+});
 
 describe("awaitElementOnce", () => {
   it("finds change in ancestor", async () => {
@@ -25,6 +34,10 @@ describe("awaitElementOnce", () => {
     ).body.innerHTML;
     const [promise] = awaitElementOnce(".newClass #menu");
     document.querySelector("#root").classList.add("newClass");
+
+    requestIdleCallback.runIdleCallbacks();
+    await tick();
+
     await expect(promise).resolves.toHaveLength(1);
   });
 
@@ -34,6 +47,10 @@ describe("awaitElementOnce", () => {
     ).body.innerHTML;
     const [promise] = awaitElementOnce('#root:has(h1:contains("Bar")) #menu');
     document.querySelector("h1").textContent = "Bar";
+
+    requestIdleCallback.runIdleCallbacks();
+    await tick();
+
     await expect(promise).resolves.toHaveLength(1);
   });
 });

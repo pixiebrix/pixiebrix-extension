@@ -28,6 +28,15 @@ import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { MultipleElementsFoundError } from "@/errors/businessErrors";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+
+beforeAll(() => {
+  requestIdleCallback.mock();
+});
+
+beforeEach(() => {
+  ensureMocksReset();
+});
 
 Element.prototype.scrollIntoView = jest.fn();
 browser.runtime.getURL = jest
@@ -279,6 +288,9 @@ describe("tourStep", () => {
     // :initialize:
     document.body.innerHTML = '<div id="foo">Foo</div>';
 
+    requestIdleCallback.runIdleCallbacks();
+    // Ticks to allow the setInterval to run
+    await tick();
     await tick();
 
     cancelAllTours();

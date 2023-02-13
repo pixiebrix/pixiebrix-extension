@@ -162,6 +162,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-common-types": "^0.2.36",
+    "@shopify/jest-dom-mocks": "^4.1.0",
     "@sindresorhus/tsconfig": "^3.0.1",
     "@sinonjs/fake-timers": "^10.0.2",
     "@storybook/addon-actions": "^6.5.15",
