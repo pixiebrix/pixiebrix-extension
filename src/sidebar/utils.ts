@@ -51,6 +51,7 @@ export function defaultEventKey({
   forms = [],
   panels = [],
   temporaryPanels = [],
+  recipeToActivate = null,
 }: SidebarEntries): string | null {
   if (forms.length > 0) {
     return mapTabEventKey("form", forms.at(-1));
@@ -60,5 +61,9 @@ export function defaultEventKey({
     return mapTabEventKey("temporaryPanel", temporaryPanels.at(-1));
   }
 
-  return mapTabEventKey("panel", panels[0]);
+  if (panels.length > 0) {
+    return mapTabEventKey("panel", panels.at(0));
+  }
+
+  return recipeToActivate && `activate-${recipeToActivate.recipeId}`;
 }

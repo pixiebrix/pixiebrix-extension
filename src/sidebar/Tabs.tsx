@@ -30,6 +30,7 @@ import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
+import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
@@ -47,6 +48,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
   panels,
   forms,
   temporaryPanels,
+  recipeToActivate,
   onSelectTab,
   onCloseTemporaryTab,
   onResolveTemporaryPanel,
@@ -119,8 +121,19 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               />
             </Nav.Link>
           ))}
+          {recipeToActivate && (
+            <Nav.Link
+              key={recipeToActivate.recipeId}
+              eventKey={`activate-${recipeToActivate.recipeId}`}
+              className={styles.tabHeader}
+            >
+              <span className={styles.tabTitle}>
+                {recipeToActivate.heading}
+              </span>
+            </Nav.Link>
+          )}
         </Nav>
-        <Tab.Content className="p-0 border-0 full-height scrollable-area">
+        <Tab.Content className="p-0 border-0">
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}
@@ -154,7 +167,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           ))}
           {temporaryPanels.map((panel) => (
             <Tab.Pane
-              className={cx("full-height flex-grow", styles.paneOverrides)}
+              className={cx("h-100", styles.paneOverrides)}
               key={panel.nonce}
               eventKey={mapTabEventKey("temporaryPanel", panel)}
             >
@@ -170,6 +183,17 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
               </ErrorBoundary>
             </Tab.Pane>
           ))}
+          {recipeToActivate && (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={recipeToActivate.recipeId}
+              eventKey={`activate-${recipeToActivate.recipeId}`}
+            >
+              <ErrorBoundary>
+                <ActivateRecipePanel recipeId={recipeToActivate.recipeId} />
+              </ErrorBoundary>
+            </Tab.Pane>
+          )}
         </Tab.Content>
       </div>
     </Tab.Container>

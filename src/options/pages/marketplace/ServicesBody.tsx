@@ -21,22 +21,40 @@ import React, { useMemo } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { type RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import AuthWidget from "@/options/pages/marketplace/AuthWidget";
+import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
 import { type ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";
+import Alert from "@/components/Alert";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
+const ErrorComponent: React.FC<{
+  error: string | string[] | undefined;
+  fieldIndex: number;
+}> = ({ error, fieldIndex }) => {
+  if (!Array.isArray(error)) {
+    return null;
+  }
+
+  // eslint-disable-next-line security/detect-object-injection -- index
+  const fieldError = error[fieldIndex];
+  if (typeof fieldError !== "string") {
+    return null;
+  }
+
+  return <Alert variant={"danger"}>{fieldError}</Alert>;
+};
+
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [authOptions, refreshAuthOptions] = useAuthOptions();
 
-  const [field] = useField<ServiceAuthPair[]>("services");
+  const [field, { error }] = useField<ServiceAuthPair[]>("services");
 
   const { data: serviceConfigs } = useGetServicesQuery();
 
@@ -55,12 +73,13 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <Col>
       <Row>
+        {typeof error === "string" && <Alert variant={"danger"}>{error}</Alert>}
         {field.value.map(
           ({ id: serviceId }, index) =>
             // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
             // consistent with the index in field.value
             visibleServiceIds.has(serviceId) && (
-              <Col xs={12} sm={6} xl={4} key={serviceId}>
+              <Col xs={12} sm={12} xl={6} key={serviceId}>
                 <Card className={styles.serviceCard}>
                   <ServiceDescriptor
                     serviceId={serviceId}
@@ -72,6 +91,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                     name={joinName(field.name, String(index), "config")}
                     onRefresh={refreshAuthOptions}
                   />
+                  <ErrorComponent error={error} fieldIndex={index} />
                 </Card>
               </Col>
             )
