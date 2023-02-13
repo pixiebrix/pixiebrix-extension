@@ -22,13 +22,15 @@ import {
   marketplaceListingFactory,
   recipeDefinitionFactory,
 } from "@/testUtils/factories";
-import { UseCachedQueryResult } from "@/core";
+import { type UseCachedQueryResult } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { ActivateRecipeEntry } from "@/sidebar/types";
+import { type ActivateRecipeEntry } from "@/sidebar/types";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { propertiesToSchema } from "@/validators/generic";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -38,6 +40,24 @@ const useRecipeMock = useRecipe as jest.MockedFunction<typeof useRecipe>;
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(),
+  useGetDatabasesQuery: jest.fn().mockReturnValue({
+    data: [],
+    isLoadingDatabases: false,
+  }),
+  useGetOrganizationsQuery: jest.fn().mockReturnValue({
+    data: [],
+    isLoadingOrganizations: false,
+  }),
+  useCreateDatabaseMutation: jest.fn().mockReturnValue([jest.fn()]),
+  useAddDatabaseToGroupMutation: jest.fn().mockReturnValue([jest.fn()]),
+  appApi: {
+    reducerPath: "appApi",
+    endpoints: {
+      getMarketplaceListings: {
+        useQueryState: jest.fn(),
+      },
+    },
+  },
 }));
 
 const useGetMarketplaceListingsQueryMock =
@@ -70,9 +90,28 @@ function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
   };
 }
 
+beforeAll(() => {
+  registerDefaultWidgets();
+});
+
 describe("ActivateRecipePanel", () => {
   test("it renders with options", async () => {
-    const recipe = recipeDefinitionFactory();
+    const recipe = recipeDefinitionFactory({
+      options: {
+        schema: propertiesToSchema({
+          foo: {
+            type: "string",
+          },
+          bar: {
+            type: "number",
+          },
+          testDatabase: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+            title: "Test Database",
+          },
+        }),
+      },
+    });
     useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
     const listing = marketplaceListingFactory({
       package: {

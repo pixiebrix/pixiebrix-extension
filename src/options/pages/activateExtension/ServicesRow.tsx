@@ -26,7 +26,7 @@ import { type ServiceDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
-import AuthWidget from "@/options/pages/marketplace/AuthWidget";
+import AuthWidget from "@/components/auth/AuthWidget";
 import { joinName } from "@/utils";
 
 const ServicesRow: React.FunctionComponent<{

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import ServiceAuthSelector from "@/components/ServiceAuthSelector";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
@@ -28,7 +28,6 @@ import {
   type UUID,
 } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
@@ -39,6 +38,7 @@ import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import styles from "./AuthWidget.module.scss";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -73,6 +73,8 @@ const AuthWidget: React.FunctionComponent<{
     [authOptions, serviceId]
   );
 
+  const { flush: flushAuthPersistence } = useContext(ReduxPersistenceContext);
+
   const refreshAuthOptions = () => {
     // `onRefresh` is not awaitable. Indicate that clicking the button did something
     notify.info("Refreshing integration configurations");
@@ -92,7 +94,7 @@ const AuthWidget: React.FunctionComponent<{
       );
 
       // Need to write the current Redux options to storage so the locator can read them during checks
-      await persistor.flush();
+      await flushAuthPersistence();
 
       // Also refresh the service locator on the background so the new auth works immediately
       await services.refresh({ remote: false, local: true });

@@ -21,7 +21,7 @@ import React, { useMemo } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { type RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import AuthWidget from "@/options/pages/marketplace/AuthWidget";
+import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
 import { type ServiceAuthPair } from "@/core";

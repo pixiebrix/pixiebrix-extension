@@ -75,7 +75,10 @@ export const registry = {
   fetch: jest.fn().mockResolvedValue(true),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   getByKinds: jest.fn().mockResolvedValue([]),
-  find: jest.fn().mockRejectedValue(new Error("Find not implemented in mock")),
+  // find: jest.fn().mockRejectedValue(new Error("Find not implemented in mock")),
+  find: jest.fn().mockImplementation(async (id: string) => {
+    throw new Error("Find not mocked, looking up:" + id);
+  }),
   clear: getMethod("REGISTRY_CLEAR", bg),
 };
 
