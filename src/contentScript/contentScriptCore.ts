@@ -35,6 +35,7 @@ import {
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
 import initSandbox from "@/sandbox/messenger/api";
+import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -57,6 +58,8 @@ export async function init(): Promise<void> {
   void initSandbox();
 
   await handleNavigate();
+
+  void initMarketplaceEnhancements();
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });

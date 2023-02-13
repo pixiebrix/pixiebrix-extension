@@ -19,9 +19,11 @@
 import { registerMethods } from "webext-messenger";
 import {
   activatePanel,
+  hideActivateRecipe,
   hideForm,
   hideTemporaryPanel,
   renderPanels,
+  showActivateRecipe,
   showForm,
   showTemporaryPanel,
   updateTemporaryPanel,
@@ -41,6 +43,8 @@ declare global {
     SIDEBAR_SHOW_TEMPORARY_PANEL: typeof showTemporaryPanel;
     SIDEBAR_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
+    SIDEBAR_SHOW_ACTIVATE_RECIPE: typeof showActivateRecipe;
+    SIDEBAR_HIDE_ACTIVATE_RECIPE: typeof hideActivateRecipe;
   }
 }
 
@@ -54,5 +58,7 @@ export default function registerMessenger(): void {
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,
     SIDEBAR_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,
+    SIDEBAR_SHOW_ACTIVATE_RECIPE: showActivateRecipe,
+    SIDEBAR_HIDE_ACTIVATE_RECIPE: hideActivateRecipe,
   });
 }

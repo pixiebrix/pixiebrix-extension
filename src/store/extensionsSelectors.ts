@@ -16,7 +16,8 @@
  */
 
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
-import { type UnresolvedExtension } from "@/core";
+import { type RegistryId, type UnresolvedExtension } from "@/core";
+import { createSelector } from "reselect";
 
 export function selectExtensions({
   options,
@@ -30,3 +31,14 @@ export function selectExtensions({
 
   return options.extensions;
 }
+
+const extensionsForRecipeSelector = createSelector(
+  selectExtensions,
+  (state: ExtensionsRootState, recipeId: RegistryId) => recipeId,
+  (extensions, recipeId) =>
+    extensions.filter((extension) => extension._recipe?.id === recipeId)
+);
+
+export const selectExtensionsForRecipe =
+  (recipeId: RegistryId) => (state: ExtensionsRootState) =>
+    extensionsForRecipeSelector(state, recipeId);

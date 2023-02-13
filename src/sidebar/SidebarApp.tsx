@@ -24,17 +24,31 @@ import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
 import ErrorBanner from "./ErrorBanner";
 import { MemoryRouter } from "react-router";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import ReduxPersistenceContext, {
+  type ReduxPersistenceContextType,
+} from "@/store/ReduxPersistenceContext";
+
+registerDefaultWidgets();
+
+const authPersistenceContext: ReduxPersistenceContextType = {
+  async flush() {
+    await persistor.flush();
+  },
+};
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp
 const SidebarApp: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate loading={<Loader />} persistor={persistor}>
-      <MemoryRouter>
-        <ErrorBanner />
-        <Header />
-        <ConnectedSidebar />
-      </MemoryRouter>
+      <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+        <MemoryRouter>
+          <ErrorBanner />
+          <Header />
+          <ConnectedSidebar />
+        </MemoryRouter>
+      </ReduxPersistenceContext.Provider>
     </PersistGate>
   </Provider>
 );

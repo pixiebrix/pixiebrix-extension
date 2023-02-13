@@ -50,6 +50,9 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import RequireAuth from "@/auth/RequireAuth";
 import useTheme from "@/hooks/useTheme";
 import { logActions } from "@/components/logViewer/logSlice";
+import ReduxPersistenceContext, {
+  type ReduxPersistenceContextType,
+} from "@/store/ReduxPersistenceContext";
 
 // Register the built-in bricks
 registerEditors();
@@ -144,14 +147,22 @@ const Layout = () => {
   );
 };
 
+const authPersistenceContext: ReduxPersistenceContextType = {
+  async flush() {
+    await persistor.flush();
+  },
+};
+
 const App: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <ConnectedRouter history={hashHistory}>
-        <ModalProvider>
-          <Layout />
-        </ModalProvider>
-      </ConnectedRouter>
+      <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+        <ConnectedRouter history={hashHistory}>
+          <ModalProvider>
+            <Layout />
+          </ModalProvider>
+        </ConnectedRouter>
+      </ReduxPersistenceContext.Provider>
     </PersistGate>
   </Provider>
 );
