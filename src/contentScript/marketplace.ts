@@ -33,12 +33,10 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 
-function getActivateButtonLinks(): HTMLAnchorElement[] {
-  return [
-    ...document.querySelectorAll<HTMLAnchorElement>(
-      "a[href^='https://app.pixiebrix.com/activate']"
-    ),
-  ];
+function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
+  return document.querySelectorAll<HTMLAnchorElement>(
+    "a[href^='https://app.pixiebrix.com/activate']"
+  );
 }
 
 async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {

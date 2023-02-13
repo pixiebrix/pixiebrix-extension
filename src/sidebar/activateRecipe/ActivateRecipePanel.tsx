@@ -71,11 +71,12 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     isReinstall = true;
   }
 
-  const recipeNameComponent = useMemo(
-    () => (
-      <div className={styles.recipeName}>{listing?.package?.verbose_name}</div>
-    ),
-    [listing?.package?.verbose_name]
+  const recipeName =
+    listing?.package?.verbose_name ??
+    listing?.package?.name ??
+    "Unnamed blueprint";
+  const recipeNameComponent = (
+    <div className={styles.recipeName}>{recipeName}</div>
   );
 
   const hasRecipeOptions = !isEmpty(recipe?.options?.schema?.properties);
