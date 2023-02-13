@@ -11098,61 +11098,91 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
 `;
 
 exports[`Storyshots Widgets/TextWidget Empty 1`] = `
-<textarea
-  className="form-control"
-  name="example"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onKeyDown={[Function]}
-  rows="1"
-  value=""
-/>
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value=""
+  />
+</form>
 `;
 
-exports[`Storyshots Widgets/TextWidget Longline 1`] = `
-<textarea
-  className="form-control"
-  name="example"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onKeyDown={[Function]}
-  rows="1"
-  value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium."
-/>
+exports[`Storyshots Widgets/TextWidget Long Line 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium."
+  />
+</form>
 `;
 
 exports[`Storyshots Widgets/TextWidget Nunjucks Expression 1`] = `
-<textarea
-  className="form-control"
-  name="example"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onKeyDown={[Function]}
-  rows="1"
-  value="Hello, {{ @input.name }}!"
-/>
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="Hello, {{ @input.name }}!"
+  />
+</form>
 `;
 
 exports[`Storyshots Widgets/TextWidget Nunjucks Tags 1`] = `
-<textarea
-  className="form-control"
-  name="example"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onKeyDown={[Function]}
-  rows="1"
-  value="My favorite color is {% if @input.day == 'Monday' %}red{% else %}blue{% endif %}"
-/>
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="My favorite color is {% if @input.day == 'Monday' %}red{% else %}blue{% endif %}"
+  />
+</form>
 `;
 
 exports[`Storyshots Widgets/TextWidget Single Line 1`] = `
-<textarea
-  className="form-control"
-  name="example"
-  onBlur={[Function]}
-  onChange={[Function]}
-  onKeyDown={[Function]}
-  rows="1"
-  value="The quick brown fox jumps over the lazy dog"
-/>
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="The quick brown fox jumps over the lazy dog"
+  />
+</form>
 `;

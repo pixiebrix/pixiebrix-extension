@@ -21,7 +21,7 @@ import { action } from "@storybook/addon-actions";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import { Formik } from "formik";
+import Form from "@/components/form/Form";
 
 export default {
   title: "Widgets/TextWidget",
@@ -33,12 +33,13 @@ export default {
 
 const Template: ComponentStory<typeof TextWidget> = ({ value }) => (
   <Provider store={settingsStore()}>
-    <Formik
+    <Form
       initialValues={{
         apiVersion: "v3",
         example: value,
       }}
       onSubmit={action("onSubmit")}
+      renderSubmit={() => null}
     >
       <TextWidget
         name="example"
@@ -47,7 +48,7 @@ const Template: ComponentStory<typeof TextWidget> = ({ value }) => (
           type: "string",
         }}
       />
-    </Formik>
+    </Form>
   </Provider>
 );
 
@@ -59,8 +60,8 @@ SingleLine.args = {
   value: "The quick brown fox jumps over the lazy dog",
 };
 
-export const Longline = Template.bind({});
-Longline.args = {
+export const LongLine = Template.bind({});
+LongLine.args = {
   value:
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium.",
 };

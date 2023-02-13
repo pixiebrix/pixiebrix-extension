@@ -18,9 +18,9 @@
 import styles from "./Form.module.scss";
 
 import React, { type ReactElement } from "react";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
 import { Formik, type FormikHelpers, type FormikValues } from "formik";
 import type * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
