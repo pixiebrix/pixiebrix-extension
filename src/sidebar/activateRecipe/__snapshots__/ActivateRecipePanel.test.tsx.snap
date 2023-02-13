@@ -13,7 +13,9 @@ exports[`ActivateRecipePanel it renders with options 1`] = `
       </h4>
       <div
         class="recipeName"
-      />
+      >
+        My Test Listing
+      </div>
       <p>
         We're almost there. This blueprint has a few settings to configure before using. You can always change these later.
       </p>
@@ -312,7 +314,7 @@ exports[`ActivateRecipePanel it renders with options 1`] = `
                 <p
                   class="text-danger"
                 >
-                  An error occurred determining additional permissions: Find not mocked, looking up:extensionPoint
+                  An error occurred determining additional permissions: Find not implemented in mock
                 </p>
               </div>
             </div>
