@@ -31,6 +31,7 @@ import {
 import { type PersistedExtension } from "@/core";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
@@ -55,6 +56,14 @@ jest.mock("@/store/extensionsStorage", () => ({
 }));
 
 const loadOptionsMock = loadOptions as jest.MockedFunction<typeof loadOptions>;
+
+jest.mock("@/background/messenger/external/_implementation", () => ({
+  setActivatingBlueprint: jest.fn(),
+  getActivatingBlueprint: jest.fn(),
+}));
+
+const getActivatingBlueprintMock =
+  getActivatingBlueprint as jest.MockedFunction<typeof getActivatingBlueprint>;
 
 const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
 const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
@@ -122,8 +131,9 @@ describe("marketplace enhancements", () => {
     // The getInstalledRecipeIds function should not call loadOptions
     // when the user is not logged in
     expect(loadOptionsMock).not.toHaveBeenCalled();
-    // TODO: check that the function to load in-progress recipe
-    //  activation is not called
+    // The marketplace script should not resume in-progress blueprint
+    // activation when the user is not logged in
+    expect(getActivatingBlueprintMock).not.toHaveBeenCalled();
   });
 
   test("given user is not logged in, when loaded, should not change button text", async () => {
@@ -195,5 +205,24 @@ describe("marketplace enhancements", () => {
     expect(window.location).toBeAt(MARKETPLACE_URL);
     // The show-sidebar function should be called
     expect(showFunctionMock).toHaveBeenCalledOnce();
+  });
+
+  test("given user is logged in, when loaded, should resume activation in progress", async () => {
+    getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
+    window.location.assign(MARKETPLACE_URL);
+
+    await initMarketplaceEnhancements();
+
+    // The loadPageEnhancements function calls getInstalledRecipeIds,
+    // which calls isUserLoggedIn, which calls getAuthHeaders. Then
+    // there is another login check before loading the in progress
+    // recipe activation.
+    expect(getAuthHeadersMock).toHaveBeenCalledTimes(2);
+    // The getInstalledRecipeIds function should call loadOptions
+    // when the user is logged in
+    expect(loadOptionsMock).toHaveBeenCalled();
+    // The marketplace script should resume in-progress blueprint
+    // activation when the user is logged in
+    expect(getActivatingBlueprintMock).toHaveBeenCalled();
   });
 });
