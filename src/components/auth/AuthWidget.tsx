@@ -73,7 +73,7 @@ const AuthWidget: React.FunctionComponent<{
     [authOptions, serviceId]
   );
 
-  const { flush: flushAuthPersistence } = useContext(ReduxPersistenceContext);
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   const refreshAuthOptions = () => {
     // `onRefresh` is not awaitable. Indicate that clicking the button did something
@@ -94,7 +94,7 @@ const AuthWidget: React.FunctionComponent<{
       );
 
       // Need to write the current Redux options to storage so the locator can read them during checks
-      await flushAuthPersistence();
+      await flushReduxPersistence();
 
       // Also refresh the service locator on the background so the new auth works immediately
       await services.refresh({ remote: false, local: true });
