@@ -1,0 +1,350 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivateRecipePanel it renders with options 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="header"
+    >
+      <h4>
+        Activating
+      </h4>
+      <div
+        class="recipeName"
+      />
+      <p>
+        We're almost there. This blueprint has a few settings to configure before using. You can always change these later.
+      </p>
+    </div>
+    <form
+      class="form"
+      novalidate=""
+    >
+      <div
+        class="scrollable-area formBody"
+      >
+        <div
+          class="wizardStepRow"
+        >
+          <div>
+            <h4>
+              Configure Blueprint
+            </h4>
+          </div>
+          <div
+            class="col"
+          >
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="optionsArgs.testDatabase"
+              >
+                Test Database
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
+              >
+                <div
+                  class="root"
+                >
+                  <div
+                    class="field"
+                  >
+                    <div
+                      class=" css-b62m3t-container"
+                    >
+                      <span
+                        class="css-1f43avz-a11yText-A11yText"
+                        id="react-select-2-live-region"
+                      />
+                      <span
+                        aria-atomic="false"
+                        aria-live="polite"
+                        aria-relevant="additions text"
+                        class="css-1f43avz-a11yText-A11yText"
+                      />
+                      <div
+                        class=" css-1s2u09g-control"
+                      >
+                        <div
+                          class=" css-319lph-ValueContainer"
+                        >
+                          <div
+                            class=" css-14el2xx-placeholder"
+                            id="react-select-2-placeholder"
+                          >
+                            Select...
+                          </div>
+                          <div
+                            class=" css-6j8wv5-Input"
+                            data-value=""
+                          >
+                            <input
+                              aria-autocomplete="list"
+                              aria-describedby="react-select-2-placeholder"
+                              aria-expanded="false"
+                              aria-haspopup="true"
+                              autocapitalize="none"
+                              autocomplete="off"
+                              autocorrect="off"
+                              class=""
+                              id="react-select-2-input"
+                              role="combobox"
+                              spellcheck="false"
+                              style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                              tabindex="0"
+                              type="text"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class=" css-1hb7zxy-IndicatorsContainer"
+                        >
+                          <span
+                            class=" css-1okebmr-indicatorSeparator"
+                          />
+                          <div
+                            aria-hidden="true"
+                            class=" css-tlfecz-indicatorContainer"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="css-tj5bde-Svg"
+                              focusable="false"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              width="20"
+                            >
+                              <path
+                                d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <input
+                        name="optionsArgs.testDatabase"
+                        type="hidden"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="dropdown dropdown"
+                    data-test-selected="Database"
+                    data-testid="toggle-optionsArgs.testDatabase"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="dropdown-toggle btn btn-link"
+                      disabled=""
+                      type="button"
+                    >
+                      <span
+                        class="symbol"
+                      >
+                        <test-file-stub
+                          classname="root"
+                        />
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="optionsArgs.bar"
+              >
+                bar
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
+              >
+                <div
+                  class="root"
+                >
+                  <div
+                    class="field"
+                  >
+                    <input
+                      class="form-control"
+                      id="optionsArgs.bar"
+                      step=""
+                      type="number"
+                      value="0"
+                    />
+                  </div>
+                  <div
+                    class="dropdown dropdown"
+                    data-test-selected="Number"
+                    data-testid="toggle-optionsArgs.bar"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="dropdown-toggle btn btn-link"
+                      disabled=""
+                      type="button"
+                    >
+                      <span
+                        class="symbol"
+                      >
+                        <test-file-stub
+                          classname="root"
+                        />
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="optionsArgs.foo"
+              >
+                foo
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
+              >
+                <div
+                  class="root"
+                >
+                  <div
+                    class="field"
+                  >
+                    <textarea
+                      class="form-control"
+                      id="optionsArgs.foo"
+                      name="optionsArgs.foo"
+                      rows="1"
+                    />
+                  </div>
+                  <div
+                    class="dropdown dropdown"
+                    data-test-selected="Text"
+                    data-testid="toggle-optionsArgs.foo"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="dropdown-toggle btn btn-link"
+                      disabled=""
+                      type="button"
+                    >
+                      <span
+                        class="symbol"
+                      >
+                        <test-file-stub
+                          classname="root"
+                        />
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="wizardStepRow"
+        >
+          <div>
+            <h4>
+              Extensions Contained
+            </h4>
+          </div>
+          <div
+            class="col"
+          >
+            <span
+              class="extensionBadge badge"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-cube fa-w-16 "
+                data-icon="cube"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                  fill="currentColor"
+                />
+              </svg>
+               Test Extension 1
+            </span>
+          </div>
+        </div>
+        <div
+          class="wizardStepRow"
+        >
+          <div>
+            <h4>
+              Permissions & URLs
+            </h4>
+          </div>
+          <div
+            class="col"
+          >
+            <div
+              class="row"
+            >
+              <div
+                class="col"
+              >
+                <p
+                  class="text-danger"
+                >
+                  An error occurred determining additional permissions: Find not mocked, looking up:extensionPoint
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="footer"
+      >
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-magic fa-w-16 "
+            data-icon="magic"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M224 96l16-32 32-16-32-16-16-32-16 32-32 16 32 16 16 32zM80 160l26.66-53.33L160 80l-53.34-26.67L80 0 53.34 53.33 0 80l53.34 26.67L80 160zm352 128l-26.66 53.33L352 368l53.34 26.67L432 448l26.66-53.33L512 368l-53.34-26.67L432 288zm70.62-193.77L417.77 9.38C411.53 3.12 403.34 0 395.15 0c-8.19 0-16.38 3.12-22.63 9.38L9.38 372.52c-12.5 12.5-12.5 32.76 0 45.25l84.85 84.85c6.25 6.25 14.44 9.37 22.62 9.37 8.19 0 16.38-3.12 22.63-9.37l363.14-363.15c12.5-12.48 12.5-32.75 0-45.24zM359.45 203.46l-50.91-50.91 86.6-86.6 50.91 50.91-86.6 86.6z"
+              fill="currentColor"
+            />
+          </svg>
+           Finish Activating
+        </button>
+      </div>
+    </form>
+  </div>
+</DocumentFragment>
+`;
