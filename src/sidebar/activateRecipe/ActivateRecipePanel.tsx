@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { type RegistryId } from "@/core";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
