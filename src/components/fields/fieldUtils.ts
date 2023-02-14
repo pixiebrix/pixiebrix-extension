@@ -101,3 +101,22 @@ export function getFieldValidator(
     }
   };
 }
+
+// Collects custom validation error messages for this schema to be passed to the `config.errMessages`
+// parameter of buildYup
+// See https://github.com/kristianmandrup/schema-to-yup#quick-start
+export const getValidationErrMessages = (
+  schema: Schema | undefined
+): Record<string, string> => {
+  const errMessages: Record<string, string> = {};
+  if (schema?.properties) {
+    for (const key of Object.keys(schema.properties.config.properties)) {
+      errMessages[key] = {
+        required: `${key} is required`,
+        ...schema.properties.config.properties[key].errMessages,
+      };
+    }
+  }
+
+  return errMessages;
+};
