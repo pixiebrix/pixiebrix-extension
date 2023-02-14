@@ -29,7 +29,7 @@ import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
-  GetPanelEntry,
+  type GetPanelEntry,
   type RefreshTrigger,
   type TemporaryDisplayInputs,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";

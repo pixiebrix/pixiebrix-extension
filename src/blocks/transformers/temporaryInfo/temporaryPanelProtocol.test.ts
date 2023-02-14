@@ -35,11 +35,11 @@ describe("temporaryPanelProtocol", () => {
 
   it("stopWaitingForTemporaryPanels resolves promise", async () => {
     const nonce = uuidv4();
-    const entry = sidebarEntryFactory("temporaryPanel", { nonce });
+    const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
-    const promise = waitForTemporaryPanel(nonce, entry);
+    const promise = waitForTemporaryPanel(nonce, definition);
 
-    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(entry);
+    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
 
     await stopWaitingForTemporaryPanels([nonce]);
 
@@ -48,11 +48,11 @@ describe("temporaryPanelProtocol", () => {
 
   it("resolveTemporaryPanel resolves promise", async () => {
     const nonce = uuidv4();
-    const entry = sidebarEntryFactory("temporaryPanel", { nonce });
+    const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
-    const promise = waitForTemporaryPanel(nonce, entry);
+    const promise = waitForTemporaryPanel(nonce, definition);
 
-    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(entry);
+    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
 
     const action = { type: "submit", detail: { foo: "bar" } };
 
@@ -63,11 +63,11 @@ describe("temporaryPanelProtocol", () => {
 
   it("cancelTemporaryPanels rejects promise", async () => {
     const nonce = uuidv4();
-    const entry = sidebarEntryFactory("temporaryPanel", { nonce });
+    const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
-    const promise = waitForTemporaryPanel(nonce, entry);
+    const promise = waitForTemporaryPanel(nonce, definition);
 
-    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(entry);
+    await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
 
     await cancelTemporaryPanels([nonce]);
 
