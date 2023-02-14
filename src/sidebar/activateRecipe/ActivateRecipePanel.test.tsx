@@ -21,13 +21,13 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
   marketplaceListingFactory,
   recipeDefinitionFactory,
+  sidebarEntryFactory,
 } from "@/testUtils/factories";
 import { type UseCachedQueryResult } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { type ActivateRecipeEntry } from "@/sidebar/types";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -138,10 +138,10 @@ describe("ActivateRecipePanel", () => {
       refetch: jest.fn(),
     });
 
-    const entry: ActivateRecipeEntry = {
+    const entry = sidebarEntryFactory("activateRecipe", {
       recipeId: recipe.metadata.id,
       heading: "Activate Blueprint",
-    };
+    });
 
     const rendered = render(
       <ActivateRecipePanel recipeId={recipe.metadata.id} />,

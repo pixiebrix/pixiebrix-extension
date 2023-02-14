@@ -23,8 +23,8 @@ import {
   resolveTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { uuidv4 } from "@/types/helpers";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { CancelError } from "@/errors/businessErrors";
+import { sidebarEntryFactory } from "@/testUtils/factories";
 
 describe("temporaryPanelProtocol", () => {
   it("getPanelDefinition if panel is not defined", async () => {
@@ -35,13 +35,7 @@ describe("temporaryPanelProtocol", () => {
 
   it("stopWaitingForTemporaryPanels resolves promise", async () => {
     const nonce = uuidv4();
-    const extensionId = uuidv4();
-    const definition: TemporaryPanelEntry = {
-      nonce,
-      heading: "Test",
-      extensionId,
-      payload: {} as any,
-    };
+    const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
     const promise = waitForTemporaryPanel(nonce, definition);
 
@@ -54,13 +48,7 @@ describe("temporaryPanelProtocol", () => {
 
   it("resolveTemporaryPanel resolves promise", async () => {
     const nonce = uuidv4();
-    const extensionId = uuidv4();
-    const definition: TemporaryPanelEntry = {
-      nonce,
-      heading: "Test",
-      extensionId,
-      payload: {} as any,
-    };
+    const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
     const promise = waitForTemporaryPanel(nonce, definition);
 
@@ -75,13 +63,7 @@ describe("temporaryPanelProtocol", () => {
 
   it("cancelTemporaryPanels rejects promise", async () => {
     const nonce = uuidv4();
-    const extensionId = uuidv4();
-    const definition: TemporaryPanelEntry = {
-      nonce,
-      heading: "Test",
-      extensionId,
-      payload: {} as any,
-    };
+    const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
     const promise = waitForTemporaryPanel(nonce, definition);
 

@@ -16,14 +16,12 @@
  */
 
 import sidebarSlice, { type SidebarState } from "@/sidebar/sidebarSlice";
-import { uuidSequence } from "@/testUtils/factories";
-import { mapTabEventKey } from "@/sidebar/utils";
+import { sidebarEntryFactory } from "@/testUtils/factories";
+import { eventKeyForEntry } from "@/sidebar/utils";
 import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
 } from "@/contentScript/messenger/api";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
-import { uuidv4 } from "@/types/helpers";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
 jest.mock("@/sidebar/messenger/api", () => ({
@@ -63,31 +61,28 @@ describe("sidebarSlice.selectTab", () => {
   });
 
   it("selects temporary panel", () => {
-    const panel = { nonce: uuidSequence(0), extensionId: uuidSequence(1) };
+    const entry = sidebarEntryFactory("temporaryPanel");
 
     const state = {
       ...sidebarSlice.getInitialState(),
-      temporaryPanels: [panel],
+      temporaryPanels: [entry],
     } as SidebarState;
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.selectTab(mapTabEventKey("temporaryPanel", panel))
+      sidebarSlice.actions.selectTab(eventKeyForEntry(entry))
     );
-    expect(newState.activeKey).toBe(mapTabEventKey("temporaryPanel", panel));
+    expect(newState.activeKey).toBe(eventKeyForEntry(entry));
   });
 });
 
 describe("sidebarSlice.addTemporaryPanel", () => {
-  it("cancels existing temporary panel", async () => {
-    const existingPanel = { nonce: uuidv4(), extensionId: uuidv4() };
-    const otherExistingPanel = { nonce: uuidv4(), extensionId: uuidv4() };
-    const newPanel: TemporaryPanelEntry = {
-      nonce: uuidv4(),
+  it("cancels existing temporary panel for extension", async () => {
+    const existingPanel = sidebarEntryFactory("temporaryPanel");
+    const otherExistingPanel = sidebarEntryFactory("temporaryPanel");
+    const newPanel = sidebarEntryFactory("temporaryPanel", {
       extensionId: existingPanel.extensionId,
-      heading: "Test",
-      payload: {} as any,
-    };
+    });
 
     const state = {
       ...sidebarSlice.getInitialState(),
@@ -99,7 +94,7 @@ describe("sidebarSlice.addTemporaryPanel", () => {
       sidebarSlice.actions.addTemporaryPanel({ panel: newPanel })
     );
 
-    expect(newState.activeKey).toBe(mapTabEventKey("temporaryPanel", newPanel));
+    expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
 
     // Wait for the async call to be processed
     await tick();
@@ -117,13 +112,13 @@ describe("sidebarSlice.addTemporaryPanel", () => {
 
 describe("sidebarSlice.removeTemporaryPanel", () => {
   it("removes active temporary panel", async () => {
-    const activePanel = { nonce: uuidv4(), extensionId: uuidv4() };
-    const otherPanel = { nonce: uuidv4(), extensionId: uuidv4() };
+    const activePanel = sidebarEntryFactory("temporaryPanel");
+    const otherPanel = sidebarEntryFactory("temporaryPanel");
 
     const state = {
       ...sidebarSlice.getInitialState(),
       temporaryPanels: [activePanel, otherPanel],
-      activeKey: mapTabEventKey("temporaryPanel", activePanel),
+      activeKey: eventKeyForEntry(activePanel),
     } as SidebarState;
 
     const newState = sidebarSlice.reducer(
@@ -131,9 +126,7 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
       sidebarSlice.actions.removeTemporaryPanel(activePanel.nonce)
     );
 
-    expect(newState.activeKey).toBe(
-      mapTabEventKey("temporaryPanel", otherPanel)
-    );
+    expect(newState.activeKey).toBe(eventKeyForEntry(otherPanel));
 
     // Wait for the async call to be processed
     await tick();
