@@ -340,7 +340,7 @@ class DisplayTemporaryInfo extends Transformer {
     }>,
     {
       logger: {
-        context: { extensionId, blueprintId, extensionPointId },
+        context: { extensionId },
       },
       root,
       ctxt,
