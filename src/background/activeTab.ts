@@ -1,6 +1,7 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
 import { updatePageEditor } from "@/pageEditor/messenger/api";
+import { uniq } from "lodash";
 import {
   type ActiveTab,
   addActiveTabListener,
@@ -21,7 +22,7 @@ export default function initActiveTabTracking() {
 export async function getTabsWithAccess(): Promise<TabId[]> {
   const { origins } = await browser.permissions.getAll();
   const tabs = await browser.tabs.query({ url: origins });
-  return [...tabs.map((x) => x.id), ...possiblyActiveTabs.keys()];
+  return uniq([...tabs.map((x) => x.id), ...possiblyActiveTabs.keys()]);
 }
 
 export async function forEachTab<

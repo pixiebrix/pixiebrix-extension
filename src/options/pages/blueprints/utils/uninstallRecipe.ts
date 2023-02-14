@@ -19,7 +19,7 @@ import { type Dispatch } from "react";
 import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
 import { type UnresolvedExtension, type RegistryId } from "@/core";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { reactivateEveryTab } from "@/background/messenger/api";
+import { removeExtensionForEveryTab } from "@/background/messenger/api";
 
 export async function uninstallRecipe(
   recipeId: RegistryId,
@@ -27,7 +27,15 @@ export async function uninstallRecipe(
   dispatch: Dispatch<unknown>
 ): Promise<void> {
   dispatch(extensionActions.removeRecipeById(recipeId));
-  await removeDynamicElementsForRecipe(recipeId);
 
-  reactivateEveryTab();
+  const dynamicElementsToUninstall = await removeDynamicElementsForRecipe(
+    recipeId
+  );
+
+  for (const id of [
+    ...recipeExtensions.map(({ id }) => id),
+    ...dynamicElementsToUninstall.map(({ uuid }) => uuid),
+  ]) {
+    removeExtensionForEveryTab(id);
+  }
 }

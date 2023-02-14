@@ -24,7 +24,8 @@ import {
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
-  removeExtension,
+  removeDynamicExtension,
+  removeInstalledExtension,
 } from "@/contentScript/lifecycle";
 import {
   getFormDefinition,
@@ -88,7 +89,8 @@ declare global {
     TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
-    REMOVE_EXTENSION: typeof removeExtension;
+    REMOVE_INSTALLED_EXTENSION: typeof removeInstalledExtension;
+    REMOVE_DYNAMIC_EXTENSION: typeof removeDynamicExtension;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -147,7 +149,8 @@ export default function registerMessenger(): void {
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
-    REMOVE_EXTENSION: removeExtension,
+    REMOVE_INSTALLED_EXTENSION: removeInstalledExtension,
+    REMOVE_DYNAMIC_EXTENSION: removeDynamicExtension,
     RESET_TAB: resetTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,

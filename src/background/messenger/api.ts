@@ -42,6 +42,10 @@ export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
+export const removeExtensionForEveryTab = getNotifier(
+  "REMOVE_EXTENSION_EVERY_TAB",
+  bg
+);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);

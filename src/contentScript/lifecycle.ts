@@ -115,25 +115,19 @@ export function getInstalled(): IExtensionPoint[] {
  * Remove an extension from an extension point on the page
  * if it's installed (i.e. clean saved extension)
  */
-export function removeExtension(extensionId: UUID): void {
-  if (_installed.has(extensionId)) {
-    removeInstalledExtension(extensionId);
-  }
-}
-
-function removeInstalledExtension(extensionId: UUID) {
+export function removeInstalledExtension(extensionId: UUID) {
   // We need to select correct extensionPoint with extensionId param
   const extensionPoint = _installed.get(extensionId);
   if (extensionPoint) {
     extensionPoint.removeExtension(extensionId);
-  } else {
-    console.warn("Extension point of extension %s not found", extensionId);
+    _installed.delete(extensionId);
   }
-
-  _installed.delete(extensionId);
 }
 
-function removeDynamicExtension(extensionId: UUID) {
+/**
+ * Remove a dynamic extension from an extension point on the page
+ */
+export function removeDynamicExtension(extensionId: UUID) {
   const extensionPoint = _dynamic.get(extensionId);
   if (extensionPoint) {
     if (extensionPoint.kind === "actionPanel") {
@@ -143,14 +137,9 @@ function removeDynamicExtension(extensionId: UUID) {
     } else {
       extensionPoint.uninstall();
     }
-  } else {
-    console.warn(
-      "Dynamic extension point of extension %s not found",
-      extensionId
-    );
-  }
 
-  _dynamic.delete(extensionId);
+    _dynamic.delete(extensionId);
+  }
 }
 
 function markUninstalled(id: RegistryId) {
