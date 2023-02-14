@@ -35,6 +35,7 @@ import cx from "classnames";
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
   isReinstall: boolean;
+  header?: React.ReactNode;
   submitButtonRef?: React.RefObject<HTMLButtonElement>;
   onSubmitSuccess?: () => void;
 };
@@ -42,23 +43,35 @@ type ActivateRecipeInputsProps = {
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   recipe,
   isReinstall,
+  header,
   submitButtonRef,
   onSubmitSuccess,
 }) => {
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const optionsStep = wizardSteps.find(({ key }) => key === "options");
+  const servicesStep = wizardSteps.find(({ key }) => key === "services");
   const activateRecipe = useActivateRecipe();
   const [error, setError] = React.useState<string | null>(null);
 
   const renderBody: RenderBody = () => (
     <div className={cx("scrollable-area", styles.formBody)}>
-      {wizardSteps.map(({ Component, label, key }) => (
-        <div key={key} className={styles.wizardStepRow}>
+      {header}
+      {optionsStep && (
+        <div>
           <div>
-            <h4>{label}</h4>
+            <h4>{optionsStep.label}</h4>
           </div>
-          <Component blueprint={recipe} reinstall={isReinstall} />
+          <optionsStep.Component blueprint={recipe} reinstall={isReinstall} />
         </div>
-      ))}
+      )}
+      {servicesStep && (
+        <div className="mt-1">
+          <div>
+            <h4>{servicesStep.label}</h4>
+          </div>
+          <servicesStep.Component blueprint={recipe} reinstall={isReinstall} />
+        </div>
+      )}
     </div>
   );
 

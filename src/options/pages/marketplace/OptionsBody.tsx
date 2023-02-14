@@ -22,7 +22,6 @@ import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
-import { Col } from "react-bootstrap";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
@@ -42,11 +41,9 @@ const OptionsBody: React.FunctionComponent<{
   );
 
   return (
-    <Col>
-      <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
-        <OptionsGroup name="optionsArgs" />
-      </FieldRuntimeContext.Provider>
-    </Col>
+    <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
+      <OptionsGroup name="optionsArgs" />
+    </FieldRuntimeContext.Provider>
   );
 };
 

@@ -107,16 +107,12 @@ function useWizard(
           extensionPoints.map((_, index) => [index, Yup.boolean().required()])
         )
       ),
-      // Services is validated in useInstall; denoting services as required will prevent
-      // form submission without errors until we implement error views on ServicesBody.
-      // This is a refactoring opportunity
+      // Services are also validated in useInstall()
       services: Yup.array().of(
-        Yup.object()
-          .shape({
-            id: Yup.string(),
-            config: Yup.string(),
-          })
-          .required()
+        Yup.object().shape({
+          id: Yup.string(),
+          config: Yup.string().required("Please select an integration"),
+        })
       ),
       optionsArgs: optionsValidationSchema,
       grantPermissions: Yup.boolean(),

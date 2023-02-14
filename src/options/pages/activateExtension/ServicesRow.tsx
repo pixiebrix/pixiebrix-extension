@@ -28,12 +28,15 @@ import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import AuthWidget from "@/components/auth/AuthWidget";
 import { joinName } from "@/utils";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { AnnotationType } from "@/types";
+import ServiceFieldError from "@/options/components/ServiceFieldError";
 
 const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];
   refreshAuthOptions: () => void;
 }> = ({ authOptions, refreshAuthOptions }) => {
-  const [field] = useField<ServiceDependency[]>("services");
+  const [field, { error }] = useField<ServiceDependency[]>("services");
 
   const { data: serviceConfigs } =
     useFetch<ServiceDefinition[]>("/api/services/");
@@ -56,6 +59,9 @@ const ServicesRow: React.FunctionComponent<{
       <Col xs={12}>
         <h4>Integrations</h4>
       </Col>
+      {typeof error === "string" && (
+        <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
+      )}
       {configurable.map(({ dependency, valueIndex }) => (
         <Col
           xs={12}
@@ -63,6 +69,7 @@ const ServicesRow: React.FunctionComponent<{
           xl={4}
           key={`${dependency.outputKey}-${valueIndex}`}
         >
+          <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
           <Card className={styles.serviceCard}>
             <ServiceDescriptor
               serviceId={dependency.id}

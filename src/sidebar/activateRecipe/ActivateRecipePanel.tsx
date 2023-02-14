@@ -148,25 +148,24 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
           </div>
         </>
       ) : (
-        <>
-          <div className={styles.header}>
-            <h4>{isReinstall ? "Reactivating" : "Activating"}</h4>
-            {recipeNameComponent}
-            <p>
-              {
-                "We're almost there. This blueprint has a few settings to configure before using. You can always change these later."
-              }
-            </p>
-          </div>
-          <ActivateRecipeInputs
-            recipe={recipe}
-            isReinstall={isReinstall}
-            submitButtonRef={submitRef}
-            onSubmitSuccess={() => {
-              setRecipeActivated(true);
-            }}
-          />
-        </>
+        <ActivateRecipeInputs
+          recipe={recipe}
+          isReinstall={isReinstall}
+          header={
+            <>
+              {recipeNameComponent}
+              <p>
+                {
+                  "We're almost there. This blueprint has a few settings to configure before using. You can always change these later."
+                }
+              </p>
+            </>
+          }
+          submitButtonRef={submitRef}
+          onSubmitSuccess={() => {
+            setRecipeActivated(true);
+          }}
+        />
       )}
     </div>
   );
