@@ -35,6 +35,7 @@ import cx from "classnames";
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
   isReinstall: boolean;
+  onClickCancel: () => void;
   header?: React.ReactNode;
   submitButtonRef?: React.RefObject<HTMLButtonElement>;
   onSubmitSuccess?: () => void;
@@ -43,6 +44,7 @@ type ActivateRecipeInputsProps = {
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   recipe,
   isReinstall,
+  onClickCancel,
   header,
   submitButtonRef,
   onSubmitSuccess,
@@ -79,6 +81,9 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     <>
       {error && <Alert variant={"danger"}>{error}</Alert>}
       <div className={styles.footer}>
+        <Button type="button" variant="outline-danger" onClick={onClickCancel}>
+          Cancel
+        </Button>
         <Button
           type="submit"
           disabled={!isValid || isSubmitting}
