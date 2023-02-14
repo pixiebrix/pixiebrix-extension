@@ -323,7 +323,8 @@ module.exports = (env, options) =>
           terserOptions: {
             // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
             // Keep error classnames because we perform name comparison (see selectSpecificError)
-            keep_classnames: /.*Error/,
+            // We use Action for SubmitPanelAction, AbortPanelAction, etc.
+            keep_classnames: /.*(Error|Action)$/,
           },
         }),
         new CssMinimizerPlugin(),
