@@ -19,6 +19,7 @@ import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { expectContext } from "@/utils/expectContext";
 import panelInThisTab from "@/blocks/transformers/temporaryInfo/messenger/api";
 import { type UUID } from "@/core";
+import { type Except } from "type-fest";
 
 /**
  * Sequence number for ensuring render requests are handled in order
@@ -33,11 +34,16 @@ let renderSequenceNumber = 0;
  * @param entry the new panel content
  * @see updateTemporarySidebarPanel
  */
-export function updateTemporaryOverlayPanel(entry: TemporaryPanelEntry): void {
+export function updateTemporaryOverlayPanel(
+  entry: Except<TemporaryPanelEntry, "type">
+): void {
   expectContext("contentScript");
 
   const sequence = renderSequenceNumber++;
-  panelInThisTab.updateTemporaryPanel(sequence, entry);
+  panelInThisTab.updateTemporaryPanel(sequence, {
+    type: "temporaryPanel",
+    ...entry,
+  });
 }
 
 export function setTemporaryOverlayPanel(args: {

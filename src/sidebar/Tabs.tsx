@@ -17,7 +17,7 @@
 
 import React, { useCallback, useEffect } from "react";
 import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
-import { mapTabEventKey } from "@/sidebar/utils";
+import { eventKeyForEntry } from "@/sidebar/utils";
 import { type UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
@@ -88,7 +88,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           {panels.map((panel) => (
             <Nav.Link
               key={panel.extensionId}
-              eventKey={mapTabEventKey("panel", panel)}
+              eventKey={eventKeyForEntry(panel)}
               className={styles.tabHeader}
             >
               <span className={styles.tabTitle}>
@@ -99,7 +99,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           {forms.map((form) => (
             <Nav.Link
               key={form.extensionId}
-              eventKey={mapTabEventKey("form", form)}
+              eventKey={eventKeyForEntry(form)}
               className={styles.tabHeader}
             >
               <span className={styles.tabTitle}>
@@ -110,7 +110,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           {temporaryPanels.map((panel) => (
             <Nav.Link
               key={panel.nonce}
-              eventKey={mapTabEventKey("temporaryPanel", panel)}
+              eventKey={eventKeyForEntry(panel)}
               className={styles.tabHeader}
             >
               <span className={styles.tabTitle}>{panel.heading}</span>
@@ -124,7 +124,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           {recipeToActivate && (
             <Nav.Link
               key={recipeToActivate.recipeId}
-              eventKey={`activate-${recipeToActivate.recipeId}`}
+              eventKey={eventKeyForEntry(recipeToActivate)}
               className={styles.tabHeader}
             >
               <span className={styles.tabTitle}>
@@ -138,7 +138,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}
               key={panel.extensionId}
-              eventKey={mapTabEventKey("panel", panel)}
+              eventKey={eventKeyForEntry(panel)}
             >
               <ErrorBoundary>
                 <PanelBody
@@ -158,7 +158,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             <Tab.Pane
               className="full-height flex-grow"
               key={form.nonce}
-              eventKey={mapTabEventKey("form", form)}
+              eventKey={eventKeyForEntry(form)}
             >
               <ErrorBoundary>
                 <FormBody form={form} />
@@ -169,7 +169,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
               key={panel.nonce}
-              eventKey={mapTabEventKey("temporaryPanel", panel)}
+              eventKey={eventKeyForEntry(panel)}
             >
               <ErrorBoundary>
                 <PanelBody
@@ -187,7 +187,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
               key={recipeToActivate.recipeId}
-              eventKey={`activate-${recipeToActivate.recipeId}`}
+              eventKey={eventKeyForEntry(recipeToActivate)}
             >
               <ErrorBoundary>
                 <ActivateRecipePanel recipeId={recipeToActivate.recipeId} />

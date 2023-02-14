@@ -95,6 +95,15 @@ import { type Permissions } from "webextension-polyfill";
 import quickBar from "@/pageEditor/extensionPoints/quickBar";
 import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
 import sidebar from "@/pageEditor/extensionPoints/sidebar";
+import {
+  type ActivateRecipeEntry,
+  type EntryType,
+  type FormEntry,
+  type PanelEntry,
+  type SidebarEntry,
+  type TemporaryPanelEntry,
+} from "@/sidebar/types";
+import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -768,3 +777,87 @@ export const marketplaceListingFactory = define<MarketplaceListing>({
       name: `@test/test-${n}`,
     } as unknown as MarketplaceListing["package"]),
 });
+
+const activateRecipeEntryFactory = define<ActivateRecipeEntry>({
+  type: "activateRecipe",
+  recipeId: (n: number) =>
+    validateRegistryId(`@test/activate-recipe-test-${n}`),
+  heading: (n: number) => `Activate Recipe Test ${n}`,
+});
+
+const formDefinitionFactory = define<FormDefinition>({
+  schema: () => ({}),
+  uiSchema: () => ({}),
+  cancelable: true,
+  submitCaption: "Submit",
+});
+
+const formEntryFactory = define<FormEntry>({
+  type: "form",
+  extensionId: uuidSequence,
+  nonce: uuidSequence,
+  form: formDefinitionFactory,
+});
+
+const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
+  type: "temporaryPanel",
+  extensionId: uuidSequence,
+  heading: (n: number) => `Temporary Panel Test ${n}`,
+  payload: null,
+  nonce: uuidSequence,
+});
+
+const panelEntryFactory = define<PanelEntry>({
+  type: "panel",
+  extensionId: uuidSequence,
+  heading: (n: number) => `Panel Test ${n}`,
+  payload: null,
+  blueprintId: (n: number) =>
+    validateRegistryId(`@test/panel-recipe-test-${n}`),
+  extensionPointId: (n: number) =>
+    validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
+});
+
+export function sidebarEntryFactory(
+  type: "panel",
+  override?: FactoryConfig<PanelEntry>
+): PanelEntry;
+export function sidebarEntryFactory(
+  type: "temporaryPanel",
+  override?: FactoryConfig<TemporaryPanelEntry>
+): TemporaryPanelEntry;
+export function sidebarEntryFactory(
+  type: "form",
+  override?: FactoryConfig<FormEntry>
+): FormEntry;
+export function sidebarEntryFactory(
+  type: "activateRecipe",
+  override?: FactoryConfig<ActivateRecipeEntry>
+): ActivateRecipeEntry;
+export function sidebarEntryFactory(
+  type: EntryType,
+  override?: FactoryConfig<SidebarEntry>
+): SidebarEntry {
+  if (type === "activateRecipe") {
+    return activateRecipeEntryFactory(
+      override as FactoryConfig<ActivateRecipeEntry>
+    );
+  }
+
+  if (type === "form") {
+    return formEntryFactory(override as FactoryConfig<FormEntry>);
+  }
+
+  if (type === "temporaryPanel") {
+    return temporaryPanelEntryFactory(
+      override as FactoryConfig<TemporaryPanelEntry>
+    );
+  }
+
+  if (type === "panel") {
+    return panelEntryFactory(override as FactoryConfig<PanelEntry>);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- allow never, future-proof for new types
+  throw new Error(`Unknown entry type: ${type}`);
+}

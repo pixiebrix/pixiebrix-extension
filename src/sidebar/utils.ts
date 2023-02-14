@@ -15,28 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarEntries, type EntryType } from "@/sidebar/types";
-import { type UUID } from "@/core";
+import { type SidebarEntries, type SidebarEntry } from "@/sidebar/types";
 
-export function mapTabEventKey(
-  type: "panel",
-  entry: { extensionId: UUID } | null
-): string | null;
-export function mapTabEventKey(
-  type: "form" | "temporaryPanel",
-  entry: { nonce?: UUID; extensionId?: UUID } | null
-): string | null;
-export function mapTabEventKey(
-  entryType: EntryType,
-  // Permanent panels don't have a nonce
-  entry: { nonce?: UUID; extensionId: UUID } | null
-): string | null {
+export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {
     return null;
   }
 
-  // Prefer nonce so there's unique eventKey for forms and temporary panels from an extension
-  return `${entryType}-${entry.nonce ?? entry.extensionId}`;
+  if (entry.type === "activateRecipe") {
+    return `activate-${entry.recipeId}`;
+  }
+
+  if (entry.type === "panel") {
+    return `panel-${entry.extensionId}`;
+  }
+
+  // Use nonce to keep eventKeys unique for forms and temporary panels from the same extension
+  return `${entry.type}-${entry.nonce}`;
 }
 
 /**
@@ -54,16 +49,16 @@ export function defaultEventKey({
   recipeToActivate = null,
 }: SidebarEntries): string | null {
   if (forms.length > 0) {
-    return mapTabEventKey("form", forms.at(-1));
+    return eventKeyForEntry(forms.at(-1));
   }
 
   if (temporaryPanels.length > 0) {
-    return mapTabEventKey("temporaryPanel", temporaryPanels.at(-1));
+    return eventKeyForEntry(temporaryPanels.at(-1));
   }
 
   if (panels.length > 0) {
-    return mapTabEventKey("panel", panels.at(0));
+    return eventKeyForEntry(panels.at(0));
   }
 
-  return recipeToActivate && `activate-${recipeToActivate.recipeId}`;
+  return recipeToActivate && eventKeyForEntry(recipeToActivate);
 }
