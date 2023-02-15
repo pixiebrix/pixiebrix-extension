@@ -68,6 +68,7 @@ const defaults = {
 
   // PixieBrix URL to enable connection to for credential exchange
   SERVICE_URL: "https://app.pixiebrix.com",
+  MARKETPLACE_URL: "https://www.pixiebrix.com/marketplace/",
 };
 
 dotenv.config({
@@ -82,6 +83,7 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
 
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
+console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
 console.log(
   "ROLLBAR_BROWSER_ACCESS_TOKEN:",
@@ -103,10 +105,18 @@ const produceSourcemap =
 const sourceMapPublicUrl =
   parseEnv(process.env.PUBLIC_RELEASE) &&
   `${process.env.SOURCE_MAP_URL_BASE}/${process.env.SOURCE_MAP_PATH}/`;
-console.log(
-  "Sourcemaps:",
-  sourceMapPublicUrl ? sourceMapPublicUrl : produceSourcemap ? "Local" : "No"
-);
+
+let sourcemapsLogMessage = "Sourcemaps: ";
+
+if (sourceMapPublicUrl) {
+  sourcemapsLogMessage += sourceMapPublicUrl;
+} else if (produceSourcemap) {
+  sourcemapsLogMessage += "Local";
+} else {
+  sourcemapsLogMessage += "None";
+}
+
+console.log(sourcemapsLogMessage);
 
 function getVersion() {
   // `manifest.json` only supports numbers in the version, so use the semver
@@ -390,6 +400,7 @@ module.exports = (env, options) =>
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
+        MARKETPLACE_URL: undefined,
         SOURCE_VERSION: undefined,
         CHROME_EXTENSION_ID: undefined,
 

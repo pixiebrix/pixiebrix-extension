@@ -123,7 +123,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     throw new Error(`Recipe ${recipeId} not found`);
   }
 
-  async function onClickOkButton() {
+  async function closeSidebar() {
     dispatch(actions.hideActivateRecipe());
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
@@ -144,29 +144,29 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
             </div>
           </div>
           <div className={styles.footer}>
-            <AsyncButton onClick={onClickOkButton}>Ok</AsyncButton>
+            <AsyncButton onClick={closeSidebar}>Ok</AsyncButton>
           </div>
         </>
       ) : (
-        <>
-          <div className={styles.header}>
-            <h4>{isReinstall ? "Reactivating" : "Activating"}</h4>
-            {recipeNameComponent}
-            <p>
-              {
-                "We're almost there. This blueprint has a few settings to configure before using. You can always change these later."
-              }
-            </p>
-          </div>
-          <ActivateRecipeInputs
-            recipe={recipe}
-            isReinstall={isReinstall}
-            submitButtonRef={submitRef}
-            onSubmitSuccess={() => {
-              setRecipeActivated(true);
-            }}
-          />
-        </>
+        <ActivateRecipeInputs
+          recipe={recipe}
+          isReinstall={isReinstall}
+          onClickCancel={closeSidebar}
+          header={
+            <>
+              {recipeNameComponent}
+              <p>
+                {
+                  "We're almost there. This blueprint has a few settings to configure before using. You can always change these later."
+                }
+              </p>
+            </>
+          }
+          submitButtonRef={submitRef}
+          onSubmitSuccess={() => {
+            setRecipeActivated(true);
+          }}
+        />
       )}
     </div>
   );

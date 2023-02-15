@@ -16,9 +16,10 @@
  */
 
 /**
- * Link to the marketplace with trailing slash
+ * Link to the marketplace
  */
-export const MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
+// eslint-disable-next-line prefer-destructuring -- breaks EnvironmentPlugin
+export const MARKETPLACE_URL = process.env.MARKETPLACE_URL;
 
 export const FieldDescriptions = {
   BLUEPRINT_ID: "A unique id for the blueprint",

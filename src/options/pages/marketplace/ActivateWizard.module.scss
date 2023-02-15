@@ -51,6 +51,11 @@
 }
 
 .wizardBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+
   .wizardBodyRow:not(:first-child) {
     margin-top: 40px;
   }

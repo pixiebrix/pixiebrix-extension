@@ -18,7 +18,7 @@
 import styles from "./ExtensionsBody.module.scss";
 
 import React from "react";
-import { Badge, Col } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { type RecipeDefinition } from "@/types/definitions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
@@ -36,11 +36,11 @@ interface OwnProps {
 }
 
 const ExtensionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => (
-  <Col>
+  <div>
     {blueprint.extensionPoints.map((definition, index) => (
       <ExtensionBadge key={definition.id} name={definition.label} />
     ))}
-  </Col>
+  </div>
 );
 
 export default ExtensionsBody;
