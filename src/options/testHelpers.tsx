@@ -20,11 +20,14 @@ import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
-import { createRenderWithWrappers } from "@/testUtils/testHelpers";
+import {
+  createRenderHookWithWrappers,
+  createRenderWithWrappers,
+} from "@/testUtils/testHelpers";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 
-const renderWithWrappers = createRenderWithWrappers(() =>
+export const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
@@ -34,10 +37,15 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       blueprints: blueprintsSlice.reducer,
       recipes: recipesSlice.reducer,
     },
-  })
+  });
+
+const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
+const renderHookWithWrappers = createRenderHookWithWrappers(
+  configureStoreForTests
 );
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+export { renderHookWithWrappers as renderHook };

@@ -18,7 +18,7 @@
 import { reportEvent } from "@/telemetry/events";
 import { type RecipeDefinition } from "@/types/definitions";
 import notify from "@/utils/notify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { type FormikHelpers } from "formik";
 import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
@@ -31,14 +31,13 @@ import { collectPermissions } from "@/permissions";
 import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import extensionsSlice from "@/store/extensionsSlice";
 import useMilestones from "@/hooks/useMilestones";
 import { useCreateMilestoneMutation } from "@/services/api";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
-import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
-
-const { installRecipe } = extensionsSlice.actions;
+import { uninstallRecipe } from "./uninstallRecipe";
+import { actions as extensionActions } from "@/store/extensionsSlice";
+import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 
 type InstallRecipe = (
   values: WizardValues,
@@ -50,6 +49,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const [createMilestone] = useCreateMilestoneMutation();
   const { hasMilestone } = useMilestones();
   const { setActiveTab } = blueprintsSlice.actions;
+
+  const recipeId = recipe.metadata.id;
+  const recipeExtensions = useSelector(selectExtensionsForRecipe(recipeId));
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -96,10 +98,10 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       }
 
       try {
-        void removeDynamicElementsForRecipe(recipe.metadata.id);
+        await uninstallRecipe(recipeId, recipeExtensions, dispatch);
 
         dispatch(
-          installRecipe({
+          extensionActions.installRecipe({
             recipe,
             extensionPoints: recipe.extensionPoints,
             services: Object.fromEntries(
@@ -116,7 +118,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           await createMilestone({
             key: "first_time_public_blueprint_install",
             metadata: {
-              blueprintId: recipe.metadata.id,
+              blueprintId: recipeId,
             },
           });
 
@@ -136,7 +138,15 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
       }
     },
-    [dispatch, recipe]
+    [
+      createMilestone,
+      dispatch,
+      hasMilestone,
+      recipe,
+      recipeExtensions,
+      recipeId,
+      setActiveTab,
+    ]
   );
 }
 

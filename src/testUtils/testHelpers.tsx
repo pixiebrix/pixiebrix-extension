@@ -45,6 +45,12 @@ import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddlew
 import { type UnknownObject } from "@/types";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type BlockPipeline } from "@/blocks/types";
+import {
+  renderHook,
+  act as actHook,
+  type RenderHookOptions,
+  type RenderHookResult,
+} from "@testing-library/react-hooks";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
@@ -211,6 +217,55 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
         return formState;
       },
+    };
+  };
+}
+
+type HookWrapperOptions<TProps> = Omit<RenderHookOptions<TProps>, "wrapper"> & {
+  setupRedux?: SetupRedux;
+};
+
+type HookWrapperResult<
+  TProps,
+  TResult,
+  S = UnknownObject,
+  A extends Action = AnyAction,
+  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
+    ThunkMiddlewareFor<S>
+  ]
+> = RenderHookResult<TProps, TResult> & {
+  getReduxStore: () => EnhancedStore<S, A, M>;
+
+  /**
+   * The act function which should be used with the renderHook
+   */
+  act: (callback: () => Promise<void>) => Promise<undefined>;
+};
+
+export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
+  return <TProps, TResult>(
+    hook: (props: TProps) => TResult,
+    { setupRedux = noop, ...renderOptions }: HookWrapperOptions<TProps> = {}
+  ): HookWrapperResult<TProps, TResult> => {
+    const store = configureStore();
+
+    setupRedux(store.dispatch);
+
+    const Wrapper: React.FC = ({ children }) => (
+      <Provider store={store}>{children}</Provider>
+    );
+
+    const renderResult = renderHook(hook, {
+      wrapper: Wrapper,
+      ...renderOptions,
+    });
+
+    return {
+      ...renderResult,
+      getReduxStore() {
+        return store;
+      },
+      act: actHook,
     };
   };
 }

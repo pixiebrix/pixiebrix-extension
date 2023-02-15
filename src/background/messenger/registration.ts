@@ -44,7 +44,10 @@ import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
-import { reactivateEveryTab } from "@/background/navigation";
+import {
+  reactivateEveryTab,
+  removeExtensionForEveryTab,
+} from "@/background/navigation";
 import initPartnerTheme from "@/background/partnerTheme";
 
 import {
@@ -103,6 +106,7 @@ declare global {
 
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
+    REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
     REGISTRY_FETCH: typeof registry.fetchNewPackages;
@@ -179,6 +183,7 @@ export default function registerMessenger(): void {
 
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
+    REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
     REGISTRY_FETCH: registry.fetchNewPackages,

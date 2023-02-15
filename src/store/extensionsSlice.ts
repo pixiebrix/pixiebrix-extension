@@ -349,4 +349,6 @@ function requireLatestState(
   }
 }
 
+export const { actions } = extensionsSlice;
+
 export default extensionsSlice;

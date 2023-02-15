@@ -27,7 +27,10 @@ export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
 export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
-export const removeExtension = getNotifier("REMOVE_EXTENSION");
+export const removeInstalledExtension = getNotifier(
+  "REMOVE_INSTALLED_EXTENSION"
+);
+export const removeDynamicExtension = getNotifier("REMOVE_DYNAMIC_EXTENSION");
 export const resetTab = getNotifier("RESET_TAB");
 
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
