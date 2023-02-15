@@ -3,54 +3,50 @@
 exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
 <DocumentFragment>
   <div
-    class="col"
+    class="formGroup form-group row"
   >
-    <div
-      class="formGroup form-group row"
+    <label
+      class="label form-label col-form-label col-xl-2 col-lg-3"
+      for="optionsArgs.textField"
     >
-      <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
-        for="optionsArgs.textField"
-      >
-        Text Field
-      </label>
+      Text Field
+    </label>
+    <div
+      class="col-xl-10 col-lg-9"
+    >
       <div
-        class="col-xl-10 col-lg-9"
+        class="root"
       >
         <div
-          class="root"
+          class="field"
         >
-          <div
-            class="field"
+          <input
+            class="form-control"
+            id="optionsArgs.textField"
+            name="optionsArgs.textField"
+            readonly=""
+            value=""
+          />
+        </div>
+        <div
+          class="dropdown dropdown"
+          data-test-selected="Exclude"
+          data-testid="toggle-optionsArgs.textField"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="dropdown-toggle btn btn-link"
+            type="button"
           >
-            <input
-              class="form-control"
-              id="optionsArgs.textField"
-              name="optionsArgs.textField"
-              readonly=""
-              value=""
-            />
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Exclude"
-            data-testid="toggle-optionsArgs.textField"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
+            <span
+              class="symbol"
             >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
+              <test-file-stub
+                classname="root"
+              />
+            </span>
+          </button>
         </div>
       </div>
     </div>

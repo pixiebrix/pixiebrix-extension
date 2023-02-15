@@ -109,14 +109,14 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const action = reinstall ? "Reactivate" : "Activate";
   useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
-  const authPersistenceContext: ReduxPersistenceContextType = {
+  const reduxPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
       await persistor.flush();
     },
   };
 
   return (
-    <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+    <ReduxPersistenceContext.Provider value={reduxPersistenceContext}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -128,13 +128,13 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             <Card>
               <ActivateHeader blueprint={blueprint} />
               <Card.Body className={styles.wizardBody}>
-                {blueprintSteps.map(({ Component, label, key }, _) => (
-                  <Row key={key} className={styles.wizardBodyRow}>
-                    <Col xs={12}>
+                {blueprintSteps.map(({ Component, label, key }) => (
+                  <div key={key} className={styles.wizardBodyRow}>
+                    <div>
                       <h4>{label}</h4>
-                    </Col>
+                    </div>
                     <Component blueprint={blueprint} reinstall={reinstall} />
-                  </Row>
+                  </div>
                 ))}
               </Card.Body>
             </Card>
