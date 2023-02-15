@@ -105,10 +105,18 @@ const produceSourcemap =
 const sourceMapPublicUrl =
   parseEnv(process.env.PUBLIC_RELEASE) &&
   `${process.env.SOURCE_MAP_URL_BASE}/${process.env.SOURCE_MAP_PATH}/`;
-console.log(
-  "Sourcemaps:",
-  sourceMapPublicUrl ?? produceSourcemap ? "Local" : "No"
-);
+
+let sourcemapsLogMessage = "Sourcemaps: ";
+
+if (sourceMapPublicUrl) {
+  sourcemapsLogMessage += sourceMapPublicUrl;
+} else if (produceSourcemap) {
+  sourcemapsLogMessage += "Local";
+} else {
+  sourcemapsLogMessage += "None";
+}
+
+console.log(sourcemapsLogMessage);
 
 function getVersion() {
   // `manifest.json` only supports numbers in the version, so use the semver
