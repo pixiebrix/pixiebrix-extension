@@ -21,7 +21,10 @@ import {
   installedRecipeMetadataFactory,
   recipeFactory,
 } from "@/testUtils/factories";
-import VarAnalysis from "./varAnalysis";
+import VarAnalysis, {
+  INVALID_VARIABLE_GENERIC_MESSAGE,
+  VARIABLE_SHOULD_START_WITH_AT_MESSAGE,
+} from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
@@ -29,6 +32,7 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
+  makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -777,6 +781,81 @@ describe("Invalid template", () => {
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position.path).toEqual(
       "extension.blockPipeline.1.config.message"
+    );
+  });
+});
+
+describe("var expression annotations", () => {
+  test("doesn't annotate valid expressions", async () => {
+    const extension = formStateFactory(undefined, [
+      blockConfigFactory({
+        outputKey: validateOutputKey("foo"),
+      }),
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeVariableExpression("@foo"),
+        },
+      },
+    ]);
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    expect(analysis.getAnnotations()).toHaveLength(0);
+  });
+
+  test("doesn't annotate empty variable", async () => {
+    const extension = formStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeVariableExpression(""),
+        },
+      },
+    ]);
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    expect(analysis.getAnnotations()).toHaveLength(0);
+  });
+
+  test("annotates variable which doesn't start with @", async () => {
+    const extension = formStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeVariableExpression("foo"),
+        },
+      },
+    ]);
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    expect(analysis.getAnnotations()).toHaveLength(1);
+    expect(analysis.getAnnotations()[0].message).toEqual(
+      VARIABLE_SHOULD_START_WITH_AT_MESSAGE
+    );
+  });
+
+  test("return a generic error message for a single @ character", async () => {
+    const extension = formStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeVariableExpression("@"),
+        },
+      },
+    ]);
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    expect(analysis.getAnnotations()).toHaveLength(1);
+    expect(analysis.getAnnotations()[0].message).toEqual(
+      INVALID_VARIABLE_GENERIC_MESSAGE
     );
   });
 });

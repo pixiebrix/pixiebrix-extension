@@ -39,7 +39,9 @@ import recipesRegistry from "@/recipes/registry";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 import { AnnotationType } from "@/types";
 
-const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
+export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
+export const VARIABLE_SHOULD_START_WITH_AT_MESSAGE =
+  "Variable name should start with @";
 
 type PreviousVisitedBlock = {
   vars: VarMap;
@@ -338,7 +340,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     expression: Expression<string, "var">
   ) {
     const varName = expression.__value__;
-    if (varName == null) {
+    if (isEmpty(varName)) {
       return;
     }
 
@@ -372,19 +374,22 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     varName: string,
     expression: Expression<string, TemplateEngine>
   ) {
+    let message: string;
+    if (varName === "@") {
+      message = INVALID_VARIABLE_GENERIC_MESSAGE;
+    } else if (varName.startsWith("@")) {
+      message = `Variable "${varName}" might not be defined`;
+    } else {
+      message = VARIABLE_SHOULD_START_WITH_AT_MESSAGE;
+    }
+
     if (
-      varName === "@" &&
       this.annotations.some(
-        (x) => x.message === INVALID_VARIABLE_GENERIC_MESSAGE
+        (x) => x.message === message && x.position.path === position.path
       )
     ) {
       return;
     }
-
-    const message =
-      varName === "@"
-        ? INVALID_VARIABLE_GENERIC_MESSAGE
-        : `Variable "${varName}" might not be defined`;
 
     this.annotations.push({
       position,
