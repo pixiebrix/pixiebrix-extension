@@ -35,7 +35,7 @@ jest.mock("@/pageEditor/EditorLayout", () => ({
 
 jest.mock("@/contentScript/messenger/api", () => ({
   __esModule: true,
-  removeExtension: jest.fn(),
+  removeInstalledExtension: jest.fn(),
   updateDynamicElement: jest.fn(),
 }));
 
