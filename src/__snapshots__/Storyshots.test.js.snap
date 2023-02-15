@@ -2,72 +2,68 @@
 
 exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 <div
-  className="col"
+  className="formGroup form-group row"
 >
-  <div
-    className="formGroup form-group row"
+  <label
+    className="label form-label col-form-label col-xl-2 col-lg-3"
+    htmlFor="optionsArgs.textField"
   >
-    <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
-      htmlFor="optionsArgs.textField"
-    >
-      Text Field
-    </label>
+    Text Field
+  </label>
+  <div
+    className="col-xl-10 col-lg-9"
+  >
     <div
-      className="col-xl-10 col-lg-9"
+      className="root"
     >
       <div
-        className="root"
+        className="field"
       >
-        <div
-          className="field"
-        >
-          <textarea
-            className="form-control"
-            id="optionsArgs.textField"
-            name="optionsArgs.textField"
-            onBlur={[Function]}
-            onChange={[Function]}
-            onKeyDown={[Function]}
-            rows="1"
-            value=""
-          />
-        </div>
-        <div
-          className="dropdown dropdown"
-          data-test-selected="Text"
-          data-testid="toggle-optionsArgs.textField"
-        >
-          <button
-            aria-expanded={false}
-            aria-haspopup={true}
-            className="dropdown-toggle btn btn-link"
-            disabled={true}
-            onClick={[Function]}
-            type="button"
-          >
-            <span
-              className="symbol"
-            >
-              <test-file-stub
-                className="root"
-              />
-            </span>
-          </button>
-        </div>
-      </div>
-      <small
-        className="text-muted form-text"
-      >
-        <span
-          dangerouslySetInnerHTML={
-            {
-              "__html": "This is a basic required text field.",
-            }
-          }
+        <textarea
+          className="form-control"
+          id="optionsArgs.textField"
+          name="optionsArgs.textField"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onKeyDown={[Function]}
+          rows="1"
+          value=""
         />
-      </small>
+      </div>
+      <div
+        className="dropdown dropdown"
+        data-test-selected="Text"
+        data-testid="toggle-optionsArgs.textField"
+      >
+        <button
+          aria-expanded={false}
+          aria-haspopup={true}
+          className="dropdown-toggle btn btn-link"
+          disabled={true}
+          onClick={[Function]}
+          type="button"
+        >
+          <span
+            className="symbol"
+          >
+            <test-file-stub
+              className="root"
+            />
+          </span>
+        </button>
+      </div>
     </div>
+    <small
+      className="text-muted form-text"
+    >
+      <span
+        dangerouslySetInnerHTML={
+          {
+            "__html": "This is a basic required text field.",
+          }
+        }
+      />
+    </small>
   </div>
 </div>
 `;
