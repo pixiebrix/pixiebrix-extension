@@ -89,7 +89,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
   );
 
-  const submitRef = useRef<HTMLButtonElement>(null);
+  const submitRef = useRef<HTMLButtonElement>();
   const activateRecipe = () => {
     submitRef.current?.click();
   };
@@ -101,6 +101,8 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
       !recipeActivated &&
       !isLoadingRecipe &&
       !recipeError &&
+      // Need to wait for the listing to load also so that the submit button renders
+      !isLoadingListing &&
       // If the recipe doesn't have options or services, we can activate immediately
       !hasRecipeOptions &&
       !needsServiceInputs
@@ -109,6 +111,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     }
   }, [
     hasRecipeOptions,
+    isLoadingListing,
     isLoadingRecipe,
     needsServiceInputs,
     recipeActivated,

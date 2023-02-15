@@ -65,9 +65,9 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
           // consistent with the index in field.value
           visibleServiceIds.has(serviceId) && (
-            <>
+            <div key={serviceId}>
               <ServiceFieldError servicesError={error} fieldIndex={index} />
-              <Card key={serviceId} className={styles.serviceCard}>
+              <Card className={styles.serviceCard}>
                 <ServiceDescriptor
                   serviceId={serviceId}
                   serviceConfigs={serviceConfigs}
@@ -79,7 +79,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                   onRefresh={refreshAuthOptions}
                 />
               </Card>
-            </>
+            </div>
           )
       )}
     </>
