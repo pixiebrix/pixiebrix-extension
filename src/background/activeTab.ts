@@ -22,6 +22,7 @@ export default function initActiveTabTracking() {
 export async function getTabsWithAccess(): Promise<TabId[]> {
   const { origins } = await browser.permissions.getAll();
   const tabs = await browser.tabs.query({ url: origins });
+  // The union of browser.tabs.query and possiblyActiveTabs can contain duplicates, hence applying uniq
   return uniq([...tabs.map((x) => x.id), ...possiblyActiveTabs.keys()]);
 }
 
