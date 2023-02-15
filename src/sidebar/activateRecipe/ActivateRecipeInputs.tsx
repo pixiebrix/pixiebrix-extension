@@ -27,7 +27,7 @@ import styles from "./ActivateRecipePanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
-import { Button } from "react-bootstrap";
+import { Button, Col } from "react-bootstrap";
 import useActivateRecipe from "@/hooks/useActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
@@ -59,12 +59,22 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     <div className={cx("scrollable-area", styles.formBody)}>
       {header}
       {optionsStep && (
-        <div>
+        <>
           <div>
             <h4>{optionsStep.label}</h4>
           </div>
-          <optionsStep.Component blueprint={recipe} reinstall={isReinstall} />
-        </div>
+          {/*
+            Need to use Col for correct spacing here because the options
+            component ends up using FieldTemplate to render the option inputs,
+            and FieldTemplate renders as a Row in the layout, and using a Row
+            without a wrapping column causes horizontal scrollbars to appear
+            for no reason. Also, the css style here adds negative margin to
+            bring everything back in line.
+          */}
+          <Col className={styles.optionsBody}>
+            <optionsStep.Component blueprint={recipe} reinstall={isReinstall} />
+          </Col>
+        </>
       )}
       {servicesStep && (
         <div className="mt-1">
