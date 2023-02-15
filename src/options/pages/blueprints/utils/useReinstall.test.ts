@@ -24,8 +24,8 @@ import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { uninstallRecipe } from "./uninstallRecipe";
 import {
-  ExtensionOptionsState,
-  ExtensionsRootState,
+  type ExtensionOptionsState,
+  type ExtensionsRootState,
 } from "@/store/extensionsTypes";
 
 jest.mock("./uninstallRecipe", () => ({
