@@ -109,10 +109,11 @@ function useWizard(
       ),
       // Services are also validated in useInstall()
       services: Yup.array().of(
-        Yup.object().shape({
-          id: Yup.string(),
-          config: Yup.string().required("Please select an integration"),
-        })
+        Yup.object().test(
+          "servicesRequired",
+          "Please select an integration",
+          (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
+        )
       ),
       optionsArgs: optionsValidationSchema,
       grantPermissions: Yup.boolean(),
