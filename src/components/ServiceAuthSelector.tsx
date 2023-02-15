@@ -103,6 +103,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         name={field.name}
         options={options}
         value={value}
+        placeholder={"Select configuration..."}
         components={components}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
