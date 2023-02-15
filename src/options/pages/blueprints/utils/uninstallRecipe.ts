@@ -20,6 +20,7 @@ import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
 import { type UnresolvedExtension, type RegistryId } from "@/core";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
+import { uniq } from "lodash";
 
 export async function uninstallRecipe(
   recipeId: RegistryId,
@@ -32,10 +33,10 @@ export async function uninstallRecipe(
     recipeId
   );
 
-  for (const id of [
+  for (const id of uniq([
     ...recipeExtensions.map(({ id }) => id),
     ...dynamicElementsToUninstall.map(({ uuid }) => uuid),
-  ]) {
+  ])) {
     removeExtensionForEveryTab(id);
   }
 }

@@ -71,6 +71,7 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
  *
  * Note: this does not trigger a change even in any current redux instances
  * @param recipeId The recipe to remove
+ * @returns The removed elements
  */
 export async function removeDynamicElementsForRecipe(
   recipeId: RegistryId
