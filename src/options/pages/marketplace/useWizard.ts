@@ -111,7 +111,7 @@ function useWizard(
       services: Yup.array().of(
         Yup.object().test(
           "servicesRequired",
-          "Please select an integration",
+          "Please select a configuration",
           (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
         )
       ),
