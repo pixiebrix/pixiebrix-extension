@@ -41,7 +41,7 @@ import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
-import { uninstallExtensions, uninstallRecipe } from "./utils/uninstallRecipe";
+import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 
 type ActionCallback = () => void;
 

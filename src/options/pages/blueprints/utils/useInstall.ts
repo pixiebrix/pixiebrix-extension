@@ -35,7 +35,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { useCreateMilestoneMutation } from "@/services/api";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { BLUEPRINTS_PAGE_TABS } from "@/options/pages/blueprints/BlueprintsPageSidebar";
-import { uninstallRecipe } from "./uninstallRecipe";
+import { uninstallRecipe } from "@/store/uninstallUtils";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 

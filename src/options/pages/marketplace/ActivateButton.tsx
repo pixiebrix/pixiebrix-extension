@@ -26,7 +26,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
-import { uninstallRecipe } from "@/options/pages/blueprints/utils/uninstallRecipe";
+import { uninstallRecipe } from "@/store/uninstallUtils";
 
 // TODO: add tests
 const ActivateButton: React.FunctionComponent<{

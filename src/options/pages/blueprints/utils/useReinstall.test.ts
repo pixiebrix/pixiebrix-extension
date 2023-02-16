@@ -22,7 +22,7 @@ import {
 } from "@/testUtils/factories";
 import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { uninstallRecipe } from "./uninstallRecipe";
+import { uninstallRecipe } from "@/store/uninstallUtils";
 import {
   type ExtensionOptionsState,
   type ExtensionsRootState,
