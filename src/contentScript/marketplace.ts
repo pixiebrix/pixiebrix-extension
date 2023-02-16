@@ -35,7 +35,7 @@ import reportError from "@/telemetry/reportError";
 
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
-    "a[href^='https://app.pixiebrix.com/activate']"
+    "a[href*='.pixiebrix.com/activate']"
   );
 }
 
