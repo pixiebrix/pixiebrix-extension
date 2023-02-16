@@ -42,6 +42,7 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
+// TODO test this
 function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);

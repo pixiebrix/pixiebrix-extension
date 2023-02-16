@@ -16,8 +16,11 @@
  */
 
 import { type Dispatch } from "react";
-import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
-import { type UnresolvedExtension, type RegistryId } from "@/core";
+import {
+  removeDynamicElements,
+  removeDynamicElementsForRecipe,
+} from "@/store/dynamicElementStorage";
+import { type UnresolvedExtension, type RegistryId, type UUID } from "@/core";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
@@ -35,8 +38,29 @@ export async function uninstallRecipe(
 
   for (const id of uniq([
     ...recipeExtensions.map(({ id }) => id),
-    ...dynamicElementsToUninstall.map(({ uuid }) => uuid),
+    ...dynamicElementsToUninstall,
   ])) {
     removeExtensionForEveryTab(id);
   }
 }
+
+export async function uninstallExtensions(
+  extensionIds: UUID[],
+  dispatch: Dispatch<unknown>
+): Promise<void> {
+  await removeDynamicElements(extensionIds);
+
+  dispatch(extensionActions.removeExtensions({ extensionIds }));
+
+  for (const id of extensionIds) {
+    removeExtensionForEveryTab(id);
+  }
+}
+
+// TODO when removing extension, should call these?
+// await Promise.allSettled([
+//   uninstallContextMenu({ extensionId }),
+//   removeSidebar(thisTab, extensionId),
+//   traces.clear(extensionId),
+//   clearLog({ extensionId }),
+// ]);

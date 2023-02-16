@@ -47,6 +47,7 @@ import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { removeDynamicElements } from "@/store/dynamicElementStorage";
+import { uninstallExtensions, uninstallRecipe } from "./utils/uninstallRecipe";
 
 type ActionCallback = () => void;
 
@@ -191,27 +192,20 @@ function useInstallableViewItemActions(
   );
 
   const uninstall = useUserAction(
-    () => {
-      void removeDynamicElements(
-        extensionsFromInstallable.map((extension) => extension.id)
-      );
-
-      for (const extension of extensionsFromInstallable) {
-        dispatch(
-          extensionActions.removeExtension({ extensionId: extension.id })
-        );
-        // XXX: also remove sidebar panels that are already open?
-        void uninstallContextMenu({ extensionId: extension.id });
-      }
-
-      reactivateEveryTab();
-
-      // Report telemetry
+    async () => {
       if (isInstallableBlueprint) {
+        const blueprintId = installable.metadata.id;
+        await uninstallRecipe(blueprintId, extensionsFromInstallable, dispatch);
+
         reportEvent("BlueprintRemove", {
-          blueprintId: installable.metadata.id,
+          blueprintId,
         });
       } else {
+        await uninstallExtensions(
+          extensionsFromInstallable.map(({ id }) => id),
+          dispatch
+        );
+
         for (const extension of extensionsFromInstallable) {
           reportEvent("ExtensionRemove", {
             extensionId: extension.id,
