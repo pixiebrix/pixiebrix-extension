@@ -74,6 +74,8 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         // Remove from options slice / extension storage
         dispatch(extensionsActions.removeExtension({ extensionId }));
 
+        // TODO: call removeExtensionsFromTabs
+        // await removeExtensionsFromTabs([extensionId]);
         await Promise.allSettled([
           uninstallContextMenu({ extensionId }),
           removeSidebar(thisTab, extensionId),

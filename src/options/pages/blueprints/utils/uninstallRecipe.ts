@@ -36,12 +36,12 @@ export async function uninstallRecipe(
     recipeId
   );
 
-  for (const id of uniq([
-    ...recipeExtensions.map(({ id }) => id),
-    ...dynamicElementsToUninstall,
-  ])) {
-    removeExtensionForEveryTab(id);
-  }
+  await removeExtensionsFromTabs(
+    uniq([
+      ...recipeExtensions.map(({ id }) => id),
+      ...dynamicElementsToUninstall,
+    ])
+  );
 }
 
 export async function uninstallExtensions(
@@ -52,15 +52,16 @@ export async function uninstallExtensions(
 
   dispatch(extensionActions.removeExtensions({ extensionIds }));
 
-  for (const id of extensionIds) {
-    removeExtensionForEveryTab(id);
-  }
+  await removeExtensionsFromTabs(extensionIds);
 }
 
-// TODO when removing extension, should call these?
-// await Promise.allSettled([
-//   uninstallContextMenu({ extensionId }),
-//   removeSidebar(thisTab, extensionId),
-//   traces.clear(extensionId),
-//   clearLog({ extensionId }),
-// ]);
+async function removeExtensionsFromTabs(
+  extensionIds: UUID[]
+): Promise<Array<PromiseSettledResult<void>>> {
+  const promises: Array<Promise<void>> = [];
+  for (const extensionId of extensionIds) {
+    promises.push(removeExtensionForEveryTab(extensionId));
+  }
+
+  return Promise.allSettled(promises);
+}

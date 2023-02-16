@@ -33,3 +33,14 @@ export async function forEachTab<
     callback({ tabId });
   }
 }
+
+export async function forEachTabAsync<
+  TCallback extends (target: { tabId: number }) => Promise<void>
+>(callback: TCallback): Promise<Array<PromiseSettledResult<void>>> {
+  const promises: Array<Promise<void>> = [];
+  for (const tabId of await getTabsWithAccess()) {
+    promises.push(callback({ tabId }));
+  }
+
+  return Promise.allSettled(promises);
+}

@@ -20,24 +20,35 @@ import {
   handleNavigate,
   removeInstalledExtension,
   removeDynamicExtension,
+  removeSidebar,
 } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/activeTab";
+import { forEachTab, forEachTabAsync } from "@/background/activeTab";
 import { type Target } from "@/types";
 import { canAccessTab } from "@/utils/permissions";
 import { debounce } from "lodash";
 import { type UUID } from "@/core";
+import { uninstallContextMenu } from "./contextMenus";
+import { clearExtensionTraces } from "@/telemetry/trace";
+import { clearLog } from "@/telemetry/logging";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
   void forEachTab(reactivateTab);
 }
 
-export function removeExtensionForEveryTab(extensionId: UUID): void {
+export async function removeExtensionForEveryTab(
+  extensionId: UUID
+): Promise<void> {
   console.debug("Remove extension for all tabs", { extensionId });
-  void forEachTab((tab) => {
+
+  await forEachTabAsync(async (tab) => {
     removeInstalledExtension(tab, extensionId);
     removeDynamicExtension(tab, extensionId);
+    await removeSidebar(tab, extensionId);
   });
+  await uninstallContextMenu({ extensionId });
+  await clearExtensionTraces(extensionId);
+  await clearLog({ extensionId });
 }
 
 async function onNavigation({ tabId, frameId }: Target): Promise<void> {
