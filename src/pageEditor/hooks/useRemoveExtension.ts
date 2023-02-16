@@ -24,16 +24,9 @@ import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import {
-  clearLog,
-  traces,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
-import {
-  clearDynamicElements,
-  removeSidebar,
-} from "@/contentScript/messenger/api";
+import { clearDynamicElements } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
+import { removeExtensionsFromTabs } from "@/store/uninstallUtils";
 
 const { actions: extensionsActions } = extensionsSlice;
 
@@ -42,7 +35,6 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
-// TODO test this
 function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
@@ -71,20 +63,12 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
       });
 
       try {
+        // Remove from page editor
+        // Equivalent of @/store/dynamicElementStorage.ts:removeDynamicElements
+        dispatch(editorActions.removeElement(extensionId));
+
         // Remove from options slice / extension storage
         dispatch(extensionsActions.removeExtension({ extensionId }));
-
-        // TODO: call removeExtensionsFromTabs
-        // await removeExtensionsFromTabs([extensionId]);
-        await Promise.allSettled([
-          uninstallContextMenu({ extensionId }),
-          removeSidebar(thisTab, extensionId),
-          traces.clear(extensionId),
-          clearLog({ extensionId }),
-        ]);
-
-        // Remove from page editor
-        dispatch(editorActions.removeElement(extensionId));
 
         // Remove from the host page
         try {
@@ -95,6 +79,8 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
           // Element might not be on the page anymore
           console.info("Cannot clear dynamic element from page", { error });
         }
+
+        await removeExtensionsFromTabs([extensionId]);
       } catch (error: unknown) {
         notify.error({
           message: "Error removing element",

@@ -30,11 +30,11 @@ export async function uninstallRecipe(
   recipeExtensions: UnresolvedExtension[],
   dispatch: Dispatch<unknown>
 ): Promise<void> {
-  dispatch(extensionActions.removeRecipeById(recipeId));
-
   const dynamicElementsToUninstall = await removeDynamicElementsForRecipe(
     recipeId
   );
+
+  dispatch(extensionActions.removeRecipeById(recipeId));
 
   await removeExtensionsFromTabs(
     uniq([
@@ -55,7 +55,7 @@ export async function uninstallExtensions(
   await removeExtensionsFromTabs(extensionIds);
 }
 
-async function removeExtensionsFromTabs(
+export async function removeExtensionsFromTabs(
   extensionIds: UUID[]
 ): Promise<Array<PromiseSettledResult<void>>> {
   const promises: Array<Promise<void>> = [];
