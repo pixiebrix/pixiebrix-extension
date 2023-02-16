@@ -44,10 +44,8 @@ import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
-import {
-  reactivateEveryTab,
-  removeExtensionForEveryTab,
-} from "@/background/navigation";
+import { reactivateEveryTab } from "@/background/navigation";
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import initPartnerTheme from "@/background/partnerTheme";
 
 import {
