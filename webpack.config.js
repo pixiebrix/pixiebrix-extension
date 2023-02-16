@@ -228,6 +228,7 @@ function customizeManifest(manifest, isProduction) {
 
   manifest.content_scripts[0].matches = uniq([
     new URL("*", process.env.SERVICE_URL).href,
+    new URL("*", process.env.MARKETPLACE_URL).href,
     ...manifest.content_scripts[0].matches,
     ...internal,
   ]);
