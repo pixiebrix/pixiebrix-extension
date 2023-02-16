@@ -41,7 +41,7 @@ import Form, {
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import { type JSONSchema7 } from "json-schema";
+import { getValidationErrMessages } from "@/components/fields/fieldUtils";
 
 type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -105,25 +105,6 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
   const [schema] = useAsyncState(schemaPromise);
 
-  const collectErrMessagesConfig = (inputSchema: JSONSchema7) => {
-    console.log("inputSchema", inputSchema?.properties?.config?.properties);
-    const errMessages = {};
-    if (inputSchema?.properties) {
-      for (const key of Object.keys(inputSchema.properties.config.properties)) {
-        errMessages[key] = {
-          required: `${key} is required`,
-          ...inputSchema.properties.config.properties[key].errMessages,
-        };
-      }
-    }
-
-    return errMessages;
-  };
-
-  const errMessages = collectErrMessagesConfig(schema);
-
-  console.log("errmessages", errMessages);
-
   const validationSchema = useMemo(() => {
     if (!schema) {
       return Yup.object();
@@ -131,15 +112,15 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
     try {
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
-      return buildYup(cloneDeep(schema), { errMessages });
+      return buildYup(cloneDeep(schema), {
+        errMessages: getValidationErrMessages(schema?.properties),
+      });
     } catch (error) {
       console.error("Error building Yup validator from JSON Schema", { error });
       reportError(error, { logToConsole: false });
       return Yup.object();
     }
   }, [schema]);
-
-  console.log("schema", schema);
 
   if (!schema) {
     return null;

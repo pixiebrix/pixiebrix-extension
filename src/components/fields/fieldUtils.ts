@@ -109,14 +109,20 @@ export const getValidationErrMessages = (
   schema: Schema | undefined
 ): Record<string, string> => {
   const errMessages: Record<string, string> = {};
-  if (schema?.properties) {
-    for (const key of Object.keys(schema.properties.config.properties)) {
+
+  console.log("hi", schema);
+  if (schema?.config) {
+    for (const key of Object.keys(schema.config.properties)) {
+      console.log("config", key, schema.config.properties[key]);
+      // TODO: refactor - for each key, see if there are any pattern
+      //  or required fields, and add a custom validation message if so
       errMessages[key] = {
         required: `${key} is required`,
-        ...schema.properties.config.properties[key].errMessages,
+        pattern: `Invalid input for ${key}`,
       };
     }
   }
 
+  console.log("errMessages", errMessages);
   return errMessages;
 };
