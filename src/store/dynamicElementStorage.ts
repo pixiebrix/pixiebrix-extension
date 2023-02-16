@@ -87,6 +87,7 @@ export async function removeDynamicElementsForRecipe(
       }
     }
   });
+
   await saveEditorState(newState);
 
   return removedDynamicElements;

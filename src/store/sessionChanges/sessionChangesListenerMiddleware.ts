@@ -40,6 +40,7 @@ sessionChangesListenerMiddleware.startListening({
 
     extensionsSlice.actions.installCloudExtension,
     extensionsSlice.actions.removeExtension,
+    extensionsSlice.actions.removeExtensions,
     extensionsSlice.actions.attachExtension,
     extensionsSlice.actions.installRecipe,
     extensionsSlice.actions.removeRecipeById
