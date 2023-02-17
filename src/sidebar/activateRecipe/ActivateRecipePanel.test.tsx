@@ -77,6 +77,17 @@ jest.mock("@/hooks/useQuickbarShortcut", () =>
   })
 );
 
+jest.mock("@/permissions/index", () => ({
+  collectPermissions: jest.fn().mockReturnValue({
+    permissions: [],
+    origins: [],
+  }),
+}));
+
+jest.mock("@/background/messenger/api", () => ({
+  containsPermissions: jest.fn().mockReturnValue(false),
+}));
+
 function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
   return {
     data,
@@ -95,7 +106,7 @@ beforeAll(() => {
 });
 
 describe("ActivateRecipePanel", () => {
-  test("it renders with options", async () => {
+  test("it renders with options and permissions info", async () => {
     const recipe = recipeDefinitionFactory({
       options: {
         schema: propertiesToSchema({

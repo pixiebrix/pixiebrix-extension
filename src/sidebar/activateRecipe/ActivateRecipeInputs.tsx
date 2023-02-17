@@ -64,7 +64,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 
   const isQuickBar = ["quickBar", "quickBarProvider"].includes(
     // @ts-expect-error -- accessing dynamic config properties
-    recipe.definitions.extensionPoint?.definition?.type as string
+    recipe.definitions?.extensionPoint?.definition?.type as string
   );
   const { isConfigured } = useQuickbarShortcut();
   const needsQuickBarShortcut = isQuickBar && !isConfigured;
