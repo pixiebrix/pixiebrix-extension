@@ -42,6 +42,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
+import { JSONSchema7 } from "json-schema";
 
 type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -113,7 +114,9 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     try {
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
       return buildYup(cloneDeep(schema), {
-        errMessages: getValidationErrMessages(schema?.properties),
+        errMessages: getValidationErrMessages(
+          schema?.properties?.config as JSONSchema7
+        ),
       });
     } catch (error) {
       console.error("Error building Yup validator from JSON Schema", { error });

@@ -22,6 +22,7 @@ import { type UnknownObject } from "@/types";
 import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
+import { JSONSchema7Definition } from "json-schema";
 
 export function fieldLabel(name: string): string {
   return name.split(".").at(-1);
@@ -107,22 +108,27 @@ export function getFieldValidator(
 // See https://github.com/kristianmandrup/schema-to-yup#quick-start
 export const getValidationErrMessages = (
   schema: Schema | undefined
-): Record<string, string> => {
-  const errMessages: Record<string, string> = {};
+): Record<string, Record<string, string>> => {
+  const errMessages: Record<string, Record<string, string>> = {};
+  if (schema) {
+    for (const key of Object.keys(schema.properties)) {
+      if (schema.required.includes(key)) {
+        // eslint-disable-next-line security/detect-object-injection
+        errMessages[key] = {
+          ...(errMessages[key] ? {} : errMessages[key]),
+          required: `${key} is required`,
+        };
+      }
 
-  console.log("hi", schema);
-  if (schema?.config) {
-    for (const key of Object.keys(schema.config.properties)) {
-      console.log("config", key, schema.config.properties[key]);
-      // TODO: refactor - for each key, see if there are any pattern
-      //  or required fields, and add a custom validation message if so
-      errMessages[key] = {
-        required: `${key} is required`,
-        pattern: `Invalid input for ${key}`,
-      };
+      if (schema.properties[key].pattern) {
+        // eslint-disable-next-line security/detect-object-injection
+        errMessages[key] = {
+          ...errMessages[key],
+          pattern: `Invalid ${key} format`,
+        };
+      }
     }
   }
 
-  console.log("errMessages", errMessages);
   return errMessages;
 };
