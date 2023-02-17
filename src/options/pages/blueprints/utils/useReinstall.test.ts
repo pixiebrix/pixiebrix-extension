@@ -28,10 +28,6 @@ import {
   type ExtensionsRootState,
 } from "@/store/extensionsTypes";
 
-jest.mock("./uninstallRecipe", () => ({
-  uninstallRecipe: jest.fn().mockResolvedValue(undefined),
-}));
-
 beforeEach(() => {
   jest.resetAllMocks();
 });
