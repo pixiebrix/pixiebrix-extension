@@ -23,8 +23,10 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
+import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
 import { type RawServiceConfiguration } from "@/core";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import userEvent from "@testing-library/user-event";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -53,5 +55,30 @@ describe("ServiceEditorModal", () => {
 
     const dialogRoot = screen.getByRole("dialog");
     expect(dialogRoot).toMatchSnapshot();
+  });
+
+  test("displays user-friendly pattern validation message", async () => {
+    const service = fromJS(automationAnywhereYaml as any);
+
+    render(
+      <ServiceEditorModal
+        configuration={{ label: "" } as RawServiceConfiguration}
+        onDelete={jest.fn()}
+        onSave={jest.fn()}
+        onClose={jest.fn()}
+        service={service}
+      />
+    );
+
+    await waitForEffect();
+
+    const controlRoomUrlInput = screen.getByRole("textbox", {
+      name: "controlRoomUrl",
+    });
+    await userEvent.type(controlRoomUrlInput, "https://invalid.control.room/");
+    expect(controlRoomUrlInput).toHaveValue("https://invalid.control.room/");
+    await userEvent.click(screen.getByRole("textbox", { name: "username" }));
+
+    expect(screen.getByText("Invalid controlRoomUrl format")).not.toBeNull();
   });
 });
