@@ -25,6 +25,10 @@ import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
 
+/**
+ * Use this helper outside the Page Editor context
+ * to uninstall a recipe and all of its extensions.
+ */
 export async function uninstallRecipe(
   recipeId: RegistryId,
   recipeExtensions: UnresolvedExtension[],
@@ -44,6 +48,10 @@ export async function uninstallRecipe(
   );
 }
 
+/**
+ * Use this helper outside the Page Editor context
+ * to uninstall a collections of extensions.
+ */
 export async function uninstallExtensions(
   extensionIds: UUID[],
   dispatch: Dispatch<unknown>
@@ -55,6 +63,9 @@ export async function uninstallExtensions(
   await removeExtensionsFromTabs(extensionIds);
 }
 
+/**
+ * Uninstalls the extensions from all open tabs
+ */
 export async function removeExtensionsFromTabs(
   extensionIds: UUID[]
 ): Promise<Array<PromiseSettledResult<void>>> {
