@@ -22,6 +22,7 @@ import {
   type OAuth2Context,
   type AuthData,
   type Schema,
+  type UiSchema,
   type ServiceConfig,
   type TokenContext,
   type SanitizedConfig,
@@ -54,6 +55,7 @@ class LocalDefinedService<
   private readonly _definition: TDefinition;
 
   public readonly schema: Schema;
+  public readonly uiSchema: UiSchema;
 
   public readonly hasAuth: boolean;
 
@@ -64,6 +66,7 @@ class LocalDefinedService<
     super(id, name, description, icon);
     this._definition = definition;
     this.schema = this._definition.inputSchema;
+    this.uiSchema = this._definition.uiSchema;
     this.hasAuth = !isEmpty(this._definition.authentication);
     this.version = version;
   }

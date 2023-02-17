@@ -233,6 +233,7 @@ export interface ServiceDefinition<
 > {
   metadata: Metadata;
   inputSchema: Schema;
+  uiSchema?: UiSchema;
   isAvailable?: {
     matchPatterns: string | string[];
   };
