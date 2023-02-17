@@ -53,7 +53,7 @@ function useActivateRecipe(): ActivateRecipe {
       if (!(await requestPermissions(collectedPermissions))) {
         return {
           success: false,
-          error: "You must accept browser permissions for the selected bricks",
+          error: "You must accept browser permissions to activate.",
         };
       }
 

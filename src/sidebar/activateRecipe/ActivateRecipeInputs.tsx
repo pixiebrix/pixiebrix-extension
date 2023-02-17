@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { type RecipeDefinition } from "@/types/definitions";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import Form, {
@@ -25,7 +25,7 @@ import Form, {
 } from "@/components/form/Form";
 import styles from "./ActivateRecipePanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagic } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { Button, Col } from "react-bootstrap";
 import useActivateRecipe from "@/hooks/useActivateRecipe";
@@ -36,7 +36,7 @@ import { collectPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
-import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -66,27 +66,35 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     // @ts-expect-error -- accessing dynamic config properties
     recipe.definitions.extensionPoint?.definition?.type as string
   );
+  const { isConfigured } = useQuickbarShortcut();
+  const needsQuickBarShortcut = isQuickBar && !isConfigured;
 
-  async function onChange(values: WizardValues) {
-    const serviceAuths = values.services.filter(({ config }) =>
-      Boolean(config)
-    );
-    const collectedPermissions = await collectPermissions(
-      await resolveRecipe(recipe, recipe.extensionPoints),
-      serviceAuths
-    );
-    setNeedsPermissions(!(await containsPermissions(collectedPermissions)));
+  const checkPermissions = useCallback(
+    async (values: WizardValues) => {
+      const serviceAuths = values.services.filter(({ config }) =>
+        Boolean(config)
+      );
+      const collectedPermissions = await collectPermissions(
+        await resolveRecipe(recipe, recipe.extensionPoints),
+        serviceAuths
+      );
+      setNeedsPermissions(!(await containsPermissions(collectedPermissions)));
+    },
+    [recipe]
+  );
+
+  function onChange(values: WizardValues) {
+    void checkPermissions(values);
   }
+
+  // Check permissions on initial load
+  useEffect(() => {
+    void checkPermissions(initialValues);
+  }, [checkPermissions, initialValues]);
 
   const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>
-      <Effect
-        values={values}
-        onChange={(values) => {
-          void onChange(values as WizardValues);
-        }}
-        delayMillis={200}
-      />
+      <Effect values={values} onChange={onChange} delayMillis={200} />
       {header}
       {optionsStep && (
         <>
@@ -128,13 +136,33 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           </div>
         </Alert>
       )}
-      {isQuickBar && <UnconfiguredQuickBarAlert />}
+      {needsQuickBarShortcut && (
+        <Alert variant="info" className="mt-3">
+          <span className={styles.permissionsBold}>
+            You&apos;re going to need a Quick Bar shortcut.
+          </span>
+          <div className="my-2">
+            <Button variant="info" href="chrome://extensions/shortcuts">
+              Set up Quick Bar shortcut
+            </Button>
+          </div>
+          <div>
+            <a href="https://docs.pixiebrix.com/quick-bar-setup">
+              Learn more <FontAwesomeIcon icon={faExternalLinkAlt} />
+            </a>
+          </div>
+        </Alert>
+      )}
     </div>
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting }) => (
     <>
-      {error && <Alert variant={"danger"}>{error}</Alert>}
+      {error && (
+        <Alert variant="danger" className="m-3">
+          {error}
+        </Alert>
+      )}
       <div className={styles.footer}>
         <Button type="button" variant="outline-danger" onClick={onClickCancel}>
           Cancel
