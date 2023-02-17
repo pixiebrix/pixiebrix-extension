@@ -31,6 +31,12 @@ import { Button, Col } from "react-bootstrap";
 import useActivateRecipe from "@/hooks/useActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
+import Effect from "@/pageEditor/components/Effect";
+import { collectPermissions } from "@/permissions";
+import { resolveRecipe } from "@/registry/internal";
+import { containsPermissions } from "@/background/messenger/api";
+import permissionsDialogImage from "@img/example-permissions-dialog.png";
+import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -54,9 +60,33 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
   const activateRecipe = useActivateRecipe();
   const [error, setError] = React.useState<string | null>(null);
+  const [needsPermissions, setNeedsPermissions] = React.useState(false);
 
-  const renderBody: RenderBody = () => (
+  const isQuickBar = ["quickBar", "quickBarProvider"].includes(
+    // @ts-expect-error -- accessing dynamic config properties
+    recipe.definitions.extensionPoint?.definition?.type as string
+  );
+
+  async function onChange(values: WizardValues) {
+    const serviceAuths = values.services.filter(({ config }) =>
+      Boolean(config)
+    );
+    const collectedPermissions = await collectPermissions(
+      await resolveRecipe(recipe, recipe.extensionPoints),
+      serviceAuths
+    );
+    setNeedsPermissions(!(await containsPermissions(collectedPermissions)));
+  }
+
+  const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>
+      <Effect
+        values={values}
+        onChange={(values) => {
+          void onChange(values as WizardValues);
+        }}
+        delayMillis={200}
+      />
       {header}
       {optionsStep && (
         <>
@@ -84,6 +114,21 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           <servicesStep.Component blueprint={recipe} reinstall={isReinstall} />
         </div>
       )}
+      {needsPermissions && (
+        <Alert variant="info" className="mt-3">
+          <span className={styles.permissionsBold}>
+            Pixiebrix needs some permissions.
+          </span>
+          <div className="my-2">
+            <img src={permissionsDialogImage} alt="" width={300} />
+          </div>
+          <div>
+            Without permissions, PixieBrix won&apos;t work. We&apos;ll ask for
+            these in just a second.
+          </div>
+        </Alert>
+      )}
+      {isQuickBar && <UnconfiguredQuickBarAlert />}
     </div>
   );
 
