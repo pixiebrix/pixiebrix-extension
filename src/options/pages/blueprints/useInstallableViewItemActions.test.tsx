@@ -39,8 +39,8 @@ import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { renderHook } from "@/options/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { RecipeDefinition } from "@/types/definitions";
-import { IExtension } from "@/core";
+import { type RecipeDefinition } from "@/types/definitions";
+import { type IExtension } from "@/core";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
