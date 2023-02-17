@@ -28,7 +28,6 @@ import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 
-// TODO: add tests
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {

@@ -23,12 +23,10 @@ import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import extensionsSlice from "@/store/extensionsSlice";
+import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { removeExtensionsFromTabs } from "@/store/uninstallUtils";
-
-const { actions: extensionsActions } = extensionsSlice;
 
 type Config = {
   extensionId: UUID;

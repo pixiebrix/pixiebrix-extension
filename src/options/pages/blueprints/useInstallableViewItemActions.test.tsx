@@ -18,8 +18,11 @@
 
 /// <reference types="jest-extended" />
 
-import { renderHook } from "@testing-library/react-hooks";
-import { extensionFactory, recipeFactory } from "@/testUtils/factories";
+import {
+  cloudExtensionFactory,
+  extensionFactory,
+  recipeFactory,
+} from "@/testUtils/factories";
 import useInstallableViewItemActions, {
   type InstallableViewItemActions,
 } from "@/options/pages/blueprints/useInstallableViewItemActions";
@@ -33,11 +36,11 @@ import useInstallablePermissions from "@/options/pages/blueprints/useInstallable
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
-
-jest.mock("react-redux", () => ({
-  useSelector: jest.fn(),
-  useDispatch: jest.fn(() => jest.fn()),
-}));
+import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
+import { renderHook } from "@/options/testHelpers";
+import { actions as extensionActions } from "@/store/extensionsSlice";
+import { RecipeDefinition } from "@/types/definitions";
+import { IExtension } from "@/core";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/options/pages/blueprints/useInstallablePermissions", () =>
@@ -84,9 +87,9 @@ const mockHooks = ({
 };
 
 const installableItemFactory = ({
-  isExtension = false,
-  sharingType = "Personal",
-  status = "Active",
+  isExtension,
+  sharingType,
+  status,
 }: {
   isExtension: boolean;
   sharingType: SharingType;
@@ -347,6 +350,77 @@ describe("useInstallableViewItemActions", () => {
           "reinstall",
         ],
         actions
+      );
+    });
+  });
+});
+
+describe("actions", () => {
+  describe("uninstall", () => {
+    beforeEach(() => {
+      mockHooks();
+    });
+
+    test("calls uninstallRecipe for a blueprint", () => {
+      mockHooks();
+      const blueprintInstallable = installableItemFactory({
+        isExtension: false,
+        sharingType: "Personal",
+        status: "Active",
+      });
+
+      const {
+        result: {
+          current: { uninstall },
+        },
+      } = renderHook(() => useInstallableViewItemActions(blueprintInstallable));
+
+      uninstall();
+
+      expect(uninstallRecipe).toHaveBeenCalledWith(
+        (blueprintInstallable.installable as RecipeDefinition).metadata.id,
+        expect.any(Array),
+        expect.any(Function)
+      );
+      expect(uninstallExtensions).not.toHaveBeenCalled();
+    });
+
+    test("calls uninstallExtensions for an extension", () => {
+      mockHooks();
+
+      const extension = cloudExtensionFactory();
+
+      const extensionInstallable = installableItemFactory({
+        isExtension: true,
+        sharingType: "Personal",
+        status: "Active",
+      });
+      (extensionInstallable.installable as IExtension).id = extension.id;
+
+      const {
+        result: {
+          current: { uninstall },
+        },
+      } = renderHook(
+        () => useInstallableViewItemActions(extensionInstallable),
+        {
+          setupRedux(dispatch) {
+            dispatch(extensionActions.installCloudExtension({ extension }));
+            dispatch(
+              extensionActions.installCloudExtension({
+                extension: cloudExtensionFactory(),
+              })
+            );
+          },
+        }
+      );
+
+      uninstall();
+
+      expect(uninstallRecipe).not.toHaveBeenCalled();
+      expect(uninstallExtensions).toHaveBeenCalledWith(
+        [extension.id],
+        expect.any(Function)
       );
     });
   });

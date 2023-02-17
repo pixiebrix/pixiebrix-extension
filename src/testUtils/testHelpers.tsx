@@ -143,7 +143,10 @@ export function createRenderFunctionWithRedux<
 }
 
 type SetupRedux = (
-  dispatch: ThunkDispatch<unknown, unknown, AnyAction>
+  dispatch: ThunkDispatch<unknown, unknown, AnyAction>,
+  extra: {
+    store: EnhancedStore;
+  }
 ) => void;
 
 type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
@@ -176,7 +179,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     const store = configureStore();
 
-    setupRedux(store.dispatch);
+    setupRedux(store.dispatch, { store });
 
     const Wrapper: React.FC = initialValues
       ? ({ children }) => (
@@ -249,7 +252,9 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
   ): HookWrapperResult<TProps, TResult> => {
     const store = configureStore();
 
-    setupRedux(store.dispatch);
+    setupRedux(store.dispatch, {
+      store,
+    });
 
     const Wrapper: React.FC = ({ children }) => (
       <Provider store={store}>{children}</Provider>
