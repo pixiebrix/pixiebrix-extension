@@ -37,6 +37,11 @@ import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { useAsyncEffect } from "use-async-effect";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { useAsyncState } from "@/hooks/common";
+import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -61,26 +66,52 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const activateRecipe = useActivateRecipe();
   const [error, setError] = React.useState<string | null>(null);
   const [needsPermissions, setNeedsPermissions] = React.useState(false);
+  const [hasQuickBar, setHasQuickBar] = React.useState(false);
 
-  const isQuickBar = ["quickBar", "quickBarProvider"].includes(
-    // @ts-expect-error -- accessing dynamic config properties
-    recipe.definitions?.extensionPoint?.definition?.type as string
+  const [resolvedRecipeConfigs] = useAsyncState(
+    async () => resolveRecipe(recipe, recipe.extensionPoints),
+    [recipe]
   );
+
+  useAsyncEffect(async () => {
+    if (!resolvedRecipeConfigs) {
+      return;
+    }
+
+    for (const { id } of resolvedRecipeConfigs) {
+      // eslint-disable-next-line no-await-in-loop -- can break when we find one
+      const extensionPoint = await extensionPointRegistry.lookup(id);
+      if (
+        QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint) ||
+        QuickBarProviderExtensionPoint.isQuickBarProviderExtensionPoint(
+          extensionPoint
+        )
+      ) {
+        setHasQuickBar(true);
+        break;
+      }
+    }
+  }, [resolvedRecipeConfigs]);
+
   const { isConfigured } = useQuickbarShortcut();
-  const needsQuickBarShortcut = isQuickBar && !isConfigured;
+  const needsQuickBarShortcut = hasQuickBar && !isConfigured;
 
   const checkPermissions = useCallback(
     async (values: WizardValues) => {
+      if (!resolvedRecipeConfigs) {
+        return;
+      }
+
       const serviceAuths = values.services.filter(({ config }) =>
         Boolean(config)
       );
       const collectedPermissions = await collectPermissions(
-        await resolveRecipe(recipe, recipe.extensionPoints),
+        resolvedRecipeConfigs,
         serviceAuths
       );
       setNeedsPermissions(!(await containsPermissions(collectedPermissions)));
     },
-    [recipe]
+    [resolvedRecipeConfigs]
   );
 
   function onChange(values: WizardValues) {
@@ -89,8 +120,10 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 
   // Check permissions on initial load
   useEffect(() => {
-    void checkPermissions(initialValues);
-  }, [checkPermissions, initialValues]);
+    if (resolvedRecipeConfigs) {
+      void checkPermissions(initialValues);
+    }
+  }, [checkPermissions, initialValues, resolvedRecipeConfigs]);
 
   const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>

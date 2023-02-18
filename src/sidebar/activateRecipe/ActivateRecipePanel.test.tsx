@@ -31,6 +31,7 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -124,12 +125,13 @@ describe("ActivateRecipePanel", () => {
       },
     });
     useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
+
     const listing = marketplaceListingFactory({
       package: {
         id: uuidv4(),
         name: recipe.metadata.id,
         kind: "recipe",
-        description: "This is a test lising",
+        description: "This is a test listing",
         verbose_name: "My Test Listing",
         config: {},
         author: {
