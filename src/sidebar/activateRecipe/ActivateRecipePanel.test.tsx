@@ -31,7 +31,6 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { screen } from "@testing-library/react";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
