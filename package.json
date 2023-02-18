@@ -178,7 +178,7 @@
     "@testing-library/react": "^12.1.5",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.4.3",
-    "@types/chrome": "^0.0.212",
+    "@types/chrome": "^0.0.216",
     "@types/dompurify": "^2.4.0",
     "@types/gapi": "0.0.43",
     "@types/gapi.client.bigquery": "^2.0.3",
