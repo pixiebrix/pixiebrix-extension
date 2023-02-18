@@ -34,10 +34,10 @@ export async function ensureAuth(
 
   try {
     // Chrome-only API, do not use browser.*
-    const { token } = await chromeP.identity.getAuthToken({
+    const token = (await chromeP.identity.getAuthToken({
       interactive,
       scopes,
-    });
+    })) as string; // `webext-polyfill-kinda` resolves with the first parameter of the callback, but in MV3 it resolves with an object
     if (token) {
       // https://bumbu.me/gapi-in-chrome-extension
       gapi.auth.setToken({ access_token: token } as GoogleApiOAuth2TokenObject);
