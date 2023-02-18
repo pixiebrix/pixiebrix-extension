@@ -28,6 +28,7 @@ import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
 import { type UnknownObject } from "@/types";
+import { syncRemotePackages } from "@/baseRegistry";
 
 // `chrome.storage.local` keys
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
@@ -219,6 +220,12 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 
   console.debug(`Setting extension auth for ${auth.email}`, auth);
   await setStorage(STORAGE_EXTENSION_KEY, auth);
+
+  if (previous.user && auth.user && previous.user !== auth.user) {
+    // The linked account changed, so their access to packages may have changed
+    void syncRemotePackages();
+  }
+
   return updated;
 }
 

@@ -18,12 +18,13 @@
 import reportError from "@/telemetry/reportError";
 import {
   type ActivatePanelOptions,
+  type ActivateRecipeEntry,
   type FormEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type UUID } from "@/core";
+import { type RegistryId, type UUID } from "@/core";
 
 let lastMessageSeen = -1;
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
@@ -46,6 +47,8 @@ export type SidebarListener = {
    */
   onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
+  onShowActivateRecipe: (activateRecipeEntry: ActivateRecipeEntry) => void;
+  onHideActivateRecipe: (recipeId: RegistryId) => void;
 };
 
 const listeners: SidebarListener[] = [];
@@ -146,4 +149,18 @@ export async function updateTemporaryPanel(
 
 export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
   runListeners("onHideTemporaryPanel", sequence, { nonce });
+}
+
+export async function showActivateRecipe(
+  sequence: number,
+  entry: ActivateRecipeEntry
+) {
+  runListeners("onShowActivateRecipe", sequence, entry);
+}
+
+export async function hideActivateRecipe(
+  sequence: number,
+  recipeId: RegistryId
+) {
+  runListeners("onHideActivateRecipe", sequence, recipeId);
 }

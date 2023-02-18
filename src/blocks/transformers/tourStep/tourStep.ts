@@ -29,6 +29,7 @@ import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
+  type GetPanelEntry,
   type RefreshTrigger,
   type TemporaryDisplayInputs,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
@@ -328,7 +329,7 @@ export class TourStepTransformer extends Transformer {
       removeOverlay = addOverlay(element as HTMLElement);
     }
 
-    const refreshEntry = async () => {
+    const getPanelEntry: GetPanelEntry = async () => {
       const payload = (await runRendererPipeline(
         (body as PipelineExpression)?.__value__ ?? [],
         {
@@ -351,8 +352,6 @@ export class TourStepTransformer extends Transformer {
 
       return {
         extensionId,
-        extensionPointId,
-        blueprintId,
         heading: title,
         payload,
         actions,
@@ -385,12 +384,11 @@ export class TourStepTransformer extends Transformer {
 
     try {
       return await displayTemporaryInfo({
-        entry: await refreshEntry(),
+        getPanelEntry,
         target: element,
         location,
         signal: abortSignal,
         refreshTrigger: appearance.refreshTrigger,
-        refreshEntry,
         onOutsideClick,
         onCloseClick,
         popoverOptions: appearance.popover,

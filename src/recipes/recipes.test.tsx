@@ -24,95 +24,37 @@ import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/localRegistry";
+import pDefer from "p-defer";
+import { recipeDefinitionFactory } from "@/testUtils/factories";
 
-jest.mock("@/services/apiClient", () => ({
-  getApiClient: jest.fn(),
-  getLinkedApiClient: jest.fn(),
-}));
-jest.mock("@/background/messenger/api", () => ({
-  registry: {
-    syncRemote: jest.fn(),
-    getKind: jest.fn(),
-  },
-}));
-jest.mock("@/components/ConfirmationModal", () => {
-  const originalModule = jest.requireActual("@/components/ConfirmationModal");
+jest.mock("@/services/apiClient");
+const getApiClientMock = getApiClient as jest.Mock;
+const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
 
-  return {
-    ...originalModule,
-    useModals: () => ({
-      showConfirmation: async () => true,
-    }),
-  };
-});
+jest.mock("@/components/ConfirmationModal", () => ({
+  ...jest.requireActual("@/components/ConfirmationModal"),
+  useModals: () => ({
+    showConfirmation: jest.fn().mockResolvedValue(true),
+  }),
+}));
 
 // The test "loads" recipes from server and attempts to save the first (and the only) recipe
 // It verifies the proper API calls and the recipe schema "sent" to the server
 test("load recipes and save one", async () => {
-  // This is the the shape of a recipe that we get from the API /api/recipes/ endpoint
-  const sourceRecipe = {
-    kind: "recipe",
-    metadata: {
-      id: "@pixies/confetti-everywhere",
-      name: "Confetti double click",
-      version: "1.0.2",
-      description: "Double click to get confetti on any website",
-    },
-    apiVersion: "v2",
-    definitions: {
-      extensionPoint: {
-        kind: "extensionPoint",
-        definition: {
-          type: "trigger",
-          reader: [
-            "@pixiebrix/document-metadata",
-            {
-              element: "@pixiebrix/html/element",
-            },
-          ],
-          trigger: "dblclick",
-          isAvailable: {
-            selectors: [] as any,
-            urlPatterns: [] as any,
-            matchPatterns: ["*://*/*"],
-          },
-          rootSelector: "body",
-        },
-      },
-    },
-    extensionPoints: [
-      {
-        id: "extensionPoint",
-        label: "Confetti double click",
-        config: {
-          action: [
-            {
-              id: "@pixiebrix/confetti",
-              config: {},
-            },
-          ],
-        },
-        services: {},
-      },
-    ],
-    sharing: {
-      public: false,
-      organizations: ["0557cdab-7246-4a73-a644-12a2249f02b9"],
-    },
-    updated_at: "2022-01-12T05:21:40.390064Z",
-  };
-
-  // This client is used by registry to fetch recipes: /api/recipes/
-  (getApiClient as jest.Mock).mockResolvedValue({
-    get: jest.fn().mockResolvedValue({ data: [sourceRecipe] }),
-  });
+  // This is the shape of a recipe that we get from the API /api/recipes/ endpoint
+  const sourceRecipe = recipeDefinitionFactory();
 
   const packageId = uuidv4();
   const recipeId = validateRegistryId(sourceRecipe.metadata.id);
   let resultRecipeSchema: any; // Holds the data that will be sent to the API
 
+  // This client is used by registry to fetch recipes: /api/recipes/
+  getApiClientMock.mockResolvedValue({
+    get: jest.fn().mockResolvedValue({ data: [sourceRecipe] }),
+  });
+
   // This linked client is used by the RTK Query hooks
-  (getLinkedApiClient as jest.Mock).mockResolvedValue(
+  getLinkedApiClientMock.mockResolvedValue(
     async ({ url, method, data }: any) => {
       if (method === "get" && url === "/api/bricks/") {
         return {
@@ -131,20 +73,29 @@ test("load recipes and save one", async () => {
           data,
         };
       }
+
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- test code
+      throw new Error(`Unexpected API call: ${method} ${url}`);
     }
   );
 
-  (messengerRegistry.syncRemote as jest.Mock).mockImplementation(
-    localRegistry.syncRemote
-  );
-  (messengerRegistry.getKind as jest.Mock).mockImplementation(
-    localRegistry.getKind
+  // Pre-populate IDB with the recipe
+  await localRegistry.syncPackages();
+
+  // Sanity check that localRegistry.syncPackages fetches from server
+  const apiClient = await getApiClient();
+  expect(apiClient.get as jest.Mock).toHaveBeenCalledTimes(1);
+
+  // Skip the messenger, and use the IDB registry directly
+  (messengerRegistry.getByKinds as jest.Mock).mockImplementation(
+    localRegistry.getByKinds
   );
 
-  let resolveFetchingSavingPromise: () => void;
-  const fetchingSavingPromise = new Promise<void>((resolve) => {
-    resolveFetchingSavingPromise = resolve;
-  });
+  (messengerRegistry.fetch as jest.Mock).mockImplementation(
+    localRegistry.fetchNewPackages
+  );
+
+  const fetchingSavingPromise = pDefer<void>();
 
   const TestComponent: React.FunctionComponent = () => {
     // Internally useSaveRecipe calls useAllRecipes.
@@ -174,13 +125,12 @@ test("load recipes and save one", async () => {
       // - calling RTK Query mutation
       // - saving the recipe to the server
       void saveRecipe(recipeId);
-
       calledSave.current = true;
     }
 
     useEffect(() => {
       if (calledSave.current && calledRefetch.current && !isFetching) {
-        resolveFetchingSavingPromise();
+        fetchingSavingPromise.resolve();
       }
 
       if (isFetching && calledSave.current) {
@@ -201,19 +151,21 @@ test("load recipes and save one", async () => {
   render(<TestComponent />);
 
   // Let the registry and the RTK Query to load and update a recipe
-  await act(async () => fetchingSavingPromise);
+  await act(async () => fetchingSavingPromise.promise);
 
   // 2 calls:
-  // - one to load the recipes from the server
+  // - one to load the recipes from the server on mount
   // - one to re-load the recipes after update
-  const apiClientMock = await getApiClient();
-  expect(apiClientMock.get as jest.Mock).toHaveBeenCalledTimes(2);
+  expect(apiClient.get as jest.Mock).toHaveBeenCalledTimes(3);
+  expect(apiClient.get as jest.Mock).toHaveBeenCalledWith(
+    "/api/registry/bricks/"
+  );
 
   // 3 calls:
   // - one for editable packages,
   // - one for updating the recipe,
   // - and one to refetch the editable packages (because the cache is stale after update)
-  expect(getLinkedApiClient as jest.Mock).toHaveBeenCalledTimes(3);
+  expect(getLinkedApiClientMock).toHaveBeenCalledTimes(3);
 
   // Validate the recipe config sent to server
   const validationResult = await validateSchema(resultRecipeSchema.config);

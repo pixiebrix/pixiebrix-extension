@@ -82,16 +82,9 @@ export type ReaderConfig =
  * - target: the last tab that the current tab opened
  * - top: the top-most frame in the window
  * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
- * - remote: the server (currently only support identity, get, and http bricks)
  * @see {@link BlockConfig.window}
  */
-export type BlockWindow =
-  | "self"
-  | "opener"
-  | "target"
-  | "top"
-  | "broadcast"
-  | "remote";
+export type BlockWindow = "self" | "opener" | "target" | "top" | "broadcast";
 
 /**
  * Condition expression written in templateEngine for deciding if the step should be run.
@@ -130,7 +123,7 @@ export type BlockConfig = {
 
   /**
    * (Optional) If the brick is being run in the context of a deployment, if an error occurs in this step an
-   * alert email is send to the admins for the deployment with the brick input.
+   * alert email is sent to the admins for the deployment with the brick input.
    *
    * Used as a stopgap/recovery mechanism operations that aren't safe to retry. (For example, sending data to a
    * UiPath queue for execution)

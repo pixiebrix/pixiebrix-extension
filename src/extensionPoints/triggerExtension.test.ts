@@ -36,6 +36,15 @@ import {
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+
+beforeAll(() => {
+  requestIdleCallback.mock();
+});
+
+beforeEach(() => {
+  ensureMocksReset();
+});
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -88,7 +97,7 @@ beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   blockRegistry.clear();
-  blockRegistry.register(rootReader);
+  blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
 });
@@ -153,12 +162,16 @@ describe("triggerExtension", () => {
         "<button>Click Me</button>"
       ).body.innerHTML;
 
+      requestIdleCallback.runIdleCallbacks();
+
       // Give the mutation observer time to run
+      await tick();
       await tick();
 
       // Check click handler was not re-attached
       document.querySelector("button").click();
       await tick();
+
       expect(rootReader.readCount).toBe(attachMode === "watch" ? 2 : 1);
 
       extensionPoint.uninstall();

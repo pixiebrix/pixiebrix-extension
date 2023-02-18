@@ -11,7 +11,7 @@ exports[`EphemeralPanel renders action buttons: modal 1`] = `
       <div
         class="modal-title h4"
       >
-        Test Title
+        Temporary Panel Test 1
       </div>
       <button
         class="close"
@@ -63,7 +63,7 @@ exports[`EphemeralPanel renders action buttons: popover 1`] = `
     <div
       class="popover-header"
     >
-      Test Title
+      Temporary Panel Test 2
       <button
         class="close btn btn-primary"
         data-dismiss="alert"

@@ -25,6 +25,7 @@ import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
+import { sidebarEntryFactory } from "@/testUtils/factories";
 
 jest.mock(
   "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition",
@@ -110,13 +111,10 @@ describe("EphemeralPanel", () => {
 
       useTemporaryPanelDefinitionMock.mockReturnValue({
         panelNonce,
-        entry: {
+        entry: sidebarEntryFactory("temporaryPanel", {
           nonce: panelNonce,
-          extensionId: uuidv4(),
-          heading: "Test Title",
-          payload: null as any,
           actions: [{ type: "testClick", variant: "light" }],
-        },
+        }),
         error: null,
         isLoading: null,
       });

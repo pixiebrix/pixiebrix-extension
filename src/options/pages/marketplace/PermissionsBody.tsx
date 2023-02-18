@@ -19,7 +19,7 @@ import { type RecipeDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Alert, Col } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import UrlPermissionsList from "@/options/pages/marketplace/UrlPermissionsList";
 import { resolveRecipe } from "@/registry/internal";
@@ -90,10 +90,10 @@ const PermissionsBody: React.FunctionComponent<{
   );
 
   return (
-    <Col>
+    <div>
       {hasQuickBar && !isShortcutConfigured && <QuickBarAlert />}
       <UrlPermissionsList {...permissionsState} />
-    </Col>
+    </div>
   );
 };
 

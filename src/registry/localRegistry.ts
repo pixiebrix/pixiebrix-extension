@@ -16,24 +16,26 @@
  */
 
 import { type DBSchema, openDB } from "idb/with-async-ittr";
-import { sortBy, groupBy } from "lodash";
+import { sortBy, groupBy, flatten } from "lodash";
+import { type RegistryPackage } from "@/types/contract";
+import { fetch } from "@/hooks/fetch";
+import { type Except } from "type-fest";
+import { memoizeUntilSettled } from "@/utils";
 
 const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
-// `LOCAL_SCOPE` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
-// but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-const LOCAL_SCOPE = "@local";
+const MS_PER_MINUTE = 60_000;
 
 export const PACKAGE_NAME_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
-export interface Version {
+export type Version = {
   major: number;
   minor: number;
   patch: number;
-}
+};
 
 export type Kind =
   | "block"
@@ -46,7 +48,7 @@ export type Kind =
   | "extensionPoint"
   | "recipe";
 
-export interface Package {
+export type Package = {
   id: string;
   version: Version;
   kind: Kind;
@@ -54,7 +56,7 @@ export interface Package {
   config: Record<string, unknown>;
   rawConfig: string | null;
   timestamp: Date;
-}
+};
 
 interface LogDB extends DBSchema {
   [BRICK_STORE]: {
@@ -68,10 +70,6 @@ interface LogDB extends DBSchema {
       timestamp: Date;
     };
   };
-}
-
-function getKey(obj: Package): [string, number, number, number] {
-  return [obj.id, obj.version.major, obj.version.minor, obj.version.patch];
 }
 
 async function getBrickDB() {
@@ -102,54 +100,150 @@ function latestVersion(versions: Package[]): Package | null {
     : null;
 }
 
-export async function getKind(kind: Kind) {
+/**
+ * Return all packages for the given kinds
+ * @param kinds kinds of bricks
+ */
+export async function getByKinds(kinds: Kind[]): Promise<Package[]> {
   const db = await getBrickDB();
-  const bricks = await db.getAllFromIndex(BRICK_STORE, "kind", kind);
+
+  const bricks = flatten(
+    await Promise.all(
+      kinds.map(async (kind) => db.getAllFromIndex(BRICK_STORE, "kind", kind))
+    )
+  );
+
   return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
     latestVersion(versions)
   );
 }
 
-// `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
-// but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-export async function getLocal() {
+/**
+ * Clear the registry
+ */
+export async function clear(): Promise<void> {
   const db = await getBrickDB();
-  return db.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
+  await db.clear(BRICK_STORE);
 }
 
-// `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
-// but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-export async function add(obj: Package) {
+/**
+ * Return the timestamp of the most recent package in the local DB.
+ */
+async function latestTimestamp(): Promise<Date | null> {
   const db = await getBrickDB();
-  await db.put(BRICK_STORE, obj);
+  const tx = db.transaction(BRICK_STORE, "readonly");
+  // Iterate from most recent to least recent and take first
+  const cursor = tx.store.index("timestamp").iterate(null, "prev");
+  const result = await cursor.next();
+  await tx.done;
+
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/5160 -- can come back as string on some versions
+  const timestamp: Date | string | null = result.value?.value.timestamp;
+  return timestamp ? new Date(timestamp) : null;
 }
 
-export async function syncRemote(kind: Kind, objs: Package[]) {
+/**
+ * Put all the packages in the local database.
+ * @param packages the packages to put in the database
+ */
+async function putAll(packages: Package[]): Promise<void> {
   const db = await getBrickDB();
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
-  const current = await tx.store.getAll();
-
-  let deleteCnt = 0;
-  for (const obj of current) {
-    if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
-      void tx.store.delete(getKey(obj));
-      deleteCnt++;
-    }
-  }
-
-  for (const obj of objs) {
+  for (const obj of packages) {
     void tx.store.put(obj);
   }
 
   await tx.done;
-
-  console.debug(
-    `Replaced ${deleteCnt} ${kind} entries with ${objs.length} entries`
-  );
 }
 
-export async function find(id: string) {
+export function parsePackage(
+  item: RegistryPackage
+): Except<Package, "timestamp"> {
+  const [major, minor, patch] = item.metadata.version
+    .split(".")
+    .map((x) => Number.parseInt(x, 10));
+
+  const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
+
+  return {
+    id: item.metadata.id,
+    version: { major, minor, patch },
+    scope: match.groups.scope,
+    kind: item.kind,
+    config: item,
+    // We don't need to store the raw configs, because the Workshop uses an endpoint vs. the registry version
+    rawConfig: undefined,
+  };
+}
+
+/**
+ * Fetch all new packages from the registry and put them in the local database.
+ *
+ * Memoized to avoid multiple network requests across tabs.
+ *
+ * @returns true if the registry was updated, false otherwise
+ */
+export const fetchNewPackages = memoizeUntilSettled(async () => {
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+  const timestamp = new Date();
+
+  const date = await latestTimestamp();
+  const params = new URLSearchParams();
+  if (date) {
+    // Add a fudge factor of 5 minutes to the timestamp to avoid issues arising from clock being out of sync
+    // between client and server.
+    const lowerBound = new Date(date.getTime() - MS_PER_MINUTE * 5);
+    params.set("updated_at__gt", lowerBound.toISOString());
+  }
+
+  const data = await fetch<RegistryPackage[]>(
+    `/api/registry/bricks/?${params.toString()}`
+  );
+
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
+
+  await putAll(packages);
+
+  return packages.length > 0;
+});
+
+/**
+ * Replace the local database with the packages from the registry.
+ *
+ * Memoized to avoid multiple network requests across tabs.
+ */
+export const syncPackages = memoizeUntilSettled(async () => {
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+  const timestamp = new Date();
+
+  // In the future, use the paginated endpoint?
+  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
+
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
+
+  const db = await getBrickDB();
+  const tx = db.transaction(BRICK_STORE, "readwrite");
+  await clear();
+  await putAll(packages);
+  await tx.done;
+});
+
+/**
+ * Return the latest version of a brick, or null if it's not found.
+ * @param id the registry id
+ */
+export async function find(id: string): Promise<Package | null> {
   if (id == null) {
     throw new Error("id is required");
   }

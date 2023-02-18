@@ -49,8 +49,10 @@ export type RendererError = {
  *
  * @see PanelEntry
  * @see FormEntry
+ * @see TemporaryPanelEntry
+ * @see ActivateRecipeEntry
  */
-export type EntryType = "panel" | "form" | "temporaryPanel";
+export type EntryType = "panel" | "form" | "temporaryPanel" | "activateRecipe";
 
 /**
  * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
@@ -89,6 +91,10 @@ export type PanelButton = PanelAction & {
 };
 
 type BasePanelEntry = {
+  type: EntryType;
+};
+
+export type BaseExtensionPanelEntry = BasePanelEntry & {
   /**
    * The id of the extension that added the panel
    */
@@ -113,7 +119,8 @@ type BasePanelEntry = {
  * A panel added by an extension attached to an SidebarExtensionPoint
  * @see SidebarExtensionPoint
  */
-export type PanelEntry = BasePanelEntry & {
+export type PanelEntry = BaseExtensionPanelEntry & {
+  type: "panel";
   /**
    * The blueprint associated with the extension that added the panel.
    *
@@ -132,7 +139,8 @@ export type PanelEntry = BasePanelEntry & {
 /**
  * An ephemeral panel to show in the sidebar. Only one temporary panel can be shown from an extension at a time.
  */
-export type TemporaryPanelEntry = BasePanelEntry & {
+export type TemporaryPanelEntry = BaseExtensionPanelEntry & {
+  type: "temporaryPanel";
   /**
    * Unique identifier for the temporary panel instance. Used to correlate panel-close action.
    */
@@ -149,7 +157,8 @@ export type TemporaryPanelEntry = BasePanelEntry & {
  * An ephemeral form to show in the sidebar. Only one form can be shown from an extension at a time.
  * @see ModalTransformer
  */
-export type FormEntry = {
+export type FormEntry = BasePanelEntry & {
+  type: "form";
   /**
    * The extension that created the form
    */
@@ -164,6 +173,18 @@ export type FormEntry = {
   form: FormDefinition;
 };
 
+export type ActivateRecipeEntry = BasePanelEntry & {
+  type: "activateRecipe";
+  recipeId: RegistryId;
+  heading: string;
+};
+
+export type SidebarEntry =
+  | PanelEntry
+  | FormEntry
+  | TemporaryPanelEntry
+  | ActivateRecipeEntry;
+
 /**
  * The entries currently added to the sidebar
  */
@@ -171,6 +192,7 @@ export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
   temporaryPanels: TemporaryPanelEntry[];
+  recipeToActivate: ActivateRecipeEntry | null;
 };
 
 /**

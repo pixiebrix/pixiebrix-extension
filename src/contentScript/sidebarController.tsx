@@ -31,6 +31,7 @@ import type {
   RendererError,
   ActivatePanelOptions,
   TemporaryPanelEntry,
+  ActivateRecipeEntry,
 } from "@/sidebar/types";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
@@ -42,6 +43,7 @@ import {
   isSidebarFrameVisible,
   removeSidebarFrame,
 } from "./sidebarDomControllerLite";
+import { type Except } from "type-fest";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
@@ -182,7 +184,7 @@ function renderPanelsIfVisible(): void {
   }
 }
 
-export function showSidebarForm(entry: FormEntry): void {
+export function showSidebarForm(entry: Except<FormEntry, "type">): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -191,7 +193,7 @@ export function showSidebarForm(entry: FormEntry): void {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void sidebarInThisTab.showForm(seqNum, entry);
+  void sidebarInThisTab.showForm(seqNum, { type: "form", ...entry });
 }
 
 export function hideSidebarForm(nonce: UUID): void {
@@ -207,7 +209,9 @@ export function hideSidebarForm(nonce: UUID): void {
   void sidebarInThisTab.hideForm(seqNum, nonce);
 }
 
-export function showTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
+export function showTemporarySidebarPanel(
+  entry: Except<TemporaryPanelEntry, "type">
+): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -217,10 +221,15 @@ export function showTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
   }
 
   const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.showTemporaryPanel(sequence, entry);
+  void sidebarInThisTab.showTemporaryPanel(sequence, {
+    type: "temporaryPanel",
+    ...entry,
+  });
 }
 
-export function updateTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
+export function updateTemporarySidebarPanel(
+  entry: Except<TemporaryPanelEntry, "type">
+): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -230,7 +239,10 @@ export function updateTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
   }
 
   const sequence = renderSequenceNumber++;
-  sidebarInThisTab.updateTemporaryPanel(sequence, entry);
+  sidebarInThisTab.updateTemporaryPanel(sequence, {
+    type: "temporaryPanel",
+    ...entry,
+  });
 }
 
 export function hideTemporarySidebarPanel(nonce: UUID): void {
@@ -293,6 +305,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
   for (const { extensionId, extensionPointId, blueprintId } of refs) {
     if (!current.has(extensionId)) {
       const entry: PanelEntry = {
+        type: "panel",
         extensionId,
         extensionPointId,
         blueprintId,
@@ -364,6 +377,7 @@ export function upsertPanel(
       }
     );
     panels.push({
+      type: "panel",
       extensionId,
       extensionPointId,
       blueprintId,
@@ -373,4 +387,33 @@ export function upsertPanel(
   }
 
   renderPanelsIfVisible();
+}
+
+export function showActivateRecipeInSidebar(
+  entry: Except<ActivateRecipeEntry, "type">
+): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    throw new Error(
+      "Cannot activate a recipe in the sidebar if the sidebar is not visible"
+    );
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.showActivateRecipe(sequence, {
+    type: "activateRecipe",
+    ...entry,
+  });
+}
+
+export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    return;
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }

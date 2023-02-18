@@ -2,72 +2,68 @@
 
 exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 <div
-  className="col"
+  className="formGroup form-group row"
 >
-  <div
-    className="formGroup form-group row"
+  <label
+    className="label form-label col-form-label col-xl-2 col-lg-3"
+    htmlFor="optionsArgs.textField"
   >
-    <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
-      htmlFor="optionsArgs.textField"
-    >
-      Text Field
-    </label>
+    Text Field
+  </label>
+  <div
+    className="col-xl-10 col-lg-9"
+  >
     <div
-      className="col-xl-10 col-lg-9"
+      className="root"
     >
       <div
-        className="root"
+        className="field"
       >
-        <div
-          className="field"
-        >
-          <textarea
-            className="form-control"
-            id="optionsArgs.textField"
-            name="optionsArgs.textField"
-            onBlur={[Function]}
-            onChange={[Function]}
-            onKeyDown={[Function]}
-            rows="1"
-            value=""
-          />
-        </div>
-        <div
-          className="dropdown dropdown"
-          data-test-selected="Text"
-          data-testid="toggle-optionsArgs.textField"
-        >
-          <button
-            aria-expanded={false}
-            aria-haspopup={true}
-            className="dropdown-toggle btn btn-link"
-            disabled={true}
-            onClick={[Function]}
-            type="button"
-          >
-            <span
-              className="symbol"
-            >
-              <test-file-stub
-                className="root"
-              />
-            </span>
-          </button>
-        </div>
-      </div>
-      <small
-        className="text-muted form-text"
-      >
-        <span
-          dangerouslySetInnerHTML={
-            {
-              "__html": "This is a basic required text field.",
-            }
-          }
+        <textarea
+          className="form-control"
+          id="optionsArgs.textField"
+          name="optionsArgs.textField"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onKeyDown={[Function]}
+          rows="1"
+          value=""
         />
-      </small>
+      </div>
+      <div
+        className="dropdown dropdown"
+        data-test-selected="Text"
+        data-testid="toggle-optionsArgs.textField"
+      >
+        <button
+          aria-expanded={false}
+          aria-haspopup={true}
+          className="dropdown-toggle btn btn-link"
+          disabled={true}
+          onClick={[Function]}
+          type="button"
+        >
+          <span
+            className="symbol"
+          >
+            <test-file-stub
+              className="root"
+            />
+          </span>
+        </button>
+      </div>
     </div>
+    <small
+      className="text-muted form-text"
+    >
+      <span
+        dangerouslySetInnerHTML={
+          {
+            "__html": "This is a basic required text field.",
+          }
+        }
+      />
+    </small>
   </div>
 </div>
 `;
@@ -11095,4 +11091,112 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
     </button>
   </div>
 </div>
+`;
+
+exports[`Storyshots Widgets/TextWidget Empty 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value=""
+  />
+</form>
+`;
+
+exports[`Storyshots Widgets/TextWidget Long Line 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium."
+  />
+</form>
+`;
+
+exports[`Storyshots Widgets/TextWidget Nunjucks Expression 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="Hello, {{ @input.name }}!"
+  />
+</form>
+`;
+
+exports[`Storyshots Widgets/TextWidget Nunjucks Tags 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="My favorite color is {% if @input.day == "Monday" %}red{% else %}blue{% endif %}"
+  />
+</form>
+`;
+
+exports[`Storyshots Widgets/TextWidget Raw Text 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="The quick brown fox jumps over the lazy dog"
+  />
+</form>
+`;
+
+exports[`Storyshots Widgets/TextWidget Single Line 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <textarea
+    className="form-control"
+    name="example"
+    onBlur={[Function]}
+    onChange={[Function]}
+    onKeyDown={[Function]}
+    rows="1"
+    value="The quick brown fox jumps over the lazy dog"
+  />
+</form>
 `;

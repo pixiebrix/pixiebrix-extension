@@ -34,6 +34,10 @@ import useWizard from "@/options/pages/marketplace/useWizard";
 import ActivateButton from "@/options/pages/marketplace/ActivateButton";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
+import ReduxPersistenceContext, {
+  type ReduxPersistenceContextType,
+} from "@/store/ReduxPersistenceContext";
+import { persistor } from "@/store/optionsStore";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -105,31 +109,39 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const action = reinstall ? "Reactivate" : "Activate";
   useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
+  const reduxPersistenceContext: ReduxPersistenceContextType = {
+    async flush() {
+      await persistor.flush();
+    },
+  };
+
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={install}
-    >
-      {({ handleSubmit }) => (
-        <Form id="activate-wizard" onSubmit={handleSubmit}>
-          <BlockFormSubmissionViaEnterIfFirstChild />
-          <Card>
-            <ActivateHeader blueprint={blueprint} />
-            <Card.Body className={styles.wizardBody}>
-              {blueprintSteps.map(({ Component, label, key }, _) => (
-                <Row key={key} className={styles.wizardBodyRow}>
-                  <Col xs={12}>
-                    <h4>{label}</h4>
-                  </Col>
-                  <Component blueprint={blueprint} reinstall={reinstall} />
-                </Row>
-              ))}
-            </Card.Body>
-          </Card>
-        </Form>
-      )}
-    </Formik>
+    <ReduxPersistenceContext.Provider value={reduxPersistenceContext}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={install}
+      >
+        {({ handleSubmit }) => (
+          <Form id="activate-wizard" onSubmit={handleSubmit}>
+            <BlockFormSubmissionViaEnterIfFirstChild />
+            <Card>
+              <ActivateHeader blueprint={blueprint} />
+              <Card.Body className={styles.wizardBody}>
+                {blueprintSteps.map(({ Component, label, key }) => (
+                  <div key={key} className={styles.wizardBodyRow}>
+                    <div>
+                      <h4>{label}</h4>
+                    </div>
+                    <Component blueprint={blueprint} reinstall={reinstall} />
+                  </div>
+                ))}
+              </Card.Body>
+            </Card>
+          </Form>
+        )}
+      </Formik>
+    </ReduxPersistenceContext.Provider>
   );
 };
 

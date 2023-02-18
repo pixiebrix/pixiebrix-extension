@@ -326,7 +326,7 @@ export const appApi = createApi({
       },
     }),
     getInvitations: builder.query<PendingInvitation[], void>({
-      query: () => ({ url: "/api/invitations/me", method: "get" }),
+      query: () => ({ url: "/api/invitations/me/", method: "get" }),
       providesTags: ["Invitations"],
     }),
     getPackage: builder.query<Package, { id: UUID }>({

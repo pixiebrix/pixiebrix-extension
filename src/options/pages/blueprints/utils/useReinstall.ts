@@ -19,11 +19,9 @@ import { type RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
-import extensionsSlice from "@/store/extensionsSlice";
+import { actions as extensionActions } from "@/store/extensionsSlice";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
-
-const { installRecipe, removeRecipeById } = extensionsSlice.actions;
+import { uninstallRecipe } from "./uninstallRecipe";
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -33,12 +31,13 @@ function useReinstall(): Reinstall {
 
   return useCallback(
     async (recipe: RecipeDefinition) => {
+      const recipeId = recipe.metadata.id;
       const recipeExtensions = extensions.filter(
-        (x) => x._recipe?.id === recipe.metadata.id
+        (x) => x._recipe?.id === recipeId
       );
 
       if (recipeExtensions.length === 0) {
-        throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
+        throw new Error(`No bricks to re-activate for ${recipeId}`);
       }
 
       const currentOptions = inferRecipeOptions(recipeExtensions);
@@ -47,11 +46,10 @@ function useReinstall(): Reinstall {
         optional: false,
       });
 
-      dispatch(removeRecipeById(recipe.metadata.id));
-      void removeDynamicElementsForRecipe(recipe.metadata.id);
+      await uninstallRecipe(recipeId, recipeExtensions, dispatch);
 
       dispatch(
-        installRecipe({
+        extensionActions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
           services: currentAuths,

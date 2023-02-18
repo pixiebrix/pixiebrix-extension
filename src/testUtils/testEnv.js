@@ -22,6 +22,7 @@ import { TextEncoder, TextDecoder } from "node:util";
 import "urlpattern-polyfill";
 
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
+process.env.MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;

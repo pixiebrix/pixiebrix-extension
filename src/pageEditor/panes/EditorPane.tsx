@@ -27,7 +27,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
 import Effect from "@/pageEditor/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
-import useEditable from "@/pageEditor/hooks/useEditable";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
@@ -44,7 +43,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   element: FormState;
 }> = ({ element }) => {
   const dispatch = useDispatch();
-  const editable = useEditable();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -71,7 +69,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
-      <ElementWizard element={element} editable={editable} />
+      <ElementWizard element={element} />
     </>
   );
 };

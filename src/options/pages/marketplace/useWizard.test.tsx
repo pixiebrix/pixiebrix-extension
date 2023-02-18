@@ -18,10 +18,10 @@
 import * as redux from "react-redux";
 import { recipeDefinitionFactory } from "@/testUtils/factories";
 import useWizard from "@/options/pages/marketplace/useWizard";
-import { type OptionsDefinition } from "@/types/definitions";
 import { renderHook } from "@testing-library/react-hooks";
+import { propertiesToSchema } from "@/validators/generic";
 
-jest.mock("@/options/pages/marketplace/AuthWidget", () => {});
+jest.mock("@/components/auth/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("connected-react-router");
 
@@ -35,8 +35,10 @@ describe("useWizard", () => {
         recipeDefinitionFactory({
           // Page Editor produces normalized form
           options: {
-            schema: { properties: { foo: { type: "string" } } },
-          } as OptionsDefinition,
+            schema: propertiesToSchema({
+              foo: { type: "string" },
+            }),
+          },
         })
       )
     );
@@ -49,14 +51,7 @@ describe("useWizard", () => {
     const spy = jest.spyOn(redux, "useSelector");
     spy.mockReturnValue([]);
 
-    const { result } = renderHook(() =>
-      useWizard(
-        recipeDefinitionFactory({
-          // Page Editor produces normalized form
-          options: { schema: { properties: {} } } as OptionsDefinition,
-        })
-      )
-    );
+    const { result } = renderHook(() => useWizard(recipeDefinitionFactory()));
 
     const [steps] = result.current;
     expect(steps).toHaveLength(2);
@@ -66,14 +61,7 @@ describe("useWizard", () => {
     const spy = jest.spyOn(redux, "useSelector");
     spy.mockReturnValue([]);
 
-    const { result } = renderHook(() =>
-      useWizard(
-        recipeDefinitionFactory({
-          // Shorthand manually written
-          options: { schema: {} } as OptionsDefinition,
-        })
-      )
-    );
+    const { result } = renderHook(() => useWizard(recipeDefinitionFactory()));
 
     const [steps] = result.current;
     expect(steps).toHaveLength(2);

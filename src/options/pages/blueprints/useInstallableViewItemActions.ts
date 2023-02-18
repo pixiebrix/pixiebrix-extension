@@ -37,7 +37,7 @@ import {
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
-import extensionsSlice from "@/store/extensionsSlice";
+import { actions as extensionActions } from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
@@ -47,8 +47,6 @@ import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { removeDynamicElements } from "@/store/dynamicElementStorage";
-
-const { removeExtension } = extensionsSlice.actions;
 
 type ActionCallback = () => void;
 
@@ -199,11 +197,14 @@ function useInstallableViewItemActions(
       );
 
       for (const extension of extensionsFromInstallable) {
-        dispatch(removeExtension({ extensionId: extension.id }));
+        dispatch(
+          extensionActions.removeExtension({ extensionId: extension.id })
+        );
         // XXX: also remove sidebar panels that are already open?
         void uninstallContextMenu({ extensionId: extension.id });
-        reactivateEveryTab();
       }
+
+      reactivateEveryTab();
 
       // Report telemetry
       if (isInstallableBlueprint) {

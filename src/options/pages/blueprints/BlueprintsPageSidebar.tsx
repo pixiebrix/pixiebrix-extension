@@ -20,7 +20,7 @@ import {
 import { type TableInstance } from "react-table";
 import { type InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import useFlags from "@/hooks/useFlags";
-import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
+import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
 import { kebabCase } from "lodash";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
@@ -108,11 +108,12 @@ const useOnboardingTabs = (
     blueprintsSlice.actions.setActiveTab
   );
   const { data: installableViewItems } = tableInstance;
+
   const {
     data: me,
     isLoading: isMeLoading,
     isFetching: isMeFetching,
-  } = useGetMeQuery();
+  } = appApi.endpoints.getMe.useQueryState();
   const { hasMilestone } = useMilestones();
   const { flagOn } = useFlags();
   const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();

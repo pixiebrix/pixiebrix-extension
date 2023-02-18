@@ -18,9 +18,9 @@
 import styles from "./Form.module.scss";
 
 import React, { type ReactElement } from "react";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
 import { Alert, Button, Form as BootstrapForm } from "react-bootstrap";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- importing the original file for our custom component
 import { Formik, type FormikHelpers, type FormikValues } from "formik";
 import type * as yup from "yup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -106,6 +106,11 @@ type FormProps = {
    * Should we show actions for errors and warnings?
    */
   showFieldActions?: boolean;
+
+  /**
+   * CSS class name to apply to the form element
+   */
+  className?: string;
 };
 
 const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
@@ -134,6 +139,7 @@ const Form: React.FC<FormProps> = ({
   enableAnalysisFieldErrors,
   showUntouchedErrors,
   showFieldActions,
+  className,
 }) => (
   <FormErrorContext.Provider
     value={{
@@ -157,7 +163,7 @@ const Form: React.FC<FormProps> = ({
         status,
         setFieldValue,
       }) => (
-        <BootstrapForm noValidate onSubmit={handleSubmit}>
+        <BootstrapForm noValidate onSubmit={handleSubmit} className={className}>
           {status && renderStatus({ status })}
           {renderBody
             ? renderBody({ isValid, values, setFieldValue, isSubmitting })

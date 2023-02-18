@@ -32,7 +32,7 @@ import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
-import { type PanelEntry, type PanelPayload } from "@/sidebar/types";
+import { type PanelPayload, type TemporaryPanelEntry } from "@/sidebar/types";
 import {
   cancelTemporaryPanels,
   cancelTemporaryPanelsForExtension,
@@ -52,6 +52,7 @@ import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelContr
 import { once } from "lodash";
 import { AbortPanelAction, ClosePanelAction } from "@/blocks/errors";
 import { isSpecificError } from "@/errors/errorHelpers";
+import { type Except } from "type-fest";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
@@ -70,11 +71,15 @@ export async function createFrameSource(
   return frameSource;
 }
 
+export type GetPanelEntry = () => Promise<
+  Except<TemporaryPanelEntry, "type" | "nonce">
+>;
+
 export type TemporaryDisplayInputs = {
   /**
-   * The initial panel entry.
+   * Factory method to generate the temporary panel entry.
    */
-  entry: PanelEntry;
+  getPanelEntry: GetPanelEntry;
   /**
    * The location to display the panel.
    */
@@ -92,11 +97,6 @@ export type TemporaryDisplayInputs = {
    * An optional trigger to trigger a panel refresh.
    */
   refreshTrigger?: RefreshTrigger;
-
-  /**
-   * Factory method to refresh the panel.
-   */
-  refreshEntry?: () => Promise<PanelEntry>;
 
   /**
    * Handler when the user clicks outside the modal/popover.
@@ -121,28 +121,27 @@ export type TemporaryDisplayInputs = {
 
 /**
  * Display a brick in a temporary panel: sidebar, modal, or popover.
- * @param entry the panel entry
+ * @param getPanelEntry factory to generate the panel entry
  * @param location the location to show the panel
  * @param signal abort signal
  * @param target target element, if location is popover
- * @param refreshEntry factory to re-generate the panel entry
  * @param refreshTrigger optional trigger to refresh the panel
  * @param popoverOptions optional popover options
  * @param onOutsideClick optional callback to invoke when the user clicks outside the popover/modal
  * @param onCloseClick optional callback to invoke when the user clicks the close button on the popover/modal
  */
 export async function displayTemporaryInfo({
-  entry,
+  getPanelEntry,
   location,
   signal,
   target,
-  refreshEntry,
   refreshTrigger,
   popoverOptions,
   onOutsideClick,
   onCloseClick,
 }: TemporaryDisplayInputs): Promise<UnknownObject> {
   const nonce = uuidv4();
+  const entry = await getPanelEntry();
   let onReady: () => void;
 
   const controller = new AbortController();
@@ -229,7 +228,7 @@ export async function displayTemporaryInfo({
 
   const rerender = async () => {
     try {
-      const newEntry = { ...(await refreshEntry()), nonce };
+      const newEntry = { ...(await getPanelEntry()), nonce };
       // Force a re-render by changing the key
       newEntry.payload.key = uuidv4();
 
@@ -341,7 +340,7 @@ class DisplayTemporaryInfo extends Transformer {
     }>,
     {
       logger: {
-        context: { extensionId, blueprintId, extensionPointId },
+        context: { extensionId },
       },
       root,
       ctxt,
@@ -357,7 +356,7 @@ class DisplayTemporaryInfo extends Transformer {
     // Counter for tracking branch execution
     let counter = 0;
 
-    const refreshEntry = async () => {
+    const getPanelEntry: GetPanelEntry = async () => {
       const payload = (await runRendererPipeline(
         bodyPipeline?.__value__ ?? [],
         {
@@ -374,19 +373,14 @@ class DisplayTemporaryInfo extends Transformer {
         heading: title,
         payload,
         extensionId,
-        blueprintId,
-        extensionPointId,
       };
     };
 
-    const initialEntry = await refreshEntry();
-
     return displayTemporaryInfo({
-      entry: initialEntry,
+      getPanelEntry,
       location,
       signal: abortSignal,
       target,
-      refreshEntry,
       refreshTrigger,
     });
   }

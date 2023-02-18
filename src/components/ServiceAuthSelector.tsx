@@ -65,7 +65,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
     MenuListProps<AuthOption, boolean, GroupBase<AuthOption>>
   >;
 }> = ({ authOptions, serviceId, CustomMenuList, ...props }) => {
-  const [field, meta, helpers] = useField(props);
+  const [field, , helpers] = useField(props);
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]
@@ -92,11 +92,6 @@ const ServiceAuthSelector: React.FunctionComponent<{
     return (
       <Form.Group controlId={field.name}>
         <Form.Control type="text" readOnly value="Automatic" />
-        {meta.error && (
-          <Form.Control.Feedback type="invalid" style={{ display: "inline" }}>
-            {meta.error}
-          </Form.Control.Feedback>
-        )}
       </Form.Group>
     );
   }
@@ -108,17 +103,13 @@ const ServiceAuthSelector: React.FunctionComponent<{
         name={field.name}
         options={options}
         value={value}
+        placeholder={"Select configuration..."}
         components={components}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);
         }}
       />
-      {meta.error && (
-        <Form.Control.Feedback type="invalid" style={{ display: "inline" }}>
-          {meta.error}
-        </Form.Control.Feedback>
-      )}
     </Form.Group>
   );
 };

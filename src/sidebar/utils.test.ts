@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
-import { uuidv4 } from "@/types/helpers";
+import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type FormEntry, type TemporaryPanelEntry } from "@/sidebar/types";
+import { sidebarEntryFactory } from "@/testUtils/factories";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {
@@ -26,6 +27,7 @@ describe("defaultEventKey", () => {
         forms: [],
         panels: [],
         temporaryPanels: [],
+        recipeToActivate: null,
       })
     ).toBe(null);
   });
@@ -37,7 +39,7 @@ describe("defaultEventKey", () => {
       panels: [{ extensionId: uuidv4() }],
     } as any;
 
-    expect(defaultEventKey(args)).toBe(mapTabEventKey("form", args.forms[1]));
+    expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.forms[1]));
     expect(defaultEventKey(args)).not.toBe("form-undefined");
   });
 
@@ -52,7 +54,7 @@ describe("defaultEventKey", () => {
     } as any;
 
     expect(defaultEventKey(args)).toBe(
-      mapTabEventKey("temporaryPanel", args.temporaryPanels[1])
+      eventKeyForEntry(args.temporaryPanels[1])
     );
     expect(defaultEventKey(args)).not.toBe("temporaryPanel-undefined");
   });
@@ -64,27 +66,45 @@ describe("defaultEventKey", () => {
       panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
     } as any;
 
-    expect(defaultEventKey(args)).toBe(mapTabEventKey("panel", args.panels[0]));
+    expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.panels[0]));
     expect(defaultEventKey(args)).not.toBe("panel-undefined");
   });
 });
 
-describe("mapTabEventKey", () => {
+describe("eventKeyForEntry", () => {
   it.each([[undefined, null]])("returns null for %s", (value) => {
-    expect(mapTabEventKey("form", value)).toBe(null);
+    expect(eventKeyForEntry(value)).toBe(null);
   });
 
-  it("prefers nonce", () => {
-    const nonce = uuidv4();
-    expect(mapTabEventKey("form", { nonce, extensionId: uuidv4() })).toBe(
-      `form-${nonce}`
-    );
+  it("uses recipeId for activateRecipe", () => {
+    const recipeId = validateRegistryId("@test/test-recipe");
+    const entry = sidebarEntryFactory("activateRecipe", { recipeId });
+    expect(eventKeyForEntry(entry)).toBe(`activate-${recipeId}`);
   });
 
-  it("uses extension id", () => {
+  it("uses extensionId for panel", () => {
     const extensionId = uuidv4();
-    expect(mapTabEventKey("panel", { extensionId })).toBe(
-      `panel-${extensionId}`
+    const extensionPointId = validateRegistryId("@test/test-extension-point");
+    const entry = sidebarEntryFactory("panel", {
+      extensionId,
+      extensionPointId,
+    });
+    expect(eventKeyForEntry(entry)).toBe(`panel-${extensionId}`);
+  });
+
+  it("uses nonce for forms and temporary panels", () => {
+    const extensionId = uuidv4();
+    const nonce = uuidv4();
+
+    const formEntry = sidebarEntryFactory("form", { extensionId, nonce });
+    expect(eventKeyForEntry(formEntry)).toBe(`form-${nonce}`);
+
+    const temporaryPanelEntry = sidebarEntryFactory("temporaryPanel", {
+      extensionId,
+      nonce,
+    });
+    expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
+      `temporaryPanel-${nonce}`
     );
   });
 });

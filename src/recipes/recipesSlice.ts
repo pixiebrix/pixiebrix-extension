@@ -18,7 +18,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
 import { type RecipesRootState, type RecipesState } from "./recipesTypes";
-import registry from "./registry";
+import recipeRegistry from "./registry";
+import { fetchNewPackages } from "@/baseRegistry";
 
 export const initialState: RecipesState = Object.freeze({
   recipes: [],
@@ -44,7 +45,7 @@ const loadRecipesFromCache = createAsyncThunk<
 
   dispatch(recipesSlice.actions.startLoadingFromCache());
 
-  const recipes = await registry.all();
+  const recipes = await recipeRegistry.all();
 
   dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
 });
@@ -61,14 +62,14 @@ export const refreshRecipes = createAsyncThunk<
   dispatch(recipesSlice.actions.startLoading());
 
   try {
-    await registry.fetch();
+    await fetchNewPackages();
   } catch (error) {
     const serializedError = serializeError(error, { useToJSON: false });
     dispatch(recipesSlice.actions.setError(serializedError));
     return;
   }
 
-  const recipes = await registry.all();
+  const recipes = await recipeRegistry.all();
   dispatch(recipesSlice.actions.setRecipes(recipes));
 });
 

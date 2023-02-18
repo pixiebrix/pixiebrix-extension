@@ -29,7 +29,6 @@ import {
   activateTab,
   closeTab,
   openTab,
-  requestRunOnServer,
   requestRunInOpener,
   requestRunInTarget,
   requestRunInBroadcast,
@@ -45,7 +44,10 @@ import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
-import { reactivateEveryTab } from "@/background/navigation";
+import {
+  reactivateEveryTab,
+  removeExtensionForEveryTab,
+} from "@/background/navigation";
 import initPartnerTheme from "@/background/partnerTheme";
 
 import {
@@ -104,17 +106,19 @@ declare global {
 
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
+    REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    REGISTRY_GET_KIND: typeof registry.getKind;
-    REGISTRY_SYNC: typeof registry.syncRemote;
+    REGISTRY_FETCH: typeof registry.fetchNewPackages;
+    REGISTRY_SYNC: typeof registry.syncPackages;
+    REGISTRY_CLEAR: typeof registry.clear;
+    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
     LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
     LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
 
-    REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
@@ -179,17 +183,19 @@ export default function registerMessenger(): void {
 
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
+    REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    REGISTRY_GET_KIND: registry.getKind,
-    REGISTRY_SYNC: registry.syncRemote,
+    REGISTRY_FETCH: registry.fetchNewPackages,
+    REGISTRY_SYNC: registry.syncPackages,
+    REGISTRY_CLEAR: registry.clear,
+    REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
     LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
     LOCATE_SERVICE: locator.locate.bind(locator),
     LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
     REFRESH_SERVICES: refreshServices,
 
-    REQUEST_RUN_ON_SERVER: requestRunOnServer,
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
     REQUEST_RUN_IN_TOP: requestRunInTop,

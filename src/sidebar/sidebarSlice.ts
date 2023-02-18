@@ -21,19 +21,22 @@ import {
   type PanelEntry,
   type ActivatePanelOptions,
   type TemporaryPanelEntry,
+  type ActivateRecipeEntry,
+  type SidebarEntry,
 } from "@/sidebar/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/core";
-import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
+import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
 import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
-import { partition, sortBy } from "lodash";
+import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
+import { type WritableDraft } from "immer/dist/types/types-external";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -51,17 +54,21 @@ const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],
+  recipeToActivate: null,
   activeKey: null,
   pendingActivePanel: null,
 };
 
-function eventKeyExists(state: SidebarState, query: string): boolean {
+function eventKeyExists(state: SidebarState, query: string | null): boolean {
+  if (query == null) {
+    return false;
+  }
+
   return (
-    state.forms.some((x) => mapTabEventKey("form", x) === query) ||
-    state.temporaryPanels.some(
-      (x) => mapTabEventKey("temporaryPanel", x) === query
-    ) ||
-    state.panels.some((x) => mapTabEventKey("panel", x) === query)
+    state.forms.some((x) => eventKeyForEntry(x) === query) ||
+    state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
+    state.panels.some((x) => eventKeyForEntry(x) === query) ||
+    eventKeyForEntry(state.recipeToActivate) === query
   );
 }
 
@@ -76,21 +83,21 @@ function findNextActiveKey(
       (x) => x.extensionId === extensionId
     );
     if (extensionForm) {
-      return mapTabEventKey("form", extensionForm);
+      return eventKeyForEntry(extensionForm);
     }
 
     const extensionTemporaryPanel = state.temporaryPanels.find(
       (x) => x.extensionId === extensionId
     );
     if (extensionTemporaryPanel) {
-      return mapTabEventKey("temporaryPanel", extensionTemporaryPanel);
+      return eventKeyForEntry(extensionTemporaryPanel);
     }
 
     const extensionPanel = state.panels.find(
       (x) => x.extensionId === extensionId
     );
     if (extensionPanel) {
-      return mapTabEventKey("panel", extensionPanel);
+      return eventKeyForEntry(extensionPanel);
     }
   }
 
@@ -100,7 +107,7 @@ function findNextActiveKey(
       .filter((x) => blueprintId == null || x.blueprintId === blueprintId)
       .find((x) => x.heading === panelHeading);
     if (extensionPanel) {
-      return mapTabEventKey("panel", extensionPanel);
+      return eventKeyForEntry(extensionPanel);
     }
   }
 
@@ -110,7 +117,7 @@ function findNextActiveKey(
       (x) => x.blueprintId === blueprintId
     );
     if (blueprintPanel) {
-      return mapTabEventKey("panel", blueprintPanel);
+      return eventKeyForEntry(blueprintPanel);
     }
   }
 
@@ -149,6 +156,16 @@ async function resolvePanel(
   resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
+function fixActiveTabOnRemove(
+  state: WritableDraft<SidebarState>,
+  removedEntry: SidebarEntry | null
+) {
+  // Only update the active panel if the panel needs to change
+  if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
+    state.activeKey = defaultEventKey(state);
+  }
+}
+
 const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
@@ -178,12 +195,14 @@ const sidebarSlice = createSlice({
         // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
         form,
       ];
-      state.activeKey = mapTabEventKey("form", form);
+      state.activeKey = eventKeyForEntry(form);
     },
     removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
-      state.forms = state.forms.filter((x) => x.nonce !== nonce);
-      state.activeKey = defaultEventKey(state);
+
+      const entry = remove(state.forms, (form) => form.nonce === nonce)[0];
+
+      fixActiveTabOnRemove(state, entry);
     },
     updateTemporaryPanel(
       state,
@@ -215,25 +234,19 @@ const sidebarSlice = createSlice({
       );
 
       state.temporaryPanels = [...otherTemporaryPanels, panel];
-      state.activeKey = mapTabEventKey("temporaryPanel", panel);
+      state.activeKey = eventKeyForEntry(panel);
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
 
-      state.temporaryPanels = state.temporaryPanels.filter(
-        (panel) => panel.nonce !== nonce
-      );
+      const entry = remove(
+        state.temporaryPanels,
+        (panel) => panel.nonce === nonce
+      )[0];
 
       void closePanels([nonce]);
 
-      // Only update the active panel if the panel needs to change
-      // Temporary panels use nonce instead of extensionId, so can pass null for extensionId
-      if (
-        state.activeKey ===
-        mapTabEventKey("temporaryPanel", { nonce, extensionId: undefined })
-      ) {
-        state.activeKey = defaultEventKey(state);
-      }
+      fixActiveTabOnRemove(state, entry);
     },
     resolveTemporaryPanel(
       state,
@@ -241,20 +254,14 @@ const sidebarSlice = createSlice({
     ) {
       const { nonce, action: panelAction } = action.payload;
 
-      state.temporaryPanels = state.temporaryPanels.filter(
-        (panel) => panel.nonce !== nonce
-      );
+      const entry = remove(
+        state.temporaryPanels,
+        (panel) => panel.nonce === nonce
+      )[0];
 
       void resolvePanel(nonce, panelAction);
 
-      // Only update the active panel if the panel needs to change
-      // Temporary panels use nonce instead of extensionId, so can pass null for extensionId
-      if (
-        state.activeKey ===
-        mapTabEventKey("temporaryPanel", { nonce, extensionId: undefined })
-      ) {
-        state.activeKey = defaultEventKey(state);
-      }
+      fixActiveTabOnRemove(state, entry);
     },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar
@@ -295,15 +302,19 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab
-      if (
-        state.activeKey == null ||
-        (state.activeKey.startsWith("panel-") &&
-          !state.panels.some(
-            (x) => mapTabEventKey("panel", x) === state.activeKey
-          ))
-      ) {
+      if (!eventKeyExists(state, state.activeKey)) {
         state.activeKey = defaultEventKey(state);
       }
+    },
+    showActivateRecipe(state, action: PayloadAction<ActivateRecipeEntry>) {
+      const entry = action.payload;
+      state.recipeToActivate = entry;
+      state.activeKey = eventKeyForEntry(entry);
+    },
+    hideActivateRecipe(state) {
+      const { recipeToActivate: entry } = state;
+      state.recipeToActivate = null;
+      fixActiveTabOnRemove(state, entry);
     },
   },
 });

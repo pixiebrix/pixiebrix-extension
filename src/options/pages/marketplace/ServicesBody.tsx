@@ -18,16 +18,19 @@
 import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { type RecipeDefinition } from "@/types/definitions";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import AuthWidget from "@/options/pages/marketplace/AuthWidget";
+import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
 import { type ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";
+import ServiceFieldError from "@/options/components/ServiceFieldError";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { AnnotationType } from "@/types";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -36,7 +39,7 @@ interface OwnProps {
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [authOptions, refreshAuthOptions] = useAuthOptions();
 
-  const [field] = useField<ServiceAuthPair[]>("services");
+  const [field, { error }] = useField<ServiceAuthPair[]>("services");
 
   const { data: serviceConfigs } = useGetServicesQuery();
 
@@ -53,31 +56,33 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   );
 
   return (
-    <Col>
-      <Row>
-        {field.value.map(
-          ({ id: serviceId }, index) =>
-            // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
-            // consistent with the index in field.value
-            visibleServiceIds.has(serviceId) && (
-              <Col xs={12} sm={6} xl={4} key={serviceId}>
-                <Card className={styles.serviceCard}>
-                  <ServiceDescriptor
-                    serviceId={serviceId}
-                    serviceConfigs={serviceConfigs}
-                  />
-                  <AuthWidget
-                    authOptions={authOptions}
-                    serviceId={serviceId}
-                    name={joinName(field.name, String(index), "config")}
-                    onRefresh={refreshAuthOptions}
-                  />
-                </Card>
-              </Col>
-            )
-        )}
-      </Row>
-    </Col>
+    <>
+      {typeof error === "string" && (
+        <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
+      )}
+      {field.value.map(
+        ({ id: serviceId }, index) =>
+          // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
+          // consistent with the index in field.value
+          visibleServiceIds.has(serviceId) && (
+            <div key={serviceId}>
+              <ServiceFieldError servicesError={error} fieldIndex={index} />
+              <Card className={styles.serviceCard}>
+                <ServiceDescriptor
+                  serviceId={serviceId}
+                  serviceConfigs={serviceConfigs}
+                />
+                <AuthWidget
+                  authOptions={authOptions}
+                  serviceId={serviceId}
+                  name={joinName(field.name, String(index), "config")}
+                  onRefresh={refreshAuthOptions}
+                />
+              </Card>
+            </div>
+          )
+      )}
+    </>
   );
 };
 

@@ -15,29 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlocksRegistry } from "@/blocks/registry";
-import { blockFactory, extensionFactory } from "@/testUtils/factories";
+import blocksRegistry from "@/blocks/registry";
+import {
+  blockFactory,
+  extensionPointDefinitionFactory,
+} from "@/testUtils/factories";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
+import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { parsePackage } from "@/registry/localRegistry";
 
-jest.mock("@/background/messenger/api", () => ({
-  registry: {
-    getKind: jest.fn(),
-  },
-}));
+const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<
+  typeof backgroundRegistry.getByKinds
+>;
+const findMock = backgroundRegistry.find as jest.MockedFunction<
+  typeof backgroundRegistry.find
+>;
+
+beforeEach(() => {
+  jest.resetAllMocks();
+  getByKindsMock.mockResolvedValue([]);
+  blocksRegistry.clear();
+});
 
 describe("blocksMap", () => {
-  let registry: BlocksRegistry;
+  afterEach(() => {
+    // eslint-disable-next-line new-cap -- test-only method
+    blocksRegistry.TEST_reset();
+  });
 
   const createReaderBlock = () => blockFactory({ read: jest.fn() } as any);
 
-  beforeEach(() => {
-    registry = new BlocksRegistry();
-  });
-
-  test("can add and reed a block", async () => {
+  test("can add and read a block", async () => {
     const block = createReaderBlock();
-    registry.register(block);
-    const enrichedBlocks = await registry.allTyped();
+    blocksRegistry.register([block]);
+    const enrichedBlocks = await blocksRegistry.allTyped();
 
     const enrichedBlock = enrichedBlocks.get(block.id);
 
@@ -49,9 +60,8 @@ describe("blocksMap", () => {
     const block1 = createReaderBlock();
     const block2 = createReaderBlock();
 
-    registry.register(block1);
-    registry.register(block2);
-    const enrichedBlocks = await registry.allTyped();
+    blocksRegistry.register([block1, block2]);
+    const enrichedBlocks = await blocksRegistry.allTyped();
 
     expect(enrichedBlocks.get(block1.id).type).toBe("reader");
     expect(enrichedBlocks.get(block1.id).block).toBe(block1);
@@ -61,23 +71,80 @@ describe("blocksMap", () => {
   });
 
   test("caches the typed blocks", async () => {
-    (backgroundRegistry.getKind as jest.Mock).mockResolvedValueOnce([
-      extensionFactory(),
-      extensionFactory(),
+    getByKindsMock.mockResolvedValueOnce([
+      {
+        ...parsePackage(extensionPointDefinitionFactory() as any),
+        timestamp: new Date(),
+      },
+      {
+        ...parsePackage(extensionPointDefinitionFactory() as any),
+        timestamp: new Date(),
+      },
     ]);
 
-    jest.spyOn(registry, "all");
+    jest.spyOn(blocksRegistry, "all");
 
     // First call loads the blocks
-    let blocks = await registry.allTyped();
+    let blocks = await blocksRegistry.allTyped();
 
-    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(blocksRegistry.all).toHaveBeenCalledTimes(1);
     expect(blocks.size).toBe(2);
 
     // Second call uses the cache
-    blocks = await registry.allTyped();
+    blocks = await blocksRegistry.allTyped();
 
-    expect(registry.all).toHaveBeenCalledTimes(1);
+    expect(blocksRegistry.all).toHaveBeenCalledTimes(1);
     expect(blocks.size).toBe(2);
+  });
+});
+
+describe("blocksRegistry", () => {
+  afterEach(() => {
+    // eslint-disable-next-line new-cap -- test-only method
+    blocksRegistry.TEST_reset();
+  });
+
+  test("reads single JS block", async () => {
+    blocksRegistry.register([echoBlock]);
+    await expect(blocksRegistry.all()).resolves.toEqual([echoBlock]);
+    expect(blocksRegistry.cached).toEqual([echoBlock]);
+  });
+
+  test("preserves JS block on clear", async () => {
+    blocksRegistry.register([echoBlock]);
+    blocksRegistry.clear();
+    await expect(blocksRegistry.all()).resolves.toEqual([echoBlock]);
+    expect(blocksRegistry.cached).toEqual([echoBlock]);
+
+    blocksRegistry.clear();
+    await expect(blocksRegistry.lookup(echoBlock.id)).resolves.toEqual(
+      echoBlock
+    );
+  });
+
+  test("throws on invalid cache", async () => {
+    blocksRegistry.register([echoBlock]);
+    blocksRegistry.clear();
+    expect(blocksRegistry.isCachedInitialized).toBe(false);
+    expect(() => blocksRegistry.cached).toThrow("Cache not initialized");
+  });
+
+  test("cache invalid until all()", async () => {
+    const value = extensionPointDefinitionFactory();
+    const brick = { ...parsePackage(value as any), timestamp: new Date() };
+
+    getByKindsMock.mockResolvedValueOnce([brick]);
+    findMock.mockResolvedValue(brick);
+
+    blocksRegistry.register([echoBlock]);
+
+    await expect(
+      blocksRegistry.lookup(value.metadata.id)
+    ).resolves.not.toThrow();
+
+    expect(blocksRegistry.isCachedInitialized).toBe(false);
+
+    await blocksRegistry.allTyped();
+    expect(blocksRegistry.isCachedInitialized).toBe(true);
   });
 });

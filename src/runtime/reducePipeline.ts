@@ -38,7 +38,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import { UNSET_UUID, uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
@@ -302,10 +302,6 @@ async function executeBlockWithValidatedProps(
       return requestRun.inAll(request);
     }
 
-    case "remote": {
-      return requestRun.onServer(request);
-    }
-
     case "self": {
       return block.run(args, {
         ...commonOptions,
@@ -564,13 +560,15 @@ export async function runBlock(
 async function applyReduceDefaults({
   logValues,
   runId,
-  logger,
+  extensionId,
+  logger: providedLogger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
   const globalLoggingConfig = await getLoggingConfig();
+  const logger = providedLogger ?? new ConsoleLogger();
 
   return {
-    extensionId: UNSET_UUID,
+    extensionId: extensionId ?? logger.context.extensionId,
     validateInput: true,
     headless: false,
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
@@ -582,9 +580,10 @@ async function applyReduceDefaults({
     // If logValues not provided explicitly, default to the global setting
     logValues: logValues ?? globalLoggingConfig.logValues ?? false,
     // For stylistic consistency, default here instead of destructured parameters
-    runId: runId ?? uuidv4(),
     branches: [],
-    logger: logger ?? new ConsoleLogger(),
+    // Assign a run id, if one is not already provided
+    runId: runId ?? uuidv4(),
+    logger,
     ...overrides,
   };
 }
@@ -610,7 +609,9 @@ export async function blockReducer(
     ...options,
     trace: {
       runId,
-      extensionId,
+      // Be defensive if the call site doesn't provide an extensionId
+      // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3751
+      extensionId: extensionId ?? logger.context.extensionId,
       blockInstanceId: blockConfig.instanceId,
       branches,
     },
@@ -660,11 +661,7 @@ export async function blockReducer(
   }
 
   const preconfiguredTraceExit: TraceExitData = {
-    runId,
-    branches,
-    extensionId: logger.context.extensionId,
-    blockId: blockConfig.id,
-    blockInstanceId: blockConfig.instanceId,
+    ...traceMeta,
     outputKey: blockConfig.outputKey,
     output: null,
     skippedRun: false,
@@ -871,7 +868,7 @@ export async function reduceExtensionPipeline(
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
   initialValues: InitialValues,
-  partialOptions: Partial<ReduceOptions> = {}
+  partialOptions: Partial<ReduceOptions>
 ): Promise<unknown> {
   const options = await applyReduceDefaults(partialOptions);
 

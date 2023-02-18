@@ -57,7 +57,7 @@ const addExitMock = traces.addExit as jest.MockedFunction<
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, contextBlock, throwBlock);
+  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
 });
@@ -297,6 +297,7 @@ describe("Trace normal execution", () => {
 
     await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
       ...testOptions("v2"),
+      extensionId,
       runId,
       logger,
     });
