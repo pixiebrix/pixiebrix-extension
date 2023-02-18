@@ -38,10 +38,8 @@ import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { useAsyncEffect } from "use-async-effect";
-import extensionPointRegistry from "@/extensionPoints/registry";
 import { useAsyncState } from "@/hooks/common";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
-import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
+import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -74,23 +72,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   );
 
   useAsyncEffect(async () => {
-    if (!resolvedRecipeConfigs) {
-      return;
-    }
-
-    for (const { id } of resolvedRecipeConfigs) {
-      // eslint-disable-next-line no-await-in-loop -- can break when we find one
-      const extensionPoint = await extensionPointRegistry.lookup(id);
-      if (
-        QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint) ||
-        QuickBarProviderExtensionPoint.isQuickBarProviderExtensionPoint(
-          extensionPoint
-        )
-      ) {
-        setHasQuickBar(true);
-        break;
-      }
-    }
+    setHasQuickBar(await includesQuickBarExtensionPoint(resolvedRecipeConfigs));
   }, [resolvedRecipeConfigs]);
 
   const { isConfigured } = useQuickbarShortcut();

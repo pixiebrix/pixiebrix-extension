@@ -31,7 +31,7 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import { screen } from "@testing-library/react";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -89,6 +89,19 @@ jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn().mockReturnValue(false),
 }));
 
+jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
+  __esModule: true,
+  default: jest.fn().mockResolvedValue(true),
+}));
+
+jest.mock("@/hooks/useQuickbarShortcut", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    shortcut: null,
+    isConfigured: false,
+  }),
+}));
+
 function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
   return {
     data,
@@ -107,7 +120,7 @@ beforeAll(() => {
 });
 
 describe("ActivateRecipePanel", () => {
-  test("it renders with options and permissions info", async () => {
+  test("it renders with options, permissions info, and quick bar hotkey info", async () => {
     const recipe = recipeDefinitionFactory({
       options: {
         schema: propertiesToSchema({
