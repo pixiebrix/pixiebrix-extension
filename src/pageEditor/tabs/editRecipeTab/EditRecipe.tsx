@@ -27,7 +27,7 @@ import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
 import { FieldDescriptions } from "@/utils/strings";

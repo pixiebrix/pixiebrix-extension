@@ -179,6 +179,8 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
+    // XXX: why is this expected to show "Quick Bar" configuration info message given that isConfigured
+    // is mocked to "true"?
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
