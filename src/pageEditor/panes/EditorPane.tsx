@@ -25,7 +25,7 @@ import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";

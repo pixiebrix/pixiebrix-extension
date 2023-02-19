@@ -47,6 +47,7 @@ const QuickBarAlert = () => (
     <a
       href="chrome://extensions/shortcuts"
       onClick={(event) => {
+        // Can't link to chrome:// URLs directly
         event.preventDefault();
         void browser.tabs.create({ url: event.currentTarget.href });
       }}
