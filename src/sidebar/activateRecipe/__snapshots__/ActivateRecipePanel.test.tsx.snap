@@ -279,7 +279,7 @@ exports[`ActivateRecipePanel it renders with options, permissions info, and quic
             class="my-2"
           >
             <img
-              alt=""
+              alt="Example Chrome permissions dialog"
               src="test-file-stub"
               width="300"
             />
