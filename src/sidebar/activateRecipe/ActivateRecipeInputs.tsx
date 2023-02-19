@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { type RecipeDefinition } from "@/types/definitions";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import Form, {
@@ -31,7 +31,7 @@ import { Button, Col } from "react-bootstrap";
 import useActivateRecipe from "@/hooks/useActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import { collectPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions } from "@/background/messenger/api";
@@ -62,9 +62,9 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
   const activateRecipe = useActivateRecipe();
-  const [error, setError] = React.useState<string | null>(null);
-  const [needsPermissions, setNeedsPermissions] = React.useState(false);
-  const [hasQuickBar, setHasQuickBar] = React.useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [needsPermissions, setNeedsPermissions] = useState(false);
+  const [requiresQuickbar, setRequiresQuickbar] = useState(false);
 
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),
@@ -72,11 +72,13 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   );
 
   useAsyncEffect(async () => {
-    setHasQuickBar(await includesQuickBarExtensionPoint(resolvedRecipeConfigs));
+    setRequiresQuickbar(
+      await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
+    );
   }, [resolvedRecipeConfigs]);
 
-  const { isConfigured } = useQuickbarShortcut();
-  const needsQuickBarShortcut = hasQuickBar && !isConfigured;
+  const { isConfigured: isQuickbarConfigured } = useQuickbarShortcut();
+  const needsQuickBarShortcut = requiresQuickbar && !isQuickbarConfigured;
 
   const checkPermissions = useCallback(
     async (values: WizardValues) => {
@@ -143,7 +145,11 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
             Pixiebrix needs some permissions.
           </span>
           <div className="my-2">
-            <img src={permissionsDialogImage} alt="" width={300} />
+            <img
+              src={permissionsDialogImage}
+              alt="Example Chrome permissions dialog"
+              width={300}
+            />
           </div>
           <div>
             Without permissions, PixieBrix won&apos;t work. We&apos;ll ask for
@@ -184,9 +190,9 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 
   const renderSubmit: RenderSubmit = ({ isSubmitting }) => (
     <>
-      {error && (
+      {submitError && (
         <Alert variant="danger" className="m-3">
-          {error}
+          {submitError}
         </Alert>
       )}
       <div className={styles.footer}>
@@ -205,7 +211,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     if (success) {
       onSubmitSuccess?.();
     } else {
-      setError(error);
+      setSubmitError(error);
     }
   };
 

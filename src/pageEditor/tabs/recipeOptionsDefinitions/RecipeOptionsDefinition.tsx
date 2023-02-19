@@ -45,7 +45,7 @@ import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoi
 import { Formik } from "formik";
 import { type OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
 
