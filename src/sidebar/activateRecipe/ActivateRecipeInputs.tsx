@@ -64,7 +64,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const activateRecipe = useActivateRecipe();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsPermissions, setNeedsPermissions] = useState(false);
-  const [requiresQuickbar, setRequiresQuickbar] = useState(false);
+  const [includesQuickbar, setIncludesQuickbar] = useState(false);
 
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),
@@ -72,13 +72,14 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   );
 
   useAsyncEffect(async () => {
-    setRequiresQuickbar(
+    setIncludesQuickbar(
       await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
     );
   }, [resolvedRecipeConfigs]);
 
-  const { isConfigured: isQuickbarConfigured } = useQuickbarShortcut();
-  const needsQuickBarShortcut = requiresQuickbar && !isQuickbarConfigured;
+  const { isConfigured: isQuickbarShortcutConfigured } = useQuickbarShortcut();
+  const needsQuickBarShortcut =
+    includesQuickbar && !isQuickbarShortcutConfigured;
 
   const checkPermissions = useCallback(
     async (values: WizardValues) => {
