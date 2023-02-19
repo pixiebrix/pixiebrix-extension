@@ -157,7 +157,18 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
             You&apos;re going to need a Quick Bar shortcut.
           </span>
           <div className="my-2">
-            <Button variant="info" href="chrome://extensions/shortcuts">
+            <Button
+              variant="info"
+              href="chrome://extensions/shortcuts"
+              onClick={(event) => {
+                // // Can't link to chrome:// URLs directly
+                event.preventDefault();
+                // `react-bootstrap` will render as an anchor tag when href is set
+                void browser.tabs.create({
+                  url: (event.currentTarget as HTMLAnchorElement).href,
+                });
+              }}
+            >
               Set up Quick Bar shortcut
             </Button>
           </div>
