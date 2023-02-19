@@ -184,7 +184,7 @@
     "@types/chrome": "0.0.162",
     "@types/dompurify": "^2.4.0",
     "@types/gapi": "0.0.43",
-    "@types/gapi.client.bigquery": "^2.0.3",
+    "@types/gapi.client.bigquery": "^2.0.4",
     "@types/gapi.client.oauth2": "^2.0.3",
     "@types/gapi.client.sheets": "^4.0.20201030",
     "@types/google.picker": "0.0.39",
