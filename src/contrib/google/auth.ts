@@ -33,16 +33,14 @@ export async function ensureAuth(
   }
 
   try {
-    // Does not work from browser.identity.getAuthToken. Returns null/undefined
-    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3746
-    const token = await chromeP.identity.getAuthToken({
+    // Chrome-only API, do not use browser.*
+    const token = (await chromeP.identity.getAuthToken({
       interactive,
       scopes,
-    });
+    })) as string; // `webext-polyfill-kinda` resolves with the first parameter of the callback, but in MV3 it resolves with an object
     if (token) {
       // https://bumbu.me/gapi-in-chrome-extension
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- GAPI types are unnecessarily strict
-      gapi.auth.setToken({ access_token: token } as any);
+      gapi.auth.setToken({ access_token: token } as GoogleApiOAuth2TokenObject);
       return token;
     }
   } catch (error) {
@@ -84,7 +82,7 @@ export async function handleRejection(
   }
 
   if ([403, 401].includes(status)) {
-    await browser.identity.removeCachedAuthToken({ token });
+    await chromeP.identity.removeCachedAuthToken({ token });
     console.debug(
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
     );
