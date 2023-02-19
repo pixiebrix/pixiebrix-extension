@@ -201,7 +201,7 @@
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.190",
     "@types/mustache": "^4.1.2",
-    "@types/nunjucks": "^3.2.1",
+    "@types/nunjucks": "^3.2.2",
     "@types/object-hash": "^2.1.1",
     "@types/papaparse": "^5.2.6",
     "@types/psl": "^1.1.0",
