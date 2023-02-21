@@ -26,6 +26,7 @@ import { type DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
 import { type BlockConfig } from "@/blocks/types";
 import objectHash from "object-hash";
+import { type ErrorObject } from "serialize-error";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
@@ -88,7 +89,7 @@ type ErrorOutput = {
   /**
    * Serialized error from running the block
    */
-  error: JsonObject;
+  error: ErrorObject;
 };
 
 /**
@@ -110,7 +111,7 @@ export type TraceEntryData = TraceRecordMeta & {
   /**
    * The error rendering the arguments
    */
-  renderError: JsonObject | null;
+  renderError: ErrorObject | null;
 
   blockConfig: BlockConfig;
 };
