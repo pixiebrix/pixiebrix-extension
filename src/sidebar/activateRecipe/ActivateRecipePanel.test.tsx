@@ -71,12 +71,6 @@ jest.mock("@/store/optionsStore", () => ({
   },
 }));
 
-jest.mock("@/hooks/useQuickbarShortcut", () =>
-  jest.fn().mockReturnValue({
-    isConfigured: true,
-  })
-);
-
 jest.mock("@/permissions/index", () => ({
   collectPermissions: jest.fn().mockReturnValue({
     permissions: [],
