@@ -71,12 +71,6 @@ jest.mock("@/store/optionsStore", () => ({
   },
 }));
 
-jest.mock("@/hooks/useQuickbarShortcut", () =>
-  jest.fn().mockReturnValue({
-    isConfigured: true,
-  })
-);
-
 jest.mock("@/permissions/index", () => ({
   collectPermissions: jest.fn().mockReturnValue({
     permissions: [],
@@ -179,8 +173,6 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
-    // XXX: why is this expected to show "Quick Bar" configuration info message given that isConfigured
-    // is mocked to "true"?
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
