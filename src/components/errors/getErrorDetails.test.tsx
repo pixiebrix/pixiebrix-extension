@@ -18,7 +18,7 @@
 import { render } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import getErrorDetails from "./getErrorDetails";
-import { type JsonArray } from "type-fest";
+import { type ErrorObject } from "serialize-error";
 
 test("Template render error", () => {
   const error = {
@@ -105,7 +105,7 @@ test("Input validation error", () => {
 });
 
 test("Network error", async () => {
-  const error = {
+  const error: ErrorObject = {
     cause: {
       config: {
         transitional: {
@@ -113,8 +113,8 @@ test("Network error", async () => {
           forcedJSONParsing: true,
           clarifyTimeoutError: false,
         },
-        transformRequest: [] as JsonArray,
-        transformResponse: [] as JsonArray,
+        transformRequest: [],
+        transformResponse: [],
         timeout: 0,
         xsrfCookieName: "XSRF-TOKEN",
         xsrfHeaderName: "X-XSRF-TOKEN",
