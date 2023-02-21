@@ -71,11 +71,29 @@ jest.mock("@/store/optionsStore", () => ({
   },
 }));
 
-jest.mock("@/hooks/useQuickbarShortcut", () =>
-  jest.fn().mockReturnValue({
-    isConfigured: true,
-  })
-);
+jest.mock("@/permissions/index", () => ({
+  collectPermissions: jest.fn().mockReturnValue({
+    permissions: [],
+    origins: [],
+  }),
+}));
+
+jest.mock("@/background/messenger/api", () => ({
+  containsPermissions: jest.fn().mockReturnValue(false),
+}));
+
+jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
+  __esModule: true,
+  default: jest.fn().mockResolvedValue(true),
+}));
+
+jest.mock("@/hooks/useQuickbarShortcut", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    shortcut: null,
+    isConfigured: false,
+  }),
+}));
 
 function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
   return {
@@ -95,7 +113,7 @@ beforeAll(() => {
 });
 
 describe("ActivateRecipePanel", () => {
-  test("it renders with options", async () => {
+  test("it renders with options, permissions info, and quick bar hotkey info", async () => {
     const recipe = recipeDefinitionFactory({
       options: {
         schema: propertiesToSchema({
@@ -113,12 +131,13 @@ describe("ActivateRecipePanel", () => {
       },
     });
     useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
+
     const listing = marketplaceListingFactory({
       package: {
         id: uuidv4(),
         name: recipe.metadata.id,
         kind: "recipe",
-        description: "This is a test lising",
+        description: "This is a test listing",
         verbose_name: "My Test Listing",
         config: {},
         author: {
