@@ -22,7 +22,6 @@ import { type UnknownObject } from "@/types";
 import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
-import { JSONSchema7Definition } from "json-schema";
 
 export function fieldLabel(name: string): string {
   return name.split(".").at(-1);

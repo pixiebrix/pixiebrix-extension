@@ -21,7 +21,12 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
+import {
+  type IService,
+  type RawServiceConfiguration,
+  type Schema,
+  type UUID,
+} from "@/core";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
@@ -42,7 +47,6 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
-import { JSONSchema7 } from "json-schema";
 
 type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -115,7 +119,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
       return buildYup(cloneDeep(schema), {
         errMessages: getValidationErrMessages(
-          schema?.properties?.config as JSONSchema7
+          schema.properties?.config as Schema
         ),
       });
     } catch (error) {
