@@ -110,19 +110,26 @@ export const getValidationErrMessages = (
   schema: Schema | undefined
 ): Record<string, Record<string, string>> => {
   const errMessages: Record<string, Record<string, string>> = {};
+
   if (schema) {
-    for (const key of Object.keys(schema.properties)) {
+    for (const [key, definition] of Object.entries(schema?.properties)) {
+      if (typeof definition === "boolean") {
+        continue;
+      }
+
       if (schema.required.includes(key)) {
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- no user generated values here
         errMessages[key] = {
+          // eslint-disable-next-line security/detect-object-injection
           ...(errMessages[key] ? {} : errMessages[key]),
           required: `${key} is required`,
         };
       }
 
-      if (schema.properties[key].pattern) {
+      if (definition.pattern) {
         // eslint-disable-next-line security/detect-object-injection
         errMessages[key] = {
+          // eslint-disable-next-line security/detect-object-injection
           ...errMessages[key],
           pattern: `Invalid ${key} format`,
         };

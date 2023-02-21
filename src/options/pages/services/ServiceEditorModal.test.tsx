@@ -76,6 +76,9 @@ describe("ServiceEditorModal", () => {
       name: "controlRoomUrl",
     });
     await userEvent.type(controlRoomUrlInput, "https://invalid.control.room/");
+
+    await waitForEffect();
+
     expect(controlRoomUrlInput).toHaveValue("https://invalid.control.room/");
     await userEvent.click(screen.getByRole("textbox", { name: "username" }));
 
