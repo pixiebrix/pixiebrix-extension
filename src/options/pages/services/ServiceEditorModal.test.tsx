@@ -27,8 +27,6 @@ import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?l
 import { type RawServiceConfiguration } from "@/core";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { fireTextInput } from "@/testUtils/formHelpers";
-import { fireEvent } from "@testing-library/react";
 
 beforeAll(() => {
   registerDefaultWidgets();
