@@ -26,7 +26,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { removeExtensionsFromTabs } from "@/store/uninstallUtils";
+import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 
 type Config = {
   extensionId: UUID;
@@ -79,7 +79,7 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         }
 
         // Uninstall from all tabs
-        await removeExtensionsFromTabs([extensionId]);
+        await removeExtensionsFromAllTabs([extensionId]);
       } catch (error: unknown) {
         notify.error({
           message: "Error removing element",

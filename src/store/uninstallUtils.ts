@@ -40,7 +40,7 @@ export async function uninstallRecipe(
 
   dispatch(extensionActions.removeRecipeById(recipeId));
 
-  await removeExtensionsFromTabs(
+  await removeExtensionsFromAllTabs(
     uniq([
       ...recipeExtensions.map(({ id }) => id),
       ...dynamicElementsToUninstall,
@@ -60,13 +60,13 @@ export async function uninstallExtensions(
 
   dispatch(extensionActions.removeExtensions({ extensionIds }));
 
-  await removeExtensionsFromTabs(extensionIds);
+  await removeExtensionsFromAllTabs(extensionIds);
 }
 
 /**
  * Uninstalls the extensions from all open tabs
  */
-export async function removeExtensionsFromTabs(
+export async function removeExtensionsFromAllTabs(
   extensionIds: UUID[]
 ): Promise<Array<PromiseSettledResult<void>>> {
   const promises: Array<Promise<void>> = [];

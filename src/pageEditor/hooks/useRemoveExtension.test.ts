@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/pageEditor/testHelpers";
-import { removeExtensionsFromTabs } from "@/store/uninstallUtils";
+import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 import { uuidSequence } from "@/testUtils/factories";
 import useRemoveExtension from "./useRemoveExtension";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -55,5 +55,5 @@ test("useRemoveExtension", async () => {
   expect(clearDynamicElements).toHaveBeenCalledWith(expect.any(Object), {
     uuid: extensionId,
   });
-  expect(removeExtensionsFromTabs).toHaveBeenCalledWith([extensionId]);
+  expect(removeExtensionsFromAllTabs).toHaveBeenCalledWith([extensionId]);
 });
