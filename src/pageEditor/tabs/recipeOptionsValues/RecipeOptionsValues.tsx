@@ -38,7 +38,7 @@ import { inferRecipeOptions } from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import { type UserOptions } from "@/core";
 import { actions } from "@/pageEditor/slices/editorSlice";
 

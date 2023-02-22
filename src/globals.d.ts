@@ -205,38 +205,9 @@ interface ExtendedStorage extends BrowserStorage {
   session: Browser.storage.local;
 }
 
-type Identity = Browser["identity"];
-
-/**
- * Gets an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json.
- */
-interface ExtendedIdentity extends Identity {
-  /**
-   * Gets an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json.
-   */
-  getAuthToken(details?: chrome.identity.TokenDetails): Promise<string>;
-
-  /**
-   * Removes an OAuth2 access token from the Identity API's token cache.
-   */
-  removeCachedAuthToken(
-    details: chrome.identity.TokenInformation
-  ): Promise<void>;
-
-  /**
-   * Resets the state of the Identity API:
-   *
-   *  * Removes all OAuth2 access tokens from the token cache
-   *  * Removes user's account preferences
-   *  * De-authorizes the user from all auth flows
-   */
-  clearAllCachedAuthTokens(): Promise<void>;
-}
-
 // @ts-expect-error See Firefox/requestUpdateCheck-related comment above
 interface ChromeifiedBrowser extends Browser {
   runtime: ExtendedRuntime;
-  identity: ExtendedIdentity;
   storage: ExtendedStorage;
 }
 
@@ -244,9 +215,4 @@ declare const browser: ChromeifiedBrowser;
 
 declare namespace CSS {
   function px(length: number): string;
-}
-
-// Temporary type until officially added
-declare namespace chrome.storage {
-  export const session: StorageArea;
 }

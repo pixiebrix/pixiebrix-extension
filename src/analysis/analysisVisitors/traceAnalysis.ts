@@ -29,8 +29,8 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type JsonObject } from "type-fest";
 import { AnnotationType } from "@/types";
+import { type ErrorObject } from "serialize-error";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
@@ -60,7 +60,7 @@ class TraceAnalysis extends AnalysisVisitor {
 
   mapErrorAnnotations(
     position: BlockPosition,
-    traceError: JsonObject
+    traceError: ErrorObject
   ): AnalysisAnnotation[] {
     const annotations: AnalysisAnnotation[] = [];
 

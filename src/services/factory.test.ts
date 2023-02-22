@@ -27,6 +27,9 @@ describe("LocalDefinedService", () => {
   test("includes version", () => {
     const service = fromJS(automationAnywhere as unknown as ServiceDefinition);
     expect(service.version).toBe("1.0.0");
+    expect(service.uiSchema).toMatchObject({
+      "ui:order": expect.toBeArrayOfSize(5),
+    });
   });
 
   test("get origins for oauth2 service", () => {

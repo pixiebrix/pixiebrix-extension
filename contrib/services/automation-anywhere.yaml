@@ -31,6 +31,8 @@ inputSchema:
       format: '\d+'
   required:
     - username
+uiSchema:
+  ui:order: ["controlRoomUrl", "username", "password", "apiKey", "folderId"]
 authentication:
   baseURL: "{{{ controlRoomUrl }}}"
   token:
