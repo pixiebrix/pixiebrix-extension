@@ -78,7 +78,6 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
           console.info("Cannot clear dynamic element from page", { error });
         }
 
-        // Uninstall from all tabs
         await removeExtensionsFromAllTabs([extensionId]);
       } catch (error: unknown) {
         notify.error({
