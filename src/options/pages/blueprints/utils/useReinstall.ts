@@ -21,7 +21,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { uninstallRecipe } from "./uninstallRecipe";
+import { uninstallRecipe } from "@/store/uninstallUtils";
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 

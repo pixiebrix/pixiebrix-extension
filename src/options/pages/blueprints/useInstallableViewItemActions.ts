@@ -26,10 +26,6 @@ import { type InstallableViewItem } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
-  reactivateEveryTab,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
-import {
   blueprintModalsSlice,
   type PublishContext,
   type ShareContext,
@@ -37,7 +33,6 @@ import {
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
-import { actions as extensionActions } from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
@@ -46,7 +41,7 @@ import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
-import { removeDynamicElements } from "@/store/dynamicElementStorage";
+import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 
 type ActionCallback = () => void;
 
@@ -191,27 +186,20 @@ function useInstallableViewItemActions(
   );
 
   const uninstall = useUserAction(
-    () => {
-      void removeDynamicElements(
-        extensionsFromInstallable.map((extension) => extension.id)
-      );
-
-      for (const extension of extensionsFromInstallable) {
-        dispatch(
-          extensionActions.removeExtension({ extensionId: extension.id })
-        );
-        // XXX: also remove sidebar panels that are already open?
-        void uninstallContextMenu({ extensionId: extension.id });
-      }
-
-      reactivateEveryTab();
-
-      // Report telemetry
+    async () => {
       if (isInstallableBlueprint) {
+        const blueprintId = installable.metadata.id;
+        await uninstallRecipe(blueprintId, extensionsFromInstallable, dispatch);
+
         reportEvent("BlueprintRemove", {
-          blueprintId: installable.metadata.id,
+          blueprintId,
         });
       } else {
+        await uninstallExtensions(
+          extensionsFromInstallable.map(({ id }) => id),
+          dispatch
+        );
+
         for (const extension of extensionsFromInstallable) {
           reportEvent("ExtensionRemove", {
             extensionId: extension.id,

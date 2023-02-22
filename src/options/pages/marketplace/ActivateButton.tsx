@@ -15,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { type RecipeDefinition } from "@/types/definitions";
 import { useLocation } from "react-router";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { uninstallContextMenu } from "@/background/messenger/api";
+import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
-import extensionsSlice from "@/store/extensionsSlice";
 import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
-
-const { removeExtension } = extensionsSlice.actions;
+import { uninstallRecipe } from "@/store/uninstallUtils";
 
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
@@ -44,32 +41,20 @@ const ActivateButton: React.FunctionComponent<{
     serviceAuths
   );
   const dispatch = useDispatch();
-  const localExtensions = useSelector(selectExtensions);
-  const installedExtensions = useMemo(
-    () =>
-      localExtensions?.filter(
-        (extension) => extension._recipe?.id === blueprint?.metadata.id
-      ),
-    [blueprint, localExtensions]
+
+  const blueprintId = blueprint?.metadata.id;
+  const blueprintExtensions = useSelector(
+    selectExtensionsForRecipe(blueprintId)
   );
 
-  const uninstallExtensions = async () => {
-    for (const extension of installedExtensions) {
-      const extensionRef = { extensionId: extension.id };
-      // eslint-disable-next-line no-await-in-loop -- see useReinstall.ts
-      await uninstallContextMenu(extensionRef);
-      dispatch(removeExtension(extensionRef));
-    }
-  };
-
   const activateOrReinstall = async () => {
-    if (!reinstall) {
+    if (!reinstall || !blueprintId) {
       activate();
       return;
     }
 
     try {
-      await uninstallExtensions();
+      await uninstallRecipe(blueprintId, blueprintExtensions, dispatch);
       activate();
     } catch (error) {
       notify.error({

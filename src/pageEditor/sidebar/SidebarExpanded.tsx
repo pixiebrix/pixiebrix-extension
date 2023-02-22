@@ -190,10 +190,10 @@ const SidebarExpanded: React.FunctionComponent<{
     return (
       <ExtensionEntry
         key={getIdForElement(item)}
+        extension={item}
         recipes={recipes}
         availableInstalledIds={availableInstalledIds}
         availableDynamicIds={availableDynamicIds}
-        extension={item}
       />
     );
   });

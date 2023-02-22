@@ -42,7 +42,7 @@ export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
-export const removeExtensionForEveryTab = getNotifier(
+export const removeExtensionForEveryTab = getMethod(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg
 );

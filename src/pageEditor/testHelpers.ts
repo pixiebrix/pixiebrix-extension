@@ -25,7 +25,10 @@ import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
-import { createRenderWithWrappers } from "@/testUtils/testHelpers";
+import {
+  createRenderHookWithWrappers,
+  createRenderWithWrappers,
+} from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
@@ -33,7 +36,7 @@ import { appApi } from "@/services/api";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 
-const renderWithWrappers = createRenderWithWrappers(() =>
+const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
@@ -58,10 +61,15 @@ const renderWithWrappers = createRenderWithWrappers(() =>
         .concat(recipesMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
-  })
+  });
+
+const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
+const renderHookWithWrappers = createRenderHookWithWrappers(
+  configureStoreForTests
 );
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+export { renderHookWithWrappers as renderHook };

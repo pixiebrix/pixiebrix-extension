@@ -28,7 +28,6 @@ import {
   removeElement,
   removeRecipeData,
 } from "@/pageEditor/slices/editorSliceHelpers";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
 
@@ -71,23 +70,24 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
  *
  * Note: this does not trigger a change even in any current redux instances
  * @param recipeId The recipe to remove
- * @returns The removed elements
+ * @returns The UUIDs of removed elements
  */
 export async function removeDynamicElementsForRecipe(
   recipeId: RegistryId
-): Promise<FormState[]> {
-  const removedDynamicElements: FormState[] = [];
+): Promise<UUID[]> {
+  const removedDynamicElements: UUID[] = [];
   const state = await getEditorState();
   const newState = produce(state, (draft) => {
     removeRecipeData(draft, recipeId);
 
     for (const element of state.elements) {
       if (element.recipe?.id === recipeId) {
-        removedDynamicElements.push(element);
+        removedDynamicElements.push(element.uuid);
         removeElement(draft, element.uuid);
       }
     }
   });
+
   await saveEditorState(newState);
 
   return removedDynamicElements;

@@ -15,29 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  reactivateTab,
-  handleNavigate,
-  removeInstalledExtension,
-  removeDynamicExtension,
-} from "@/contentScript/messenger/api";
+import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
 import { type Target } from "@/types";
 import { canAccessTab } from "@/utils/permissions";
 import { debounce } from "lodash";
-import { type UUID } from "@/core";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
   void forEachTab(reactivateTab);
-}
-
-export function removeExtensionForEveryTab(extensionId: UUID): void {
-  console.debug("Remove extension for all tabs", { extensionId });
-  void forEachTab((tab) => {
-    removeInstalledExtension(tab, extensionId);
-    removeDynamicExtension(tab, extensionId);
-  });
 }
 
 async function onNavigation({ tabId, frameId }: Target): Promise<void> {

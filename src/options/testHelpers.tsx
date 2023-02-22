@@ -27,7 +27,7 @@ import {
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 
-export const configureStoreForTests = () =>
+const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,

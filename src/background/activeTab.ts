@@ -26,10 +26,28 @@ export async function getTabsWithAccess(): Promise<TabId[]> {
   return uniq([...tabs.map((x) => x.id), ...possiblyActiveTabs.keys()]);
 }
 
+/**
+ * Runs a callback for each tab the extension has access to
+ */
 export async function forEachTab<
   TCallback extends (target: { tabId: number }) => void
 >(callback: TCallback): Promise<void> {
   for (const tabId of await getTabsWithAccess()) {
     callback({ tabId });
   }
+}
+
+/**
+ * Runs an asynchronous callback for each tab the extension has access to
+ * @returns A promise that resolves when all the callbacks have resolved
+ */
+export async function forEachTabAsync<
+  TCallback extends (target: { tabId: number }) => Promise<void>
+>(callback: TCallback): Promise<Array<PromiseSettledResult<void>>> {
+  const promises: Array<Promise<void>> = [];
+  for (const tabId of await getTabsWithAccess()) {
+    promises.push(callback({ tabId }));
+  }
+
+  return Promise.allSettled(promises);
 }

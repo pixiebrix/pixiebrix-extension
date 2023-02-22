@@ -326,6 +326,18 @@ const extensionsSlice = createSlice({
       state.extensions = extensions;
     },
 
+    removeExtensions(
+      state,
+      { payload: { extensionIds } }: PayloadAction<{ extensionIds: UUID[] }>
+    ) {
+      requireLatestState(state);
+
+      // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
+      state.extensions = state.extensions.filter(
+        (x) => !extensionIds.includes(x.id)
+      );
+    },
+
     removeExtension(
       state,
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
