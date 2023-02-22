@@ -17,4 +17,6 @@
 
 export const uninstallRecipe = jest.fn().mockResolvedValue(undefined);
 export const uninstallExtensions = jest.fn().mockResolvedValue(undefined);
-export const removeExtensionsFromTabs = jest.fn().mockResolvedValue(undefined);
+export const removeExtensionsFromAllTabs = jest
+  .fn()
+  .mockResolvedValue(undefined);
