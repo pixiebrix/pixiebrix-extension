@@ -52,7 +52,7 @@ exports[`it renders default state 1`] = `
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="blueprintId"
             >
-              Blueprint ID
+              Mod ID
             </label>
             <div
               class="col-xl-10 col-lg-9"
@@ -150,7 +150,7 @@ exports[`it renders default state 1`] = `
                 class="text-muted form-text"
               >
                 <span>
-                  A unique id for the blueprint
+                  A unique id for the mod
                 </span>
               </small>
             </div>
@@ -177,7 +177,7 @@ exports[`it renders default state 1`] = `
                 class="text-muted form-text"
               >
                 <span>
-                  A display name for the blueprint
+                  A display name for the mod
                 </span>
               </small>
             </div>
@@ -204,7 +204,7 @@ exports[`it renders default state 1`] = `
                 class="text-muted form-text"
               >
                 <span>
-                  The current blueprint version
+                  The current mod version
                 </span>
               </small>
             </div>
@@ -231,7 +231,7 @@ exports[`it renders default state 1`] = `
                 class="text-muted form-text"
               >
                 <span>
-                  A short description of the blueprint
+                  A short description of the mod
                 </span>
               </small>
             </div>
