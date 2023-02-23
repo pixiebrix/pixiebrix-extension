@@ -22,6 +22,7 @@ import { type UnknownObject } from "@/types";
 import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
+import { isEmpty } from "lodash";
 
 export function fieldLabel(name: string): string {
   return name.split(".").at(-1);
@@ -129,7 +130,13 @@ export const getValidationErrMessages = (
     if (definition.pattern) {
       messages.pattern = `Invalid ${key} format`;
     }
+
+    if (!isEmpty(messages)) {
+      // eslint-disable-next-line security/detect-object-injection -- no user generated values here
+      errMessages[key] = messages;
+    }
   }
 
+  console.log("errmessages", errMessages);
   return errMessages;
 };
