@@ -159,7 +159,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                     {isBlueprint && isInstalled && (
                       <div className="mr-4 my-auto">
                         <BooleanWidget name="reactivate" />
-                        <span className="ml-2">Re-activate Blueprint</span>
+                        <span className="ml-2">Re-activate Mod</span>
                       </div>
                     )}
                     <div>

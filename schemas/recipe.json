@@ -3,7 +3,7 @@
   "$id": "https://app.pixiebrix.com/schemas/recipe#",
   "type": "object",
   "title": "PixieBrix Recipe",
-  "description": "A PixieBrix blueprint for one or more installed bricks",
+  "description": "A PixieBrix mod for one or more installed bricks",
   "properties": {
     "apiVersion": {
       "type": "string",

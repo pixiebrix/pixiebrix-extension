@@ -48,11 +48,11 @@ const SharingLabel: React.VoidFunctionComponent<{
     overlay={
       <Popover id="sharingLabelPopover">
         <Popover.Content>
-          {sharing.type === "Personal" && "You created this blueprint."}
+          {sharing.type === "Personal" && "You created this mod."}
           {sharing.type === "Team" &&
-            `This blueprint was shared with you by "${sharing.label}" team.`}
+            `This mod was shared with you by "${sharing.label}" team.`}
           {sharing.type === "Public" &&
-            "You activated this blueprint from the public marketplace."}
+            "You activated this mod from the public marketplace."}
         </Popover.Content>
       </Popover>
     }

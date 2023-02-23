@@ -105,7 +105,7 @@ function useSaveRecipe(): RecipeSaver {
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
     if (recipe == null) {
       throw new Error(
-        "You no longer have edit permissions for the blueprint. Please reload the Editor."
+        "You no longer have edit permissions for the mod. Please reload the Editor."
       );
     }
 
@@ -115,8 +115,8 @@ function useSaveRecipe(): RecipeSaver {
     }
 
     const confirm = await showConfirmation({
-      title: "Save Blueprint?",
-      message: "All changes to the blueprint and its extensions will be saved",
+      title: "Save Mod?",
+      message: "All changes to the mod and its extensions will be saved",
       submitCaption: "Save",
       submitVariant: "primary",
     });
@@ -217,11 +217,11 @@ function useSaveRecipe(): RecipeSaver {
     try {
       const success = await save(recipeId);
       if (success) {
-        notify.success("Saved blueprint");
+        notify.success("Saved mod");
       }
     } catch (error: unknown) {
       notify.error({
-        message: "Failed saving blueprint",
+        message: "Failed saving mod",
         error,
       });
     } finally {

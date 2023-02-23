@@ -96,7 +96,7 @@ const useSavingWizard = () => {
       const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
       if (!recipe) {
         notify.error(
-          "You no longer have edit permissions for the blueprint. Please reload the Editor."
+          "You no longer have edit permissions for the mod. Please reload the Editor."
         );
         return;
       }
@@ -158,7 +158,7 @@ const useSavingWizard = () => {
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
     if (recipeMeta.id === recipe.metadata.id) {
-      closeWizard("You must provide a new id for the Blueprint");
+      closeWizard("You must provide a new id for the Mod");
       return;
     }
 
@@ -182,7 +182,7 @@ const useSavingWizard = () => {
     });
 
     if ("error" in createRecipeResponse) {
-      const errorMessage = "Failed to create new Blueprint";
+      const errorMessage = "Failed to create new Mod";
       notify.error({
         message: errorMessage,
         error: createRecipeResponse.error,
@@ -240,7 +240,7 @@ const useSavingWizard = () => {
     });
 
     if ("error" in updateRecipeResponse) {
-      const errorMessage = "Failed to update the Blueprint";
+      const errorMessage = "Failed to update the Mod";
       notify.error({
         message: errorMessage,
         error: updateRecipeResponse.error,

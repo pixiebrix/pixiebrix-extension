@@ -28,7 +28,7 @@ const PublishedContent: React.FunctionComponent = (props) => {
   return (
     <PublishContentLayout title="Published">
       <Modal.Body>
-        <p>The blueprint has been published to the Marketplace.</p>
+        <p>The mod has been published to the Marketplace.</p>
         <p className="mb-1">Public link to share:</p>
         <ActivationLink blueprintId={blueprintId} />
       </Modal.Body>

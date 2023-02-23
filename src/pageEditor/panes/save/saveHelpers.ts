@@ -100,13 +100,13 @@ function findRecipeIndex(
 
   if (labelMatches.length === 0) {
     throw new Error(
-      `There are no extensions in the blueprint with label "${extension.label}". You must edit the blueprint in the Workshop`
+      `There are no extensions in the mod with label "${extension.label}". You must edit the mod in the Workshop`
     );
   }
 
   if (labelMatches.length > 1) {
     throw new Error(
-      `There are multiple extensions in the blueprint with label "${extension.label}". You must edit the blueprint in the Workshop`
+      `There are multiple extensions in the mod with label "${extension.label}". You must edit the mod in the Workshop`
     );
   }
 
@@ -347,13 +347,13 @@ export function buildRecipe({
 
     if (badApiVersion) {
       throw new Error(
-        `Blueprint extensions have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All extensions in a blueprint must have the same API Version.`
+        `Mod extensions have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All extensions in a mod must have the same API Version.`
       );
     }
 
     if (itemsApiVersion !== recipe.apiVersion) {
       throw new Error(
-        `Blueprint has API Version ${recipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this blueprint.`
+        `Mod has API Version ${recipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`
       );
     }
 

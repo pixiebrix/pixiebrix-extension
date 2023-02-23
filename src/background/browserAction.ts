@@ -28,7 +28,7 @@ const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
 
 const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
-const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
+const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new mod, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;

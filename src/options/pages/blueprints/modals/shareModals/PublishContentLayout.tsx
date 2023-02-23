@@ -117,7 +117,7 @@ const PublishContentLayout: React.FunctionComponent<
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <RequireScope scopeSettingsDescription="To publish a blueprint, you must first set an account alias for your PixieBrix account">
+      <RequireScope scopeSettingsDescription="To publish a mod, you must first set an account alias for your PixieBrix account">
         {body}
       </RequireScope>
     </>

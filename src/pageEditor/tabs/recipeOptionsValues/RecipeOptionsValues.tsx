@@ -114,7 +114,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
     <>
       <Effect values={values} onChange={updateRedux} delayMillis={300} />
       <Card>
-        <Card.Header>Blueprint Input Options</Card.Header>
+        <Card.Header>Mod Input Options</Card.Header>
         <Card.Body>
           <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
             <OptionsFieldGroup name="" />

@@ -95,7 +95,7 @@ describe("ActivateWizard", () => {
           blueprint={recipeDefinitionFactory({
             metadata: recipeMetadataFactory({
               id: "test/blueprint-with-required-options" as RegistryId,
-              name: "Blueprint with Required Options",
+              name: "Mod with Required Options",
             }),
             options: {
               schema: {
@@ -113,7 +113,7 @@ describe("ActivateWizard", () => {
             },
             extensionPoints: [
               extensionPointConfigFactory({
-                label: "Extension Point for Blueprint with Required Options",
+                label: "Extension Point for Mod with Required Options",
               }),
             ],
           })}

@@ -72,9 +72,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   }
 
   const recipeName =
-    listing?.package?.verbose_name ??
-    listing?.package?.name ??
-    "Unnamed blueprint";
+    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
   const recipeNameComponent = (
     <div className={styles.recipeName}>{recipeName}</div>
   );
@@ -143,7 +141,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               {recipeNameComponent}
               <div>is ready to use!</div>
               <br />
-              <div>Go try it out now, or activate another blueprint.</div>
+              <div>Go try it out now, or activate another mod.</div>
             </div>
           </div>
           <div className={styles.footer}>
@@ -160,7 +158,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               {recipeNameComponent}
               <p>
                 {
-                  "We're almost there. This blueprint has a few settings to configure before using. You can always change these later."
+                  "We're almost there. This mod has a few settings to configure before using. You can always change these later."
                 }
               </p>
             </>

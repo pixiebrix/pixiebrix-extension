@@ -235,8 +235,8 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => (
       icon={faHammer}
       description={
         <p>
-          Text-based editor for advanced users to create and edit bricks.
-          Blueprints created in the Page Editor can also be edited here.
+          Text-based editor for advanced users to create and edit bricks. Mods
+          created in the Page Editor can also be edited here.
         </p>
       }
       toolbar={

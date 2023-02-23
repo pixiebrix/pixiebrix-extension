@@ -20,7 +20,7 @@ exports[`it renders default state 1`] = `
         <div
           class="modal-title h4"
         >
-          Name your blueprint
+          Name your mod
         </div>
         <button
           class="close"
@@ -279,7 +279,7 @@ exports[`it renders requires user scope 1`] = `
         <div
           class="modal-title h4"
         >
-          Name your blueprint
+          Name your mod
         </div>
         <button
           class="close"
@@ -303,7 +303,7 @@ exports[`it renders requires user scope 1`] = `
         <div
           class="font-weight-bold"
         >
-          To publish a blueprint, you must first set an account alias for your PixieBrix account
+          To publish a mod, you must first set an account alias for your PixieBrix account
         </div>
         <div
           class="fade mt-2 alert alert-info show"

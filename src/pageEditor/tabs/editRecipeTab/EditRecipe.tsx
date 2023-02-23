@@ -117,25 +117,25 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
 
       <Card>
-        <Card.Header>Blueprint Metadata</Card.Header>
+        <Card.Header>Mod Metadata</Card.Header>
         <Card.Body>
           {showOldRecipeWarning && (
             <Alert variant="warning">
-              You are editing version {installedRecipeVersion} of this
-              blueprint, the latest version is {latestRecipeVersion}. To get the
-              latest version,{" "}
+              You are editing version {installedRecipeVersion} of this mod, the
+              latest version is {latestRecipeVersion}. To get the latest
+              version,{" "}
               <a
-                href="/options.html#/blueprints"
+                href="/options.html#/mods"
                 target="_blank"
-                title="Re-activate the blueprint"
+                title="Re-activate the mod"
               >
-                re-activate the blueprint
+                re-activate the mod
               </a>
             </Alert>
           )}
           <ConnectedFieldTemplate
             name="id"
-            label="Blueprint ID"
+            label="Mod ID"
             description={FieldDescriptions.BLUEPRINT_ID}
             // Blueprint IDs may not be changed after creation
             readOnly

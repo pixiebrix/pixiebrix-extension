@@ -26,8 +26,7 @@ const GetStarted: React.FunctionComponent = () => (
   <>
     <h4 className={styles.callout}>Get started with PixieBrix</h4>
     <p>
-      This is the PixieBrix Page Editor where you can create and modify
-      Blueprints.
+      This is the PixieBrix Page Editor where you can create and modify mods.
     </p>
     <p>To get started, try navigating to a page you&apos;d like to edit.</p>
     <p>
