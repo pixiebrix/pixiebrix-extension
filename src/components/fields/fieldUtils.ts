@@ -137,6 +137,5 @@ export const getValidationErrMessages = (
     }
   }
 
-  console.log("errmessages", errMessages);
   return errMessages;
 };
