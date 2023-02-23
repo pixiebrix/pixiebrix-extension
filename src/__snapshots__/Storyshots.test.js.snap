@@ -85,7 +85,7 @@ exports[`Storyshots Blueprints/GetStartedView Activate Blueprint 1`] = `
       className="col"
     >
       <h4>
-        Want to create a new Blueprint?
+        Want to create a new Mod?
       </h4>
       <ul>
         <li>
@@ -110,7 +110,7 @@ exports[`Storyshots Blueprints/GetStartedView Activate Blueprint 1`] = `
            and start editing your page.
         </li>
         <li>
-          Save your Blueprint in the Page Editor, and you'll see it here as a personal Blueprint.
+          Save your Mod in the Page Editor, and you'll see it here as a personal Mod.
         </li>
       </ul>
     </div>
@@ -239,7 +239,7 @@ exports[`Storyshots Blueprints/GetStartedView Default 1`] = `
       className="col"
     >
       <h4>
-        Want to create a new Blueprint?
+        Want to create a new Mod?
       </h4>
       <ul>
         <li>
@@ -264,7 +264,7 @@ exports[`Storyshots Blueprints/GetStartedView Default 1`] = `
            and start editing your page.
         </li>
         <li>
-          Save your Blueprint in the Page Editor, and you'll see it here as a personal Blueprint.
+          Save your Mod in the Page Editor, and you'll see it here as a personal Mod.
         </li>
       </ul>
     </div>

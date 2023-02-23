@@ -94,8 +94,8 @@ const GetStartedView: React.VoidFunctionComponent<{
             </h4>
             <ul>
               <li>
-                Time to try this Blueprint in the wild! You can navigate to a
-                webpage this Blueprint enhances to see it in action.
+                Time to try this Mod in the wild! You can navigate to a webpage
+                this Mod enhances to see it in action.
               </li>
               <li>
                 Check out the &quot;How to Use&quot; section for{" "}
@@ -103,8 +103,7 @@ const GetStartedView: React.VoidFunctionComponent<{
                   linkText={`${onboardingBlueprintListing.package.verbose_name}`}
                   url={marketplaceUrl}
                 />{" "}
-                in the Marketplace for more details about how to use this
-                Blueprint.
+                in the Marketplace for more details about how to use this Mod.
               </li>
             </ul>
           </Col>
@@ -112,7 +111,7 @@ const GetStartedView: React.VoidFunctionComponent<{
       )}
       <Row className={styles.infoRow}>
         <Col>
-          <h4>Want to create a new Blueprint?</h4>
+          <h4>Want to create a new Mod?</h4>
           <ul>
             <li>
               Start by opening a new browser tab and navigating to the webpage
@@ -129,8 +128,8 @@ const GetStartedView: React.VoidFunctionComponent<{
               or <kbd>F12</kbd> and start editing your page.
             </li>
             <li>
-              Save your Blueprint in the Page Editor, and you&apos;ll see it
-              here as a personal Blueprint.
+              Save your Mod in the Page Editor, and you&apos;ll see it here as a
+              personal Mod.
             </li>
           </ul>
         </Col>

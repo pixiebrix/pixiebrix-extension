@@ -132,8 +132,7 @@ const BotGamesView: React.VoidFunctionComponent<{
                 <p>
                   Click to open the Bot Games challenge page. Chrome will prompt
                   you to allow PixieBrix to enhance the challenge page.
-                  Additionally, PixieBrix will activate the challenge hints
-                  blueprint.
+                  Additionally, PixieBrix will activate the challenge hints mod.
                 </p>
                 <span>
                   <AsyncButton onClick={installBotGamesBlueprint}>
