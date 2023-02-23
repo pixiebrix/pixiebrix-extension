@@ -250,7 +250,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
         <Modal.Body>
           <ConnectedFieldTemplate
             name="blueprintId"
-            label="Blueprint ID"
+            label="Mod ID"
             description={FieldDescriptions.BLUEPRINT_ID}
             as={RegistryIdWidget}
             selectStyles={selectStylesOverride}
