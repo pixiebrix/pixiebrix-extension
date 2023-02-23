@@ -119,22 +119,15 @@ export const getValidationErrMessages = (
       continue;
     }
 
+    // eslint-disable-next-line security/detect-object-injection -- no user generated values here
+    const messages = errMessages[key] ?? {};
+
     if (schema.required.includes(key)) {
-      // eslint-disable-next-line security/detect-object-injection -- no user generated values here
-      errMessages[key] = {
-        // eslint-disable-next-line security/detect-object-injection
-        ...(errMessages[key] ? {} : errMessages[key]),
-        required: `${key} is required`,
-      };
+      messages.required = `${key} is required`;
     }
 
     if (definition.pattern) {
-      // eslint-disable-next-line security/detect-object-injection
-      errMessages[key] = {
-        // eslint-disable-next-line security/detect-object-injection
-        ...errMessages[key],
-        pattern: `Invalid ${key} format`,
-      };
+      messages.pattern = `Invalid ${key} format`;
     }
   }
 
