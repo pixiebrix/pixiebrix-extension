@@ -29,8 +29,6 @@ export type FieldInputMode =
   | "array"
   | "object"
   | "select"
-  | "database"
-  | "icon"
   | "omit"; // An input option to remove a property
 
 /**
@@ -53,11 +51,11 @@ export function inferInputMode(
   const value = fieldConfig[fieldName];
 
   if (isDatabaseField(fieldSchema)) {
-    return isVarExpression(value) ? "var" : "database";
+    return isVarExpression(value) ? "var" : "select";
   }
 
   if (isIconField(fieldSchema)) {
-    return isVarExpression(value) ? "var" : "icon";
+    return isVarExpression(value) ? "var" : "select";
   }
 
   const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);

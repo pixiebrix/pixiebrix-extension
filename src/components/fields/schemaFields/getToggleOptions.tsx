@@ -156,7 +156,7 @@ export function getToggleOptions({
   if (isDatabaseField(fieldSchema)) {
     pushOptions({
       label: "Database",
-      value: "database",
+      value: "select",
       symbol: <OptionIcon icon="select" />,
       Widget: widgetsRegistry.DatabaseWidget,
       interpretValue: () =>
@@ -174,7 +174,7 @@ export function getToggleOptions({
   if (isIconField(fieldSchema)) {
     pushOptions({
       label: "Icon",
-      value: "icon",
+      value: "select",
       symbol: <OptionIcon icon="select" />,
       Widget: widgetsRegistry.IconWidget,
       interpretValue: () => null,
