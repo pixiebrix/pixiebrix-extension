@@ -230,7 +230,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
               class="col"
             >
               <h4>
-                Want to create a new Mod?
+                Want to create a new mod?
               </h4>
               <ul>
                 <li>
@@ -252,7 +252,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
                    and start editing your page.
                 </li>
                 <li>
-                  Save your Mod in the Page Editor, and you'll see it here as a personal Mod.
+                  Save your mod in the Page Editor, and you'll see it here as a personal mod.
                 </li>
               </ul>
             </div>
