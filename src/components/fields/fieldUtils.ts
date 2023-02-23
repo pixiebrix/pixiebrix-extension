@@ -22,6 +22,7 @@ import { type UnknownObject } from "@/types";
 import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
+import { isEmpty } from "lodash";
 
 export function fieldLabel(name: string): string {
   return name.split(".").at(-1);
@@ -101,3 +102,40 @@ export function getFieldValidator(
     }
   };
 }
+
+// Collects custom validation error messages for this schema to be passed to the `config.errMessages`
+// parameter of buildYup
+// See https://github.com/kristianmandrup/schema-to-yup#quick-start
+export const getValidationErrMessages = (
+  schema: Schema | undefined
+): Record<string, Record<string, string>> => {
+  const errMessages: Record<string, Record<string, string>> = {};
+
+  if (!schema) {
+    return errMessages;
+  }
+
+  for (const [key, definition] of Object.entries(schema?.properties)) {
+    if (typeof definition === "boolean") {
+      continue;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- no user generated values here
+    const messages = errMessages[key] ?? {};
+
+    if (schema.required?.includes(key)) {
+      messages.required = `${key} is a required field`;
+    }
+
+    if (definition.pattern) {
+      messages.pattern = `Invalid ${key} format`;
+    }
+
+    if (!isEmpty(messages)) {
+      // eslint-disable-next-line security/detect-object-injection -- no user generated values here
+      errMessages[key] = messages;
+    }
+  }
+
+  return errMessages;
+};
