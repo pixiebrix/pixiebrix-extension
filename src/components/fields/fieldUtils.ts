@@ -122,6 +122,10 @@ export const getValidationErrMessages = (
     // eslint-disable-next-line security/detect-object-injection -- no user generated values here
     const messages = errMessages[key] ?? {};
 
+    if (schema.required.includes(key)) {
+      messages.required = `${key} is a required field`;
+    }
+
     if (definition.pattern) {
       messages.pattern = `Invalid ${key} format`;
     }
