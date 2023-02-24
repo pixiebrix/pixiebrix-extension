@@ -159,7 +159,7 @@ describe("ActivateRecipePanel", () => {
 
     const entry = sidebarEntryFactory("activateRecipe", {
       recipeId: recipe.metadata.id,
-      heading: "Activate Blueprint",
+      heading: "Activate Mod",
     });
 
     const rendered = render(

@@ -129,7 +129,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         reactivateEveryTab();
 
-        dispatch(push("/blueprints"));
+        dispatch(push("/mods"));
       } catch (error) {
         notify.error({
           message: `Error installing ${recipe.metadata.name}`,

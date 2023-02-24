@@ -69,7 +69,7 @@ const RemoveFromRecipeModal: React.FC = () => {
         hideModal();
       } catch (error: unknown) {
         notify.error({
-          message: "Problem removing extension from blueprint",
+          message: "Problem removing from mod",
           error,
         });
       } finally {
@@ -85,7 +85,7 @@ const RemoveFromRecipeModal: React.FC = () => {
       value: "move",
     },
     {
-      label: "Remove the extension from the blueprint",
+      label: "Remove from the mod",
       value: "remove",
     },
   ];
@@ -127,7 +127,7 @@ const RemoveFromRecipeModal: React.FC = () => {
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Remove <em>{activeElement?.label}</em> from blueprint{" "}
+          Remove <em>{activeElement?.label}</em> from mod{" "}
           <em>{activeElement?.recipe?.name}</em>?
         </Modal.Title>
       </Modal.Header>

@@ -46,7 +46,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
       {extensionPoint.definition.type === "quickBar" && (
         <UnconfiguredQuickBarAlert />
       )}
-      <ConnectedFieldTemplate name="label" label="Extension Name" />
+      <ConnectedFieldTemplate name="label" label="Name" />
       {showVersionField && <ApiVersionField />}
       <UpgradedToApiV3 />
       <SchemaFieldContext.Provider value={devtoolFieldOverrides}>

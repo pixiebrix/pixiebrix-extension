@@ -45,8 +45,8 @@ const Sidebar: React.FunctionComponent = () => {
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
           <SidebarLink
-            route="/blueprints"
-            title="Blueprints"
+            route="/mods"
+            title="Mods"
             icon={faCubes}
             isActive={(match, location) =>
               Boolean(match) ||

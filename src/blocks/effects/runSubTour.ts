@@ -27,7 +27,7 @@ export class RunSubTourEffect extends Effect {
     super(
       "@pixiebrix/tour/run",
       "Run Sub-tour",
-      "Run a tour from the same blueprint"
+      "Run a tour from the same mod"
     );
   }
 
@@ -46,7 +46,7 @@ export class RunSubTourEffect extends Effect {
     { logger }: BlockOptions
   ): Promise<void> {
     if (isEmpty(logger.context.blueprintId)) {
-      throw new BusinessError("Can only run sub-tours in the same blueprint");
+      throw new BusinessError("Can only run sub-tours in the same mod");
     }
 
     // XXX: do we need affordance cancel this using abortSignal from BlockOptions? Probably not for now, because

@@ -224,7 +224,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   };
 
   return (
-    <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
+    <RequireScope scopeSettingsDescription="To share a mod, you must first set an account alias for your PixieBrix account">
       <Form
         validationSchema={validationSchema}
         initialValues={initialValues}
@@ -250,7 +250,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
         <Modal.Body>
           <ConnectedFieldTemplate
             name="blueprintId"
-            label="Blueprint ID"
+            label="Mod ID"
             description={FieldDescriptions.BLUEPRINT_ID}
             as={RegistryIdWidget}
             selectStyles={selectStylesOverride}

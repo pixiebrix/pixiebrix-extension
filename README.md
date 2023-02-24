@@ -4,7 +4,7 @@ PixieBrix is a browser extension and platform for safely extending your favorite
 with low/no-code.
 
 In addition to the extension, we maintain [pixiebrix.com](https://www.pixiebrix.com/), a
-registry of bricks and pre-made blueprints. You can create a PixieBrix account to enable
+registry of bricks and pre-made mods. You can create a PixieBrix account to enable
 support for team features, such as shared integration configurations and team bricks.
 
 <table>

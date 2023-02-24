@@ -14,7 +14,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
         <input
           class="form-control form-control-sm"
           id="query"
-          placeholder="Search all blueprints"
+          placeholder="Search all mods"
           value=""
         />
       </form>
@@ -85,7 +85,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="All"
-          data-testid="all-blueprints-blueprint-tab"
+          data-testid="all-mods-blueprint-tab"
           href="#"
           role="button"
         >
@@ -107,7 +107,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
           <span
             class="media-body ml-2"
           >
-            All Blueprints
+            All Mods
           </span>
         </a>
         <a
@@ -230,7 +230,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
               class="col"
             >
               <h4>
-                Want to create a new Blueprint?
+                Want to create a new mod?
               </h4>
               <ul>
                 <li>
@@ -252,7 +252,7 @@ exports[`BlueprintsPageLayout renders 1`] = `
                    and start editing your page.
                 </li>
                 <li>
-                  Save your Blueprint in the Page Editor, and you'll see it here as a personal Blueprint.
+                  Save your mod in the Page Editor, and you'll see it here as a personal mod.
                 </li>
               </ul>
             </div>

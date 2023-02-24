@@ -587,7 +587,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to add extension to blueprint, extension form state not found"
+          "Unable to add extension to mod, extension form state not found"
         );
       }
 
@@ -628,7 +628,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to remove extension from blueprint, extension form state not found"
+          "Unable to remove extension from mod, extension form state not found"
         );
       }
 

@@ -627,7 +627,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="label"
                 >
-                  Extension Name
+                  Name
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -1292,7 +1292,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="text-muted"
                 >
-                  A foundation is the first step in the execution flow, they do not receive inputs
+                  This is the first step in the execution flow, so it does not receive inputs from any other brick.
                 </div>
               </div>
               <div
@@ -1303,7 +1303,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="text-muted"
                 >
-                  A foundation is the first step in the execution flow, they do not receive inputs
+                  This is the first step in the execution flow, so it does not receive inputs from any other brick.
                 </div>
               </div>
               <div
@@ -2141,7 +2141,7 @@ exports[`renders the first selected node 1`] = `
                   <div
                     class="text-muted"
                   >
-                    No trace available, run the extension to generate data
+                    No trace available. Run the mod to generate data
                   </div>
                 </div>
               </div>

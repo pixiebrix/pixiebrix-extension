@@ -52,22 +52,22 @@ type BlueprintTabMap = {
 export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
   active: {
     key: "Active",
-    tabTitle: "Active Blueprints",
+    tabTitle: "Active Mods",
     filters: [{ id: "status", value: "Active" }],
   },
   all: {
     key: "All",
-    tabTitle: "All Blueprints",
+    tabTitle: "All Mods",
     filters: [],
   },
   personal: {
     key: "Personal",
-    tabTitle: "Personal Blueprints",
+    tabTitle: "Personal Mods",
     filters: [{ id: "sharing.source.label", value: "Personal" }],
   },
   public: {
     key: "Public",
-    tabTitle: "Public Blueprints",
+    tabTitle: "Public Mods",
     filters: [{ id: "sharing.source.label", value: "Public" }],
   },
   getStarted: {
@@ -253,7 +253,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
       <Form>
         <Form.Control
           id="query"
-          placeholder="Search all blueprints"
+          placeholder="Search all mods"
           size="sm"
           value={searchInput}
           onChange={({ target }) => {
@@ -300,7 +300,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
         />
         <ListItem
           icon={faAsterisk}
-          label="All Blueprints"
+          label="All Mods"
           eventKey="All"
           onClick={() => {
             setActiveTab(BLUEPRINTS_PAGE_TABS.all);
@@ -336,7 +336,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
             onClick={() => {
               setActiveTab({
                 key: filter,
-                tabTitle: `${filter} Blueprints`,
+                tabTitle: `${filter} Mods`,
                 filters: [{ id: "sharing.source.label", value: filter }],
               });
             }}

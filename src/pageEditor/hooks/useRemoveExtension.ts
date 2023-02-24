@@ -46,7 +46,7 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         const confirm = await showConfirmation({
           title: "Remove Extension?",
           message:
-            "You can reactivate extensions and blueprints from the PixieBrix Options page",
+            "You can reactivate extensions and mods from the PixieBrix Options page",
           submitCaption: "Remove",
         });
 

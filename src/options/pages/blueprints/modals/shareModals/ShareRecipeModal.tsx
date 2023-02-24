@@ -37,7 +37,7 @@ const ShareRecipeModal: React.FunctionComponent = () => {
       title="Share with Teams"
       onHide={closeModal}
     >
-      <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
+      <RequireScope scopeSettingsDescription="To share a mod, you must first set an account alias for your PixieBrix account">
         <ShareRecipeModalBody />
       </RequireScope>
     </ModalLayout>

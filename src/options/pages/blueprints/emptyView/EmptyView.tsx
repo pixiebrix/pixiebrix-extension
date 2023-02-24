@@ -46,9 +46,9 @@ const EmptyView: React.VoidFunctionComponent<{
         <Card.Body>
           <div className={styles.suggestions}>
             <img src={workshopImage} alt="Workshop" width={300} />
-            <h3>No blueprints found {filterName && `in "${filterName}"`}</h3>
+            <h3>No mods found {filterName && `in "${filterName}"`}</h3>
             <div className="mb-4">
-              There {"weren't"} any blueprints with a name, description, or id
+              There {"weren't"} any mods with a name, description, or id
               containing your search term <strong>{`"${globalFilter}"`}</strong>
               .
             </div>

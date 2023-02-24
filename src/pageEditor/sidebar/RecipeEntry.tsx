@@ -115,7 +115,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         {hasUpdate && (
           <span className={cx(styles.icon, "text-warning")}>
             <RecipeHasUpdateIcon
-              title={`You are editing version ${installedVersion} of this blueprint, the latest version is ${latestRecipeVersion}.`}
+              title={`You are editing version ${installedVersion} of this mod, the latest version is ${latestRecipeVersion}.`}
             />
           </span>
         )}

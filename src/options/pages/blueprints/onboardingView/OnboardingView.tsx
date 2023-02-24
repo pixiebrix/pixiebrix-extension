@@ -33,8 +33,7 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
       <span className="text-primary">Not sure what to build?</span> Activate a
-      pre-made blueprints from the public marketplace, or just peruse for
-      inspiration.
+      pre-made mod from the public marketplace, or just peruse for inspiration.
     </p>
     <div className="align-self-center">
       <a
@@ -55,10 +54,10 @@ const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
 
   return (
     <Col xs={6}>
-      <h4>Activate Team Blueprints</h4>
+      <h4>Activate Team Mods</h4>
       <p>
-        You can browse blueprints shared with you using the category filters on
-        this page.
+        You can browse mods shared with you using the category filters on this
+        page.
       </p>
       <Button
         size="sm"
@@ -66,7 +65,7 @@ const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
           dispatch(setActiveTab(BLUEPRINTS_PAGE_TABS.all));
         }}
       >
-        View my blueprints
+        View my mods
       </Button>
     </Col>
   );
@@ -77,8 +76,8 @@ const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
     <p>
       Click the <strong className="text-primary">Activate</strong> button in the{" "}
       <strong className="text-info">blue banner above</strong> to start using
-      your team blueprints. You will see this banner every time your team
-      deploys new or updated blueprints for you to use.
+      your team mods. You will see this banner every time your team deploys new
+      or updated mods for you to use.
     </p>
   </Col>
 );
@@ -86,9 +85,9 @@ const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
 const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
   <Col>
     <p>
-      It looks like your team hasn&apos;t made any blueprints available to you
-      yet. <strong>Contact your team admin</strong> to get access to your
-      team&apos;s blueprints.
+      It looks like your team hasn&apos;t made any mods available to you yet.{" "}
+      <strong>Contact your team admin</strong> to get access to your team&apos;s
+      mods.
     </p>
   </Col>
 );
@@ -182,7 +181,7 @@ const OnboardingView: React.VoidFunctionComponent<{
         }
 
         if (filter === "public") {
-          return "Discover pre-made blueprints in the public marketplace";
+          return "Discover pre-made mods in the public marketplace";
         }
 
         return "Welcome to PixieBrix! Ready to get started?";

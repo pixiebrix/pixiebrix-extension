@@ -24,7 +24,7 @@ import { reportEvent } from "@/telemetry/events";
 import Modals from "./modals/Modals";
 
 const BlueprintsPage: React.FunctionComponent = () => {
-  useTitle("Blueprints");
+  useTitle("Mods");
   const { installables, error } = useInstallables();
 
   useEffect(() => {
