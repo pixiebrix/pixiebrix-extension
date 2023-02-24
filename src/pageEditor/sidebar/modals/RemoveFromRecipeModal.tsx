@@ -85,7 +85,7 @@ const RemoveFromRecipeModal: React.FC = () => {
       value: "move",
     },
     {
-      label: "Remove the extension from the mod",
+      label: "Remove from the mod",
       value: "remove",
     },
   ];
