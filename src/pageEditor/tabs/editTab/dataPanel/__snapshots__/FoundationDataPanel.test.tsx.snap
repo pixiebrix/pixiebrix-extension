@@ -86,7 +86,7 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
         <div
           class="text-muted"
         >
-          A foundation is the first step in the execution flow, they do not receive inputs
+          This is the first step in the execution flow, so it does not receive inputs from any other brick.
         </div>
       </div>
       <div
@@ -97,7 +97,7 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
         <div
           class="text-muted"
         >
-          A foundation is the first step in the execution flow, they do not receive inputs
+          This is the first step in the execution flow, so it does not receive inputs from any other brick.
         </div>
       </div>
       <div
