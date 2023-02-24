@@ -138,7 +138,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<PanelFormState> {
   if (extensionPoint.definition.type !== "panel") {
-    throw new Error("Expected panel extension point type");
+    throw new Error("Expected panel starter brick type");
   }
 
   const { heading = "Custom Panel", collapsible = false } =

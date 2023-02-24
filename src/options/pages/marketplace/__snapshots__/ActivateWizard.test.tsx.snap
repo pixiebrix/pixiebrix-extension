@@ -235,7 +235,7 @@ exports[`ActivateWizard activate blueprint with missing required blueprint optio
         >
           <div>
             <h4>
-              Extensions Contained
+              Starter Bricks Contained
             </h4>
           </div>
           <div>
@@ -393,7 +393,7 @@ exports[`ActivateWizard renders 1`] = `
         >
           <div>
             <h4>
-              Extensions Contained
+              Starter Bricks Contained
             </h4>
           </div>
           <div>

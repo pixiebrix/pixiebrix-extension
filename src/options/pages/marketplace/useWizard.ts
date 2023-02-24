@@ -34,7 +34,11 @@ const STEPS: WizardStep[] = [
     }>,
   },
   { key: "services", label: "Integrations", Component: ServicesBody },
-  { key: "review", label: "Extensions Contained", Component: ExtensionsBody },
+  {
+    key: "review",
+    label: "Starter Bricks Contained",
+    Component: ExtensionsBody,
+  },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 
