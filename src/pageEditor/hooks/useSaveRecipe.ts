@@ -105,7 +105,7 @@ function useSaveRecipe(): RecipeSaver {
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
     if (recipe == null) {
       throw new Error(
-        "You no longer have edit permissions for the mod. Please reload the Editor."
+        "You no longer have edit permissions for the mod. Please reload the Page Editor."
       );
     }
 
