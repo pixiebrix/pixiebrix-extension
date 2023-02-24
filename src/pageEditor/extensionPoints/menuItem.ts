@@ -140,7 +140,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<MenuDefinition>
 ): Promise<ActionFormState> {
   if (extensionPoint.definition.type !== "menuItem") {
-    throw new Error("Expected menuItem extension point type");
+    throw new Error("Expected menuItem starter brick type");
   }
 
   return {

@@ -27,10 +27,10 @@ const ExtraPermissionsSection: React.FunctionComponent = () => (
       addButtonCaption="Add Allowed Origin"
       description={
         <div>
-          URL match patterns permitting the extension to run on a site or call
-          an API. Provide URL match patterns here if the extension either 1)
-          calls an API without using an Integration, or 2) performs actions on a
-          target tab not included in the Site match patterns
+          URL match patterns permitting the starter brick to run on a site or
+          call an API. Provide URL match patterns here if the starter brick
+          either 1) calls an API without using an Integration, or 2) performs
+          actions on a target tab not included in the Site match patterns
         </div>
       }
     />

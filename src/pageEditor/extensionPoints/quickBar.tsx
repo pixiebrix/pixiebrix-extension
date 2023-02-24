@@ -176,7 +176,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<QuickBarDefinition>
 ): Promise<QuickBarFormState> {
   if (extensionPoint.definition.type !== "quickBar") {
-    throw new Error("Expected quickBar extension point type");
+    throw new Error("Expected quickBar starter brick type");
   }
 
   const {

@@ -159,7 +159,7 @@ const AddToRecipeModal: React.FC = () => {
         hideLabel
         as={RadioItemListWidget}
         items={radioItems}
-        header="Move or copy the extension?"
+        header="Move or copy the starter brick?"
       />
     </Modal.Body>
   );

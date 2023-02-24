@@ -171,7 +171,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<MenuDefinition>
 ): Promise<ContextMenuFormState> {
   if (extensionPoint.definition.type !== "contextMenu") {
-    throw new Error("Expected contextMenu extension point type");
+    throw new Error("Expected contextMenu starter brick type");
   }
 
   const {

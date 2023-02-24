@@ -112,7 +112,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
             this.annotations.push({
               position: nestedPosition(position, "config.url"),
               message:
-                "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the extension.",
+                "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the starter brick.",
               analysisId: this.id,
               type: AnnotationType.Error,
               actions: [

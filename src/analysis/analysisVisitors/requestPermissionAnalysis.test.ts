@@ -109,7 +109,7 @@ describe("requestPermissionAnalysis", () => {
         analysisId: "requestPermission",
         type: "error",
         message:
-          "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the extension.",
+          "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the starter brick.",
         position: {
           path: "extension.blockPipeline.0.config.url",
         },

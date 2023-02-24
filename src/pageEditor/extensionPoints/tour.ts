@@ -118,7 +118,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<TourDefinition>
 ): Promise<TourFormState> {
   if (extensionPoint.definition.type !== "tour") {
-    throw new Error("Expected tour extension point type");
+    throw new Error("Expected tour starter brick type");
   }
 
   const { type, reader } = extensionPoint.definition;

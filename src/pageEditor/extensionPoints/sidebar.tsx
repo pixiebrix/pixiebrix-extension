@@ -133,7 +133,7 @@ export async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<SidebarFormState> {
   if (extensionPoint.definition.type !== "actionPanel") {
-    throw new Error("Expected actionPanel extension point type");
+    throw new Error("Expected actionPanel starter brick type");
   }
 
   const heading = `${getDomain(url)} side panel`;

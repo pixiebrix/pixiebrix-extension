@@ -42,8 +42,8 @@ const UpgradedToApiV3: React.FC = () => {
         />
         <p>
           The Page Editor no longer supports editing bricks created for runtime
-          API v2. We&apos;ve attempted to automatically convert this extension
-          to runtime API v3.{" "}
+          API v2. We&apos;ve attempted to automatically convert this mod to
+          runtime API v3.{" "}
           <a
             href="https://docs.pixiebrix.com/runtime"
             target="_blank"

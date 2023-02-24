@@ -414,7 +414,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         extensionId: this.instanceId,
       });
       throw new Error(
-        "Cannot install menu item because extension point was uninstalled"
+        "Cannot install menu item because starter brick was uninstalled"
       );
     }
 
@@ -478,7 +478,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     extension: ResolvedExtension<MenuItemExtensionConfig>
   ) {
     if (!extension.id) {
-      this.logger.error(`Refusing to run extension without id for ${this.id}`);
+      this.logger.error(`Refusing to run mod without id for ${this.id}`);
       return;
     }
 

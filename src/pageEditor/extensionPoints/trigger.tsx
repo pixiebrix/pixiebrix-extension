@@ -150,7 +150,7 @@ async function fromExtensionPoint(
   extensionPoint: ExtensionPointConfig<TriggerDefinition>
 ): Promise<TriggerFormState> {
   if (extensionPoint.definition.type !== "trigger") {
-    throw new Error("Expected trigger extension point type");
+    throw new Error("Expected trigger starter brick type");
   }
 
   const {

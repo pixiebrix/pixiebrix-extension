@@ -81,7 +81,7 @@ const RemoveFromRecipeModal: React.FC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label: "Move the extension to a stand-alone extension",
+      label: "Move the starter brick to stand-alone",
       value: "move",
     },
     {
@@ -96,12 +96,12 @@ const RemoveFromRecipeModal: React.FC = () => {
         name="moveOrRemove"
         as={RadioItemListWidget}
         items={radioItems}
-        header="Move or remove the extension?"
+        header="Move or remove the starter brick?"
       />
       {values.moveOrRemove === "remove" && (
         <Alert variant="warning">
           <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;This will delete the extension. To restore it, use the reset
+          &nbsp;This will delete the starter brick. To restore it, use the reset
           button.
         </Alert>
       )}

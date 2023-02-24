@@ -25,7 +25,7 @@ const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
 }> = ({ unavailableCount }) => (
   <Centered isScrollable>
-    <div className={styles.title}>No custom extensions on the page</div>
+    <div className={styles.title}>No custom mods on the page</div>
 
     <div className="text-left">
       <p>
@@ -35,8 +35,7 @@ const NoExtensionsPane: React.FunctionComponent<{
 
       <p>
         Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo; box to
-        list extensions that are activated but aren&apos;t available on this
-        page.
+        list mods that are activated but aren&apos;t available on this page.
       </p>
 
       <IntroButtons />

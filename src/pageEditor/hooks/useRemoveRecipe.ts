@@ -47,8 +47,7 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
           title: "Remove Mod?",
-          message:
-            "You can reactivate extensions and mods from the PixieBrix Options page",
+          message: "You can reactivate mods from the PixieBrix Options page",
           submitCaption: "Remove",
         });
 

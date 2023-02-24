@@ -174,10 +174,8 @@ function useInstallableViewItemActions(
       await deleteCloudExtension({ extensionId: installable.id }).unwrap();
     },
     {
-      successMessage: `Deleted extension ${getLabel(
-        installable
-      )} from your account`,
-      errorMessage: `Error deleting extension ${getLabel(
+      successMessage: `Deleted mod ${getLabel(installable)} from your account`,
+      errorMessage: `Error deleting mod ${getLabel(
         installable
       )} from your account`,
       event: "ExtensionCloudDelete",

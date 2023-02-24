@@ -91,7 +91,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
           <div className="text-warning">
             <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
             have permission to access {absoluteUrl}. Specify an Integration to
-            access the API, or add an Extra Permissions rule to the extension.
+            access the API, or add an Extra Permissions rule to the mod.
           </div>
         )}
         {permissionsReady && hasPermissions && (
