@@ -96,7 +96,7 @@ const useSavingWizard = () => {
       const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
       if (!recipe) {
         notify.error(
-          "You no longer have edit permissions for the mod. Please reload the Editor."
+          "You no longer have edit permissions for the mod. Please reload the Page Editor."
         );
         return;
       }
