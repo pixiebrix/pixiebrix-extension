@@ -240,7 +240,7 @@ const useSavingWizard = () => {
     });
 
     if ("error" in updateRecipeResponse) {
-      const errorMessage = "Failed to update the Mod";
+      const errorMessage = "Failed to update the mod";
       notify.error({
         message: errorMessage,
         error: updateRecipeResponse.error,
