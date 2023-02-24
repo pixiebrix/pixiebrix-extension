@@ -155,7 +155,7 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
               <span
                 style="color: rgb(64, 175, 108);"
               >
-                "Extension is not in a mod"
+                "Extension is not in a blueprint"
               </span>
             </li>
             <li
