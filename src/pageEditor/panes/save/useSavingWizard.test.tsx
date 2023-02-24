@@ -378,7 +378,7 @@ describe("saving a Recipe Extension", () => {
       await creatingRecipePromise;
       await savingPromise;
     } catch (error) {
-      expect(error).toBe("Failed to create new Mod");
+      expect(error).toBe("Failed to create new mod");
     }
 
     // Wizard closes on error
