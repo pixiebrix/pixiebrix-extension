@@ -8551,7 +8551,7 @@ exports[`Storyshots Panels/RootErrorPanel No Renderer Error Example 1`] = `
       </div>
       <div>
         <small>
-          Add a renderer brick to the extension.
+          Add a renderer brick to the starter brick.
         </small>
       </div>
     </div>
