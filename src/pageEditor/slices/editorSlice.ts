@@ -587,7 +587,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to add extension to mod, extension form state not found"
+          "Unable to add starter brick to mod, starter brick form state not found"
         );
       }
 
@@ -628,7 +628,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to remove extension from mod, extension form state not found"
+          "Unable to remove starter brick from mod, starter brick form state not found"
         );
       }
 
