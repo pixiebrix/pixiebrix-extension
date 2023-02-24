@@ -100,13 +100,13 @@ function findRecipeIndex(
 
   if (labelMatches.length === 0) {
     throw new Error(
-      `There are no extensions in the mod with label "${extension.label}". You must edit the mod in the Workshop`
+      `There are no starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`
     );
   }
 
   if (labelMatches.length > 1) {
     throw new Error(
-      `There are multiple extensions in the mod with label "${extension.label}". You must edit the mod in the Workshop`
+      `There are multiple starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`
     );
   }
 
@@ -141,7 +141,7 @@ export function replaceRecipeExtension(
 
   if (installedExtension == null) {
     throw new Error(
-      `Could not find local copy of recipe extension: ${element.uuid}`
+      `Could not find local copy of starter brick: ${element.uuid}`
     );
   }
 
@@ -163,7 +163,7 @@ export function replaceRecipeExtension(
         }
       } else {
         throw new Error(
-          `Element's API Version (${element.apiVersion}) does not match recipe's API Version (${sourceRecipe.apiVersion}) and recipe's API Version cannot be updated`
+          `Element's API Version (${element.apiVersion}) does not match mod's API Version (${sourceRecipe.apiVersion}) and mod's API Version cannot be updated`
         );
       }
     }

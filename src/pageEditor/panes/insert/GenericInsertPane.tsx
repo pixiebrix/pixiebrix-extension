@@ -91,7 +91,7 @@ const GenericInsertPane: React.FunctionComponent<{
           )) as FormState
         );
       } catch (error) {
-        notify.error({ message: "Error using existing foundation", error });
+        notify.error({ message: "Error using existing starter brick", error });
       }
     },
     [start, config]

@@ -101,7 +101,7 @@ const RemoveFromRecipeModal: React.FC = () => {
       {values.moveOrRemove === "remove" && (
         <Alert variant="warning">
           <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;This will delete the extension. To restore it, use the reset
+          &nbsp;This will delete the starter brick. To restore it, use the reset
           button.
         </Alert>
       )}
