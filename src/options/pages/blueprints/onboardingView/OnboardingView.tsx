@@ -95,7 +95,7 @@ const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
 const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
-      Learn how to create your own extensions in minutes by following our{" "}
+      Learn how to create your own mods in minutes by following our{" "}
       <span className="text-primary">step-by-step guide</span>.
     </p>
     <div className="align-self-center">
@@ -115,8 +115,8 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
   <Col>
     <h4>Create your Own</h4>
     <p>
-      Learn how to create your own extensions in minutes by following our
-      step-by-step guide.
+      Learn how to create your own mods in minutes by following our step-by-step
+      guide.
     </p>
     <a
       className="btn btn-info btn-sm"

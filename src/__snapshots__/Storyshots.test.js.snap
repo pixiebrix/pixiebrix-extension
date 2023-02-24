@@ -408,7 +408,7 @@ exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
           className="d-flex justify-content-center flex-column text-center col"
         >
           <p>
-            Learn how to create your own extensions in minutes by following our
+            Learn how to create your own mods in minutes by following our
              
             <span
               className="text-primary"
