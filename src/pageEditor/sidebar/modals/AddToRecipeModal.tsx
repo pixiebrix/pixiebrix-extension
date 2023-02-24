@@ -135,7 +135,7 @@ const AddToRecipeModal: React.FC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label: "Move the extension into the mod",
+      label: "Move into the selected mod",
       value: "move",
     },
     {
