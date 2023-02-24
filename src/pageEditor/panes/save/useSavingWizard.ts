@@ -182,7 +182,7 @@ const useSavingWizard = () => {
     });
 
     if ("error" in createRecipeResponse) {
-      const errorMessage = "Failed to create new Mod";
+      const errorMessage = "Failed to create new mod";
       notify.error({
         message: errorMessage,
         error: createRecipeResponse.error,
