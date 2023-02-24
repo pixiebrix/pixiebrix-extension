@@ -49,9 +49,7 @@ const Sidebar: React.FunctionComponent = () => {
             title="Mods"
             icon={faCubes}
             isActive={(match, location) =>
-              Boolean(match) ||
-              location.pathname === "/" ||
-              location.pathname.startsWith("/extensions/")
+              Boolean(match) || location.pathname === "/"
             }
           />
 

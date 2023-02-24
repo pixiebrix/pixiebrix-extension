@@ -87,10 +87,10 @@ const ActivateForm: React.FunctionComponent<{
             extension: { ...extension, ...values },
           })
         );
-        notify.success("Activated extension");
+        notify.success("Activated mod");
         dispatch(push("/mods"));
       } catch (error) {
-        notify.error({ message: "Error activating extension", error });
+        notify.error({ message: "Error activating mod", error });
       } finally {
         helpers.setSubmitting(false);
       }

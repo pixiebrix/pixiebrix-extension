@@ -42,7 +42,7 @@ const ActivatePage: React.FunctionComponent = () => {
 
   return (
     <Page
-      title="Activate Extension"
+      title="Activate Mod"
       icon={faCloudDownloadAlt}
       error={error}
       isPending={isLoading || authOptions == null}
