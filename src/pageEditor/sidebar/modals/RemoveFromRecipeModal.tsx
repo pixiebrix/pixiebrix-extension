@@ -69,7 +69,7 @@ const RemoveFromRecipeModal: React.FC = () => {
         hideModal();
       } catch (error: unknown) {
         notify.error({
-          message: "Problem removing extension from mod",
+          message: "Problem removing from mod",
           error,
         });
       } finally {
