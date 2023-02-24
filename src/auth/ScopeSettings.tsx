@@ -152,7 +152,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
       <Alert variant="info" className="mt-2">
         <p>
           <FontAwesomeIcon icon={faEyeSlash} /> You account alias will not be
-          visible to anyone unless you choose to share a brick or extension.
+          visible to anyone unless you choose to share a brick or mod.
         </p>
       </Alert>
 
