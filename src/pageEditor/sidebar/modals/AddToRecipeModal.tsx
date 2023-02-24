@@ -139,7 +139,7 @@ const AddToRecipeModal: React.FC = () => {
       value: "move",
     },
     {
-      label: "Create a copy of the extension in the mod",
+      label: "Create a copy in the selected mod",
       value: "copy",
     },
   ];
