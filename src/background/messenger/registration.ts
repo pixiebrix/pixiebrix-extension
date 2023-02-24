@@ -40,7 +40,6 @@ import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
 import { proxyService } from "@/background/requests";
-import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
@@ -126,8 +125,6 @@ declare global {
     GET_CACHED_AUTH: typeof getCachedAuthData;
     PROXY: typeof proxyService;
     CLEAR_SERVICE_CACHE: VoidFunction;
-    GOOGLE_BIGQUERY_READ: typeof readQuery;
-
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
 
@@ -203,7 +200,6 @@ export default function registerMessenger(): void {
     GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     PROXY: proxyService,
-    GOOGLE_BIGQUERY_READ: readQuery,
 
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,

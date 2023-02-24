@@ -51,7 +51,6 @@ export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
 
 export const sheets = {
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
