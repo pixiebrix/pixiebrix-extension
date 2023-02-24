@@ -116,7 +116,7 @@ function useSaveRecipe(): RecipeSaver {
 
     const confirm = await showConfirmation({
       title: "Save Mod?",
-      message: "All changes to the mod and its extensions will be saved",
+      message: "All changes to the mod will be saved",
       submitCaption: "Save",
       submitVariant: "primary",
     });

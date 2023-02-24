@@ -69,7 +69,7 @@ const RemoveFromRecipeModal: React.FC = () => {
         hideModal();
       } catch (error: unknown) {
         notify.error({
-          message: "Problem removing extension from mod",
+          message: "Problem removing from mod",
           error,
         });
       } finally {
@@ -81,11 +81,11 @@ const RemoveFromRecipeModal: React.FC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label: "Move the extension to a stand-alone extension",
+      label: "Move the starter brick to stand-alone",
       value: "move",
     },
     {
-      label: "Remove the extension from the mod",
+      label: "Remove the starter brick from the mod",
       value: "remove",
     },
   ];
@@ -96,7 +96,7 @@ const RemoveFromRecipeModal: React.FC = () => {
         name="moveOrRemove"
         as={RadioItemListWidget}
         items={radioItems}
-        header="Move or remove the extension?"
+        header="Move or remove the starter brick?"
       />
       {values.moveOrRemove === "remove" && (
         <Alert variant="warning">

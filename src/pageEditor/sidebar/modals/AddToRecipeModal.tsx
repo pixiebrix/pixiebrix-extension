@@ -117,7 +117,7 @@ const AddToRecipeModal: React.FC = () => {
       }
 
       notify.error({
-        message: "Problem adding extension to mod",
+        message: "Problem adding starter brick to mod",
         error,
       });
     } finally {
@@ -135,11 +135,11 @@ const AddToRecipeModal: React.FC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label: "Move the extension into the mod",
+      label: "Move the starter brick into the mod",
       value: "move",
     },
     {
-      label: "Create a copy of the extension in the mod",
+      label: "Create a copy of these bricks in the mod",
       value: "copy",
     },
   ];
@@ -159,7 +159,7 @@ const AddToRecipeModal: React.FC = () => {
         hideLabel
         as={RadioItemListWidget}
         items={radioItems}
-        header="Move or copy the extension?"
+        header="Move or copy the starter brick?"
       />
     </Modal.Body>
   );

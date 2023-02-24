@@ -177,7 +177,7 @@ const OnboardingView: React.VoidFunctionComponent<{
 
       default: {
         if (filter === "personal") {
-          return "Create your own extensions";
+          return "Create your own mods";
         }
 
         if (filter === "public") {

@@ -347,13 +347,13 @@ export function buildRecipe({
 
     if (badApiVersion) {
       throw new Error(
-        `Mod extensions have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All extensions in a mod must have the same API Version.`
+        `Mod bricks have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All bricks in a mod must have the same API Version.`
       );
     }
 
     if (itemsApiVersion !== recipe.apiVersion) {
       throw new Error(
-        `Mod has API Version ${recipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`
+        `Mod has API Version ${recipe.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`
       );
     }
 
