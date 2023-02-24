@@ -158,7 +158,7 @@ const useSavingWizard = () => {
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
     if (recipeMeta.id === recipe.metadata.id) {
-      closeWizard("You must provide a new id for the Mod");
+      closeWizard("You must provide a new id for the mod");
       return;
     }
 
