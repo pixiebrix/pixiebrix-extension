@@ -117,7 +117,7 @@ const AddToRecipeModal: React.FC = () => {
       }
 
       notify.error({
-        message: "Problem adding extension to mod",
+        message: "Problem adding to mod",
         error,
       });
     } finally {
