@@ -40,7 +40,7 @@ export class ShowSidebar extends Effect {
       panelHeading: {
         type: "string",
         description:
-          "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in this extension's mod",
+          "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in this mod",
       },
       forcePanel: {
         type: "boolean",
