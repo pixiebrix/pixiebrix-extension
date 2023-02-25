@@ -19,7 +19,12 @@ import { type UnknownObject } from "@/types";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { type Schema } from "@/core";
 import { isEmpty } from "lodash";
-import { isDatabaseField, isIconField } from "./fieldTypeCheckers";
+import {
+  isDatabaseField,
+  isGoogleSheetIdField,
+  isIconField,
+  isServiceFieldNonMulti,
+} from "./fieldTypeCheckers";
 
 export type FieldInputMode =
   | "string"
@@ -58,6 +63,14 @@ export function inferInputMode(
     return isVarExpression(value) ? "var" : "select";
   }
 
+  if (isServiceFieldNonMulti(fieldSchema)) {
+    return "select";
+  }
+
+  if (isGoogleSheetIdField(fieldSchema)) {
+    return "string";
+  }
+
   const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
 
   if (value == null) {
@@ -85,6 +98,24 @@ export function inferInputMode(
   // TODO: Should handle number the same way as string when implementing https://github.com/pixiebrix/pixiebrix-extension/issues/2341
   if (typeOf === "number" || typeOf === "boolean" || typeOf === "object") {
     return typeOf;
+  }
+
+  let subSchema: Schema;
+
+  if (fieldSchema.anyOf) {
+    subSchema = fieldSchema.anyOf.find((x) => typeof x !== "boolean") as Schema;
+  }
+
+  if (fieldSchema.oneOf) {
+    subSchema = fieldSchema.oneOf.find((x) => typeof x !== "boolean") as Schema;
+  }
+
+  if (fieldSchema.allOf) {
+    subSchema = fieldSchema.allOf.find((x) => typeof x !== "boolean") as Schema;
+  }
+
+  if (subSchema) {
+    return inferInputMode(fieldConfig, fieldName, subSchema);
   }
 
   return "string";

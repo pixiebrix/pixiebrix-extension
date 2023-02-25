@@ -21,7 +21,7 @@ import { useField } from "formik";
 import { type Expression, type Schema } from "@/core";
 import { joinName } from "@/utils";
 import { type SheetMeta } from "@/contrib/google/sheets/types";
-import FileWidget from "@/contrib/google/sheets/FileWidget";
+import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import TabField from "@/contrib/google/sheets/TabField";
 import { useAsyncState } from "@/hooks/common";
@@ -108,7 +108,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={joinName(basePath, "spreadsheetId")}
         label="Google Sheet"
         description="Select a Google Sheet"
-        as={FileWidget}
+        as={SheetsFileWidget}
         doc={doc}
         onSelect={setDoc}
       />

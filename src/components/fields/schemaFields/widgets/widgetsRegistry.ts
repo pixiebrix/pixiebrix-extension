@@ -19,6 +19,8 @@ import { type FormControlProps } from "react-bootstrap";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import type React from "react";
 import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
+import { type ServiceWidgetProps } from "@/components/fields/schemaFields/widgets/ServiceWidget";
+import { type SheetsFileWidgetProps } from "@/contrib/google/sheets/SheetsFileWidget";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;
@@ -43,8 +45,9 @@ type Widgets = {
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
   DatabaseWidget: React.VFC<{ name: string }>;
   PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-
   IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  ServiceWidget: React.FC<ServiceWidgetProps>;
+  SheetsFileWidget: React.FC<SheetsFileWidgetProps>;
 };
 
 function unsetWidgetFactory(label: string): React.VFC {
@@ -81,6 +84,8 @@ const widgetsRegistry: Widgets = {
   DatabaseWidget: unsetWidgetFactory("DatabaseWidget"),
   PasswordWidget: unsetWidgetFactory("PasswordWidget"),
   IconWidget: unsetWidgetFactory("IconWidget"),
+  ServiceWidget: unsetWidgetFactory("ServiceWidget"),
+  SheetsFileWidget: unsetWidgetFactory("SheetsFileWidget"),
 };
 
 export default widgetsRegistry;

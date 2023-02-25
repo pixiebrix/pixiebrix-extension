@@ -26,6 +26,7 @@ import { isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 export const isAppServiceField = createTypePredicate(
   (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
@@ -60,4 +61,24 @@ export function isDatabaseField(schema: Schema): boolean {
 
 export function isIconField(schema: Schema): boolean {
   return schema.$ref === iconSchema.$id;
+}
+
+export function isGoogleSheetIdField(schema: Schema): boolean {
+  return (
+    schema.$ref === googleSheetIdSchema.$id ||
+    schema.$id === googleSheetIdSchema.$id
+  );
+}
+
+/**
+ * Check if a schema matches a service field without checking anyOf/oneOf/allOf
+ * @param schema
+ */
+export function isServiceFieldNonMulti(schema: Schema): boolean {
+  return (
+    schema.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
+    schema.$id?.startsWith(SERVICE_BASE_SCHEMA) ||
+    SERVICE_FIELD_REFS.includes(schema.$ref) ||
+    SERVICE_FIELD_REFS.includes(schema.$id)
+  );
 }

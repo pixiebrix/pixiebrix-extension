@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/googleSheetId#",
+  "type": "string",
+  "format": "select",
+  "title": "Google Sheet",
+  "description": "Select a Google Sheet. The first row in your sheet MUST contain headings.",
+  "minLength": 1
+}

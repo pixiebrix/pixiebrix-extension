@@ -24,12 +24,13 @@ import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
 import { type SheetMeta } from "@/contrib/google/sheets/types";
-import FileWidget from "@/contrib/google/sheets/FileWidget";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
 import { isExpression } from "@/runtime/mapArgs";
+import { dereference } from "@/validators/generic";
+import Loader from "@/components/Loader";
+import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -93,16 +94,54 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     joinName(basePath, "tabName")
   );
 
-  return (
-    <div className="my-2">
-      <ConnectedFieldTemplate
+  const baseSheetSchema: Schema = {
+    $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
+  };
+  const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
+    dereference(baseSheetSchema),
+    []
+  );
+  const sheetServiceSchema: Schema = {
+    $ref: "https://app.pixiebrix.com/schemas/services/google/sheet",
+    title: "Google Sheet",
+    description:
+      "Select a Google Sheet. The first row in your sheet MUST contain headings.",
+  };
+  const sheetFieldSchema: Schema = {
+    oneOf: [sheetServiceSchema, sheetSchema ?? baseSheetSchema],
+  };
+
+  /*
+  Old Sheet input
+  <ConnectedFieldTemplate
         name={joinName(basePath, "spreadsheetId")}
         label="Google Sheet"
         description="Select a Google Sheet. The first row in your sheet MUST contain headings."
-        as={FileWidget}
+        as={SheetsFileWidget}
         doc={doc}
         onSelect={setDoc}
       />
+   */
+
+  return (
+    <div className="my-2">
+      {isLoadingSheetSchema ? (
+        <Loader />
+      ) : (
+        <FormErrorContext.Provider
+          value={{
+            shouldUseAnalysis: false,
+            showUntouchedErrors: false,
+            showFieldActions: false,
+          }}
+        >
+          <SchemaField
+            name={joinName(basePath, "spreadsheetId")}
+            schema={sheetFieldSchema}
+            isRequired
+          />
+        </FormErrorContext.Provider>
+      )}
       <TabField
         name={joinName(basePath, "tabName")}
         schema={APPEND_SCHEMA.properties.tabName as Schema}

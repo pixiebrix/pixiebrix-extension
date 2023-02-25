@@ -17,7 +17,7 @@
 
 import React, { useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import FileWidget from "@/contrib/google/sheets/FileWidget";
+import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { validateRegistryId } from "@/types/helpers";
 import { type SheetMeta } from "@/contrib/google/sheets/types";
@@ -35,7 +35,7 @@ const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={`${name}.spreadsheetId`}
         description="The ID of the spreadsheet to update."
         label="Google Sheet"
-        as={FileWidget}
+        as={SheetsFileWidget}
         onSelect={setDoc}
         doc={doc}
       />

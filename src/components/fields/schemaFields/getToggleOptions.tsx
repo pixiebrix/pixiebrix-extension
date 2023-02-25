@@ -17,7 +17,13 @@ import {
   isSelectField,
   isDatabaseField,
   isIconField,
+  isGoogleSheetIdField,
+  isServiceFieldNonMulti,
 } from "./fieldTypeCheckers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
+import { makeServiceFiledDescription } from "@/components/fields/schemaFields/ServiceField";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -134,6 +140,13 @@ export function getToggleOptions({
     }
   }
 
+  for (const mode of customToggleModes) {
+    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
+    if (mode.match(fieldSchema)) {
+      pushOptions(mode.option);
+    }
+  }
+
   if (isKeyStringField(fieldSchema)) {
     pushOptions({
       label: "Key",
@@ -144,13 +157,6 @@ export function getToggleOptions({
     });
     handleOptionalValue();
     return options;
-  }
-
-  for (const mode of customToggleModes) {
-    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
-    if (mode.match(fieldSchema)) {
-      pushOptions(mode.option);
-    }
   }
 
   if (isDatabaseField(fieldSchema)) {
@@ -183,6 +189,32 @@ export function getToggleOptions({
     handleVarOption();
     handleOptionalValue();
 
+    return options;
+  }
+
+  // Let the multi-schema handling do its thing, don't check here
+  if (isServiceFieldNonMulti(fieldSchema)) {
+    pushOptions({
+      label: "Service",
+      value: "select",
+      symbol: <FontAwesomeIcon icon={faCloud} />,
+      Widget: widgetsRegistry.ServiceWidget,
+      description: makeServiceFiledDescription(fieldSchema),
+      interpretValue: () => null,
+    });
+    handleOptionalValue();
+    return options;
+  }
+
+  if (isGoogleSheetIdField(fieldSchema)) {
+    pushOptions({
+      label: "Sheet",
+      value: "string",
+      symbol: <FontAwesomeIcon icon={faFileAlt} />,
+      Widget: widgetsRegistry.SheetsFileWidget,
+      interpretValue: () => null,
+    });
+    handleOptionalValue();
     return options;
   }
 
