@@ -245,7 +245,7 @@
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
-    "msw": "^1.0.0",
+    "msw": "^1.1.0",
     "msw-storybook-addon": "^1.7.0",
     "node-polyfill-webpack-plugin": "^2.0.0",
     "raw-loader": "^4.0.1",
