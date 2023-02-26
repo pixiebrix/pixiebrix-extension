@@ -17,7 +17,6 @@
 
 import reportError from "@/telemetry/reportError";
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
-import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 import { isChrome } from "webext-detect-page";
 import pMemoize from "p-memoize";
 import injectScriptTag from "@/utils/injectScriptTag";
@@ -38,7 +37,7 @@ async function onGAPILoad(): Promise<void> {
       // Don't pass client nor scope as these will init auth2, which we don't want
       // until the user actually uses a brick
       apiKey: API_KEY,
-      discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
+      discoveryDocs: [...SHEETS_DOCS],
     });
     console.info("gapi initialized");
   } catch (error) {
