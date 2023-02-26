@@ -16,7 +16,12 @@
  */
 
 import { Effect, type UnknownObject } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type SanitizedServiceConfiguration,
+  type Schema,
+} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
 import { isEqual, isPlainObject, unary, uniq } from "lodash";
@@ -25,6 +30,7 @@ import { normalizeHeader } from "@/contrib/google/sheets/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 
 type CellValue = string | number | null;
 
@@ -43,8 +49,14 @@ type Shape = KnownShape | "infer";
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
     spreadsheetId: {
-      type: "string",
-      description: "The ID of the spreadsheet to update.",
+      // Spreadsheet ID or service config
+      oneOf: [
+        {
+          type: "string",
+          minLength: 1,
+        },
+        SHEET_SERVICE_SCHEMA,
+      ],
     },
     tabName: {
       type: "string",
@@ -244,18 +256,22 @@ export class GoogleSheetsAppend extends Effect {
 
   async effect(
     {
-      spreadsheetId,
+      spreadsheetId: spreadsheetIdArg,
       tabName,
       shape = "infer",
       rowValues: rawValues = {},
     }: BlockArg<{
-      spreadsheetId: string;
+      spreadsheetId: string | SanitizedServiceConfiguration;
       tabName: string;
       shape: Shape;
       rowValues: RowValues;
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
+    const spreadsheetId =
+      typeof spreadsheetIdArg === "string"
+        ? spreadsheetIdArg
+        : spreadsheetIdArg.config.spreadsheetId;
     const rows = normalizeShape(shape, rawValues);
     const valueHeaders = uniq(
       rows.flatMap((row) => row.map((x: Entry) => x.header))
