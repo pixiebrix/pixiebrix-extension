@@ -88,7 +88,7 @@ const ActivateForm: React.FunctionComponent<{
           })
         );
         notify.success("Activated extension");
-        dispatch(push("/blueprints"));
+        dispatch(push("/mods"));
       } catch (error) {
         notify.error({ message: "Error activating extension", error });
       } finally {

@@ -79,7 +79,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             fixedWidth
             className={styles.addIcon}
           />{" "}
-          Add to blueprint
+          Add to mod
         </>
       ),
       hide: !onAddToRecipe,
@@ -94,7 +94,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             fixedWidth
             className={styles.removeIcon}
           />{" "}
-          Remove from blueprint
+          Remove from mod
         </>
       ),
       hide: !onRemoveFromRecipe,

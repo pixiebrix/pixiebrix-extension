@@ -131,11 +131,11 @@ const RecipeOptionsDefinition: React.VFC = () => {
 
               <div className={styles.configPanel}>
                 <Card>
-                  <Card.Header>Advanced: Blueprint Options</Card.Header>
+                  <Card.Header>Advanced: Mod Options</Card.Header>
                   <Card.Body>
                     {noOptions && (
                       <div className="mb-3">
-                        No options defined for this Blueprint
+                        No options defined for this mod
                       </div>
                     )}
 

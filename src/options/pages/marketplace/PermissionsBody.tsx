@@ -42,8 +42,8 @@ export function useSelectedAuths(): ServiceAuthPair[] {
 
 const QuickBarAlert = () => (
   <Alert variant="warning">
-    <FontAwesomeIcon icon={faExclamationTriangle} /> This blueprint contains a
-    Quick Bar action, but you have not{" "}
+    <FontAwesomeIcon icon={faExclamationTriangle} /> This mod contains a Quick
+    Bar action, but you have not{" "}
     <a
       href="chrome://extensions/shortcuts"
       onClick={(event) => {

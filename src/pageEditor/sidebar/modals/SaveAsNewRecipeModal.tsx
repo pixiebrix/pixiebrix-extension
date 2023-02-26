@@ -32,7 +32,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
 
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipe, isFetching } = useRecipe(recipeId);
-  const recipeName = recipe?.metadata?.name ?? "this blueprint";
+  const recipeName = recipe?.metadata?.name ?? "this mod";
 
   const dispatch = useDispatch();
 
@@ -48,11 +48,11 @@ const SaveAsNewRecipeModal: React.FC = () => {
   return (
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
-        <Modal.Title>Save as new blueprint?</Modal.Title>
+        <Modal.Title>Save as new mod?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         You do not have permissions to edit <em>{recipeName}</em>. Save as a new
-        blueprint?
+        mod?
       </Modal.Body>
       <Modal.Footer>
         <Button variant="info" onClick={hideModal}>

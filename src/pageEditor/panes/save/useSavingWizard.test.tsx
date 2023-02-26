@@ -378,7 +378,7 @@ describe("saving a Recipe Extension", () => {
       await creatingRecipePromise;
       await savingPromise;
     } catch (error) {
-      expect(error).toBe("Failed to create new Blueprint");
+      expect(error).toBe("Failed to create new mod");
     }
 
     // Wizard closes on error
@@ -461,7 +461,7 @@ describe("saving a Recipe Extension", () => {
       await updatingRecipePromise;
       await savingPromise;
     } catch (error) {
-      expect(error).toBe("Failed to update the Blueprint");
+      expect(error).toBe("Failed to update the mod");
     }
 
     // Wizard closes on error

@@ -27,7 +27,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       }
 
       case KnownSources.OPTIONS: {
-        label = "Blueprint Options";
+        label = "Mod Options";
         break;
       }
 

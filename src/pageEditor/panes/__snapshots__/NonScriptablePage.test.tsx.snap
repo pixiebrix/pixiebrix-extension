@@ -20,10 +20,10 @@ exports[`NonScriptablePage it renders 1`] = `
             Get started with PixieBrix
           </h4>
           <p>
-            This is the PixieBrix Page Editor where you can create and modify Blueprints.
+            This is the PixieBrix Page Editor. Use the Page Editor to create web page modifications, called mods.
           </p>
           <p>
-            To get started, try navigating to a page you'd like to edit.
+            To start, navigate to a web page that you'd like to modify and then click the "Add" button.
           </p>
           <p>
             Try the 

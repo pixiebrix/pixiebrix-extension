@@ -42,7 +42,7 @@ exports[`renders cancel publish modal 1`] = `
         class="modal-body"
       >
         <p>
-          Your marketplace submission will not be published and the public link to your blueprint will no longer work.
+          Your marketplace submission will not be published and the public link to your mod will no longer work.
         </p>
       </div>
       <div
@@ -118,7 +118,7 @@ exports[`renders edit publish modal 1`] = `
             PixieBrix Marketplace
           </a>
            
-          admin team is working on publishing your blueprint. You'll receive an email when it is live in the Marketplace. Contact
+          admin team is working on publishing your mod. You'll receive an email when it is live in the Marketplace. Contact
            
           <a
             href="mailto:support@pixiebrix.com"
@@ -233,7 +233,7 @@ exports[`renders publish modal 1`] = `
         class="modal-body"
       >
         <p>
-          On Submit, the public link to this blueprint will be shared with the
+          On Submit, the public link to this mod will be shared with the
            
           <a
             href="https://www.pixiebrix.com/marketplace/"
@@ -243,7 +243,7 @@ exports[`renders publish modal 1`] = `
             PixieBrix Marketplace
           </a>
            
-          admin team, who will review your submission and publish your blueprint.
+          admin team, who will review your submission and publish your mod.
         </p>
         <p>
           As soon as you Submit, the public link below will work for anyone, so you can start sharing right away!

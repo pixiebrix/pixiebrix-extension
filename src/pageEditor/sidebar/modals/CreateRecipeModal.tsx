@@ -308,10 +308,10 @@ function useFormSchema() {
     id: string()
       .matches(
         PACKAGE_REGEX,
-        "Blueprint ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
+        "Mod ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
       )
-      .notOneOf(allRecipeIds, "Blueprint ID is already in use")
-      .required("Blueprint ID is required"),
+      .notOneOf(allRecipeIds, "Mod ID is already in use")
+      .required("Mod ID is required"),
     name: string().required("Name is required"),
     version: string()
       .test(
@@ -361,7 +361,7 @@ const CreateRecipeModalBody: React.FC = () => {
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
-        throw new Error("Expected either active element or blueprint");
+        throw new Error("Expected either active element or mod");
       }
 
       hideModal();
@@ -372,7 +372,7 @@ const CreateRecipeModalBody: React.FC = () => {
       }
 
       notify.error({
-        message: "Error creating blueprint",
+        message: "Error creating mod",
         error,
       });
     } finally {
@@ -384,7 +384,7 @@ const CreateRecipeModalBody: React.FC = () => {
     <Modal.Body>
       <ConnectedFieldTemplate
         name="id"
-        label="Blueprint ID"
+        label="Mod ID"
         description={FieldDescriptions.BLUEPRINT_ID}
         widerLabel
         as={RegistryIdWidget}
@@ -426,7 +426,7 @@ const CreateRecipeModalBody: React.FC = () => {
   );
 
   return (
-    <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
+    <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
       {isRecipeFetching ? (
         <Loader />
       ) : (
@@ -455,7 +455,7 @@ const CreateRecipeModal: React.FunctionComponent = () => {
   }, [dispatch]);
 
   return (
-    <ModalLayout title="Create new blueprint" show={show} onHide={hideModal}>
+    <ModalLayout title="Create new mod" show={show} onHide={hideModal}>
       <CreateRecipeModalBody />
     </ModalLayout>
   );

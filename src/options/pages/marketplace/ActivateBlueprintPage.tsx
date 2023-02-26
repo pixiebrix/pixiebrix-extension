@@ -68,11 +68,11 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
       // show an error message if not a valid blueprint
       return (
         <Card>
-          <Card.Header>Invalid Blueprint</Card.Header>
+          <Card.Header>Invalid Mod</Card.Header>
           <Card.Body>
             <p className="text-danger">
-              Error: {decodeURIComponent(blueprintId)} is not a valid blueprint.
-              Please verify the link you received to activate the blueprint
+              Error: {decodeURIComponent(blueprintId)} is not a valid mod.
+              Please verify the link you received to activate the mod
             </p>
 
             <Link to="/marketplace" className="btn btn-info">
@@ -90,7 +90,7 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
 
   return (
     <Page
-      title={`${action} Blueprint`}
+      title={`${action} Mod`}
       icon={faStoreAlt}
       isPending={fetchingBlueprint}
       error={fetchError}

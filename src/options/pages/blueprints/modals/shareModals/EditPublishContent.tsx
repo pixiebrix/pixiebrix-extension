@@ -45,8 +45,8 @@ const EditPublishContent: React.FunctionComponent = () => {
           <a href={MARKETPLACE_URL} target="blank" rel="noreferrer noopener">
             PixieBrix Marketplace
           </a>{" "}
-          admin team is working on publishing your blueprint. You&apos;ll
-          receive an email when it is live in the Marketplace. Contact{" "}
+          admin team is working on publishing your mod. You&apos;ll receive an
+          email when it is live in the Marketplace. Contact{" "}
           <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a> if
           you need help.
         </p>

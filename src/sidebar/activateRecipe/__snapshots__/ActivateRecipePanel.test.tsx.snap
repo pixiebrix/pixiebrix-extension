@@ -18,11 +18,11 @@ exports[`ActivateRecipePanel it renders with options, permissions info, and quic
           My Test Listing
         </div>
         <p>
-          We're almost there. This blueprint has a few settings to configure before using. You can always change these later.
+          We're almost there. This mod has a few settings to configure before using. You can always change these later.
         </p>
         <div>
           <h4>
-            Configure Blueprint
+            Configure Mod
           </h4>
         </div>
         <div

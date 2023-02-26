@@ -21,7 +21,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
             <div
               class="card-header"
             >
-              Blueprint Input Options
+              Mod Input Options
             </div>
             <div
               class="card-body"
@@ -339,7 +339,7 @@ exports[`ActivationOptions renders empty options 1`] = `
             <div
               class="card-header"
             >
-              Blueprint Input Options
+              Mod Input Options
             </div>
             <div
               class="card-body"

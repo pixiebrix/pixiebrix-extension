@@ -113,7 +113,7 @@ function useInstallableViewItemActions(
       // This should never happen, because the hook will return `reinstall: null` for installables with no
       // associated blueprint
       notify.error({
-        error: new Error("Cannot reinstall item with no associated blueprint"),
+        error: new Error("Cannot reinstall item with no associated mod"),
       });
     }
   };
@@ -208,8 +208,8 @@ function useInstallableViewItemActions(
       }
     },
     {
-      successMessage: `Deactivated blueprint: ${getLabel(installable)}`,
-      errorMessage: `Error deactivating blueprint: ${getLabel(installable)}`,
+      successMessage: `Deactivated mod: ${getLabel(installable)}`,
+      errorMessage: `Error deactivating mod: ${getLabel(installable)}`,
     },
     [installable, extensionsFromInstallable]
   );

@@ -38,10 +38,10 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
   return (
     <ModalLayout
       show={showConvertToRecipeModal}
-      title="Name your blueprint"
+      title="Name your mod"
       onHide={closeModal}
     >
-      <RequireScope scopeSettingsDescription="To publish a blueprint, you must first set an account alias for your PixieBrix account">
+      <RequireScope scopeSettingsDescription="To publish a mod, you must first set an account alias for your PixieBrix account">
         <ConvertToRecipeModalBody />
       </RequireScope>
     </ModalLayout>

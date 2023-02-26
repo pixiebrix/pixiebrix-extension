@@ -22,8 +22,8 @@
 export const MARKETPLACE_URL = process.env.MARKETPLACE_URL;
 
 export const FieldDescriptions = {
-  BLUEPRINT_ID: "A unique id for the blueprint",
-  BLUEPRINT_NAME: "A display name for the blueprint",
-  BLUEPRINT_DESCRIPTION: "A short description of the blueprint",
-  BLUEPRINT_VERSION: "The current blueprint version",
+  BLUEPRINT_ID: "A unique id for the mod",
+  BLUEPRINT_NAME: "A display name for the mod",
+  BLUEPRINT_DESCRIPTION: "A short description of the mod",
+  BLUEPRINT_VERSION: "The current mod version",
 };

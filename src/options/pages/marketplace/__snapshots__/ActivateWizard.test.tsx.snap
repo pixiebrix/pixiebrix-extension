@@ -53,7 +53,7 @@ exports[`ActivateWizard activate blueprint with missing required blueprint optio
                   <div
                     class="card-title h5"
                   >
-                    Blueprint with Required Options
+                    Mod with Required Options
                   </div>
                   <code
                     class="packageId"
@@ -104,7 +104,7 @@ exports[`ActivateWizard activate blueprint with missing required blueprint optio
         >
           <div>
             <h4>
-              Configure Blueprint
+              Configure Mod
             </h4>
           </div>
           <div
@@ -257,7 +257,7 @@ exports[`ActivateWizard activate blueprint with missing required blueprint optio
                   fill="currentColor"
                 />
               </svg>
-               Extension Point for Blueprint with Required Options
+               Extension Point for Mod with Required Options
             </span>
           </div>
         </div>

@@ -38,7 +38,7 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
     contents = (
       <>
         <div className="text-muted">
-          No trace available, run the extension to generate data
+          No trace available. Run the mod to generate data
         </div>
 
         <div className="text-info mt-2">
@@ -51,7 +51,7 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   } else if (isTraceEmpty) {
     contents = (
       <div className="text-muted">
-        No trace available, run the extension to generate data
+        No trace available. Run the mod to generate data
       </div>
     );
   } else {

@@ -32,9 +32,9 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   return useCallback(
     async (recipeId: RegistryId) => {
       const confirmed = await showConfirmation({
-        title: "Reset Blueprint?",
+        title: "Reset Mod?",
         message:
-          "Unsaved changes to extensions within this blueprint, or to blueprint options and metadata, will be lost.",
+          "Unsaved changes to extensions within this mod, or to mod options and metadata, will be lost.",
         submitCaption: "Reset",
       });
       if (!confirmed) {

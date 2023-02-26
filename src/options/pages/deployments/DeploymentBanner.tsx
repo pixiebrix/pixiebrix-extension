@@ -37,7 +37,7 @@ const DeploymentBanner: React.FunctionComponent = () => {
   // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)
   const matchRoot = useRouteMatch({ path: "/", exact: true });
   const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
-  const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
+  const matchMarketplace = useRouteMatch({ path: "/mods", exact: true });
 
   if (!hasUpdate) {
     return null;

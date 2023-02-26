@@ -96,7 +96,7 @@ const CancelPublishContent: React.FunctionComponent = () => {
 
         <p>
           Your marketplace submission will not be published and the public link
-          to your blueprint will no longer work.
+          to your mod will no longer work.
         </p>
       </Modal.Body>
       <Modal.Footer>

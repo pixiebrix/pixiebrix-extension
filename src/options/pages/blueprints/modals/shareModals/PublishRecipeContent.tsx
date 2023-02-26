@@ -95,12 +95,11 @@ const PublishRecipeContent: React.FunctionComponent = () => {
         {error && <div className="text-danger p-3">{error}</div>}
 
         <p>
-          On Submit, the public link to this blueprint will be shared with the{" "}
+          On Submit, the public link to this mod will be shared with the{" "}
           <a href={MARKETPLACE_URL} target="blank" rel="noreferrer noopener">
             PixieBrix Marketplace
           </a>{" "}
-          admin team, who will review your submission and publish your
-          blueprint.
+          admin team, who will review your submission and publish your mod.
         </p>
         <p>
           As soon as you Submit, the public link below will work for anyone, so
