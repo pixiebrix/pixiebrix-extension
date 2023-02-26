@@ -16,7 +16,7 @@
  */
 
 import { createTypePredicate } from "@/components/fields/fieldUtils";
-import { Expression, type Schema } from "@/core";
+import { type Expression, type Schema } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import {
   SERVICE_BASE_SCHEMA,
