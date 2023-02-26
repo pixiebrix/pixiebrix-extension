@@ -25,10 +25,22 @@ import PipelineVisitor, {
 } from "./PipelineVisitor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
-type VisitDocumentElementArgs = {
+export type VisitDocumentElementArgs = {
+  /**
+   * The position of document builder block within the mod
+   */
   position: BlockPosition;
+  /**
+   * The document builder config
+   */
   blockConfig: BlockConfig;
+  /**
+   * The element at path `pathInBlock` within the document builder config
+   */
   element: DocumentElement;
+  /**
+   * The path to the element within the document builder config
+   */
   pathInBlock: string;
 };
 

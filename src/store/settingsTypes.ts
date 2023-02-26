@@ -110,11 +110,6 @@ export type SkunkworksSettings = {
   selectionTools?: boolean;
 
   /**
-   * Experimental setting to support analysis of variables in the Page Editor
-   */
-  varAnalysis?: boolean;
-
-  /**
    * Experimental setting to support autosuggest for variables in the Page Editor
    */
   varAutosuggest?: boolean;
