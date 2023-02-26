@@ -18,12 +18,14 @@
 import { type UnknownObject } from "@/types";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { type Schema } from "@/core";
-import { isEmpty } from "lodash";
+import { compact, isEmpty, uniq } from "lodash";
 import {
   isDatabaseField,
   isGoogleSheetIdField,
+  isGoogleSheetIdValue,
   isIconField,
   isServiceFieldNonMulti,
+  isServiceValue,
 } from "./fieldTypeCheckers";
 
 export type FieldInputMode =
@@ -41,11 +43,13 @@ export type FieldInputMode =
  * @param fieldConfig the current state/configuration of the field
  * @param fieldName the name of the field in the configuration
  * @param fieldSchema the JSON Schema for the field
+ * @param safeDefault if true, return "string" instead of undefined when nothing matches
  */
 export function inferInputMode(
   fieldConfig: UnknownObject,
   fieldName: string,
-  fieldSchema: Schema
+  fieldSchema: Schema,
+  safeDefault = true
 ): FieldInputMode {
   const hasField = Object.hasOwn(fieldConfig, fieldName);
   if (!hasField) {
@@ -55,6 +59,25 @@ export function inferInputMode(
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
 
+  // We need to check sub-schemas first so things like services don't end up as var
+  const subSchemas = uniq([
+    ...(fieldSchema.anyOf ?? []),
+    ...(fieldSchema.oneOf ?? []),
+    ...(fieldSchema.allOf ?? []),
+  ]);
+  if (!isEmpty(subSchemas)) {
+    const inputModes = compact(
+      subSchemas
+        .filter((x) => typeof x !== "boolean")
+        .map((subSchema) =>
+          inferInputMode(fieldConfig, fieldName, subSchema as Schema, false)
+        )
+    );
+    if (!isEmpty(inputModes)) {
+      return inputModes[0];
+    }
+  }
+
   if (isDatabaseField(fieldSchema)) {
     return isVarExpression(value) ? "var" : "select";
   }
@@ -63,11 +86,11 @@ export function inferInputMode(
     return isVarExpression(value) ? "var" : "select";
   }
 
-  if (isServiceFieldNonMulti(fieldSchema)) {
+  if (isServiceFieldNonMulti(fieldSchema) && isServiceValue(value)) {
     return "select";
   }
 
-  if (isGoogleSheetIdField(fieldSchema)) {
+  if (isGoogleSheetIdField(fieldSchema) && isGoogleSheetIdValue(value)) {
     return "string";
   }
 
@@ -100,23 +123,9 @@ export function inferInputMode(
     return typeOf;
   }
 
-  let subSchema: Schema;
-
-  if (fieldSchema.anyOf) {
-    subSchema = fieldSchema.anyOf.find((x) => typeof x !== "boolean") as Schema;
+  if (safeDefault) {
+    return "string";
   }
 
-  if (fieldSchema.oneOf) {
-    subSchema = fieldSchema.oneOf.find((x) => typeof x !== "boolean") as Schema;
-  }
-
-  if (fieldSchema.allOf) {
-    subSchema = fieldSchema.allOf.find((x) => typeof x !== "boolean") as Schema;
-  }
-
-  if (subSchema) {
-    return inferInputMode(fieldConfig, fieldName, subSchema);
-  }
-
-  return "string";
+  return undefined;
 }

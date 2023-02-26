@@ -200,7 +200,7 @@ export function getToggleOptions({
       symbol: <FontAwesomeIcon icon={faCloud} />,
       Widget: widgetsRegistry.ServiceWidget,
       description: makeServiceFiledDescription(fieldSchema),
-      interpretValue: () => null,
+      interpretValue: () => null, // ServiceWidget has logic that will make this null anyway
     });
     handleOptionalValue();
     return options;
@@ -212,7 +212,7 @@ export function getToggleOptions({
       value: "string",
       symbol: <FontAwesomeIcon icon={faFileAlt} />,
       Widget: widgetsRegistry.SheetsFileWidget,
-      interpretValue: () => null,
+      interpretValue: () => "",
     });
     handleOptionalValue();
     return options;

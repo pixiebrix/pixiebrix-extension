@@ -40,6 +40,7 @@ import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
   onBlur: onBlurProp,
+  extraWidgetProps,
   ...restProps
 }) => {
   const {
@@ -176,6 +177,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       {...restProps}
       // Pass in schema after spreading props to override the non-normalized schema in props
       schema={normalizedSchema}
+      {...extraWidgetProps}
     />
   );
 };

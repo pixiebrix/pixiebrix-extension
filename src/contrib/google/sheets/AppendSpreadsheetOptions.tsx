@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
-import { useField } from "formik";
-import { type Expression, type Schema } from "@/core";
+import { useField, useFormikContext } from "formik";
+import { type Expression, type RegistryId, type Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
@@ -31,6 +31,14 @@ import { isExpression } from "@/runtime/mapArgs";
 import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
+import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import useDependency from "@/services/useDependency";
+import {
+  keyToFieldValue,
+  type ServiceSlice,
+} from "@/components/fields/schemaFields/serviceFieldUtils";
+import { useAsyncEffect } from "use-async-effect";
+import { isEqual } from "lodash";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -90,9 +98,47 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [doc, setDoc] = useState<SheetMeta>(null);
 
+  const [{ value: spreadsheetIdValue }] = useField<string | Expression>(
+    joinName(basePath, "spreadsheetId")
+  );
+
   const [{ value: tabName }] = useField<string | Expression>(
     joinName(basePath, "tabName")
   );
+
+  const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
+    null
+  );
+  const {
+    values: { services },
+  } = useFormikContext<ServiceSlice>();
+
+  useEffect(() => {
+    if (isServiceValue(spreadsheetIdValue)) {
+      const sheetsService = services.find((service) =>
+        isEqual(keyToFieldValue(service.outputKey), spreadsheetIdValue)
+      );
+      if (sheetsService) {
+        setSheetsServiceId(sheetsService.id);
+      }
+    }
+  }, [services, spreadsheetIdValue]);
+
+  const sheetsServiceDependency = useDependency(sheetsServiceId);
+
+  useAsyncEffect(async () => {
+    const config = sheetsServiceDependency?.config?.config;
+    if (!config) {
+      return;
+    }
+
+    if (config.spreadsheetId) {
+      const spreadsheetProperties = await sheets.getSheetProperties(
+        config.spreadsheetId
+      );
+      console.log(spreadsheetProperties);
+    }
+  }, [sheetsServiceDependency]);
 
   const baseSheetSchema: Schema = {
     $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
@@ -139,6 +185,10 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             name={joinName(basePath, "spreadsheetId")}
             schema={sheetFieldSchema}
             isRequired
+            extraWidgetProps={{
+              doc,
+              onSelect: setDoc,
+            }}
           />
         </FormErrorContext.Provider>
       )}

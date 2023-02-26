@@ -26,6 +26,7 @@ import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { type Schema } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isExpression } from "@/runtime/mapArgs";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
@@ -56,10 +57,13 @@ function useToggleFormField(
   const { values: formState, setValues: setFormState } =
     useFormikContext<FormState>();
   const parentValues = getIn(formState, parentFieldName) ?? formState;
+  const value = getIn(formState, name);
+  const unwrappedValue = isExpression(value) ? value.__value__ : value;
 
   const inputMode = useMemo(
     () => inferInputMode(parentValues, fieldName, schema),
-    [fieldName, parentValues, schema]
+    // eslint-disable-next-line -- run when value changes
+    [fieldName, unwrappedValue]
   );
 
   const onOmitField = useCallback(() => {
