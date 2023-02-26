@@ -52,3 +52,15 @@ export class QuickbarQueryReader extends Reader {
     },
   };
 }
+
+export const quickbarQueryReaderShim = {
+  isAvailable: async () => true,
+
+  outputSchema: new QuickbarQueryReader().outputSchema,
+
+  async read() {
+    return {
+      query: "Quick Bar query placeholder",
+    };
+  },
+};

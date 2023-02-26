@@ -215,6 +215,10 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 
   abstract defaultReader(): Promise<IReader>;
 
+  async previewReader(): Promise<IReader> {
+    return this.defaultReader();
+  }
+
   abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<IBlock[]>;
 
   abstract isAvailable(): Promise<boolean>;

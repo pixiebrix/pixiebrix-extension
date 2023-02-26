@@ -73,6 +73,7 @@ import {
 } from "@/extensionPoints/triggerExtensionTypes";
 import {
   getEventReader,
+  getShimEventReader,
   pickEventProperties,
 } from "@/extensionPoints/triggerEventReaders";
 import CompositeReader from "@/blocks/readers/CompositeReader";
@@ -288,6 +289,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return new ArrayCompositeReader(
       compact([
         eventReader ? new CompositeReader({ event: eventReader }) : null,
+        await this.getBaseReader(),
+      ])
+    );
+  }
+
+  override async previewReader(): Promise<IReader> {
+    const shim = getShimEventReader(this.trigger) as IReader;
+
+    return new ArrayCompositeReader(
+      compact([
+        shim ? new CompositeReader({ event: shim }) : null,
         await this.getBaseReader(),
       ])
     );

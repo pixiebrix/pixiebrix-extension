@@ -17,7 +17,6 @@
 
 import {
   type IExtensionPoint,
-  type IReader,
   type ReaderOutput,
   type ReaderRoot,
   type UUID,
@@ -27,12 +26,8 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/vendors/Overlay";
 import { resolveDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
-import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
 import { type TriggerDefinition } from "@/extensionPoints/triggerExtension";
-import selection from "@/utils/selectionController";
-import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
@@ -57,42 +52,6 @@ export async function clearDynamicElements({
     _temporaryExtensions.clear();
   }
 }
-
-/**
- * A "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
- */
-const contextMenuReaderShim = {
-  isAvailable: async () => true,
-
-  outputSchema: new ContextMenuReader().outputSchema,
-
-  async read() {
-    const { activeElement } = document;
-
-    const linkProps =
-      activeElement?.tagName === "A"
-        ? {
-            linkText: activeElement.textContent,
-            linkUrl: activeElement.getAttribute("href"),
-          }
-        : { linkText: null, linkUrl: null };
-
-    // XXX: do we need to support SVG here too?
-    const mediaType = {
-      IMG: "image",
-      VIDEO: "video",
-      AUDIO: "audio",
-    }[activeElement?.tagName];
-
-    return {
-      mediaType,
-      selectionText: selection.get(),
-      srcUrl: activeElement?.getAttribute("src"),
-      documentUrl: document.location.href,
-      ...linkProps,
-    };
-  },
-};
 
 export async function runExtensionPointReader(
   { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
@@ -131,16 +90,7 @@ export async function runExtensionPointReader(
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-  // HACK: same as ContextMenuExtensionPoint, but with the shim reader based on the focused element/selection
-  if (extensionPoint instanceof ContextMenuExtensionPoint) {
-    extensionPoint.defaultReader = async () =>
-      new ArrayCompositeReader([
-        await extensionPoint.getBaseReader(),
-        contextMenuReaderShim as unknown as IReader,
-      ]);
-  }
-
-  const reader = await extensionPoint.defaultReader();
+  const reader = await extensionPoint.previewReader();
 
   // FIXME: this will return an incorrect value in the following scenario(s):
   //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)

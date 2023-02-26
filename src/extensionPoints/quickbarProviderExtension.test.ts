@@ -213,4 +213,11 @@ describe("quickBarProviderExtension", () => {
     const reader = await extensionPoint.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("query");
   });
+
+  it("includes query in preview", async () => {
+    const extensionPoint = fromJS(extensionPointFactory());
+    const reader = await extensionPoint.previewReader();
+    const value = await reader.read(document);
+    expect(value).toHaveProperty("query");
+  });
 });

@@ -334,4 +334,18 @@ describe("triggerExtension", () => {
     const reader = await extensionPoint.defaultReader();
     expect((reader.outputSchema.properties as any).event).toBeUndefined();
   });
+
+  it.each([["selectionchange"], ["click"], ["keypress"], ["custom"]])(
+    "smoke test for preview %s",
+    async (trigger) => {
+      const extensionPoint = fromJS(
+        extensionPointFactory({
+          trigger,
+        })()
+      );
+
+      const reader = await extensionPoint.previewReader();
+      await reader.read(document);
+    }
+  );
 });

@@ -696,7 +696,7 @@ export type RunArgs = {
   extensionIds?: UUID[];
 };
 
-export interface IExtensionPoint extends Metadata {
+export type IExtensionPoint = Metadata & {
   kind: string;
 
   inputSchema: Schema;
@@ -705,7 +705,20 @@ export interface IExtensionPoint extends Metadata {
 
   defaultOptions: Record<string, unknown>;
 
+  /**
+   * Return the IReader used by the extension point. This method should only be called for calculating availability
+   * and the schema, as it may include stub readers.
+   *
+   * @see IExtensionPoint.previewReader
+   */
   defaultReader: () => Promise<IReader>;
+
+  /**
+   * Return a IReader for generated an `@input` preview. The shape will correspond to defaultReader, but some
+   * properties may not be available
+   * @see defaultReader
+   */
+  previewReader: () => Promise<IReader>;
 
   isAvailable: () => Promise<boolean>;
 
@@ -746,7 +759,7 @@ export interface IExtensionPoint extends Metadata {
    * Returns any blocks configured in extension.
    */
   getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
-}
+};
 
 export interface IBlock extends Metadata {
   /** A JSON schema of the inputs for the block */

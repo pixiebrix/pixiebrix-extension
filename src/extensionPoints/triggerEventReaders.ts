@@ -216,6 +216,24 @@ export class CustomEventReader extends Reader {
   };
 }
 
+export function getShimEventReader(trigger: Trigger): unknown {
+  const reader = getEventReader(trigger);
+
+  if (reader) {
+    return {
+      isAvailable: async () => true,
+
+      outputSchema: reader.outputSchema,
+
+      async read() {
+        return "Event data not available in preview";
+      },
+    };
+  }
+
+  return null;
+}
+
 export function getEventReader(trigger: Trigger): IReader | null {
   if (KEYBOARD_TRIGGERS.includes(trigger)) {
     return new KeyboardEventReader();

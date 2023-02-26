@@ -60,7 +60,10 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
-import { QuickbarQueryReader } from "@/extensionPoints/quickbarQueryReader";
+import {
+  QuickbarQueryReader,
+  quickbarQueryReaderShim,
+} from "@/extensionPoints/quickbarQueryReader";
 
 export type QuickBarProviderConfig = {
   /**
@@ -170,6 +173,13 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
     return new ArrayCompositeReader([
       // Include QuickbarQueryReader for the outputSchema. The value gets filled in by the run method
       new QuickbarQueryReader(),
+      await this.getBaseReader(),
+    ]);
+  }
+
+  override async previewReader(): Promise<IReader> {
+    return new ArrayCompositeReader([
+      quickbarQueryReaderShim as unknown as IReader,
       await this.getBaseReader(),
     ]);
   }
