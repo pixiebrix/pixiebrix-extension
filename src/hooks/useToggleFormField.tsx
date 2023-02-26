@@ -63,7 +63,7 @@ function useToggleFormField(
   const inputMode = useMemo(
     () => inferInputMode(parentValues, fieldName, schema),
     // eslint-disable-next-line -- run when value changes
-    [fieldName, unwrappedValue]
+    [fieldName, unwrappedValue, schema]
   );
 
   const onOmitField = useCallback(() => {

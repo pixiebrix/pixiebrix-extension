@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
-import { useField, useFormikContext } from "formik";
-import { type Expression, type RegistryId, type Schema } from "@/core";
+import { useField } from "formik";
+import { type Expression, type Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
@@ -30,13 +30,11 @@ import { isExpression } from "@/runtime/mapArgs";
 import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
 import {
-  keyToFieldValue,
-  type ServiceSlice,
-} from "@/components/fields/schemaFields/serviceFieldUtils";
-import { isEqual } from "lodash";
-import useDependency from "@/services/useDependency";
+  BASE_SHEET_SCHEMA,
+  SHEET_SERVICE_SCHEMA,
+} from "@/contrib/google/sheets/schemas";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -45,7 +43,7 @@ const DEFAULT_FIELDS_SCHEMA: Schema = {
 
 const PropertiesField: React.FunctionComponent<{
   name: string;
-  spreadsheetId: string;
+  spreadsheetId: string | null;
   tabName: string | Expression;
 }> = ({ name, spreadsheetId, tabName }) => {
   const [sheetSchema, , schemaError] = useAsyncState<Schema>(
@@ -93,63 +91,18 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
 }) => {
   const basePath = joinName(name, configKey);
-
-  const [{ value: spreadsheetIdValue }] = useField<string | Expression>(
-    joinName(basePath, "spreadsheetId")
-  );
-  const [spreadsheetId, setSpreadsheetId] = useState<string | null>(
-    isExpression(spreadsheetIdValue) ? null : spreadsheetIdValue
-  );
-  const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
-    null
-  );
-  const {
-    values: { services },
-  } = useFormikContext<ServiceSlice>();
-
-  useEffect(() => {
-    if (isServiceValue(spreadsheetIdValue)) {
-      const sheetsService = services.find((service) =>
-        isEqual(keyToFieldValue(service.outputKey), spreadsheetIdValue)
-      );
-      if (sheetsService) {
-        setSheetsServiceId(sheetsService.id);
-      }
-    }
-  }, [services, spreadsheetIdValue]);
-
-  const sheetsServiceDependency = useDependency(sheetsServiceId);
-
-  useEffect(() => {
-    const config = sheetsServiceDependency?.config?.config;
-    if (!config) {
-      return;
-    }
-
-    if (config.spreadsheetId) {
-      setSpreadsheetId(config.spreadsheetId);
-    }
-  }, [sheetsServiceDependency]);
+  const spreadsheetId = useSpreadsheetId(basePath);
 
   const [{ value: tabName }] = useField<string | Expression>(
     joinName(basePath, "tabName")
   );
 
-  const baseSheetSchema: Schema = {
-    $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
-  };
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
-    dereference(baseSheetSchema),
+    dereference(BASE_SHEET_SCHEMA),
     []
   );
-  const sheetServiceSchema: Schema = {
-    $ref: "https://app.pixiebrix.com/schemas/services/google/sheet",
-    title: "Google Sheet",
-    description:
-      "Select a Google Sheet. The first row in your sheet MUST contain headings.",
-  };
   const sheetFieldSchema: Schema = {
-    oneOf: [sheetServiceSchema, sheetSchema ?? baseSheetSchema],
+    oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
   };
 
   /*
