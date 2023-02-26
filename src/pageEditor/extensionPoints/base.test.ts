@@ -22,7 +22,7 @@ import {
 } from "./base";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories";
 import { type ExtensionPointType } from "@/extensionPoints/types";
-import { ReaderConfig } from "@/blocks/types";
+import { type ReaderConfig } from "@/blocks/types";
 import { validateRegistryId } from "@/types/helpers";
 
 describe("removeEmptyValues()", () => {
