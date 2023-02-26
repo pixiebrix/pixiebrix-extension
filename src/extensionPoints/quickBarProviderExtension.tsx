@@ -168,6 +168,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
   override async defaultReader(): Promise<IReader> {
     return new ArrayCompositeReader([
+      // Include QuickbarQueryReader for the outputSchema. The value gets filled in by the run method
       new QuickbarQueryReader(),
       await this.getBaseReader(),
     ]);

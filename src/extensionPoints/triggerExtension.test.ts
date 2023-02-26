@@ -282,4 +282,56 @@ describe("triggerExtension", () => {
 
     extensionPoint.uninstall();
   });
+
+  it("includes selection change reader schema", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "selectionchange",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+
+    expect(
+      (reader.outputSchema.properties as any).event.properties.selectionText
+        .type
+    ).toBe("string");
+  });
+
+  it("includes custom event schema", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "custom",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+    expect(
+      (reader.outputSchema.properties as any).event.additionalProperties
+    ).toBe(true);
+  });
+
+  it("includes keyboard event schema", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "keypress",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+    expect(
+      (reader.outputSchema.properties as any).event.properties.key.type
+    ).toBe("string");
+  });
+
+  it("excludes event for mouse click", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "click",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+    expect((reader.outputSchema.properties as any).event).toBeUndefined();
+  });
 });
