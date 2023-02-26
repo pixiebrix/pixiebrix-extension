@@ -384,38 +384,42 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 export function getImplicitReader(
   type: ExtensionPointType
 ): SingleLayerReaderConfig {
+  // Reminder: when providing a composite array reader, the later entries override the earlier ones
+
+  const base = [
+    validateRegistryId("@pixiebrix/document-metadata"),
+    // Include @pixiebrix/document-context because it reads the current URL, instead of the original URL on the page.
+    // Necessary to avoid confusion when working with SPAs
+    validateRegistryId("@pixiebrix/document-context"),
+  ] as ReaderConfig[];
+
+  const elementAddons = [
+    { element: validateRegistryId("@pixiebrix/html/element") },
+  ] as const;
+
   if (type === "trigger") {
-    return readerTypeHack([
-      validateRegistryId("@pixiebrix/document-metadata"),
-      { element: validateRegistryId("@pixiebrix/html/element") },
-    ]);
+    return readerTypeHack([...base, ...elementAddons]);
   }
 
   if (type === "quickBar" || type === "quickBarProvider") {
     return readerTypeHack([
-      validateRegistryId("@pixiebrix/document-metadata"),
+      ...base,
+      ...elementAddons,
       validateRegistryId("@pixiebrix/selection"),
-      { element: validateRegistryId("@pixiebrix/html/element") },
     ]);
   }
 
   if (type === "contextMenu") {
     // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
     // the contextMenu extension point.
-    return readerTypeHack([
-      validateRegistryId("@pixiebrix/document-metadata"),
-      { element: validateRegistryId("@pixiebrix/html/element") },
-    ]);
+    return readerTypeHack([...base, ...elementAddons]);
   }
 
   if (type === "menuItem") {
-    return readerTypeHack([
-      validateRegistryId("@pixiebrix/document-metadata"),
-      { element: validateRegistryId("@pixiebrix/html/element") },
-    ]);
+    return readerTypeHack([...base, ...elementAddons]);
   }
 
-  return [validateRegistryId("@pixiebrix/document-metadata")];
+  return readerTypeHack(base);
 }
 
 /**
