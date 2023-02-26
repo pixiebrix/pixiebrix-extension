@@ -41,13 +41,14 @@ import {
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/recipes/registry";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 import { AnnotationType } from "@/types";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { fromJS } from "@/extensionPoints/factory";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -80,16 +81,22 @@ async function setServiceVars(extension: FormState, contextVars: VarMap) {
   }
 }
 
-async function setInputVars(extension: FormState, contextVars: VarMap) {
-  const readersConfig = extension.extensionPoint.definition.reader;
-  if (readersConfig == null) {
-    return;
-  }
+/**
+ * Set the input variables from the ExtensionPoint definition.
+ */
+async function setInputVars(
+  extension: FormState,
+  contextVars: VarMap
+): Promise<void> {
+  const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
+  const config = adapter.selectExtensionPointConfig(extension);
 
-  const reader = await mergeReaders(readersConfig);
+  const extensionPoint = fromJS(config);
+
+  const reader = await extensionPoint.defaultReader();
+
   const readerProperties = reader?.outputSchema?.properties;
-  const readerKeys =
-    readerProperties == null ? [] : Object.keys(readerProperties);
+  const readerKeys = Object.keys(readerProperties ?? {});
 
   if (readerKeys.length === 0) {
     return;
@@ -101,7 +108,7 @@ async function setInputVars(extension: FormState, contextVars: VarMap) {
   }
 
   contextVars.setExistenceFromValues({
-    source: `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
+    source: KnownSources.INPUT,
     values: inputContextShape,
     parentPath: "@input",
   });

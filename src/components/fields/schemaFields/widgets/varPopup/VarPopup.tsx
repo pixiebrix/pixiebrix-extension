@@ -48,9 +48,8 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const analysisSliceExists = useSelector(selectAnalysisSliceExists);
-  const { varAnalysis, varAutosuggest } = useSelector(selectSettings);
-  const autosuggestEnabled =
-    varAnalysis && varAutosuggest && analysisSliceExists;
+  const { varAutosuggest } = useSelector(selectSettings);
+  const autosuggestEnabled = varAutosuggest && analysisSliceExists;
 
   useEffect(() => {
     if (

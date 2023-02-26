@@ -207,4 +207,10 @@ describe("quickBarProviderExtension", () => {
     toggleQuickBar();
     await tick();
   });
+
+  it("includes query in the schema", async () => {
+    const extensionPoint = fromJS(extensionPointFactory());
+    const reader = await extensionPoint.defaultReader();
+    expect(reader.outputSchema.properties).toHaveProperty("query");
+  });
 });
