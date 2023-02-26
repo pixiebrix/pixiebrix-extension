@@ -17,12 +17,18 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { Transformer, type UnknownObject } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type SanitizedServiceConfiguration,
+  type Schema,
+} from "@/core";
 import { sheets } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { zip } from "lodash";
 import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
+import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"
@@ -31,8 +37,14 @@ export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
 export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
   {
     spreadsheetId: {
-      type: "string",
-      description: "The ID of the spreadsheet to update.",
+      // Spreadsheet ID or service config
+      oneOf: [
+        {
+          type: "string",
+          minLength: 1,
+        },
+        SHEET_SERVICE_SCHEMA,
+      ],
     },
     tabName: {
       type: "string",
@@ -70,9 +82,25 @@ export class GoogleSheetsLookup extends Transformer {
   inputSchema: Schema = LOOKUP_SCHEMA;
 
   async transform(
-    { spreadsheetId, tabName, header, query, multi }: BlockArg,
+    {
+      spreadsheetId: spreadsheetIdArg,
+      tabName,
+      header,
+      query,
+      multi,
+    }: BlockArg<{
+      spreadsheetId: string | SanitizedServiceConfiguration;
+      tabName: string;
+      header: string;
+      query: string | number | boolean;
+      multi: boolean;
+    }>,
     { logger }: BlockOptions
   ): Promise<UnknownObject | UnknownObject[]> {
+    const spreadsheetId =
+      typeof spreadsheetIdArg === "string"
+        ? spreadsheetIdArg
+        : spreadsheetIdArg.config.spreadsheetId;
     const response = await sheets.batchGet(spreadsheetId, tabName);
 
     const headers = response.valueRanges?.[0].values?.[0] ?? [];
