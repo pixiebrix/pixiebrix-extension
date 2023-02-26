@@ -19,7 +19,6 @@ import { type Schema, type UiSchema } from "@/core";
 import type React from "react";
 import { type FieldInputMode } from "./fieldInputMode";
 import type * as Yup from "yup";
-import { type UnknownObject } from "@/types";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
@@ -111,9 +110,4 @@ export interface SchemaFieldProps {
    * Reference to the input DOM element. Used for instance by the Variable autosuggest popup
    */
   inputRef?: React.MutableRefObject<HTMLElement>;
-
-  /**
-   * Extra props to pass down to the widget(s)
-   */
-  extraWidgetProps?: UnknownObject;
 }

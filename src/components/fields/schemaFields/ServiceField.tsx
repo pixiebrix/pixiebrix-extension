@@ -68,6 +68,7 @@ const ServiceField: React.FunctionComponent<ServiceWidgetProps> = ({
       label={makeLabelForSchemaField(props)}
       description={makeServiceFiledDescription(schema)}
       as={ServiceWidget}
+      {...props}
     />
   );
 };

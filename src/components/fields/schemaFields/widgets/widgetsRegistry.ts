@@ -20,7 +20,6 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import type React from "react";
 import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
 import { type ServiceWidgetProps } from "@/components/fields/schemaFields/widgets/ServiceWidget";
-import { type SheetsFileWidgetProps } from "@/contrib/google/sheets/SheetsFileWidget";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;
@@ -47,7 +46,7 @@ type Widgets = {
   PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   ServiceWidget: React.FC<ServiceWidgetProps>;
-  SheetsFileWidget: React.FC<SheetsFileWidgetProps>;
+  SheetsFileWidget: React.FC<SchemaFieldProps>;
 };
 
 function unsetWidgetFactory(label: string): React.VFC {

@@ -23,7 +23,6 @@ import { type Expression, type RegistryId, type Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
-import { type SheetMeta } from "@/contrib/google/sheets/types";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
@@ -32,13 +31,12 @@ import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import useDependency from "@/services/useDependency";
 import {
   keyToFieldValue,
   type ServiceSlice,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { useAsyncEffect } from "use-async-effect";
 import { isEqual } from "lodash";
+import useDependency from "@/services/useDependency";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -47,14 +45,14 @@ const DEFAULT_FIELDS_SCHEMA: Schema = {
 
 const PropertiesField: React.FunctionComponent<{
   name: string;
-  doc: SheetMeta | null;
+  spreadsheetId: string;
   tabName: string | Expression;
-}> = ({ name, tabName, doc }) => {
+}> = ({ name, spreadsheetId, tabName }) => {
   const [sheetSchema, , schemaError] = useAsyncState<Schema>(
     async () => {
-      if (doc?.id && tabName && !isExpression(tabName)) {
+      if (spreadsheetId && tabName && !isExpression(tabName)) {
         const headers = await sheets.getHeaders({
-          spreadsheetId: doc.id,
+          spreadsheetId,
           tabName,
         });
         return {
@@ -69,7 +67,7 @@ const PropertiesField: React.FunctionComponent<{
 
       return DEFAULT_FIELDS_SCHEMA;
     },
-    [doc?.id, tabName],
+    [spreadsheetId, tabName],
     DEFAULT_FIELDS_SCHEMA
   );
 
@@ -85,7 +83,7 @@ const PropertiesField: React.FunctionComponent<{
           </span>
         ) : null
       }
-      schema={sheetSchema}
+      schema={sheetSchema ?? DEFAULT_FIELDS_SCHEMA}
     />
   );
 };
@@ -96,16 +94,12 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = joinName(name, configKey);
 
-  const [doc, setDoc] = useState<SheetMeta>(null);
-
   const [{ value: spreadsheetIdValue }] = useField<string | Expression>(
     joinName(basePath, "spreadsheetId")
   );
-
-  const [{ value: tabName }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
+  const [spreadsheetId, setSpreadsheetId] = useState<string | null>(
+    isExpression(spreadsheetIdValue) ? null : spreadsheetIdValue
   );
-
   const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
     null
   );
@@ -126,19 +120,20 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const sheetsServiceDependency = useDependency(sheetsServiceId);
 
-  useAsyncEffect(async () => {
+  useEffect(() => {
     const config = sheetsServiceDependency?.config?.config;
     if (!config) {
       return;
     }
 
     if (config.spreadsheetId) {
-      const spreadsheetProperties = await sheets.getSheetProperties(
-        config.spreadsheetId
-      );
-      console.log(spreadsheetProperties);
+      setSpreadsheetId(config.spreadsheetId);
     }
   }, [sheetsServiceDependency]);
+
+  const [{ value: tabName }] = useField<string | Expression>(
+    joinName(basePath, "tabName")
+  );
 
   const baseSheetSchema: Schema = {
     $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
@@ -185,22 +180,18 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             name={joinName(basePath, "spreadsheetId")}
             schema={sheetFieldSchema}
             isRequired
-            extraWidgetProps={{
-              doc,
-              onSelect: setDoc,
-            }}
           />
         </FormErrorContext.Provider>
       )}
       <TabField
         name={joinName(basePath, "tabName")}
         schema={APPEND_SCHEMA.properties.tabName as Schema}
-        doc={doc}
+        spreadsheetId={spreadsheetId}
       />
       <PropertiesField
         name={joinName(basePath, "rowValues")}
+        spreadsheetId={spreadsheetId}
         tabName={tabName}
-        doc={doc}
       />
     </div>
   );

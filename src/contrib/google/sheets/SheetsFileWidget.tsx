@@ -38,18 +38,10 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
-export type SheetsFileWidgetProps = SchemaFieldProps & {
-  doc: SheetMeta | null;
-  onSelect: (doc: SheetMeta) => void;
-};
-
-const SheetsFileWidget: React.FC<SheetsFileWidgetProps> = ({
-  doc,
-  onSelect,
-  ...props
-}) => {
+const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [field, , helpers] = useField<string | Expression>(props);
   const [sheetError, setSheetError] = useState(null);
+  const [doc, setDoc] = useState<SheetMeta | null>(null);
 
   useEffect(
     () => {
@@ -83,18 +75,18 @@ const SheetsFileWidget: React.FC<SheetsFileWidgetProps> = ({
 
           const properties = await sheets.getSheetProperties(field.value);
           if (!isMounted()) return;
-          onSelect({ id: spreadsheetId, name: properties.title });
+          setDoc({ id: spreadsheetId, name: properties.title });
         } else {
-          onSelect(null);
+          setDoc(null);
         }
       } catch (error) {
         if (!isMounted()) return;
-        onSelect(null);
+        setDoc(null);
         setSheetError(error);
         notify.error({ message: "Error retrieving sheet information", error });
       }
     },
-    [doc?.id, field.value, onSelect, setSheetError]
+    [doc?.id, field.value, setDoc, setSheetError]
   );
 
   const showPicker = useCallback(async () => {
@@ -135,7 +127,7 @@ const SheetsFileWidget: React.FC<SheetsFileWidgetProps> = ({
             }
 
             helpers.setValue(data.docs[0].id);
-            onSelect(doc);
+            setDoc(doc);
           }
         })
         .setOrigin(
@@ -149,7 +141,7 @@ const SheetsFileWidget: React.FC<SheetsFileWidgetProps> = ({
         error,
       });
     }
-  }, [helpers, onSelect]);
+  }, [helpers]);
 
   return isExpression(field.value) ? (
     <WorkshopMessageWidget />
