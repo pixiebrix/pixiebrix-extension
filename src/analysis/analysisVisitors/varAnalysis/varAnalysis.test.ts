@@ -20,6 +20,7 @@ import {
   formStateFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
+  triggerFormStateFactory,
 } from "@/testUtils/factories";
 import VarAnalysis, {
   INVALID_VARIABLE_GENERIC_MESSAGE,
@@ -134,7 +135,6 @@ describe("Collecting available vars", () => {
       expect(knownVars.size).toBe(1);
 
       const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
-
       expect(foundationKnownVars.isVariableDefined("@input.title")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.url")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.lang")).toBeTrue();
@@ -1013,5 +1013,29 @@ describe("var expression annotations", () => {
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
     expect(annotations[0].message).toEqual(INVALID_VARIABLE_GENERIC_MESSAGE);
+  });
+});
+
+describe("var analysis integration tests", () => {
+  it("should handle trigger event", async () => {
+    const extension = triggerFormStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeTemplateExpression(
+            "nunjucks",
+            "{{ @input.event.key }} was pressed"
+          ),
+        },
+      },
+    ]);
+
+    extension.extensionPoint.definition.trigger = "keypress";
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(0);
   });
 });

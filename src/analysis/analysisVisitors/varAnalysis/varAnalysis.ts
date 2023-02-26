@@ -95,22 +95,15 @@ async function setInputVars(
 
   const reader = await extensionPoint.defaultReader();
 
-  const readerProperties = reader?.outputSchema?.properties;
-  const readerKeys = Object.keys(readerProperties ?? {});
-
-  if (readerKeys.length === 0) {
-    return;
-  }
-
-  const inputContextShape: Record<string, boolean> = {};
-  for (const key of readerKeys) {
-    inputContextShape[key] = true;
-  }
-
-  contextVars.setExistenceFromValues({
+  setVarsFromSchema({
+    schema: reader?.outputSchema ?? {
+      type: "object",
+      properties: {},
+      additionalProperties: true,
+    },
+    contextVars,
     source: KnownSources.INPUT,
-    values: inputContextShape,
-    parentPath: "@input",
+    parentPath: ["@input"],
   });
 }
 
