@@ -25,13 +25,11 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { uuidv4 } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
@@ -39,7 +37,6 @@ import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TourFormState } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 import {
   type TourConfig,
   type TourDefinition,
@@ -113,44 +110,6 @@ function asDynamicElement(element: TourFormState): DynamicDefinition {
   };
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<TourDefinition>
-): Promise<TourFormState> {
-  if (extensionPoint.definition.type !== "tour") {
-    throw new Error("Expected tour extension point type");
-  }
-
-  const { type, reader } = extensionPoint.definition;
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type,
-    label: `My ${getDomain(url)} tour`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-
-    optionsArgs: {},
-
-    extension: {
-      blockPipeline: [],
-    },
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      definition: {
-        ...extensionPoint.definition,
-        reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-    recipe: undefined,
-  };
-}
-
 async function fromExtension(
   config: IExtension<TourConfig>
 ): Promise<TourFormState> {
@@ -198,7 +157,6 @@ const config: ElementConfig<undefined, TourFormState> = {
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  fromExtensionPoint,
 };
 
 export default config;

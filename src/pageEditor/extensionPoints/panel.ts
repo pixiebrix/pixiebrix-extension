@@ -20,12 +20,11 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  extensionWithNormalizedPipeline,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -37,8 +36,6 @@ import {
   type PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
-import { uuidv4 } from "@/types/helpers";
-import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
@@ -49,7 +46,6 @@ import {
   type PanelSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type PanelFormState, type PanelTraits } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 
 const DEFAULT_TRAITS: PanelTraits = {
   style: {
@@ -133,54 +129,6 @@ function asDynamicElement(element: PanelFormState): DynamicDefinition {
   };
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<PanelDefinition>
-): Promise<PanelFormState> {
-  if (extensionPoint.definition.type !== "panel") {
-    throw new Error("Expected panel extension point type");
-  }
-
-  const { heading = "Custom Panel", collapsible = false } =
-    extensionPoint.definition.defaultOptions ?? {};
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type: "panel",
-    label: `My ${getDomain(url)} panel`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-
-    optionsArgs: {},
-
-    extension: {
-      heading,
-      collapsible: boolean(collapsible ?? false),
-      blockPipeline: [],
-    },
-
-    // There's no containerInfo for the page because the user did not select it during the session
-    containerInfo: null,
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      traits: {
-        // We don't provide a way to set style anywhere yet so this doesn't apply yet
-        style: { mode: "inherit" },
-      },
-      definition: {
-        ...extensionPoint.definition,
-        reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-    recipe: undefined,
-  };
-}
-
 async function fromExtension(
   config: IExtension<PanelConfig>
 ): Promise<PanelFormState> {
@@ -232,7 +180,6 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   EditorNode: PanelConfiguration,
   fromNativeElement,
   asDynamicElement,
-  fromExtensionPoint,
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
