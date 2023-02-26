@@ -26,14 +26,11 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { uuidv4 } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { getDomain } from "@/permissions/patterns";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -41,7 +38,6 @@ import {
 } from "@/pageEditor/extensionPoints/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarProviderFormState } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
