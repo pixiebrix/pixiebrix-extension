@@ -96,7 +96,6 @@ const Layout = () => {
               <div className="content-wrapper">
                 <ErrorBoundary>
                   <Switch>
-                    {/* TODO: What should we do about these urls? */}
                     <Route
                       exact
                       path="/extensions/install/:extensionId"

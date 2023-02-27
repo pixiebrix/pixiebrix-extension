@@ -172,7 +172,7 @@ const DeploymentModal: React.FC<
 
   const snooze = useCallback(
     (durationMillis: number) => {
-      notify.success("Snoozed mod and deployment updates");
+      notify.success("Snoozed extension and deployment updates");
       reportEvent("SnoozeUpdates", {
         durationMillis,
       });
