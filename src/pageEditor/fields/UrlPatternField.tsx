@@ -30,7 +30,7 @@ export type UrlPatternFieldProps = {
 
 const defaultDescription = (
   <span>
-    URL pattern rules restricting when the starter brick runs. If provided, at
+    URL pattern rules restricting when this starter brick runs. If provided, at
     least one of the rules must match for the starter brick to run. See{" "}
     <a
       href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
