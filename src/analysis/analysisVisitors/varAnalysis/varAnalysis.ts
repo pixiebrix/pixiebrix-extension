@@ -15,16 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
+import PipelineExpressionVisitor, {
+  type VisitDocumentElementArgs,
+} from "@/blocks/PipelineExpressionVisitor";
 import {
+  nestedPosition,
   type VisitBlockExtra,
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
-import { type BlockPosition, type BlockConfig } from "@/blocks/types";
-import type { Schema, Expression, TemplateEngine } from "@/core";
+import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import type { Expression, Schema, TemplateEngine } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { getInputKeyForSubPipeline } from "@/pageEditor/utils";
-import { isNunjucksExpression, isVarExpression } from "@/runtime/mapArgs";
+import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
+import {
+  isDeferExpression,
+  isExpression,
+  isNunjucksExpression,
+  isVarExpression,
+} from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import {
@@ -33,13 +41,19 @@ import {
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/recipes/registry";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 import { AnnotationType } from "@/types";
+import { joinPathParts } from "@/utils";
+import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { fromJS } from "@/extensionPoints/factory";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
+
+export const NO_VARIABLE_PROVIDED_MESSAGE = "Variable is blank";
+
 export const VARIABLE_SHOULD_START_WITH_AT_MESSAGE =
   "Variable name should start with @";
 
@@ -67,30 +81,29 @@ async function setServiceVars(extension: FormState, contextVars: VarMap) {
   }
 }
 
-async function setInputVars(extension: FormState, contextVars: VarMap) {
-  const readersConfig = extension.extensionPoint.definition.reader;
-  if (readersConfig == null) {
-    return;
-  }
+/**
+ * Set the input variables from the ExtensionPoint definition.
+ */
+async function setInputVars(
+  extension: FormState,
+  contextVars: VarMap
+): Promise<void> {
+  const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
+  const config = adapter.selectExtensionPointConfig(extension);
 
-  const reader = await mergeReaders(readersConfig);
-  const readerProperties = reader?.outputSchema?.properties;
-  const readerKeys =
-    readerProperties == null ? [] : Object.keys(readerProperties);
+  const extensionPoint = fromJS(config);
 
-  if (readerKeys.length === 0) {
-    return;
-  }
+  const reader = await extensionPoint.defaultReader();
 
-  const inputContextShape: Record<string, boolean> = {};
-  for (const key of readerKeys) {
-    inputContextShape[key] = true;
-  }
-
-  contextVars.setExistenceFromValues({
-    source: `${KnownSources.INPUT}:${reader.id ?? reader.name ?? "reader"}`,
-    values: inputContextShape,
-    parentPath: "@input",
+  setVarsFromSchema({
+    schema: reader?.outputSchema ?? {
+      type: "object",
+      properties: {},
+      additionalProperties: true,
+    },
+    contextVars,
+    source: KnownSources.INPUT,
+    parentPath: ["@input"],
   });
 }
 
@@ -202,7 +215,10 @@ function setVarsFromSchema({
   }
 }
 
-async function setOptionsVars(extension: FormState, contextVars: VarMap) {
+async function setOptionsVars(
+  extension: FormState,
+  contextVars: VarMap
+): Promise<void> {
   if (extension.recipe == null) {
     return;
   }
@@ -379,6 +395,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       message = INVALID_VARIABLE_GENERIC_MESSAGE;
     } else if (varName.startsWith("@")) {
       message = `Variable "${varName}" might not be defined`;
+    } else if (varName.trim() === "") {
+      message = NO_VARIABLE_PROVIDED_MESSAGE;
     } else {
       message = VARIABLE_SHOULD_START_WITH_AT_MESSAGE;
     }
@@ -407,10 +425,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     pipeline: BlockConfig[],
     extra: VisitPipelineExtra
   ) {
-    // Getting element key for sub pipeline if applicable (e.g. for a for-each block)
+    // Getting element key for sub pipeline if applicable (e.g. for a for-each, try-except, block)
     const subPipelineInput =
       extra.parentNode && extra.pipelinePropName
-        ? getInputKeyForSubPipeline(extra.parentNode, extra.pipelinePropName)
+        ? getVariableKeyForSubPipeline(extra.parentNode, extra.pipelinePropName)
         : null;
 
     // Before visiting the sub pipeline, we need to save the current context
@@ -458,6 +476,113 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
+  }
+
+  /**
+   * Visit a Document Builder ListElement body.
+   *
+   * The ListElement body is a deferred expression that is evaluated with the elementKey available on each rendering
+   * of an item.
+   *
+   * @param position the position of the document builder block
+   * @param blockConfig the block config of the document builder block
+   * @param element the ListElement within the document
+   * @param pathInBlock the path of the ListElement within the document config
+   */
+  visitListElementBody({
+    position,
+    blockConfig,
+    element,
+    pathInBlock,
+  }: VisitDocumentElementArgs) {
+    const variableName = element.config.elementKey ?? "element";
+    const listBodyExpression = element.config.element;
+
+    // `element` of ListElement should always be a deferred expression. But guard just in case.
+    if (isDeferExpression(listBodyExpression)) {
+      // Before visiting the deferred expression, we need to save the current context
+      this.contextStack.push(this.previousVisitedBlock);
+
+      let deferredExpressionVars: VarMap;
+      if (typeof variableName === "string") {
+        deferredExpressionVars = new VarMap();
+        deferredExpressionVars.setOutputKeyExistence({
+          source: position.path,
+          outputKey: `@${variableName}`,
+          existence: VarExistence.DEFINITELY,
+          // XXX: type should be derived from the known array item type from the list
+          allowAnyChild: true,
+        });
+      }
+
+      this.currentBlockKnownVars = this.previousVisitedBlock.vars.clone();
+      this.currentBlockKnownVars.addSourceMap(deferredExpressionVars);
+      this.knownVars.set(
+        joinPathParts(
+          position.path,
+          pathInBlock,
+          "config",
+          "element",
+          "__value__"
+        ),
+        this.currentBlockKnownVars
+      );
+
+      // Creating context for the sub-pipeline
+      this.previousVisitedBlock = {
+        vars: this.previousVisitedBlock.vars,
+        output: deferredExpressionVars,
+      };
+
+      this.visitDocumentElement({
+        position,
+        blockConfig,
+        element: (element as ListDocumentElement).config.element.__value__,
+        pathInBlock: joinPathParts(
+          pathInBlock,
+          "config",
+          "element",
+          "__value__"
+        ),
+      });
+
+      // Restoring the context of the parent pipeline
+      this.previousVisitedBlock = this.contextStack.pop();
+      this.currentBlockKnownVars = this.previousVisitedBlock.vars.clone();
+    }
+  }
+
+  override visitDocumentElement({
+    position,
+    blockConfig,
+    element,
+    pathInBlock,
+  }: VisitDocumentElementArgs) {
+    if (element.type === "list") {
+      for (const [prop, value] of Object.entries(element.config)) {
+        // ListElement provides an elementKey to the deferred expression in its body
+        if (prop === "element") {
+          this.visitListElementBody({
+            position,
+            blockConfig,
+            element,
+            pathInBlock,
+          });
+        } else if (isExpression(value)) {
+          this.visitExpression(
+            nestedPosition(position, pathInBlock, "config", prop),
+            value
+          );
+        }
+      }
+    } else {
+      super.visitDocumentElement({
+        position,
+        blockConfig,
+        element,
+        pathInBlock,
+      });
+    }
   }
 }
 

@@ -58,7 +58,10 @@ import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
-import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
+import {
+  ContextMenuReader,
+  contextMenuReaderShim,
+} from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -176,6 +179,13 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return new ArrayCompositeReader([
       await this.getBaseReader(),
       new ContextMenuReader(),
+    ]);
+  }
+
+  override async previewReader(): Promise<IReader> {
+    return new ArrayCompositeReader([
+      await this.getBaseReader(),
+      contextMenuReaderShim as unknown as IReader,
     ]);
   }
 
