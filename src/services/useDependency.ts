@@ -32,7 +32,7 @@ import notify from "@/utils/notify";
 
 type Listener = () => void;
 
-type Dependency = {
+export type Dependency = {
   config: SanitizedServiceConfiguration;
   service: Service;
   hasPermissions: boolean;

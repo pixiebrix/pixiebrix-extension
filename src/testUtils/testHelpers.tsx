@@ -225,6 +225,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 }
 
 type HookWrapperOptions<TProps> = Omit<RenderHookOptions<TProps>, "wrapper"> & {
+  initialValues?: FormikValues;
   setupRedux?: SetupRedux;
 };
 
@@ -243,22 +244,44 @@ type HookWrapperResult<
    * The act function which should be used with the renderHook
    */
   act: (callback: () => Promise<void>) => Promise<undefined>;
+
+  getFormState: () => Promise<FormikValues>;
 };
 
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
   return <TProps, TResult>(
     hook: (props: TProps) => TResult,
-    { setupRedux = noop, ...renderOptions }: HookWrapperOptions<TProps> = {}
+    {
+      initialValues,
+      setupRedux = noop,
+      ...renderOptions
+    }: HookWrapperOptions<TProps> = {}
   ): HookWrapperResult<TProps, TResult> => {
+    let submitHandler: (values: FormikValues) => void = jest.fn();
+
     const store = configureStore();
 
-    setupRedux(store.dispatch, {
-      store,
-    });
+    setupRedux(store.dispatch, { store });
 
-    const Wrapper: React.FC = ({ children }) => (
-      <Provider store={store}>{children}</Provider>
-    );
+    const Wrapper: React.FC = initialValues
+      ? ({ children }) => (
+          <Provider store={store}>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values) => {
+                submitHandler?.(values);
+              }}
+            >
+              {({ handleSubmit }) => (
+                <Form onSubmit={handleSubmit}>
+                  {children}
+                  <button type="submit">Submit</button>
+                </Form>
+              )}
+            </Formik>
+          </Provider>
+        )
+      : ({ children }) => <Provider store={store}>{children}</Provider>;
 
     const renderResult = renderHook(hook, {
       wrapper: Wrapper,
@@ -271,6 +294,18 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
         return store;
       },
       act: actHook,
+      async getFormState() {
+        // Wire-up a handler to grab the form state
+        let formState: FormikValues = null;
+        submitHandler = (values) => {
+          formState = values;
+        };
+
+        // Submit the form
+        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+        return formState;
+      },
     };
   };
 }
