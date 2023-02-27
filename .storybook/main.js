@@ -19,9 +19,7 @@ const path = require("path");
 const webpack = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const mergeWithShared = require("../webpack.sharedConfig.js");
-
 const rootDir = path.resolve(__dirname, "../");
-
 module.exports = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
@@ -41,7 +39,6 @@ module.exports = {
         // e.g. src/__mocks__/webextension-polyfill.js
         // https://webpack.js.org/configuration/resolve/#resolvemodules
         modules: [path.resolve(rootDir, "src/__mocks__"), "node_modules"],
-
         alias: {
           // Mock any LOCAL modules that appear in __mocks__
           // e.g. src/__mocks__/@/telemetry/reportErrors.ts
@@ -74,7 +71,6 @@ module.exports = {
           },
         ],
       },
-
       plugins: [
         new NodePolyfillPlugin(),
         new webpack.ProvidePlugin({
@@ -88,7 +84,6 @@ module.exports = {
         }),
       ],
     });
-
     mergedConfig.resolve.alias = {
       // For some reason, during the merge this alias gets placed toward the bottom of the object keys
       // so wasn't taking effect vs. the "@" alias
@@ -103,8 +98,10 @@ module.exports = {
     const fileLoaderRule = config.module.rules.find(
       (rule) => rule.test && rule.test.test(".apng")
     );
-    fileLoaderRule.resourceQuery = { not: [/loadAsComponent/] };
-
+    fileLoaderRule.resourceQuery = {
+      not: [/loadAsComponent/],
+    };
     return mergedConfig;
   },
+  framework: "@storybook/react",
 };

@@ -11,10 +11,8 @@ const restrictedZones = [
     exporter === "contentScript"
       ? `./src/!(${exporter}|blocks|extensionPoints)/**/*` // Temporary: Blocks and extensionPoints are implicitly run from CS
       : `./src/!(${exporter})/**/*`,
-
   // The files above cannot import `from` this folder
   from: `./src/${exporter}`,
-
   // These can be imported from anywhere
   except: [
     `../${exporter}/messenger`,
@@ -26,19 +24,14 @@ const restrictedZones = [
     `../${exporter}/extensionPoints/formStateTypes.ts`,
     `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
   ],
-
   message: `Cross-context imports break expectations. Shared components should be in shared folders.
   Solution 1: Keep both importing and imported modules in the same context (shared or @/${exporter}).
   Solution 2: Use the Messenger if they are in the correct context.
   Solution 3: Propose a clearly-shared component within the context, like we do for Messenger and *Types files.`,
 }));
-
 module.exports = {
   root: true,
-  extends: [
-    // Full config: https://github.com/fregante/eslint-config-pixiebrix/blob/main/index.js
-    "pixiebrix",
-  ],
+  extends: ["pixiebrix", "plugin:storybook/recommended"],
   rules: {
     "import/no-restricted-paths": [
       "warn",
@@ -46,7 +39,6 @@ module.exports = {
         zones: restrictedZones,
       },
     ],
-
     // Avoid imports with side effects
     "import/no-unassigned-import": [
       "error",
@@ -56,14 +48,19 @@ module.exports = {
           "**/*.scss",
           "@/development/*",
           "@/background/messenger/external/api",
-          "@/extensionContext", // Must be run before other code
-          "@/background/axiosFetch", // Must be run before other code
+          "@/extensionContext",
+          // Must be run before other code
+          "@/background/axiosFetch",
+          // Must be run before other code
           "@/telemetry/reportUncaughtErrors",
           "@testing-library/jest-dom",
           "jest-location-mock",
-          "webext-dynamic-content-scripts/including-active-tab", // Automatic registration
-          "regenerator-runtime/runtime", // Automatic registration
-          "@/vendors/hoverintent/hoverintent", // JQuery plugin
+          "webext-dynamic-content-scripts/including-active-tab",
+          // Automatic registration
+          "regenerator-runtime/runtime",
+          // Automatic registration
+          "@/vendors/hoverintent/hoverintent",
+          // JQuery plugin
           "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
         ],
       },
@@ -72,7 +69,6 @@ module.exports = {
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
-
     // Enabled for the IDE, but it's disabled in the `lint` script
     "import/no-cycle": "warn",
   },
