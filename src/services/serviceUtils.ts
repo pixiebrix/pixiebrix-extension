@@ -49,7 +49,7 @@ const SERVICE_ID_REGEX =
 export function extractServiceIds(
   schema: Schema,
   options?: {
-    suppressError?: boolean;
+    suppressNotFoundError?: boolean;
   }
 ): RegistryId[] {
   if ("$ref" in schema) {
@@ -60,16 +60,20 @@ export function extractServiceIds(
   if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x !== false)
-      .flatMap((x) => extractServiceIds(x as Schema, { suppressError: true }));
+      .flatMap((x) =>
+        extractServiceIds(x as Schema, { suppressNotFoundError: true })
+      );
   }
 
   if ("oneOf" in schema) {
     return schema.oneOf
       .filter((x) => x !== false)
-      .flatMap((x) => extractServiceIds(x as Schema, { suppressError: true }));
+      .flatMap((x) =>
+        extractServiceIds(x as Schema, { suppressNotFoundError: true })
+      );
   }
 
-  if (options.suppressError) {
+  if (options.suppressNotFoundError) {
     return [];
   }
 
