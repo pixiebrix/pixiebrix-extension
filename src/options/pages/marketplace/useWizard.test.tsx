@@ -44,7 +44,7 @@ describe("useWizard", () => {
     );
 
     const [steps] = result.current;
-    expect(steps).toHaveLength(3);
+    expect(steps).toHaveLength(2);
   });
 
   test("hide personalized tab for empty schema", () => {
@@ -54,7 +54,7 @@ describe("useWizard", () => {
     const { result } = renderHook(() => useWizard(recipeDefinitionFactory()));
 
     const [steps] = result.current;
-    expect(steps).toHaveLength(2);
+    expect(steps).toHaveLength(1);
   });
 
   test("hide personalized tab for empty shorthand schema", () => {
@@ -64,6 +64,6 @@ describe("useWizard", () => {
     const { result } = renderHook(() => useWizard(recipeDefinitionFactory()));
 
     const [steps] = result.current;
-    expect(steps).toHaveLength(2);
+    expect(steps).toHaveLength(1);
   });
 });

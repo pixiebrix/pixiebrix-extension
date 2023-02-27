@@ -38,7 +38,7 @@ exports[`MatchRulesSection render empty section 1`] = `
             class="text-muted form-text"
           >
             <span>
-              URL pattern rules restricting when the starter brick runs. If provided, at least one of the rules must match for the starter brick to run. See 
+              URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See 
               <a
                 href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
                 rel="noreferrer"
@@ -76,11 +76,11 @@ exports[`MatchRulesSection render empty section 1`] = `
             class="text-muted form-text"
           >
             <span>
-              Selectors restricting when the starter brick runs. If provided, at least one of the selectors must match 
+              Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
               <i>
                 on page load
               </i>
-               for the starter brick to run.
+               for this starter brick to run.
             </span>
           </small>
         </div>
@@ -455,7 +455,7 @@ exports[`MatchRulesSection render populated section 1`] = `
             class="text-muted form-text"
           >
             <span>
-              URL pattern rules restricting when the starter brick runs. If provided, at least one of the rules must match for the starter brick to run. See 
+              URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See 
               <a
                 href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
                 rel="noreferrer"
@@ -542,11 +542,11 @@ exports[`MatchRulesSection render populated section 1`] = `
             class="text-muted form-text"
           >
             <span>
-              Selectors restricting when the starter brick runs. If provided, at least one of the selectors must match 
+              Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
               <i>
                 on page load
               </i>
-               for the starter brick to run.
+               for this starter brick to run.
             </span>
           </small>
         </div>

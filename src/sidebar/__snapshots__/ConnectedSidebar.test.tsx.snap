@@ -183,7 +183,7 @@ exports[`SidebarApp renders not connected partner view 1`] = `
             Connect your AARI account
           </h4>
           <p>
-            Authenticate with Automation Anywhere to continue using your team mods
+            Authenticate with Automation Anywhere to continue using your team's AARI extensions
           </p>
           <a
             class="mt-4 btn btn-primary"

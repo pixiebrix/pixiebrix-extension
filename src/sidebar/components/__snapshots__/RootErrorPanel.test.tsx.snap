@@ -307,7 +307,7 @@ exports[`RootErrorPanel should render no renderer error 1`] = `
           </div>
           <div>
             <small>
-              Add a renderer brick to the starter brick.
+              Add a renderer brick.
             </small>
           </div>
         </div>
@@ -347,7 +347,7 @@ exports[`RootErrorPanel should render no renderer error 1`] = `
         </div>
         <div>
           <small>
-            Add a renderer brick to the starter brick.
+            Add a renderer brick.
           </small>
         </div>
       </div>
