@@ -29,7 +29,7 @@ import { isEqual } from "lodash";
 import useDependency from "@/services/useDependency";
 
 function useSpreadsheetId(basePath: string): string | null {
-  const [{ value: spreadsheetIdValue }] = useField<string | Expression>(
+  const [{ value: fieldValue }] = useField<string | Expression>(
     joinName(basePath, "spreadsheetId")
   );
   const [spreadsheetId, setSpreadsheetId] = useState<string | null>(
@@ -37,7 +37,7 @@ function useSpreadsheetId(basePath: string): string | null {
     // file picker option, or a var expression for a service key when using
     // a service input. If the value is the spreadsheetId, then we can set it
     // here directly, otherwise we need to wait for the service to load.
-    isExpression(spreadsheetIdValue) ? null : spreadsheetIdValue
+    isExpression(fieldValue) ? null : fieldValue
   );
   const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
     null
@@ -47,15 +47,15 @@ function useSpreadsheetId(basePath: string): string | null {
   } = useFormikContext<ServiceSlice>();
 
   useEffect(() => {
-    if (isServiceValue(spreadsheetIdValue)) {
+    if (isServiceValue(fieldValue)) {
       const sheetsService = services.find((service) =>
-        isEqual(keyToFieldValue(service.outputKey), spreadsheetIdValue)
+        isEqual(keyToFieldValue(service.outputKey), fieldValue)
       );
       if (sheetsService) {
         setSheetsServiceId(sheetsService.id);
       }
     }
-  }, [services, spreadsheetIdValue]);
+  }, [services, fieldValue]);
 
   const sheetsServiceDependency = useDependency(sheetsServiceId);
 

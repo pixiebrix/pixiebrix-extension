@@ -38,19 +38,28 @@ export type FieldInputMode =
   | "select"
   | "omit"; // An input option to remove a property
 
+const DEFAULT_OPTIONS = {
+  safeDefault: true,
+};
+
 /**
  * Try to infer the field toggle input mode from the current value of the field.
  * @param fieldConfig the current state/configuration of the field
  * @param fieldName the name of the field in the configuration
  * @param fieldSchema the JSON Schema for the field
- * @param safeDefault if true, return "string" instead of undefined when nothing matches
+ * @param options extra options for the function
+ * @param options.safeDefault if true, return "string" instead of undefined when nothing matches; defaults to true
  */
 export function inferInputMode(
   fieldConfig: UnknownObject,
   fieldName: string,
   fieldSchema: Schema,
-  safeDefault = true
+  options: {
+    safeDefault?: boolean;
+  } = DEFAULT_OPTIONS
 ): FieldInputMode {
+  const { safeDefault = true } = options;
+
   const hasField = Object.hasOwn(fieldConfig, fieldName);
   if (!hasField) {
     return "omit";
@@ -70,7 +79,9 @@ export function inferInputMode(
       subSchemas
         .filter((x) => typeof x !== "boolean")
         .map((subSchema) =>
-          inferInputMode(fieldConfig, fieldName, subSchema as Schema, false)
+          inferInputMode(fieldConfig, fieldName, subSchema as Schema, {
+            safeDefault: false,
+          })
         )
     );
     if (!isEmpty(inputModes)) {

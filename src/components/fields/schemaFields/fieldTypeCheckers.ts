@@ -22,7 +22,7 @@ import {
   SERVICE_BASE_SCHEMA,
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
-import { isEmpty, startsWith } from "lodash";
+import { isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
@@ -97,7 +97,7 @@ export function isServiceValue(value: unknown): value is Expression {
   const varValue = value.__value__;
 
   // Service starts with @ and doesn't contain whitespace
-  return startsWith(varValue, "@") && /^\S+$/.test(varValue);
+  return /^@\S+$/.test(varValue);
 }
 
 export function isGoogleSheetIdValue(value: unknown): boolean {

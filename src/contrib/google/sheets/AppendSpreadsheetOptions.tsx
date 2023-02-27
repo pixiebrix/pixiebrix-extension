@@ -105,18 +105,6 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
   };
 
-  /*
-  Old Sheet input
-  <ConnectedFieldTemplate
-        name={joinName(basePath, "spreadsheetId")}
-        label="Google Sheet"
-        description="Select a Google Sheet. The first row in your sheet MUST contain headings."
-        as={SheetsFileWidget}
-        doc={doc}
-        onSelect={setDoc}
-      />
-   */
-
   return (
     <div className="my-2">
       {isLoadingSheetSchema ? (
