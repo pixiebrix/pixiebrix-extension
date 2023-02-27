@@ -23,13 +23,13 @@ import IntroButtons from "./IntroButtons";
 
 const NoExtensionSelectedPane: React.FunctionComponent = () => (
   <Centered>
-    <div className={styles.title}>No extension selected</div>
+    <div className={styles.title}>No mod selected</div>
 
     <div className="text-left">
-      <p>Select an extension in the sidebar to edit</p>
+      <p>Select a mod in the sidebar to edit</p>
       <p>
         Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add an extension to the page.
+        sidebar to add to the page.
       </p>
 
       <IntroButtons />

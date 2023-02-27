@@ -15,7 +15,6 @@ import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type Schema } from "@/core";
 import { isPrimitive } from "@/utils";
-import ExtensionsBody from "@/options/pages/marketplace/ExtensionsBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import ServicesBody from "@/options/pages/marketplace/ServicesBody";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
@@ -34,7 +33,6 @@ const STEPS: WizardStep[] = [
     }>,
   },
   { key: "services", label: "Integrations", Component: ServicesBody },
-  { key: "review", label: "Extensions Contained", Component: ExtensionsBody },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 

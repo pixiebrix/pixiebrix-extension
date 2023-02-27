@@ -408,7 +408,7 @@ exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
           className="d-flex justify-content-center flex-column text-center col"
         >
           <p>
-            Learn how to create your own extensions in minutes by following our
+            Learn how to create your own mods in minutes by following our
              
             <span
               className="text-primary"
@@ -5510,7 +5510,7 @@ exports[`Storyshots Fields/UrlMatchPatternField Default 1`] = `
         className="text-muted form-text"
       >
         <span>
-          URL match patterns permitting the extension to run on a site. If PixieBrix does not already have access to a site, your browser will prompt you to grant access. See
+          URL match patterns permitting this starter brick to run on a site. If PixieBrix does not already have access to a site, your browser will prompt you to grant access. See
            
           <a
             href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
@@ -5571,7 +5571,7 @@ exports[`Storyshots Fields/UrlPatternField Default 1`] = `
         className="text-muted form-text"
       >
         <span>
-          URL pattern rules restricting when the extension runs. If provided, at least one of the rules must match for the extension to run. See
+          URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See
            
           <a
             href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
@@ -8551,7 +8551,7 @@ exports[`Storyshots Panels/RootErrorPanel No Renderer Error Example 1`] = `
       </div>
       <div>
         <small>
-          Add a renderer brick to the extension.
+          Add a renderer brick.
         </small>
       </div>
     </div>

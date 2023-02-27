@@ -45,9 +45,7 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
   }
 
   if (!Object.hasOwn(TYPE_MAP, config.definition.type)) {
-    throw new Error(
-      `Unexpected extension point type: ${config.definition.type}`
-    );
+    throw new Error(`Unexpected starter brick type: ${config.definition.type}`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the factory methods perform validation

@@ -73,7 +73,7 @@ export async function runBlock({
 
   if (!versionOptions.explicitDataFlow) {
     throw new BusinessError(
-      "Preview only supported for extensions using runtime v2 or later"
+      "Preview only supported for mods using runtime v2 or later"
     );
   }
 

@@ -50,8 +50,8 @@ const PartnerAuth: React.FunctionComponent = () => {
     <Col className="text-center">
       <h4 className="display-6">Connect your AARI account</h4>
       <p>
-        Authenticate with Automation Anywhere to continue using your team
-        extensions
+        Authenticate with Automation Anywhere to continue using your team&apos;s
+        AARI extensions
       </p>
       <Button
         className="mt-4"

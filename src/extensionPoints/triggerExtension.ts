@@ -701,9 +701,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         : this.trigger;
 
     if (!domTrigger) {
-      throw new BusinessError(
-        "No trigger event configured for extension point"
-      );
+      throw new BusinessError("No trigger event configured for starter brick");
     }
 
     // Avoid duplicate events caused by:
@@ -827,7 +825,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
         } else {
           throw new BusinessError(
-            "No trigger event configured for extension point"
+            "No trigger event configured for starter brick"
           );
         }
       }

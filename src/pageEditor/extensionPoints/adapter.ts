@@ -58,11 +58,11 @@ export async function selectType(
 
   const brick = await registry.find(extension.extensionPointId);
   if (!brick) {
-    console.error("Cannot find extension point", {
+    console.error("Cannot find starter brick", {
       extensionPointId: extension.extensionPointId,
       extension,
     });
-    throw new Error("Cannot find extension point");
+    throw new Error("Cannot find starter brick");
   }
 
   const extensionPoint = brick.config as unknown as ExtensionPointConfig;

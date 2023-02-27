@@ -364,7 +364,7 @@ const DataPanel: React.FC = () => {
               </ErrorBoundary>
             ) : (
               <div className="text-muted">
-                Run the extension once to enable live preview
+                Run the mod once to enable live preview
               </div>
             )}
           </DataTab>

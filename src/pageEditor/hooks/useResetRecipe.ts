@@ -34,7 +34,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       const confirmed = await showConfirmation({
         title: "Reset Mod?",
         message:
-          "Unsaved changes to extensions within this mod, or to mod options and metadata, will be lost.",
+          "Unsaved changes to this mod, or to mod options and metadata, will be lost.",
         submitCaption: "Reset",
       });
       if (!confirmed) {

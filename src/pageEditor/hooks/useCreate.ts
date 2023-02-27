@@ -222,7 +222,7 @@ function useCreate(): CreateCallback {
 
       reactivateEveryTab();
 
-      notify.success("Saved extension");
+      notify.success("Saved");
       return null;
     },
     [dispatch, editablePackages, sessionId]
@@ -235,10 +235,10 @@ function useCreate(): CreateCallback {
       } catch (error) {
         console.error("Error saving extension", { error });
         notify.error({
-          message: "Error saving extension",
+          message: "Save error",
           error,
         });
-        return "Error saving extension";
+        return "Save error";
       }
     },
     [saveElement]

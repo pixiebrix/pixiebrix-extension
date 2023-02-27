@@ -348,7 +348,7 @@ exports[`it renders requires user scope 1`] = `
                 fill="currentColor"
               />
             </svg>
-             You account alias will not be visible to anyone unless you choose to share a brick or extension.
+             You account alias will not be visible to anyone unless you choose to share a brick or mod.
           </p>
         </div>
         <div
