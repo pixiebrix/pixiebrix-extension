@@ -97,7 +97,7 @@ export function isServiceValue(value: unknown): value is Expression {
   const varValue = value.__value__;
 
   // Service starts with @ and doesn't contain whitespace
-  return startsWith(varValue, "@") && !/\s/.test(varValue);
+  return startsWith(varValue, "@") && /^\S+$/.test(varValue);
 }
 
 export function isGoogleSheetIdValue(value: unknown): boolean {
@@ -106,6 +106,6 @@ export function isGoogleSheetIdValue(value: unknown): boolean {
     return true;
   }
 
-  // Sheets values are keys/secrets, a string with no whitespace
-  return typeof value === "string" && !/\s/.test(value);
+  // Sheets id values are strings with no whitespace
+  return typeof value === "string" && /^\S+$/.test(value);
 }

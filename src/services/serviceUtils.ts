@@ -42,10 +42,15 @@ const SERVICE_ID_REGEX =
 
 /**
  * Return the registry ids of services supported by a JSON Schema field definition
+ * @param schema The schema to extract services from
+ * @param options Extra execution options
+ * @param options.suppressError Suppress the "not found" error if no matches are found. Useful when aggregating results of this function or calling it recursively.
  */
 export function extractServiceIds(
   schema: Schema,
-  suppressError?: boolean
+  options?: {
+    suppressError?: boolean;
+  }
 ): RegistryId[] {
   if ("$ref" in schema) {
     const match = SERVICE_ID_REGEX.exec(schema.$ref ?? "");
@@ -55,16 +60,16 @@ export function extractServiceIds(
   if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x !== false)
-      .flatMap((x) => extractServiceIds(x as Schema, true));
+      .flatMap((x) => extractServiceIds(x as Schema, { suppressError: true }));
   }
 
   if ("oneOf" in schema) {
     return schema.oneOf
       .filter((x) => x !== false)
-      .flatMap((x) => extractServiceIds(x as Schema, true));
+      .flatMap((x) => extractServiceIds(x as Schema, { suppressError: true }));
   }
 
-  if (suppressError) {
+  if (options.suppressError) {
     return [];
   }
 

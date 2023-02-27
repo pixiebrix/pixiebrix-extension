@@ -23,7 +23,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
-import { makeServiceFiledDescription } from "@/components/fields/schemaFields/ServiceField";
+import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -199,7 +199,7 @@ export function getToggleOptions({
       value: "select",
       symbol: <FontAwesomeIcon icon={faCloud} />,
       Widget: widgetsRegistry.ServiceWidget,
-      description: makeServiceFiledDescription(fieldSchema),
+      description: <ServiceFieldDescription schema={fieldSchema} />,
       interpretValue: () => null, // ServiceWidget has logic that will make this null anyway
     });
     handleOptionalValue();

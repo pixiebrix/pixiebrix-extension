@@ -46,7 +46,7 @@ function listenerKey(dependency: ServiceDependency) {
 }
 
 function useDependency(
-  serviceId: RegistryId | RegistryId[]
+  serviceId: RegistryId | RegistryId[] | null
 ): Dependency | null {
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState(false);

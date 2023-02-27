@@ -25,29 +25,29 @@ import ServiceWidget, {
   type ServiceWidgetProps,
 } from "@/components/fields/schemaFields/widgets/ServiceWidget";
 
-export function makeServiceFiledDescription(schema: Schema) {
-  return (
-    <>
-      {schema.description && (
-        <>
-          <span>{schema.description}</span>
-          <br />
-        </>
-      )}
-      <span>
-        A configured integration.{" "}
-        <a
-          href={`${browser.runtime.getURL("options.html")}#/services`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FontAwesomeIcon icon={faCloud} />
-          &nbsp;Configure additional integrations on the Integrations page
-        </a>
-      </span>
-    </>
-  );
-}
+export const ServiceFieldDescription: React.FC<{ schema: Schema }> = ({
+  schema,
+}) => (
+  <>
+    {schema.description && (
+      <>
+        <span>{schema.description}</span>
+        <br />
+      </>
+    )}
+    <span>
+      A configured integration.{" "}
+      <a
+        href={`${browser.runtime.getURL("options.html")}#/services`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FontAwesomeIcon icon={faCloud} />
+        &nbsp;Configure additional integrations on the Integrations page
+      </a>
+    </span>
+  </>
+);
 
 /**
  * A field layout for a schema-driven Service Selector that automatically maintains the services form state (and output keys)
@@ -66,7 +66,7 @@ const ServiceField: React.FunctionComponent<ServiceWidgetProps> = ({
     <FieldTemplate
       name={name}
       label={makeLabelForSchemaField(props)}
-      description={makeServiceFiledDescription(schema)}
+      description={<ServiceFieldDescription schema={schema} />}
       as={ServiceWidget}
       {...props}
     />

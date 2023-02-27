@@ -33,6 +33,10 @@ function useSpreadsheetId(basePath: string): string | null {
     joinName(basePath, "spreadsheetId")
   );
   const [spreadsheetId, setSpreadsheetId] = useState<string | null>(
+    // The value is either the spreadsheetId directly, when using the sheet
+    // file picker option, or a var expression for a service key when using
+    // a service input. If the value is the spreadsheetId, then we can set it
+    // here directly, otherwise we need to wait for the service to load.
     isExpression(spreadsheetIdValue) ? null : spreadsheetIdValue
   );
   const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
