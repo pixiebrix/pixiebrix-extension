@@ -45,6 +45,7 @@ import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
 import databaseSchema from "@schemas/database.json";
 import elementSchema from "@schemas/element.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 const SCHEMA_URLS: Record<string, UnknownObject> = {
   "http://json-schema.org/draft-07/schema": draft07,
@@ -61,6 +62,7 @@ const SCHEMA_URLS: Record<string, UnknownObject> = {
   "https://app.pixiebrix.com/schemas/innerDefinition": innerDefinitionSchema,
   "https://app.pixiebrix.com/schemas/database": databaseSchema,
   "https://app.pixiebrix.com/schemas/element": elementSchema,
+  "https://app.pixiebrix.com/schemas/googleSheetId": googleSheetIdSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";

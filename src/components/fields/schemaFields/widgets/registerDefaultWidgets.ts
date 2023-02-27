@@ -34,6 +34,8 @@ import CssClassWidget from "./CssClassWidget";
 import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
 import IconWidget from "@/components/fields/IconWidget";
+import ServiceWidget from "@/components/fields/schemaFields/widgets/ServiceWidget";
+import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 
 const defaultWidgets = {
   ArrayWidget,
@@ -54,6 +56,8 @@ const defaultWidgets = {
   DatabaseWidget,
   IconWidget,
   PasswordWidget,
+  ServiceWidget,
+  SheetsFileWidget,
 } as const;
 
 function registerDefaultWidgets() {

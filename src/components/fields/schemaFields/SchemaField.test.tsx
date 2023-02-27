@@ -416,11 +416,11 @@ describe("SchemaField", () => {
   const databaseFieldTestCases = [
     {
       isRequired: true,
-      expectedOptions: ["database", "var"],
+      expectedOptions: ["select", "var"],
     },
     {
       isRequired: false,
-      expectedOptions: ["database", "var", "omit"],
+      expectedOptions: ["select", "var", "omit"],
     },
   ];
   test.each(databaseFieldTestCases)(

@@ -32,7 +32,7 @@ import notify from "@/utils/notify";
 
 type Listener = () => void;
 
-type Dependency = {
+export type Dependency = {
   config: SanitizedServiceConfiguration;
   service: Service;
   hasPermissions: boolean;
@@ -45,7 +45,9 @@ function listenerKey(dependency: ServiceDependency) {
   return `${dependency.id}:${dependency.config}`;
 }
 
-function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
+function useDependency(
+  serviceId: RegistryId | RegistryId[] | null
+): Dependency | null {
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState(false);
 
@@ -124,12 +126,25 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
     }
   }, [setGrantedPermissions, serviceResult?.origins, dependency]);
 
-  return {
-    config: serviceResult?.localConfig,
-    service: serviceResult?.service,
-    hasPermissions: serviceResult?.hasPermissions || grantedPermissions,
-    requestPermissions: requestPermissionCallback,
-  };
+  return useMemo(() => {
+    if (serviceId == null) {
+      return null;
+    }
+
+    return {
+      config: serviceResult?.localConfig,
+      service: serviceResult?.service,
+      hasPermissions: serviceResult?.hasPermissions || grantedPermissions,
+      requestPermissions: requestPermissionCallback,
+    };
+  }, [
+    grantedPermissions,
+    requestPermissionCallback,
+    serviceId,
+    serviceResult?.hasPermissions,
+    serviceResult?.localConfig,
+    serviceResult?.service,
+  ]);
 }
 
 export default useDependency;

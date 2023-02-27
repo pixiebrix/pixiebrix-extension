@@ -17,7 +17,13 @@ import {
   isSelectField,
   isDatabaseField,
   isIconField,
+  isGoogleSheetIdField,
+  isSimpleServiceField,
 } from "./fieldTypeCheckers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
+import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -134,6 +140,13 @@ export function getToggleOptions({
     }
   }
 
+  for (const mode of customToggleModes) {
+    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
+    if (mode.match(fieldSchema)) {
+      pushOptions(mode.option);
+    }
+  }
+
   if (isKeyStringField(fieldSchema)) {
     pushOptions({
       label: "Key",
@@ -146,17 +159,10 @@ export function getToggleOptions({
     return options;
   }
 
-  for (const mode of customToggleModes) {
-    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
-    if (mode.match(fieldSchema)) {
-      pushOptions(mode.option);
-    }
-  }
-
   if (isDatabaseField(fieldSchema)) {
     pushOptions({
       label: "Database",
-      value: "database",
+      value: "select",
       symbol: <OptionIcon icon="select" />,
       Widget: widgetsRegistry.DatabaseWidget,
       interpretValue: () =>
@@ -174,7 +180,7 @@ export function getToggleOptions({
   if (isIconField(fieldSchema)) {
     pushOptions({
       label: "Icon",
-      value: "icon",
+      value: "select",
       symbol: <OptionIcon icon="select" />,
       Widget: widgetsRegistry.IconWidget,
       interpretValue: () => null,
@@ -183,6 +189,32 @@ export function getToggleOptions({
     handleVarOption();
     handleOptionalValue();
 
+    return options;
+  }
+
+  // Let the multi-schema handling do its thing, don't check here
+  if (isSimpleServiceField(fieldSchema)) {
+    pushOptions({
+      label: "Integration",
+      value: "select",
+      symbol: <FontAwesomeIcon icon={faCloud} fixedWidth />,
+      Widget: widgetsRegistry.ServiceWidget,
+      description: <ServiceFieldDescription schema={fieldSchema} />,
+      interpretValue: () => null, // ServiceWidget has logic that will make this null anyway
+    });
+    handleOptionalValue();
+    return options;
+  }
+
+  if (isGoogleSheetIdField(fieldSchema)) {
+    pushOptions({
+      label: "Sheet",
+      value: "string",
+      symbol: <FontAwesomeIcon icon={faFileAlt} fixedWidth />,
+      Widget: widgetsRegistry.SheetsFileWidget,
+      interpretValue: () => "",
+    });
+    handleOptionalValue();
     return options;
   }
 
