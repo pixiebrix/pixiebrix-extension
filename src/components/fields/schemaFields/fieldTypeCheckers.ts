@@ -75,7 +75,7 @@ export function isGoogleSheetIdField(schema: Schema): boolean {
  * Check if a schema matches a service field without checking anyOf/oneOf/allOf
  * @param schema
  */
-export function isServiceFieldNonMulti(schema: Schema): boolean {
+export function isSimpleServiceField(schema: Schema): boolean {
   return (
     schema.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
     schema.$id?.startsWith(SERVICE_BASE_SCHEMA) ||

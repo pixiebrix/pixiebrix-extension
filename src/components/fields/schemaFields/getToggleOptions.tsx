@@ -18,7 +18,7 @@ import {
   isDatabaseField,
   isIconField,
   isGoogleSheetIdField,
-  isServiceFieldNonMulti,
+  isSimpleServiceField,
 } from "./fieldTypeCheckers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
@@ -193,7 +193,7 @@ export function getToggleOptions({
   }
 
   // Let the multi-schema handling do its thing, don't check here
-  if (isServiceFieldNonMulti(fieldSchema)) {
+  if (isSimpleServiceField(fieldSchema)) {
     pushOptions({
       label: "Service",
       value: "select",
