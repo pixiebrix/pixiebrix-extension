@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./FileWidget.module.scss";
+import "./SheetsFileWidget.module.scss";
 
 import React, { useCallback, useEffect, useState } from "react";
 import { type Data, type SheetMeta } from "@/contrib/google/sheets/types";
@@ -33,20 +33,15 @@ import AsyncButton from "@/components/AsyncButton";
 import { type Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
-type FileWidgetProps = {
-  id?: string;
-  name: string;
-  doc: SheetMeta | null;
-  onSelect: (doc: SheetMeta) => void;
-};
-
-const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
+const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [field, , helpers] = useField<string | Expression>(props);
   const [sheetError, setSheetError] = useState(null);
+  const [doc, setDoc] = useState<SheetMeta | null>(null);
 
   useEffect(
     () => {
@@ -80,18 +75,18 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
           const properties = await sheets.getSheetProperties(field.value);
           if (!isMounted()) return;
-          onSelect({ id: spreadsheetId, name: properties.title });
+          setDoc({ id: spreadsheetId, name: properties.title });
         } else {
-          onSelect(null);
+          setDoc(null);
         }
       } catch (error) {
         if (!isMounted()) return;
-        onSelect(null);
+        setDoc(null);
         setSheetError(error);
         notify.error({ message: "Error retrieving sheet information", error });
       }
     },
-    [doc?.id, field.value, onSelect, setSheetError]
+    [doc?.id, field.value, setDoc, setSheetError]
   );
 
   const showPicker = useCallback(async () => {
@@ -132,7 +127,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
             }
 
             helpers.setValue(data.docs[0].id);
-            onSelect(doc);
+            setDoc(doc);
           }
         })
         .setOrigin(
@@ -146,7 +141,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         error,
       });
     }
-  }, [helpers, onSelect]);
+  }, [helpers]);
 
   return isExpression(field.value) ? (
     <WorkshopMessageWidget />
@@ -176,4 +171,4 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   );
 };
 
-export default FileWidget;
+export default SheetsFileWidget;

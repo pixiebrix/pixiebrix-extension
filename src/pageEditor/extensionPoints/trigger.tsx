@@ -26,13 +26,11 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { uuidv4 } from "@/types/helpers";
 import {
   getDefaultReportModeForTrigger,
   type TriggerConfig,
@@ -48,7 +46,6 @@ import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -145,63 +142,6 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   };
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<TriggerDefinition>
-): Promise<TriggerFormState> {
-  if (extensionPoint.definition.type !== "trigger") {
-    throw new Error("Expected trigger starter brick type");
-  }
-
-  const {
-    type,
-    rootSelector,
-    attachMode,
-    targetMode,
-    reportMode,
-    debounce,
-    customEvent,
-    reader,
-    intervalMillis,
-    trigger = "load",
-  } = extensionPoint.definition;
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type,
-    label: `My ${getDomain(url)} ${trigger} trigger`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-
-    optionsArgs: {},
-
-    extension: {
-      blockPipeline: [],
-    },
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      definition: {
-        ...extensionPoint.definition,
-        rootSelector,
-        attachMode,
-        targetMode,
-        reportMode,
-        debounce,
-        customEvent,
-        trigger,
-        intervalMillis,
-        reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-    recipe: undefined,
-  };
-}
-
 async function fromExtension(
   config: IExtension<TriggerConfig>
 ): Promise<TriggerFormState> {
@@ -268,7 +208,6 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  fromExtensionPoint,
   InsertModeHelpText: () => (
     <div>
       <p>

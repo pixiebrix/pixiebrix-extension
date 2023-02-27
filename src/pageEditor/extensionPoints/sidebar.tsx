@@ -21,12 +21,11 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  extensionWithNormalizedPipeline,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -34,11 +33,10 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
+  type PanelDefinition,
   type SidebarConfig,
   SidebarExtensionPoint,
-  type PanelDefinition,
 } from "@/extensionPoints/sidebarExtension";
-import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
@@ -46,7 +44,6 @@ import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -128,55 +125,6 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
   };
 }
 
-export async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<PanelDefinition>
-): Promise<SidebarFormState> {
-  if (extensionPoint.definition.type !== "actionPanel") {
-    throw new Error("Expected actionPanel starter brick type");
-  }
-
-  const heading = `${getDomain(url)} side panel`;
-
-  const {
-    trigger = "load",
-    debounce,
-    customEvent,
-    reader,
-  } = extensionPoint.definition;
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: heading,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-
-    optionsArgs: {},
-
-    extension: {
-      heading,
-      blockPipeline: [],
-    },
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      definition: {
-        ...extensionPoint.definition,
-        trigger,
-        debounce,
-        customEvent,
-        reader: readerTypeHack(reader),
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-    recipe: undefined,
-  };
-}
-
 async function fromExtension(
   config: IExtension<SidebarConfig>
 ): Promise<SidebarFormState> {
@@ -227,7 +175,6 @@ const config: ElementConfig<never, SidebarFormState> = {
   icon: faColumns,
   fromNativeElement,
   asDynamicElement,
-  fromExtensionPoint,
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,

@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression, type Schema } from "@/core";
 import { joinName } from "@/utils";
-import { type SheetMeta } from "@/contrib/google/sheets/types";
-import FileWidget from "@/contrib/google/sheets/FileWidget";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import TabField from "@/contrib/google/sheets/TabField";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
@@ -31,6 +28,14 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
 import { isEmpty } from "lodash";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
+import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
+import { dereference } from "@/validators/generic";
+import {
+  BASE_SHEET_SCHEMA,
+  SHEET_SERVICE_SCHEMA,
+} from "@/contrib/google/sheets/schemas";
+import Loader from "@/components/Loader";
+import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
@@ -38,16 +43,16 @@ const DEFAULT_HEADER_SCHEMA: Schema = {
 
 const HeaderField: React.FunctionComponent<{
   name: string;
-  doc: SheetMeta | null;
+  spreadsheetId: string | null;
   tabName: string | Expression;
-}> = ({ name, tabName, doc }) => {
+}> = ({ name, spreadsheetId, tabName }) => {
   const [{ value }, , { setValue }] = useField<string | Expression>(name);
 
   const [headerSchema, , headersError] = useAsyncState<Schema>(
     async () => {
-      if (doc?.id && tabName && !isExpression(tabName)) {
+      if (spreadsheetId && tabName && !isExpression(tabName)) {
         const headers = await sheets.getHeaders({
-          spreadsheetId: doc.id,
+          spreadsheetId,
           tabName,
         });
         if (
@@ -69,7 +74,7 @@ const HeaderField: React.FunctionComponent<{
 
       return DEFAULT_HEADER_SCHEMA;
     },
-    [doc?.id, tabName],
+    [spreadsheetId, tabName],
     DEFAULT_HEADER_SCHEMA
   );
 
@@ -95,32 +100,48 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
 }) => {
   const basePath = joinName(name, configKey);
-
-  const [doc, setDoc] = useState<SheetMeta>(null);
+  const spreadsheetId = useSpreadsheetId(basePath);
 
   const [{ value: tabName }] = useField<string | Expression>(
     joinName(basePath, "tabName")
   );
 
+  const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
+    dereference(BASE_SHEET_SCHEMA),
+    []
+  );
+  const sheetFieldSchema: Schema = {
+    oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
+  };
+
   return (
     <div className="my-2">
-      <ConnectedFieldTemplate
-        name={joinName(basePath, "spreadsheetId")}
-        label="Google Sheet"
-        description="Select a Google Sheet"
-        as={FileWidget}
-        doc={doc}
-        onSelect={setDoc}
-      />
+      {isLoadingSheetSchema ? (
+        <Loader />
+      ) : (
+        <FormErrorContext.Provider
+          value={{
+            shouldUseAnalysis: false,
+            showUntouchedErrors: false,
+            showFieldActions: false,
+          }}
+        >
+          <SchemaField
+            name={joinName(basePath, "spreadsheetId")}
+            schema={sheetFieldSchema}
+            isRequired
+          />
+        </FormErrorContext.Provider>
+      )}
       <TabField
         name={joinName(basePath, "tabName")}
         schema={LOOKUP_SCHEMA.properties.tabName as Schema}
-        doc={doc}
+        spreadsheetId={spreadsheetId}
       />
       <HeaderField
         name={joinName(basePath, "header")}
+        spreadsheetId={spreadsheetId}
         tabName={tabName}
-        doc={doc}
       />
       <SchemaField
         name={joinName(basePath, "query")}

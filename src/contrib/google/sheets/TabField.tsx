@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { type SheetMeta } from "@/contrib/google/sheets/types";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
@@ -29,18 +28,19 @@ import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 
-const TabField: React.FunctionComponent<
-  SchemaFieldProps & { doc: SheetMeta | null }
-> = ({ name, doc }) => {
+const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
+  name,
+  spreadsheetId,
+}) => {
   const [{ value: tabName }] = useField<string | Expression>(name);
 
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
-    if (doc?.id) {
-      return sheets.getTabNames(doc.id);
+    if (spreadsheetId) {
+      return sheets.getTabNames(spreadsheetId);
     }
 
     return [];
-  }, [doc?.id]);
+  }, [spreadsheetId]);
 
   const sheetOptions = useMemo(
     () =>

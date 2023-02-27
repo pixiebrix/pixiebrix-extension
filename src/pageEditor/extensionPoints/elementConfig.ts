@@ -202,15 +202,6 @@ export interface ElementConfig<
   ) => TState;
 
   /**
-   * Returns the initial form state from an existing extension point
-   * @see fromNativeElement
-   */
-  readonly fromExtensionPoint: (
-    url: string,
-    config: ExtensionPointConfig
-  ) => Promise<TState>;
-
-  /**
    * Returns a dynamic element definition that the content script can render on the page
    */
   readonly asDynamicElement: (state: TState) => DynamicDefinition;

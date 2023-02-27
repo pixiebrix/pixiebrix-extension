@@ -20,12 +20,11 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  extensionWithNormalizedPipeline,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -38,7 +37,6 @@ import {
 } from "@/extensionPoints/menuItemExtension";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
-import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
@@ -49,7 +47,6 @@ import {
   type ButtonSelectionResult,
 } from "@/contentScript/pageEditor/types";
 import { type ActionFormState } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -135,53 +132,6 @@ function selectExtension(
   });
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<MenuDefinition>
-): Promise<ActionFormState> {
-  if (extensionPoint.definition.type !== "menuItem") {
-    throw new Error("Expected menuItem starter brick type");
-  }
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: `My ${getDomain(url)} button`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-
-    optionsArgs: {},
-
-    extension: {
-      caption:
-        extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
-      blockPipeline: [],
-      onSuccess: true,
-      synchronous: false,
-    },
-
-    // There's no containerInfo for the page because the user did not select it during the session
-    containerInfo: null,
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      traits: {
-        // We don't provide a way to set style anywhere yet so this doesn't apply yet
-        style: { mode: "inherit" },
-      },
-      definition: {
-        ...extensionPoint.definition,
-        reader: readerTypeHack(extensionPoint.definition.reader),
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-    recipe: undefined,
-  };
-}
-
 async function fromExtension(
   config: IExtension<MenuItemExtensionConfig>
 ): Promise<ActionFormState> {
@@ -232,7 +182,6 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   baseClass: MenuItemExtensionPoint,
   EditorNode: MenuItemConfiguration,
   selectNativeElement: insertButton,
-  fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPointConfig,

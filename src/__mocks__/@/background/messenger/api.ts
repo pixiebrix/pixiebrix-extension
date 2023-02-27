@@ -50,10 +50,6 @@ export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-export const readGoogleBigQuery = jest
-  .fn()
-  .mockRejectedValue(new Error("Not implemented"));
-
 export const sheets = {
   getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),

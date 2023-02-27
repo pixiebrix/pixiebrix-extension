@@ -45,6 +45,7 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
     name: joinName(elementName, "config", "array"),
     schema: { type: "array" },
     label: "Array",
+    description: "An array/list of elements to render in the document",
   };
 
   const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -64,9 +65,10 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
     <>
       <SchemaField {...arraySourceEdit} />
       <ConnectedFieldTemplate
-        label="Element key"
+        label="Element Key"
         name={joinName(elementName, "config", "elementKey")}
         as={KeyNameWidget}
+        description="The variable name to use for each element in the array/list"
       />
       <FieldTemplate
         label="Item type"
