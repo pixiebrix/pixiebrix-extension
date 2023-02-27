@@ -32,6 +32,9 @@ export default {
     // The dnd library doesn't appear to be compatible with storyshots
     // Stories error with "Invariant failed: Drag handle could not obtain draggable ref"
     storyshots: false,
+
+    // Sets a delay for the component's stories
+    chromatic: { delay: 1000 },
   },
 } as ComponentMeta<typeof OutlineItem>;
 
