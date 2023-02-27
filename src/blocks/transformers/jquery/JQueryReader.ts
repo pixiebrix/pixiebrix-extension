@@ -23,8 +23,8 @@ export class JQueryReader extends Transformer {
   constructor() {
     super(
       "@pixiebrix/jquery-reader",
-      "jQuery Selector Reader",
-      "Extract data via one or more jQuery selectors"
+      "Extract from Page",
+      "Get data from the page using jQuery selectors"
     );
   }
 
