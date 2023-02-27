@@ -18,7 +18,6 @@
 import React from "react";
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
@@ -26,7 +25,6 @@ import {
   isAppServiceField,
   isCssClassField,
   isHeadingStyleField,
-  isServiceField,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
 
@@ -35,10 +33,6 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   if (isAppServiceField(schema)) {
     return <AppServiceField {...props} />;
-  }
-
-  if (isServiceField(schema)) {
-    return <ServiceField {...props} />;
   }
 
   if (isCssClassField(schema)) {

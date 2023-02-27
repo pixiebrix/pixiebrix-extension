@@ -16,7 +16,7 @@
  */
 
 import { createTypePredicate } from "@/components/fields/fieldUtils";
-import { type Schema } from "@/core";
+import { type Expression, type Schema } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import {
   SERVICE_BASE_SCHEMA,
@@ -26,6 +26,8 @@ import { isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { isVarExpression } from "@/runtime/mapArgs";
 
 export const isAppServiceField = createTypePredicate(
   (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
@@ -60,4 +62,50 @@ export function isDatabaseField(schema: Schema): boolean {
 
 export function isIconField(schema: Schema): boolean {
   return schema.$ref === iconSchema.$id;
+}
+
+export function isGoogleSheetIdField(schema: Schema): boolean {
+  return (
+    schema.$ref === googleSheetIdSchema.$id ||
+    schema.$id === googleSheetIdSchema.$id
+  );
+}
+
+/**
+ * Check if a schema matches a service field without checking anyOf/oneOf/allOf
+ * @param schema
+ */
+export function isSimpleServiceField(schema: Schema): boolean {
+  return (
+    schema.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
+    schema.$id?.startsWith(SERVICE_BASE_SCHEMA) ||
+    SERVICE_FIELD_REFS.includes(schema.$ref) ||
+    SERVICE_FIELD_REFS.includes(schema.$id)
+  );
+}
+
+export function isServiceValue(value: unknown): value is Expression {
+  // Default service value, see ServiceWidget
+  if (value == null) {
+    return true;
+  }
+
+  if (!isVarExpression(value)) {
+    return false;
+  }
+
+  const varValue = value.__value__;
+
+  // Service starts with @ and doesn't contain whitespace
+  return /^@\S+$/.test(varValue);
+}
+
+export function isGoogleSheetIdValue(value: unknown): boolean {
+  if (value == null) {
+    // Allow null values
+    return true;
+  }
+
+  // Sheets id values are strings with no whitespace
+  return typeof value === "string" && /^\S+$/.test(value);
 }

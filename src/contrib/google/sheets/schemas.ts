@@ -15,9 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.extensionBadge {
-  background-color: #f6f5f7;
-  margin: 0 8px 8px 0;
-  font-size: 16px;
-  padding: 8px;
-}
+import { type Schema } from "@/core";
+
+export const BASE_SHEET_SCHEMA: Schema = {
+  $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
+};
+
+export const SHEET_SERVICE_SCHEMA: Schema = {
+  $ref: "https://app.pixiebrix.com/schemas/services/google/sheet",
+  title: "Google Sheet",
+  description:
+    "Select a Google Sheet. The first row in your sheet MUST contain headings.",
+};

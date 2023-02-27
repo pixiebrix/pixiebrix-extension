@@ -55,7 +55,8 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
         },
       },
     },
-  });
+    // Was getting "Type instantiation is excessively deep and possibly infinite" during compilation
+  } as any);
 
   return renderHook(
     () => {

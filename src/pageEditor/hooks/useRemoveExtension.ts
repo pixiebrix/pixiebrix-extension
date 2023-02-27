@@ -44,9 +44,9 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
 
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
-          title: "Remove Extension?",
+          title: "Remove Mod?",
           message:
-            "You can reactivate extensions and mods from the PixieBrix Options page",
+            "You can reactivate mods from the PixieBrix Extension Console",
           submitCaption: "Remove",
         });
 

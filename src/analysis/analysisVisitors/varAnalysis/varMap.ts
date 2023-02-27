@@ -133,7 +133,7 @@ function createNode(
   return node;
 }
 
-const numberReges = /^\d+$/;
+const numberRegex = /^\d+$/;
 
 class VarMap {
   private map: Record<string, ExistenceNode> = {};
@@ -269,7 +269,7 @@ class VarMap {
         const part = pathPartsCopy.shift();
 
         // Handle the array case (allow only numeric keys)
-        const isNumberPart = numberReges.test(part);
+        const isNumberPart = numberRegex.test(part);
         if (isNumberPart && bag[IS_ARRAY]) {
           // Dealing with array of primitives or array of unknown objects
           if (pathPartsCopy.length === 0 || bag[ALLOW_ANY_CHILD]) {

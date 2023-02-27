@@ -20,10 +20,12 @@ import {
   formStateFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
+  triggerFormStateFactory,
 } from "@/testUtils/factories";
 import VarAnalysis, {
   INVALID_VARIABLE_GENERIC_MESSAGE,
   VARIABLE_SHOULD_START_WITH_AT_MESSAGE,
+  NO_VARIABLE_PROVIDED_MESSAGE,
 } from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -40,6 +42,11 @@ import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import { type Schema } from "@/core";
+import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
+import { DocumentRenderer } from "@/blocks/renderers/document";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -128,7 +135,6 @@ describe("Collecting available vars", () => {
       expect(knownVars.size).toBe(1);
 
       const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
-
       expect(foundationKnownVars.isVariableDefined("@input.title")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.url")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@input.lang")).toBeTrue();
@@ -648,6 +654,138 @@ describe("Collecting available vars", () => {
     });
   });
 
+  describe("document builder list element", () => {
+    beforeAll(async () => {
+      const listElement = createNewElement("list") as ListDocumentElement;
+      const textElement = createNewElement("text");
+      textElement.config.text = makeTemplateExpression(
+        "nunjucks",
+        "{{ @foo }} {{ @element }}"
+      );
+      listElement.config.element.__value__ = textElement;
+
+      const otherTextElement = createNewElement("text");
+      otherTextElement.config.text = makeTemplateExpression(
+        "nunjucks",
+        "{{ @element }}"
+      );
+
+      const documentRendererBrick = {
+        id: DocumentRenderer.BLOCK_ID,
+        config: {
+          body: [listElement, otherTextElement],
+        },
+      };
+
+      const extension = formStateFactory(undefined, [documentRendererBrick]);
+
+      analysis = new VarAnalysis([]);
+      await analysis.run(extension);
+    });
+
+    test("adds the list element key list body", () => {
+      const knownVars = analysis.getKnownVars();
+      const listElementVarMap = knownVars.get(
+        "extension.blockPipeline.0.config.body.0.config.element.__value__"
+      );
+
+      expect(listElementVarMap.isVariableDefined("@element")).toBeTrue();
+      expect(listElementVarMap.isVariableDefined("@foo")).toBeFalse();
+    });
+
+    test("adds annotations", () => {
+      const annotations = analysis.getAnnotations();
+      expect(annotations).toHaveLength(2);
+
+      // Check warning is generated for @foo but not @element
+      expect(annotations[0].message).toEqual(
+        'Variable "@foo" might not be defined'
+      );
+      expect(annotations[0].position.path).toEqual(
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text"
+      );
+
+      // Not available in to the peer element to the list
+      expect(annotations[1].message).toEqual(
+        'Variable "@element" might not be defined'
+      );
+      expect(annotations[1].position.path).toEqual(
+        "extension.blockPipeline.0.config.body.1.config.text"
+      );
+    });
+  });
+
+  describe("try-except brick", () => {
+    beforeAll(async () => {
+      const tryExceptBlock = {
+        id: TryExcept.BLOCK_ID,
+        outputKey: validateOutputKey("typeExcept"),
+        config: {
+          errorKey: "error",
+          try: makePipelineExpression([blockConfigFactory()]),
+          except: makePipelineExpression([blockConfigFactory()]),
+        },
+      };
+
+      const extension = formStateFactory(undefined, [
+        tryExceptBlock,
+        blockConfigFactory(),
+      ]);
+
+      analysis = new VarAnalysis([]);
+      await analysis.run(extension);
+    });
+
+    test("adds the error key to the except branch", () => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.0.config.except.__value__.0")
+          .isVariableDefined("@error")
+      ).toBeTrue();
+    });
+
+    test("does not add the error key to the try branch", () => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.0.config.try.__value__.0")
+          .isVariableDefined("@error")
+      ).toBeFalse();
+    });
+  });
+
+  describe("for-each element brick", () => {
+    beforeAll(async () => {
+      const forEachBlock = {
+        id: ForEachElement.BLOCK_ID,
+        outputKey: validateOutputKey("forEachOutput"),
+        config: {
+          elementKey: "element",
+          selector: "a",
+          body: makePipelineExpression([blockConfigFactory()]),
+        },
+      };
+
+      const extension = formStateFactory(undefined, [
+        forEachBlock,
+        blockConfigFactory(),
+      ]);
+
+      analysis = new VarAnalysis([]);
+      await analysis.run(extension);
+    });
+
+    test("adds the element key to the sub pipeline", () => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.0.config.body.__value__.0")
+          .isVariableDefined("@element")
+      ).toBeTrue();
+    });
+  });
+
   describe("for-each brick", () => {
     beforeAll(async () => {
       const forEachBlock = {
@@ -834,10 +972,29 @@ describe("var expression annotations", () => {
     const analysis = new VarAnalysis([]);
     await analysis.run(extension);
 
-    expect(analysis.getAnnotations()).toHaveLength(1);
-    expect(analysis.getAnnotations()[0].message).toEqual(
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(1);
+    expect(annotations[0].message).toEqual(
       VARIABLE_SHOULD_START_WITH_AT_MESSAGE
     );
+  });
+
+  test("annotates variable which is just whitespace", async () => {
+    const extension = formStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeVariableExpression("  "),
+        },
+      },
+    ]);
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(1);
+    expect(annotations[0].message).toEqual(NO_VARIABLE_PROVIDED_MESSAGE);
   });
 
   test("return a generic error message for a single @ character", async () => {
@@ -853,9 +1010,32 @@ describe("var expression annotations", () => {
     const analysis = new VarAnalysis([]);
     await analysis.run(extension);
 
-    expect(analysis.getAnnotations()).toHaveLength(1);
-    expect(analysis.getAnnotations()[0].message).toEqual(
-      INVALID_VARIABLE_GENERIC_MESSAGE
-    );
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(1);
+    expect(annotations[0].message).toEqual(INVALID_VARIABLE_GENERIC_MESSAGE);
+  });
+});
+
+describe("var analysis integration tests", () => {
+  it("should handle trigger event", async () => {
+    const extension = triggerFormStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeTemplateExpression(
+            "nunjucks",
+            "{{ @input.event.key }} was pressed"
+          ),
+        },
+      },
+    ]);
+
+    extension.extensionPoint.definition.trigger = "keypress";
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(0);
   });
 });

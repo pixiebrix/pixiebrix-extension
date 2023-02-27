@@ -50,7 +50,7 @@ const PageStateTab: React.VFC = () => {
         getPageState(thisTab, { namespace: "shared", ...context }),
         activeElement.recipe
           ? getPageState(thisTab, { namespace: "blueprint", ...context })
-          : Promise.resolve("Extension is not in a blueprint"),
+          : Promise.resolve("Starter brick is not in a mod"),
         getPageState(thisTab, { namespace: "extension", ...context }),
       ]);
 
