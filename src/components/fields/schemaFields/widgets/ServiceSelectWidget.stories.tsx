@@ -20,6 +20,7 @@ import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { uuidSequence } from "@/testUtils/factories";
 
 export default {
   title: "Widgets/ServiceSelectWidget",
@@ -49,13 +50,13 @@ SelectedOption.args = {
     {
       label: "Local Config",
       local: true,
-      value: uuidv4(),
+      value: uuidSequence(1),
       serviceId: validateRegistryId("@story/service"),
     },
     {
       label: "Team Config",
       local: false,
-      value: uuidv4(),
+      value: uuidSequence(2),
       serviceId: validateRegistryId("@story/service"),
     },
   ],
