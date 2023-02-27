@@ -25,7 +25,7 @@ const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
 }> = ({ unavailableCount }) => (
   <Centered isScrollable>
-    <div className={styles.title}>No custom mods on the page</div>
+    <div className={styles.title}>No mods on the page</div>
 
     <div className="text-left">
       <p>
