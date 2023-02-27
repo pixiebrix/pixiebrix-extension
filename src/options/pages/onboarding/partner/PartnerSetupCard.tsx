@@ -38,14 +38,20 @@ import {
   isCommunityControlRoom,
 } from "@/contrib/automationanywhere/aaUtils";
 
-function useInstallUrl() {
+/**
+ * Get the PixieBrix app URL for completing the partner browser extension installation.
+ */
+export function useInstallUrl(): {
+  installURL: string | null;
+  isPending: boolean;
+} {
   const { data: me } = appApi.endpoints.getMe.useQueryState();
 
   const controlRoomUrl = me?.organization?.control_room?.url;
 
   const [installURL, isPending] = useAsyncState(async () => {
     const baseUrl = await getBaseURL();
-    const startUrl = new URL(`${baseUrl}start`);
+    const startUrl = new URL("/start", baseUrl);
 
     if (controlRoomUrl) {
       const parsedControlRoomUrl = new URL(controlRoomUrl);

@@ -226,6 +226,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
 type HookWrapperOptions<TProps> = Omit<RenderHookOptions<TProps>, "wrapper"> & {
   setupRedux?: SetupRedux;
+  renderWrapper?: (store: any) => React.FC;
 };
 
 type HookWrapperResult<
@@ -248,7 +249,11 @@ type HookWrapperResult<
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
   return <TProps, TResult>(
     hook: (props: TProps) => TResult,
-    { setupRedux = noop, ...renderOptions }: HookWrapperOptions<TProps> = {}
+    {
+      setupRedux = noop,
+      renderWrapper,
+      ...renderOptions
+    }: HookWrapperOptions<TProps> = {}
   ): HookWrapperResult<TProps, TResult> => {
     const store = configureStore();
 
@@ -256,12 +261,12 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
       store,
     });
 
-    const Wrapper: React.FC = ({ children }) => (
+    const DefaultWrapper: React.FC = ({ children }) => (
       <Provider store={store}>{children}</Provider>
     );
 
     const renderResult = renderHook(hook, {
-      wrapper: Wrapper,
+      wrapper: renderWrapper ? renderWrapper(store) : DefaultWrapper,
       ...renderOptions,
     });
 
