@@ -51,6 +51,8 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
     spreadsheetId: {
       // Spreadsheet ID or service config
       oneOf: [
+        // First one here should be BASE_SHEET_SCHEMA,
+        // but the runtime can't dereference it properly
         {
           type: "string",
           minLength: 1,

@@ -195,9 +195,9 @@ export function getToggleOptions({
   // Let the multi-schema handling do its thing, don't check here
   if (isSimpleServiceField(fieldSchema)) {
     pushOptions({
-      label: "Service",
+      label: "Integration",
       value: "select",
-      symbol: <FontAwesomeIcon icon={faCloud} />,
+      symbol: <FontAwesomeIcon icon={faCloud} fixedWidth />,
       Widget: widgetsRegistry.ServiceWidget,
       description: <ServiceFieldDescription schema={fieldSchema} />,
       interpretValue: () => null, // ServiceWidget has logic that will make this null anyway
@@ -210,7 +210,7 @@ export function getToggleOptions({
     pushOptions({
       label: "Sheet",
       value: "string",
-      symbol: <FontAwesomeIcon icon={faFileAlt} />,
+      symbol: <FontAwesomeIcon icon={faFileAlt} fixedWidth />,
       Widget: widgetsRegistry.SheetsFileWidget,
       interpretValue: () => "",
     });
