@@ -19,7 +19,7 @@ import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories";
 
 export default {
