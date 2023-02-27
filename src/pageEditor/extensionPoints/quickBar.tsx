@@ -27,14 +27,11 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { uuidv4 } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { getDomain } from "@/permissions/patterns";
 import {
   faExclamationTriangle,
   faThLarge,
@@ -55,7 +52,6 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type QuickBarFormState } from "./formStateTypes";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
@@ -171,55 +167,6 @@ async function fromExtension(
   };
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<QuickBarDefinition>
-): Promise<QuickBarFormState> {
-  if (extensionPoint.definition.type !== "quickBar") {
-    throw new Error("Expected quickBar extension point type");
-  }
-
-  const {
-    defaultOptions = {},
-    documentUrlPatterns = [],
-    targetMode = "eventTarget",
-    type,
-    reader,
-  } = extensionPoint.definition;
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type,
-    label: `My ${getDomain(url)} quick bar item`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-    optionsArgs: {},
-
-    extension: {
-      title: defaultOptions.title ?? "Custom Action",
-      blockPipeline: [],
-    },
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      definition: {
-        ...extensionPoint.definition,
-        defaultOptions,
-        documentUrlPatterns,
-        targetMode,
-        // See comment on SingleLayerReaderConfig
-        reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-
-    recipe: undefined,
-  };
-}
-
 function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   return {
     type: "quickBar",
@@ -300,7 +247,6 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   selectNativeElement: undefined,
   icon: faThLarge,
   fromNativeElement,
-  fromExtensionPoint,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,

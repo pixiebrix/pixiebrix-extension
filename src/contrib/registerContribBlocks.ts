@@ -24,7 +24,6 @@ import {
   ORGANIZATION_READER,
   PERSON_READER,
 } from "./pipedrive/readers";
-import { GoogleBigQueryQuery } from "./google/bigquery/query";
 import { GeocodeTransformer } from "./google/geocode";
 import { GoogleSheetsAppend } from "./google/sheets/append";
 import {
@@ -42,7 +41,6 @@ import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
 function registerContribBlocks(): void {
   blockRegistry.register([
     // Google
-    new GoogleBigQueryQuery(),
     new GoogleSheetsAppend(),
     new GoogleSheetsLookup(),
     new GeocodeTransformer(),

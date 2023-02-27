@@ -26,14 +26,11 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { uuidv4 } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { getDomain } from "@/permissions/patterns";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -41,7 +38,6 @@ import {
 } from "@/pageEditor/extensionPoints/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarProviderFormState } from "./formStateTypes";
-import { makeEmptyPermissions } from "@/utils/permissions";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
@@ -154,53 +150,6 @@ async function fromExtension(
   };
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<QuickBarProviderDefinition>
-): Promise<QuickBarProviderFormState> {
-  if (extensionPoint.definition.type !== "quickBarProvider") {
-    throw new Error("Expected quickBarProvider extension point type");
-  }
-
-  const {
-    defaultOptions = {},
-    documentUrlPatterns = [],
-    type,
-    reader,
-  } = extensionPoint.definition;
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type,
-    label: `My ${getDomain(url)} dynamic Quick Bar`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-    optionsArgs: {},
-
-    extension: {
-      rootAction: undefined,
-      blockPipeline: [],
-    },
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      definition: {
-        ...extensionPoint.definition,
-        defaultOptions,
-        documentUrlPatterns,
-        // See comment on SingleLayerReaderConfig
-        reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-
-    recipe: undefined,
-  };
-}
-
 function asDynamicElement(
   element: QuickBarProviderFormState
 ): DynamicDefinition {
@@ -221,7 +170,6 @@ const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   icon: faPlusSquare,
   flag: "pageeditor-quickbar-provider",
   fromNativeElement,
-  fromExtensionPoint,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,

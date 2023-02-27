@@ -22,23 +22,20 @@ import {
   baseSelectExtension,
   baseSelectExtensionPoint,
   cleanIsAvailable,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  extensionWithNormalizedPipeline,
-  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
-import { uuidv4 } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   type ContextMenuConfig,
   ContextMenuExtensionPoint,
   type MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -49,7 +46,6 @@ import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuC
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { makeEmptyPermissions } from "@/utils/permissions";
 
 function fromNativeElement(
   url: string,
@@ -166,55 +162,6 @@ async function fromExtension(
   };
 }
 
-async function fromExtensionPoint(
-  url: string,
-  extensionPoint: ExtensionPointConfig<MenuDefinition>
-): Promise<ContextMenuFormState> {
-  if (extensionPoint.definition.type !== "contextMenu") {
-    throw new Error("Expected contextMenu extension point type");
-  }
-
-  const {
-    defaultOptions = {},
-    documentUrlPatterns = [],
-    targetMode = "legacy",
-    type,
-    reader,
-  } = extensionPoint.definition;
-
-  return {
-    uuid: uuidv4(),
-    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    installed: true,
-    type,
-    label: `My ${getDomain(url)} context menu`,
-
-    services: [],
-    permissions: makeEmptyPermissions(),
-    optionsArgs: {},
-
-    extension: {
-      title: defaultOptions.title ?? "Custom Action",
-      blockPipeline: [],
-    },
-
-    extensionPoint: {
-      metadata: extensionPoint.metadata,
-      definition: {
-        ...extensionPoint.definition,
-        defaultOptions,
-        documentUrlPatterns,
-        targetMode,
-        // See comment on SingleLayerReaderConfig
-        reader: reader as SingleLayerReaderConfig,
-        isAvailable: selectIsAvailable(extensionPoint),
-      },
-    },
-
-    recipe: undefined,
-  };
-}
-
 function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
@@ -232,7 +179,6 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,
-  fromExtensionPoint,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,

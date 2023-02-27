@@ -19,13 +19,11 @@ import React, { useCallback, useEffect } from "react";
 import paneStyles from "@/pageEditor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
 import { useDispatch } from "react-redux";
-import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/components/Centered";
 import { Button, Row } from "react-bootstrap";
-import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
@@ -80,23 +78,6 @@ const GenericInsertPane: React.FunctionComponent<{
     [config, dispatch]
   );
 
-  const addExisting = useCallback(
-    async (extensionPoint) => {
-      try {
-        const url = await getCurrentURL();
-        await start(
-          (await config.fromExtensionPoint(
-            url,
-            extensionPoint.rawConfig
-          )) as FormState
-        );
-      } catch (error) {
-        notify.error({ message: "Error using existing foundation", error });
-      }
-    },
-    [start, config]
-  );
-
   const addNew = useCallback(async () => {
     try {
       const url = await getCurrentURL();
@@ -130,8 +111,6 @@ const GenericInsertPane: React.FunctionComponent<{
     }
   }, [showMarketplace, addNew]);
 
-  const extensionPoints = useAvailableExtensionPoints(config.baseClass);
-
   if (!showMarketplace) {
     // The insert pane will flash up quickly while the addNew is running.
     return <Loader />;
@@ -149,21 +128,6 @@ const GenericInsertPane: React.FunctionComponent<{
         <Button variant="primary" onClick={addNew}>
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
         </Button>
-
-        <BrickModal
-          bricks={extensionPoints ?? []}
-          renderButton={(onClick) => (
-            <Button
-              variant="info"
-              onClick={onClick}
-              disabled={!extensionPoints?.length}
-              className={styles.searchButton}
-            >
-              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-            </Button>
-          )}
-          onSelect={async (block) => addExisting(block)}
-        />
       </Row>
       <Row className={styles.cancelRow}>
         <Button variant="danger" className="m-3" onClick={cancel}>
