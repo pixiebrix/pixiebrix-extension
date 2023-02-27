@@ -261,6 +261,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   return (
     <ServiceSelectWidget
       name={field.name}
+      id={field.name}
       value={selectedValue}
       onChange={onChange}
       options={options}
