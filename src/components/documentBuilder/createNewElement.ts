@@ -91,6 +91,9 @@ export function createNewElement(elementType: DocumentElementType) {
     }
 
     case "list": {
+      // ListElement uses "element" as the default. But be explicit
+      element.config.elementKey = "element";
+
       element.config.element = {
         __type__: "defer",
         __value__: createNewElement("text"),
