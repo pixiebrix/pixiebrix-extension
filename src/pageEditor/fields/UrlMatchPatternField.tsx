@@ -31,7 +31,7 @@ export type UrlMatchPatternFieldProps = {
 
 const defaultDescription = (
   <span>
-    URL match patterns permitting the starter brick to run on a site. If
+    URL match patterns permitting this starter brick to run on a site. If
     PixieBrix does not already have access to a site, your browser will prompt
     you to grant access. See{" "}
     <a
