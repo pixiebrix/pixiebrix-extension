@@ -18,7 +18,7 @@
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook",
+    "build-storybook": "build-storybook -s public",
     "madge:circular": "madge --extensions js,ts,tsx --circular src/** --ts-config tsconfig.json"
   },
   "engine-strict": true,
@@ -222,6 +222,7 @@
     "@types/webpack-env": "^1.16.2",
     "@types/whatwg-mimetype": "^3.0.0",
     "axios-mock-adapter": "^1.21.2",
+    "chromatic": "^6.17.1",
     "compass-mixins": "^0.12.10",
     "concurrently": "^7.2.0",
     "cooky-cutter": "^1.5.4",
