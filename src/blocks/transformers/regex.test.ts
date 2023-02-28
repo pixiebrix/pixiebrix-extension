@@ -18,7 +18,10 @@
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 
 const transformer = new RegexTransformer();
 
@@ -87,11 +90,11 @@ describe("getOutputSchema", () => {
     });
   });
 
-  test("handles nunjucks", () => {
+  test("handles nunjucks in input and regex", () => {
     const schema = transformer.getOutputSchema({
       id: transformer.id,
       config: {
-        regex: "(?<name>ABC)",
+        regex: makeTemplateExpression("nunjucks", "(?<name>ABC)"),
         input: makeTemplateExpression("nunjucks", "{{ @test }}"),
       },
     });
@@ -140,5 +143,17 @@ describe("getOutputSchema", () => {
         },
       },
     });
+  });
+
+  test("returns default schema for variable input", () => {
+    const schema = transformer.getOutputSchema({
+      id: transformer.id,
+      config: {
+        regex: "(?<name>ABC)",
+        input: makeVariableExpression("@test"),
+      },
+    });
+
+    expect(schema).toEqual(transformer.outputSchema);
   });
 });
