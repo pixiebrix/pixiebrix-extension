@@ -2,7 +2,7 @@ apiVersion: v1
 kind: service
 metadata:
   id: google/sheet
-  version: 0.0.1
+  version: 0.0.2
   name: Google Sheet
   description: A Google Sheet
   url: https://sheets.google.com
@@ -11,7 +11,6 @@ inputSchema:
   type: object
   properties:
     spreadsheetId:
-      type: string
-      description: The spreadsheet id
+      $ref: "https://app.pixiebrix.com/schemas/googleSheetId#"
   required:
     - spreadsheetId
