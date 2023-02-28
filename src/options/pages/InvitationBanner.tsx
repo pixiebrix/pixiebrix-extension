@@ -41,11 +41,11 @@ const InvitationBanner: React.FunctionComponent = () => {
       <span role="img" aria-label="envelope">
         ✉️
       </span>
-      &nbsp; You can view them on the{" "}
-      <a href={`${SERVICE_URL}/team`} target="_blank" rel="noopener noreferrer">
-        &quot;My Team&quot; Page <FontAwesomeIcon icon={faExternalLinkAlt} />
+      &nbsp; Visit the{" "}
+      <a href={`${SERVICE_URL}`} target="_blank" rel="noopener noreferrer">
+        Admin Console <FontAwesomeIcon icon={faExternalLinkAlt} />
       </a>{" "}
-      of the Admin Console.
+      to view them.
     </Banner>
   );
 };
