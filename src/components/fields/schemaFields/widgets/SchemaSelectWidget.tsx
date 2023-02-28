@@ -21,6 +21,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { isEmpty, sortBy, uniq } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";
+import { isExpression } from "@/runtime/mapArgs";
 
 type StringOption = {
   value: string;
@@ -29,7 +30,12 @@ type StringOptionsType = Options<StringOption>;
 
 const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
   const [created, setCreated] = useState([]);
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value: fieldValue }, , { setValue }] = useField(name);
+
+  // Need to handle expressions because this field could be toggled to "var"
+  // and the Widget won't change until the input mode can be inferred again
+  // from the new value.
+  const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
 
   const [creatable, options]: [boolean, StringOptionsType] = useMemo(() => {
     const values = schema.examples ?? schema.enum;

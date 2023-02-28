@@ -61,7 +61,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
     useState<React.ReactNode>(defaultDescription);
 
   const updateFieldDescription = useCallback(
-    (newDescription: string | undefined) => {
+    (newDescription: React.ReactNode | undefined) => {
       setFieldDescription(newDescription ?? defaultDescription);
     },
     [defaultDescription]

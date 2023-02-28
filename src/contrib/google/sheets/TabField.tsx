@@ -17,24 +17,16 @@
 
 import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
-import { compact, uniq } from "lodash";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { type Expression } from "@/core";
-import { isExpression } from "@/runtime/mapArgs";
-import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
-import FieldTemplate from "@/components/form/FieldTemplate";
+import { type Schema } from "@/core";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,
   spreadsheetId,
 }) => {
-  const [{ value: tabName }] = useField<string | Expression>(name);
-
-  const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
+  const [tabNames] = useAsyncState(async () => {
     if (spreadsheetId) {
       return sheets.getTabNames(spreadsheetId);
     }
@@ -42,13 +34,18 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
     return [];
   }, [spreadsheetId]);
 
-  const sheetOptions = useMemo(
-    () =>
-      uniq(compact([...(tabNames ?? []), tabName])).map((value) => ({
-        label: value,
-        value,
-      })),
-    [tabNames, tabName]
+  const fieldSchema = useMemo<Schema>(
+    () => ({
+      type: "string",
+      title: "Tab Name",
+      description: "The spreadsheet tab",
+      // Need to have at least one item in the enum to force "select"
+      // input mode, otherwise this defaults to a string expression
+      // values and that causes issues inferring the inputMode. This
+      // default value rarely actually appears to users in the UI.
+      enum: tabNames ?? ["Fetching tab names..."],
+    }),
+    [tabNames]
   );
 
   // TODO: re-add info message that tab will be created
@@ -61,26 +58,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   //         </span>
   // )}
 
-  return isExpression(tabName) ? (
-    <FieldTemplate
-      name={name}
-      label="Tab Name"
-      description="The spreadsheet tab"
-      as={WorkshopMessageWidget}
-    />
-  ) : (
-    <ConnectedFieldTemplate
-      name={name}
-      label="Tab Name"
-      description="The spreadsheet tab"
-      as={SelectWidget}
-      blankValue={null}
-      loadError={tabsError}
-      isLoading={tabsPending}
-      options={sheetOptions}
-      loadingMessage="Fetching sheet names..."
-    />
-  );
+  return <SchemaField name={name} schema={fieldSchema} isRequired />;
 };
 
 export default TabField;
