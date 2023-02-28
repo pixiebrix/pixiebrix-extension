@@ -18,13 +18,16 @@
 import { Transformer } from "@/types";
 import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
+import { type BlockConfig } from "@/blocks/types";
+import { mapValues } from "lodash";
+import { isExpression } from "@/runtime/mapArgs";
 
 export class JQueryReader extends Transformer {
   constructor() {
     super(
       "@pixiebrix/jquery-reader",
-      "jQuery Selector Reader",
-      "Extract data via one or more jQuery selectors"
+      "Extract from Page",
+      "Get data from the page using jQuery selectors"
     );
   }
 
@@ -82,6 +85,34 @@ export class JQueryReader extends Transformer {
       },
     },
   };
+
+  override outputSchema: Schema = {
+    type: "object",
+    additionalProperties: true,
+  };
+
+  override getOutputSchema(config: BlockConfig): Schema | undefined {
+    const selectors = config.config.selectors as SelectorMap;
+
+    if (isExpression(selectors)) {
+      return this.outputSchema;
+    }
+
+    return {
+      type: "object",
+      properties: mapValues(selectors, (value) => {
+        if (typeof value === "string") {
+          return { type: "string" } as Schema;
+        }
+
+        if (value.multi) {
+          return { type: "array", items: {} } as Schema;
+        }
+
+        return {};
+      }),
+    };
+  }
 
   override async isRootAware(): Promise<boolean> {
     return true;

@@ -15,26 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/pageEditor/panes/Pane.module.scss";
+import { getKindDisplayName } from "@/options/pages/workshop/workshopUtils";
 
-import React from "react";
-import Centered from "@/components/Centered";
-import IntroButtons from "./IntroButtons";
+describe("getKindDisplayName", () => {
+  it.each(["block", "Block", "reader"])("maps %s to Brick", (kind) => {
+    expect(getKindDisplayName(kind as any)).toEqual("Brick");
+  });
 
-const NoExtensionSelectedPane: React.FunctionComponent = () => (
-  <Centered>
-    <div className={styles.title}>No mod selected</div>
-
-    <div className="text-left">
-      <p>Select a mod in the sidebar to edit</p>
-      <p>
-        Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add to the page.
-      </p>
-
-      <IntroButtons />
-    </div>
-  </Centered>
-);
-
-export default NoExtensionSelectedPane;
+  it.each(["recipe", "Recipe", "blueprint"])("maps %s to Mod", (kind) => {
+    expect(getKindDisplayName(kind as any)).toEqual("Mod");
+  });
+});

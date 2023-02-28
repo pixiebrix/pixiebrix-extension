@@ -33,7 +33,6 @@ export const initialSettingsState: SettingsState = {
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
-  varAnalysis: false,
   varAutosuggest: false,
   partnerId: null,
   authMethod: null,

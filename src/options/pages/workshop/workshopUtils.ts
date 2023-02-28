@@ -15,9 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.extensionBadge {
-  background-color: #f6f5f7;
-  margin: 0 8px 8px 0;
-  font-size: 16px;
-  padding: 8px;
+import { type Brick } from "@/types/contract";
+import { startCase } from "lodash";
+
+const kindDisplayNameMap = new Map<Brick["kind"], string>([
+  ["block", "Brick"],
+  ["reader", "Brick"],
+  ["blueprint", "Mod"],
+  ["recipe", "Mod"],
+  ["service", "Integration"],
+  // Full name is "starter brick", but user shorter name
+  ["foundation", "Starter"],
+]);
+
+/**
+ * Returns the display name for a brick kind.
+ * @since 1.7.20
+ */
+export function getKindDisplayName(kind: Brick["kind"]): string {
+  // Be defensive and lowercase for the match, some callers may not have the correct casing
+  return (
+    kindDisplayNameMap.get(kind.toLowerCase() as Brick["kind"]) ??
+    startCase(kind)
+  );
 }

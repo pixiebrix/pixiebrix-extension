@@ -17,6 +17,7 @@
 
 import { Reader } from "@/types";
 import { type ReaderOutput, type Schema } from "@/core";
+import selection from "@/utils/selectionController";
 
 /**
  * A reader "stub" for the context menu reader.
@@ -77,3 +78,39 @@ export class ContextMenuReader extends Reader {
     },
   };
 }
+
+/**
+ * A "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
+ */
+export const contextMenuReaderShim = {
+  isAvailable: async () => true,
+
+  outputSchema: new ContextMenuReader().outputSchema,
+
+  async read() {
+    const { activeElement } = document;
+
+    const linkProps =
+      activeElement?.tagName === "A"
+        ? {
+            linkText: activeElement.textContent,
+            linkUrl: activeElement.getAttribute("href"),
+          }
+        : { linkText: null, linkUrl: null };
+
+    // XXX: do we need to support SVG here too?
+    const mediaType = {
+      IMG: "image",
+      VIDEO: "video",
+      AUDIO: "audio",
+    }[activeElement?.tagName];
+
+    return {
+      mediaType,
+      selectionText: selection.get(),
+      srcUrl: activeElement?.getAttribute("src"),
+      documentUrl: document.location.href,
+      ...linkProps,
+    };
+  },
+};

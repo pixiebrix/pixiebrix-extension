@@ -41,7 +41,7 @@ import {
   type ReportMode,
   type TargetMode,
   type Trigger as TriggerTrigger,
-} from "@/extensionPoints/triggerExtension";
+} from "@/extensionPoints/triggerExtensionTypes";
 import {
   type CustomEventOptions,
   type DebounceOptions,

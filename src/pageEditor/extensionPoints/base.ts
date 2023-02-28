@@ -296,14 +296,14 @@ export async function lookupExtensionPoint<
   const brick = await registry.find(config.extensionPointId);
   if (!brick) {
     throw new Error(
-      `Cannot find extension point definition: ${config.extensionPointId}`
+      `Cannot find starter brick definition: ${config.extensionPointId}`
     );
   }
 
   const extensionPoint =
     brick.config as unknown as ExtensionPointConfig<TDefinition>;
   if (extensionPoint.definition.type !== type) {
-    throw new Error(`Expected ${type} extension point type`);
+    throw new Error(`Expected ${type} starter brick type`);
   }
 
   return extensionPoint as ExtensionPointConfig<TDefinition> & {

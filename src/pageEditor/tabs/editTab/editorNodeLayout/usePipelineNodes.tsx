@@ -35,7 +35,7 @@ import {
   getBlockAnnotations,
   getDocumentPipelinePaths,
   getFoundationNodeAnnotations,
-  getInputKeyForSubPipeline,
+  getVariableKeyForSubPipeline,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
 import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
@@ -132,7 +132,10 @@ function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
         flavor: PipelineFlavor.NoRenderer,
       };
 
-      const inputKey = getInputKeyForSubPipeline(blockConfig, pipelinePropName);
+      const inputKey = getVariableKeyForSubPipeline(
+        blockConfig,
+        pipelinePropName
+      );
 
       if (inputKey) {
         subPipeline.inputKey = inputKey;

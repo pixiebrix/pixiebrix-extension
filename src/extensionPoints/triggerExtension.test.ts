@@ -249,6 +249,37 @@ describe("triggerExtension", () => {
     extensionPoint.uninstall();
   });
 
+  it("runs keypress trigger", async () => {
+    document.body.innerHTML = getDocument(
+      "<div><input type='text'></input></div>"
+    ).body.innerHTML;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "keypress",
+        rootSelector: "input",
+      })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    const element = document.querySelector("input");
+
+    await userEvent.type(element, "a");
+    await waitForEffect();
+
+    expect(rootReader.readCount).toBe(1);
+
+    extensionPoint.uninstall();
+  });
+
   it("runs hover trigger", async () => {
     document.body.innerHTML = getDocument(
       "<div><button>Hover Me</button></div>"
@@ -282,4 +313,70 @@ describe("triggerExtension", () => {
 
     extensionPoint.uninstall();
   });
+
+  it("includes selection change reader schema", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "selectionchange",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+
+    expect(
+      (reader.outputSchema.properties as any).event.properties.selectionText
+        .type
+    ).toBe("string");
+  });
+
+  it("includes custom event schema", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "custom",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+    expect(
+      (reader.outputSchema.properties as any).event.additionalProperties
+    ).toBe(true);
+  });
+
+  it("includes keyboard event schema", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "keypress",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+    expect(
+      (reader.outputSchema.properties as any).event.properties.key.type
+    ).toBe("string");
+  });
+
+  it("excludes event for mouse click", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "click",
+      })()
+    );
+
+    const reader = await extensionPoint.defaultReader();
+    expect((reader.outputSchema.properties as any).event).toBeUndefined();
+  });
+
+  it.each([["selectionchange"], ["click"], ["keypress"], ["custom"]])(
+    "smoke test for preview %s",
+    async (trigger) => {
+      const extensionPoint = fromJS(
+        extensionPointFactory({
+          trigger,
+        })()
+      );
+
+      const reader = await extensionPoint.previewReader();
+      await reader.read(document);
+    }
+  );
 });

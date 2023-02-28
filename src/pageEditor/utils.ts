@@ -142,13 +142,16 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
   }
 }
 
-export function getInputKeyForSubPipeline(
+export function getVariableKeyForSubPipeline(
   blockConfig: BlockConfig,
   pipelinePropName: string
 ): string | null {
   let keyPropName: string = null;
 
-  if (blockConfig.id === ForEach.BLOCK_ID && pipelinePropName === "body") {
+  if (
+    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(blockConfig.id) &&
+    pipelinePropName === "body"
+  ) {
     keyPropName = "elementKey";
   }
 

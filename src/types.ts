@@ -33,6 +33,7 @@ import {
 } from "@/core";
 import { type AxiosRequestConfig } from "axios";
 import { validateRegistryId } from "@/types/helpers";
+import { type BlockConfig } from "@/blocks/types";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -109,6 +110,10 @@ export abstract class Block implements IBlock {
   async isRootAware(): Promise<boolean> {
     // Safe default
     return true;
+  }
+
+  getOutputSchema(_config: BlockConfig): Schema | undefined {
+    return this.outputSchema;
   }
 
   protected constructor(
