@@ -45,7 +45,7 @@ function useInstallUrl() {
 
   const [installURL, isPending] = useAsyncState(async () => {
     const baseUrl = await getBaseURL();
-    const startUrl = new URL(`${baseUrl}start`);
+    const startUrl = new URL("/start", baseUrl);
 
     if (controlRoomUrl) {
       const parsedControlRoomUrl = new URL(controlRoomUrl);
