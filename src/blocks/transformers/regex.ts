@@ -87,11 +87,9 @@ export class RegexTransformer extends Transformer {
     }
 
     if (
-      !(
-        typeof input === "string" ||
-        isNunjucksExpression(input) ||
-        isArray(input)
-      )
+      typeof input !== "string" &&
+      !isNunjucksExpression(input) &&
+      !isArray(input)
     ) {
       // Don't have enough information to determine if output will be an array or object
       return this.outputSchema;

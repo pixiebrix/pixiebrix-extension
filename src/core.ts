@@ -782,7 +782,7 @@ export interface IBlock extends Metadata {
   outputSchema?: Schema;
 
   /**
-   * An optional method to generate a a JSON output schema given a block configuration.
+   * An optional method to generate a JSON output schema given a block configuration.
    * @param config the block configuration
    * @see outputSchema
    * @since 1.7.20
