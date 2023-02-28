@@ -35,6 +35,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
+import { getKindDisplayName } from "@/options/pages/workshop/workshopUtils";
 
 type TableColumn = Column<EnrichedBrick>;
 function inferIcon(kind: Kind, verboseName: string): IconProp {
@@ -118,7 +119,7 @@ const columnFactory = (): TableColumn[] => [
   },
   {
     Header: "Type",
-    accessor: "kind",
+    accessor: ({ kind }) => getKindDisplayName(kind),
   },
   {
     Header: "Version",
