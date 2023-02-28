@@ -27,6 +27,7 @@ import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 import { type contextNames } from "webext-detect-page";
+import { type BlockConfig } from "@/blocks/types";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -774,8 +775,19 @@ export interface IBlock extends Metadata {
    */
   uiSchema?: UiSchema;
 
-  /** An optional a JSON schema for the output of the block */
+  /**
+   * An optional a JSON schema for the output of the block.
+   * @see getOutputSchema
+   */
   outputSchema?: Schema;
+
+  /**
+   * An optional method to generate a JSON output schema given a block configuration.
+   * @param config the block configuration
+   * @see outputSchema
+   * @since 1.7.20
+   */
+  getOutputSchema?: (config: BlockConfig) => Schema | undefined;
 
   defaultOptions: Record<string, unknown>;
 
