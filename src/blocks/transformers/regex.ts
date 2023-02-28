@@ -18,8 +18,11 @@
 import { Transformer } from "@/types";
 import { type BlockArg, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { unary } from "lodash";
+import { isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
+import { type BlockConfig } from "@/blocks/types";
+import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
+import { isNunjucksExpression } from "@/runtime/mapArgs";
 
 export class RegexTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
@@ -54,6 +57,76 @@ export class RegexTransformer extends Transformer {
     },
     ["regex", "input"]
   );
+
+  override outputSchema: Schema = {
+    oneOf: [
+      {
+        type: "object",
+        additionalProperties: {
+          type: "string",
+        },
+      },
+      {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+          },
+        },
+      },
+    ],
+  };
+
+  override getOutputSchema(config: BlockConfig): Schema | undefined {
+    const pattern = extractRegexLiteral(config);
+    const { input } = config.config;
+
+    if (!pattern) {
+      return this.outputSchema;
+    }
+
+    if (
+      !(
+        typeof input === "string" ||
+        isNunjucksExpression(input) ||
+        isArray(input)
+      )
+    ) {
+      // Don't have enough information to determine if output will be an array or object
+      return this.outputSchema;
+    }
+
+    try {
+      // eslint-disable-next-line no-new -- evaluating for type error
+      new RegExp(pattern);
+    } catch {
+      return this.outputSchema;
+    }
+
+    // Create new regex on each analysis call to avoid state issues with test
+    const namedCapturedGroupRegex = /\(\?<(\S+)>.*?\)/g;
+
+    const namedGroups: string[] = [
+      ...pattern.matchAll(namedCapturedGroupRegex),
+    ].map((x) => x[1]);
+
+    const itemSchema: Schema = {
+      type: "object",
+      properties: Object.fromEntries(
+        namedGroups.map((name) => [name, { type: "string" }])
+      ),
+    };
+
+    if (isArray(input)) {
+      return {
+        type: "array",
+        items: itemSchema,
+      };
+    }
+
+    return itemSchema;
+  }
 
   async transform({
     regex,

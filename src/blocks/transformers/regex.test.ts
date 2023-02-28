@@ -18,6 +18,7 @@
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 const transformer = new RegexTransformer();
 
@@ -66,4 +67,78 @@ test("invalid regex is business error", async () => {
       "Invalid regular expression: /BOOM\\/: \\ at end of pattern"
     )
   );
+});
+
+describe("getOutputSchema", () => {
+  test("returns named groups in output schema", () => {
+    const schema = transformer.getOutputSchema({
+      id: transformer.id,
+      config: {
+        regex: "(?<name>ABC)",
+        input: "ABC",
+      },
+    });
+
+    expect(schema).toEqual({
+      type: "object",
+      properties: {
+        name: { type: "string" },
+      },
+    });
+  });
+
+  test("handles nunjucks", () => {
+    const schema = transformer.getOutputSchema({
+      id: transformer.id,
+      config: {
+        regex: "(?<name>ABC)",
+        input: makeTemplateExpression("nunjucks", "{{ @test }}"),
+      },
+    });
+
+    expect(schema).toEqual({
+      type: "object",
+      properties: {
+        name: { type: "string" },
+      },
+    });
+  });
+
+  test("returns multiple named groups in output schema", () => {
+    const schema = transformer.getOutputSchema({
+      id: transformer.id,
+      config: {
+        regex: "(?<name>ABC) (?<other>DEF)?",
+        input: "ABC",
+      },
+    });
+
+    expect(schema).toEqual({
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        other: { type: "string" },
+      },
+    });
+  });
+
+  test("handles input array", () => {
+    const schema = transformer.getOutputSchema({
+      id: transformer.id,
+      config: {
+        regex: "(?<name>ABC)",
+        input: ["ABC", "XYZ"],
+      },
+    });
+
+    expect(schema).toEqual({
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+        },
+      },
+    });
+  });
 });

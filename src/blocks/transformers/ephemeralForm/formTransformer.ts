@@ -31,6 +31,8 @@ import {
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
+import { type BlockConfig } from "@/blocks/types";
+import { isExpression } from "@/runtime/mapArgs";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -95,6 +97,21 @@ export class FormTransformer extends Transformer {
     },
     required: ["schema"],
   };
+
+  override outputSchema: Schema = {
+    type: "object",
+    additionalProperties: true,
+  };
+
+  override getOutputSchema(config: BlockConfig): Schema | undefined {
+    const formSchema = config.config?.schema as Schema;
+
+    if (isExpression(formSchema)) {
+      return this.outputSchema;
+    }
+
+    return formSchema ?? this.outputSchema;
+  }
 
   async transform(
     {

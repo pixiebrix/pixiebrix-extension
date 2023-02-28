@@ -271,6 +271,23 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.knownVars;
   }
 
+  private safeGetOutputSchema(blockConfig: BlockConfig): Schema | undefined {
+    const block = this.allBlocks.get(blockConfig.id)?.block;
+
+    if (!block) {
+      return;
+    }
+
+    // Be defensive if getOutputSchema errors due to nested variables, etc.
+    try {
+      return block.getOutputSchema(blockConfig);
+    } catch {
+      // NOP
+    }
+
+    return block.outputSchema ?? {};
+  }
+
   /**
    * @param trace the trace for the latest run of the extension
    */
@@ -310,8 +327,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     if (blockConfig.outputKey) {
       const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-      const outputSchema = this.allBlocks.get(blockConfig.id)?.block
-        ?.outputSchema;
+
+      const outputSchema = this.safeGetOutputSchema(blockConfig);
 
       if (outputSchema == null) {
         currentBlockOutput.setOutputKeyExistence({
