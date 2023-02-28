@@ -288,6 +288,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     return new ArrayCompositeReader(
       compact([
+        // Because defaultReader is used outputSchema, only include eventReader if it's actually applicable so
+        // @input.event doesn't show up in autocomplete/etc. otherwise
         eventReader ? new CompositeReader({ event: eventReader }) : null,
         await this.getBaseReader(),
       ])
@@ -412,7 +414,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       return [];
     }
 
-    const reader = await this.defaultReader();
+    const reader = await this.getBaseReader();
 
     const readerContext = {
       // The default reader overrides the event property. Should match the override precedence in defaultReader()

@@ -249,6 +249,37 @@ describe("triggerExtension", () => {
     extensionPoint.uninstall();
   });
 
+  it("runs keypress trigger", async () => {
+    document.body.innerHTML = getDocument(
+      "<div><input type='text'></input></div>"
+    ).body.innerHTML;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "keypress",
+        rootSelector: "input",
+      })()
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    const element = document.querySelector("input");
+
+    await userEvent.type(element, "a");
+    await waitForEffect();
+
+    expect(rootReader.readCount).toBe(1);
+
+    extensionPoint.uninstall();
+  });
+
   it("runs hover trigger", async () => {
     document.body.innerHTML = getDocument(
       "<div><button>Hover Me</button></div>"
