@@ -39,11 +39,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       type: "string",
       title: "Tab Name",
       description: "The spreadsheet tab",
-      // Need to have at least one item in the enum to force "select"
-      // input mode, otherwise this defaults to a string expression
-      // values and that causes issues inferring the inputMode. This
-      // default value rarely actually appears to users in the UI.
-      enum: tabNames ?? ["Fetching tab names..."],
+      enum: tabNames ?? [],
     }),
     [tabNames]
   );
@@ -58,7 +54,14 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   //         </span>
   // )}
 
-  return <SchemaField name={name} schema={fieldSchema} isRequired />;
+  return (
+    <SchemaField
+      name={name}
+      schema={fieldSchema}
+      isRequired
+      defaultType="select"
+    />
+  );
 };
 
 export default TabField;

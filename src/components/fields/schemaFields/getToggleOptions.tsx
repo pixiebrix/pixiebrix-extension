@@ -306,9 +306,10 @@ export function getToggleOptions({
           ? String(fieldSchema.default)
           : null,
     });
-    handleVarOption();
-    // Select fields will match the basic string check also, so we need an "else" here
-  } else if (fieldSchema.type === "string" || anyType) {
+  }
+
+  // Select fields will match the basic string check also
+  if (fieldSchema.type === "string" || anyType) {
     pushOptions(textOption);
     handleVarOption();
   }
