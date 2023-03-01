@@ -384,7 +384,10 @@ export function getToggleOptions({
       isArrayItem,
       allowExpressions,
     }).map((option) => {
-      option.description = subSchema.description;
+      if (!option.description) {
+        option.description = subSchema.description;
+      }
+
       return option;
     });
   });

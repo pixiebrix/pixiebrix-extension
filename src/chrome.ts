@@ -163,3 +163,10 @@ export async function reloadIfNewVersionIsReady(): Promise<
 
   return status as "throttled" | "no_update";
 }
+
+/**
+ * Check if we're currently running in the page editor
+ */
+export function isPageEditorContext(): boolean {
+  return location.pathname === "/pageEditor.html";
+}
