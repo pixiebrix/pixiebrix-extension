@@ -22,6 +22,7 @@ import {
 import {
   type IBlock,
   type IExtensionPoint,
+  type IReader,
   type ReaderOutput,
   type ReaderRoot,
   type ResolvedExtension,
@@ -43,7 +44,6 @@ import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
-  pickEventProperties,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
@@ -62,95 +62,24 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
 import "@/vendors/hoverintent/hoverintent";
+import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import {
+  type AttachMode,
+  type IntervalArgs,
+  type ReportMode,
+  type TargetMode,
+  type Trigger,
+  USER_ACTION_TRIGGERS,
+} from "@/extensionPoints/triggerExtensionTypes";
+import {
+  getEventReader,
+  getShimEventReader,
+  pickEventProperties,
+} from "@/extensionPoints/triggerEventReaders";
+import CompositeReader from "@/blocks/readers/CompositeReader";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
-};
-
-export type AttachMode =
-  // Attach handlers once (for any elements available at the time of attaching handlers) (default)
-  | "once"
-  // Watch for new elements and attach triggers to any new elements that matches the selector. Only supports native
-  // CSS selectors (because it uses MutationObserver under the hood)
-  | "watch";
-
-export type TargetMode =
-  // The element that triggered the event
-  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
-  | "eventTarget"
-  // The element the trigger is attached to
-  | "root";
-
-export type ReportMode =
-  // Events (trigger/error) reported only once per extension per page
-  | "once"
-  // Report all events
-  | "all";
-
-export type Trigger =
-  // `load` is page load
-  | "load"
-  // `interval` is a fixed interval
-  | "interval"
-  // `appear` is triggered when an element enters the user's viewport
-  | "appear"
-  // `initialize` is triggered when an element is added to the DOM
-  | "initialize"
-  | "blur"
-  | "click"
-  | "dblclick"
-  | "mouseover"
-  // https://ux.stackexchange.com/questions/109288/how-long-in-milliseconds-is-long-enough-to-decide-a-user-is-actually-hovering
-  | "hover"
-  | "keydown"
-  | "keyup"
-  | "keypress"
-  | "change"
-  // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  | "selectionchange"
-  // The PixieBrix page state changed
-  | "statechange"
-  // A custom event configured by the user. Can also be an external event from the page
-  | "custom";
-
-/**
- * Triggers considered user actions for the purpose of defaulting the reportMode if not provided.
- *
- * Currently, includes mouse events and input blur. Keyboard events, e.g., "keydown", are not included because single
- * key events do not convey user intent.
- *
- * @see ReportMode
- * @see getDefaultReportModeForTrigger
- */
-const USER_ACTION_TRIGGERS: Trigger[] = [
-  "click",
-  "dblclick",
-  "blur",
-  "mouseover",
-  "hover",
-];
-
-type IntervalArgs = {
-  /**
-   * Interval in milliseconds.
-   */
-  intervalMillis: number;
-
-  /**
-   * Effect to run on each interval.
-   */
-  effectGenerator: () => Promise<void>;
-
-  /**
-   * AbortSignal to cancel the interval
-   */
-  signal: AbortSignal;
-
-  /**
-   * Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
-   * using the tab/frame running the interval.
-   */
-  requestAnimationFrame: boolean;
 };
 
 export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
@@ -212,6 +141,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get customTriggerOptions(): CustomEventOptions;
 
   abstract get triggerSelector(): string | null;
+
+  abstract getBaseReader(): Promise<IReader>;
 
   /**
    * Map from extension ID to elements a trigger is currently running on.
@@ -352,6 +283,30 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return blockList(extension.config.action);
   }
 
+  override async defaultReader(): Promise<IReader> {
+    const eventReader = getEventReader(this.trigger);
+
+    return new ArrayCompositeReader(
+      compact([
+        // Because defaultReader is used outputSchema, only include eventReader if it's actually applicable so
+        // @input.event doesn't show up in autocomplete/etc. otherwise
+        eventReader ? new CompositeReader({ event: eventReader }) : null,
+        await this.getBaseReader(),
+      ])
+    );
+  }
+
+  override async previewReader(): Promise<IReader> {
+    const shim = getShimEventReader(this.trigger) as IReader;
+
+    return new ArrayCompositeReader(
+      compact([
+        shim ? new CompositeReader({ event: shim }) : null,
+        await this.getBaseReader(),
+      ])
+    );
+  }
+
   private async runExtension(
     ctxt: ReaderOutput,
     extension: ResolvedExtension<TriggerConfig>,
@@ -459,10 +414,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       return [];
     }
 
-    const reader = await this.defaultReader();
+    const reader = await this.getBaseReader();
 
     const readerContext = {
-      // The default reader overrides the event property
+      // The default reader overrides the event property. Should match the override precedence in defaultReader()
       event: nativeEvent ? pickEventProperties(nativeEvent) : null,
       ...(await reader.read(root)),
     };
@@ -962,7 +917,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.background ?? false;
   }
 
-  override async defaultReader() {
+  override async getBaseReader(): Promise<IReader> {
     return mergeReaders(this._definition.reader);
   }
 

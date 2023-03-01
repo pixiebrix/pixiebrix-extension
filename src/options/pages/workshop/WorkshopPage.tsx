@@ -33,6 +33,7 @@ import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
+import { getKindDisplayName } from "@/options/pages/workshop/workshopUtils";
 
 const { actions } = workshopSlice;
 
@@ -90,7 +91,7 @@ function useSearchOptions(bricks: EnrichedBrick[]) {
     () =>
       sortBy(compact(uniq((bricks ?? []).map((x) => x.kind)))).map((value) => ({
         value,
-        label: value,
+        label: getKindDisplayName(value),
       })),
     [bricks]
   );
@@ -190,7 +191,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
         <div style={{ width: 200 }} className="ml-3">
           <Select
             isMulti
-            placeholder="Filter kind"
+            placeholder="Filter type"
             options={kindOptions}
             value={kindOptions.filter((x) => kinds.includes(x.value))}
             onChange={(values) => {

@@ -59,6 +59,11 @@ import {
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
+import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import {
+  QuickbarQueryReader,
+  quickbarQueryReaderShim,
+} from "@/extensionPoints/quickbarQueryReader";
 
 export type QuickBarProviderConfig = {
   /**
@@ -165,7 +170,18 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
   }
 
   override async defaultReader(): Promise<IReader> {
-    return this.getBaseReader();
+    return new ArrayCompositeReader([
+      // Include QuickbarQueryReader for the outputSchema. The value gets filled in by the run method
+      new QuickbarQueryReader(),
+      await this.getBaseReader(),
+    ]);
+  }
+
+  override async previewReader(): Promise<IReader> {
+    return new ArrayCompositeReader([
+      quickbarQueryReaderShim as unknown as IReader,
+      await this.getBaseReader(),
+    ]);
   }
 
   private async syncActionProvidersForUrl(): Promise<void> {
@@ -249,6 +265,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
       const targetElement = guessSelectedElement() ?? document;
 
       const input = {
+        // Make sure to match the order in defaultReader so override behavior in the schema is accurate
         query,
         ...(await reader.read(targetElement)),
       };

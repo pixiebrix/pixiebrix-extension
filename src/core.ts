@@ -27,6 +27,7 @@ import type { ErrorObject } from "serialize-error";
 import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 import { type contextNames } from "webext-detect-page";
+import { type BlockConfig } from "@/blocks/types";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -696,7 +697,7 @@ export type RunArgs = {
   extensionIds?: UUID[];
 };
 
-export interface IExtensionPoint extends Metadata {
+export type IExtensionPoint = Metadata & {
   kind: string;
 
   inputSchema: Schema;
@@ -705,7 +706,20 @@ export interface IExtensionPoint extends Metadata {
 
   defaultOptions: Record<string, unknown>;
 
+  /**
+   * Return the IReader used by the extension point. This method should only be called for calculating availability
+   * and the schema, as it may include stub readers.
+   *
+   * @see IExtensionPoint.previewReader
+   */
   defaultReader: () => Promise<IReader>;
+
+  /**
+   * Return a IReader for generated an `@input` preview. The shape will correspond to defaultReader, but some
+   * properties may not be available
+   * @see defaultReader
+   */
+  previewReader: () => Promise<IReader>;
 
   isAvailable: () => Promise<boolean>;
 
@@ -746,7 +760,7 @@ export interface IExtensionPoint extends Metadata {
    * Returns any blocks configured in extension.
    */
   getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
-}
+};
 
 export interface IBlock extends Metadata {
   /** A JSON schema of the inputs for the block */
@@ -761,8 +775,19 @@ export interface IBlock extends Metadata {
    */
   uiSchema?: UiSchema;
 
-  /** An optional a JSON schema for the output of the block */
+  /**
+   * An optional a JSON schema for the output of the block.
+   * @see getOutputSchema
+   */
   outputSchema?: Schema;
+
+  /**
+   * An optional method to generate a JSON output schema given a block configuration.
+   * @param config the block configuration
+   * @see outputSchema
+   * @since 1.7.20
+   */
+  getOutputSchema?: (config: BlockConfig) => Schema | undefined;
 
   defaultOptions: Record<string, unknown>;
 

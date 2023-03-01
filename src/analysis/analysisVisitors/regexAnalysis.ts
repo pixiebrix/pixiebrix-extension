@@ -28,6 +28,28 @@ function containsTemplateExpression(literalOrTemplate: string): boolean {
   return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
 }
 
+/**
+ * Returns the regex literal pattern, or null if the regex is a variable or template expression
+ * @param blockConfig
+ */
+export function extractRegexLiteral(blockConfig: BlockConfig): string | null {
+  const { regex: rawRegex = "" } = blockConfig.config;
+  if (typeof rawRegex === "string") {
+    return rawRegex;
+  }
+
+  if (
+    isTemplateExpression(rawRegex) &&
+    rawRegex.__type__ === "nunjucks" &&
+    !containsTemplateExpression(rawRegex.__value__)
+  ) {
+    return rawRegex.__value__;
+  }
+
+  // Skip variables and dynamic expressions
+  return null;
+}
+
 class RegexAnalysis extends AnalysisVisitor {
   get id() {
     return "regex";
@@ -44,22 +66,14 @@ class RegexAnalysis extends AnalysisVisitor {
       return;
     }
 
-    const { regex: rawRegex = "" } = blockConfig.config;
-    let pattern: string;
-    if (typeof rawRegex === "string") {
-      pattern = rawRegex;
-    } else if (
-      isTemplateExpression(rawRegex) &&
-      rawRegex.__type__ === "nunjucks" &&
-      !containsTemplateExpression(rawRegex.__value__)
-    ) {
-      pattern = rawRegex.__value__;
-    } else {
+    let compileError;
+
+    const pattern = extractRegexLiteral(blockConfig);
+
+    if (!pattern) {
       // Skip variables and dynamic expressions
       return;
     }
-
-    let compileError;
 
     try {
       // eslint-disable-next-line no-new -- evaluating for type error

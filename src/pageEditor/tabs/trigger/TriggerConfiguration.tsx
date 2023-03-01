@@ -23,10 +23,7 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import {
-  getDefaultReportModeForTrigger,
-  type Trigger,
-} from "@/extensionPoints/triggerExtension";
+import { getDefaultReportModeForTrigger } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { partial } from "lodash";
@@ -35,6 +32,7 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type DebounceOptions } from "@/extensionPoints/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import { type Trigger } from "@/extensionPoints/triggerExtensionTypes";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange", "statechange"].includes(

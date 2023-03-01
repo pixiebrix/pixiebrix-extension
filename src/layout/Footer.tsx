@@ -21,7 +21,7 @@ import { isExtensionContext } from "webext-detect-page";
 const Footer: React.FunctionComponent = () => {
   const extensionVersion = useMemo(() => {
     if (isExtensionContext()) {
-      return browser.runtime.getManifest().version;
+      return browser.runtime.getManifest().version_name;
     }
 
     return null;
@@ -31,7 +31,7 @@ const Footer: React.FunctionComponent = () => {
     <footer className="footer">
       <div className="d-sm-flex justify-content-center justify-content-sm-between">
         <span className="text-muted text-center text-sm-left d-block d-sm-inline-block">
-          Copyright © 2022{" "}
+          Copyright © 2023{" "}
           <a href="https://www.pixiebrix.com">PixieBrix, Inc.</a> All rights
           reserved.
         </span>

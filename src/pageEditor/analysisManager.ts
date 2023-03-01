@@ -24,7 +24,7 @@ import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
 import { type UUID } from "@/core";
 import { type TraceRecord } from "@/telemetry/trace";
-import { type PayloadAction, isAnyOf } from "@reduxjs/toolkit";
+import { isAnyOf, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "./pageEditorTypes";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
@@ -33,7 +33,6 @@ import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectActiveElementTraces } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
-import { selectSettings } from "@/store/settingsSelectors";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
@@ -119,13 +118,7 @@ const varAnalysisFactory = (
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState
 ) => {
-  const { varAnalysis } = selectSettings(state);
-  if (!varAnalysis) {
-    return null;
-  }
-
   const records = selectActiveElementTraces(state);
-
   return new VarAnalysis(records);
 };
 
