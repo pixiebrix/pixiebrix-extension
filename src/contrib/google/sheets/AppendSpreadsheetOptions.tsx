@@ -48,7 +48,14 @@ const PropertiesField: React.FunctionComponent<{
 }> = ({ name, spreadsheetId, tabName }) => {
   const [sheetSchema, , schemaError] = useAsyncState<Schema>(
     async () => {
-      if (spreadsheetId && tabName && !isExpression(tabName)) {
+      if (spreadsheetId && tabName) {
+        if (isExpression(tabName)) {
+          return {
+            type: "object",
+            additionalProperties: true,
+          };
+        }
+
         const headers = await sheets.getHeaders({
           spreadsheetId,
           tabName,

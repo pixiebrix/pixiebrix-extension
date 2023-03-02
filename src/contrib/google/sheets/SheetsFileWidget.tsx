@@ -58,7 +58,9 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   useAsyncEffect(
     async (isMounted) => {
       if (isExpression(field.value)) {
-        // Showing a workshop message for now here
+        // Expression would mean it's a service integration, and the
+        // service picker shows the service name, so we don't need
+        // to load the doc here.
         return;
       }
 
