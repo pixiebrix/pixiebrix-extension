@@ -1,0 +1,179 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppendSpreadsheetOptions should render with raw sheetId value 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="my-2"
+    >
+      <div
+        class="root"
+        data-testid="loader"
+      >
+        <span
+          style="width: 57px; font-size: 0px; display: inline-block;"
+        >
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.8413834047547105s 0.04138340475471053s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.5011382791995889s 0.7011382791995888s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.5982390575883625s 0.7982390575883624s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.8366775449673721s 0.03667754496737213s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.6005174592296697s -0.19948254077033029s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.7802855816497675s -0.019714418350232493s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.5540494504514717s 0.7540494504514719s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.2892782945346912s 0.4892782945346911s infinite ease;"
+          />
+          <span
+            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.5890737205202106s 0.7890737205202107s infinite ease;"
+          />
+        </span>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="config.tabName"
+        >
+          Tab Name
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <textarea
+                class="form-control"
+                id="config.tabName"
+                name="config.tabName"
+                rows="1"
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Text"
+              data-testid="toggle-config.tabName"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              The spreadsheet tab
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="config.rowValues"
+        >
+          Row Values
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <div>
+                <table
+                  class="mb-0 table table-sm"
+                >
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                      >
+                        Property
+                      </th>
+                      <th
+                        scope="col"
+                      >
+                        Value
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody />
+                </table>
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                >
+                  Add Property
+                </button>
+              </div>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Object properties"
+              data-testid="toggle-config.rowValues"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

@@ -18,6 +18,7 @@
 import { renderHook } from "@/pageEditor/testHelpers";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
 import { uuidSequence } from "@/testUtils/factories";
+import { fromJS } from "@/services/factory";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 

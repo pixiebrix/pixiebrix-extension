@@ -16,10 +16,56 @@
  */
 
 import React from "react";
+import { render } from "@/sidebar/testHelpers";
+import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
-jest.mock("@contrib/google/sheets/useSpreadsheetId.ts", () => ({
+const SPREADSHEET_ID = "testId";
+
+jest.mock("@/contrib/google/sheets/useSpreadsheetId", () => ({
   __esModule: true,
-  default: () => "testId",
+  default: () => SPREADSHEET_ID,
 }));
 
-describe("AppendSpreadsheetOptions", () => {});
+jest.mock("@/background/messenger/api", () => ({
+  __esModule: true,
+  sheets: {
+    getSheetProperties: jest.fn().mockResolvedValue({ title: "Test Sheet" }),
+    getTabNames: jest.fn().mockResolvedValue(["Tab1", "Tab2"]),
+    getHeaders: jest.fn().mockImplementation(({ tabName }) => {
+      if (tabName === "Tab1") {
+        return ["Column1", "Column2"];
+      }
+
+      return ["Foo", "Bar"];
+    }),
+  },
+}));
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
+
+describe("AppendSpreadsheetOptions", () => {
+  it("should render with raw sheetId value", async () => {
+    const rendered = render(
+      <AppendSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: SPREADSHEET_ID,
+            tabName: "",
+            rowValues: {},
+          },
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should render with service sheetId value", async () => {});
+});
