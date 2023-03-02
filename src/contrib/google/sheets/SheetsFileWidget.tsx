@@ -25,17 +25,7 @@ import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/handlers";
 import { ensureAuth } from "@/contrib/google/auth";
-import {
-  isWebPage,
-  isContentScript,
-  isBackgroundPage,
-  isBackground,
-  isBackgroundWorker,
-  isDevToolsPage,
-  isExtensionContext,
-  isOptionsPage,
-} from "webext-detect-page";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- Only using Form.Control here
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
@@ -43,6 +33,7 @@ import { type Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -100,115 +91,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     [doc?.id, field.value, setDoc, setSheetError]
   );
 
-  const [pickerOrigin, setPickerOrigin] = useState<string>("");
-
-  useAsyncEffect(async (isMounted) => {
-    const { devtools_page: devtoolsPage } = chrome.runtime.getManifest();
-    const url = new URL(devtoolsPage, location.origin);
-    const currentLocation = location;
-    // X return url.pathname === location.pathname;
-
-    const getUrl = browser.runtime.getURL("");
-
-    const _isWebPage = isWebPage();
-    const _isExtensionContext = isExtensionContext();
-    const _isContentScript = isContentScript();
-    const _isBackgroundPage = isBackgroundPage();
-    const _isBackground = isBackground();
-    const _isBackgroundWorker = isBackgroundWorker();
-    const _isDevToolsPage = isDevToolsPage();
-    const _isOptionsPage = isOptionsPage();
-
-    /**
-     * The sheet picker needs to run in 3 different contexts:
-     *  1. The "options page" / Integrations page
-     *  2. The "devtools page" / Page Editor
-     *  3. The Sidebar
-     *
-     *  We use Federico's webext-detect-page library to figure out the context
-     *
-     *
-     *  The options page can be identified by: isOptionsPage() === true
-     *
-     *  Options page:
-     *  _isBackground: false
-     *  _isBackgroundPage: false
-     *  _isBackgroundWorker: false
-     *  _isContentScript: false
-     *  _isDevToolsPage: false
-     *  _isExtensionContext: true
-     *  _isOptionsPage: true
-     *  _isWebPage: false
-     *
-     *
-     *  In the page editor, unfortunately: isDevToolsPage() === false.
-     *  The page editor does NOT register as a "devtools page", because it's pathname
-     *  is "/pageEditor.html" and not "/devtools.html". This is what Federico's library
-     *  checks, but that doesn't work when you mount a devtools panel with a different
-     *  pathname in the pagePath. There's not really a general way to check for a devtools
-     *  panel, because the pagePath can be set to anything at runtime, outside the
-     *  manifest.
-     *
-     *  Page Editor:
-     *  _isBackground: false
-     *  _isBackgroundPage: false
-     *  _isBackgroundWorker: false
-     *  _isContentScript: false
-     *  _isDevToolsPage: false
-     *  _isExtensionContext: true
-     *  _isOptionsPage: false
-     *  _isWebPage: false
-     *
-     *
-     *  In the sidebar app, the only check that returns true is isExtensionContext().
-     *  The problem here is that, due to the issue identifying devtools panels (above),
-     *  this check matches between the page editor and the sidebar.
-     *
-     *  Sidebar:
-     *  _isBackground: false
-     *  _isBackgroundPage: false
-     *  _isBackgroundWorker: false
-     *  _isContentScript: false
-     *  _isDevToolsPage: false
-     *  _isExtensionContext: true
-     *  _isOptionsPage: false
-     *  _isWebPage: false
-     */
-
-    // Checks location.pathname against the 'options_ui' value in manifest.json
-    // THIS WORKS AS EXPECTED
-    if (isOptionsPage()) {
-      setPickerOrigin(browser.runtime.getURL(""));
-      return;
-    }
-
-    // Checks location.pathname against the 'devtools_page' value in manifest.json
-    // THIS DOES NOT WORK FOR THE PAGE EDITOR, CHECK RETURNS FALSE (see long comment above)
-    if (isDevToolsPage()) {
-      setPickerOrigin("devtools://devtools");
-      return;
-    }
-
-    // We could check for the pageEditor.html pathname directly here instead, but this
-    // feels sort of fragile. I suppose the pagePath isn't going to change anytime soon.
-    // THIS WORKS FOR THE PAGE EDITOR
-    if (location.pathname === "/pageEditor.html") {
-      setPickerOrigin("devtools://devtools");
-      return;
-    }
-
-    // Just checks that we're running in the context of a chrome extension in general:
-    //    typeof globalThis.chrome?.extension === 'object'
-    // THIS WORKS FOR THE SIDEBAR APP, BUT ALSO MATCHES THE PAGE EDITOR
-    if (isExtensionContext()) {
-      // THIS DOES NOT WORK FOR THE PAGE EDITOR, PICKER EXPECTS 'devtools://devtools'
-      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-        if (isMounted) {
-          setPickerOrigin(tabs[0].url);
-        }
-      });
-    }
-  }, []);
+  const pickerOrigin = useCurrentOrigin();
 
   const showPicker = useCallback(async () => {
     try {
