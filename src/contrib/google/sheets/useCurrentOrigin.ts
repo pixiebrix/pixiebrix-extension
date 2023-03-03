@@ -46,6 +46,12 @@ function useCurrentOrigin(): string {
     }
 
     // Default to using the Chrome tabs API to get the active tab url
+    //
+    // NOTE: Technically, we might want to instead ping the background page,
+    // and have it report back what the URL is. This is probably fine for now,
+    // since the tab with the sidebar will be active when this code is run
+    // in this PR. But, to be correct in all cases, we don't want to rely
+    // on the tab/page this is running on being active.
     const tabs = await chrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
