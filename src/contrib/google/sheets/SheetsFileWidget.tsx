@@ -25,8 +25,7 @@ import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/handlers";
 import { ensureAuth } from "@/contrib/google/auth";
-import { isOptionsPage } from "webext-detect-page";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- Only using Form.Control here
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
@@ -34,6 +33,7 @@ import { type Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -91,6 +91,8 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     [doc?.id, field.value, setDoc, setSheetError]
   );
 
+  const pickerOrigin = useCurrentOrigin();
+
   const showPicker = useCallback(async () => {
     try {
       const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
@@ -132,9 +134,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
             setDoc(doc);
           }
         })
-        .setOrigin(
-          isOptionsPage() ? browser.runtime.getURL("") : "devtools://devtools"
-        )
+        .setOrigin(pickerOrigin)
         .build();
       picker.setVisible(true);
     } catch (error) {

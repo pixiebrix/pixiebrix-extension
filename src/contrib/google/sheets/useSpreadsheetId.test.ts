@@ -15,73 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@/pageEditor/testHelpers";
+import { renderHook } from "@/sidebar/testHelpers";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
-import { uuidSequence } from "@/testUtils/factories";
+import {
+  sanitizedServiceConfigurationFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
+import { type RegistryId } from "@/core";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import useDependency, { type Dependency } from "@/services/useDependency";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
+const GOOGLE_SHEET_SERVICE_ID = "google/sheet" as RegistryId;
 
 jest.mock("@/services/useDependency", () => ({
   __esModule: true,
-  default: () => ({
-    config: {
-      id: "c5a2b0d2-e749-4191-8543-e52e5ef3a55a",
-      serviceId: "google/sheet",
-      proxy: false,
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-      },
-    },
-    service: {
-      id: "google/sheet",
-      name: "Google Sheet",
-      description: "A Google Sheet",
-      _definition: {
-        kind: "service",
-        metadata: {
-          id: "google/sheet",
-          url: "https://sheets.google.com",
-          name: "Google Sheet",
-          version: "0.0.1",
-          description: "A Google Sheet",
-        },
-        apiVersion: "v1",
-        inputSchema: {
-          type: "object",
-          $schema: "https://json-schema.org/draft/2019-09/schema#",
-          required: ["spreadsheetId"],
-          properties: {
-            spreadsheetId: {
-              type: "string",
-              description: "The spreadsheet id",
-            },
-          },
-        },
-        sharing: {
-          public: true,
-          organizations: [],
-        },
-        updated_at: "2022-08-17T17:35:40.779163Z",
-      },
-      schema: {
-        type: "object",
-        $schema: "https://json-schema.org/draft/2019-09/schema#",
-        required: ["spreadsheetId"],
-        properties: {
-          spreadsheetId: {
-            type: "string",
-            description: "The spreadsheet id",
-          },
-        },
-      },
-      hasAuth: false,
-      version: "0.0.1",
-    },
-    hasPermissions: true,
-  }),
+  default: jest.fn(),
 }));
 
+const useDependencyMock = useDependency as jest.MockedFunction<
+  typeof useDependency
+>;
+
 describe("useSpreadsheetId", () => {
+  beforeAll(() => {
+    useDependencyMock.mockReturnValue({
+      // Hook only needs the config
+      config: sanitizedServiceConfigurationFactory({
+        serviceId: GOOGLE_SHEET_SERVICE_ID,
+        // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
+        config: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
+        },
+      }),
+    } as Dependency);
+  });
+
   test("works with string value", async () => {
     const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
@@ -96,17 +65,20 @@ describe("useSpreadsheetId", () => {
       initialValues: {
         spreadsheetId: {
           __type__: "var",
-          __value__: "google/sheet",
+          __value__: GOOGLE_SHEET_SERVICE_ID,
         },
         services: [
           {
-            id: "google/sheet",
+            id: GOOGLE_SHEET_SERVICE_ID,
             outputKey: "google",
-            config: "c5a2b0d2-e749-4191-8543-e52e5ef3a55a",
+            config: uuidSequence(2),
           },
         ],
       },
     });
+
+    await waitForEffect();
+
     expect(result.current).toBe(TEST_SPREADSHEET_ID);
   });
 });

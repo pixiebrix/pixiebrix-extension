@@ -21,9 +21,12 @@ import extensionsSlice from "@/store/extensionsSlice";
 import servicesSlice from "@/store/servicesSlice";
 import settingsSlice from "@/store/settingsSlice";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { createRenderWithWrappers } from "@/testUtils/testHelpers";
+import {
+  createRenderHookWithWrappers,
+  createRenderWithWrappers,
+} from "@/testUtils/testHelpers";
 
-const renderWithWrappers = createRenderWithWrappers(() =>
+const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
@@ -32,10 +35,15 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       settings: settingsSlice.reducer,
       services: servicesSlice.reducer,
     },
-  })
+  });
+
+const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
+const renderHookWithWrappers = createRenderHookWithWrappers(
+  configureStoreForTests
 );
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+export { renderHookWithWrappers as renderHook };
