@@ -384,6 +384,8 @@ export function getToggleOptions({
       isArrayItem,
       allowExpressions,
     }).map((option) => {
+      // Only use the schema description if a custom description wasn't already
+      // set for the input mode option
       if (!option.description) {
         option.description = subSchema.description;
       }
