@@ -95,8 +95,8 @@ describe("LookupSpreadsheetOptions", () => {
     // Shows the header names for Tab1 in the dropdown
     const headerChooser = await screen.findByLabelText("Column Header");
     await userEvent.click(headerChooser);
-    expect(screen.getByDisplayValue("Column1")).toBeVisible();
-    expect(screen.getByDisplayValue("Column2")).toBeVisible();
+    expect(screen.getByText("Column1")).toBeVisible();
+    expect(screen.getByText("Column2")).toBeVisible();
     expect(screen.queryByText("Foo")).not.toBeInTheDocument();
     expect(screen.queryByText("Bar")).not.toBeInTheDocument();
 
@@ -107,8 +107,8 @@ describe("LookupSpreadsheetOptions", () => {
 
     // Shows the header names for Tab2 in the dropdown
     await userEvent.click(headerChooser);
-    expect(screen.getByDisplayValue("Foo")).toBeVisible();
-    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByText("Foo")).toBeVisible();
+    expect(screen.getByText("Bar")).toBeVisible();
     expect(screen.queryByText("Column1")).not.toBeInTheDocument();
     expect(screen.queryByText("Column2")).not.toBeInTheDocument();
   });
