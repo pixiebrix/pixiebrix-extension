@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { render } from "@/sidebar/testHelpers";
-import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
+import { render } from "@/sidebar/testHelpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
@@ -50,16 +50,18 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("AppendSpreadsheetOptions", () => {
+describe("LookupSpreadsheetOptions", () => {
   it("should render successfully", async () => {
     const rendered = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
+      <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: {
           config: {
             spreadsheetId: SPREADSHEET_ID,
             tabName: "",
-            rowValues: {},
+            header: "",
+            query: "",
+            multi: false,
           },
         },
       }
@@ -70,8 +72,8 @@ describe("AppendSpreadsheetOptions", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("can choose tab and row values will load automatically", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+  it("can choose tab and header values will load automatically", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
           spreadsheetId: SPREADSHEET_ID,
@@ -90,41 +92,45 @@ describe("AppendSpreadsheetOptions", () => {
     const tab1Option = await screen.findByText("Tab1");
     await userEvent.click(tab1Option);
 
-    // Shows the header names for Tab1
+    // Shows the header names for Tab1 in the dropdown
+    const headerChooser = await screen.findByLabelText("Column Header");
+    await userEvent.click(headerChooser);
     expect(screen.getByDisplayValue("Column1")).toBeVisible();
     expect(screen.getByDisplayValue("Column2")).toBeVisible();
-    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bar")).not.toBeInTheDocument();
 
     // Choose Tab2
     await userEvent.click(tabChooser);
     const tab2Option = await screen.findByText("Tab2");
     await userEvent.click(tab2Option);
 
-    // Shows the header names for Tab2
+    // Shows the header names for Tab2 in the dropdown
+    await userEvent.click(headerChooser);
     expect(screen.getByDisplayValue("Foo")).toBeVisible();
     expect(screen.getByDisplayValue("Bar")).toBeVisible();
-    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
+    expect(screen.queryByText("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByText("Column2")).not.toBeInTheDocument();
   });
 
-  it("allows any rowValues fields for variable tab name", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: SPREADSHEET_ID,
-          tabName: makeVariableExpression("@mySheetTab"),
-          rowValues: {},
+  it("renders with variable inputs", async () => {
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: SPREADSHEET_ID,
+            tabName: makeVariableExpression("@myTab"),
+            header: makeVariableExpression("@myHeader"),
+            query: makeVariableExpression("@query"),
+            multi: true,
+          },
         },
-      },
-    });
+      }
+    );
 
     await waitForEffect();
 
-    // Ensure that no header names have been loaded into the rowValues field
-    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

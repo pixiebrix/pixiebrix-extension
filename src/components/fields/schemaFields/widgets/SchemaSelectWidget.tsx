@@ -68,6 +68,7 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
 
   return creatable ? (
     <Creatable
+      inputId={name}
       isClearable
       options={options}
       onCreateOption={(value) => {
@@ -79,6 +80,7 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
     />
   ) : (
     <Select
+      inputId={name}
       isClearable
       options={options}
       value={selectedValue}
