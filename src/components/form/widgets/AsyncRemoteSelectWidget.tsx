@@ -70,8 +70,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   // `react-select` doesn't automatically debounce requests
   const loadOptions = useDebouncedCallback(
     (inputValue: string, callback: (options: Option[]) => void) => {
-      // eslint-disable-next-line promise/prefer-await-to-then -- https://stackoverflow.com/a/64773351
       void optionsFactory(config, { ...factoryArgs, query: inputValue })
+        // eslint-disable-next-line promise/prefer-await-to-then -- https://stackoverflow.com/a/64773351
         .then((options) => {
           setKnownOptions((prev) =>
             uniqBy([...prev, ...options] as Option[], (x) => x.value)
