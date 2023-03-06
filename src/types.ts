@@ -34,6 +34,9 @@ import {
 import { type AxiosRequestConfig } from "axios";
 import { validateRegistryId } from "@/types/helpers";
 import { type BlockConfig } from "@/blocks/types";
+import { type BaseEditor } from "slate";
+import { type HistoryEditor } from "slate-history";
+import { type ReactEditor } from "slate-react";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -213,3 +216,30 @@ export type BaseAnnotation = {
    */
   type: AnnotationType;
 };
+
+/**
+ * Slate's typeguards require typing to be done by declaring a module.
+ * There appears to be some discourse over whether to change this to localized typing.
+ * If we ever need to have more than one kind of slate editor we can extend the types here,
+ * or check if they decided to change that paradigm.
+ * for more info: https://docs.slatejs.org/concepts/12-typescript
+ */
+declare module "slate" {
+  interface CustomTypes {
+    Editor: CustomEditor
+    Element: CustomElement
+    Text: CustomText
+  }
+}
+
+export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor
+
+export type ParagraphElement = {
+  children: CustomText[]
+}
+
+export type CustomElement = ParagraphElement
+
+export type FormattedText = { text: string; template?: true; variable?: true  }
+
+export type CustomText = FormattedText
