@@ -39,7 +39,7 @@ import {
   mapBotInput,
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
-import { pollUntilTruthy, sleep } from "@/utils";
+import { isNullOrBlank, pollUntilTruthy, sleep } from "@/utils";
 import {
   type CommunityBotArgs,
   type EnterpriseBotArgs,
@@ -64,9 +64,16 @@ const SORT_BY_NAME = {
   ],
 };
 
-async function fetchAllPages<TData>(
+/**
+ * Fetch paginated Control Room responses.
+ * @param config the control room integration configuration
+ * @param requestConfig the axios configuration for the request
+ * @param maxPages maximum number of pages to fetch, defaults to all pages
+ */
+async function fetchPages<TData>(
   config: SanitizedServiceConfiguration,
-  requestConfig: AxiosRequestConfig
+  requestConfig: AxiosRequestConfig,
+  { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {}
 ): Promise<TData[]> {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 
@@ -88,8 +95,9 @@ async function fetchAllPages<TData>(
   const total = initialResponse.data.page.totalFilter;
 
   // Note that CR API uses offset/length instead of page/size
+  let page = 0;
   let offset = results.length;
-  while (offset < total) {
+  while (offset < total && page < maxPages) {
     paginatedRequestConfig.data.page = {
       offset,
       length: PAGINATION_LIMIT,
@@ -101,6 +109,7 @@ async function fetchAllPages<TData>(
     );
     results.push(...response.data.list);
     offset += response.data.list.length;
+    page += 1;
   }
 
   return results;
@@ -146,37 +155,79 @@ export const cachedFetchFolder = cachePromiseMethod(
   fetchFolder
 );
 
-async function fetchBots(
+async function searchBots(
   config: SanitizedServiceConfiguration,
-  options: { workspaceType: WorkspaceType }
+  options: { workspaceType: WorkspaceType; query: string; value: string | null }
 ): Promise<Option[]> {
-  const botFilterPayload = {
+  let searchPayload = {
     ...SORT_BY_NAME,
     filter: {
-      operator: "eq",
-      field: "type",
-      value: BOT_TYPE,
+      operator: "and",
+      operands: [
+        {
+          operator: "substring",
+          field: "name",
+          value: options.query,
+        },
+        {
+          operator: "eq",
+          field: "type",
+          value: BOT_TYPE,
+        },
+      ],
     },
   };
+
+  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
+    // If the value is set, but not the query just return the result set for the current value to ensure we can show
+    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
+    // but that would require an extra request unless the sort could somehow put the known value first
+    searchPayload = {
+      ...SORT_BY_NAME,
+      filter: {
+        operator: "and",
+        operands: [
+          {
+            operator: "eq",
+            field: "id",
+            value: options.value,
+          },
+          {
+            operator: "eq",
+            field: "type",
+            value: BOT_TYPE,
+          },
+        ],
+      },
+    };
+  }
 
   let bots: Bot[];
 
   // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
   // the Page Editor configuration is only showing bots for the folder id.
   if (isEmpty(config.config.folderId)) {
-    bots = await fetchAllPages<Bot>(config, {
-      url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
-      method: "POST",
-      data: botFilterPayload,
-    });
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 }
+    );
   } else {
     // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
     // include `type` field for filters or in the body or the response
-    bots = await fetchAllPages<Bot>(config, {
-      url: `/v2/repository/folders/${config.config.folderId}/list`,
-      method: "POST",
-      data: botFilterPayload,
-    });
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/folders/${config.config.folderId}/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 }
+    );
   }
 
   return bots.map((bot) => ({
@@ -185,12 +236,15 @@ async function fetchBots(
   }));
 }
 
-export const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
+export const cachedSearchBots = cachePromiseMethod(
+  ["aa:fetchBots"],
+  searchBots
+);
 
 async function fetchDevices(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  const devices = await fetchAllPages<Device>(config, {
+  const devices = await fetchPages<Device>(config, {
     url: "/v2/devices/list",
     method: "POST",
     data: {},
@@ -218,7 +272,7 @@ export const cachedFetchDevices = cachePromiseMethod(
 async function fetchDevicePools(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  const devicePools = await fetchAllPages<DevicePool>(config, {
+  const devicePools = await fetchPages<DevicePool>(config, {
     url: "/v2/devices/pools/list",
     method: "POST",
     data: { ...SORT_BY_NAME },
@@ -237,7 +291,7 @@ export const cachedFetchDevicePools = cachePromiseMethod(
 async function fetchRunAsUsers(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
-  const users = await fetchAllPages<RunAsUser>(config, {
+  const users = await fetchPages<RunAsUser>(config, {
     url: "/v1/devices/runasusers/list",
     method: "POST",
     data: {},
