@@ -107,7 +107,10 @@ describe("AsyncRemoteSelectWidget", () => {
       await waitForEffect();
     });
 
-    expect(optionsFactoryMock).toHaveBeenCalledWith(null, { query: "foo" });
+    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+      query: "foo",
+      value: null,
+    });
   });
 
   test("handles error state", async () => {
@@ -139,5 +142,32 @@ describe("AsyncRemoteSelectWidget", () => {
     });
 
     expect(helpers.queryByDisplayValue("Oh No!")).toBeDefined();
+  });
+
+  test("it passes the current value to the factory", async () => {
+    const onChangeMock = jest.fn();
+    const optionsFactoryMock = jest.fn().mockResolvedValue([]);
+
+    render(
+      <AsyncRemoteSelectWidget
+        id={id}
+        name={name}
+        optionsFactory={optionsFactoryMock}
+        onChange={onChangeMock}
+        defaultOptions
+        value="test-value"
+        config={null}
+      />
+    );
+
+    await act(async () => {
+      await sleep(100);
+      await waitForEffect();
+    });
+
+    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+      query: "",
+      value: "test-value",
+    });
   });
 });

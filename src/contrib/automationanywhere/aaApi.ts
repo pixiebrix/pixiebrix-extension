@@ -39,7 +39,7 @@ import {
   mapBotInput,
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
-import { pollUntilTruthy, sleep } from "@/utils";
+import { isNullOrBlank, pollUntilTruthy, sleep } from "@/utils";
 import {
   type CommunityBotArgs,
   type EnterpriseBotArgs,
@@ -157,9 +157,9 @@ export const cachedFetchFolder = cachePromiseMethod(
 
 async function searchBots(
   config: SanitizedServiceConfiguration,
-  options: { workspaceType: WorkspaceType; query: string }
+  options: { workspaceType: WorkspaceType; query: string; value: string | null }
 ): Promise<Option[]> {
-  const botFilterPayload = {
+  let searchPayload = {
     ...SORT_BY_NAME,
     filter: {
       operator: "and",
@@ -178,6 +178,30 @@ async function searchBots(
     },
   };
 
+  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
+    // If the value is set, but not the query just return the result set for the current value to ensure we can show
+    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
+    // but that would require an extra request unless the sort could somehow put the known value first
+    searchPayload = {
+      ...SORT_BY_NAME,
+      filter: {
+        operator: "and",
+        operands: [
+          {
+            operator: "eq",
+            field: "id",
+            value: options.value,
+          },
+          {
+            operator: "eq",
+            field: "type",
+            value: BOT_TYPE,
+          },
+        ],
+      },
+    };
+  }
+
   let bots: Bot[];
 
   // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
@@ -188,7 +212,7 @@ async function searchBots(
       {
         url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
         method: "POST",
-        data: botFilterPayload,
+        data: searchPayload,
       },
       { maxPages: 1 }
     );
@@ -200,7 +224,7 @@ async function searchBots(
       {
         url: `/v2/repository/folders/${config.config.folderId}/list`,
         method: "POST",
-        data: botFilterPayload,
+        data: searchPayload,
       },
       { maxPages: 1 }
     );

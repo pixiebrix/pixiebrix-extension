@@ -28,8 +28,19 @@ import { useDebouncedCallback } from "use-debounce";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
+type DefaultFactoryArgs = {
+  /**
+   * The current user-provided query.
+   */
+  query: string;
+  /**
+   * The currently selected value, or null if a value is not selected.
+   */
+  value: unknown;
+};
+
 export type AsyncOptionsFactory<
-  Args extends { query: string } = { query: string },
+  Args extends DefaultFactoryArgs = DefaultFactoryArgs,
   T = unknown
 > = (
   config: SanitizedServiceConfiguration,
@@ -37,7 +48,7 @@ export type AsyncOptionsFactory<
 ) => Promise<Array<Option<T>>>;
 
 type AsyncRemoteSelectWidgetProps<
-  Args extends { query: string } = { query: string },
+  Args extends DefaultFactoryArgs = DefaultFactoryArgs,
   T = unknown
 > = CustomFieldWidgetProps<T, SelectLike<Option<T>>> & {
   isClearable?: boolean;
@@ -69,8 +80,8 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
 
   // `react-select` doesn't automatically debounce requests
   const loadOptions = useDebouncedCallback(
-    (inputValue: string, callback: (options: Option[]) => void) => {
-      void optionsFactory(config, { ...factoryArgs, query: inputValue })
+    (query: string, callback: (options: Option[]) => void) => {
+      void optionsFactory(config, { ...factoryArgs, query, value })
         // eslint-disable-next-line promise/prefer-await-to-then -- https://stackoverflow.com/a/64773351
         .then((options) => {
           setKnownOptions((prev) =>

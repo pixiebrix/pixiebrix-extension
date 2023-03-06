@@ -172,7 +172,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             <ConnectedFieldTemplate
               label="Bot"
               name={configName("fileId")}
-              description="The Automation Anywhere bot"
+              description="The Automation Anywhere bot to run. Type a query to search available bots by name"
               as={AsyncRemoteSelectWidget}
               defaultOptions
               cacheOptions
