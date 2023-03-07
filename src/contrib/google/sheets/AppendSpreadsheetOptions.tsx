@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
@@ -35,6 +35,7 @@ import {
   BASE_SHEET_SCHEMA,
   SHEET_SERVICE_SCHEMA,
 } from "@/contrib/google/sheets/schemas";
+import { isEmpty } from "lodash";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -100,8 +101,31 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const basePath = joinName(name, configKey);
   const spreadsheetId = useSpreadsheetId(basePath);
 
-  const [{ value: tabName }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
+  const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
+    string | Expression
+  >(joinName(basePath, "tabName"));
+
+  const [{ value: rowValuesValue }, , { setValue: setRowValuesValue }] =
+    useField(joinName(basePath, "rowValues"));
+
+  // Clear tab name when spreadsheetId changes
+  useEffect(
+    () => {
+      setTabNameValue(null);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render
+    [spreadsheetId]
+  );
+
+  // Clear row values when tabName changes
+  useEffect(
+    () => {
+      if (tabNameValue == null && !isEmpty(rowValuesValue)) {
+        setRowValuesValue({});
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render
+    [rowValuesValue, tabNameValue]
   );
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
@@ -139,7 +163,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       <PropertiesField
         name={joinName(basePath, "rowValues")}
         spreadsheetId={spreadsheetId}
-        tabName={tabName}
+        tabName={tabNameValue}
       />
     </div>
   );
