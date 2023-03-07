@@ -60,7 +60,7 @@
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.6.0",
     "date-fns": "^2.28.0",
-    "dompurify": "^3.0.0",
+    "dompurify": "^3.0.1",
     "exifreader": "^4.8.1",
     "export-to-csv": "^0.2.1",
     "filenamify": "^5.1.0",
