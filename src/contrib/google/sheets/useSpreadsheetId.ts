@@ -54,6 +54,8 @@ function useSpreadsheetId(basePath: string): string | null {
       if (sheetsService) {
         setSheetsServiceId(sheetsService.id);
       }
+    } else {
+      setSpreadsheetId(fieldValue);
     }
   }, [services, fieldValue]);
 
