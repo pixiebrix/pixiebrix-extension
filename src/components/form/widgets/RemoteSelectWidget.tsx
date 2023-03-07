@@ -71,6 +71,7 @@ export function useOptionsResolver<T>(
 
 /**
  * Widget for selecting values retrieved from a 3rd party API
+ * @see AsyncRemoteSelectWidget
  */
 const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   config,
