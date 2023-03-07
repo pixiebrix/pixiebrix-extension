@@ -85,10 +85,8 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabChooser = await screen.findByLabelText("Tab Name");
 
-    // Choose Tab1
-    await userEvent.click(tabChooser);
-    const tab1Option = await screen.findByText("Tab1");
-    await userEvent.click(tab1Option);
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
 
     // Shows the header names for Tab1
     expect(screen.getByDisplayValue("Column1")).toBeVisible();
