@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression, type Schema } from "@/core";
@@ -55,15 +55,10 @@ const HeaderField: React.FunctionComponent<{
           spreadsheetId,
           tabName,
         });
-        if (
-          !isEmpty(headers) &&
-          isTemplateExpression(value) &&
-          isEmpty(value.__value__)
-        ) {
-          // When the current value is an empty expression, we can set
-          // it to null here, instead, to force the field to start on
-          // the select field toggle option
-          setValue(null);
+        // If we loaded headers, then set the value to the first item for
+        // convenience, unless there's an existing expression value in the field
+        if (!isEmpty(headers) && !isTemplateExpression(value)) {
+          setValue(headers[0]);
         }
 
         return {
@@ -78,18 +73,24 @@ const HeaderField: React.FunctionComponent<{
     DEFAULT_HEADER_SCHEMA
   );
 
+  // TODO: We shouldn't be using the description for an error message like this, but the
+  //  field is using analysis errors right now, so formik errors won't be shown.
+  const fieldDescription = headersError ? (
+    <span className="text-warning">
+      Error determining columns: {getErrorMessage(headersError)}
+    </span>
+  ) : null;
+
+  // I saw a transient error here with a null schema, but couldn't reproduce it. Leaving
+  // this here for safety for now.
+  const fieldSchema = headerSchema ?? DEFAULT_HEADER_SCHEMA;
+
   return (
     <SchemaField
       name={name}
       label="Column Header"
-      description={
-        headersError ? (
-          <span className="text-warning">
-            Error determining columns: {getErrorMessage(headersError)}
-          </span>
-        ) : null
-      }
-      schema={headerSchema}
+      description={fieldDescription}
+      schema={fieldSchema}
       isRequired
     />
   );
@@ -102,8 +103,40 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const basePath = joinName(name, configKey);
   const spreadsheetId = useSpreadsheetId(basePath);
 
-  const [{ value: tabName }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
+  const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
+    string | Expression
+  >(joinName(basePath, "tabName"));
+  const headerFieldName = joinName(basePath, "header");
+  const [{ value: headerValue }, , { setValue: setHeaderValue }] = useField<
+    string | Expression
+  >(headerFieldName);
+
+  // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
+  useEffect(
+    () => {
+      if (
+        !isTemplateExpression(tabNameValue) ||
+        isEmpty(tabNameValue.__value__)
+      ) {
+        setTabNameValue(null);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when spreadsheetId changes
+    [spreadsheetId]
+  );
+
+  // Clear the header value when the tab name changes, if the value is not an expression, or is empty
+  useEffect(
+    () => {
+      if (
+        !isTemplateExpression(headerValue) ||
+        isEmpty(headerValue.__value__)
+      ) {
+        setHeaderValue(null);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when tabName changes
+    [tabNameValue]
   );
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
@@ -139,9 +172,9 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         spreadsheetId={spreadsheetId}
       />
       <HeaderField
-        name={joinName(basePath, "header")}
+        name={headerFieldName}
         spreadsheetId={spreadsheetId}
-        tabName={tabName}
+        tabName={tabNameValue}
       />
       <SchemaField
         name={joinName(basePath, "query")}

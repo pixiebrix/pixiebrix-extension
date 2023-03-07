@@ -128,7 +128,9 @@ exports[`AppendSpreadsheetOptions should render successfully 1`] = `
                   >
                     <div
                       class=" css-qc6sy-singleValue"
-                    />
+                    >
+                      Tab1
+                    </div>
                     <div
                       class=" css-6j8wv5-Input"
                       data-value=""
@@ -261,14 +263,121 @@ exports[`AppendSpreadsheetOptions should render successfully 1`] = `
                       </th>
                     </tr>
                   </thead>
-                  <tbody />
+                  <tbody>
+                    <tr>
+                      <td>
+                        <input
+                          class="form-control"
+                          data-testid="config.rowValues.Column1-name"
+                          readonly=""
+                          type="text"
+                          value="Column1"
+                        />
+                      </td>
+                      <td>
+                        <div
+                          class="formGroup mb-0 form-group row"
+                        >
+                          <div
+                            class="col-xl-12 col-lg-12"
+                          >
+                            <div
+                              class="root"
+                            >
+                              <div
+                                class="field"
+                              >
+                                <input
+                                  class="form-control"
+                                  id="config.rowValues.Column1"
+                                  name="config.rowValues.Column1"
+                                  readonly=""
+                                  value=""
+                                />
+                              </div>
+                              <div
+                                class="dropdown dropdown"
+                                data-test-selected="Exclude"
+                                data-testid="toggle-config.rowValues.Column1"
+                              >
+                                <button
+                                  aria-expanded="false"
+                                  aria-haspopup="true"
+                                  class="dropdown-toggle btn btn-link"
+                                  type="button"
+                                >
+                                  <span
+                                    class="symbol"
+                                  >
+                                    <test-file-stub
+                                      classname="root"
+                                    />
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input
+                          class="form-control"
+                          data-testid="config.rowValues.Column2-name"
+                          readonly=""
+                          type="text"
+                          value="Column2"
+                        />
+                      </td>
+                      <td>
+                        <div
+                          class="formGroup mb-0 form-group row"
+                        >
+                          <div
+                            class="col-xl-12 col-lg-12"
+                          >
+                            <div
+                              class="root"
+                            >
+                              <div
+                                class="field"
+                              >
+                                <input
+                                  class="form-control"
+                                  id="config.rowValues.Column2"
+                                  name="config.rowValues.Column2"
+                                  readonly=""
+                                  value=""
+                                />
+                              </div>
+                              <div
+                                class="dropdown dropdown"
+                                data-test-selected="Exclude"
+                                data-testid="toggle-config.rowValues.Column2"
+                              >
+                                <button
+                                  aria-expanded="false"
+                                  aria-haspopup="true"
+                                  class="dropdown-toggle btn btn-link"
+                                  type="button"
+                                >
+                                  <span
+                                    class="symbol"
+                                  >
+                                    <test-file-stub
+                                      classname="root"
+                                    />
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
-                <button
-                  class="btn btn-primary"
-                  type="button"
-                >
-                  Add Property
-                </button>
               </div>
             </div>
             <div

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
@@ -26,7 +26,7 @@ import { isNullOrBlank, joinName } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
-import { isExpression } from "@/runtime/mapArgs";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
@@ -35,6 +35,7 @@ import {
   BASE_SHEET_SCHEMA,
   SHEET_SERVICE_SCHEMA,
 } from "@/contrib/google/sheets/schemas";
+import { isEmpty } from "lodash";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -100,8 +101,39 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const basePath = joinName(name, configKey);
   const spreadsheetId = useSpreadsheetId(basePath);
 
-  const [{ value: tabName }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
+  const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
+    string | Expression
+  >(joinName(basePath, "tabName"));
+
+  const [{ value: rowValuesValue }, , { setValue: setRowValuesValue }] =
+    useField(joinName(basePath, "rowValues"));
+
+  // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
+  useEffect(
+    () => {
+      if (
+        !isTemplateExpression(tabNameValue) ||
+        isEmpty(tabNameValue.__value__)
+      ) {
+        setTabNameValue(null);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when spreadsheetId changes
+    [spreadsheetId]
+  );
+
+  // Clear row values when tabName changes, if the value is not an expression, or is empty
+  useEffect(
+    () => {
+      if (
+        !isTemplateExpression(rowValuesValue) ||
+        isEmpty(rowValuesValue.__value__)
+      ) {
+        setRowValuesValue({});
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when tabName changes
+    [tabNameValue]
   );
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
@@ -139,7 +171,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       <PropertiesField
         name={joinName(basePath, "rowValues")}
         spreadsheetId={spreadsheetId}
-        tabName={tabName}
+        tabName={tabNameValue}
       />
     </div>
   );
