@@ -26,7 +26,7 @@ import { isNullOrBlank, joinName } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
-import { isExpression } from "@/runtime/mapArgs";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
@@ -108,24 +108,32 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const [{ value: rowValuesValue }, , { setValue: setRowValuesValue }] =
     useField(joinName(basePath, "rowValues"));
 
-  // Clear tab name when spreadsheetId changes
+  // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
   useEffect(
     () => {
-      setTabNameValue(null);
+      if (
+        !isTemplateExpression(tabNameValue) ||
+        isEmpty(tabNameValue.__value__)
+      ) {
+        setTabNameValue(null);
+      }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when spreadsheetId changes
     [spreadsheetId]
   );
 
-  // Clear row values when tabName changes
+  // Clear row values when tabName changes, if the value is not an expression, or is empty
   useEffect(
     () => {
-      if (tabNameValue == null && !isEmpty(rowValuesValue)) {
+      if (
+        !isTemplateExpression(rowValuesValue) ||
+        isEmpty(rowValuesValue.__value__)
+      ) {
         setRowValuesValue({});
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render
-    [rowValuesValue, tabNameValue]
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when tabName changes
+    [tabNameValue]
   );
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
