@@ -36,7 +36,6 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { serviceOriginPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
-import { util as apiUtil } from "@/services/api";
 import { normalizeControlRoomUrl } from "@/options/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
 
@@ -138,10 +137,10 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         // Redirect to blueprints screen. The SetupPage always shows a login screen for the "/start" URL
         history.push("/");
 
-        // Refresh auth state so that 1) the user appears as logged in the UI in the navbar, and 2) the Admin Console
-        // link in the navbar links to the URL required for JWT hand-off.
+        // This is a hack - refresh the page so that 1) the user appears as logged in the UI in the navbar, and 2)
+        // the Admin Console link in the navbar links to the URL required for JWT hand-off.
         // See useRequiredAuth hook for more details
-        dispatch(apiUtil.resetApiState());
+        history.go(0);
       } catch (error) {
         helpers.setStatus(getErrorMessage(error));
       }
