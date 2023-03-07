@@ -143,7 +143,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
         error,
       });
     }
-  }, [helpers]);
+  }, [helpers, pickerOrigin]);
 
   return isExpression(field.value) ? (
     <WorkshopMessageWidget />
