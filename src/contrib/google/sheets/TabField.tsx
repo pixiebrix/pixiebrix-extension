@@ -44,7 +44,10 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   ] = useField<string>(name);
 
   useEffect(() => {
-    // If we've loaded tab names and the tab name is not set, set it to the first tab name
+    // If we've loaded tab names and the tab name is not set, set it to the first tab name.
+    // Check to make sure there's not an error so we're not setting it to the first value
+    // of a stale list of tabs, and check the tab name value itself to prevent an infinite
+    // re-render loop here.
     if (!loading && !error && !isEmpty(tabNames) && !tabNameValue) {
       setTabNameValue(tabNames[0]);
     }
@@ -64,7 +67,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
     () => {
       if (!loading && error) {
         // NOTE: This isn't currently shown in the UI, the field uses analysis to show errors, not Formik.
-        setTabNameError("Error loading tab names - " + getErrorMessage(error));
+        setTabNameError("Error loading tab names: " + getErrorMessage(error));
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render

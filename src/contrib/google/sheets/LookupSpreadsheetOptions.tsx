@@ -73,20 +73,24 @@ const HeaderField: React.FunctionComponent<{
     DEFAULT_HEADER_SCHEMA
   );
 
+  // TODO: We shouldn't be using the description for an error message like this, but the
+  //  field is using analysis errors right now, so formik errors won't be shown.
+  const fieldDescription = headersError ? (
+    <span className="text-warning">
+      Error determining columns: {getErrorMessage(headersError)}
+    </span>
+  ) : null;
+
+  // I saw a transient error here with a null schema, but couldn't reproduce it. Leaving
+  // this here for safety for now.
+  const fieldSchema = headerSchema ?? DEFAULT_HEADER_SCHEMA;
+
   return (
     <SchemaField
       name={name}
       label="Column Header"
-      // TODO: We shouldn't be using the description for an error message like this, but the
-      //  field is using analysis errors right now, so formik errors won't be shown.
-      description={
-        headersError ? (
-          <span className="text-warning">
-            Error determining columns: {getErrorMessage(headersError)}
-          </span>
-        ) : null
-      }
-      schema={headerSchema}
+      description={fieldDescription}
+      schema={fieldSchema}
       isRequired
     />
   );
