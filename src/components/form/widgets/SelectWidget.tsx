@@ -95,7 +95,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   };
 
   // Pass null instead of undefined if options is not defined
-  const selectValue =
+  const selectedOption =
     options?.find((option: TOption) => value === option.value) ?? null;
 
   return (
@@ -108,7 +108,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       isLoading={isLoading}
       isClearable={isClearable}
       options={options}
-      value={selectValue}
+      value={selectedOption}
       onChange={patchedOnChange}
       components={components}
       styles={styles}

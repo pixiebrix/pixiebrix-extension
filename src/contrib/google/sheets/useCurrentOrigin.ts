@@ -17,6 +17,8 @@
 
 import { isDevToolsPage, isOptionsPage } from "webext-detect-page";
 import { useAsyncState } from "@/hooks/common";
+import { useEffect } from "react";
+import notify from "@/utils/notify";
 
 /**
  * Get the current origin for where code is running. Used to set the origin on the
@@ -28,7 +30,7 @@ import { useAsyncState } from "@/hooks/common";
  * @returns The current origin, or empty string if the origin is being fetched
  */
 function useCurrentOrigin(): string {
-  const [origin] = useAsyncState(async () => {
+  const [origin, loading, error] = useAsyncState(async () => {
     // Checks location.pathname against the 'options_ui' value in manifest.json
     if (isOptionsPage()) {
       return browser.runtime.getURL("");
@@ -52,12 +54,29 @@ function useCurrentOrigin(): string {
     // since the tab with the sidebar will be active when this code is run
     // in this PR. But, to be correct in all cases, we don't want to rely
     // on the tab/page this is running on being active.
-    const tabs = await chrome.tabs.query({
+    //
+    // NOTE2: Make sure to use browser.tabs instead of chrome.tabs, in order to
+    // use the MV3 promise-based syntax as opposed to the callback version.
+    const tabs = await browser.tabs.query({
       active: true,
       lastFocusedWindow: true,
     });
-    return tabs[0].url;
+    const url = new URL(tabs[0].url);
+    // See google.picker:
+    // The origin should be set to the window.location.protocol + '//' +
+    // window.location.host of the top-most page, if your application is
+    // running in an iframe.
+    return url.protocol + "//" + url.host;
   }, []);
+
+  useEffect(() => {
+    if (!loading && error) {
+      notify.error({
+        message: "Error occurred loading the current tab URL",
+        error,
+      });
+    }
+  }, [error, loading, origin]);
 
   return origin;
 }
