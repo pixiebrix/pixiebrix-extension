@@ -33,7 +33,7 @@ import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import {
   cachedFetchBotFile,
-  cachedFetchBots,
+  cachedSearchBots,
   cachedFetchDevicePools,
   cachedFetchDevices,
   cachedFetchFolder,
@@ -50,11 +50,17 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },
   { value: "private", label: "Private/Local" },
 ];
+
+const BotLoadingMessage: React.FC = () => <span>Searching bots...</span>;
+const BotNoOptionsMessage: React.FC = () => (
+  <span>No bots found for query...</span>
+);
 
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -159,15 +165,24 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             </Alert>
           )}
 
-          <ConnectedFieldTemplate
-            label="Bot"
-            name={configName("fileId")}
-            description="The Automation Anywhere bot"
-            as={RemoteSelectWidget}
-            optionsFactory={cachedFetchBots}
-            factoryArgs={factoryArgs}
-            config={config}
-          />
+          {
+            // Use AsyncRemoteSelectWidget instead of RemoteSelectWidget because the former can handle
+            // Control Rooms with lots of bots
+            // https://github.com/pixiebrix/pixiebrix-extension/issues/5260
+            <ConnectedFieldTemplate
+              label="Bot"
+              name={configName("fileId")}
+              description="The Automation Anywhere bot to run. Type a query to search available bots by name"
+              as={AsyncRemoteSelectWidget}
+              defaultOptions
+              cacheOptions
+              optionsFactory={cachedSearchBots}
+              loadingMessage={BotLoadingMessage}
+              noOptonsMessage={BotNoOptionsMessage}
+              factoryArgs={factoryArgs}
+              config={config}
+            />
+          }
 
           {isCommunityControlRoom(config.config.controlRoomUrl) ? (
             <ConnectedFieldTemplate
