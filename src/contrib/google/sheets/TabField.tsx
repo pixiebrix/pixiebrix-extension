@@ -63,6 +63,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   useEffect(
     () => {
       if (!loading && error) {
+        // NOTE: This isn't currently shown in the UI, the field uses analysis to show errors, not Formik.
         setTabNameError("Error loading tab names - " + getErrorMessage(error));
       }
     },

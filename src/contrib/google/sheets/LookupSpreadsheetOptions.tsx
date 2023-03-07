@@ -77,6 +77,8 @@ const HeaderField: React.FunctionComponent<{
     <SchemaField
       name={name}
       label="Column Header"
+      // TODO: We shouldn't be using the description for an error message like this, but the
+      //  field is using analysis errors right now, so formik errors won't be shown.
       description={
         headersError ? (
           <span className="text-warning">
