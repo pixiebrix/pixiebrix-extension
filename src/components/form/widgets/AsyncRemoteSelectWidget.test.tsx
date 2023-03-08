@@ -23,6 +23,8 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { sleep } from "@/utils";
 import { act } from "react-dom/test-utils";
+import pDefer, { type DeferredPromise } from "p-defer";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 
 const id = "widget";
 const name = "widget";
@@ -169,6 +171,75 @@ describe("AsyncRemoteSelectWidget", () => {
     expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
       query: "",
       value: "test-value",
+    });
+  });
+
+  test("debounces calls while typing", async () => {
+    const onChangeMock = jest.fn();
+
+    const deferred: Array<DeferredPromise<Option[]>> = [];
+
+    const optionsFactoryMock = jest.fn().mockImplementation(() => {
+      const deferredOptions = pDefer<Option[]>();
+      deferred.push(deferredOptions);
+      return deferredOptions.promise;
+    });
+
+    const { container } = render(
+      <AsyncRemoteSelectWidget
+        id={id}
+        name={name}
+        optionsFactory={optionsFactoryMock}
+        onChange={onChangeMock}
+        value={null}
+        config={null}
+      />
+    );
+
+    await waitForEffect();
+    expect(optionsFactoryMock).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await userEvent.click(container.querySelector('[role="combobox"]'));
+      await userEvent.type(container.querySelector('[role="combobox"]'), "f");
+
+      await sleep(1);
+
+      await waitForEffect();
+      await userEvent.type(container.querySelector('[role="combobox"]'), "o");
+
+      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
+      await sleep(1000);
+
+      await userEvent.type(container.querySelector('[role="combobox"]'), "x");
+
+      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
+      await sleep(1000);
+
+      await waitForEffect();
+    });
+
+    expect(optionsFactoryMock).toHaveBeenCalledTimes(2);
+
+    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+      query: "fo",
+      value: null,
+    });
+
+    expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
+      query: "fox",
+      value: null,
+    });
+
+    // This is contrived/fake. To ensure the order of promises is correct in the callback,
+    // just assume the 2nd one resolves first with values, but the first one doesn't even though
+    // the query is a prefix
+    deferred[1].resolve([{ value: "fox", label: "Fox" }]);
+    deferred[0].resolve([]);
+
+    await act(async () => {
+      await waitForEffect();
+      await selectEvent.select(container.querySelector(`#${id}`), "Fox");
     });
   });
 });
