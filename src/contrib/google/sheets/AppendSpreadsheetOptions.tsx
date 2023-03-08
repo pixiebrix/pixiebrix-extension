@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
@@ -36,6 +36,7 @@ import {
   SHEET_SERVICE_SCHEMA,
 } from "@/contrib/google/sheets/schemas";
 import { isEmpty } from "lodash";
+import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -109,32 +110,24 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     useField(joinName(basePath, "rowValues"));
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useEffect(
-    () => {
-      if (
-        !isTemplateExpression(tabNameValue) ||
-        isEmpty(tabNameValue.__value__)
-      ) {
-        setTabNameValue(null);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when spreadsheetId changes
-    [spreadsheetId]
-  );
+  useOnChangeEffect(() => {
+    if (
+      !isTemplateExpression(tabNameValue) ||
+      isEmpty(tabNameValue.__value__)
+    ) {
+      setTabNameValue(null);
+    }
+  }, [spreadsheetId]);
 
   // Clear row values when tabName changes, if the value is not an expression, or is empty
-  useEffect(
-    () => {
-      if (
-        !isTemplateExpression(rowValuesValue) ||
-        isEmpty(rowValuesValue.__value__)
-      ) {
-        setRowValuesValue({});
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when tabName changes
-    [tabNameValue]
-  );
+  useOnChangeEffect(() => {
+    if (
+      !isTemplateExpression(rowValuesValue) ||
+      isEmpty(rowValuesValue.__value__)
+    ) {
+      setRowValuesValue({});
+    }
+  }, [tabNameValue]);
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
