@@ -24,9 +24,9 @@ import { type SanitizedServiceConfiguration } from "@/core";
 import AsyncSelect from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { type UnknownObject } from "@/types";
-import { useDebouncedCallback } from "use-debounce";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { useDebouncedCallback } from "use-debounce";
 
 type DefaultFactoryArgs = {
   /**
@@ -79,31 +79,54 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
   const [knownOptions, setKnownOptions] = useState<Option[]>([]);
 
   // `react-select` doesn't automatically debounce requests
+  // See quirks here: https://github.com/JedWatson/react-select/issues/3075#issuecomment-506647171
+  // Need to use callback and ensure that the callback is not returning a promise
   const loadOptions = useDebouncedCallback(
     (query: string, callback: (options: Option[]) => void) => {
-      void optionsFactory(config, { ...factoryArgs, query, value })
-        // eslint-disable-next-line promise/prefer-await-to-then -- https://stackoverflow.com/a/64773351
-        .then((options) => {
-          setKnownOptions((prev) =>
-            uniqBy([...prev, ...options] as Option[], (x) => x.value)
-          );
-          callback(options as Option[]);
-        })
-        // eslint-disable-next-line promise/prefer-await-to-then -- https://stackoverflow.com/a/64773351
-        .catch((error) => {
-          // `react-select` doesn't have native support for error in async :shrug:
+      const generate = async () => {
+        try {
+          const rawOptions = (await optionsFactory(config, {
+            ...factoryArgs,
+            query,
+            value,
+          })) as Option[];
+
+          if (Array.isArray(rawOptions)) {
+            setKnownOptions((prev) =>
+              uniqBy([...prev, ...rawOptions], (x) => x.value)
+            );
+          } else {
+            // Throw locally, to translate into error for AsyncSelect
+            console.error(
+              `Expected array of options, got ${typeof rawOptions}`,
+              rawOptions
+            );
+            throw new TypeError(
+              `Expected array of options, got ${typeof rawOptions}`
+            );
+          }
+
+          callback(rawOptions);
+        } catch (error) {
+          // Return options to AsyncSelect, but do not cache in local knownOptions
+          // `react-select` doesn't have native support for error in AsyncSelect :shrug:
           // https://github.com/JedWatson/react-select/issues/1528
           callback([
             {
               value: "error",
               label: getErrorMessage(error, "Error loading options"),
               isDisabled: true,
-            } as any,
+              // `isDisabled` is not on the type definition, but it is supported
+            } as Option,
           ]);
-        });
+        }
+      };
+
+      // Ensure we're not returning a promise because we're using the callback
+      void generate();
     },
-    75,
-    { maxWait: 500, leading: false, trailing: true }
+    150,
+    { leading: false, trailing: true, maxWait: 750 }
   );
 
   // Option will be null when the select is "cleared"

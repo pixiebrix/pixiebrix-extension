@@ -91,6 +91,12 @@ async function fetchPages<TData>(
     config,
     paginatedRequestConfig
   );
+
+  if (initialResponse.data.list == null) {
+    // Use TypeError instead of BusinessError to ensure we get the telemetry in Rollbar if we're calling API incorrectly
+    throw new TypeError("Expected list response from Control Room");
+  }
+
   const results: TData[] = [...initialResponse.data.list];
   const total = initialResponse.data.page.totalFilter;
 
@@ -159,6 +165,10 @@ async function searchBots(
   config: SanitizedServiceConfiguration,
   options: { workspaceType: WorkspaceType; query: string; value: string | null }
 ): Promise<Option[]> {
+  if (isNullOrBlank(options.workspaceType)) {
+    throw new TypeError("workspaceType is required");
+  }
+
   let searchPayload = {
     ...SORT_BY_NAME,
     filter: {
@@ -167,7 +177,7 @@ async function searchBots(
         {
           operator: "substring",
           field: "name",
-          value: options.query,
+          value: options.query ?? "",
         },
         {
           operator: "eq",
