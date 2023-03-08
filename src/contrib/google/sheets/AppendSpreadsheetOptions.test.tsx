@@ -125,4 +125,31 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
+
+  it("does not clear initial values on first render", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: SPREADSHEET_ID,
+          tabName: "Tab2",
+          rowValues: {
+            Foo: "valueA",
+            Bar: "valueB",
+          },
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Ensure title loaded
+    expect(screen.getByDisplayValue("Test Sheet")).toBeVisible();
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Ensure row values have both names and values
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("valueA")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("valueB")).toBeVisible();
+  });
 });

@@ -21,6 +21,7 @@ import { useEffect, useRef } from "react";
  * Like useEffect, but only runs after the first render
  * @param effect the side effect to run
  * @param dependencies the useEffect dependencies
+ * @deprecated this is not a great pattern, should probably avoid using it if possible
  */
 export function useOnChangeEffect(
   effect: () => void,
