@@ -130,7 +130,9 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   // Additional args passed to the remote options factories
   const factoryArgs = useMemo(
     () => ({
-      workspaceType: workspaceType as WorkspaceType,
+      // Default to "private" because that's compatible with both CE and EE
+      // The workspaceType can be temporarily null when switching between CR configurations
+      workspaceType: (workspaceType as WorkspaceType) ?? "private",
     }),
     [workspaceType]
   );

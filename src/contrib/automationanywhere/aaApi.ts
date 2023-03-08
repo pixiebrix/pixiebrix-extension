@@ -159,6 +159,10 @@ async function searchBots(
   config: SanitizedServiceConfiguration,
   options: { workspaceType: WorkspaceType; query: string; value: string | null }
 ): Promise<Option[]> {
+  if (isNullOrBlank(options.workspaceType)) {
+    throw new TypeError("workspaceType is required");
+  }
+
   let searchPayload = {
     ...SORT_BY_NAME,
     filter: {
