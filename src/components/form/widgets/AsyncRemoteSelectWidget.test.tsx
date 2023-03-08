@@ -103,7 +103,7 @@ describe("AsyncRemoteSelectWidget", () => {
       await userEvent.type(container.querySelector('[role="combobox"]'), "foo");
 
       // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(100);
+      await sleep(1000);
       await waitForEffect();
     });
 
@@ -137,7 +137,7 @@ describe("AsyncRemoteSelectWidget", () => {
       await userEvent.type(container.querySelector('[role="combobox"]'), "foo");
 
       // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(100);
+      await sleep(1000);
       await waitForEffect();
     });
 
@@ -161,7 +161,8 @@ describe("AsyncRemoteSelectWidget", () => {
     );
 
     await act(async () => {
-      await sleep(100);
+      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
+      await sleep(1000);
       await waitForEffect();
     });
 

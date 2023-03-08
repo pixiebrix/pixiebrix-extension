@@ -175,7 +175,8 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               description="The Automation Anywhere bot to run. Type a query to search available bots by name"
               as={AsyncRemoteSelectWidget}
               defaultOptions
-              cacheOptions
+              // Was running into issue with it showing stale results
+              cacheOptions={false}
               optionsFactory={cachedSearchBots}
               loadingMessage={BotLoadingMessage}
               noOptonsMessage={BotNoOptionsMessage}

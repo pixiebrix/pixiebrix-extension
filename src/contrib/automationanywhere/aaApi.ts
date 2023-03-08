@@ -167,7 +167,7 @@ async function searchBots(
         {
           operator: "substring",
           field: "name",
-          value: options.query,
+          value: options.query ?? "",
         },
         {
           operator: "eq",
