@@ -179,7 +179,7 @@ describe("AsyncRemoteSelectWidget", () => {
 
     const deferred: Array<DeferredPromise<Option[]>> = [];
 
-    const optionsFactoryMock = jest.fn().mockImplementation(() => {
+    const optionsFactoryMock = jest.fn().mockImplementation(async () => {
       const deferredOptions = pDefer<Option[]>();
       deferred.push(deferredOptions);
       return deferredOptions.promise;
