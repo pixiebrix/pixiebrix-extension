@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression, type Schema } from "@/core";
@@ -36,6 +36,7 @@ import {
 } from "@/contrib/google/sheets/schemas";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
+import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 
 const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
@@ -112,32 +113,21 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   >(headerFieldName);
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useEffect(
-    () => {
-      if (
-        !isTemplateExpression(tabNameValue) ||
-        isEmpty(tabNameValue.__value__)
-      ) {
-        setTabNameValue(null);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when spreadsheetId changes
-    [spreadsheetId]
-  );
+  useOnChangeEffect(() => {
+    if (
+      !isTemplateExpression(tabNameValue) ||
+      isEmpty(tabNameValue.__value__)
+    ) {
+      setTabNameValue(null);
+    }
+  }, [spreadsheetId]);
 
   // Clear the header value when the tab name changes, if the value is not an expression, or is empty
-  useEffect(
-    () => {
-      if (
-        !isTemplateExpression(headerValue) ||
-        isEmpty(headerValue.__value__)
-      ) {
-        setHeaderValue(null);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run this when tabName changes
-    [tabNameValue]
-  );
+  useOnChangeEffect(() => {
+    if (!isTemplateExpression(headerValue) || isEmpty(headerValue.__value__)) {
+      setHeaderValue(null);
+    }
+  }, [tabNameValue]);
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
