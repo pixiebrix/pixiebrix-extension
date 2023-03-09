@@ -26,7 +26,7 @@ import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
 import { dereference } from "@/validators/generic";
@@ -113,21 +113,33 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   >(headerFieldName);
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useOnChangeEffect(() => {
+  useOnChangeEffect(spreadsheetId, (newValue, oldValue) => {
+    // `spreadsheetId` is null when useAsyncState is loading
+    if (oldValue == null) {
+      return;
+    }
+
     if (
       !isTemplateExpression(tabNameValue) ||
       isEmpty(tabNameValue.__value__)
     ) {
       setTabNameValue(null);
     }
-  }, [spreadsheetId]);
+  });
 
   // Clear the header value when the tab name changes, if the value is not an expression, or is empty
-  useOnChangeEffect(() => {
-    if (!isTemplateExpression(headerValue) || isEmpty(headerValue.__value__)) {
-      setHeaderValue(null);
-    }
-  }, [tabNameValue]);
+  useOnChangeEffect(
+    tabNameValue,
+    () => {
+      if (
+        !isTemplateExpression(headerValue) ||
+        isEmpty(headerValue.__value__)
+      ) {
+        setHeaderValue(null);
+      }
+    },
+    isEqual
+  );
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
