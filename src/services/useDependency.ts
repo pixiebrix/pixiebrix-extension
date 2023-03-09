@@ -24,7 +24,7 @@ import {
   type ServiceDependency,
 } from "@/core";
 import { castArray, compact, head } from "lodash";
-import registry from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import { type Service } from "@/types";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions, services } from "@/background/messenger/api";
@@ -48,7 +48,7 @@ function listenerKey(dependency: ServiceDependency) {
 export function pickDependency(
   services: ServiceDependency[],
   serviceIds: RegistryId[]
-) {
+): ServiceDependency | null {
   const configuredServices = (services ?? []).filter((service) =>
     serviceIds.includes(service.id)
   );
@@ -62,7 +62,7 @@ export function pickDependency(
 export async function lookupDependency(dependency: ServiceDependency) {
   const localConfig = await services.locate(dependency.id, dependency.config);
 
-  const service = await registry.lookup(dependency.id);
+  const service = await serviceRegistry.lookup(dependency.id);
 
   const origins = service.getOrigins(localConfig.config);
 
