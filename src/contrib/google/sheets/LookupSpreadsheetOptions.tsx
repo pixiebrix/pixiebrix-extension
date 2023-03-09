@@ -102,7 +102,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
 }) => {
   const basePath = joinName(name, configKey);
-  const spreadsheetId = useSpreadsheetId(basePath);
+  const { spreadsheetId, error: spreadsheetError } = useSpreadsheetId(basePath);
 
   const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
     string | Expression
@@ -113,7 +113,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   >(headerFieldName);
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useOnChangeEffect(spreadsheetId, (newValue, oldValue) => {
+  useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
     // `spreadsheetId` is null when useAsyncState is loading
     if (oldValue == null) {
       return;

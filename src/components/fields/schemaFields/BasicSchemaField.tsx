@@ -123,6 +123,10 @@ const BasicSchemaField: SchemaFieldComponent = ({
   const annotations = useFieldAnnotations(name);
 
   useEffect(() => {
+    console.log("BasicSchemaField - annotations changed", annotations);
+  }, [annotations.length]);
+
+  useEffect(() => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
     if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
       setValue(inputModeOptions[0].interpretValue(value));

@@ -16,37 +16,29 @@
  */
 
 import { useField, useFormikContext } from "formik";
-import { type Expression, type RegistryId } from "@/core";
+import { type Expression } from "@/core";
 import { joinName } from "@/utils";
-import { useEffect, useReducer, useState } from "react";
-import { isExpression } from "@/runtime/mapArgs";
+import { useReducer } from "react";
 import {
   keyToFieldValue,
   type ServiceSlice,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEqual } from "lodash";
-import useDependency from "@/services/useDependency";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { pickDependency } from "@/services/useDependency";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { useAsyncEffect } from "use-async-effect";
+import { services } from "@/background/messenger/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
-
-  /**
-   * The service id, if brick is providing a sheet via integration configuration.
-   */
-  serviceId: RegistryId | null;
-
-  /** True if the spreadsheetId field is loading */
-  isLoading: boolean;
 
   error: unknown;
 };
 
 const initialState: SpreadsheetState = {
   spreadsheetId: null,
-  isLoading: true,
-  serviceId: null,
   error: null,
 };
 
@@ -54,11 +46,17 @@ const spreadsheetSlice = createSlice({
   name: "spreadsheet",
   initialState,
   reducers: {
-    setSpreadsheetLiteral(state, action: PayloadAction<string>) {
-      state.isLoading = false;
+    setSpreadsheetId(state, action: PayloadAction<string>) {
       state.spreadsheetId = action.payload;
-      state.serviceId = null;
       state.error = null;
+    },
+    setLoading(state) {
+      state.spreadsheetId = null;
+      state.error = null;
+    },
+    setError(state, action: PayloadAction<unknown>) {
+      state.spreadsheetId = null;
+      state.error = action.payload;
     },
   },
 });
@@ -69,51 +67,77 @@ const spreadsheetSlice = createSlice({
  */
 function useSpreadsheetId(basePath: string): SpreadsheetState {
   const {
-    values: { services },
+    values: { services: servicesValue },
   } = useFormikContext<ServiceSlice>();
 
-  const [{ value: fieldValue }] = useField<string | Expression>(
+  const [{ value: fieldValue }, , { setError }] = useField<string | Expression>(
     joinName(basePath, "spreadsheetId")
   );
 
   const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
 
-  const serviceDependency = useDependency(state.serviceId);
+  /**
+   * Note about when this effect will fire:
+   *
+   * This async effect has fieldValue as its dependency. This can either be a
+   * string spreadsheetId, or a service config, var-expression object, or null.
+   *
+   * When the user switches between two different GSheets service integrations,
+   * the fieldValue will not change, it will stay as this value:
+   * {
+   *   __type__: "var",
+   *   __value__: "@google",
+   * }
+   *
+   * The service selector actually changes the top-level form state to make @google
+   * point to a different GSheet integration. By using fieldValue as the effect
+   * dependency, we're taking advantage of the fact that object comparison will
+   * fail and the effect will fire on every render when a user switches between
+   * GSheet integrations, even if the fieldValue is not actually changing.
+   */
+  useAsyncEffect(async () => {
+    dispatch(spreadsheetSlice.actions.setLoading());
+    if (isServiceValueFormat(fieldValue)) {
+      try {
+        const sheetsService = servicesValue.find((service) =>
+          isEqual(keyToFieldValue(service.outputKey), fieldValue)
+        );
+        if (!sheetsService) {
+          throw new Error(
+            "Could not find service for spreadsheetId field value: " +
+              JSON.stringify(fieldValue)
+          );
+        }
 
-  // On initial mount, set spreadsheetId directly if it's a literal value.
-  // Could instead set this via initialState for useReducer
-  useEffect(() => {
-    if (!isExpression(fieldValue)) {
-      dispatch(spreadsheetSlice.actions.setSpreadsheetLiteral(fieldValue));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
-  }, []);
+        const dependency = pickDependency(servicesValue, [sheetsService.id]);
+        const sanitizedServiceConfig = await services.locate(
+          dependency.id,
+          dependency.config
+        );
+        const configSpreadsheetId =
+          sanitizedServiceConfig.config?.spreadsheetId;
+        if (!configSpreadsheetId) {
+          throw new Error(
+            "Could not find spreadsheetId in service configuration: " +
+              JSON.stringify(sanitizedServiceConfig)
+          );
+        }
 
-  useEffect(() => {
-    if (isServiceValue(fieldValue)) {
-      const sheetsService = services.find((service) =>
-        isEqual(keyToFieldValue(service.outputKey), fieldValue)
-      );
-      if (sheetsService) {
-        setSheetsServiceId(sheetsService.id);
+        if (configSpreadsheetId) {
+          dispatch(
+            spreadsheetSlice.actions.setSpreadsheetId(configSpreadsheetId)
+          );
+        }
+      } catch (error: unknown) {
+        dispatch(spreadsheetSlice.actions.setError(error));
+        setError(getErrorMessage(error));
       }
     } else {
-      dispatch(spreadsheetSlice.actions.setSpreadsheetLiteral(fieldValue));
+      dispatch(spreadsheetSlice.actions.setSpreadsheetId(fieldValue));
     }
-  }, [services, fieldValue]);
+  }, [fieldValue]);
 
-  useEffect(() => {
-    const config = serviceDependency?.config?.config;
-    if (!config) {
-      return;
-    }
-
-    if (config.spreadsheetId) {
-      setSpreadsheetId(config.spreadsheetId);
-    }
-  }, [serviceDependency]);
-
-  return spreadsheetId;
+  return state;
 }
 
 export default useSpreadsheetId;

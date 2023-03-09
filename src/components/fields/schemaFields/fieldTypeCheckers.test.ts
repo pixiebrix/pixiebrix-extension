@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import {
   makeTemplateExpression,
   makeVariableExpression,
@@ -23,20 +23,20 @@ import {
 
 describe("isServiceValue", () => {
   it("null is service value", () => {
-    expect(isServiceValue(null)).toBe(true);
+    expect(isServiceValueFormat(null)).toBe(true);
   });
 
   it("literal is not a service value", () => {
-    expect(isServiceValue("foo")).toBe(false);
+    expect(isServiceValueFormat("foo")).toBe(false);
   });
 
   it("nunjucks is not a service value", () => {
-    expect(isServiceValue(makeTemplateExpression("nunjucks", "@foo"))).toBe(
-      false
-    );
+    expect(
+      isServiceValueFormat(makeTemplateExpression("nunjucks", "@foo"))
+    ).toBe(false);
   });
 
   it("var is a service value", () => {
-    expect(isServiceValue(makeVariableExpression("@foo"))).toBe(true);
+    expect(isServiceValueFormat(makeVariableExpression("@foo"))).toBe(true);
   });
 });
