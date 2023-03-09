@@ -1,0 +1,159 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SheetsFileWidget falls back to spreadsheet id if fetching properties fails 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="input-group"
+    >
+      <input
+        class="form-control"
+        disabled=""
+        name="spreadsheetId"
+        type="text"
+        value="abc123"
+      />
+      <div
+        class="input-group-append"
+      >
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Select
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`SheetsFileWidget handles error on load 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="input-group"
+    >
+      <input
+        class="form-control"
+        disabled=""
+        name="spreadsheetId"
+        type="text"
+        value="abc123"
+      />
+      <div
+        class="input-group-append"
+      >
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Select
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`SheetsFileWidget renders valid sheet on load 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="input-group"
+    >
+      <input
+        class="form-control"
+        disabled=""
+        type="text"
+        value="Test Sheet"
+      />
+      <div
+        class="input-group-append"
+      >
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Select
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`SheetsFileWidget shows workshop fallback on expression 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <input
+      class="px-1 form-control-plaintext"
+      readonly=""
+      value="Use Workshop to edit"
+    />
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`SheetsFileWidget smoke test 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="input-group"
+    >
+      <input
+        class="form-control"
+        disabled=""
+        name="spreadsheetId"
+        type="text"
+        value=""
+      />
+      <div
+        class="input-group-append"
+      >
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Select
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
