@@ -23,7 +23,7 @@ import {
   type SanitizedServiceConfiguration,
   type ServiceDependency,
 } from "@/core";
-import { castArray, head } from "lodash";
+import { castArray, compact, head } from "lodash";
 import registry from "@/services/registry";
 import { type Service } from "@/types";
 import { requestPermissions } from "@/utils/permissions";
@@ -45,6 +45,32 @@ function listenerKey(dependency: ServiceDependency) {
   return `${dependency.id}:${dependency.config}`;
 }
 
+export function pickDependency(
+  services: ServiceDependency[],
+  serviceIds: RegistryId[]
+) {
+  const configuredServices = (services ?? []).filter((service) =>
+    serviceIds.includes(service.id)
+  );
+  if (configuredServices.length > 1) {
+    throw new Error("Multiple matching services configured");
+  }
+
+  return head(configuredServices);
+}
+
+export async function lookupDependency(dependency: ServiceDependency) {
+  const localConfig = await services.locate(dependency.id, dependency.config);
+
+  const service = await registry.lookup(dependency.id);
+
+  const origins = service.getOrigins(localConfig.config);
+
+  const hasPermissions = await containsPermissions({ origins });
+
+  return { localConfig, service, origins, hasPermissions };
+}
+
 /**
  * Hook connected to the Formik state to return currently configuration for a given service
  * @param serviceId valid integration ids for providing the service
@@ -55,36 +81,18 @@ function useDependency(
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState(false);
 
-  const serviceIds = useMemo(() => castArray(serviceId), [serviceId]);
-
-  const dependency: ServiceDependency = useMemo(() => {
-    const configuredServices = (values.services ?? []).filter((service) =>
-      serviceIds.includes(service.id)
-    );
-    if (configuredServices.length > 1) {
-      throw new Error("Multiple matching services configured");
-    }
-
-    return head(configuredServices);
-  }, [serviceIds, values.services]);
+  const serviceIds = useMemo(() => compact(castArray(serviceId)), [serviceId]);
+  const dependency: ServiceDependency = useMemo(
+    () => pickDependency(values.services, serviceIds),
+    [serviceIds, values.services]
+  );
 
   const [serviceResult] = useAsyncState(async () => {
     if (dependency?.config) {
-      const localConfig = await services.locate(
-        dependency.id,
-        dependency.config
-      );
-
-      const service = await registry.lookup(dependency.id);
-
-      const origins = service.getOrigins(localConfig.config);
-
-      const hasPermissions = await containsPermissions({ origins });
-
-      return { localConfig, service, origins, hasPermissions };
+      return lookupDependency(dependency);
     }
 
-    throw new Error("No integration selected");
+    throw new Error("No integration dependency selected");
   }, [dependency?.config]);
 
   useEffect(() => {
