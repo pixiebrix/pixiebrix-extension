@@ -95,21 +95,25 @@ function useDependency(
     throw new Error("No integration dependency selected");
   }, [dependency?.config]);
 
+  // Listen for permissions changes granted from hook instances, so the useDependency can be used in multiple
+  // places in the React tree
   useEffect(() => {
     if (dependency && !serviceResult?.hasPermissions) {
       const key = listenerKey(dependency);
-      const listener = () => {
+      const onPermissionGranted = () => {
         setGrantedPermissions(true);
       };
 
       permissionsListeners.set(key, [
         ...(permissionsListeners.get(key) ?? []),
-        listener,
+        onPermissionGranted,
       ]);
       return () => {
         permissionsListeners.set(
           key,
-          (permissionsListeners.get(key) ?? []).filter((x) => x !== listener)
+          (permissionsListeners.get(key) ?? []).filter(
+            (x) => x !== onPermissionGranted
+          )
         );
       };
     }
@@ -138,6 +142,7 @@ function useDependency(
     }
   }, [setGrantedPermissions, serviceResult?.origins, dependency]);
 
+  // Wrap in use memo so callers don't have to do their own guards
   return useMemo(() => {
     if (serviceId == null) {
       return null;

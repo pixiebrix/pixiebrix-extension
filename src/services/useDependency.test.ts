@@ -22,14 +22,19 @@ import { act } from "@testing-library/react-hooks";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
 import { type Service } from "@/types";
+import { requestPermissions } from "@/utils/permissions";
 
 // Not currently test:
 // - Listening for permissions changes
 // - requestPermissions callback
 
+jest.mock("@/utils/permissions", () => ({
+  requestPermissions: jest.fn().mockResolvedValue(true),
+}));
+
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
-  containsPermissions: jest.fn().mockResolvedValue(true),
+  containsPermissions: jest.fn().mockResolvedValue(false),
   services: {
     locate: jest.fn().mockResolvedValue({
       serviceId: "google/sheet",
@@ -51,6 +56,10 @@ jest.mock("@/services/registry", () => {
 
 const serviceRegistryMock = serviceRegistry as jest.Mocked<
   typeof serviceRegistry
+>;
+
+const requestPermissionsMock = requestPermissions as jest.MockedFunction<
+  typeof requestPermissions
 >;
 
 describe("useDependency", () => {
@@ -105,6 +114,46 @@ describe("useDependency", () => {
     });
 
     expect(hookish.result.current).toEqual({
+      config: { serviceId: registryId },
+      hasPermissions: false,
+      requestPermissions: expect.toBeFunction(),
+      service: {
+        getOrigins: expect.toBeFunction(),
+        id: registryId,
+      },
+    });
+  });
+
+  it("handles multiple hooks on page", async () => {
+    const registryId = validateRegistryId("google/sheet");
+    const configId = uuidv4();
+
+    serviceRegistryMock.lookup.mockResolvedValue({
+      id: registryId,
+      getOrigins: () => [] as any,
+    } as unknown as Service);
+
+    const hookish = renderHook(
+      () => {
+        return [useDependency(registryId), useDependency(registryId)] as const;
+      },
+      {
+        initialValues: {
+          services: [{ id: registryId, outputKey: "sheet", config: configId }],
+        },
+      }
+    );
+
+    await act(async () => {
+      await waitForEffect();
+      hookish.result.current[0].requestPermissions();
+      await waitForEffect();
+    });
+
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+
+    // Check the other one now has permissions because it was listening
+    expect(hookish.result.current[1]).toEqual({
       config: { serviceId: registryId },
       hasPermissions: true,
       requestPermissions: expect.toBeFunction(),
