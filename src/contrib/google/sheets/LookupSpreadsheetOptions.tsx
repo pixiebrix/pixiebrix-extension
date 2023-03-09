@@ -37,6 +37,7 @@ import {
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import useReportError from "@/hooks/useReportError";
 
 const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
@@ -111,6 +112,8 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const [{ value: headerValue }, , { setValue: setHeaderValue }] = useField<
     string | Expression
   >(headerFieldName);
+
+  useReportError(spreadsheetError);
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
   useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
