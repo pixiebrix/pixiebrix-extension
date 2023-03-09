@@ -15,7 +15,7 @@ exports[`AppendSpreadsheetOptions should render successfully 1`] = `
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
         >
-          spreadsheetId
+          Spreadsheet
         </label>
         <div
           class="col-xl-10 col-lg-9"

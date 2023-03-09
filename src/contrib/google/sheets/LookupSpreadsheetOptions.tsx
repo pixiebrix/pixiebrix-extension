@@ -146,6 +146,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     []
   );
   const sheetFieldSchema: Schema = {
+    title: "Spreadsheet",
     oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
   };
 
