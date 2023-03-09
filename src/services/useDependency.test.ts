@@ -134,9 +134,7 @@ describe("useDependency", () => {
     } as unknown as Service);
 
     const hookish = renderHook(
-      () => {
-        return [useDependency(registryId), useDependency(registryId)] as const;
-      },
+      () => [useDependency(registryId), useDependency(registryId)] as const,
       {
         initialValues: {
           services: [{ id: registryId, outputKey: "sheet", config: configId }],
