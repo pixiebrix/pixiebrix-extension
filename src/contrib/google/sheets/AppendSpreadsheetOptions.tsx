@@ -35,7 +35,7 @@ import {
   BASE_SHEET_SCHEMA,
   SHEET_SERVICE_SCHEMA,
 } from "@/contrib/google/sheets/schemas";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
@@ -110,24 +110,33 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     useField(joinName(basePath, "rowValues"));
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useOnChangeEffect(() => {
+  useOnChangeEffect(spreadsheetId, (newValue, oldValue) => {
+    // The oldValue can be null while useAsyncState is loading
+    if (oldValue == null) {
+      return;
+    }
+
     if (
       !isTemplateExpression(tabNameValue) ||
       isEmpty(tabNameValue.__value__)
     ) {
       setTabNameValue(null);
     }
-  }, [spreadsheetId]);
+  });
 
   // Clear row values when tabName changes, if the value is not an expression, or is empty
-  useOnChangeEffect(() => {
-    if (
-      !isTemplateExpression(rowValuesValue) ||
-      isEmpty(rowValuesValue.__value__)
-    ) {
-      setRowValuesValue({});
-    }
-  }, [tabNameValue]);
+  useOnChangeEffect(
+    tabNameValue,
+    () => {
+      if (
+        !isTemplateExpression(rowValuesValue) ||
+        isEmpty(rowValuesValue.__value__)
+      ) {
+        setRowValuesValue({});
+      }
+    },
+    isEqual
+  );
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
@@ -156,6 +165,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
           />
         </FormErrorContext.Provider>
       )}
+
       <TabField
         name={joinName(basePath, "tabName")}
         schema={APPEND_SCHEMA.properties.tabName as Schema}
