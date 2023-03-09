@@ -15,9 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultOutputKey } from "@/components/fields/schemaFields/widgets/ServiceWidget";
-import { validateRegistryId } from "@/types/helpers";
+import ServiceWidget, {
+  defaultOutputKey,
+} from "@/components/fields/schemaFields/widgets/ServiceWidget";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import React from "react";
+import { render } from "@/pageEditor/testHelpers";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type Schema } from "@/core";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+// eslint-disable-next-line no-restricted-imports -- test
+import { Formik } from "formik";
+import { useAuthOptions } from "@/hooks/auth";
+import { noop } from "lodash";
+import { waitForEffect } from "@/testUtils/testHelpers";
+
+jest.mock("@/hooks/auth", () => ({
+  useAuthOptions: jest.fn(),
+}));
+
+jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
+  ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
+  // Mock so we don't have to have full Page Editor state in tests
+  produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
+}));
+
+const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
+  typeof useAuthOptions
+>;
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("defaultOutputKey", () => {
   test("should handle default", () => {
@@ -36,5 +66,63 @@ describe("defaultOutputKey", () => {
         validateOutputKey("google"),
       ])
     ).toBe("google2");
+  });
+});
+
+const renderServiceWidget = (
+  schema: Schema,
+  initialValues: any,
+  props?: Partial<SchemaFieldProps>
+) =>
+  render(
+    <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+      <ServiceWidget name="service" schema={schema} {...props} />
+    </Formik>
+  );
+
+describe("ServiceWidget", () => {
+  it("should not default if there are multiple auth options", async () => {
+    const serviceId = validateRegistryId("jest/api");
+
+    useAuthOptionsMock.mockReturnValue([
+      [
+        { serviceId, label: "Test 1", value: uuidv4(), local: true },
+        { serviceId, label: "Test 2", value: uuidv4(), local: true },
+      ],
+      noop,
+    ]);
+
+    const schema = {
+      $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
+    };
+
+    const wrapper = renderServiceWidget(schema, {
+      services: [],
+    });
+
+    await waitForEffect();
+
+    expect(wrapper.queryByText("Select...")).toBeVisible();
+  });
+
+  it("should default to only configuration", async () => {
+    const serviceId = validateRegistryId("jest/api");
+
+    useAuthOptionsMock.mockReturnValue([
+      [{ serviceId, label: "Test 1", value: uuidv4(), local: true }],
+      noop,
+    ]);
+
+    const schema = {
+      $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
+    };
+
+    const wrapper = renderServiceWidget(schema, {
+      services: [],
+    });
+
+    await waitForEffect();
+
+    expect(wrapper.queryByText("Test 1")).toBeVisible();
   });
 });

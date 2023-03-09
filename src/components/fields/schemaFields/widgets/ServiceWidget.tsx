@@ -205,6 +205,12 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   useEffect(
     () => {
       if (value == null && detectDefault) {
+        if (root.services == null) {
+          throw new TypeError(
+            "services prop does not exist on base form state. Is your Formik state configured properly?"
+          );
+        }
+
         const match = root.services.find((service) =>
           serviceIds.includes(service.id)
         );
