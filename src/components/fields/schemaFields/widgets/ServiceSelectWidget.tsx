@@ -24,6 +24,15 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 
+/**
+ * Composite presentational widget with select control and refresh button.
+ *
+ * See ServiceWidget for connected logic and defaulting.
+ *
+ * @param refreshOptions callback to refresh available options
+ * @param selectProps props to pass through to SelectWidget
+ * @see ServiceWidget
+ */
 const ServiceSelectWidget: React.FunctionComponent<
   SelectWidgetProps<AuthOption> & { refreshOptions: () => void }
 > = ({ refreshOptions, ...selectProps }) => (
