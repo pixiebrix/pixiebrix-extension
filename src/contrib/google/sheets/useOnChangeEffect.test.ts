@@ -44,7 +44,25 @@ describe("useOnChangeEffect", () => {
     expect(effect).toHaveBeenCalledTimes(1);
   });
 
-  it("should use equality comparison", async () => {
+  it("should default to reference equality", async () => {
+    const effect = jest.fn();
+
+    const value = { foo: 42 };
+
+    const hookish = renderHook(
+      ({ value }) => {
+        useOnChangeEffect(value, effect);
+      },
+      { initialProps: { value } }
+    );
+
+    hookish.rerender({ value: { foo: 42 } });
+
+    // Jest uses deep equality for the comparison
+    expect(effect).toHaveBeenCalledWith({ foo: 42 }, value);
+  });
+
+  it("should use custom equality comparison", async () => {
     const effect = jest.fn();
 
     const value = { foo: 42 };
