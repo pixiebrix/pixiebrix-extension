@@ -65,7 +65,7 @@ const spreadsheetSlice = createSlice({
  * Hook to get the Google Sheets spreadsheetId from an integration configuration or direct input.
  * @param basePath brick configuration path
  */
-function useSpreadsheetId(basePath: string): SpreadsheetState {
+function useSpreadsheetId(basePath: string): string | null {
   const {
     values: { services: servicesValue },
   } = useFormikContext<ServiceSlice>();
@@ -137,7 +137,7 @@ function useSpreadsheetId(basePath: string): SpreadsheetState {
     }
   }, [fieldValue]);
 
-  return state;
+  return state.spreadsheetId;
 }
 
 export default useSpreadsheetId;

@@ -103,7 +103,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
 }) => {
   const basePath = joinName(name, configKey);
-  const { spreadsheetId, error: spreadsheetError } = useSpreadsheetId(basePath);
+  const spreadsheetId = useSpreadsheetId(basePath);
 
   const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
     string | Expression
@@ -161,7 +161,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         <FormErrorContext.Provider
           value={{
             shouldUseAnalysis: false,
-            showUntouchedErrors: false,
+            showUntouchedErrors: true,
             showFieldActions: false,
           }}
         >
