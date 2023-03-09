@@ -22,9 +22,28 @@ import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetO
 import { render } from "@/sidebar/testHelpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { useAuthOptions } from "@/hooks/auth";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import selectEvent from "react-select-event";
+import { act } from "react-dom/test-utils";
 
 const SPREADSHEET_ID = "testId";
+
+jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
+  ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
+  // Mock so we don't have to have full Page Editor state in tests
+  produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
+}));
+
+jest.mock("@/hooks/auth", () => ({
+  __esModule: true,
+  useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),
+}));
 
 jest.mock("@/contrib/google/sheets/useSpreadsheetId", () => ({
   __esModule: true,
@@ -45,6 +64,10 @@ jest.mock("@/background/messenger/api", () => ({
     }),
   },
 }));
+
+const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
+  typeof useAuthOptions
+>;
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -70,6 +93,61 @@ describe("LookupSpreadsheetOptions", () => {
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should show tab names automatically when config is selected", async () => {
+    const uuid = uuidv4();
+
+    useAuthOptionsMock.mockReturnValue([
+      [
+        // Provide 2 so widget won't select one by default
+        {
+          label: "Test 1",
+          value: uuid,
+          local: true,
+          serviceId: validateRegistryId("google/sheet"),
+        },
+        {
+          label: "Test 2",
+          value: uuidv4(),
+          local: true,
+          serviceId: validateRegistryId("google/sheet"),
+        },
+      ],
+      () => {},
+    ]);
+
+    const { fragment } = render(
+      <ErrorBoundary>
+        <LookupSpreadsheetOptions name="" configKey="config" />
+      </ErrorBoundary>,
+      {
+        initialValues: {
+          config: {
+            // Causes integration configuration checker to be shown
+            spreadsheetId: null,
+            // XXX: the test passes if this starts as "", but not if it's a blank expression
+            // That's because the TabField only defaults if the value is null
+            tabName: makeTemplateExpression("nunjucks", ""),
+            rowValues: {},
+          },
+          services: [],
+        },
+      }
+    );
+
+    await act(async () => {
+      await waitForEffect();
+
+      const spreadsheetSelect = await screen.findByLabelText("Spreadsheet");
+      await selectEvent.select(spreadsheetSelect, "Test 1");
+      await waitForEffect();
+    });
+
+    const tabOption = await screen.findByText("Tab1");
+    expect(tabOption).toBeVisible();
+
+    expect(fragment).toMatchSnapshot();
   });
 
   it("can choose tab and header values will load automatically", async () => {

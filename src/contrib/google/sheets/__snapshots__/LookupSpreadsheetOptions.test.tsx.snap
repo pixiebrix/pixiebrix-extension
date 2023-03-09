@@ -825,3 +825,5 @@ exports[`LookupSpreadsheetOptions should render successfully 1`] = `
   </form>
 </DocumentFragment>
 `;
+
+exports[`LookupSpreadsheetOptions should show tab names automatically when config is selected 1`] = `undefined`;
