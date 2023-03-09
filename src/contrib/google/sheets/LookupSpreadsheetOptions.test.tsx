@@ -31,6 +31,7 @@ import { useAuthOptions } from "@/hooks/auth";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { act } from "react-dom/test-utils";
+import { noop } from "lodash";
 
 const SPREADSHEET_ID = "testId";
 
@@ -112,7 +113,7 @@ describe("LookupSpreadsheetOptions", () => {
           serviceId: validateRegistryId("google/sheet"),
         },
       ],
-      () => {},
+      noop,
     ]);
 
     const wrapper = render(
@@ -137,8 +138,11 @@ describe("LookupSpreadsheetOptions", () => {
     await act(async () => {
       await waitForEffect();
 
+      // Simulate user selecting a sheet integration configuration
       const spreadsheetSelect = await screen.findByLabelText("Spreadsheet");
       await selectEvent.select(spreadsheetSelect, "Test 1");
+
+      // Wait for tab names to load/default
       await waitForEffect();
     });
 

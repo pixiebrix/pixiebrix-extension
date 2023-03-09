@@ -18,7 +18,7 @@
 import { useField, useFormikContext } from "formik";
 import { type Expression, type RegistryId } from "@/core";
 import { joinName } from "@/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { isExpression } from "@/runtime/mapArgs";
 import {
   keyToFieldValue,
@@ -27,24 +27,67 @@ import {
 import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEqual } from "lodash";
 import useDependency from "@/services/useDependency";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-function useSpreadsheetId(basePath: string): string | null {
-  const [{ value: fieldValue }] = useField<string | Expression>(
-    joinName(basePath, "spreadsheetId")
-  );
-  const [spreadsheetId, setSpreadsheetId] = useState<string | null>(
-    // The value is either the spreadsheetId directly, when using the sheet
-    // file picker option, or a var expression for a service key when using
-    // a service input. If the value is the spreadsheetId, then we can set it
-    // here directly, otherwise we need to wait for the service to load.
-    isExpression(fieldValue) ? null : fieldValue
-  );
-  const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
-    null
-  );
+type SpreadsheetState = {
+  spreadsheetId: string | null;
+
+  /**
+   * The service id, if brick is providing a sheet via integration configuration.
+   */
+  serviceId: RegistryId | null;
+
+  /** True if the spreadsheetId field is loading */
+  isLoading: boolean;
+
+  error: unknown;
+};
+
+const initialState: SpreadsheetState = {
+  spreadsheetId: null,
+  isLoading: true,
+  serviceId: null,
+  error: null,
+};
+
+const spreadsheetSlice = createSlice({
+  name: "spreadsheet",
+  initialState,
+  reducers: {
+    setSpreadsheetLiteral(state, action: PayloadAction<string>) {
+      state.isLoading = false;
+      state.spreadsheetId = action.payload;
+      state.serviceId = null;
+      state.error = null;
+    },
+  },
+});
+
+/**
+ * Hook to get the Google Sheets spreadsheetId from an integration configuration or direct input.
+ * @param basePath brick configuration path
+ */
+function useSpreadsheetId(basePath: string): SpreadsheetState {
   const {
     values: { services },
   } = useFormikContext<ServiceSlice>();
+
+  const [{ value: fieldValue }] = useField<string | Expression>(
+    joinName(basePath, "spreadsheetId")
+  );
+
+  const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
+
+  const serviceDependency = useDependency(state.serviceId);
+
+  // On initial mount, set spreadsheetId directly if it's a literal value.
+  // Could instead set this via initialState for useReducer
+  useEffect(() => {
+    if (!isExpression(fieldValue)) {
+      dispatch(spreadsheetSlice.actions.setSpreadsheetLiteral(fieldValue));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
+  }, []);
 
   useEffect(() => {
     if (isServiceValue(fieldValue)) {
@@ -55,14 +98,12 @@ function useSpreadsheetId(basePath: string): string | null {
         setSheetsServiceId(sheetsService.id);
       }
     } else {
-      setSpreadsheetId(fieldValue);
+      dispatch(spreadsheetSlice.actions.setSpreadsheetLiteral(fieldValue));
     }
   }, [services, fieldValue]);
 
-  const sheetsServiceDependency = useDependency(sheetsServiceId);
-
   useEffect(() => {
-    const config = sheetsServiceDependency?.config?.config;
+    const config = serviceDependency?.config?.config;
     if (!config) {
       return;
     }
@@ -70,7 +111,7 @@ function useSpreadsheetId(basePath: string): string | null {
     if (config.spreadsheetId) {
       setSpreadsheetId(config.spreadsheetId);
     }
-  }, [sheetsServiceDependency]);
+  }, [serviceDependency]);
 
   return spreadsheetId;
 }

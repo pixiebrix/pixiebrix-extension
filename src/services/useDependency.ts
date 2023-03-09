@@ -45,6 +45,10 @@ function listenerKey(dependency: ServiceDependency) {
   return `${dependency.id}:${dependency.config}`;
 }
 
+/**
+ * Hook connected to the Formik state to return currently configuration for a given service
+ * @param serviceId valid integration ids for providing the service
+ */
 function useDependency(
   serviceId: RegistryId | RegistryId[] | null
 ): Dependency | null {
