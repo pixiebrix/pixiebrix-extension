@@ -37,7 +37,6 @@ import {
 } from "@/contrib/google/sheets/schemas";
 import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
-import useReportError from "@/hooks/useReportError";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -109,8 +108,6 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: rowValuesValue }, , { setValue: setRowValuesValue }] =
     useField(joinName(basePath, "rowValues"));
-
-  useReportError(spreadsheetError);
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
   useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {

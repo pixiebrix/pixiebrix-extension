@@ -23,15 +23,12 @@ import {
 } from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { services } from "@/background/messenger/api";
+import { validateRegistryId } from "@/types/helpers";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
 const servicesLocateMock = services.locate as jest.MockedFunction<
-  typeof services.locate
->;
-
-const serviceLocatorMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
 
@@ -54,10 +51,7 @@ describe("useSpreadsheetId", () => {
         spreadsheetId: TEST_SPREADSHEET_ID,
       },
     });
-    expect(result.current).toEqual({
-      spreadsheetId: TEST_SPREADSHEET_ID,
-      error: null,
-    });
+    expect(result.current).toEqual(TEST_SPREADSHEET_ID);
   });
 
   test("works with service value", async () => {
