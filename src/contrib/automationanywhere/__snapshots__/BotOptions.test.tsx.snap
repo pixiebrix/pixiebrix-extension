@@ -17,6 +17,7 @@ exports[`BotOptions should require selected integration 1`] = `
       >
         <div
           class="d-flex"
+          data-widget="ServiceSelectWidget"
         >
           <div
             class="flex-grow-1"
