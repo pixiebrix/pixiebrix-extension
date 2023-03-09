@@ -96,14 +96,12 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   it("should show tab names automatically when config is selected", async () => {
-    const uuid = uuidv4();
-
     useAuthOptionsMock.mockReturnValue([
       [
-        // Provide 2 so widget won't select one by default
+        // Provide 2 so ServiceSelectWidget won't select one by default
         {
           label: "Test 1",
-          value: uuid,
+          value: uuidv4(),
           local: true,
           serviceId: validateRegistryId("google/sheet"),
         },
@@ -117,7 +115,7 @@ describe("LookupSpreadsheetOptions", () => {
       () => {},
     ]);
 
-    const { fragment } = render(
+    const wrapper = render(
       <ErrorBoundary>
         <LookupSpreadsheetOptions name="" configKey="config" />
       </ErrorBoundary>,
@@ -147,7 +145,7 @@ describe("LookupSpreadsheetOptions", () => {
     const tabOption = await screen.findByText("Tab1");
     expect(tabOption).toBeVisible();
 
-    expect(fragment).toMatchSnapshot();
+    expect(wrapper.container).toMatchSnapshot();
   });
 
   it("can choose tab and header values will load automatically", async () => {

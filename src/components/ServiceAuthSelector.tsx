@@ -77,6 +77,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
     [CustomMenuList]
   );
 
+  // Automatically default the field value if there's only one option available
   useEffect(() => {
     if (authOptions.length === 1 && field.value == null) {
       helpers.setValue(authOptions[0].value);

@@ -27,7 +27,7 @@ import { faSync } from "@fortawesome/free-solid-svg-icons";
 const ServiceSelectWidget: React.FunctionComponent<
   SelectWidgetProps<AuthOption> & { refreshOptions: () => void }
 > = ({ refreshOptions, ...selectProps }) => (
-  <div className="d-flex">
+  <div className="d-flex" data-widget="ServiceSelectWidget">
     <div className="flex-grow-1">
       <SelectWidget {...selectProps} />
     </div>

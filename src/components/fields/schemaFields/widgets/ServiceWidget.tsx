@@ -57,7 +57,7 @@ export type ServiceWidgetProps = SchemaFieldProps & {
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
-function defaultOutputKey(
+export function defaultOutputKey(
   serviceId: RegistryId | null,
   otherOutputKeys: OutputKey[]
 ): OutputKey {
