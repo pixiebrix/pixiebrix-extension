@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { render } from "@/sidebar/testHelpers";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -30,6 +29,7 @@ import {
   SHEET_SERVICE_SCHEMA,
 } from "@/contrib/google/sheets/schemas";
 import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
+import { render } from "@/pageEditor/testHelpers";
 
 const SPREADSHEET_ID = "testId";
 

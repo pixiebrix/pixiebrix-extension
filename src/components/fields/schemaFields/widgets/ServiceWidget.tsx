@@ -198,7 +198,10 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
           ? clearServiceSelection(root, field.name)
           : produceServiceAuths(root, field.name, value, serviceIds, options);
       setRootValues(newState);
+      // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
+      helpers.setError(undefined);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- formik helpers change on every render
     [root, setRootValues, serviceIds, field.name]
   );
 

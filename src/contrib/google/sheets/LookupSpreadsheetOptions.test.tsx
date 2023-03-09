@@ -19,21 +19,30 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
-import { render } from "@/sidebar/testHelpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { useAuthOptions } from "@/hooks/auth";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
-import { act } from "react-dom/test-utils";
 import { noop } from "lodash";
+import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { render } from "@/pageEditor/testHelpers";
+import {
+  sanitizedServiceConfigurationFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
+import { services, sheets } from "@/background/messenger/api";
 
-const SPREADSHEET_ID = "testId";
+const TEST_SPREADSHEET_ID = uuidSequence(1);
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+
+const servicesLocateMock = services.locate as jest.MockedFunction<
+  typeof services.locate
+>;
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
   ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
@@ -46,25 +55,17 @@ jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),
 }));
 
-jest.mock("@/contrib/google/sheets/useSpreadsheetId", () => ({
-  __esModule: true,
-  default: () => SPREADSHEET_ID,
-}));
+const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
+  typeof sheets.getSheetProperties
+>;
 
-jest.mock("@/background/messenger/api", () => ({
-  __esModule: true,
-  sheets: {
-    getSheetProperties: jest.fn().mockResolvedValue({ title: "Test Sheet" }),
-    getTabNames: jest.fn().mockResolvedValue(["Tab1", "Tab2"]),
-    getHeaders: jest.fn().mockImplementation(({ tabName }) => {
-      if (tabName === "Tab1") {
-        return ["Column1", "Column2"];
-      }
+const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
+  typeof sheets.getTabNames
+>;
 
-      return ["Foo", "Bar"];
-    }),
-  },
-}));
+const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
+  typeof sheets.getHeaders
+>;
 
 const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
   typeof useAuthOptions
@@ -72,6 +73,24 @@ const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
 
 beforeAll(() => {
   registerDefaultWidgets();
+  servicesLocateMock.mockResolvedValue(
+    sanitizedServiceConfigurationFactory({
+      serviceId: GOOGLE_SHEET_SERVICE_ID,
+      // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+      },
+    })
+  );
+  getSheetPropertiesMock.mockResolvedValue({ title: "Test Sheet" });
+  getTabNamesMock.mockResolvedValue(["Tab1", "Tab2"]);
+  getHeadersMock.mockImplementation(async ({ tabName }) => {
+    if (tabName === "Tab1") {
+      return ["Column1", "Column2"];
+    }
+
+    return ["Foo", "Bar"];
+  });
 });
 
 describe("LookupSpreadsheetOptions", () => {
@@ -81,7 +100,7 @@ describe("LookupSpreadsheetOptions", () => {
       {
         initialValues: {
           config: {
-            spreadsheetId: SPREADSHEET_ID,
+            spreadsheetId: TEST_SPREADSHEET_ID,
             tabName: "",
             header: "",
             query: "",
@@ -116,10 +135,8 @@ describe("LookupSpreadsheetOptions", () => {
       noop,
     ]);
 
-    const wrapper = render(
-      <ErrorBoundary>
-        <LookupSpreadsheetOptions name="" configKey="config" />
-      </ErrorBoundary>,
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: {
           config: {
@@ -135,28 +152,29 @@ describe("LookupSpreadsheetOptions", () => {
       }
     );
 
-    await act(async () => {
-      await waitForEffect();
+    await waitForEffect();
 
-      // Simulate user selecting a sheet integration configuration
-      const spreadsheetSelect = await screen.findByLabelText("Spreadsheet");
-      await selectEvent.select(spreadsheetSelect, "Test 1");
+    // Simulate user selecting a sheet integration configuration
+    const spreadsheetSelect = await screen.findByLabelText("Spreadsheet");
+    await selectEvent.select(spreadsheetSelect, "Test 1");
 
-      // Wait for tab names to load/default
-      await waitForEffect();
-    });
+    // Wait for tab names to load/default
+    await waitForEffect();
+    await tick();
+
+    screen.debug(undefined, 100_000);
 
     const tabOption = await screen.findByText("Tab1");
     expect(tabOption).toBeVisible();
 
-    expect(wrapper.container).toMatchSnapshot();
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   it("can choose tab and header values will load automatically", async () => {
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
-          spreadsheetId: SPREADSHEET_ID,
+          spreadsheetId: TEST_SPREADSHEET_ID,
           tabName: "",
           rowValues: {},
         },
@@ -201,7 +219,7 @@ describe("LookupSpreadsheetOptions", () => {
       {
         initialValues: {
           config: {
-            spreadsheetId: SPREADSHEET_ID,
+            spreadsheetId: TEST_SPREADSHEET_ID,
             tabName: makeVariableExpression("@myTab"),
             header: makeVariableExpression("@myHeader"),
             query: makeVariableExpression("@query"),
