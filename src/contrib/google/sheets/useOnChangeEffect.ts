@@ -18,23 +18,24 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Like useEffect, but only runs after the first render
+ * Hook to run a side effect when a value changes.
+ * @param value the value to watch
  * @param effect the side effect to run
- * @param dependencies the useEffect dependencies
- * @deprecated this is not a great pattern, should probably avoid using it if possible
+ * @param isEqual the equality function to use to determine if the value has changed, or undefined to use reference equality
+ * @deprecated should avoid using this pattern because it can cause infinite re-renders
  */
-export function useOnChangeEffect(
-  effect: () => void,
-  dependencies: unknown[]
+export function useOnChangeEffect<T = unknown>(
+  value: T,
+  effect: (newValue: T, oldValue: T) => void,
+  isEqual?: (a: T, b: T) => boolean
 ): void {
-  const isInitialMount = useRef(true);
+  const valueRef = useRef(value);
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      effect();
+    const equal = isEqual ?? Object.is;
+    if (!equal(value, valueRef.current)) {
+      effect(value, valueRef.current);
+      valueRef.current = value;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- input array
-  }, dependencies);
+  }, [value, valueRef, effect, isEqual]);
 }
