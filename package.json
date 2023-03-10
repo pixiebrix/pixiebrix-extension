@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.7.20-beta.5",
+  "version": "1.7.20-beta.6",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "TZ=UTC jest",
