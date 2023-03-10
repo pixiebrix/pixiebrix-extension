@@ -114,7 +114,7 @@ describe("LookupSpreadsheetOptions", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("should show tab names automatically when config is selected", async () => {
+  it("should show tab names automatically when config is selected, when starting with a blank nunjucks tabName", async () => {
     useAuthOptionsMock.mockReturnValue([
       [
         // Provide 2 so ServiceSelectWidget won't select one by default
@@ -136,11 +136,14 @@ describe("LookupSpreadsheetOptions", () => {
 
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
+        // This state is possible if the user takes these steps:
+        // 1. Select a spreadsheet integration configuration
+        // 2. Type something into the tabName field, then delete, so
+        //    it turns from null into an empty nunjucks template expression
+        // 3. Click the x to clear the spreadsheet field
         config: {
           // Causes integration configuration checker to be shown
           spreadsheetId: null,
-          // XXX: the test passes if this starts as "", but not if it's a blank expression
-          // That's because the TabField only defaults if the value is null
           tabName: makeTemplateExpression("nunjucks", ""),
           rowValues: {},
         },

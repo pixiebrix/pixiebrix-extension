@@ -36,7 +36,7 @@ import {
   type ThunkDispatch,
 } from "@reduxjs/toolkit";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, Formik, FormikErrors, type FormikValues } from "formik";
+import { Form, Formik, type FormikErrors, type FormikValues } from "formik";
 import { type Middleware } from "redux";
 import userEvent from "@testing-library/user-event";
 import { type Expression, type ExpressionType } from "@/core";
