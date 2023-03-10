@@ -17,6 +17,7 @@ exports[`UiPath Options Render integration selector 1`] = `
       >
         <div
           class="d-flex"
+          data-widget="ServiceSelectWidget"
         >
           <div
             class="flex-grow-1"
@@ -178,6 +179,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       >
         <div
           class="d-flex"
+          data-widget="ServiceSelectWidget"
         >
           <div
             class="flex-grow-1"

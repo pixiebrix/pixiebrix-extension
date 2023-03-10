@@ -58,7 +58,10 @@ const HeaderField: React.FunctionComponent<{
         });
         // If we loaded headers, then set the value to the first item for
         // convenience, unless there's an existing expression value in the field
-        if (!isEmpty(headers) && !isTemplateExpression(value)) {
+        if (
+          !isEmpty(headers) &&
+          (!isTemplateExpression(value) || isEmpty(value.__value__))
+        ) {
           setValue(headers[0]);
         }
 
@@ -113,7 +116,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   >(headerFieldName);
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useOnChangeEffect(spreadsheetId, (newValue, oldValue) => {
+  useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
     // `spreadsheetId` is null when useAsyncState is loading
     if (oldValue == null) {
       return;
@@ -146,6 +149,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     []
   );
   const sheetFieldSchema: Schema = {
+    title: "Spreadsheet",
     oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
   };
 
@@ -157,7 +161,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         <FormErrorContext.Provider
           value={{
             shouldUseAnalysis: false,
-            showUntouchedErrors: false,
+            showUntouchedErrors: true,
             showFieldActions: false,
           }}
         >

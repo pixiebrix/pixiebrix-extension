@@ -84,7 +84,7 @@ export function isSimpleServiceField(schema: Schema): boolean {
   );
 }
 
-export function isServiceValue(value: unknown): value is Expression {
+export function isServiceValueFormat(value: unknown): value is Expression {
   // Default service value, see ServiceWidget
   if (value == null) {
     return true;

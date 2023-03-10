@@ -16,13 +16,20 @@
  */
 
 import React from "react";
-import { render } from "@/sidebar/testHelpers";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
+import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
+import { dereference } from "@/validators/generic";
+import {
+  BASE_SHEET_SCHEMA,
+  SHEET_SERVICE_SCHEMA,
+} from "@/contrib/google/sheets/schemas";
+import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
+import { render } from "@/pageEditor/testHelpers";
 
 const SPREADSHEET_ID = "testId";
 
@@ -48,6 +55,36 @@ jest.mock("@/background/messenger/api", () => ({
 
 beforeAll(() => {
   registerDefaultWidgets();
+});
+
+describe("getToggleOptions", () => {
+  // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
+  it("should include toggle options", async () => {
+    const baseSchema = await dereference(BASE_SHEET_SCHEMA);
+
+    const result = getToggleOptions({
+      fieldSchema: {
+        oneOf: [baseSchema, SHEET_SERVICE_SCHEMA],
+      },
+      customToggleModes: [],
+      isRequired: true,
+      allowExpressions: true,
+      isObjectProperty: false,
+      isArrayItem: false,
+    });
+
+    expect(result).toEqual([
+      // The Google File Picker
+      expect.objectContaining({
+        Widget: expect.toBeOneOf([SheetsFileWidget]),
+        value: "string",
+      }),
+      // Service Configuration Picker
+      expect.objectContaining({
+        value: "select",
+      }),
+    ]);
+  });
 });
 
 describe("AppendSpreadsheetOptions", () => {
