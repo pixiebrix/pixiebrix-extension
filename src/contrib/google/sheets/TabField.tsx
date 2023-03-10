@@ -24,6 +24,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { isExpression } from "@/runtime/mapArgs";
 
 const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,
@@ -45,10 +46,17 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
 
   useEffect(() => {
     // If we've loaded tab names and the tab name is not set, set it to the first tab name.
-    // Check to make sure there's not an error so we're not setting it to the first value
+    // Check to make sure there's not an error, so we're not setting it to the first value
     // of a stale list of tabs, and check the tab name value itself to prevent an infinite
     // re-render loop here.
-    if (!loading && !error && !isEmpty(tabNames) && !tabNameValue) {
+    if (loading || error || isEmpty(tabNames)) {
+      return;
+    }
+
+    if (
+      !tabNameValue ||
+      (isExpression(tabNameValue) && isEmpty(tabNameValue.__value__))
+    ) {
       setTabNameValue(tabNames[0]);
     }
   }, [error, loading, setTabNameValue, tabNameValue, tabNames]);

@@ -21,7 +21,10 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { dereference } from "@/validators/generic";
 import {
@@ -30,31 +33,57 @@ import {
 } from "@/contrib/google/sheets/schemas";
 import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import { render } from "@/pageEditor/testHelpers";
+import {
+  sanitizedServiceConfigurationFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
+import { validateRegistryId } from "@/types/helpers";
+import { services, sheets } from "@/background/messenger/api";
 
-const SPREADSHEET_ID = "testId";
+const TEST_SPREADSHEET_ID = uuidSequence(1);
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
-jest.mock("@/contrib/google/sheets/useSpreadsheetId", () => ({
+const servicesLocateMock = services.locate as jest.MockedFunction<
+  typeof services.locate
+>;
+
+jest.mock("@/hooks/auth", () => ({
   __esModule: true,
-  default: () => SPREADSHEET_ID,
+  useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),
 }));
 
-jest.mock("@/background/messenger/api", () => ({
-  __esModule: true,
-  sheets: {
-    getSheetProperties: jest.fn().mockResolvedValue({ title: "Test Sheet" }),
-    getTabNames: jest.fn().mockResolvedValue(["Tab1", "Tab2"]),
-    getHeaders: jest.fn().mockImplementation(({ tabName }) => {
-      if (tabName === "Tab1") {
-        return ["Column1", "Column2"];
-      }
+const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
+  typeof sheets.getSheetProperties
+>;
 
-      return ["Foo", "Bar"];
-    }),
-  },
-}));
+const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
+  typeof sheets.getTabNames
+>;
+
+const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
+  typeof sheets.getHeaders
+>;
 
 beforeAll(() => {
   registerDefaultWidgets();
+  servicesLocateMock.mockResolvedValue(
+    sanitizedServiceConfigurationFactory({
+      serviceId: GOOGLE_SHEET_SERVICE_ID,
+      // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+      },
+    })
+  );
+  getSheetPropertiesMock.mockResolvedValue({ title: "Test Sheet" });
+  getTabNamesMock.mockResolvedValue(["Tab1", "Tab2"]);
+  getHeadersMock.mockImplementation(async ({ tabName }) => {
+    if (tabName === "Tab1") {
+      return ["Column1", "Column2"];
+    }
+
+    return ["Foo", "Bar"];
+  });
 });
 
 describe("getToggleOptions", () => {
@@ -94,7 +123,7 @@ describe("AppendSpreadsheetOptions", () => {
       {
         initialValues: {
           config: {
-            spreadsheetId: SPREADSHEET_ID,
+            spreadsheetId: TEST_SPREADSHEET_ID,
             tabName: "",
             rowValues: {},
           },
@@ -111,7 +140,7 @@ describe("AppendSpreadsheetOptions", () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
-          spreadsheetId: SPREADSHEET_ID,
+          spreadsheetId: TEST_SPREADSHEET_ID,
           tabName: "",
           rowValues: {},
         },
@@ -143,11 +172,89 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
   });
 
+  it("loads in tab names with spreadsheet ID and empty nunjucks tabName", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: makeTemplateExpression("nunjucks", ""),
+          rowValues: {},
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    // Shows the header names for Tab1
+    expect(screen.getByDisplayValue("Column1")).toBeVisible();
+    expect(screen.getByDisplayValue("Column2")).toBeVisible();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+  });
+
+  it("does not load tabs when spreadsheetId is null", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: null,
+          tabName: makeTemplateExpression("nunjucks", ""),
+          rowValues: {},
+        },
+        services: [],
+      },
+    });
+
+    await waitForEffect();
+
+    // Service field should show Select... placeholder
+    expect(screen.getByText("Select...")).toBeVisible();
+    expect(screen.getByLabelText("Tab Name")).toHaveTextContent("");
+
+    // Should not show any header names
+    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+  });
+
+  it("loads in tab names with spreadsheet service integration and empty nunjucks tabName", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@google"),
+          tabName: makeTemplateExpression("nunjucks", ""),
+          rowValues: {},
+        },
+        services: [
+          {
+            id: GOOGLE_SHEET_SERVICE_ID,
+            outputKey: "google",
+            config: uuidSequence(2),
+          },
+        ],
+      },
+    });
+
+    await waitForEffect();
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    // Shows the header names for Tab1
+    expect(screen.getByDisplayValue("Column1")).toBeVisible();
+    expect(screen.getByDisplayValue("Column2")).toBeVisible();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+  });
+
   it("allows any rowValues fields for variable tab name", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
-          spreadsheetId: SPREADSHEET_ID,
+          spreadsheetId: TEST_SPREADSHEET_ID,
           tabName: makeVariableExpression("@mySheetTab"),
           rowValues: {},
         },
@@ -167,7 +274,7 @@ describe("AppendSpreadsheetOptions", () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
-          spreadsheetId: SPREADSHEET_ID,
+          spreadsheetId: TEST_SPREADSHEET_ID,
           tabName: "Tab2",
           rowValues: {
             Foo: "valueA",
