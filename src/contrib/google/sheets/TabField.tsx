@@ -57,6 +57,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       !tabNameValue ||
       (isExpression(tabNameValue) && isEmpty(tabNameValue.__value__))
     ) {
+      //
       setTabNameValue(tabNames[0]);
     }
   }, [error, loading, setTabNameValue, tabNameValue, tabNames]);
