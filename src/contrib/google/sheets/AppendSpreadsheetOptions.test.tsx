@@ -21,7 +21,10 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { dereference } from "@/validators/generic";
 import {
@@ -30,6 +33,10 @@ import {
 } from "@/contrib/google/sheets/schemas";
 import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import { render } from "@/pageEditor/testHelpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { noop } from "lodash";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
+import selectEvent from "react-select-event";
 
 const SPREADSHEET_ID = "testId";
 
