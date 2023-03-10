@@ -136,11 +136,7 @@ describe("LookupSpreadsheetOptions", () => {
 
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
-        // This state is possible if the user takes these steps:
-        // 1. Select a spreadsheet integration configuration
-        // 2. Type something into the tabName field, then delete, so
-        //    it turns from null into an empty nunjucks template expression
-        // 3. Click the x to clear the spreadsheet field
+        // This state happens when a user first adds a Google Sheets brick to a new mod
         config: {
           // Causes integration configuration checker to be shown
           spreadsheetId: null,

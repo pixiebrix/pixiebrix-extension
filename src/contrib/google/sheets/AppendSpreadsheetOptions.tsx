@@ -164,13 +164,18 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             schema={sheetFieldSchema}
             isRequired
           />
+          {
+            // The problem with including this inside the nested FormErrorContext.Provider is that we
+            // would like analysis to run if this is in text/template mode, but not if it's in select mode.
+            // Select mode is more important, so we're leaving it like this for now.
+            <TabField
+              name={joinName(basePath, "tabName")}
+              schema={APPEND_SCHEMA.properties.tabName as Schema}
+              spreadsheetId={spreadsheetId}
+            />
+          }
         </FormErrorContext.Provider>
       )}
-      <TabField
-        name={joinName(basePath, "tabName")}
-        schema={APPEND_SCHEMA.properties.tabName as Schema}
-        spreadsheetId={spreadsheetId}
-      />
       <PropertiesField
         name={joinName(basePath, "rowValues")}
         spreadsheetId={spreadsheetId}
