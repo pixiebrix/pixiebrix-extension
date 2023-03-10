@@ -58,7 +58,10 @@ const HeaderField: React.FunctionComponent<{
         });
         // If we loaded headers, then set the value to the first item for
         // convenience, unless there's an existing expression value in the field
-        if (!isEmpty(headers) && !isTemplateExpression(value)) {
+        if (
+          !isEmpty(headers) &&
+          (!isTemplateExpression(value) || isEmpty(value.__value__))
+        ) {
           setValue(headers[0]);
         }
 

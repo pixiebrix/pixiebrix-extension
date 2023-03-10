@@ -166,7 +166,6 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
           />
         </FormErrorContext.Provider>
       )}
-
       <TabField
         name={joinName(basePath, "tabName")}
         schema={APPEND_SCHEMA.properties.tabName as Schema}

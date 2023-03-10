@@ -29,7 +29,6 @@ import { useAuthOptions } from "@/hooks/auth";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { noop } from "lodash";
-import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { render } from "@/pageEditor/testHelpers";
 import {
   sanitizedServiceConfigurationFactory,
@@ -135,22 +134,19 @@ describe("LookupSpreadsheetOptions", () => {
       noop,
     ]);
 
-    const rendered = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            // Causes integration configuration checker to be shown
-            spreadsheetId: null,
-            // XXX: the test passes if this starts as "", but not if it's a blank expression
-            // That's because the TabField only defaults if the value is null
-            tabName: makeTemplateExpression("nunjucks", ""),
-            rowValues: {},
-          },
-          services: [],
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          // Causes integration configuration checker to be shown
+          spreadsheetId: null,
+          // XXX: the test passes if this starts as "", but not if it's a blank expression
+          // That's because the TabField only defaults if the value is null
+          tabName: makeTemplateExpression("nunjucks", ""),
+          rowValues: {},
         },
-      }
-    );
+        services: [],
+      },
+    });
 
     await waitForEffect();
 
@@ -158,16 +154,27 @@ describe("LookupSpreadsheetOptions", () => {
     const spreadsheetSelect = await screen.findByLabelText("Spreadsheet");
     await selectEvent.select(spreadsheetSelect, "Test 1");
 
-    // Wait for tab names to load/default
-    await waitForEffect();
-    await tick();
-
-    screen.debug(undefined, 100_000);
+    // Toggle the Tab Name field to select
+    const tabNameToggle = screen
+      .getByTestId("toggle-config.tabName")
+      .querySelector("button");
+    await selectEvent.select(tabNameToggle, "Select...");
 
     const tabOption = await screen.findByText("Tab1");
     expect(tabOption).toBeVisible();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    // Ensure headers loaded in for Tab1
+    const headerSelect = await screen.findByLabelText("Column Header");
+    selectEvent.openMenu(headerSelect);
+    // Input value and select option in the dropdown, 2 instances
+    const column1Options = screen.getAllByText("Column1");
+    expect(column1Options).toHaveLength(2);
+    expect(column1Options[0]).toBeVisible();
+    expect(column1Options[1]).toBeVisible();
+
+    expect(screen.getByText("Column2")).toBeVisible();
+    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bar")).not.toBeInTheDocument();
   });
 
   it("can choose tab and header values will load automatically", async () => {
@@ -189,11 +196,14 @@ describe("LookupSpreadsheetOptions", () => {
     expect(screen.getByText("Tab1")).toBeVisible();
 
     // Shows the header names for Tab1 in the dropdown
-    const headerChooser = await screen.findByLabelText("Column Header");
-    await userEvent.click(headerChooser);
-    // TODO: This check fails because Column1 appears twice, in the field value and dropdown option.
-    //  We should convert this test to use react-select-event
-    // expect(screen.getByText("Column1")).toBeVisible();
+    const headerSelect = await screen.findByLabelText("Column Header");
+    selectEvent.openMenu(headerSelect);
+    // Input value and select option in the dropdown, 2 instances
+    const column1Options = screen.getAllByText("Column1");
+    expect(column1Options).toHaveLength(2);
+    expect(column1Options[0]).toBeVisible();
+    expect(column1Options[1]).toBeVisible();
+
     expect(screen.getByText("Column2")).toBeVisible();
     expect(screen.queryByText("Foo")).not.toBeInTheDocument();
     expect(screen.queryByText("Bar")).not.toBeInTheDocument();
@@ -204,10 +214,13 @@ describe("LookupSpreadsheetOptions", () => {
     await userEvent.click(tab2Option);
 
     // Shows the header names for Tab2 in the dropdown
-    await userEvent.click(headerChooser);
-    // TODO: This check fails because Foo appears twice, in the field value and dropdown option.
-    //  We should convert this test to use react-select-event
-    // expect(screen.getByText("Foo")).toBeVisible();
+    selectEvent.openMenu(headerSelect);
+    // Input value and select option in the dropdown, 2 instances
+    const fooOptions = screen.getAllByText("Foo");
+    expect(fooOptions).toHaveLength(2);
+    expect(fooOptions[0]).toBeVisible();
+    expect(fooOptions[1]).toBeVisible();
+
     expect(screen.getByText("Bar")).toBeVisible();
     expect(screen.queryByText("Column1")).not.toBeInTheDocument();
     expect(screen.queryByText("Column2")).not.toBeInTheDocument();
