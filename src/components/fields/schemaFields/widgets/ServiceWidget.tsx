@@ -57,7 +57,7 @@ export type ServiceWidgetProps = SchemaFieldProps & {
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
-function defaultOutputKey(
+export function defaultOutputKey(
   serviceId: RegistryId | null,
   otherOutputKeys: OutputKey[]
 ): OutputKey {
@@ -198,13 +198,22 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
           ? clearServiceSelection(root, field.name)
           : produceServiceAuths(root, field.name, value, serviceIds, options);
       setRootValues(newState);
+      // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
+      helpers.setError(undefined);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- formik helpers change on every render
     [root, setRootValues, serviceIds, field.name]
   );
 
   useEffect(
     () => {
       if (value == null && detectDefault) {
+        if (root.services == null) {
+          throw new TypeError(
+            "services prop does not exist on base form state. Is your Formik state configured properly?"
+          );
+        }
+
         const match = root.services.find((service) =>
           serviceIds.includes(service.id)
         );

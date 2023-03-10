@@ -16,63 +16,134 @@
  */
 
 import { useField, useFormikContext } from "formik";
-import { type Expression, type RegistryId } from "@/core";
+import { type Expression } from "@/core";
 import { joinName } from "@/utils";
-import { useEffect, useState } from "react";
-import { isExpression } from "@/runtime/mapArgs";
+import { useReducer } from "react";
 import {
   keyToFieldValue,
   type ServiceSlice,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { isServiceValue } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEqual } from "lodash";
-import useDependency from "@/services/useDependency";
+import { pickDependency } from "@/services/useDependency";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { useAsyncEffect } from "use-async-effect";
+import { services } from "@/background/messenger/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
+type SpreadsheetState = {
+  spreadsheetId: string | null;
+
+  error: unknown;
+};
+
+const initialState: SpreadsheetState = {
+  spreadsheetId: null,
+  error: null,
+};
+
+const spreadsheetSlice = createSlice({
+  name: "spreadsheet",
+  initialState,
+  reducers: {
+    setSpreadsheetId(state, action: PayloadAction<string>) {
+      state.spreadsheetId = action.payload;
+      state.error = null;
+    },
+    setLoading(state) {
+      state.spreadsheetId = null;
+      state.error = null;
+    },
+    setError(state, action: PayloadAction<unknown>) {
+      state.spreadsheetId = null;
+      state.error = action.payload;
+    },
+  },
+});
+
+/**
+ * Hook to get the Google Sheets spreadsheetId from an integration configuration or direct input.
+ * @param basePath brick configuration path
+ */
 function useSpreadsheetId(basePath: string): string | null {
-  const [{ value: fieldValue }] = useField<string | Expression>(
-    joinName(basePath, "spreadsheetId")
-  );
-  const [spreadsheetId, setSpreadsheetId] = useState<string | null>(
-    // The value is either the spreadsheetId directly, when using the sheet
-    // file picker option, or a var expression for a service key when using
-    // a service input. If the value is the spreadsheetId, then we can set it
-    // here directly, otherwise we need to wait for the service to load.
-    isExpression(fieldValue) ? null : fieldValue
-  );
-  const [sheetsServiceId, setSheetsServiceId] = useState<RegistryId | null>(
-    null
-  );
   const {
-    values: { services },
+    values: { services: servicesValue },
   } = useFormikContext<ServiceSlice>();
 
-  useEffect(() => {
-    if (isServiceValue(fieldValue)) {
-      const sheetsService = services.find((service) =>
-        isEqual(keyToFieldValue(service.outputKey), fieldValue)
-      );
-      if (sheetsService) {
-        setSheetsServiceId(sheetsService.id);
+  const [{ value: fieldValue }, , { setError }] = useField<string | Expression>(
+    joinName(basePath, "spreadsheetId")
+  );
+
+  const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
+
+  /**
+   * Note about when this effect will fire:
+   *
+   * This async effect has fieldValue as its dependency. This can either be a
+   * string spreadsheetId, or a service config, var-expression object, or null.
+   *
+   * When the user switches between two different GSheets service integrations,
+   * the fieldValue will not change, it will stay as this value:
+   * {
+   *   __type__: "var",
+   *   __value__: "@google",
+   * }
+   *
+   * The service selector actually changes the top-level form state to make @google
+   * point to a different GSheet integration. By using fieldValue as the effect
+   * dependency, we're taking advantage of the fact that object comparison will
+   * fail and the effect will fire on every render when a user switches between
+   * GSheet integrations, even if the fieldValue is not actually changing.
+   */
+  useAsyncEffect(async () => {
+    dispatch(spreadsheetSlice.actions.setLoading());
+    if (isServiceValueFormat(fieldValue)) {
+      if (fieldValue == null) {
+        // A service value can be null, but here we don't want to try and load anything if it is null
+        dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
+        return;
+      }
+
+      try {
+        const sheetsService = servicesValue.find((service) =>
+          isEqual(keyToFieldValue(service.outputKey), fieldValue)
+        );
+        if (!sheetsService) {
+          throw new Error(
+            "Could not find service for spreadsheetId field value: " +
+              JSON.stringify(fieldValue)
+          );
+        }
+
+        const dependency = pickDependency(servicesValue, [sheetsService.id]);
+        const sanitizedServiceConfig = await services.locate(
+          dependency.id,
+          dependency.config
+        );
+        const configSpreadsheetId =
+          sanitizedServiceConfig.config?.spreadsheetId;
+        if (!configSpreadsheetId) {
+          throw new Error(
+            "Could not find spreadsheetId in service configuration: " +
+              JSON.stringify(sanitizedServiceConfig)
+          );
+        }
+
+        if (configSpreadsheetId) {
+          dispatch(
+            spreadsheetSlice.actions.setSpreadsheetId(configSpreadsheetId)
+          );
+        }
+      } catch (error: unknown) {
+        dispatch(spreadsheetSlice.actions.setError(error));
+        setError(getErrorMessage(error));
       }
     } else {
-      setSpreadsheetId(fieldValue);
+      dispatch(spreadsheetSlice.actions.setSpreadsheetId(fieldValue));
     }
-  }, [services, fieldValue]);
+  }, [fieldValue]);
 
-  const sheetsServiceDependency = useDependency(sheetsServiceId);
-
-  useEffect(() => {
-    const config = sheetsServiceDependency?.config?.config;
-    if (!config) {
-      return;
-    }
-
-    if (config.spreadsheetId) {
-      setSpreadsheetId(config.spreadsheetId);
-    }
-  }, [sheetsServiceDependency]);
-
-  return spreadsheetId;
+  return state.spreadsheetId;
 }
 
 export default useSpreadsheetId;

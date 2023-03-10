@@ -21,34 +21,28 @@ import {
   sanitizedServiceConfigurationFactory,
   uuidSequence,
 } from "@/testUtils/factories";
-import { type RegistryId } from "@/core";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import useDependency, { type Dependency } from "@/services/useDependency";
+import { services } from "@/background/messenger/api";
+import { validateRegistryId } from "@/types/helpers";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
-const GOOGLE_SHEET_SERVICE_ID = "google/sheet" as RegistryId;
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
-jest.mock("@/services/useDependency", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const useDependencyMock = useDependency as jest.MockedFunction<
-  typeof useDependency
+const servicesLocateMock = services.locate as jest.MockedFunction<
+  typeof services.locate
 >;
 
 describe("useSpreadsheetId", () => {
   beforeAll(() => {
-    useDependencyMock.mockReturnValue({
-      // Hook only needs the config
-      config: sanitizedServiceConfigurationFactory({
+    servicesLocateMock.mockResolvedValue(
+      sanitizedServiceConfigurationFactory({
         serviceId: GOOGLE_SHEET_SERVICE_ID,
         // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,
         },
-      }),
-    } as Dependency);
+      })
+    );
   });
 
   test("works with string value", async () => {
@@ -57,7 +51,7 @@ describe("useSpreadsheetId", () => {
         spreadsheetId: TEST_SPREADSHEET_ID,
       },
     });
-    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+    expect(result.current).toEqual(TEST_SPREADSHEET_ID);
   });
 
   test("works with service value", async () => {
@@ -65,7 +59,7 @@ describe("useSpreadsheetId", () => {
       initialValues: {
         spreadsheetId: {
           __type__: "var",
-          __value__: GOOGLE_SHEET_SERVICE_ID,
+          __value__: "@google",
         },
         services: [
           {

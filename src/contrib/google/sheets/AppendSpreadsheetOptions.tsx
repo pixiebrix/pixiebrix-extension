@@ -110,8 +110,8 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     useField(joinName(basePath, "rowValues"));
 
   // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useOnChangeEffect(spreadsheetId, (newValue, oldValue) => {
-    // The oldValue can be null while useAsyncState is loading
+  useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
+    // `spreadsheetId` is null when useAsyncState is loading
     if (oldValue == null) {
       return;
     }
@@ -143,6 +143,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     []
   );
   const sheetFieldSchema: Schema = {
+    title: "Spreadsheet",
     oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
   };
 
@@ -154,7 +155,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         <FormErrorContext.Provider
           value={{
             shouldUseAnalysis: false,
-            showUntouchedErrors: false,
+            showUntouchedErrors: true,
             showFieldActions: false,
           }}
         >
@@ -165,7 +166,6 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
           />
         </FormErrorContext.Provider>
       )}
-
       <TabField
         name={joinName(basePath, "tabName")}
         schema={APPEND_SCHEMA.properties.tabName as Schema}

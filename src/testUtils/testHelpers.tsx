@@ -36,7 +36,7 @@ import {
   type ThunkDispatch,
 } from "@reduxjs/toolkit";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, Formik, type FormikValues } from "formik";
+import { Form, Formik, type FormikErrors, type FormikValues } from "formik";
 import { type Middleware } from "redux";
 import userEvent from "@testing-library/user-event";
 import { type Expression, type ExpressionType } from "@/core";
@@ -151,6 +151,7 @@ type SetupRedux = (
 
 type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
   initialValues?: FormikValues;
+  initialErrors?: FormikErrors<FormikValues>;
   setupRedux?: SetupRedux;
 };
 
@@ -173,7 +174,12 @@ type ConfigureStore<
 export function createRenderWithWrappers(configureStore: ConfigureStore) {
   return (
     ui: React.ReactElement,
-    { initialValues, setupRedux = noop, ...renderOptions }: WrapperOptions = {}
+    {
+      initialValues,
+      initialErrors,
+      setupRedux = noop,
+      ...renderOptions
+    }: WrapperOptions = {}
   ): WrapperResult => {
     let submitHandler: (values: FormikValues) => void = jest.fn();
 
@@ -186,6 +192,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
           <Provider store={store}>
             <Formik
               initialValues={initialValues}
+              initialErrors={initialErrors}
               onSubmit={(values) => {
                 submitHandler?.(values);
               }}
