@@ -663,3 +663,31 @@ export const memoizeUntilSettled: typeof pMemoize = (
   });
 
 export const foreverPendingPromise = new Promise(() => {});
+
+
+export const getIndicesOf = (
+  searchStr: string,
+  str: string,
+  caseSensitive?: boolean
+) => {
+  const searchStrLength = searchStr.length;
+  if (searchStrLength === 0) {
+    return [];
+  }
+
+  let startIndex = 0;
+  let index;
+  const indices = [];
+
+  if (!caseSensitive) {
+    str = str.toLowerCase();
+    searchStr = searchStr.toLowerCase();
+  }
+
+  while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+    indices.push(index);
+    startIndex = index + searchStrLength;
+  }
+
+  return indices;
+};
