@@ -61,7 +61,7 @@
     "css-selector-generator": "^3.6.0",
     "date-fns": "^2.28.0",
     "dompurify": "^3.0.1",
-    "exifreader": "^4.9.2",
+    "exifreader": "^4.10.0",
     "export-to-csv": "^0.2.1",
     "filenamify": "^5.1.0",
     "fit-textarea": "^3.0.0",
