@@ -21,14 +21,17 @@ import { initialState } from "@/pageEditor/slices/editorSlice";
 import {
   formStateFactory,
   installedRecipeMetadataFactory,
+  uuidSequence,
 } from "@/testUtils/factories";
 import { type UUID } from "@/core";
 import { type NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
+  getEditorState,
   removeDynamicElements,
   removeDynamicElementsForRecipe,
 } from "@/store/dynamicElementStorage";
+import { validateRegistryId } from "@/types/helpers";
 
 jest.mock("@/chrome", () => ({
   readReduxStorage: jest.fn(),
@@ -317,5 +320,23 @@ describe("dynamicElementStorage", () => {
       "persist:editor",
       jsonifyObject(baseState)
     );
+  });
+});
+
+describe("dynamicElementStorage when no state is persisted", () => {
+  test("getEditorState returns undefined when readReduxStorage returns undefined", async () => {
+    (readReduxStorage as jest.Mock).mockResolvedValue(undefined);
+    const state = await getEditorState();
+    expect(state).toBeUndefined();
+  });
+
+  test("removeDynamicElementsForRecipe doesn't crash when readReduxStorage returns undefined", async () => {
+    (readReduxStorage as jest.Mock).mockResolvedValue(undefined);
+    await removeDynamicElementsForRecipe(validateRegistryId("@test/recipe"));
+  });
+
+  test("removeDynamicElements doesn't crash when readReduxStorage returns undefined", async () => {
+    (readReduxStorage as jest.Mock).mockResolvedValue(undefined);
+    await removeDynamicElements([uuidSequence(0), uuidSequence(1)]);
   });
 });
