@@ -95,20 +95,22 @@ export async function removeDynamicElementsForRecipe(
 
   // If this is called from a page where the page editor has not been opened yet,
   // then the persisted editor state will be undefined, so we need to check for that
-  if (state != null) {
-    const newState = produce(state, (draft) => {
-      removeRecipeData(draft, recipeId);
-
-      for (const element of state.elements) {
-        if (element.recipe?.id === recipeId) {
-          removedDynamicElements.push(element.uuid);
-          removeElement(draft, element.uuid);
-        }
-      }
-    });
-
-    await saveEditorState(newState);
+  if (state == null) {
+    return [] as UUID[];
   }
+
+  const newState = produce(state, (draft) => {
+    removeRecipeData(draft, recipeId);
+
+    for (const element of state.elements) {
+      if (element.recipe?.id === recipeId) {
+        removedDynamicElements.push(element.uuid);
+        removeElement(draft, element.uuid);
+      }
+    }
+  });
+
+  await saveEditorState(newState);
 
   return removedDynamicElements;
 }
