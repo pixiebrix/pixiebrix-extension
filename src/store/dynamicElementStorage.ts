@@ -36,7 +36,7 @@ const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
  *
  * @returns The editor state, if found in storage, otherwise undefined.
  */
-async function getEditorState(): Promise<EditorState | undefined> {
+export async function getEditorState(): Promise<EditorState | undefined> {
   const storage: Record<string, string> = await readReduxStorage(STORAGE_KEY);
 
   if (storage == null) {
