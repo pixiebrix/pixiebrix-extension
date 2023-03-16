@@ -25,13 +25,13 @@ import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateRecipe from "@/hooks/activateRecipe/useActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { MenuDefinition } from "@/extensionPoints/contextMenu";
-import { InnerDefinitions } from "@/core";
+import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type MenuDefinition } from "@/extensionPoints/contextMenu";
+import { type InnerDefinitions } from "@/core";
 import ensureRecipePermissions from "@/hooks/activateRecipe/ensureRecipePermissions";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import extensionsSlice from "@/store/extensionsSlice";
 
 jest.mock("@/hooks/activateRecipe/ensureRecipePermissions", () => ({
