@@ -19,6 +19,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
   deploymentFactory,
   extensionFactory,
+  extensionPointDefinitionFactory,
   installedRecipeMetadataFactory,
   sharingDefinitionFactory,
 } from "@/testUtils/factories";
@@ -32,6 +33,15 @@ import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";
 import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
+import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import {
+  editorSlice,
+  initialState as initialEditorState,
+} from "@/pageEditor/slices/editorSlice";
+import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { parsePackage } from "@/registry/localRegistry";
+import { registry } from "@/background/messenger/api";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
@@ -89,6 +99,10 @@ jest.mock("webext-detect-page", () => ({
 jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
+
+const registryFindMock = registry.find as jest.MockedFunction<
+  typeof registry.find
+>;
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
@@ -190,14 +204,33 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);
 
+    const extensionPoint = extensionPointDefinitionFactory();
+    const brick = {
+      ...parsePackage(extensionPoint as any),
+      timestamp: new Date(),
+    };
+    registryFindMock.mockResolvedValue(brick);
+
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = extensionFactory() as PersistedExtension;
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.metadata.id,
+    }) as PersistedExtension;
     delete extension._recipe;
     delete extension._deployment;
 
     await saveOptions({
       extensions: [extension],
     });
+
+    let editorState = initialEditorState;
+    const element = (await ADAPTERS.get(
+      extensionPoint.definition.type
+    ).fromExtension(extension)) as ActionFormState;
+    editorState = editorSlice.reducer(
+      editorState,
+      editorSlice.actions.addElement(element)
+    );
+    await saveEditorState(editorState);
 
     const deployment = deploymentFactory();
 
@@ -210,11 +243,13 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     const { extensions } = await loadOptions();
-
-    expect(extensions.length).toBe(2);
+    expect(extensions).toBeArrayOfSize(2);
+    const { elements } = await getEditorState();
+    // Expect unrelated dynamic element not to be removed
+    expect(elements).toBeArrayOfSize(1);
   });
 
-  test("uninstall existing recipe extension", async () => {
+  test("uninstall existing recipe extension with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(true);
 
@@ -245,8 +280,63 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     const { extensions } = await loadOptions();
+    expect(extensions).toBeArrayOfSize(1);
+    expect(extensions[0]._recipe.version).toBe(deployment.package.version);
+  });
 
-    expect(extensions.length).toBe(1);
+  test("uninstall existing recipe extension with dynamic element", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(true);
+
+    const deployment = deploymentFactory();
+
+    const extensionPoint = extensionPointDefinitionFactory();
+    const brick = {
+      ...parsePackage(extensionPoint as any),
+      timestamp: new Date(),
+    };
+    registryFindMock.mockResolvedValue(brick);
+
+    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.metadata.id,
+      _recipe: {
+        id: deployment.package.package_id,
+        name: deployment.package.name,
+        version: validateSemVerString("0.0.1"),
+        updated_at: deployment.updated_at as Timestamp,
+        sharing: sharingDefinitionFactory(),
+      },
+    }) as PersistedExtension;
+    delete extension._deployment;
+
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    let editorState = initialEditorState;
+    const element = (await ADAPTERS.get("menuItem").fromExtension(
+      extension
+    )) as ActionFormState;
+    editorState = editorSlice.reducer(
+      editorState,
+      editorSlice.actions.addElement(element)
+    );
+    await saveEditorState(editorState);
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+    expect(extensions).toBeArrayOfSize(1);
+    const { elements } = await getEditorState();
+    // Expect dynamic element to be removed
+    expect(elements).toBeArrayOfSize(0);
     expect(extensions[0]._recipe.version).toBe(deployment.package.version);
   });
 
@@ -389,20 +479,62 @@ describe("updateDeployments", () => {
   });
 
   test("can uninstall all deployments", async () => {
-    const personalExtension = extensionFactory() as PersistedExtension;
+    const personalExtensionPoint = extensionPointDefinitionFactory();
+    const personalBrick = {
+      ...parsePackage(personalExtensionPoint as any),
+      timestamp: new Date(),
+    };
+
+    const personalExtension = extensionFactory({
+      extensionPointId: personalExtensionPoint.metadata.id,
+    }) as PersistedExtension;
 
     const recipeExtension = extensionFactory({
       _recipe: installedRecipeMetadataFactory(),
     }) as PersistedExtension;
 
+    const deploymentExtensionPoint = extensionPointDefinitionFactory();
+    const deploymentsBrick = {
+      ...parsePackage(deploymentExtensionPoint as any),
+      timestamp: new Date(),
+    };
+
     const deploymentExtension = extensionFactory({
+      extensionPointId: deploymentExtensionPoint.metadata.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
       _recipe: installedRecipeMetadataFactory(),
     }) as PersistedExtension;
 
+    registryFindMock.mockImplementation(async (id) => {
+      if (id === personalBrick.id) {
+        return personalBrick;
+      }
+
+      return deploymentsBrick;
+    });
+
+    let editorState = initialEditorState;
+
+    const personalElement = (await ADAPTERS.get(
+      personalExtensionPoint.definition.type
+    ).fromExtension(personalExtension)) as ActionFormState;
+    editorState = editorSlice.reducer(
+      editorState,
+      editorSlice.actions.addElement(personalElement)
+    );
+
+    const deploymentElement = (await ADAPTERS.get(
+      deploymentExtensionPoint.definition.type
+    ).fromExtension(deploymentExtension)) as ActionFormState;
+    editorState = editorSlice.reducer(
+      editorState,
+      editorSlice.actions.addElement(deploymentElement)
+    );
+
     await saveOptions({
       extensions: [personalExtension, deploymentExtension, recipeExtension],
     });
+    await saveEditorState(editorState);
 
     isLinkedMock.mockResolvedValue(true);
     readAuthDataMock.mockResolvedValue({} as any);
@@ -416,5 +548,9 @@ describe("updateDeployments", () => {
     const installedIds = extensions.map((x) => x.id);
     expect(installedIds).toContain(personalExtension.id);
     expect(installedIds).toContain(recipeExtension.id);
+
+    const { elements } = await getEditorState();
+    expect(elements).toBeArrayOfSize(1);
+    expect(elements[0]).toEqual(personalElement);
   });
 });

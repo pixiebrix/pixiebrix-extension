@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import useActivateRecipe from "@/hooks/useActivateRecipe";
+import useActivateRecipe from "@/hooks/activateRecipe/useActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
