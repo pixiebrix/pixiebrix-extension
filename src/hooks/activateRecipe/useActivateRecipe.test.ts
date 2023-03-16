@@ -34,7 +34,7 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { RecipeDefinition } from "@/types/definitions";
 import extensionsSlice from "@/store/extensionsSlice";
 
-jest.mock("@/hooks/activateRecipe/ensurePermissions", () => ({
+jest.mock("@/hooks/activateRecipe/ensureRecipePermissions", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
