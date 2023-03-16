@@ -48,7 +48,13 @@ export async function getEditorState(): Promise<EditorState | undefined> {
   return mapValues(storage, (value) => JSON.parse(value)) as EditorState;
 }
 
-async function saveEditorState(state: EditorState): Promise<void> {
+export async function saveEditorState(
+  state: EditorState | undefined
+): Promise<void> {
+  if (!state) {
+    return;
+  }
+
   await setReduxStorage(
     STORAGE_KEY,
     // Redux-persist stores the values of each top-level property in the state object as a JSON string
