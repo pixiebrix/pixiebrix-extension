@@ -277,6 +277,9 @@ describe("updateDeployments", () => {
 
     axiosMock.onPost().reply(201, [deployment]);
 
+    // Make sure we're testing the case where getEditorState() returns undefined
+    expect(await getEditorState()).toBeUndefined();
+
     await updateDeployments();
 
     const { extensions } = await loadOptions();
