@@ -27,7 +27,10 @@ import {
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import {
+  selectExtensions,
+  selectExtensionsForRecipe,
+} from "@/store/extensionsSelectors";
 import { type RegistryId, type UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
@@ -40,7 +43,6 @@ import { expectContext } from "@/utils/expectContext";
 import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
-import { uninstallContextMenu } from "@/background/contextMenus";
 import {
   findLocalDeploymentServiceConfigurations,
   makeUpdatedFilter,
@@ -51,8 +53,13 @@ import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { locator } from "@/background/locator";
 import { deploymentPermissions } from "@/utils/deploymentPermissionUtils";
+import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 
-const { reducer, actions } = extensionsSlice;
+const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
+const { reducer: editorReducer, actions: editorActions } = editorSlice;
 const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
@@ -66,23 +73,33 @@ async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
   await forEachTab(queueReactivateTab);
 }
 
-function uninstallExtension(
-  state: ExtensionOptionsState,
+function uninstallExtensionFromStates(
+  optionsState: ExtensionOptionsState,
+  editorState: EditorState | undefined,
   extensionId: UUID
-): ExtensionOptionsState {
-  const extensionRef = {
-    extensionId,
-  };
-  void uninstallContextMenu(extensionRef);
-  return reducer(state, actions.removeExtension(extensionRef));
+): {
+  options: ExtensionOptionsState;
+  editor: EditorState;
+} {
+  const options = optionsReducer(
+    optionsState,
+    optionsActions.removeExtension({ extensionId })
+  );
+  const editor = editorState
+    ? editorReducer(editorState, editorActions.removeElement(extensionId))
+    : undefined;
+  return { options, editor };
 }
 
 /**
  * Uninstall all deployments by uninstalling all extensions associated with the deployment.
  */
 export async function uninstallAllDeployments(): Promise<void> {
-  let state = await loadOptions();
-  const installed = selectExtensions({ options: state });
+  let [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
+  const installed = selectExtensions({ options: optionsState });
 
   const toUninstall = installed.filter(
     (extension) => !isEmpty(extension._deployment)
@@ -94,10 +111,23 @@ export async function uninstallAllDeployments(): Promise<void> {
 
   // Uninstall existing versions of the extensions
   for (const extension of toUninstall) {
-    state = uninstallExtension(state, extension.id);
+    const result = uninstallExtensionFromStates(
+      optionsState,
+      editorState,
+      extension.id
+    );
+    optionsState = result.options;
+    editorState = result.editor;
   }
 
-  await setExtensionsState(state);
+  await Promise.allSettled(
+    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id))
+  );
+
+  await setExtensionsState(optionsState);
+  if (editorState) {
+    await saveEditorState(editorState);
+  }
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
@@ -108,8 +138,11 @@ export async function uninstallAllDeployments(): Promise<void> {
 export async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
-  let state = await loadOptions();
-  const installed = selectExtensions({ options: state });
+  let [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
+  const installed = selectExtensions({ options: optionsState });
 
   const recipeIds = new Set(
     deployments.map((deployment) => deployment.package.package_id)
@@ -124,10 +157,23 @@ export async function uninstallUnmatchedDeployments(
   }
 
   for (const extension of toUninstall) {
-    state = uninstallExtension(state, extension.id);
+    const result = uninstallExtensionFromStates(
+      optionsState,
+      editorState,
+      extension.id
+    );
+    optionsState = result.options;
+    editorState = result.editor;
   }
 
-  await setExtensionsState(state);
+  await Promise.allSettled(
+    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id))
+  );
+
+  await setExtensionsState(optionsState);
+  if (editorState) {
+    await saveEditorState(editorState);
+  }
 
   reportEvent("DeploymentDeactivateUnassigned", {
     auto: true,
@@ -135,36 +181,58 @@ export async function uninstallUnmatchedDeployments(
   });
 }
 
-function uninstallRecipe(
-  state: ExtensionOptionsState,
+async function uninstallRecipe(
+  optionsState: ExtensionOptionsState,
+  editorState: EditorState | undefined,
   recipeId: RegistryId
-): ExtensionOptionsState {
-  let returnState = state;
-  const installed = selectExtensions({ options: state });
+): Promise<{
+  options: ExtensionOptionsState;
+  editor: EditorState | undefined;
+}> {
+  let options = optionsState;
+  let editor = editorState;
+
+  const recipeOptionsSelector = selectExtensionsForRecipe(recipeId);
+  const recipeExtensions = recipeOptionsSelector({ options: optionsState });
 
   // Uninstall existing versions of the extensions
-  for (const extension of installed) {
-    if (extension._recipe?.id === recipeId) {
-      returnState = uninstallExtension(returnState, extension.id);
-    }
+  for (const extension of recipeExtensions) {
+    const result = uninstallExtensionFromStates(options, editor, extension.id);
+    options = result.options;
+    editor = result.editor;
   }
 
-  return returnState;
+  await Promise.allSettled(
+    recipeExtensions.map(async ({ id }) => removeExtensionForEveryTab(id))
+  );
+
+  return { options, editor };
 }
 
 async function installDeployment(
-  state: ExtensionOptionsState,
+  optionsState: ExtensionOptionsState,
+  editorState: EditorState | undefined,
   deployment: Deployment
-): Promise<ExtensionOptionsState> {
-  let returnState = state;
+): Promise<{
+  options: ExtensionOptionsState;
+  editor: EditorState | undefined;
+}> {
+  let options = optionsState;
+  let editor = editorState;
 
   // Uninstall existing versions of the extensions
-  returnState = uninstallRecipe(returnState, deployment.package.package_id);
+  const result = await uninstallRecipe(
+    options,
+    editor,
+    deployment.package.package_id
+  );
+  options = result.options;
+  editor = result.editor;
 
   // Install the deployment's blueprint with the service definition
-  returnState = reducer(
-    returnState,
-    actions.installRecipe({
+  options = optionsReducer(
+    options,
+    optionsActions.installRecipe({
       recipe: deployment.package.config,
       extensionPoints: deployment.package.config.extensionPoints,
       deployment,
@@ -181,7 +249,7 @@ async function installDeployment(
     auto: true,
   });
 
-  return returnState;
+  return { options, editor };
 }
 
 /**
@@ -189,13 +257,26 @@ async function installDeployment(
  * @param deployments deployments that PixieBrix already has permission to run
  */
 async function installDeployments(deployments: Deployment[]): Promise<void> {
-  let state = await loadOptions();
+  let [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
+
   for (const deployment of deployments) {
-    // eslint-disable-next-line no-await-in-loop -- running reducer
-    state = await installDeployment(state, deployment);
+    // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
+    const result = await installDeployment(
+      optionsState,
+      editorState,
+      deployment
+    );
+    optionsState = result.options;
+    editorState = result.editor;
   }
 
-  await setExtensionsState(state);
+  await setExtensionsState(optionsState);
+  if (editorState) {
+    await saveEditorState(editorState);
+  }
 }
 
 type DeploymentConstraint = {

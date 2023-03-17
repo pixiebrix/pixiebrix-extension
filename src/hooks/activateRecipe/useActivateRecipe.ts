@@ -18,15 +18,14 @@
 import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { type RecipeDefinition } from "@/types/definitions";
 import { useCallback } from "react";
-import { collectPermissions } from "@/permissions";
-import { resolveRecipe } from "@/registry/internal";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { requestPermissions } from "@/utils/permissions";
-import { removeDynamicElementsForRecipe } from "@/store/dynamicElementStorage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { uninstallRecipe } from "@/store/uninstallUtils";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import ensureRecipePermissions from "@/hooks/activateRecipe/ensureRecipePermissions";
 
 type ActivateResult = {
   success: boolean;
@@ -40,17 +39,14 @@ type ActivateRecipe = (
 
 function useActivateRecipe(): ActivateRecipe {
   const dispatch = useDispatch();
+  const extensions = useSelector(selectExtensions);
 
   return useCallback(
     async (formValues: WizardValues, recipe: RecipeDefinition) => {
       const serviceAuths = formValues.services.filter(({ config }) =>
         Boolean(config)
       );
-      const collectedPermissions = await collectPermissions(
-        await resolveRecipe(recipe, recipe.extensionPoints),
-        serviceAuths
-      );
-      if (!(await requestPermissions(collectedPermissions))) {
+      if (!(await ensureRecipePermissions(recipe, serviceAuths))) {
         return {
           success: false,
           error: "You must accept browser permissions to activate.",
@@ -58,7 +54,12 @@ function useActivateRecipe(): ActivateRecipe {
       }
 
       try {
-        void removeDynamicElementsForRecipe(recipe.metadata.id);
+        const recipeExtensions = extensions.filter(
+          (extension) => extension._recipe?.id === recipe.metadata.id
+        );
+
+        await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
+
         dispatch(
           extensionsSlice.actions.installRecipe({
             recipe,
