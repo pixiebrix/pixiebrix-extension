@@ -74,8 +74,8 @@ const SidebarConfiguration: React.FC<{
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name="extension.heading"
-          label="Heading"
-          description="Panel heading to show in the sidebar"
+          label="Tab title"
+          description="The text that will appear in the tab along the top of the Sidebar Panel"
         />
 
         <UrlMatchPatternField

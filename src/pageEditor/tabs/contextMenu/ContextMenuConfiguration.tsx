@@ -66,13 +66,14 @@ const ContextMenuConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.contexts"
+        label="Menu context"
         as={MultiSelectWidget}
         options={contextOptions}
         description={
           <span>
-            One or more contexts to include the context menu item. For example,
-            use the <code>selection</code> context to show the menu item when
-            right-clicking selected text.
+            Limit when the Context Menu item is shown. For example, selecting
+            only the <code>link</code> option will show the item only when
+            right-clicking on a link.
           </span>
         }
         {...makeLockableFieldProps("Contexts", isLocked)}

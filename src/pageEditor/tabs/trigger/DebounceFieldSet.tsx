@@ -28,7 +28,7 @@ const DebounceFieldSet: React.FC<{
     <>
       <FieldTemplate
         as={SwitchButtonWidget}
-        description="Debounce the trigger"
+        description="Group trigger events to limit the number of runs and increase performance"
         name="debounce"
         value={!isEmpty(debounce)}
         onChange={({ target }: ChangeEvent<CheckBoxLike>) => {

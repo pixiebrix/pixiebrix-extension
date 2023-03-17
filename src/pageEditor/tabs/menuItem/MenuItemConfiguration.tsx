@@ -55,14 +55,13 @@ const MenuItemConfiguration: React.FC<{
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name="extension.caption"
-          label="Caption"
-          description="Button caption"
+          label="Button text"
+          description="This is the text that appears on the button"
         />
 
         <ConnectedFieldTemplate
           name="extensionPoint.definition.containerSelector"
           as={LocationWidget}
-          description="Location on the page"
           {...makeLockableFieldProps("Location", isLocked)}
         />
 

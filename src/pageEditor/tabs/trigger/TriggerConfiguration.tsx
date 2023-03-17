@@ -106,9 +106,9 @@ const TriggerConfiguration: React.FC<{
         <ConnectedFieldTemplate
           name={fieldName("trigger")}
           as="select"
-          description="Trigger event"
+          description="Select a browser event to trigger or launch this mod"
           onChange={onTriggerChange}
-          {...makeLockableFieldProps("Trigger", isLocked)}
+          {...makeLockableFieldProps("Trigger event", isLocked)}
         >
           <option value="load">Page Load</option>
           <option value="interval">Interval</option>
@@ -162,8 +162,8 @@ const TriggerConfiguration: React.FC<{
               name={fieldName("rootSelector")}
               as={LocationWidget}
               selectMode="element"
-              description="An element to watch"
-              {...makeLockableFieldProps("Element", isLocked)}
+              description="Use your cursor to select an element on the page to watch"
+              {...makeLockableFieldProps("Element selector", isLocked)}
             />
 
             <ConnectedFieldTemplate
