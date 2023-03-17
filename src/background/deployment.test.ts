@@ -115,13 +115,15 @@ const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
 const saveSettingsStateMock = saveSettingsState as jest.Mock;
 
+async function clearEditorReduxState() {
+  await browser.storage.local.remove("persist:editor");
+}
+
 beforeEach(async () => {
   jest.resetModules();
 
-  // Reset local options state
-  await saveOptions({
-    extensions: [],
-  });
+  // Reset local states
+  await Promise.all([saveOptions({ extensions: [] }), clearEditorReduxState()]);
 
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
