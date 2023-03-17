@@ -51,7 +51,7 @@ export async function getEditorState(): Promise<EditorState | undefined> {
 export async function saveEditorState(
   state: EditorState | undefined
 ): Promise<void> {
-  if (!state) {
+  if (state == null) {
     return;
   }
 

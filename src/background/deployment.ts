@@ -95,8 +95,10 @@ function uninstallExtensionFromStates(
  * Uninstall all deployments by uninstalling all extensions associated with the deployment.
  */
 export async function uninstallAllDeployments(): Promise<void> {
-  let optionsState = await loadOptions();
-  let editorState = await getEditorState();
+  let [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
   const installed = selectExtensions({ options: optionsState });
 
   const toUninstall = installed.filter(
@@ -136,8 +138,10 @@ export async function uninstallAllDeployments(): Promise<void> {
 export async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
-  let optionsState = await loadOptions();
-  let editorState = await getEditorState();
+  let [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
   const installed = selectExtensions({ options: optionsState });
 
   const recipeIds = new Set(
@@ -253,8 +257,10 @@ async function installDeployment(
  * @param deployments deployments that PixieBrix already has permission to run
  */
 async function installDeployments(deployments: Deployment[]): Promise<void> {
-  let optionsState = await loadOptions();
-  let editorState = await getEditorState();
+  let [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
 
   for (const deployment of deployments) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
