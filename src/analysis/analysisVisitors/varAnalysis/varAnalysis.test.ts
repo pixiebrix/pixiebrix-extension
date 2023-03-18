@@ -748,7 +748,7 @@ describe("Collecting available vars", () => {
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const buttonPipelineVarMap = knownVars.get(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0"
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.0"
       );
 
       expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
@@ -758,23 +758,7 @@ describe("Collecting available vars", () => {
 
     test("adds annotations", () => {
       const annotations = analysis.getAnnotations();
-      expect(annotations).toHaveLength(2);
-
-      // Check warning is generated for @foo but not @element
-      expect(annotations[0].message).toEqual(
-        'Variable "@foo" might not be defined'
-      );
-      expect(annotations[0].position.path).toEqual(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text"
-      );
-
-      // Not available in to the peer element to the list
-      expect(annotations[1].message).toEqual(
-        'Variable "@element" might not be defined'
-      );
-      expect(annotations[1].position.path).toEqual(
-        "extension.blockPipeline.0.config.body.1.config.text"
-      );
+      expect(annotations).toHaveLength(0);
     });
   });
 

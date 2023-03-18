@@ -18,12 +18,13 @@
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
 import { type Expression } from "@/core";
-import { isExpression } from "@/runtime/mapArgs";
+import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import PipelineVisitor, {
   nestedPosition,
   type VisitBlockExtra,
 } from "./PipelineVisitor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
 export type VisitDocumentElementArgs = {
   /**
@@ -78,6 +79,22 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     }
   }
 
+  private getFlavor(elementType: string): PipelineFlavor {
+    switch (elementType) {
+      case "block": {
+        return PipelineFlavor.NoEffect;
+      }
+
+      case "button": {
+        return PipelineFlavor.NoRenderer;
+      }
+
+      default: {
+        return PipelineFlavor.AllBlocks;
+      }
+    }
+  }
+
   public visitDocumentElement({
     position,
     blockConfig,
@@ -85,7 +102,13 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     pathInBlock,
   }: VisitDocumentElementArgs) {
     for (const [prop, value] of Object.entries(element.config)) {
-      if (isExpression(value)) {
+      if (isPipelineExpression(value)) {
+        this.visitPipeline(
+          nestedPosition(position, pathInBlock, "config", prop),
+          value.__value__,
+          { flavor: this.getFlavor(element.type), parentNode: blockConfig }
+        );
+      } else if (isExpression(value)) {
         this.visitExpression(
           nestedPosition(position, pathInBlock, "config", prop),
           value
