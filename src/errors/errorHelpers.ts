@@ -18,7 +18,7 @@
 import { deserializeError, type ErrorObject } from "serialize-error";
 import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
-import { isEmpty, truncate } from "lodash";
+import { isEmpty, truncate, uniq } from "lodash";
 import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/core";
 
@@ -227,14 +227,25 @@ export function getErrorMessage(
   return String(selectError(error).message ?? defaultMessage);
 }
 
+/**
+ * Return a single error message for an error with possibly nested causes.
+ *
+ * Excludes duplicate error messages.
+ *
+ * @param error the top-level error
+ * @param defaultMessage the default message to return if no messages are found
+ */
 export function getErrorMessageWithCauses(
   error: unknown,
   defaultMessage = DEFAULT_ERROR_MESSAGE
 ): string {
   if (isErrorObject(error) && error.cause) {
-    return getErrorCauseList(error)
-      .map((error) => smartAppendPeriod(getErrorMessage(error)))
-      .join("\n");
+    // Currently excluding all duplicates. Might instead consider only excluding adjacent duplicates.
+    return uniq(
+      getErrorCauseList(error).map((error) =>
+        smartAppendPeriod(getErrorMessage(error))
+      )
+    ).join("\n");
   }
 
   // Handle cause-less messages more simply, they don't need to end with a period.

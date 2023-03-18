@@ -26,6 +26,8 @@ import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { ClientRequestError } from "@/errors/clientRequestErrors";
+import { ProxiedRemoteServiceError } from "@/errors/businessErrors";
+import RemoteApiErrorDetail from "@/components/errors/RemoteApiErrorDetail";
 
 type ErrorDetails = {
   title: string;
@@ -61,6 +63,16 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     return {
       title: networkError.message,
       detailsElement: <NetworkErrorDetail error={networkError.cause} />,
+    };
+  }
+
+  const remoteApiError = selectSpecificError(error, ProxiedRemoteServiceError);
+  if (remoteApiError.response) {
+    return {
+      title: remoteApiError.message,
+      detailsElement: (
+        <RemoteApiErrorDetail response={remoteApiError.response} />
+      ),
     };
   }
 
