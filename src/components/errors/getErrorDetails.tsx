@@ -67,7 +67,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   }
 
   const remoteApiError = selectSpecificError(error, ProxiedRemoteServiceError);
-  if (remoteApiError.response) {
+  if (remoteApiError?.response) {
     return {
       title: remoteApiError.message,
       detailsElement: (
