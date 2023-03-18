@@ -42,16 +42,16 @@ type SetExistenceArgs = {
   isArray?: boolean;
 };
 
-type SetOutputKeyExistenceArgs = {
+type SetVariableExistenceArgs = {
   /**
    * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
    */
   source: string;
 
   /**
-   * The output key of the block
+   * The variable name with `@` prefix, e.g., the output key of the block.
    */
-  outputKey: string;
+  variableName: string;
 
   /**
    * Existence of the variable
@@ -225,18 +225,17 @@ class VarMap {
   }
 
   /**
-   * Adds an existence for a block with output key
+   * Directly set that a variable exists for a given variable name.
    */
-  public setOutputKeyExistence({
+  public setVariableExistence({
     source,
-    outputKey,
+    variableName,
     existence,
     allowAnyChild,
-  }: SetOutputKeyExistenceArgs): void {
-    // While any block can provide no more than one output key,
-    // we are safe to create a new object for the 'source'
+  }: SetVariableExistenceArgs): void {
+    // While any block can provide no more than one output key, we are safe to create a new object for the 'source'
     this.map[source] = {
-      [outputKey]: createNode(existence, { allowAnyChild }),
+      [variableName]: createNode(existence, { allowAnyChild }),
     };
   }
 
@@ -244,7 +243,11 @@ class VarMap {
    * Merges in another VarMap. Overwrites any existing source records
    * @param varMap A VarMap to merge in
    */
-  public addSourceMap(varMap: VarMap): void {
+  public addSourceMap(varMap: VarMap | null): void {
+    if (varMap == null) {
+      return;
+    }
+
     for (const [source, existenceMap] of Object.entries(varMap.map)) {
       this.map[source] = existenceMap;
     }

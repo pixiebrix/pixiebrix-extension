@@ -46,7 +46,11 @@ import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  type ButtonDocumentElement,
+  type DocumentElement,
+  type ListDocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -691,6 +695,65 @@ describe("Collecting available vars", () => {
 
       expect(listElementVarMap.isVariableDefined("@element")).toBeTrue();
       expect(listElementVarMap.isVariableDefined("@foo")).toBeFalse();
+    });
+
+    test("adds annotations", () => {
+      const annotations = analysis.getAnnotations();
+      expect(annotations).toHaveLength(2);
+
+      // Check warning is generated for @foo but not @element
+      expect(annotations[0].message).toEqual(
+        'Variable "@foo" might not be defined'
+      );
+      expect(annotations[0].position.path).toEqual(
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text"
+      );
+
+      // Not available in to the peer element to the list
+      expect(annotations[1].message).toEqual(
+        'Variable "@element" might not be defined'
+      );
+      expect(annotations[1].position.path).toEqual(
+        "extension.blockPipeline.0.config.body.1.config.text"
+      );
+    });
+  });
+
+  describe("document builder list element with button", () => {
+    beforeAll(async () => {
+      const listElement = createNewElement("list") as ListDocumentElement;
+      const rowElement = createNewElement("row") as DocumentElement<"row">;
+      listElement.config.element.__value__ = rowElement;
+
+      const buttonElement = createNewElement("button") as ButtonDocumentElement;
+      rowElement.children[0].children.push(buttonElement);
+
+      buttonElement.config.onClick = makePipelineExpression([
+        blockConfigFactory(),
+      ]);
+
+      const documentRendererBrick = {
+        id: DocumentRenderer.BLOCK_ID,
+        config: {
+          body: [listElement],
+        },
+      };
+
+      const extension = formStateFactory(undefined, [documentRendererBrick]);
+
+      analysis = new VarAnalysis([]);
+      await analysis.run(extension);
+    });
+
+    test("adds the list element key list body", () => {
+      const knownVars = analysis.getKnownVars();
+      const buttonPipelineVarMap = knownVars.get(
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0"
+      );
+
+      expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
+      expect(buttonPipelineVarMap.isVariableDefined("@element")).toBeTrue();
+      expect(buttonPipelineVarMap.isVariableDefined("@foo")).toBeFalse();
     });
 
     test("adds annotations", () => {
