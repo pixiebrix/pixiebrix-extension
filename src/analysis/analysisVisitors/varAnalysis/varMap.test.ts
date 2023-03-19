@@ -246,15 +246,15 @@ describe("setting output key", () => {
   test("sets the existence", () => {
     const varMap = new VarMap();
 
-    varMap.setOutputKeyExistence({
+    varMap.setVariableExistence({
       source: "brick1",
-      outputKey: "@foo",
+      variableName: "@foo",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
-    varMap.setOutputKeyExistence({
+    varMap.setVariableExistence({
       source: "brick2",
-      outputKey: "@bar",
+      variableName: "@bar",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
@@ -265,16 +265,16 @@ describe("setting output key", () => {
   // No real use case, just a functionality expectations
   test("overwrites any previous for the same source", () => {
     const varMap = new VarMap();
-    varMap.setOutputKeyExistence({
+    varMap.setVariableExistence({
       source: "brick1",
-      outputKey: "@foo",
+      variableName: "@foo",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
 
-    varMap.setOutputKeyExistence({
+    varMap.setVariableExistence({
       source: "brick1",
-      outputKey: "@bar",
+      variableName: "@bar",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
@@ -288,9 +288,9 @@ describe("setting output key", () => {
     [false, false],
   ])("works when allow any child = %s", (allowAnyChild, expectedExistence) => {
     const varMap = new VarMap();
-    varMap.setOutputKeyExistence({
+    varMap.setVariableExistence({
       source: "brick1",
-      outputKey: "@foo",
+      variableName: "@foo",
       existence: VarExistence.DEFINITELY,
       allowAnyChild,
     });
@@ -371,17 +371,17 @@ describe("setExistenceFromValues", () => {
 describe("cloning", () => {
   test("clones a var map", () => {
     const varMap = new VarMap();
-    varMap.setOutputKeyExistence({
+    varMap.setVariableExistence({
       source: "brick1",
-      outputKey: "@foo",
+      variableName: "@foo",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
 
     const clone = varMap.clone();
-    clone.setOutputKeyExistence({
+    clone.setVariableExistence({
       source: "brick2",
-      outputKey: "@bar",
+      variableName: "@bar",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
@@ -398,17 +398,17 @@ describe("addSourceMap", () => {
   // Use case: adding an output of previous brick to the current brick's available vars
   test("adds a source map", () => {
     const varMap1 = new VarMap();
-    varMap1.setOutputKeyExistence({
+    varMap1.setVariableExistence({
       source: "brick1",
-      outputKey: "@foo",
+      variableName: "@foo",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });
 
     const varMap2 = new VarMap();
-    varMap2.setOutputKeyExistence({
+    varMap2.setVariableExistence({
       source: "brick2",
-      outputKey: "@bar",
+      variableName: "@bar",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: false,
     });

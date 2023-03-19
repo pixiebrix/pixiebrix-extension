@@ -46,7 +46,11 @@ import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import {
+  type ButtonDocumentElement,
+  type DocumentElement,
+  type ListDocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,
@@ -712,6 +716,65 @@ describe("Collecting available vars", () => {
       expect(annotations[1].position.path).toEqual(
         "extension.blockPipeline.0.config.body.1.config.text"
       );
+    });
+  });
+
+  describe("document builder list element with button", () => {
+    beforeAll(async () => {
+      const listElement = createNewElement("list") as ListDocumentElement;
+      const rowElement = createNewElement("row") as DocumentElement<"row">;
+      listElement.config.element.__value__ = rowElement;
+
+      const buttonElement = createNewElement("button") as ButtonDocumentElement;
+      rowElement.children[0].children.push(buttonElement);
+
+      buttonElement.config.onClick = makePipelineExpression([
+        blockConfigFactory({
+          config: {
+            text: makeTemplateExpression("nunjucks", "{{ @foo }}"),
+          },
+        }),
+      ]);
+
+      const documentRendererBrick = {
+        id: DocumentRenderer.BLOCK_ID,
+        config: {
+          body: [listElement],
+        },
+      };
+
+      const extension = formStateFactory(undefined, [documentRendererBrick]);
+
+      analysis = new VarAnalysis([]);
+      await analysis.run(extension);
+    });
+
+    test("adds the list element key list body", () => {
+      const knownVars = analysis.getKnownVars();
+      const buttonPipelineVarMap = knownVars.get(
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0"
+      );
+
+      expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
+      expect(buttonPipelineVarMap.isVariableDefined("@element")).toBeTrue();
+      expect(buttonPipelineVarMap.isVariableDefined("@foo")).toBeFalse();
+    });
+
+    test("adds annotations", () => {
+      const annotations = analysis.getAnnotations();
+      expect(annotations).toHaveLength(1);
+
+      expect(annotations[0]).toStrictEqual({
+        analysisId: "var",
+        message: 'Variable "@foo" might not be defined',
+        type: "warning",
+        position: {
+          path: "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0.config.text",
+        },
+        detail: {
+          expression: expect.toBeObject(),
+        },
+      });
     });
   });
 
