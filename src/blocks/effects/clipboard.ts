@@ -120,6 +120,12 @@ export class CopyToClipboard extends Effect {
           throw new BusinessError("Invalid image content", { cause: error });
         }
 
+        if (!("write" in navigator.clipboard)) {
+          throw new BusinessError(
+            "Your browser does not support writing images to the clipboard"
+          );
+        }
+
         await navigator.clipboard.write([
           new ClipboardItem({
             [blob.type]: blob,
