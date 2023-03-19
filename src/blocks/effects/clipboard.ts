@@ -21,6 +21,8 @@ import { type BlockArg, type Schema } from "@/core";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import pDefer from "p-defer";
+import notify, { hideNotification } from "@/utils/notify";
 
 type ContentType = "infer" | "text" | "image";
 
@@ -30,6 +32,15 @@ function detectContentType(content: unknown): "text" | "image" {
   }
 
   return "text";
+}
+
+function isDocumentFocusError(error: unknown): boolean {
+  // Chrome throws a DOMException with the message "Document is not focused" when it can't establish a user action
+  // for the clipboard write request
+  // https://stackoverflow.com/questions/56306153/domexception-on-calling-navigator-clipboard-readtext/70386674#70386674
+  return getErrorMessage(error)
+    .toLowerCase()
+    .includes("document is not focused");
 }
 
 // Parse instead of using fetch to avoid potential CSP issues with data: URIs
@@ -136,18 +147,42 @@ export class CopyToClipboard extends Effect {
         try {
           await navigator.clipboard.write(data);
         } catch (error) {
-          if (
-            getErrorMessage(error)
-              .toLowerCase()
-              .includes("document is not focused")
-          ) {
-            // This occurs if there are other users interaction (e.g., Modal Form, Window Alert, etc.) between
-            // the content generation and the clipboard write.
-            // I tried working around this by adding a click handler to the document body, and retrying when the
-            // user clicked the page, but that didn't work.
-            throw new BusinessError(
-              "Copying an image must occur before any user interaction."
+          if (isDocumentFocusError(error)) {
+            const clickPromise = pDefer<void>();
+
+            const notificationId = notify.info(
+              "Click anywhere to copy image to clipboard."
             );
+
+            const handler = async () => {
+              try {
+                hideNotification(notificationId);
+                await navigator.clipboard.write(data);
+                clickPromise.resolve();
+              } catch (error) {
+                if (isDocumentFocusError(error)) {
+                  clickPromise.reject(
+                    new BusinessError(
+                      "Chrome was unable to determine the user action for clipboard write."
+                    )
+                  );
+                  return;
+                }
+
+                clickPromise.reject(error);
+              }
+            };
+
+            document.body.addEventListener("click", handler);
+
+            try {
+              await clickPromise.promise;
+            } finally {
+              document.body.removeEventListener("click", handler);
+            }
+
+            // Remember to return to avoid falling through to the original error
+            return;
           }
 
           throw error;
