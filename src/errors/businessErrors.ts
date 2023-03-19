@@ -178,7 +178,10 @@ export class NotConfiguredError extends BusinessError {
   }
 }
 
-type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
+export type ProxiedResponse = Pick<
+  AxiosResponse,
+  "data" | "status" | "statusText"
+>;
 
 /**
  * An error response from a 3rd party API via the PixieBrix proxy
@@ -189,7 +192,7 @@ export class ProxiedRemoteServiceError extends BusinessError {
   readonly response: ProxiedResponse;
 
   constructor(message: string, response: ProxiedResponse) {
-    super(message);
+    super(`Remote API Error: ${message}`);
 
     this.response = response;
   }

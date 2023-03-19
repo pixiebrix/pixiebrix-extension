@@ -567,6 +567,108 @@ exports[`Network error 1`] = `
 </DocumentFragment>
 `;
 
+exports[`RemoteApiErrorDetail 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="column"
+    >
+      <h5>
+        Response from Remote API
+      </h5>
+      <div>
+        Status: 400 — Bad Request
+      </div>
+      <div
+        class="root"
+      >
+        <ul
+          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+        >
+          <li
+            style="padding: 0px; margin: 0px;"
+          >
+            <ul
+              style="padding: 0px; margin: 0px; list-style: none;"
+            >
+              <li
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
+              >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  >
+                    ▶
+                  </div>
+                </div>
+                <label
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                >
+                  <span>
+                    data:
+                  </span>
+                </label>
+                <span
+                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                >
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     1 key
+                  </span>
+                </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                />
+              </li>
+              <li
+                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+              >
+                <label
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                >
+                  <span>
+                    status:
+                  </span>
+                </label>
+                <span
+                  style="color: rgb(243, 100, 51);"
+                >
+                  400
+                </span>
+              </li>
+              <li
+                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+              >
+                <label
+                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                >
+                  <span>
+                    statusText:
+                  </span>
+                </label>
+                <span
+                  style="color: rgb(64, 175, 108);"
+                >
+                  "Bad Request"
+                </span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`Template render error 1`] = `
 <DocumentFragment>
   <div>
