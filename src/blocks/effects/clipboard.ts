@@ -20,6 +20,7 @@ import copy from "copy-text-to-clipboard";
 import { type BlockArg, type Schema } from "@/core";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 type ContentType = "infer" | "text" | "image";
 
@@ -126,11 +127,31 @@ export class CopyToClipboard extends Effect {
           );
         }
 
-        await navigator.clipboard.write([
+        const data = [
           new ClipboardItem({
             [blob.type]: blob,
           }),
-        ]);
+        ];
+
+        try {
+          await navigator.clipboard.write(data);
+        } catch (error) {
+          if (
+            getErrorMessage(error)
+              .toLowerCase()
+              .includes("document is not focused")
+          ) {
+            // This occurs if there are other users interaction (e.g., Modal Form, Window Alert, etc.) between
+            // the content generation and the clipboard write.
+            // I tried working around this by adding a click handler to the document body, and retrying when the
+            // user clicked the page, but that didn't work.
+            throw new BusinessError(
+              "Copying an image must occur before any user interaction."
+            );
+          }
+
+          throw error;
+        }
 
         break;
       }
