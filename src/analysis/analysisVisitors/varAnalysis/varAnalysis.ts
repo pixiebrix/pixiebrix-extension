@@ -65,11 +65,16 @@ type VariableContext = {
    * Initial known variables.
    */
   readonly vars: VarMap;
+
+  // Alternatively, we could keep track of block output variable so far in visitPipeline as a local variable. But that
+  // would require overloading the base class's implementation of visitPipeline.
+  // Alternatively, we could push new a context on to the context stack for each visited block. But that's a bit more
+  // convoluted stack management.
   /**
    * Accumulator for new variables set by bricks in the pipeline so far.
    *
-   * Used to accumulate variables for visitBlock, there's a single VariableContext for each visitPipeline. (The visitor
-   * iterates over the blocks in the pipeline.)
+   * Used to accumulate variables for visitBlock because visitPipeline iterates over blocks in the pipeline (i.e., as
+   * opposed to making recursive calls a la continuation passing style).
    */
   readonly blockOutputVars: VarMap;
 };
@@ -282,8 +287,8 @@ async function setOptionsVars(
     parentPath: [optionsOutputKey],
   });
 
-  // XXX: is this necessary? Should be redundant with setVarsFromSchema until if/when we pass along variable
-  // values in the future.
+  // XXX: is this necessary? Should be redundant with setVarsFromSchema because user should only be providing values
+  // that are valid with respect to the schema.
   if (!isEmpty(extension.optionsArgs)) {
     for (const optionName of Object.keys(extension.optionsArgs)) {
       contextVars.setExistence({
@@ -339,11 +344,22 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.knownVars;
   }
 
-  private safeGetOutputSchema(blockConfig: BlockConfig): Schema | undefined {
+  /**
+   * Helper method to get the output schema for a block, given its configuration.
+   *
+   * In order of precedence:
+   * - The dependent output schema
+   * - The static output schema
+   * - An empty schema
+   *
+   * @param blockConfig the block configuration
+   * @private
+   */
+  private safeGetOutputSchema(blockConfig: BlockConfig): Schema {
     const block = this.allBlocks.get(blockConfig.id)?.block;
 
     if (!block) {
-      return;
+      return {};
     }
 
     // Be defensive if getOutputSchema errors due to nested variables, etc.
@@ -363,6 +379,10 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     super();
   }
 
+  /**
+   * Returns the current context variables. Do not modify the returned object directly, call `clone` first.
+   * @private
+   */
   private get currentContextVars(): VarMap {
     return this.contextStack.at(-1).vars ?? new VarMap();
   }
@@ -372,12 +392,11 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    const context = this.contextStack.at(-1);
-
     // Create a new context frame with:
     // - The context provided by the parent pipeline
     // - Any blocks that appeared before this one in the pipeline
     // - Values seen from the trace
+    const context = this.contextStack.at(-1);
     const blockKnownVars = context.vars.clone();
     blockKnownVars.addSourceMap(context.blockOutputVars);
 
@@ -414,26 +433,14 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       const outputVarName = `@${blockConfig.outputKey}`;
       const outputSchema = this.safeGetOutputSchema(blockConfig);
 
-      if (outputSchema == null) {
-        currentBlockOutput.setVariableExistence({
-          source: position.path,
-          variableName: outputVarName,
-          existence:
-            blockConfig.if == null
-              ? VarExistence.DEFINITELY
-              : VarExistence.MAYBE,
-          allowAnyChild: true,
-        });
-      } else {
-        setVarsFromSchema({
-          schema: outputSchema,
-          contextVars: currentBlockOutput,
-          source: position.path,
-          parentPath: [outputVarName],
-          existenceOverride:
-            blockConfig.if == null ? undefined : VarExistence.MAYBE,
-        });
-      }
+      setVarsFromSchema({
+        schema: outputSchema,
+        contextVars: currentBlockOutput,
+        source: position.path,
+        parentPath: [outputVarName],
+        existenceOverride:
+          blockConfig.if == null ? undefined : VarExistence.MAYBE,
+      });
 
       context.blockOutputVars.addSourceMap(currentBlockOutput);
     }
