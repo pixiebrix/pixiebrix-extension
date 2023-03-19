@@ -20,7 +20,6 @@ import copy from "copy-text-to-clipboard";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 import userEvent from "@testing-library/user-event";
-import { noop } from "lodash";
 
 const brick = new CopyToClipboard();
 

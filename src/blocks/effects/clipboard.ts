@@ -152,7 +152,7 @@ export class CopyToClipboard extends Effect {
 
             const notificationId = notify.info({
               message: "Click anywhere to copy image to clipboard",
-              duration: Number.MAX_SAFE_INTEGER,
+              duration: Number.POSITIVE_INFINITY,
               dismissable: false,
             });
 
