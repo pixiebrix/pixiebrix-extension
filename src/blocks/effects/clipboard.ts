@@ -23,7 +23,6 @@ import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import pDefer from "p-defer";
 import notify, { hideNotification } from "@/utils/notify";
-import { Integer } from "@/components/fields/schemaFields/SchemaField.stories";
 
 type ContentType = "infer" | "text" | "image";
 
@@ -152,8 +151,9 @@ export class CopyToClipboard extends Effect {
             const copyPromise = pDefer<void>();
 
             const notificationId = notify.info({
-              message: "Click anywhere to copy image to clipboard.",
+              message: "Click anywhere to copy image to clipboard",
               duration: Number.MAX_SAFE_INTEGER,
+              dismissable: false,
             });
 
             const handler = async () => {
