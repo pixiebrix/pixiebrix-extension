@@ -79,7 +79,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     }
   }
 
-  private getFlavor(elementType: string): PipelineFlavor {
+  private getPipelineFlavor(elementType: string): PipelineFlavor {
     switch (elementType) {
       case "block": {
         return PipelineFlavor.NoEffect;
@@ -104,9 +104,13 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
     for (const [prop, value] of Object.entries(element.config)) {
       if (isPipelineExpression(value)) {
         this.visitPipeline(
-          nestedPosition(position, pathInBlock, "config", prop),
+          // For pipelines, need to include the __value__ when constructing the position
+          nestedPosition(position, pathInBlock, "config", prop, "__value__"),
           value.__value__,
-          { flavor: this.getFlavor(element.type), parentNode: blockConfig }
+          {
+            flavor: this.getPipelineFlavor(element.type),
+            parentNode: blockConfig,
+          }
         );
       } else if (isExpression(value)) {
         this.visitExpression(

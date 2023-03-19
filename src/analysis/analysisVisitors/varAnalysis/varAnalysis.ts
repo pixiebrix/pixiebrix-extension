@@ -593,15 +593,17 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     element,
     pathInBlock,
   }: VisitDocumentElementArgs) {
+    const listElement = element as ListDocumentElement;
+
     // Variable name without the `@` prefix
-    const variableKey = element.config.elementKey ?? "element";
-    const listBodyExpression = element.config.element;
+    const variableKey = listElement.config.elementKey ?? "element";
+    const listBodyExpression = listElement.config.element;
 
     // `element` of ListElement will always be a deferred expression when using Page Editor. But guard just in case.
     if (isDeferExpression(listBodyExpression)) {
-      let deferredExpressionVars: VarMap;
+      const deferredExpressionVars = new VarMap();
+
       if (typeof variableKey === "string") {
-        deferredExpressionVars = new VarMap();
         deferredExpressionVars.setVariableExistence({
           source: position.path,
           variableName: `@${variableKey}`,

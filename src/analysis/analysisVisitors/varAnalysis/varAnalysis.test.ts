@@ -729,7 +729,11 @@ describe("Collecting available vars", () => {
       rowElement.children[0].children.push(buttonElement);
 
       buttonElement.config.onClick = makePipelineExpression([
-        blockConfigFactory(),
+        blockConfigFactory({
+          config: {
+            text: makeTemplateExpression("nunjucks", "{{ @foo }}"),
+          },
+        }),
       ]);
 
       const documentRendererBrick = {
@@ -748,7 +752,7 @@ describe("Collecting available vars", () => {
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const buttonPipelineVarMap = knownVars.get(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.0"
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0"
       );
 
       expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
@@ -758,7 +762,19 @@ describe("Collecting available vars", () => {
 
     test("adds annotations", () => {
       const annotations = analysis.getAnnotations();
-      expect(annotations).toHaveLength(0);
+      expect(annotations).toHaveLength(1);
+
+      expect(annotations[0]).toStrictEqual({
+        analysisId: "var",
+        message: 'Variable "@foo" might not be defined',
+        type: "warning",
+        position: {
+          path: "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0.config.text",
+        },
+        detail: {
+          expression: expect.toBeObject(),
+        },
+      });
     });
   });
 
