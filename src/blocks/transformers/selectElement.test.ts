@@ -54,6 +54,6 @@ describe("selectElement", () => {
 
     userSelectElementMock.mockRejectedValue(new CancelError());
 
-    await expect(() => brick.transform()).rejects.toThrow(CancelError);
+    await expect(async () => brick.transform()).rejects.toThrow(CancelError);
   });
 });

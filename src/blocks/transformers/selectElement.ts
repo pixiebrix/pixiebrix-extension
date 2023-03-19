@@ -18,7 +18,6 @@
 import { Transformer } from "@/types";
 import { type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 
 export class SelectElement extends Transformer {
@@ -51,6 +50,11 @@ export class SelectElement extends Transformer {
   });
 
   async transform(): Promise<unknown> {
+    // Include here to avoid error during header generation (which runs in node environment)
+    const { userSelectElement } = await import(
+      /* webpackChunkName: "editorContentScript" */ "@/contentScript/pageEditor/elementPicker"
+    );
+
     const { elements } = await userSelectElement();
 
     const elementRefs = elements.map((element) =>
