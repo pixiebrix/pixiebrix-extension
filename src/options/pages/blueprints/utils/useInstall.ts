@@ -44,14 +44,30 @@ type InstallRecipe = (
   helpers: FormikHelpers<WizardValues>
 ) => Promise<void>;
 
+/**
+ * React hook to install a recipe, suitable for using as a Formik `onSubmit` handler.
+ *
+ * NOTE: the user should have already granted required permissions before installing the recipe.
+ *
+ * Checks/Performs:
+ * - That integration configurations have been selected for all required services
+ * - That PixieBrix has all required permissions for the mod
+ * - Uninstalls mod IExtensions if any are already installed
+ * - Install the mod
+ * - Redirects to the active mods screen
+ *
+ * @param recipe the blueprint definition to install
+ * @see useEnsurePermissions
+ */
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
   const [createMilestone] = useCreateMilestoneMutation();
   const { hasMilestone } = useMilestones();
-  const { setActiveTab } = blueprintsSlice.actions;
 
   const recipeId = recipe.metadata.id;
-  const recipeExtensions = useSelector(selectExtensionsForRecipe(recipeId));
+  const activeRecipeExtensions = useSelector(
+    selectExtensionsForRecipe(recipeId)
+  );
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -80,7 +96,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       if (missingServiceIds.length > 0) {
         const missing = missingServiceIds.join(", ");
         notify.error({
-          message: `You must select a configuration for each service: ${missing}`,
+          message: `You must select a configuration for each integration: ${missing}`,
           reportError: false,
         });
         setSubmitting(false);
@@ -98,7 +114,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       }
 
       try {
-        await uninstallRecipe(recipeId, recipeExtensions, dispatch);
+        await uninstallRecipe(recipeId, activeRecipeExtensions, dispatch);
 
         dispatch(
           extensionActions.installRecipe({
@@ -122,7 +138,11 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
             },
           });
 
-          dispatch(setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted));
+          dispatch(
+            blueprintsSlice.actions.setActiveTab(
+              BLUEPRINTS_PAGE_TABS.getStarted
+            )
+          );
         }
 
         setSubmitting(false);
@@ -135,6 +155,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           message: `Error installing ${recipe.metadata.name}`,
           error,
         });
+      } finally {
         setSubmitting(false);
       }
     },
@@ -143,9 +164,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       dispatch,
       hasMilestone,
       recipe,
-      recipeExtensions,
+      activeRecipeExtensions,
       recipeId,
-      setActiveTab,
     ]
   );
 }
