@@ -23,6 +23,7 @@ import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import pDefer from "p-defer";
 import notify, { hideNotification } from "@/utils/notify";
+import { Integer } from "@/components/fields/schemaFields/SchemaField.stories";
 
 type ContentType = "infer" | "text" | "image";
 
@@ -148,35 +149,36 @@ export class CopyToClipboard extends Effect {
           await navigator.clipboard.write(data);
         } catch (error) {
           if (isDocumentFocusError(error)) {
-            const clickPromise = pDefer<void>();
+            const copyPromise = pDefer<void>();
 
-            const notificationId = notify.info(
-              "Click anywhere to copy image to clipboard."
-            );
+            const notificationId = notify.info({
+              message: "Click anywhere to copy image to clipboard.",
+              duration: Number.MAX_SAFE_INTEGER,
+            });
 
             const handler = async () => {
               try {
                 hideNotification(notificationId);
                 await navigator.clipboard.write(data);
-                clickPromise.resolve();
+                copyPromise.resolve();
               } catch (error) {
                 if (isDocumentFocusError(error)) {
-                  clickPromise.reject(
+                  copyPromise.reject(
                     new BusinessError(
-                      "Chrome was unable to determine the user action for clipboard write."
+                      "Your Browser was unable to determine the user action that initiated the clipboard write."
                     )
                   );
                   return;
                 }
 
-                clickPromise.reject(error);
+                copyPromise.reject(error);
               }
             };
 
             document.body.addEventListener("click", handler);
 
             try {
-              await clickPromise.promise;
+              await copyPromise.promise;
             } finally {
               document.body.removeEventListener("click", handler);
             }
