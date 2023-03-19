@@ -43,31 +43,35 @@ function selectActivateEventData(blueprint: RecipeDefinition) {
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
-  const location = useLocation();
   const { submitForm } = useFormikContext();
-  const reinstall =
-    new URLSearchParams(location.search).get("reinstall") === "1";
-
+  const location = useLocation();
   const serviceAuths = useSelectedAuths();
+  const { request, isPending: isPermissionsPending } = useEnsurePermissions(
+    blueprint,
+    serviceAuths
+  );
 
-  const { request, isPending } = useEnsurePermissions(blueprint, serviceAuths);
+  const isReactivate =
+    new URLSearchParams(location.search).get("reinstall") === "1";
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async -- preserve user action call chain
   const onActivate = () =>
+    // `request` for permissions _must_ be called first to ensure Chrome sees the permissions request as coming from
+    // a trusted user action.
     request()
       // eslint-disable-next-line promise/prefer-await-to-then, @typescript-eslint/promise-function-async -- call chain
       .then((accepted) => {
         if (accepted) {
           reportEvent("MarketplaceActivate", {
             ...selectActivateEventData(blueprint),
-            reactivate: reinstall,
+            reactivate: isReactivate,
           });
           return submitForm();
         }
 
         reportEvent("MarketplaceRejectPermissions", {
           ...selectActivateEventData(blueprint),
-          reactivate: reinstall,
+          reactivate: isReactivate,
         });
       })
       // eslint-disable-next-line promise/prefer-await-to-then -- preserve user action call chain
@@ -81,7 +85,9 @@ const ActivateButton: React.FunctionComponent<{
           });
         } else {
           notify.error({
-            message: `Error ${reinstall ? "re-activating" : "activating"} mod`,
+            message: `Error ${
+              isReactivate ? "re-activating" : "activating"
+            } mod`,
             error,
           });
         }
@@ -90,10 +96,11 @@ const ActivateButton: React.FunctionComponent<{
   return (
     <AsyncButton
       className="text-nowrap"
-      disabled={isPending}
+      disabled={isPermissionsPending}
       onClick={onActivate}
     >
-      <FontAwesomeIcon icon={faMagic} /> {reinstall ? "Reactivate" : "Activate"}
+      <FontAwesomeIcon icon={faMagic} />{" "}
+      {isReactivate ? "Reactivate" : "Activate"}
     </AsyncButton>
   );
 };

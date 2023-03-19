@@ -1,5 +1,259 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ActivateWizard activate blueprint permissions 1`] = `
+<DocumentFragment>
+  <form
+    class=""
+    id="activate-wizard"
+  >
+    <input
+      disabled=""
+      hidden=""
+      type="submit"
+    />
+    <div
+      class="card"
+    >
+      <div
+        class="wizardHeader card-header"
+      >
+        <div
+          class="row"
+        >
+          <div
+            class="col"
+          >
+            <div
+              class="wizardHeaderLayout"
+            >
+              <div
+                class="wizardMainInfo"
+              >
+                <span
+                  class="blueprintIcon"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
+                    color="#241C32"
+                    data-icon="cube"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span>
+                  <div
+                    class="card-title h5"
+                  >
+                    A Mod
+                  </div>
+                  <code
+                    class="packageId"
+                  >
+                    test/blueprint-with-required-options
+                  </code>
+                </span>
+              </div>
+              <div
+                class="wizardDescription"
+              >
+                Recipe generated from factory
+              </div>
+            </div>
+            <div
+              class="activateButtonContainer"
+            >
+              <button
+                class="text-nowrap btn btn-primary"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-magic fa-w-16 "
+                  data-icon="magic"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M224 96l16-32 32-16-32-16-16-32-16 32-32 16 32 16 16 32zM80 160l26.66-53.33L160 80l-53.34-26.67L80 0 53.34 53.33 0 80l53.34 26.67L80 160zm352 128l-26.66 53.33L352 368l53.34 26.67L432 448l26.66-53.33L512 368l-53.34-26.67L432 288zm70.62-193.77L417.77 9.38C411.53 3.12 403.34 0 395.15 0c-8.19 0-16.38 3.12-22.63 9.38L9.38 372.52c-12.5 12.5-12.5 32.76 0 45.25l84.85 84.85c6.25 6.25 14.44 9.37 22.62 9.37 8.19 0 16.38-3.12 22.63-9.37l363.14-363.15c12.5-12.48 12.5-32.75 0-45.24zM359.45 203.46l-50.91-50.91 86.6-86.6 50.91 50.91-86.6 86.6z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Activate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="wizardBody card-body"
+      >
+        <div
+          class="wizardBodyRow"
+        >
+          <div>
+            <h4>
+              Permissions & URLs
+            </h4>
+          </div>
+          <div>
+            <div
+              class="row"
+            >
+              <div
+                class="col"
+              >
+                <p>
+                  No special permissions required
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ActivateWizard activate blueprint reject permissions 1`] = `
+<DocumentFragment>
+  <form
+    class=""
+    id="activate-wizard"
+  >
+    <input
+      disabled=""
+      hidden=""
+      type="submit"
+    />
+    <div
+      class="card"
+    >
+      <div
+        class="wizardHeader card-header"
+      >
+        <div
+          class="row"
+        >
+          <div
+            class="col"
+          >
+            <div
+              class="wizardHeaderLayout"
+            >
+              <div
+                class="wizardMainInfo"
+              >
+                <span
+                  class="blueprintIcon"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-2x "
+                    color="#241C32"
+                    data-icon="cube"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span>
+                  <div
+                    class="card-title h5"
+                  >
+                    A Mod
+                  </div>
+                  <code
+                    class="packageId"
+                  >
+                    test/blueprint-with-required-options
+                  </code>
+                </span>
+              </div>
+              <div
+                class="wizardDescription"
+              >
+                Recipe generated from factory
+              </div>
+            </div>
+            <div
+              class="activateButtonContainer"
+            >
+              <button
+                class="text-nowrap btn btn-primary"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-magic fa-w-16 "
+                  data-icon="magic"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M224 96l16-32 32-16-32-16-16-32-16 32-32 16 32 16 16 32zM80 160l26.66-53.33L160 80l-53.34-26.67L80 0 53.34 53.33 0 80l53.34 26.67L80 160zm352 128l-26.66 53.33L352 368l53.34 26.67L432 448l26.66-53.33L512 368l-53.34-26.67L432 288zm70.62-193.77L417.77 9.38C411.53 3.12 403.34 0 395.15 0c-8.19 0-16.38 3.12-22.63 9.38L9.38 372.52c-12.5 12.5-12.5 32.76 0 45.25l84.85 84.85c6.25 6.25 14.44 9.37 22.62 9.37 8.19 0 16.38-3.12 22.63-9.37l363.14-363.15c12.5-12.48 12.5-32.75 0-45.24zM359.45 203.46l-50.91-50.91 86.6-86.6 50.91 50.91-86.6 86.6z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Activate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="wizardBody card-body"
+      >
+        <div
+          class="wizardBodyRow"
+        >
+          <div>
+            <h4>
+              Permissions & URLs
+            </h4>
+          </div>
+          <div>
+            <div
+              class="row"
+            >
+              <div
+                class="col"
+              >
+                <p>
+                  No special permissions required
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
 exports[`ActivateWizard activate blueprint with missing required blueprint options 1`] = `
 <DocumentFragment>
   <form

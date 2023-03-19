@@ -91,7 +91,7 @@ function uninstallExtensionFromStates(
   return { options, editor };
 }
 
-async function uninstallExtensions(
+async function uninstallExtensionsAndSaveState(
   toUninstall: UnresolvedExtension[],
   {
     editorState,
@@ -114,9 +114,7 @@ async function uninstallExtensions(
   );
 
   await setExtensionsState(optionsState);
-  if (editorState) {
-    await saveEditorState(editorState);
-  }
+  await saveEditorState(editorState);
 }
 
 /**
@@ -134,10 +132,14 @@ export async function uninstallAllDeployments(): Promise<void> {
   );
 
   if (toUninstall.length === 0) {
+    // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await uninstallExtensions(toUninstall, { editorState, optionsState });
+  await uninstallExtensionsAndSaveState(toUninstall, {
+    editorState,
+    optionsState,
+  });
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
@@ -165,10 +167,14 @@ async function uninstallUnmatchedDeployments(
   );
 
   if (toUninstall.length === 0) {
+    // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await uninstallExtensions(toUninstall, { editorState, optionsState });
+  await uninstallExtensionsAndSaveState(toUninstall, {
+    editorState,
+    optionsState,
+  });
 
   reportEvent("DeploymentDeactivateUnassigned", {
     auto: true,
@@ -221,6 +227,7 @@ async function installDeployment(
     editor,
     deployment.package.package_id
   );
+
   options = result.options;
   editor = result.editor;
 
@@ -269,9 +276,7 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
   }
 
   await setExtensionsState(optionsState);
-  if (editorState) {
-    await saveEditorState(editorState);
-  }
+  await saveEditorState(editorState);
 }
 
 type DeploymentConstraint = {
