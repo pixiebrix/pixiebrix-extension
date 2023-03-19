@@ -33,6 +33,7 @@ import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
 import { type UUID } from "@/core";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";
+import { serializeError } from "serialize-error";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -116,7 +117,18 @@ class ReduxAnalysisManager {
           })
         );
 
-        await analysis.run(activeElement);
+        try {
+          await analysis.run(activeElement);
+        } catch (error) {
+          listenerApi.dispatch(
+            analysisSlice.actions.failAnalysis({
+              extensionId,
+              analysisId: analysis.id,
+              error: serializeError(error),
+            })
+          );
+          return;
+        }
 
         listenerApi.dispatch(
           analysisSlice.actions.finishAnalysis({

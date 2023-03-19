@@ -179,13 +179,14 @@ type SetVarsFromSchemaArgs = {
  * - Service configuration schema
  */
 function setVarsFromSchema({
-  schema,
+  schema = {},
   contextVars,
   source,
   parentPath,
   existenceOverride,
 }: SetVarsFromSchemaArgs) {
   const { properties, required } = schema;
+
   if (properties == null) {
     contextVars.setExistence({
       source,

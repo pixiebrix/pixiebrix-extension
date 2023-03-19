@@ -23,6 +23,7 @@ import {
 } from "@/analysis/analysisTypes";
 import { type UUID } from "@/core";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
+import { type ErrorObject } from "serialize-error";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},
@@ -33,12 +34,23 @@ const analysisSlice = createSlice({
   name: "analysis",
   initialState,
   reducers: {
-    // TODO: if you see this action and it's still NOOP, remove it
+    // `startAnalysis` action is to help with debugging via redux-logger
     startAnalysis(
       state,
       action: PayloadAction<{ extensionId: UUID; analysisId: string }>
     ) {
-      // NOOP
+      // NOP
+    },
+    // `failAnalysis` action is to help with debugging via redux-logger
+    failAnalysis(
+      state,
+      action: PayloadAction<{
+        extensionId: UUID;
+        analysisId: string;
+        error: ErrorObject;
+      }>
+    ) {
+      // NOP
     },
     finishAnalysis(
       state,
