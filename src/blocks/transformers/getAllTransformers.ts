@@ -48,6 +48,7 @@ import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTem
 import TraverseElements from "@/blocks/transformers/traverseElements";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type IBlock } from "@/core";
+import { SelectElement } from "@/blocks/transformers/selectElement";
 
 function getAllTransformers(): IBlock[] {
   return [
@@ -78,6 +79,7 @@ function getAllTransformers(): IBlock[] {
     new ScreenshotTab(),
     new RandomNumber(),
     new TraverseElements(),
+    new SelectElement(),
 
     // Control Flow Bricks
     new ForEach(),
