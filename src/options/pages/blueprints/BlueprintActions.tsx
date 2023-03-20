@@ -45,7 +45,7 @@ const BlueprintActions: React.FunctionComponent<{
         title: (
           <>
             {/* Applying the same classes which <FontAwesomeIcon/> applies */}
-            <PublishIcon className="svg-inline--fa fa-w-16" /> Publish to
+            <PublishIcon className="svg-inline--fa fa-w-16 fa-fw" /> Publish to
             Marketplace
           </>
         ),
@@ -55,7 +55,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faStore} /> View in Marketplace
+            <FontAwesomeIcon fixedWidth icon={faStore} /> View in Marketplace
           </>
         ),
         href: actions.viewInMarketplaceHref,
@@ -64,7 +64,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faShare} /> Share with Teams
+            <FontAwesomeIcon fixedWidth icon={faShare} /> Share with Teams
           </>
         ),
         action: actions.viewShare,
@@ -73,7 +73,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faList} /> View Logs
+            <FontAwesomeIcon fixedWidth icon={faList} /> View Logs
           </>
         ),
         action: actions.viewLogs,
@@ -84,11 +84,11 @@ const BlueprintActions: React.FunctionComponent<{
           <>
             {hasUpdate ? (
               <span className="text-info">
-                <FontAwesomeIcon icon={faSyncAlt} /> Update
+                <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Update
               </span>
             ) : (
               <>
-                <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+                <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Reactivate
               </>
             )}
           </>
@@ -99,7 +99,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faTimes} /> Deactivate
+            <FontAwesomeIcon fixedWidth icon={faTimes} /> Deactivate
           </>
         ),
         action: actions.uninstall,
@@ -109,7 +109,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <span className="text-danger">
-            <FontAwesomeIcon icon={faTrash} /> Delete
+            <FontAwesomeIcon fixedWidth icon={faTrash} /> Delete
           </span>
         ),
         action: actions.deleteExtension,
