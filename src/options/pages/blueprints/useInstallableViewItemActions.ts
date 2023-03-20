@@ -138,6 +138,12 @@ function useInstallableViewItemActions(
         )
       );
     } else {
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: null,
+        screen: "extensionConsole",
+        reinstall: false,
+      });
+
       dispatch(push(`/extensions/install/${installable.id}`));
     }
   };
