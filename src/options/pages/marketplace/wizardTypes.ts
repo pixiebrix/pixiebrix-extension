@@ -43,6 +43,4 @@ export type WizardValues = {
 
   // XXX: optionsArgs can contain periods, which will throw off formik
   optionsArgs: Record<string, Primitive>;
-
-  grantPermissions: boolean;
 };

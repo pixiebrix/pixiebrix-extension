@@ -19,58 +19,88 @@ import React from "react";
 import { type RecipeDefinition } from "@/types/definitions";
 import { useLocation } from "react-router";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { useSelectedAuths } from "@/options/pages/marketplace/PermissionsBody";
-import { uninstallRecipe } from "@/store/uninstallUtils";
+import { useFormikContext } from "formik";
+import { reportEvent } from "@/telemetry/events";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
+function selectActivateEventData(blueprint: RecipeDefinition) {
+  return {
+    blueprintId: blueprint.metadata.id,
+    extensions: blueprint.extensionPoints.map((x) => x.label),
+  };
+}
+
+/**
+ * Connect Component to request permissions and then submit the Formik form.
+ * @param blueprint the blueprint to activate
+ * @constructor
+ */
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
+  const { submitForm } = useFormikContext();
   const location = useLocation();
-  const reinstall =
-    new URLSearchParams(location.search).get("reinstall") === "1";
   const serviceAuths = useSelectedAuths();
-  const { activate, isPending } = useEnsurePermissions(
+  const { request, isPending: isPermissionsPending } = useEnsurePermissions(
     blueprint,
-    blueprint.extensionPoints,
     serviceAuths
   );
-  const dispatch = useDispatch();
 
-  const blueprintId = blueprint?.metadata.id;
-  const blueprintExtensions = useSelector(
-    selectExtensionsForRecipe(blueprintId)
-  );
+  const isReactivate =
+    new URLSearchParams(location.search).get("reinstall") === "1";
 
-  const activateOrReinstall = async () => {
-    if (!reinstall || !blueprintId) {
-      activate();
-      return;
-    }
+  // eslint-disable-next-line @typescript-eslint/promise-function-async -- preserve user action call chain
+  const onActivate = () =>
+    // `request` for permissions _must_ be called first to ensure Chrome sees the permissions request as coming from
+    // a trusted user action.
+    request()
+      // eslint-disable-next-line promise/prefer-await-to-then, @typescript-eslint/promise-function-async -- call chain
+      .then((accepted) => {
+        if (accepted) {
+          reportEvent("MarketplaceActivate", {
+            ...selectActivateEventData(blueprint),
+            reactivate: isReactivate,
+          });
+          return submitForm();
+        }
 
-    try {
-      await uninstallRecipe(blueprintId, blueprintExtensions, dispatch);
-      activate();
-    } catch (error) {
-      notify.error({
-        message: "Error re-installing bricks",
-        error,
+        reportEvent("MarketplaceRejectPermissions", {
+          ...selectActivateEventData(blueprint),
+          reactivate: isReactivate,
+        });
+      })
+      // eslint-disable-next-line promise/prefer-await-to-then -- preserve user action call chain
+      .catch((error) => {
+        if (getErrorMessage(error).toLowerCase().includes("user gesture")) {
+          notify.warning({
+            message: "Unable to request mod permissions, try again.",
+            includeErrorDetails: false,
+            reportError: true,
+            error,
+          });
+        } else {
+          notify.error({
+            message: `Error ${
+              isReactivate ? "re-activating" : "activating"
+            } mod`,
+            error,
+          });
+        }
       });
-    }
-  };
 
   return (
     <AsyncButton
       className="text-nowrap"
-      disabled={isPending}
-      onClick={activateOrReinstall}
+      disabled={isPermissionsPending}
+      onClick={onActivate}
     >
-      <FontAwesomeIcon icon={faMagic} /> {reinstall ? "Reactivate" : "Activate"}
+      <FontAwesomeIcon icon={faMagic} />{" "}
+      {isReactivate ? "Reactivate" : "Activate"}
     </AsyncButton>
   );
 };

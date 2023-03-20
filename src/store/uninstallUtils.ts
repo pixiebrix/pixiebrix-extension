@@ -26,8 +26,12 @@ import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
 
 /**
- * Use this helper outside the Page Editor context
- * to uninstall a recipe and all of its extensions.
+ * Use this helper outside the Page Editor context to uninstall a recipe and all of its extensions.
+ *
+ * Uninstalls from:
+ * - Extension Options slice
+ * - Dynamic Elements slice (i.e., Page Editor state)
+ * - Notifies all tabs to remove the extensions
  */
 export async function uninstallRecipe(
   recipeId: RegistryId,

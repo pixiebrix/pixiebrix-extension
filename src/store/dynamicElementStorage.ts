@@ -48,6 +48,10 @@ export async function getEditorState(): Promise<EditorState | undefined> {
   return mapValues(storage, (value) => JSON.parse(value)) as EditorState;
 }
 
+/**
+ * Save the editorSlice state. NOP if state is null/undefined.
+ * @param state the editorSlice state to save
+ */
 export async function saveEditorState(
   state: EditorState | undefined
 ): Promise<void> {

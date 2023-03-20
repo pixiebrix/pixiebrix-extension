@@ -59,7 +59,6 @@ function setupInputs(): {
     extensions: { 0: true },
     services: [],
     optionsArgs: {},
-    grantPermissions: false,
   };
 
   const extensionPointId = validateRegistryId("test/extension-point-1");
