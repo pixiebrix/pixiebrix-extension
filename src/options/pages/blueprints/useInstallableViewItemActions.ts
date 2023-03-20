@@ -100,13 +100,19 @@ function useInstallableViewItemActions(
 
   const reinstall = () => {
     if (hasBlueprint) {
+      const blueprintId = isInstallableBlueprint
+        ? installable.metadata.id
+        : installable._recipe.id;
+
+      reportEvent("StartInstallBlueprint", {
+        blueprintId,
+        screen: "extensionConsole",
+        reinstall: true,
+      });
+
       dispatch(
         push(
-          `marketplace/activate/${encodeURIComponent(
-            isInstallableBlueprint
-              ? installable.metadata.id
-              : installable._recipe.id
-          )}?reinstall=1`
+          `marketplace/activate/${encodeURIComponent(blueprintId)}?reinstall=1`
         )
       );
     } else {
@@ -120,12 +126,24 @@ function useInstallableViewItemActions(
 
   const activate = () => {
     if (isInstallableBlueprint) {
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: installable.metadata.id,
+        screen: "extensionConsole",
+        reinstall: false,
+      });
+
       dispatch(
         push(
           `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
         )
       );
     } else {
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: null,
+        screen: "extensionConsole",
+        reinstall: false,
+      });
+
       dispatch(push(`/extensions/install/${installable.id}`));
     }
   };

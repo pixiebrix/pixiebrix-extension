@@ -32,12 +32,19 @@ type ActivateResult = {
   error?: string;
 };
 
-type ActivateRecipe = (
+type ActivateRecipeFormCallback = (
   formValues: WizardValues,
   recipe: RecipeDefinition
 ) => Promise<ActivateResult>;
 
-function useActivateRecipe(): ActivateRecipe {
+/**
+ * React hook to install a recipe, suitable for using as a Formik `onSubmit` handler.
+ *
+ * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
+ *
+ * @see useExtensionConsoleInstall
+ */
+function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 
@@ -71,7 +78,11 @@ function useActivateRecipe(): ActivateRecipe {
           })
         );
 
-        reportEvent("InstallBlueprint");
+        reportEvent("InstallBlueprint", {
+          blueprintId: recipe.metadata.id,
+          screen: "marketplace",
+          reinstall: recipeExtensions.length > 0,
+        });
 
         reactivateEveryTab();
       } catch (error) {
@@ -92,4 +103,4 @@ function useActivateRecipe(): ActivateRecipe {
   );
 }
 
-export default useActivateRecipe;
+export default useMarketplaceActivateRecipe;
