@@ -135,6 +135,7 @@ function useExtensionConsoleInstall(
         reportEvent("InstallBlueprint", {
           blueprintId: recipeId,
           screen: "extensionConsole",
+          reinstall: activeRecipeExtensions.length > 0,
         });
 
         if (!hasMilestone("first_time_public_blueprint_install")) {
