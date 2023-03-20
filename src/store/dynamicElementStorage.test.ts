@@ -30,6 +30,7 @@ import {
   getEditorState,
   removeDynamicElements,
   removeDynamicElementsForRecipe,
+  saveEditorState,
 } from "@/store/dynamicElementStorage";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -37,6 +38,13 @@ jest.mock("@/chrome", () => ({
   readReduxStorage: jest.fn(),
   setReduxStorage: jest.fn(),
 }));
+
+const readReduxStorageMock = readReduxStorage as jest.MockedFunction<
+  typeof readReduxStorage
+>;
+const setReduxStorageMock = setReduxStorage as jest.MockedFunction<
+  typeof setReduxStorage
+>;
 
 function jsonifyObject<T>(object: T): Record<string, string> {
   return Object.fromEntries(
@@ -71,7 +79,7 @@ describe("dynamicElementStorage", () => {
       },
       availableDynamicIds: [element.uuid],
     };
-    (readReduxStorage as jest.Mock).mockResolvedValue(jsonifyObject(state));
+    readReduxStorageMock.mockResolvedValue(jsonifyObject(state));
 
     await removeDynamicElements([element.uuid]);
 
@@ -132,9 +140,7 @@ describe("dynamicElementStorage", () => {
         inactiveElement.uuid,
       ],
     };
-    (readReduxStorage as jest.Mock).mockResolvedValue(
-      jsonifyObject(stateWithInactive)
-    );
+    readReduxStorageMock.mockResolvedValue(jsonifyObject(stateWithInactive));
 
     await removeDynamicElements([inactiveElement.uuid]);
 
@@ -221,9 +227,7 @@ describe("dynamicElementStorage", () => {
         element2.uuid,
       ],
     };
-    (readReduxStorage as jest.Mock).mockResolvedValue(
-      jsonifyObject(stateWithRecipe)
-    );
+    readReduxStorageMock.mockResolvedValue(jsonifyObject(stateWithRecipe));
 
     await removeDynamicElementsForRecipe(recipe.id);
 
@@ -324,19 +328,31 @@ describe("dynamicElementStorage", () => {
 });
 
 describe("dynamicElementStorage when no state is persisted", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   test("getEditorState returns undefined when readReduxStorage returns undefined", async () => {
-    (readReduxStorage as jest.Mock).mockResolvedValue(undefined);
+    readReduxStorageMock.mockResolvedValue(undefined);
     const state = await getEditorState();
     expect(state).toBeUndefined();
   });
 
+  test.each([undefined, null])(
+    "setEditorState is NOP for: %s",
+    async (state) => {
+      await saveEditorState(state);
+      expect(setReduxStorageMock).not.toHaveBeenCalled();
+    }
+  );
+
   test("removeDynamicElementsForRecipe doesn't crash when readReduxStorage returns undefined", async () => {
-    (readReduxStorage as jest.Mock).mockResolvedValue(undefined);
+    readReduxStorageMock.mockResolvedValue(undefined);
     await removeDynamicElementsForRecipe(validateRegistryId("@test/recipe"));
   });
 
   test("removeDynamicElements doesn't crash when readReduxStorage returns undefined", async () => {
-    (readReduxStorage as jest.Mock).mockResolvedValue(undefined);
+    readReduxStorageMock.mockResolvedValue(undefined);
     await removeDynamicElements([uuidSequence(0), uuidSequence(1)]);
   });
 });

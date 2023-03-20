@@ -15,43 +15,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ExtensionPointConfig,
-  type RecipeDefinition,
-} from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/definitions";
 import { type ServiceAuthPair } from "@/core";
 import notify from "@/utils/notify";
-import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
-import { reportEvent } from "@/telemetry/events";
 import { type Permissions } from "webextension-polyfill";
 
 type PermissionsState = {
+  /**
+   * True if PixieBrix already has all the required permissions.
+   */
   enabled: boolean;
+  /**
+   * Callback to request calculated permissions.
+   */
   request: () => Promise<boolean>;
+  /**
+   * Permissions computed for the blueprint and selected service configurations.
+   */
   permissions: Permissions.Permissions;
-  activate: () => void;
+  /**
+   * True if required permissions are being calculated.
+   */
   isPending: boolean;
-  extensions: ExtensionPointConfig[];
+  /**
+   * The error, if any, that occurred while calculating permissions.
+   */
   error: unknown;
 };
 
+/**
+ * Hook providing convenience methods for ensuring permissions for a recipe prior to activation.
+ * @param blueprint the blueprint definition
+ * @param serviceAuths the integration configurations selected for blueprint activation
+ */
 function useEnsurePermissions(
   blueprint: RecipeDefinition,
-  selected: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ): PermissionsState {
-  const { submitForm } = useFormikContext();
-
   const [permissionState, isPending, error] = useAsyncState(async () => {
     // Refresh services because the user may have created a team integration since the last refresh.
     await services.refresh();
     const permissions = await collectPermissions(
-      await resolveRecipe(blueprint, selected),
+      await resolveRecipe(blueprint, blueprint.extensionPoints),
       serviceAuths
     );
     const enabled = await containsPermissions(permissions);
@@ -59,7 +69,7 @@ function useEnsurePermissions(
       enabled,
       permissions,
     };
-  }, [selected, serviceAuths]);
+  }, [serviceAuths]);
 
   const { enabled, permissions } = permissionState ?? {
     enabled: false,
@@ -88,32 +98,11 @@ function useEnsurePermissions(
     return true;
   }, [permissions]);
 
-  const activate = useCallback(() => {
-    // Can't use async here because Firefox loses track of trusted UX event
-    // eslint-disable-next-line @typescript-eslint/promise-function-async, promise/prefer-await-to-then
-    void request().then((accepted: boolean) => {
-      if (accepted) {
-        reportEvent("MarketplaceActivate", {
-          blueprintId: blueprint.metadata.id,
-          extensions: selected.map((x) => x.label),
-        });
-        return submitForm();
-      }
-
-      reportEvent("MarketplaceRejectPermissions", {
-        blueprintId: blueprint.metadata.id,
-        extensions: selected.map((x) => x.label),
-      });
-    });
-  }, [selected, request, submitForm, blueprint.metadata]);
-
   return {
     enabled,
     request,
     permissions,
-    activate,
     isPending,
-    extensions: selected,
     error,
   };
 }

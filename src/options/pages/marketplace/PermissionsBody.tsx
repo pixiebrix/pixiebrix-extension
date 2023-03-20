@@ -65,11 +65,8 @@ const PermissionsBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
   const selectedAuths = useSelectedAuths();
-  const permissionsState = useEnsurePermissions(
-    blueprint,
-    blueprint.extensionPoints,
-    selectedAuths
-  );
+
+  const permissionsState = useEnsurePermissions(blueprint, selectedAuths);
 
   const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 
