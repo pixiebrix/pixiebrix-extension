@@ -39,7 +39,7 @@ import { uninstallRecipe } from "@/store/uninstallUtils";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 
-type InstallRecipe = (
+type InstallRecipeFormCallback = (
   values: WizardValues,
   helpers: FormikHelpers<WizardValues>
 ) => Promise<void>;
@@ -58,8 +58,11 @@ type InstallRecipe = (
  *
  * @param recipe the blueprint definition to install
  * @see useEnsurePermissions
+ * @see useMarketplaceActivateRecipe
  */
-function useInstall(recipe: RecipeDefinition): InstallRecipe {
+function useExtensionConsoleInstall(
+  recipe: RecipeDefinition
+): InstallRecipeFormCallback {
   const dispatch = useDispatch();
   const [createMilestone] = useCreateMilestoneMutation();
   const { hasMilestone } = useMilestones();
@@ -128,7 +131,12 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         );
 
         notify.success(`Installed ${recipe.metadata.name}`);
-        reportEvent("InstallBlueprint");
+
+        reportEvent("InstallBlueprint", {
+          blueprintId: recipeId,
+          screen: "extensionConsole",
+          reinstall: activeRecipeExtensions.length > 0,
+        });
 
         if (!hasMilestone("first_time_public_blueprint_install")) {
           await createMilestone({
@@ -170,4 +178,4 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
   );
 }
 
-export default useInstall;
+export default useExtensionConsoleInstall;

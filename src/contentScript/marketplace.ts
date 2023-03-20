@@ -32,6 +32,7 @@ import {
   setActivatingBlueprint,
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
+import { reportEvent } from "@/telemetry/events";
 
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
@@ -134,6 +135,12 @@ async function loadPageEnhancements(): Promise<void> {
         window.location.assign(button.href);
         return;
       }
+
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: recipeId,
+        screen: "marketplace",
+        reinstall: installedRecipeIds.has(recipeId),
+      });
 
       await showSidebarActivationForRecipe(recipeId);
     });

@@ -29,7 +29,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/core";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import useInstall from "@/options/pages/blueprints/utils/useInstall";
+import useExtensionConsoleInstall from "@/options/pages/blueprints/utils/useExtensionConsoleInstall";
 import { ensureAllPermissions } from "@/permissions";
 
 registerDefaultWidgets();
@@ -51,10 +51,13 @@ jest.mock("@/store/optionsStore", () => ({
 
 const installMock = jest.fn();
 
-jest.mock("@/options/pages/blueprints/utils/useInstall", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => installMock),
-}));
+jest.mock(
+  "@/options/pages/blueprints/utils/useExtensionConsoleInstall",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => installMock),
+  })
+);
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest
@@ -161,7 +164,7 @@ describe("ActivateWizard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(useInstall).toHaveBeenCalledWith(blueprint);
+    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(blueprint);
 
     expect(installMock).toHaveBeenCalledWith(
       {
@@ -196,7 +199,7 @@ describe("ActivateWizard", () => {
     await waitForEffect();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(useInstall).toHaveBeenCalledWith(blueprint);
+    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(blueprint);
     expect(installMock).not.toHaveBeenCalled();
   });
 });
