@@ -20,6 +20,9 @@ import copy from "copy-text-to-clipboard";
 import { type BlockArg, type Schema } from "@/core";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import pDefer from "p-defer";
+import notify, { hideNotification } from "@/utils/notify";
 
 type ContentType = "infer" | "text" | "image";
 
@@ -29,6 +32,15 @@ function detectContentType(content: unknown): "text" | "image" {
   }
 
   return "text";
+}
+
+function isDocumentFocusError(error: unknown): boolean {
+  // Chrome throws a DOMException with the message "Document is not focused" when it can't establish a user action
+  // for the clipboard write request
+  // https://stackoverflow.com/questions/56306153/domexception-on-calling-navigator-clipboard-readtext/70386674#70386674
+  return getErrorMessage(error)
+    .toLowerCase()
+    .includes("document is not focused");
 }
 
 // Parse instead of using fetch to avoid potential CSP issues with data: URIs
@@ -126,11 +138,57 @@ export class CopyToClipboard extends Effect {
           );
         }
 
-        await navigator.clipboard.write([
+        const data = [
           new ClipboardItem({
             [blob.type]: blob,
           }),
-        ]);
+        ];
+
+        try {
+          await navigator.clipboard.write(data);
+        } catch (error) {
+          if (isDocumentFocusError(error)) {
+            const copyPromise = pDefer<void>();
+
+            const notificationId = notify.info({
+              message: "Click anywhere to copy image to clipboard",
+              duration: Number.POSITIVE_INFINITY,
+              dismissable: false,
+            });
+
+            const handler = async () => {
+              try {
+                hideNotification(notificationId);
+                await navigator.clipboard.write(data);
+                copyPromise.resolve();
+              } catch (error) {
+                if (isDocumentFocusError(error)) {
+                  copyPromise.reject(
+                    new BusinessError(
+                      "Your Browser was unable to determine the user action that initiated the clipboard write."
+                    )
+                  );
+                  return;
+                }
+
+                copyPromise.reject(error);
+              }
+            };
+
+            document.body.addEventListener("click", handler);
+
+            try {
+              await copyPromise.promise;
+            } finally {
+              document.body.removeEventListener("click", handler);
+            }
+
+            // Remember to return to avoid falling through to the original error
+            return;
+          }
+
+          throw error;
+        }
 
         break;
       }
