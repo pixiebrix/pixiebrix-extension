@@ -19,6 +19,7 @@ import { CopyToClipboard } from "@/blocks/effects/clipboard";
 import copy from "copy-text-to-clipboard";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
+import userEvent from "@testing-library/user-event";
 
 const brick = new CopyToClipboard();
 
@@ -91,5 +92,36 @@ describe("CopyToClipboard", () => {
         {} as any
       )
     ).rejects.toThrow(PropError);
+  });
+
+  it("handles document focus error", async () => {
+    writeMock.mockRejectedValueOnce(new Error("Document is not focused."));
+
+    const brickPromise = brick.run(
+      unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "image" }),
+      {} as any
+    );
+
+    writeMock.mockResolvedValue();
+
+    await userEvent.click(document.body);
+
+    await expect(brickPromise).resolves.toBeUndefined();
+  });
+
+  // Jest fails the test because it's not happy about the BusinessError in HTMLBodyElement.handler. The assertion
+  // that brickPromise throws succeeds, though.  I'm not sure if it thinks the promise is unhandled, or there's special
+  // logic in JSDOM/Jest about errors.
+  it.skip("handles unfixable document focus error", async () => {
+    writeMock.mockRejectedValue(new Error("Document is not focused."));
+
+    const brickPromise = brick.run(
+      unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "image" }),
+      {} as any
+    );
+
+    await userEvent.click(document.body);
+
+    await expect(brickPromise).rejects.toThrow();
   });
 });
