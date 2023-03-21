@@ -23,7 +23,15 @@ import getAllReaders, {
 } from "@/blocks/readers/getAllReaders";
 import blockRegistry from "@/blocks/registry";
 
+let registered = false;
+
 function registerBuiltinBlocks() {
+  if (registered) {
+    console.warn(
+      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance"
+    );
+  }
+
   blockRegistry.register([
     ...getAllTransformers(),
     ...getAllEffects(),
@@ -32,6 +40,8 @@ function registerBuiltinBlocks() {
   ]);
 
   registerReaderFactories();
+
+  registered = true;
 }
 
 export default registerBuiltinBlocks;

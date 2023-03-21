@@ -57,6 +57,8 @@ import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -521,7 +523,7 @@ export async function updateDeployments(): Promise<void> {
   } catch (error) {
     reportError(error);
     void browser.runtime.openOptionsPage();
-    // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
+    // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user to
     // manually install the deployments via the banner
     return;
   }
@@ -587,6 +589,10 @@ async function resetUpdatePromptTimestamp() {
 }
 
 function initDeploymentUpdater(): void {
+  // Need to load the built-in bricks for permissions checks to work on initial startup
+  registerBuiltinBlocks();
+  registerContribBlocks();
+
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
   void resetUpdatePromptTimestamp();
   void updateDeployments();
