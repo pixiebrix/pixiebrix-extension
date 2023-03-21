@@ -29,6 +29,7 @@ import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -209,6 +210,9 @@ export const produceSchemaOnUiTypeChange = (
 
     if (uiWidget === "database") {
       draftPropertySchema.$ref = databaseSchema.$id;
+      delete draftPropertySchema.type;
+    } else if (uiWidget === "googleSheet") {
+      draftPropertySchema.$ref = googleSheetSchema.$id;
       delete draftPropertySchema.type;
     } else {
       draftPropertySchema.type = propertyType;

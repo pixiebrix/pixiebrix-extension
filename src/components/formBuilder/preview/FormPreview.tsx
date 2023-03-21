@@ -37,6 +37,7 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type WritableDraft } from "immer/dist/internal";
 import { type Schema } from "@/core";
 
@@ -90,10 +91,26 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             property.enum = "Select...";
             delete property.$ref;
           }
+
+          const googleSheetProperties = Object.values(
+            draftSchema.properties
+          ).filter(
+            (value) =>
+              typeof value === "object" && value.$ref === googleSheetSchema.$id
+          ) as Array<WritableDraft<Schema>>;
+
+          for (const property of googleSheetProperties) {
+            property.type = "string";
+
+            /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
+            // @ts-expect-error -- intentionally assigning to a string
+            property.enum = "Select a sheet...";
+            delete property.$ref;
+          }
         }
 
         // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Let's fix that!
-        // We only interested in select with labels, otherwise we don't need to do anything.
+        // We're only interested in select with labels, otherwise we don't need to do anything.
         // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
         for (const [key, value] of Object.entries(draftUiSchema)) {
           const propertySchema = draftSchema.properties[key];
@@ -152,6 +169,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     imageCrop: ImageCropWidgetPreview,
     database: SelectWidgetPreview,
     SelectWidget: SelectWidgetPreview,
+    googleSheet: SelectWidgetPreview,
   };
 
   return (

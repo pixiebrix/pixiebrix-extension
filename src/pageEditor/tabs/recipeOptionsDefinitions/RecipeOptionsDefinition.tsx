@@ -57,6 +57,10 @@ const fieldTypes = [
     label: "Database selector",
     value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
   },
+  {
+    label: "Google Sheet",
+    value: stringifyUiType({ propertyType: "string", uiWidget: "googleSheet" }),
+  },
 ];
 
 const formRuntimeContext: RuntimeContext = {
