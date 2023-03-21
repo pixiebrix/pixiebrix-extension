@@ -27,6 +27,8 @@ import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/definitions";
 import { type Except } from "type-fest";
 import { type UseCachedQueryResult } from "@/core";
+import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -108,6 +110,12 @@ describe("ActivationOptions", () => {
                   type: "number",
                 },
               },
+            },
+            myDatabase: {
+              $ref: databaseSchema.$id,
+            },
+            myGoogleSheet: {
+              $ref: googleSheetIdSchema.$id,
             },
           },
         },

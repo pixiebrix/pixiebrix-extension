@@ -30,6 +30,7 @@ import { produce } from "immer";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
+import { isEmpty } from "lodash";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -272,7 +273,7 @@ export const produceSchemaOnUiTypeChange = (
  * @param rjsfSchemaDraft The mutable draft of the RJSF schema
  */
 export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
-  if (rjsfSchemaDraft.schema == null) {
+  if (isEmpty(rjsfSchemaDraft.schema)) {
     rjsfSchemaDraft.schema = getMinimalSchema();
   }
 
