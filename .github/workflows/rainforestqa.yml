@@ -44,7 +44,7 @@ jobs:
 
       - name: Reset Test Account Data
         run: |
-          curl -H "Authorization: Token $TOKEN" -X POST https://app.pixiebrix.com/api/tests/accounts/reset/
+          curl -H "Authorization: Token $TOKEN" -X POST https://app.pixiebrix.com/api/tests/seed/rainforest/
         env:
           TOKEN: ${{ secrets.TEST_ACCOUNT_KEY }}
 
