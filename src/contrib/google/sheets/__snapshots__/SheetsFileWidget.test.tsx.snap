@@ -11,6 +11,7 @@ exports[`SheetsFileWidget falls back to spreadsheet id if fetching properties fa
       <input
         class="form-control"
         disabled=""
+        id="spreadsheetId"
         name="spreadsheetId"
         type="text"
         value="abc123"
@@ -46,6 +47,7 @@ exports[`SheetsFileWidget renders valid sheet on load 1`] = `
       <input
         class="form-control"
         disabled=""
+        id="spreadsheetId"
         type="text"
         value="Test Sheet"
       />
@@ -80,6 +82,7 @@ exports[`SheetsFileWidget smoke test 1`] = `
       <input
         class="form-control"
         disabled=""
+        id="spreadsheetId"
         name="spreadsheetId"
         type="text"
         value=""
