@@ -34,17 +34,19 @@ jobs:
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
       # https://stackoverflow.com/a/58142637
-      - name: Get Branch
-      - if: github.ref_name == 'main'
-      - run: echo "##[set-output name=build_path;]$(echo builds/pixiebrix-extension-main.zip)"
-      - run: echo "##[set-output name=run_group;]$(echo 14129)"
-      - if: github.ref_name != 'main'
-      - run: echo "##[set-output name=build_path;]$(echo builds/pixiebrix-extension-release.zip)"
-      - run: echo "##[set-output name=run_group;]$(echo 14130)"
-      - id: extract_branch
+      - name: Determine if main branch
+        run: |
+          echo "BUILD_PATH=builds/pixiebrix-extension-main.zip" >> $GITHUB_ENV
+          echo "RUN_GROUP=14129" >> $GITHUB_ENV
+        if: github.ref_name == 'main'
+      - name: Determine if release branch
+        run: |
+          echo "BUILD_PATH=builds/pixiebrix-extension-release.zip" >> $GITHUB_ENV
+          echo "RUN_GROUP=14130" >> $GITHUB_ENV
+        if: github.ref_name != 'main'
 
       - name: Upload Extension
-      - run: bash scripts/upload-extension.sh steps.extract_branch.outputs.build_path
+        run: bash scripts/upload-extension.sh ${{ env.BUILD_PATH }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
@@ -70,4 +72,4 @@ jobs:
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
           # The run group for tests to run during CI, now has start URL built-in
-          RUN_GROUP: steps.extract_branch.outputs.run_group
+          RUN_GROUP: ${{ env.RUN_GROUP }}
