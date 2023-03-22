@@ -113,4 +113,9 @@ export type SkunkworksSettings = {
    * Experimental setting to support autosuggest for variables in the Page Editor
    */
   varAutosuggest?: boolean;
+
+  /**
+   * Enable GSheets mod input features
+   */
+  googleSheetsModInputs?: boolean;
 };
