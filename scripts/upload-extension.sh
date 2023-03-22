@@ -3,9 +3,15 @@
 # Automatically exit on error
 set -e
 
+if [ "$#" -ne 1 ]; then
+  echo "Usage: ./upload-extension.sh <BUILD_PATH>"
+  echo "example: ./upload-extension.sh pixiebrix-extension-cws"
+fi
+
 # Ensure ENVs are set https://stackoverflow.com/a/307735/288906
-: "${BUILD_PATH?Need to set BUILD_PATH}"
-: "${BUILD_FILENAME?Need to set BUILD_FILENAME}"
+# Extract everything after last slash https://unix.stackexchange.com/a/247636
+BUILD_PATH=$1
+BUILD_FILENAME="${BUILD_PATH##*/}"
 
 : "${AWS_ACCESS_KEY_ID?Need to set AWS_ACCESS_KEY_ID}"
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
