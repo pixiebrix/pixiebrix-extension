@@ -202,4 +202,37 @@ describe("ActivationOptions", () => {
 
     expect(allInputs).toStrictEqual([numInput, boolInput, strInput]);
   });
+
+  it("renders google sheets field type option", async () => {
+    const recipe = recipeFactory({
+      options: {
+        schema: {
+          type: "object",
+          properties: {
+            mySheet: {
+              $ref: googleSheetIdSchema.$id,
+            },
+          },
+          required: ["mySheet"],
+        },
+      },
+    });
+    mockRecipe(recipe);
+    render(<RecipeOptionsValues />, {
+      setupRedux(dispatch) {
+        extensionsSlice.actions.installRecipe({
+          recipe,
+          extensionPoints: recipe.extensionPoints,
+        });
+      },
+    });
+
+    await waitForEffect();
+
+    const input = screen.getByLabelText("mySheet");
+    expect(input).toBeInTheDocument();
+    const selectButton = screen.getByRole("button", { name: "Select" });
+    expect(selectButton).toBeInTheDocument();
+    expect(input.parentElement).toContainElement(selectButton);
+  });
 });

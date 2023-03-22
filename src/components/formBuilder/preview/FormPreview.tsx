@@ -39,7 +39,7 @@ import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type WritableDraft } from "immer/dist/internal";
-import { type Schema } from "@/core";
+import { KEYS_OF_UI_SCHEMA, type Schema } from "@/core";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -113,6 +113,11 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         // We're only interested in select with labels, otherwise we don't need to do anything.
         // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
         for (const [key, value] of Object.entries(draftUiSchema)) {
+          // We're only looking for sub-property UiSchemas
+          if (KEYS_OF_UI_SCHEMA.includes(key)) {
+            continue;
+          }
+
           const propertySchema = draftSchema.properties[key];
 
           if (
