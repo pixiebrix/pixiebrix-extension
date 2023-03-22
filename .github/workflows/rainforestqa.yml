@@ -34,6 +34,7 @@ jobs:
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
       # https://stackoverflow.com/a/58142637
+      # github doesn't support if-else, only if, so we need two separate steps
       - name: Determine if main branch
         run: |
           echo "BUILD_PATH=builds/pixiebrix-extension-main.zip" >> $GITHUB_ENV
