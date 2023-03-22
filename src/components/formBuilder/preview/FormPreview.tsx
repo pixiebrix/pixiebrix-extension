@@ -86,7 +86,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           for (const property of databaseProperties) {
             property.type = "string";
 
-            /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
+            // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
             // @ts-expect-error -- intentionally assigning to a string
             property.enum = "Select...";
             delete property.$ref;
@@ -102,7 +102,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           for (const property of googleSheetProperties) {
             property.type = "string";
 
-            /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
+            // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
             // @ts-expect-error -- intentionally assigning to a string
             property.enum = "Select a sheet...";
             delete property.$ref;

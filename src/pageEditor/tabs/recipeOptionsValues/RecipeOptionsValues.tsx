@@ -126,20 +126,20 @@ const RecipeOptionsValuesContent: React.FC = () => {
   );
 
   return (
-    // <ErrorBoundary>
-    <Form
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-      enableReinitialize
-      renderBody={renderBody}
-      onSubmit={() => {
-        console.error(
-          "The form's submit should not be called to save recipe option values, they are automatically synced with redux"
-        );
-      }}
-      renderSubmit={() => null}
-    />
-    // </ErrorBoundary>
+    <ErrorBoundary>
+      <Form
+        validationSchema={validationSchema}
+        initialValues={initialValues}
+        enableReinitialize
+        renderBody={renderBody}
+        onSubmit={() => {
+          console.error(
+            "The form's submit should not be called to save recipe option values, they are automatically synced with redux"
+          );
+        }}
+        renderSubmit={() => null}
+      />
+    </ErrorBoundary>
   );
 };
 
