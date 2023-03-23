@@ -399,6 +399,25 @@ describe("updateDeployments", () => {
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
+  test("open options page if refresh registries fails", async () => {
+    refreshRegistriesMock.mockRejectedValue(new Error("test error"));
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(false);
+
+    axiosMock.onGet().reply(200, {
+      flags: ["restricted-version"],
+    });
+
+    const deployment = deploymentFactory();
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+  });
+
   test("open options page on update if restricted-version flag is set", async () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);

@@ -29,6 +29,8 @@ import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
+import { isEmpty } from "lodash";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -207,12 +209,23 @@ export const produceSchemaOnUiTypeChange = (
     /* eslint-disable security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
-    if (uiWidget === "database") {
-      draftPropertySchema.$ref = databaseSchema.$id;
-      delete draftPropertySchema.type;
-    } else {
-      draftPropertySchema.type = propertyType;
-      delete draftPropertySchema.$ref;
+    switch (uiWidget) {
+      case "database": {
+        draftPropertySchema.$ref = databaseSchema.$id;
+        delete draftPropertySchema.type;
+        break;
+      }
+
+      case "googleSheet": {
+        draftPropertySchema.$ref = googleSheetSchema.$id;
+        delete draftPropertySchema.type;
+        break;
+      }
+
+      default: {
+        draftPropertySchema.type = propertyType;
+        delete draftPropertySchema.$ref;
+      }
     }
 
     if (propertyFormat) {
@@ -268,7 +281,7 @@ export const produceSchemaOnUiTypeChange = (
  * @param rjsfSchemaDraft The mutable draft of the RJSF schema
  */
 export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
-  if (rjsfSchemaDraft.schema == null) {
+  if (isEmpty(rjsfSchemaDraft.schema)) {
     rjsfSchemaDraft.schema = getMinimalSchema();
   }
 

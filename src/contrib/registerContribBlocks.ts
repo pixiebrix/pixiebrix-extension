@@ -38,7 +38,15 @@ import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
 
+let registered = false;
+
 function registerContribBlocks(): void {
+  if (registered) {
+    console.warn(
+      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance"
+    );
+  }
+
   blockRegistry.register([
     // Google
     new GoogleSheetsAppend(),
@@ -75,6 +83,8 @@ function registerContribBlocks(): void {
     // Automation Anywhere
     new RunBot(),
   ]);
+
+  registered = true;
 }
 
 export default registerContribBlocks;

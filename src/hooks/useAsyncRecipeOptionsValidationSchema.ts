@@ -17,16 +17,24 @@
 
 import { object } from "yup";
 import { dereference } from "@/validators/generic";
-import { cloneDeep, mapValues } from "lodash";
+import { cloneDeep, isEmpty, mapValues } from "lodash";
 import { type Schema } from "@/core";
 import { buildYup } from "schema-to-yup";
 import { useAsyncState } from "@/hooks/common";
+
+function isEmptySchema(schema: Schema | undefined) {
+  return (
+    isEmpty(schema) ||
+    (schema.type === "object" && isEmpty(schema.properties)) ||
+    (schema.type === "array" && isEmpty(schema.items))
+  );
+}
 
 const useAsyncRecipeOptionsValidationSchema = (
   optionsDefinitionSchema: Schema | undefined
 ) =>
   useAsyncState(async () => {
-    if (!optionsDefinitionSchema) {
+    if (isEmptySchema(optionsDefinitionSchema)) {
       return object().shape({});
     }
 

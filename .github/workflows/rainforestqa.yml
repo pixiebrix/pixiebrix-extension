@@ -15,9 +15,6 @@ on:
 jobs:
   rainforestqa:
     runs-on: ubuntu-latest
-    env:
-      BUILD_FILENAME: ${{ github.job }}-${{ github.sha }}.zip
-      BUILD_PATH: builds/${{ github.job }}-${{ github.sha }}.zip
 
     steps:
       - uses: actions/checkout@v3
@@ -36,7 +33,21 @@ jobs:
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
-      - run: bash scripts/upload-extension.sh
+      # https://stackoverflow.com/a/58142637
+      # github doesn't support if-else, only if, so we need two separate steps
+      - name: Determine if main branch
+        run: |
+          echo "BUILD_PATH=builds/pixiebrix-extension-main.zip" >> $GITHUB_ENV
+          echo "RUN_GROUP=14129" >> $GITHUB_ENV
+        if: github.ref_name == 'main'
+      - name: Determine if release branch
+        run: |
+          echo "BUILD_PATH=builds/pixiebrix-extension-release.zip" >> $GITHUB_ENV
+          echo "RUN_GROUP=14130" >> $GITHUB_ENV
+        if: github.ref_name != 'main'
+
+      - name: Upload Extension
+        run: bash scripts/upload-extension.sh ${{ env.BUILD_PATH }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
@@ -44,7 +55,7 @@ jobs:
 
       - name: Reset Test Account Data
         run: |
-          curl -H "Authorization: Token $TOKEN" -X POST https://app.pixiebrix.com/api/tests/accounts/reset/
+          curl -H "Authorization: Token $TOKEN" -X POST https://app.pixiebrix.com/api/tests/seed/rainforest/
         env:
           TOKEN: ${{ secrets.TEST_ACCOUNT_KEY }}
 
@@ -54,13 +65,12 @@ jobs:
 
       # https://github.com/rainforestapp/rainforest-cli
       - name: Run Rainforest QA Extension Test Suite
-        # Include hash on at end of the URL because Rainforest QA automatically appends a "/" to the end of custom URLs
         # Can't pass cancel for conflict because while we're generating a separate Rainforest QA environment for each run
         #   they're all using the same server
         # Use --fail-fast so that we're not using GitHub build minutes if not necessary
         run: |
-          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all --custom-url "https://pixiebrix-extension-builds.s3.us-east-2.amazonaws.com/$BUILD_PATH"
+          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
-          # The run group for tests to run during CI
-          RUN_GROUP: 9732
+          # The run group for tests to run during CI, now has start URL built-in
+          RUN_GROUP: ${{ env.RUN_GROUP }}

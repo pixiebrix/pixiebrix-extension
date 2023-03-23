@@ -39,9 +39,9 @@ describe("setting values", () => {
       parentPath: "@input",
     });
 
-    knownVars.setOutputKeyExistence({
+    knownVars.setVariableExistence({
       source: "extension.blockPipeline.0",
-      outputKey: "@jq",
+      variableName: "@jq",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: true,
     });

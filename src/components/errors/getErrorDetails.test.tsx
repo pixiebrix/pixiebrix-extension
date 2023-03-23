@@ -145,3 +145,22 @@ test("Network error", async () => {
   await waitForEffect();
   expect(rendered.asFragment()).toMatchSnapshot();
 });
+
+test("RemoteApiErrorDetail", async () => {
+  const error: ErrorObject = {
+    response: {
+      data: { error: { message: "Invalid data" } },
+      status: 400,
+      statusText: "Bad Request",
+    },
+    name: "ProxiedRemoteServiceError",
+    message: "Invalid data message.",
+    stack: "ProxiedRemoteServiceError: Invalid data message",
+  };
+
+  const { title, detailsElement } = getErrorDetails(error);
+  expect(title).toBe("Invalid data message.");
+  const rendered = render(detailsElement);
+  await waitForEffect();
+  expect(rendered.asFragment()).toMatchSnapshot();
+});

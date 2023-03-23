@@ -44,6 +44,7 @@ import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
+  selectRemoteResponseErrorMessage,
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
@@ -218,7 +219,7 @@ async function proxyRequest<T>(
 
   if (isProxiedErrorResponse(remoteResponse)) {
     throw new ProxiedRemoteServiceError(
-      remoteResponse.message ?? remoteResponse.reason,
+      selectRemoteResponseErrorMessage(remoteResponse),
       proxyResponseToAxiosResponse(remoteResponse)
     );
   }

@@ -27,6 +27,8 @@ import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/definitions";
 import { type Except } from "type-fest";
 import { type UseCachedQueryResult } from "@/core";
+import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -108,6 +110,12 @@ describe("ActivationOptions", () => {
                   type: "number",
                 },
               },
+            },
+            myDatabase: {
+              $ref: databaseSchema.$id,
+            },
+            myGoogleSheet: {
+              $ref: googleSheetIdSchema.$id,
             },
           },
         },
@@ -193,5 +201,38 @@ describe("ActivationOptions", () => {
     const strInput = await screen.findByLabelText("Input String");
 
     expect(allInputs).toStrictEqual([numInput, boolInput, strInput]);
+  });
+
+  it("renders google sheets field type option", async () => {
+    const recipe = recipeFactory({
+      options: {
+        schema: {
+          type: "object",
+          properties: {
+            mySheet: {
+              $ref: googleSheetIdSchema.$id,
+            },
+          },
+          required: ["mySheet"],
+        },
+      },
+    });
+    mockRecipe(recipe);
+    render(<RecipeOptionsValues />, {
+      setupRedux(dispatch) {
+        extensionsSlice.actions.installRecipe({
+          recipe,
+          extensionPoints: recipe.extensionPoints,
+        });
+      },
+    });
+
+    await waitForEffect();
+
+    const input = screen.getByLabelText("mySheet");
+    expect(input).toBeInTheDocument();
+    const selectButton = screen.getByRole("button", { name: "Select" });
+    expect(selectButton).toBeInTheDocument();
+    expect(input.parentElement).toContainElement(selectButton);
   });
 });

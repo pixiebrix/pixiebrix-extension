@@ -25,6 +25,13 @@ import {
 } from "@/background/messenger/api";
 import { fetchNewPackages } from "@/baseRegistry";
 
+const refreshServices = async () => {
+  await serviceAuthRegistry.refresh();
+  // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
+  // the call to serviceRegistry, because that populates the local IDB definitions.
+  await clearServiceCache();
+};
+
 /**
  * Refresh registries for the current context.
  *
@@ -32,11 +39,7 @@ import { fetchNewPackages } from "@/baseRegistry";
  */
 export async function refreshRegistries(): Promise<void> {
   console.debug("Refreshing bricks from the server");
-  await Promise.allSettled([fetchNewPackages(), serviceAuthRegistry.refresh()]);
-
-  // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
-  // the call to serviceRegistry, because that populates the local IDB definitions.
-  await clearServiceCache();
+  await Promise.all([fetchNewPackages(), refreshServices()]);
 }
 
 const throttledRefreshRegistries = throttle(

@@ -96,7 +96,6 @@ function useWizard(
           return isPrimitive(value) ? value : undefined;
         }
       ),
-      grantPermissions: false,
     };
 
     const validationSchema = Yup.object().shape({
@@ -114,7 +113,6 @@ function useWizard(
         )
       ),
       optionsArgs: optionsValidationSchema,
-      grantPermissions: Yup.boolean(),
     });
 
     return [steps, initialValues, validationSchema];

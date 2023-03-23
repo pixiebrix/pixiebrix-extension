@@ -22,6 +22,33 @@ import {
 } from "@/types/contract";
 import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
+/**
+ * Return the error message from a 3rd party API proxied through the PixieBrix API proxy
+ * @param errorData an error response from the PixieBrix API proxy.
+ */
+export function selectRemoteResponseErrorMessage(
+  errorData: ProxyResponseErrorData
+): string {
+  if (errorData.message) {
+    return errorData.message;
+  }
+
+  if (typeof errorData.json === "object") {
+    const errorPayload = errorData.json as any;
+    // OpenAI uses error.message payload
+    const customMessage = errorPayload?.error?.message ?? errorPayload?.message;
+    if (typeof customMessage === "string") {
+      return customMessage;
+    }
+  }
+
+  return errorData.reason ?? safeGuessStatusText(errorData.status_code);
+}
+
+/**
+ * Convert a proxied response from the PixieBrix API proxy /api/proxy/ to an Axios-like response
+ * @param data the response from the PixieBrix proxy
+ */
 export function proxyResponseToAxiosResponse(
   data: ProxyResponseData
 ): Pick<AxiosResponse, "data" | "status" | "statusText"> {
@@ -41,6 +68,11 @@ export function proxyResponseToAxiosResponse(
   };
 }
 
+/**
+ * Returns true if the response is an error response
+ * @param data response from the PixieBrix proxy
+ * @see ProxyResponseErrorData
+ */
 export function isProxiedErrorResponse(
   data: ProxyResponseData
 ): data is ProxyResponseErrorData {

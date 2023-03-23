@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import useActivateRecipe from "@/hooks/activateRecipe/useActivateRecipe";
+import useMarketplaceActivateRecipe from "@/hooks/activateRecipe/useMarketplaceActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
@@ -61,7 +61,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
-  const activateRecipe = useActivateRecipe();
+  const activateRecipe = useMarketplaceActivateRecipe();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsPermissions, setNeedsPermissions] = useState(false);
   const [includesQuickbar, setIncludesQuickbar] = useState(false);

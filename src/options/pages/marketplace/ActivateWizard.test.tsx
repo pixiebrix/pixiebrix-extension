@@ -29,6 +29,8 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/core";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
+import useExtensionConsoleInstall from "@/options/pages/blueprints/utils/useExtensionConsoleInstall";
+import { ensureAllPermissions } from "@/permissions";
 
 registerDefaultWidgets();
 
@@ -37,11 +39,25 @@ jest.mock("@/permissions", () => ({
   collectPermissions: jest.fn(),
 }));
 
+const ensureAllPermissionsMock = ensureAllPermissions as jest.MockedFunction<
+  typeof ensureAllPermissions
+>;
+
 jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },
 }));
+
+const installMock = jest.fn();
+
+jest.mock(
+  "@/options/pages/blueprints/utils/useExtensionConsoleInstall",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => installMock),
+  })
+);
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest
@@ -124,5 +140,66 @@ describe("ActivateWizard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
     expect(screen.getByText("Database is a required field")).not.toBeNull();
+  });
+
+  test("activate blueprint permissions", async () => {
+    const blueprint = recipeDefinitionFactory({
+      metadata: recipeMetadataFactory({
+        id: "test/blueprint-with-required-options" as RegistryId,
+        name: "A Mod",
+      }),
+      extensionPoints: [
+        extensionPointConfigFactory({
+          label: "A Extension Point for Mod",
+        }),
+      ],
+    });
+
+    const rendered = render(
+      <MemoryRouter>
+        <ActivateWizard blueprint={blueprint} />
+      </MemoryRouter>
+    );
+    await waitForEffect();
+    expect(rendered.asFragment()).toMatchSnapshot();
+    await userEvent.click(rendered.getByText("Activate"));
+    await waitForEffect();
+    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(blueprint);
+
+    expect(installMock).toHaveBeenCalledWith(
+      {
+        extensions: { "0": true },
+        optionsArgs: {},
+        services: [],
+      },
+      expect.toBeObject()
+    );
+  });
+
+  test("user reject permissions", async () => {
+    ensureAllPermissionsMock.mockResolvedValue(false);
+
+    const blueprint = recipeDefinitionFactory({
+      metadata: recipeMetadataFactory({
+        id: "test/blueprint-with-required-options" as RegistryId,
+        name: "A Mod",
+      }),
+      extensionPoints: [
+        extensionPointConfigFactory({
+          label: "A Extension Point for Mod",
+        }),
+      ],
+    });
+
+    const rendered = render(
+      <MemoryRouter>
+        <ActivateWizard blueprint={blueprint} />
+      </MemoryRouter>
+    );
+    await waitForEffect();
+    await userEvent.click(rendered.getByText("Activate"));
+    await waitForEffect();
+    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(blueprint);
+    expect(installMock).not.toHaveBeenCalled();
   });
 });

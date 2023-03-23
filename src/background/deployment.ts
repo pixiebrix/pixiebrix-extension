@@ -31,7 +31,7 @@ import {
   selectExtensions,
   selectExtensionsForRecipe,
 } from "@/store/extensionsSelectors";
-import { type RegistryId, type UUID } from "@/core";
+import { type RegistryId, type UnresolvedExtension, type UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
@@ -57,6 +57,8 @@ import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -91,24 +93,13 @@ function uninstallExtensionFromStates(
   return { options, editor };
 }
 
-/**
- * Uninstall all deployments by uninstalling all extensions associated with the deployment.
- */
-export async function uninstallAllDeployments(): Promise<void> {
-  let [optionsState, editorState] = await Promise.all([
-    loadOptions(),
-    getEditorState(),
-  ]);
-  const installed = selectExtensions({ options: optionsState });
-
-  const toUninstall = installed.filter(
-    (extension) => !isEmpty(extension._deployment)
-  );
-
-  if (toUninstall.length === 0) {
-    return;
-  }
-
+async function uninstallExtensionsAndSaveState(
+  toUninstall: UnresolvedExtension[],
+  {
+    editorState,
+    optionsState,
+  }: { editorState: EditorState; optionsState: ExtensionOptionsState }
+): Promise<void> {
   // Uninstall existing versions of the extensions
   for (const extension of toUninstall) {
     const result = uninstallExtensionFromStates(
@@ -125,9 +116,32 @@ export async function uninstallAllDeployments(): Promise<void> {
   );
 
   await setExtensionsState(optionsState);
-  if (editorState) {
-    await saveEditorState(editorState);
+  await saveEditorState(editorState);
+}
+
+/**
+ * Uninstall all deployments by uninstalling all extensions associated with a deployment.
+ */
+export async function uninstallAllDeployments(): Promise<void> {
+  const [optionsState, editorState] = await Promise.all([
+    loadOptions(),
+    getEditorState(),
+  ]);
+  const installed = selectExtensions({ options: optionsState });
+
+  const toUninstall = installed.filter(
+    (extension) => !isEmpty(extension._deployment)
+  );
+
+  if (toUninstall.length === 0) {
+    // Short-circuit to skip reporting telemetry
+    return;
   }
+
+  await uninstallExtensionsAndSaveState(toUninstall, {
+    editorState,
+    optionsState,
+  });
 
   reportEvent("DeploymentDeactivateAll", {
     auto: true,
@@ -135,45 +149,34 @@ export async function uninstallAllDeployments(): Promise<void> {
   });
 }
 
-export async function uninstallUnmatchedDeployments(
+async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
-  let [optionsState, editorState] = await Promise.all([
+  const [optionsState, editorState] = await Promise.all([
     loadOptions(),
     getEditorState(),
   ]);
   const installed = selectExtensions({ options: optionsState });
 
-  const recipeIds = new Set(
+  const deploymentRecipeIds = new Set(
     deployments.map((deployment) => deployment.package.package_id)
   );
+
   const toUninstall = installed.filter(
     (extension) =>
-      !isEmpty(extension._deployment) && !recipeIds.has(extension._recipe?.id)
+      !isEmpty(extension._deployment) &&
+      !deploymentRecipeIds.has(extension._recipe?.id)
   );
 
   if (toUninstall.length === 0) {
+    // Short-circuit to skip reporting telemetry
     return;
   }
 
-  for (const extension of toUninstall) {
-    const result = uninstallExtensionFromStates(
-      optionsState,
-      editorState,
-      extension.id
-    );
-    optionsState = result.options;
-    editorState = result.editor;
-  }
-
-  await Promise.allSettled(
-    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id))
-  );
-
-  await setExtensionsState(optionsState);
-  if (editorState) {
-    await saveEditorState(editorState);
-  }
+  await uninstallExtensionsAndSaveState(toUninstall, {
+    editorState,
+    optionsState,
+  });
 
   reportEvent("DeploymentDeactivateUnassigned", {
     auto: true,
@@ -226,6 +229,7 @@ async function installDeployment(
     editor,
     deployment.package.package_id
   );
+
   options = result.options;
   editor = result.editor;
 
@@ -274,9 +278,7 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
   }
 
   await setExtensionsState(optionsState);
-  if (editorState) {
-    await saveEditorState(editorState);
-  }
+  await saveEditorState(editorState);
 }
 
 type DeploymentConstraint = {
@@ -521,7 +523,7 @@ export async function updateDeployments(): Promise<void> {
   } catch (error) {
     reportError(error);
     void browser.runtime.openOptionsPage();
-    // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
+    // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user to
     // manually install the deployments via the banner
     return;
   }
@@ -587,6 +589,10 @@ async function resetUpdatePromptTimestamp() {
 }
 
 function initDeploymentUpdater(): void {
+  // Need to load the built-in bricks for permissions checks to work on initial startup
+  registerBuiltinBlocks();
+  registerContribBlocks();
+
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
   void resetUpdatePromptTimestamp();
   void updateDeployments();

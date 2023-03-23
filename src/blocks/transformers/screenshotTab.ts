@@ -61,7 +61,7 @@ export class ScreenshotTab extends Transformer {
         // - Executing a context menu item
         // - Executing a keyboard shortcut from the commands API
         throw new BusinessError(
-          "The Screenshot Tab brick can only be run from the context menu or sidebar of the active tab"
+          "The Screenshot Tab brick can only be run from the context menu, quick bar, or sidebar of the active tab"
         );
       }
 

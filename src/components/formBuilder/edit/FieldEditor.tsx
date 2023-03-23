@@ -48,8 +48,13 @@ import { uniq } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { isNullOrBlank } from "@/utils";
 import { AnnotationType } from "@/types";
+import {
+  isDatabaseField,
+  isGoogleSheetIdField,
+} from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -136,16 +141,21 @@ const FieldEditor: React.FC<{
   };
 
   const getSelectedUiTypeOption = () => {
-    const isDatabaseSelector =
-      (schema?.properties?.[propertyName] as Schema)?.$ref ===
-      databaseSchema.$id;
+    const fieldSchema = schema.properties[propertyName];
+    const isDatabaseFieldType =
+      typeof fieldSchema !== "boolean" && isDatabaseField(fieldSchema);
+    const isGoogleSheetFieldType =
+      typeof fieldSchema !== "boolean" && isGoogleSheetIdField(fieldSchema);
 
-    const propertyType = isDatabaseSelector
-      ? "string"
-      : (propertySchema.type as SchemaPropertyType);
+    const propertyType =
+      isDatabaseFieldType || isGoogleSheetFieldType
+        ? "string"
+        : (propertySchema.type as SchemaPropertyType);
 
-    const uiWidget = isDatabaseSelector
+    const uiWidget = isDatabaseFieldType
       ? "database"
+      : isGoogleSheetFieldType
+      ? "googleSheet"
       : uiSchema?.[propertyName]?.[UI_WIDGET];
 
     const propertyFormat = propertySchema.format;
@@ -233,6 +243,10 @@ const FieldEditor: React.FC<{
             uiType.uiWidget === "database"
               ? {
                   $ref: databaseSchema.$id,
+                }
+              : uiType.uiWidget === "googleSheet"
+              ? {
+                  $ref: googleSheetIdSchema.$id,
                 }
               : {
                   type: uiType.propertyType,

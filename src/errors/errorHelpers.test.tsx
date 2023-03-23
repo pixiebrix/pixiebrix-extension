@@ -331,6 +331,14 @@ describe("getErrorMessageWithCauses", () => {
         420."
       `);
   });
+
+  test("ignores duplicate error messages", () => {
+    expect(
+      getErrorMessageWithCauses(
+        new Error(FIRST_ERROR, { cause: new Error(FIRST_ERROR) })
+      )
+    ).toBe(`${FIRST_ERROR}.`);
+  });
 });
 
 describe("isErrorObject", () => {

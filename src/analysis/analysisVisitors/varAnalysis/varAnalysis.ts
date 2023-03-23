@@ -57,19 +57,55 @@ export const NO_VARIABLE_PROVIDED_MESSAGE = "Variable is blank";
 export const VARIABLE_SHOULD_START_WITH_AT_MESSAGE =
   "Variable name should start with @";
 
-type PreviousVisitedBlock = {
-  vars: VarMap;
-  output: VarMap | null;
+/**
+ * Record to keep track of a variable context
+ */
+type VariableContext = {
+  /**
+   * Initial known variables.
+   */
+  readonly vars: VarMap;
+
+  // Alternatively, we could keep track of block output variable so far in visitPipeline as a local variable. But that
+  // would require overloading the base class's implementation of visitPipeline.
+  // Alternatively, we could push new a context on to the context stack for each visited block. But that's a bit more
+  // convoluted stack management.
+  /**
+   * Accumulator for new variables set by bricks in the pipeline so far.
+   *
+   * Used to accumulate variables for visitBlock because visitPipeline iterates over blocks in the pipeline (i.e., as
+   * opposed to making recursive calls a la continuation passing style).
+   */
+  readonly blockOutputVars: VarMap;
 };
 
 export enum KnownSources {
+  /**
+   * Input provided by the starter brick.
+   */
   INPUT = "input",
+  /**
+   * Mod options.
+   */
   OPTIONS = "options",
+  /**
+   * Integration configuration.
+   */
   SERVICE = "service",
+  /**
+   * Observed trace when running the bricks with the Page Editor open.
+   */
   TRACE = "trace",
 }
 
-async function setServiceVars(extension: FormState, contextVars: VarMap) {
+/**
+ * Set availability of variables based on the integrations used by the IExtension
+ * @see makeServiceContext
+ */
+async function setServiceVars(
+  extension: FormState,
+  contextVars: VarMap
+): Promise<void> {
   // Loop through all the services so we can set the source each service variable properly
   for (const service of extension.services ?? []) {
     // eslint-disable-next-line no-await-in-loop
@@ -82,7 +118,7 @@ async function setServiceVars(extension: FormState, contextVars: VarMap) {
 }
 
 /**
- * Set the input variables from the ExtensionPoint definition.
+ * Set the input variables from the ExtensionPoint definition (aka starter brick).
  */
 async function setInputVars(
   extension: FormState,
@@ -134,14 +170,23 @@ type SetVarsFromSchemaArgs = {
   existenceOverride?: VarExistence;
 };
 
+/**
+ * Helper method to set variables based on a JSON Schema
+ *
+ * Examples:
+ * - Blueprint input schema
+ * - Block output schema
+ * - Service configuration schema
+ */
 function setVarsFromSchema({
-  schema,
+  schema = {},
   contextVars,
   source,
   parentPath,
   existenceOverride,
 }: SetVarsFromSchemaArgs) {
   const { properties, required } = schema;
+
   if (properties == null) {
     contextVars.setExistence({
       source,
@@ -215,6 +260,9 @@ function setVarsFromSchema({
   }
 }
 
+/**
+ * Set the options variables from the blueprint option definitions.
+ */
 async function setOptionsVars(
   extension: FormState,
   contextVars: VarMap
@@ -240,6 +288,8 @@ async function setOptionsVars(
     parentPath: [optionsOutputKey],
   });
 
+  // XXX: is this necessary? Should be redundant with setVarsFromSchema because user should only be providing values
+  // that are valid with respect to the schema.
   if (!isEmpty(extension.optionsArgs)) {
     for (const optionName of Object.keys(extension.optionsArgs)) {
       contextVars.setExistence({
@@ -252,11 +302,35 @@ async function setOptionsVars(
 }
 
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
+  /**
+   * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
+   * @see VarMap
+   * @private
+   */
   private readonly knownVars = new Map<string, VarMap>();
-  private currentBlockKnownVars: VarMap;
-  private previousVisitedBlock: PreviousVisitedBlock = null;
-  private readonly contextStack: PreviousVisitedBlock[] = [];
+
+  /**
+   * The stack of nested variable contexts. The top of the stack (last element) is the current context.
+   *
+   * New stack frames are introduced for recursive calls:
+   * - Child pipeline
+   * - A brick configuration
+   * - List Element in Document Builder (because it uses deferred expression and introduces a variable)
+   *
+   * @private
+   */
+  private readonly contextStack: VariableContext[] = [];
+
+  /**
+   * Annotation accumulator for warnings and errors
+   * @protected
+   */
   protected readonly annotations: AnalysisAnnotation[] = [];
+
+  /**
+   * Cache of block definitions to fetch definitions synchronously.
+   * @private
+   */
   private allBlocks: TypedBlockMap;
 
   get id() {
@@ -271,11 +345,22 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.knownVars;
   }
 
-  private safeGetOutputSchema(blockConfig: BlockConfig): Schema | undefined {
+  /**
+   * Helper method to get the output schema for a block, given its configuration.
+   *
+   * In order of precedence:
+   * - The dependent output schema
+   * - The static output schema
+   * - An empty schema
+   *
+   * @param blockConfig the block configuration
+   * @private
+   */
+  private safeGetOutputSchema(blockConfig: BlockConfig): Schema {
     const block = this.allBlocks.get(blockConfig.id)?.block;
 
     if (!block) {
-      return;
+      return {};
     }
 
     // Be defensive if getOutputSchema errors due to nested variables, etc.
@@ -295,66 +380,71 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     super();
   }
 
+  /**
+   * Returns the current context variables. Do not modify the returned object directly, call `clone` first.
+   * @private
+   */
+  private get currentContextVars(): VarMap {
+    return this.contextStack.at(-1).vars ?? new VarMap();
+  }
+
   override visitBlock(
     position: BlockPosition,
     blockConfig: BlockConfig,
     extra: VisitBlockExtra
   ) {
-    this.currentBlockKnownVars = this.previousVisitedBlock.vars.clone();
-    if (this.previousVisitedBlock.output != null) {
-      this.currentBlockKnownVars.addSourceMap(this.previousVisitedBlock.output);
-    }
+    // Create a new context frame with:
+    // - The context provided by the parent pipeline
+    // - Any blocks that appeared before this one in the pipeline
+    // - Values seen from the trace
+    const context = this.contextStack.at(-1);
+    const blockKnownVars = context.vars.clone();
+    blockKnownVars.addSourceMap(context.blockOutputVars);
 
     const traceRecord = this.trace.find(
       (x) =>
         x.blockInstanceId === blockConfig.instanceId &&
         x.templateContext != null
     );
+
     if (traceRecord != null) {
-      this.currentBlockKnownVars.setExistenceFromValues({
+      blockKnownVars.setExistenceFromValues({
         source: KnownSources.TRACE,
         values: traceRecord.templateContext,
       });
     }
 
-    this.knownVars.set(position.path, this.currentBlockKnownVars);
+    this.knownVars.set(position.path, blockKnownVars);
 
-    this.previousVisitedBlock = {
-      vars: this.currentBlockKnownVars,
-      output: null,
-    };
+    // Put all vars under `vars`. The recursive call doesn't care about whether the vars came from the context
+    // parent pipeline or the preceding blocks.
+    this.contextStack.push({
+      vars: blockKnownVars,
+      blockOutputVars: new VarMap(),
+    });
 
+    // Analyze the block
+    super.visitBlock(position, blockConfig, extra);
+
+    this.contextStack.pop();
+
+    // Add the output vars to the context for the next block to see
     if (blockConfig.outputKey) {
-      const outputVarName = `@${blockConfig.outputKey}`;
       const currentBlockOutput = new VarMap();
-
+      const outputVarName = `@${blockConfig.outputKey}`;
       const outputSchema = this.safeGetOutputSchema(blockConfig);
 
-      if (outputSchema == null) {
-        currentBlockOutput.setOutputKeyExistence({
-          source: position.path,
-          outputKey: outputVarName,
-          existence:
-            blockConfig.if == null
-              ? VarExistence.DEFINITELY
-              : VarExistence.MAYBE,
-          allowAnyChild: true,
-        });
-      } else {
-        setVarsFromSchema({
-          schema: outputSchema,
-          contextVars: currentBlockOutput,
-          source: position.path,
-          parentPath: [outputVarName],
-          existenceOverride:
-            blockConfig.if == null ? undefined : VarExistence.MAYBE,
-        });
-      }
+      setVarsFromSchema({
+        schema: outputSchema,
+        contextVars: currentBlockOutput,
+        source: position.path,
+        parentPath: [outputVarName],
+        existenceOverride:
+          blockConfig.if == null ? undefined : VarExistence.MAYBE,
+      });
 
-      this.previousVisitedBlock.output = currentBlockOutput;
+      context.blockOutputVars.addSourceMap(currentBlockOutput);
     }
-
-    super.visitBlock(position, blockConfig, extra);
   }
 
   override visitExpression(
@@ -377,7 +467,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       return;
     }
 
-    if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
+    if (!this.currentContextVars.isVariableDefined(varName)) {
       this.pushNotFoundVariableAnnotation(position, varName, expression);
     }
   }
@@ -396,7 +486,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     }
 
     for (const varName of templateVariables) {
-      if (!this.currentBlockKnownVars?.isVariableDefined(varName)) {
+      if (!this.currentContextVars.isVariableDefined(varName)) {
         this.pushNotFoundVariableAnnotation(position, varName, expression);
       }
     }
@@ -442,53 +532,52 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     pipeline: BlockConfig[],
     extra: VisitPipelineExtra
   ) {
-    // Getting element key for sub pipeline if applicable (e.g. for a for-each, try-except, block)
-    const subPipelineInput =
+    // Get variable provided to child pipeline if applicable (e.g. for a for-each, try-except, block)
+    const childPipelineKey =
       extra.parentNode && extra.pipelinePropName
         ? getVariableKeyForSubPipeline(extra.parentNode, extra.pipelinePropName)
         : null;
 
-    // Before visiting the sub pipeline, we need to save the current context
-    this.contextStack.push(this.previousVisitedBlock);
-
-    let subPipelineVars: VarMap;
-    if (subPipelineInput) {
-      subPipelineVars = new VarMap();
-      subPipelineVars.setOutputKeyExistence({
+    const childPipelineVars = new VarMap();
+    if (childPipelineKey) {
+      childPipelineVars.setVariableExistence({
         // The source of the element key is the parent block
         source: extra.parentPosition.path,
-        outputKey: `@${subPipelineInput}`,
+        variableName: `@${childPipelineKey}`,
         existence: VarExistence.DEFINITELY,
+        // XXX: in the future, base on the type of the variable provided
         allowAnyChild: true,
       });
     }
 
-    // Creating context for the sub pipeline
-    this.previousVisitedBlock = {
-      vars: this.previousVisitedBlock.vars,
-      output: subPipelineVars,
-    };
+    // Construct new context with the variables provided to the child pipeline
+    const pipelineVars = this.currentContextVars.clone();
+    pipelineVars.addSourceMap(childPipelineVars);
+
+    this.contextStack.push({
+      vars: pipelineVars,
+      blockOutputVars: new VarMap(),
+    });
 
     super.visitPipeline(position, pipeline, extra);
 
     // Restoring the context of the parent pipeline
-    this.previousVisitedBlock = this.contextStack.pop();
+    this.contextStack.pop();
   }
 
   async run(extension: FormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
-    const contextVars = new VarMap();
-
     // Order of the following calls will determine the order of the sources in the UI
+    const contextVars = new VarMap();
     await setOptionsVars(extension, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 
-    this.previousVisitedBlock = {
+    this.contextStack.push({
       vars: contextVars,
-      output: null,
-    };
+      blockOutputVars: new VarMap(),
+    });
 
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
@@ -512,28 +601,29 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     element,
     pathInBlock,
   }: VisitDocumentElementArgs) {
-    const variableName = element.config.elementKey ?? "element";
-    const listBodyExpression = element.config.element;
+    const listElement = element as ListDocumentElement;
 
-    // `element` of ListElement should always be a deferred expression. But guard just in case.
+    // Variable name without the `@` prefix
+    const variableKey = listElement.config.elementKey ?? "element";
+    const listBodyExpression = listElement.config.element;
+
+    // `element` of ListElement will always be a deferred expression when using Page Editor. But guard just in case.
     if (isDeferExpression(listBodyExpression)) {
-      // Before visiting the deferred expression, we need to save the current context
-      this.contextStack.push(this.previousVisitedBlock);
+      const deferredExpressionVars = new VarMap();
 
-      let deferredExpressionVars: VarMap;
-      if (typeof variableName === "string") {
-        deferredExpressionVars = new VarMap();
-        deferredExpressionVars.setOutputKeyExistence({
+      if (typeof variableKey === "string") {
+        deferredExpressionVars.setVariableExistence({
           source: position.path,
-          outputKey: `@${variableName}`,
+          variableName: `@${variableKey}`,
           existence: VarExistence.DEFINITELY,
           // XXX: type should be derived from the known array item type from the list
           allowAnyChild: true,
         });
       }
 
-      this.currentBlockKnownVars = this.previousVisitedBlock.vars.clone();
-      this.currentBlockKnownVars.addSourceMap(deferredExpressionVars);
+      const bodyKnownVars = this.currentContextVars.clone();
+      bodyKnownVars.addSourceMap(deferredExpressionVars);
+
       this.knownVars.set(
         joinPathParts(
           position.path,
@@ -542,14 +632,14 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
           "element",
           "__value__"
         ),
-        this.currentBlockKnownVars
+        bodyKnownVars
       );
 
-      // Creating context for the sub-pipeline
-      this.previousVisitedBlock = {
-        vars: this.previousVisitedBlock.vars,
-        output: deferredExpressionVars,
-      };
+      // Creating context frame for visiting the deferred expression
+      this.contextStack.push({
+        vars: bodyKnownVars,
+        blockOutputVars: new VarMap(),
+      });
 
       this.visitDocumentElement({
         position,
@@ -563,42 +653,68 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         ),
       });
 
-      // Restoring the context of the parent pipeline
-      this.previousVisitedBlock = this.contextStack.pop();
-      this.currentBlockKnownVars = this.previousVisitedBlock.vars.clone();
+      this.contextStack.pop();
     }
   }
 
+  override visitDocument(
+    position: BlockPosition,
+    blockConfig: BlockConfig
+  ): void {
+    // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
+    // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)
+    for (const [index, element] of Object.entries(blockConfig.config.body)) {
+      this.visitDocumentElement({
+        position,
+        blockConfig,
+        element,
+        pathInBlock: `config.body.${index}`,
+      });
+    }
+  }
+
+  /**
+   * Visit an element within a document builder brick.
+   * @see VisitDocumentElementArgs
+   */
   override visitDocumentElement({
     position,
     blockConfig,
     element,
     pathInBlock,
   }: VisitDocumentElementArgs) {
-    if (element.type === "list") {
-      for (const [prop, value] of Object.entries(element.config)) {
-        // ListElement provides an elementKey to the deferred expression in its body
-        if (prop === "element") {
-          this.visitListElementBody({
-            position,
-            blockConfig,
-            element,
-            pathInBlock,
-          });
-        } else if (isExpression(value)) {
-          this.visitExpression(
-            nestedPosition(position, pathInBlock, "config", prop),
-            value
-          );
+    switch (element.type) {
+      case "list": {
+        for (const [prop, value] of Object.entries(element.config)) {
+          // ListElement provides an elementKey to the deferred expression in its body
+          if (prop === "element") {
+            this.visitListElementBody({
+              position,
+              blockConfig,
+              element,
+              pathInBlock,
+            });
+          } else if (isExpression(value)) {
+            this.visitExpression(
+              nestedPosition(position, pathInBlock, "config", prop),
+              value
+            );
+          }
         }
+
+        break;
       }
-    } else {
-      super.visitDocumentElement({
-        position,
-        blockConfig,
-        element,
-        pathInBlock,
-      });
+
+      default: {
+        super.visitDocumentElement({
+          position,
+          blockConfig,
+          element,
+          pathInBlock,
+        });
+
+        break;
+      }
     }
   }
 }
