@@ -34,7 +34,6 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   varAutosuggest: false,
-  googleSheetsModInputs: false,
   partnerId: null,
   authMethod: null,
   authServiceId: null,

@@ -48,7 +48,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { selectSettings } from "@/store/settingsSelectors";
+import useFlags from "@/hooks/useFlags";
 
 const baseFieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -75,9 +75,9 @@ const RecipeOptionsDefinition: React.VFC = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipe, isFetching, error } = useRecipe(recipeId);
 
-  const { googleSheetsModInputs } = useSelector(selectSettings);
+  const { flagOn } = useFlags();
   const fieldTypes = useMemo(() => {
-    if (!googleSheetsModInputs) {
+    if (!flagOn("gsheets-mod-inputs")) {
       return baseFieldTypes;
     }
 
@@ -91,7 +91,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
         }),
       },
     ];
-  }, [googleSheetsModInputs]);
+  }, [flagOn]);
 
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(
