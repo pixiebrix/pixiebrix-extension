@@ -25,7 +25,12 @@ import { screen } from "@testing-library/react";
 import { recipeDefinitionFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
-import settingsSlice from "@/store/settingsSlice";
+
+jest.mock("@/hooks/useFlags", () =>
+  jest.fn().mockReturnValue({
+    flagOn: jest.fn().mockReturnValue(true),
+  })
+);
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -41,12 +46,6 @@ describe("RecipeOptionsDefinitions", () => {
           extensionsSlice.actions.installRecipe({
             recipe,
             extensionPoints: recipe.extensionPoints,
-          })
-        );
-        dispatch(
-          settingsSlice.actions.setFlag({
-            flag: "googleSheetsModInputs",
-            value: true,
           })
         );
       },

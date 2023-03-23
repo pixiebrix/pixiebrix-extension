@@ -209,15 +209,23 @@ export const produceSchemaOnUiTypeChange = (
     /* eslint-disable security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
-    if (uiWidget === "database") {
-      draftPropertySchema.$ref = databaseSchema.$id;
-      delete draftPropertySchema.type;
-    } else if (uiWidget === "googleSheet") {
-      draftPropertySchema.$ref = googleSheetSchema.$id;
-      delete draftPropertySchema.type;
-    } else {
-      draftPropertySchema.type = propertyType;
-      delete draftPropertySchema.$ref;
+    switch (uiWidget) {
+      case "database": {
+        draftPropertySchema.$ref = databaseSchema.$id;
+        delete draftPropertySchema.type;
+        break;
+      }
+
+      case "googleSheet": {
+        draftPropertySchema.$ref = googleSheetSchema.$id;
+        delete draftPropertySchema.type;
+        break;
+      }
+
+      default: {
+        draftPropertySchema.type = propertyType;
+        delete draftPropertySchema.$ref;
+      }
     }
 
     if (propertyFormat) {
