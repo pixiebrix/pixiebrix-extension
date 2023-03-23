@@ -28,6 +28,7 @@ import { type BlockConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import TourStep from "@/blocks/transformers/tourStep/tourStep";
+import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 
 /**
  * Get a default block config for a block
@@ -66,7 +67,7 @@ export function getExampleBlockConfig(
           },
         },
       },
-      uiSchema: {},
+      uiSchema: getMinimalUiSchema(),
       cancelable: true,
       submitCaption: "Submit",
       location: "modal",
