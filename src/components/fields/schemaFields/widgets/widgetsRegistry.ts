@@ -32,6 +32,7 @@ type Widgets = {
       }
   >;
   ObjectWidget: React.VFC<SchemaFieldProps>;
+  FixedInnerObjectWidget: React.VFC<SchemaFieldProps>;
   OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   SchemaSelectWidget: React.VFC<SchemaFieldProps>;
   TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps>;
@@ -70,6 +71,7 @@ const widgetsRegistry: Widgets = {
   IntegerWidget: unsetWidgetFactory("IntegerWidget"),
   NumberWidget: unsetWidgetFactory("NumberWidget"),
   ObjectWidget: unsetWidgetFactory("ObjectWidget"),
+  FixedInnerObjectWidget: unsetWidgetFactory("FixedInnerObjectWidget"),
   OmitFieldWidget: unsetWidgetFactory("OmitFieldWidget"),
   SchemaSelectWidget: unsetWidgetFactory("SchemaSelectWidget"),
   TemplateToggleWidget: unsetWidgetFactory("TemplateToggleWidget"),

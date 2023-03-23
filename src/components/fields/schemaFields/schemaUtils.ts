@@ -16,6 +16,7 @@
  */
 
 import { type Schema } from "@/core";
+import { type JSONSchema7Definition } from "json-schema";
 
 type SchemaProperties = Record<string, Schema>;
 
@@ -54,4 +55,10 @@ export function castSchema(
     type: "object",
     properties: schemaOrProperties as SchemaProperties,
   };
+}
+
+export function isRealDefinition(
+  schemaDefinition: JSONSchema7Definition
+): schemaDefinition is Schema {
+  return typeof schemaDefinition === "object";
 }
