@@ -195,7 +195,7 @@
     "@types/js-beautify": "^1.13.2",
     "@types/js-cookie": "^3.0.0",
     "@types/js-yaml": "^4.0.2",
-    "@types/jsdom": "^21.1.0",
+    "@types/jsdom": "^21.1.1",
     "@types/json-schema": "^7.0.8",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.190",
