@@ -16,7 +16,7 @@
  */
 
 import { useField, useFormikContext } from "formik";
-import { type Expression } from "@/core";
+import { type Expression, type UserOptions } from "@/core";
 import { joinName } from "@/utils";
 import { useReducer } from "react";
 import {
@@ -24,12 +24,13 @@ import {
   type ServiceSlice,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual, startsWith } from "lodash";
 import { pickDependency } from "@/services/useDependency";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { isVarExpression } from "@/runtime/mapArgs";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
@@ -74,6 +75,8 @@ function useSpreadsheetId(basePath: string): string | null {
     joinName(basePath, "spreadsheetId")
   );
 
+  const [{ value: optionsArgs }] = useField<UserOptions>("optionsArgs");
+
   const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
 
   /**
@@ -97,7 +100,25 @@ function useSpreadsheetId(basePath: string): string | null {
    */
   useAsyncEffect(async () => {
     dispatch(spreadsheetSlice.actions.setLoading());
-    if (isServiceValueFormat(fieldValue)) {
+    if (
+      isVarExpression(fieldValue) &&
+      startsWith(fieldValue.__value__, "@options.") &&
+      !isEmpty(optionsArgs)
+    ) {
+      const optionsKey = fieldValue.__value__.replace("@options.", "");
+      if (isEmpty(optionsKey)) {
+        dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
+        return;
+      }
+
+      // Leaving this lint warning for now, this DOES come from user input
+      const optionsValue = optionsArgs[optionsKey];
+      if (typeof optionsValue === "string") {
+        dispatch(spreadsheetSlice.actions.setSpreadsheetId(optionsValue));
+      } else {
+        dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
+      }
+    } else if (isServiceValueFormat(fieldValue)) {
       if (fieldValue == null) {
         // A service value can be null, but here we don't want to try and load anything if it is null
         dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));

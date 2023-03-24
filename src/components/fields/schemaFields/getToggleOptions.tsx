@@ -214,6 +214,7 @@ export function getToggleOptions({
       Widget: widgetsRegistry.SheetsFileWidget,
       interpretValue: () => "",
     });
+    handleVarOption();
     handleOptionalValue();
     return options;
   }

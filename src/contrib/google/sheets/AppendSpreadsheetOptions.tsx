@@ -31,10 +31,7 @@ import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
-import {
-  BASE_SHEET_SCHEMA,
-  SHEET_SERVICE_SCHEMA,
-} from "@/contrib/google/sheets/schemas";
+import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 
@@ -140,12 +137,9 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
-    []
+    [],
+    BASE_SHEET_SCHEMA
   );
-  const sheetFieldSchema: Schema = {
-    title: "Spreadsheet",
-    oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
-  };
 
   return (
     <div className="my-2">
@@ -161,7 +155,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         >
           <SchemaField
             name={joinName(basePath, "spreadsheetId")}
-            schema={sheetFieldSchema}
+            schema={sheetSchema}
             isRequired
           />
           {
