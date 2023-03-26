@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import { type Installable, UnavailableRecipe } from "./blueprintsTypes";
+import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";

@@ -20,6 +20,7 @@ import {
   type Config,
   define,
   derive,
+  extend,
   type FactoryConfig,
 } from "cooky-cutter";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
@@ -31,6 +32,7 @@ import {
   type InnerDefinitions,
   type Metadata,
   type OutputKey,
+  type PersistedExtension,
   type RecipeMetadata,
   type RegistryId,
   type RenderedArgs,
@@ -243,6 +245,16 @@ export const extensionFactory = define<IExtension>({
   }),
   active: true,
 });
+
+export const persistedExtensionFactory = extend<IExtension, PersistedExtension>(
+  extensionFactory,
+  {
+    createTimestamp: timestampFactory,
+    updateTimestamp: timestampFactory,
+    _unresolvedExtensionBrand: undefined,
+    active: true,
+  }
+);
 
 export const cloudExtensionFactory = (
   override?: Partial<Config<CloudExtension>>
