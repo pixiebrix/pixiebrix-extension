@@ -56,6 +56,9 @@ const workshopSlice = createSlice({
   name: "workshop",
   initialState: initialWorkshopState,
   reducers: {
+    resetWorkshop() {
+      return initialWorkshopState;
+    },
     setScopes(state, { payload: scopes }) {
       state.filters.scopes = scopes;
     },

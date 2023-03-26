@@ -54,6 +54,9 @@ const blueprintsSlice = createSlice({
   name: "blueprints",
   initialState,
   reducers: {
+    resetScreen() {
+      return initialState;
+    },
     setView(state, { payload: view }: PayloadAction<View>) {
       state.view = view;
     },

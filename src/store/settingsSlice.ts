@@ -45,6 +45,9 @@ const settingsSlice = createSlice({
   name: "settings",
   initialState: initialSettingsState,
   reducers: {
+    resetSettings() {
+      return initialSettingsState;
+    },
     setMode(state, { payload: { mode } }) {
       state.mode = mode;
     },

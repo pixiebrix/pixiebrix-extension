@@ -77,6 +77,9 @@ export const recipesSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
+    resetRecipes() {
+      return initialState;
+    },
     startLoadingFromCache(state) {
       state.isFetchingFromCache = true;
     },
