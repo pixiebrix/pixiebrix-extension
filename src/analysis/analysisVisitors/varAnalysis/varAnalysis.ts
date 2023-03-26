@@ -203,6 +203,27 @@ function setVarsFromSchema({
     }
 
     if (propertySchema.type === "object") {
+      const nodePath = [...parentPath, key];
+
+      const existence =
+        existenceOverride ?? required?.includes(key)
+          ? VarExistence.DEFINITELY
+          : VarExistence.MAYBE;
+
+      // If the items is an array, then we allow any child to simplify the validation logic
+      const allowAnyChild =
+        propertySchema.additionalProperties != null ||
+        !isEmpty(propertySchema.additionalProperties);
+
+      // Set existence for the current node
+      contextVars.setExistence({
+        source,
+        path: nodePath,
+        existence,
+        isArray: false,
+        allowAnyChild,
+      });
+
       setVarsFromSchema({
         schema: propertySchema,
         contextVars,

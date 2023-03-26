@@ -216,6 +216,11 @@ export class CustomEventReader extends Reader {
   };
 }
 
+/**
+ * An event reader to show a helpful message the output preview for the trigger
+ * @param trigger the trigger type.
+ * @see getEventReader
+ */
 export function getShimEventReader(trigger: Trigger): unknown {
   const reader = getEventReader(trigger);
 
@@ -234,6 +239,10 @@ export function getShimEventReader(trigger: Trigger): unknown {
   return null;
 }
 
+/**
+ * Return the reader for the `event` property of the trigger's input, or null if no event data is available.
+ * @param trigger the trigger type
+ */
 export function getEventReader(trigger: Trigger): IReader | null {
   if (KEYBOARD_TRIGGERS.includes(trigger)) {
     return new KeyboardEventReader();
