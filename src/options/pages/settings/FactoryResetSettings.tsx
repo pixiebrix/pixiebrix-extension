@@ -96,6 +96,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
               dispatch(resetSettings());
               dispatch(resetWorkshop());
               dispatch(sessionChangesActions.resetSessionChanges());
+              // Force all open page editors to be reloaded
               dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
 
               await Promise.allSettled([
