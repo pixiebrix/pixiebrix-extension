@@ -34,6 +34,7 @@ import {
   getUpdatedAt,
   isDeployment,
   isExtension,
+  isUnavailableRecipe,
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
@@ -79,6 +80,10 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const getStatus = useCallback(
     (installable: Installable): InstallableStatus => {
+      if (isUnavailableRecipe(installable)) {
+        return "Unavailable";
+      }
+
       if (isDeployment(installable, installedExtensions)) {
         if (isExtension(installable)) {
           return isDeploymentActive(installable) ? "Active" : "Paused";

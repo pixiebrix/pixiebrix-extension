@@ -33,10 +33,18 @@ import AsyncButton from "@/components/AsyncButton";
 const Status: React.VoidFunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { activate, reinstall, requestPermissions } =
+  const { activate, reinstall, requestPermissions, uninstall } =
     useInstallableViewItemActions(installableViewItem);
 
   const { hasUpdate, status, installedVersionNumber } = installableViewItem;
+
+  if (status === "Unavailable") {
+    return (
+      <Button size="sm" variant="outline-primary" onClick={uninstall}>
+        Deactivate
+      </Button>
+    );
+  }
 
   if (activate) {
     return (

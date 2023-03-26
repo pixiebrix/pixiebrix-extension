@@ -28,6 +28,7 @@ import { type Row } from "react-table";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 import { getUniqueId } from "@/options/pages/blueprints/utils/installableUtils";
+import GridCardErrorBoundary from "@/options/pages/blueprints/gridView/GridCardErrorBoundary";
 
 /**
  *  Expands `react-table` rows recursively in chunks of
@@ -125,10 +126,15 @@ const GridView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
           {gridRow.map((row: Row<InstallableViewItem>) => {
             tableInstance.prepareRow(row);
             return (
-              <GridCard
-                key={getUniqueId(row.original.installable)}
+              <GridCardErrorBoundary
                 installableItem={row.original}
-              />
+                key={getUniqueId(row.original.installable)}
+              >
+                <GridCard
+                  key={getUniqueId(row.original.installable)}
+                  installableItem={row.original}
+                />
+              </GridCardErrorBoundary>
             );
           })}
         </div>

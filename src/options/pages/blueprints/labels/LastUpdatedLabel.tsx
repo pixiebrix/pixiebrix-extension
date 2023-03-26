@@ -25,9 +25,13 @@ import React from "react";
 import cx from "classnames";
 
 const LastUpdatedLabel: React.VoidFunctionComponent<{
-  timestamp: string;
+  timestamp: string | null;
   className?: string;
 }> = ({ timestamp, className }) => {
+  if (timestamp == null) {
+    return null;
+  }
+
   const timestampFormatted = new Date(timestamp).toLocaleString();
 
   // Omitted attributes aren't required

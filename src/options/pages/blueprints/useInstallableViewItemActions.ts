@@ -68,7 +68,8 @@ function useInstallableViewItemActions(
   const { restrict } = useFlags();
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
-  const isInstalled = status === "Active" || status === "Paused";
+  const isInstalled =
+    status === "Active" || status === "Paused" || status === "Unavailable";
   const isInstallableExtension = isExtension(installable);
   const isInstallableBlueprint = !isInstallableExtension;
 
@@ -82,6 +83,7 @@ function useInstallableViewItemActions(
   const hasBlueprint =
     isExtensionFromRecipe(installable) || isInstallableBlueprint;
 
+  const isUnavailable = status === "Unavailable";
   const isDeployment = sharing.source.type === "Deployment";
 
   // Restricted users aren't allowed to uninstall/reinstall deployments. They are controlled by the admin from the
@@ -245,6 +247,7 @@ function useInstallableViewItemActions(
   };
 
   const showPublishAction =
+    !isUnavailable &&
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
     // Extensions can be published
@@ -253,7 +256,7 @@ function useInstallableViewItemActions(
       sharing.listingId == null);
 
   const viewInMarketplaceHref =
-    isDeployment || showPublishAction
+    isDeployment || showPublishAction || isUnavailable
       ? null
       : // If showPublishAction is false, then the listing for the recipe is defined
         `${MARKETPLACE_URL}${sharing.listingId}/`;
@@ -262,12 +265,15 @@ function useInstallableViewItemActions(
     viewPublish: showPublishAction ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
-    viewShare: isDeployment ? null : viewShare,
+    viewShare: isDeployment || isUnavailable ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isRestricted ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
     // no activation-time integrations/options associated with them.)
-    reinstall: hasBlueprint && isInstalled && !isRestricted ? reinstall : null,
+    reinstall:
+      hasBlueprint && isInstalled && !isRestricted && !isUnavailable
+        ? reinstall
+        : null,
     viewLogs: status === "Inactive" ? null : viewLogs,
     activate: status === "Inactive" ? activate : null,
     requestPermissions: hasPermissions ? null : requestPermissions,

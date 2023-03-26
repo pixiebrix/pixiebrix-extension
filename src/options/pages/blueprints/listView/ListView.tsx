@@ -22,6 +22,7 @@ import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 import { type BlueprintsPageContentProps } from "@/options/pages/blueprints/blueprintsTypes";
+import ListItemErrorBoundary from "@/options/pages/blueprints/listView/ListItemErrorBoundary";
 
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;
@@ -70,7 +71,9 @@ const ListView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
           return row.isGrouped ? (
             <ListGroupHeader groupName={row.groupByVal} style={style} />
           ) : (
-            <ListItem installableItem={row.original} style={style} />
+            <ListItemErrorBoundary installableItem={row.original} style={style}>
+              <ListItem installableItem={row.original} style={style} />
+            </ListItemErrorBoundary>
           );
         }}
       </List>

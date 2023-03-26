@@ -275,6 +275,20 @@ describe("useInstallableViewItemActions", () => {
     );
   });
 
+  test("blueprint with access revoked", () => {
+    mockHooks();
+    const blueprintItem = installableItemFactory({
+      isExtension: false,
+      sharingType: "Team",
+      status: "Unavailable",
+    });
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+    expectActions(["uninstall", "viewLogs"], actions);
+  });
+
   test("paused deployment with unrestricted user", () => {
     mockHooks({ restricted: false });
     const deploymentItem = installableItemFactory({
