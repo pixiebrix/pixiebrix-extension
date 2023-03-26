@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import React from "react";
 import { useDispatch } from "react-redux";
 import notify from "@/utils/notify";
@@ -25,11 +25,12 @@ import { clearPackages } from "@/baseRegistry";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { authSlice } from "@/auth/authSlice";
-import { clearLogs } from "@/background/messenger/api";
+import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import workshopSlice from "@/store/workshopSlice";
 import { sessionChangesSlice } from "@/store/sessionChanges/sessionChangesSlice";
+import AsyncButton from "@/components/AsyncButton";
 
 const { resetOptions } = extensionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -52,7 +53,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
           Click here to reset your local PixieBrix data.{" "}
           <b>This will deactivate any mods you&apos;ve installed.</b>
         </p>
-        <Button
+        <AsyncButton
           variant="danger"
           onClick={async () => {
             try {
@@ -74,6 +75,8 @@ const FactoryResetSettings: React.FunctionComponent = () => {
                 clearPackages(),
               ]);
 
+              reactivateEveryTab();
+
               notify.success("Reset all mods and integration configurations");
             } catch (error) {
               notify.error({
@@ -84,7 +87,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
           }}
         >
           Factory Reset
-        </Button>
+        </AsyncButton>
       </Card.Body>
     </Card>
   );
