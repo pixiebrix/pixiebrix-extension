@@ -17,33 +17,46 @@
 
 import { Card } from "react-bootstrap";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
 import extensionsSlice from "@/store/extensionsSlice";
 import servicesSlice from "@/store/servicesSlice";
 import { clearPackages } from "@/baseRegistry";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { authSlice } from "@/auth/authSlice";
 import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import workshopSlice from "@/store/workshopSlice";
-import { sessionChangesSlice } from "@/store/sessionChanges/sessionChangesSlice";
+import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";
+import { reportEvent } from "@/telemetry/events";
+import { useModals } from "@/components/ConfirmationModal";
+import { type Permissions } from "webextension-polyfill";
+import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { persistor } from "@/store/optionsStore";
 
 const { resetOptions } = extensionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
-const { resetEditor } = editorSlice.actions;
 const { resetRecipes } = recipesSlice.actions;
 const { resetAuth } = authSlice.actions;
 const { resetScreen: resetBlueprintsScreen } = blueprintsSlice.actions;
 const { resetSettings } = settingsSlice.actions;
 const { resetWorkshop } = workshopSlice.actions;
-const { resetSessionChanges } = sessionChangesSlice.actions;
+
+async function revokeAllAdditionalPermissions() {
+  const permissions: Permissions.AnyPermissions =
+    await browser.permissions.getAll();
+  const additional = selectAdditionalPermissionsSync(permissions);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- typings appear to be incorrect
+  await browser.permissions.remove(additional as any);
+}
 
 const FactoryResetSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
+  const { showConfirmation } = useModals();
+  const sessionId = useSelector(selectSessionId);
 
   return (
     <Card border="danger">
@@ -51,25 +64,45 @@ const FactoryResetSettings: React.FunctionComponent = () => {
       <Card.Body className="text-danger">
         <p className="card-text">
           Click here to reset your local PixieBrix data.{" "}
-          <b>This will deactivate any mods you&apos;ve installed.</b>
+          <b>
+            This will deactivate any mods you&apos;ve activated and reset all
+            browser extension settings.
+          </b>
         </p>
         <AsyncButton
           variant="danger"
           onClick={async () => {
+            const confirmed = await showConfirmation({
+              title: "Factory Reset",
+              message:
+                "Deactivate all mods and reset all browser extension settings?",
+              submitCaption: "Yes, reset extension",
+              cancelCaption: "Back to safety",
+            });
+
+            if (!confirmed) {
+              return;
+            }
+
+            reportEvent("FactoryReset");
+
             try {
+              // Reset all persisted state -- see optionsStore.ts
+              dispatch(resetBlueprintsScreen());
               dispatch(resetOptions());
               dispatch(resetServices());
-              dispatch(resetEditor());
               dispatch(resetRecipes());
               dispatch(resetAuth());
-              dispatch(resetBlueprintsScreen());
               dispatch(resetSettings());
               dispatch(resetWorkshop());
-              dispatch(resetSessionChanges());
-              dispatch(sessionChangesSlice.actions.setSessionChanges());
-              resetEditor();
+              dispatch(sessionChangesActions.resetSessionChanges());
+              dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
 
               await Promise.allSettled([
+                // Clear persisted editor state directly because it's not attached to the options page store.
+                browser.storage.local.remove("persist:editor"),
+                persistor.flush(),
+                revokeAllAdditionalPermissions(),
                 clearLogs(),
                 browser.contextMenus.removeAll(),
                 clearPackages(),

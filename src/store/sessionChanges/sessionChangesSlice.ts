@@ -20,7 +20,6 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
-import { uuidv4 } from "@/types/helpers";
 
 export const initialState: SessionChangesState = {
   latestChanges: {},
@@ -33,10 +32,7 @@ export const sessionChangesSlice = createSlice({
   initialState,
   reducers: {
     resetSessionChanges() {
-      const state = { ...initialState };
-      // Add an entry to force open Page Editors to show session expired warning
-      state.latestChanges[uuidv4()] = Date.now();
-      return state;
+      return initialState;
     },
     setSessionChanges(
       state,
