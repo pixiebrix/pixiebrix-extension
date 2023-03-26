@@ -16,7 +16,6 @@
  */
 
 import {
-  fetchNewPackages,
   clear,
   getByKinds,
   syncPackages,
@@ -39,23 +38,9 @@ describe("localRegistry", () => {
     getApiClientMock.mockResolvedValue({
       get: jest.fn().mockResolvedValue({ data: [recipeDefinitionFactory()] }),
     });
-    await fetchNewPackages();
+    await syncPackages();
     const recipes = await getByKinds(["recipe"]);
     expect(recipes).toHaveLength(1);
-  });
-
-  it("should fetch new packages", async () => {
-    getApiClientMock.mockResolvedValue({
-      get: jest.fn().mockResolvedValue({ data: [recipeDefinitionFactory()] }),
-    });
-    await fetchNewPackages();
-    await fetchNewPackages();
-
-    const client = await getApiClientMock();
-    expect((client.get as jest.Mock).mock.calls).toEqual([
-      ["/api/registry/bricks/?"],
-      [expect.stringMatching(/\/api\/registry\/bricks\/\?updated_at__gt=\S+/)],
-    ]);
   });
 
   it("should sync packages for empty db", async () => {

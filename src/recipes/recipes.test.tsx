@@ -91,8 +91,8 @@ test("load recipes and save one", async () => {
     localRegistry.getByKinds
   );
 
-  (messengerRegistry.fetch as jest.Mock).mockImplementation(
-    localRegistry.fetchNewPackages
+  (messengerRegistry.syncRemote as jest.Mock).mockImplementation(
+    localRegistry.syncPackages
   );
 
   const fetchingSavingPromise = pDefer<void>();

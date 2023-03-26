@@ -19,7 +19,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
 import { type RecipesRootState, type RecipesState } from "./recipesTypes";
 import recipeRegistry from "./registry";
-import { fetchNewPackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/baseRegistry";
 
 export const initialState: RecipesState = Object.freeze({
   recipes: [],
@@ -62,7 +62,7 @@ export const refreshRecipes = createAsyncThunk<
   dispatch(recipesSlice.actions.startLoading());
 
   try {
-    await fetchNewPackages();
+    await syncRemotePackages();
   } catch (error) {
     const serializedError = serializeError(error, { useToJSON: false });
     dispatch(recipesSlice.actions.setError(serializedError));

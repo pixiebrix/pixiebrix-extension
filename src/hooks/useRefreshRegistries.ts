@@ -23,7 +23,7 @@ import {
   clearServiceCache,
   services as serviceAuthRegistry,
 } from "@/background/messenger/api";
-import { fetchNewPackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/baseRegistry";
 
 const refreshServices = async () => {
   await serviceAuthRegistry.refresh();
@@ -38,8 +38,9 @@ const refreshServices = async () => {
  * Additionally, refreshes background states necessary for making network calls.
  */
 export async function refreshRegistries(): Promise<void> {
+  // Sync remote packages in order to be able to remove packages that have been deleted/the user no longer has access to
   console.debug("Refreshing bricks from the server");
-  await Promise.all([fetchNewPackages(), refreshServices()]);
+  await Promise.all([syncRemotePackages(), refreshServices()]);
 }
 
 const throttledRefreshRegistries = throttle(

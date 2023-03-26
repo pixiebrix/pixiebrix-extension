@@ -106,7 +106,6 @@ declare global {
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    REGISTRY_FETCH: typeof registry.fetchNewPackages;
     REGISTRY_SYNC: typeof registry.syncPackages;
     REGISTRY_CLEAR: typeof registry.clear;
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
@@ -181,7 +180,6 @@ export default function registerMessenger(): void {
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    REGISTRY_FETCH: registry.fetchNewPackages,
     REGISTRY_SYNC: registry.syncPackages,
     REGISTRY_CLEAR: registry.clear,
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
