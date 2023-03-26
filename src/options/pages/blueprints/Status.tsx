@@ -24,6 +24,7 @@ import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faExclamationTriangle,
   faPause,
   faShieldAlt,
   faSync,
@@ -33,16 +34,23 @@ import AsyncButton from "@/components/AsyncButton";
 const Status: React.VoidFunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { activate, reinstall, requestPermissions, uninstall } =
+  const { activate, reinstall, requestPermissions } =
     useInstallableViewItemActions(installableViewItem);
 
-  const { hasUpdate, status, installedVersionNumber } = installableViewItem;
+  const { hasUpdate, status, installedVersionNumber, unavailable } =
+    installableViewItem;
 
-  if (status === "Unavailable") {
+  if (unavailable) {
     return (
-      <Button size="sm" variant="outline-primary" onClick={uninstall}>
-        Deactivate
-      </Button>
+      <div className="text-warning">
+        <div className={styles.root}>
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          <span className={styles.textStatus}>
+            Active
+            <span className={styles.versionNumber}>No longer available</span>
+          </span>
+        </div>
+      </div>
     );
   }
 

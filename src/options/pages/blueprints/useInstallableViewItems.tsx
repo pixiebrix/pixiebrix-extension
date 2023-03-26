@@ -80,10 +80,6 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const getStatus = useCallback(
     (installable: Installable): InstallableStatus => {
-      if (isUnavailableRecipe(installable)) {
-        return "Unavailable";
-      }
-
       if (isDeployment(installable, installedExtensions)) {
         if (isExtension(installable)) {
           return isDeploymentActive(installable) ? "Active" : "Paused";
@@ -148,6 +144,7 @@ function useInstallableViewItems(installables: Installable[]): {
             installable
           ),
           icon: installableIcon(installable),
+          unavailable: isUnavailableRecipe(installable),
           installable,
         } satisfies InstallableViewItem;
       }),

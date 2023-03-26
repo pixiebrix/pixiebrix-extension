@@ -49,9 +49,7 @@ export type InstallableStatus =
   | "Active"
   | "Inactive"
   // The installable is a deployment that has been paused
-  | "Paused"
-  // The IExtension(s) for a mod are installed, but the user no longer has access to the source mod
-  | "Unavailable";
+  | "Paused";
 
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableViewItem = {
@@ -69,6 +67,10 @@ export type InstallableViewItem = {
   icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
   installable: Installable;
+  /**
+   * True if the source package is no longer available
+   */
+  unavailable: boolean;
 };
 
 export type BlueprintsPageContentProps = {

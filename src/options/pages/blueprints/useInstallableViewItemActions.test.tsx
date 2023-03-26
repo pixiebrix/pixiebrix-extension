@@ -90,10 +90,12 @@ const installableItemFactory = ({
   isExtension,
   sharingType,
   status,
+  unavailable = false,
 }: {
   isExtension: boolean;
   sharingType: SharingType;
   status: InstallableStatus;
+  unavailable?: boolean;
 }) =>
   ({
     installable: isExtension ? extensionFactory() : recipeFactory(),
@@ -103,6 +105,7 @@ const installableItemFactory = ({
       },
     },
     status,
+    unavailable,
   } as InstallableViewItem);
 
 afterEach(() => {
@@ -280,7 +283,8 @@ describe("useInstallableViewItemActions", () => {
     const blueprintItem = installableItemFactory({
       isExtension: false,
       sharingType: "Team",
-      status: "Unavailable",
+      status: "Active",
+      unavailable: true,
     });
 
     const {
