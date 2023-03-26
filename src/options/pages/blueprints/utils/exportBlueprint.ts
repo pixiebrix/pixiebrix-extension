@@ -53,6 +53,7 @@ export function makeBlueprint(
   const {
     extensionPointId,
     label,
+    // Use v1 for backward compatibility
     apiVersion = "v1",
     templateEngine,
     permissions,

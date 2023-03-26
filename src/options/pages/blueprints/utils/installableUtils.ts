@@ -73,10 +73,18 @@ export function isBlueprint(
   return !isExtension(installable);
 }
 
+/**
+ * Returns a unique id for the installable. Suitable for use as a React key
+ * @param installable the installable
+ */
 export function getUniqueId(installable: Installable): UUID | RegistryId {
   return isExtension(installable) ? installable.id : installable.metadata.id;
 }
 
+/**
+ * Returns the human-readable label for the installable
+ * @param installable the installable
+ */
 export function getLabel(installable: Installable): string {
   return isExtension(installable)
     ? installable.label
@@ -84,12 +92,12 @@ export function getLabel(installable: Installable): string {
 }
 
 export const getDescription = (installable: Installable): string => {
-  let description = isExtension(installable)
+  const description = isExtension(installable)
     ? installable._recipe?.description
     : installable.metadata.description;
 
   if (!description && isExtension(installable)) {
-    description = "Created in the Page Editor";
+    return "Created in the Page Editor";
   }
 
   return description;
@@ -136,7 +144,12 @@ function hasRecipeScope(
   return Boolean(recipe.metadata?.id.startsWith(scope + "/"));
 }
 
-function isPersonal(installable: Installable, userScope: string) {
+/**
+ * Returns true if the user directly owns the installable
+ * @param installable the installable
+ * @param userScope the user's scope, or null if it's not set
+ */
+function isPersonal(installable: Installable, userScope: string | null) {
   if (isExtension(installable)) {
     return (
       isPersonalExtension(installable) ||
@@ -180,7 +193,7 @@ export function isDeployment(
 }
 
 /**
- * Checks if a Blueprint has been made public but is not yet published to the Marketplace.
+ * Returns true if a Blueprint has been made public but is not yet published to the Marketplace.
  */
 export function isRecipePendingPublish(
   recipe: RecipeDefinition,

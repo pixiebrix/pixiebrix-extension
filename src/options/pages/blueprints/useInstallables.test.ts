@@ -75,8 +75,8 @@ describe("useInstallables", () => {
   it("handles unavailable", async () => {
     const wrapper = renderHook(() => useInstallables(), {
       setupRedux(dispatch) {
-        // eslint-disable-next-line new-cap -- unsave
         dispatch(
+          // eslint-disable-next-line new-cap -- unsave
           extensionsSlice.actions.UNSAFE_setExtensions([
             persistedExtensionFactory({
               _recipe: {
@@ -116,8 +116,8 @@ describe("useInstallables", () => {
 
     const wrapper = renderHook(() => useInstallables(), {
       setupRedux(dispatch) {
-        // eslint-disable-next-line new-cap -- test setup
         dispatch(
+          // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
             persistedExtensionFactory({
               _recipe: {
@@ -186,8 +186,8 @@ describe("useInstallables", () => {
 
     const wrapper = renderHook(() => useInstallables(), {
       setupRedux(dispatch) {
-        // eslint-disable-next-line new-cap -- test setup
         dispatch(
+          // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
             // Content doesn't matter, just need to match the ID
             persistedExtensionFactory({ id: cloudExtension.id }),
