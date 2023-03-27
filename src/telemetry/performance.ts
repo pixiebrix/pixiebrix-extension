@@ -19,7 +19,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/services/baseService";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { flagOn } from "@/auth/token";
+import { flagOn, getUserData } from "@/auth/token";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;
@@ -50,6 +50,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
   }
 
   const { version_name } = browser.runtime.getManifest();
+  const { user: userId } = await getUserData();
 
   datadogRum.init({
     applicationId,
@@ -67,6 +68,11 @@ export async function initPerformanceMonitoring(): Promise<void> {
     // List the URLs/origins for sending trace headers
     // https://docs.datadoghq.com/real_user_monitoring/connect_rum_and_traces/?tab=browserrum#usage
     allowedTracingUrls: [baseUrl],
+  });
+
+  // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
+  datadogRum.setUser({
+    id: userId,
   });
 
   datadogRum.startSessionReplayRecording();
