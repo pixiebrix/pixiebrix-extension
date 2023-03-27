@@ -19,6 +19,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { orderBy } from "lodash";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
 
 type RecentBrick = {
   id: string;
@@ -86,6 +87,9 @@ const workshopSlice = createSlice({
         ).slice(0, state.maxRecent);
       }
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialWorkshopState);
   },
 });
 

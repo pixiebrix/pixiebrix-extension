@@ -20,6 +20,7 @@ import { serializeError } from "serialize-error";
 import { type RecipesRootState, type RecipesState } from "./recipesTypes";
 import recipeRegistry from "./registry";
 import { fetchNewPackages } from "@/baseRegistry";
+import { revertAll } from "@/store/commonActions";
 
 export const initialState: RecipesState = Object.freeze({
   recipes: [],
@@ -103,6 +104,9 @@ export const recipesSlice = createSlice({
       state.isFetching = false;
       state.isLoading = false;
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialState);
   },
 });
 
