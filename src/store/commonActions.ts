@@ -15,21 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { refreshServices } from "./locator";
-import { syncRemotePackages } from "@/baseRegistry";
-import { expectContext } from "@/utils/expectContext";
+import { createAction } from "@reduxjs/toolkit";
 
 /**
- * Method to refresh packages and services in the background context.
- *
- * @see useRefreshRegistries
+ * Redux action to revert slices to their initial state.
  */
-export async function refreshRegistries(): Promise<void> {
-  expectContext("background");
-
-  await Promise.all([
-    // Call the @/baseRegistry copy of fetchNewPackages so it invalidates in-memory registries
-    syncRemotePackages(),
-    refreshServices(),
-  ]);
-}
+export const revertAll = createAction("REVERT_ALL");

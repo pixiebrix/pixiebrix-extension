@@ -31,6 +31,9 @@ export const sessionChangesSlice = createSlice({
   name: key,
   initialState,
   reducers: {
+    resetSessionChanges() {
+      return initialState;
+    },
     setSessionChanges(
       state,
       action: PayloadAction<{

@@ -70,7 +70,6 @@ export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
 
 export const registry = {
-  fetch: getMethod("REGISTRY_FETCH", bg),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
   find: getMethod("REGISTRY_FIND", bg),

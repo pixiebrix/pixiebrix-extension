@@ -32,6 +32,7 @@ exports[`AppendSpreadsheetOptions should render successfully 1`] = `
                 <input
                   class="form-control"
                   disabled=""
+                  id="config.spreadsheetId"
                   type="text"
                   value="Test Sheet"
                 />

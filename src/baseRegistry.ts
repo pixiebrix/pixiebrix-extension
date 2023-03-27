@@ -58,19 +58,6 @@ function notifyDatabaseListeners() {
 }
 
 /**
- * Fetch new remote packages and notify listeners.
- */
-export const fetchNewPackages = memoizeUntilSettled(async () => {
-  expectContext("extension");
-
-  const changed = await backgroundRegistry.fetch();
-
-  if (changed) {
-    notifyDatabaseListeners();
-  }
-});
-
-/**
  * Replace IDB with remote packages and notify listeners.
  */
 export const syncRemotePackages = memoizeUntilSettled(async () => {

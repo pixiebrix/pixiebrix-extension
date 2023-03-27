@@ -26,8 +26,6 @@ const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
-const MS_PER_MINUTE = 60_000;
-
 export const PACKAGE_NAME_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
@@ -127,22 +125,6 @@ export async function clear(): Promise<void> {
 }
 
 /**
- * Return the timestamp of the most recent package in the local DB.
- */
-async function latestTimestamp(): Promise<Date | null> {
-  const db = await getBrickDB();
-  const tx = db.transaction(BRICK_STORE, "readonly");
-  // Iterate from most recent to least recent and take first
-  const cursor = tx.store.index("timestamp").iterate(null, "prev");
-  const result = await cursor.next();
-  await tx.done;
-
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/5160 -- can come back as string on some versions
-  const timestamp: Date | string | null = result.value?.value.timestamp;
-  return timestamp ? new Date(timestamp) : null;
-}
-
-/**
  * Put all the packages in the local database.
  * @param packages the packages to put in the database
  */
@@ -176,42 +158,6 @@ export function parsePackage(
     rawConfig: undefined,
   };
 }
-
-/**
- * Fetch all new packages from the registry and put them in the local database.
- *
- * Memoized to avoid multiple network requests across tabs.
- *
- * @returns true if the registry was updated, false otherwise
- */
-export const fetchNewPackages = memoizeUntilSettled(async () => {
-  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
-  const timestamp = new Date();
-
-  const date = await latestTimestamp();
-  const params = new URLSearchParams();
-  if (date) {
-    // Add a fudge factor of 5 minutes to the timestamp to avoid issues arising from clock being out of sync
-    // between client and server.
-    const lowerBound = new Date(date.getTime() - MS_PER_MINUTE * 5);
-    params.set("updated_at__gt", lowerBound.toISOString());
-  }
-
-  const data = await fetch<RegistryPackage[]>(
-    `/api/registry/bricks/?${params.toString()}`
-  );
-
-  const packages = data.map((x) => ({
-    ...parsePackage(x),
-    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
-    // that were made during the call.
-    timestamp,
-  }));
-
-  await putAll(packages);
-
-  return packages.length > 0;
-});
 
 /**
  * Replace the local database with the packages from the registry.

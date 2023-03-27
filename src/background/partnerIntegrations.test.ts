@@ -34,7 +34,7 @@ import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import { setCachedAuthData } from "@/background/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { fetchNewPackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/baseRegistry";
 
 const serviceMap = new Map([
   [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],
@@ -72,7 +72,7 @@ jest.mock("@/background/messenger/api", () => {
           config,
         };
       },
-      fetch: jest.fn().mockResolvedValue(undefined),
+      syncRemote: jest.fn().mockResolvedValue(undefined),
     },
   };
 });
@@ -110,7 +110,7 @@ describe("getPartnerPrincipals", () => {
       controlRoomOAuthService,
     ]);
 
-    await fetchNewPackages();
+    await syncRemotePackages();
 
     // No remote services configured
     fetchMock.mockResolvedValue([]);
@@ -127,7 +127,7 @@ describe("getPartnerPrincipals", () => {
       controlRoomOAuthService,
     ]);
 
-    await fetchNewPackages();
+    await syncRemotePackages();
 
     // No remote services configured
     fetchMock.mockResolvedValue([]);

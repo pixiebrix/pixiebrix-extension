@@ -152,12 +152,14 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
       {doc ? (
         // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
         <Form.Control
+          id={field.name}
           type="text"
           disabled
           value={doc.name ?? field.value ?? ""}
         />
       ) : (
         <Form.Control
+          id={field.name}
           type="text"
           disabled
           {...field}

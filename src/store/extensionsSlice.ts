@@ -35,7 +35,7 @@ import {
   type RecipeDefinition,
 } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
-import { partition, pick } from "lodash";
+import { cloneDeep, partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -45,6 +45,7 @@ import {
 } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
+import { revertAll } from "@/store/commonActions";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
@@ -66,8 +67,13 @@ const extensionsSlice = createSlice({
   name: "extensions",
   initialState: initialExtensionsState,
   reducers: {
-    resetOptions(state) {
-      state.extensions = [];
+    // Helper method to directly update extensions in tests. Can't use installCloudExtension because CloudExtension
+    // doesn't have the _recipe field
+    UNSAFE_setExtensions(
+      state,
+      { payload }: PayloadAction<PersistedExtension[]>
+    ) {
+      state.extensions = cloneDeep(payload);
     },
 
     installCloudExtension(
@@ -347,6 +353,9 @@ const extensionsSlice = createSlice({
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialExtensionsState);
   },
 });
 

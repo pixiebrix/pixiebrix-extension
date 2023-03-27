@@ -90,10 +90,12 @@ const installableItemFactory = ({
   isExtension,
   sharingType,
   status,
+  unavailable = false,
 }: {
   isExtension: boolean;
   sharingType: SharingType;
   status: InstallableStatus;
+  unavailable?: boolean;
 }) =>
   ({
     installable: isExtension ? extensionFactory() : recipeFactory(),
@@ -103,6 +105,7 @@ const installableItemFactory = ({
       },
     },
     status,
+    unavailable,
   } as InstallableViewItem);
 
 afterEach(() => {
@@ -273,6 +276,21 @@ describe("useInstallableViewItemActions", () => {
       ],
       actions
     );
+  });
+
+  test("blueprint with access revoked", () => {
+    mockHooks();
+    const blueprintItem = installableItemFactory({
+      isExtension: false,
+      sharingType: "Team",
+      status: "Active",
+      unavailable: true,
+    });
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+    expectActions(["uninstall", "viewLogs"], actions);
   });
 
   test("paused deployment with unrestricted user", () => {

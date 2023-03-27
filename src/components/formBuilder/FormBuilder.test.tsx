@@ -372,4 +372,26 @@ describe("rename a field", () => {
 
     expect(previewInput).toBeInTheDocument();
   });
+
+  it("does not show google sheet input type option", async () => {
+    const FormikTemplate = createFormikTemplate(
+      {
+        [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBlockConfig(
+          CustomFormRenderer.BLOCK_ID
+        ),
+      },
+      jest.fn()
+    );
+
+    render(
+      <FormikTemplate>
+        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+      </FormikTemplate>
+    );
+    await waitForEffect();
+
+    const inputTypeSelect = screen.getByLabelText("Input Type");
+    selectEvent.openMenu(inputTypeSelect);
+    expect(screen.queryByText("Google Sheet")).not.toBeInTheDocument();
+  });
 });

@@ -15,52 +15,97 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import React from "react";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
-import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/servicesSlice";
 import { clearPackages } from "@/baseRegistry";
+import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
+import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
+import AsyncButton from "@/components/AsyncButton";
+import { reportEvent } from "@/telemetry/events";
+import { useModals } from "@/components/ConfirmationModal";
+import { type Permissions } from "webextension-polyfill";
+import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { persistor } from "@/store/optionsStore";
+import { revertAll } from "@/store/commonActions";
 
-const { resetOptions } = extensionsSlice.actions;
-const { resetServices } = servicesSlice.actions;
+async function revokeAllAdditionalPermissions() {
+  const permissions: Permissions.AnyPermissions =
+    await browser.permissions.getAll();
+  const additional = selectAdditionalPermissionsSync(permissions);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- typings appear to be incorrect
+  await browser.permissions.remove(additional as any);
+}
 
-const FactoryResetSettings: React.FunctionComponent<{
-  resetOptions: () => void;
-}> = ({ resetOptions }) => (
-  <Card border="danger">
-    <Card.Header className="danger">Factory Reset</Card.Header>
-    <Card.Body className="text-danger">
-      <p className="card-text">
-        Click here to reset your local PixieBrix data.{" "}
-        <b>This will delete any bricks you&apos;ve installed.</b>
-      </p>
-      <Button
-        variant="danger"
-        onClick={async () => {
-          try {
-            resetOptions();
-            await browser.contextMenus.removeAll();
-            await clearPackages();
-            notify.success("Reset all options and service configurations");
-          } catch (error) {
-            notify.error({
-              message: "Error resetting options and service configurations",
-              error,
+const FactoryResetSettings: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
+  const { showConfirmation } = useModals();
+  const sessionId = useSelector(selectSessionId);
+
+  return (
+    <Card border="danger">
+      <Card.Header className="danger">Factory Reset</Card.Header>
+      <Card.Body className="text-danger">
+        <p className="card-text">
+          Click here to reset your local PixieBrix data.{" "}
+          <b>
+            This will deactivate any mods you&apos;ve activated and reset all
+            browser extension settings.
+          </b>
+        </p>
+        <AsyncButton
+          variant="danger"
+          onClick={async () => {
+            const confirmed = await showConfirmation({
+              title: "Factory Reset",
+              message:
+                "Deactivate all mods and reset all browser extension settings?",
+              submitCaption: "Yes, reset extension",
+              cancelCaption: "Back to safety",
             });
-          }
-        }}
-      >
-        Factory Reset
-      </Button>
-    </Card.Body>
-  </Card>
-);
 
-export default connect(null, (dispatch) => ({
-  resetOptions() {
-    dispatch(resetOptions());
-    dispatch(resetServices());
-  },
-}))(FactoryResetSettings);
+            if (!confirmed) {
+              return;
+            }
+
+            reportEvent("FactoryReset");
+
+            try {
+              // Reset all persisted state -- see optionsStore.ts
+              dispatch(revertAll());
+
+              dispatch(sessionChangesActions.resetSessionChanges());
+              // Force all open page editors to be reloaded
+              dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
+
+              await Promise.allSettled([
+                // Clear persisted editor state directly because it's not attached to the options page store.
+                browser.storage.local.remove("persist:editor"),
+                persistor.flush(),
+                revokeAllAdditionalPermissions(),
+                clearLogs(),
+                browser.contextMenus.removeAll(),
+                clearPackages(),
+              ]);
+
+              reactivateEveryTab();
+
+              notify.success("Reset all mods and integration configurations");
+            } catch (error) {
+              notify.error({
+                message: "Error resetting mods and integration configurations",
+                error,
+              });
+            }
+          }}
+        >
+          Factory Reset
+        </AsyncButton>
+      </Card.Body>
+    </Card>
+  );
+};
+
+export default FactoryResetSettings;

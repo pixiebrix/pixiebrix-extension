@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import { type Installable } from "./blueprintsTypes";
+import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
@@ -32,11 +32,15 @@ type InstallablesState = {
   error: unknown;
 };
 
+/**
+ * React Hook returning `Installable`s, a common abstraction for recipes and un-packaged IExtensions.
+ * @see Installable
+ */
 function useInstallables(): InstallablesState {
   const scope = useSelector(selectScope);
   const unresolvedExtensions = useSelector(selectExtensions);
 
-  const recipes = useAllRecipes();
+  const { data: knownRecipes, ...recipesState } = useAllRecipes();
   const cloudExtensions = useGetCloudExtensionsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
@@ -51,9 +55,14 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
-  const personalOrTeamBlueprints = useMemo(
+  const knownRecipeIds = useMemo(
+    () => new Set((knownRecipes ?? []).map((x) => x.metadata.id)),
+    [knownRecipes]
+  );
+
+  const knownPersonalOrTeamRecipes = useMemo(
     () =>
-      (recipes.data ?? []).filter(
+      (knownRecipes ?? []).filter(
         (recipe) =>
           // Is personal blueprint
           recipe.metadata.id.includes(scope) ||
@@ -62,7 +71,7 @@ function useInstallables(): InstallablesState {
           // Is blueprint active, e.g. installed via marketplace
           installedRecipeIds.has(recipe.metadata.id)
       ),
-    [installedRecipeIds, recipes.data, scope]
+    [installedRecipeIds, knownRecipes, scope]
   );
 
   const allExtensions = useMemo(() => {
@@ -86,7 +95,7 @@ function useInstallables(): InstallablesState {
 
   const extensionsWithoutRecipe = useMemo(
     () =>
-      // Can be undefined if resolveDefinitions errors above
+      // `resolvedExtensions` can be undefined if resolveDefinitions errors above
       (resolvedExtensions ?? []).filter((extension) =>
         extension._recipe?.id
           ? !installedRecipeIds.has(extension._recipe?.id)
@@ -95,13 +104,33 @@ function useInstallables(): InstallablesState {
     [installedRecipeIds, resolvedExtensions]
   );
 
+  const unknownRecipes: UnavailableRecipe[] = useMemo(() => {
+    // `resolvedExtensions` can be undefined if resolveDefinitions errors above
+    const unavailable = (resolvedExtensions ?? []).filter(
+      (extension) =>
+        extension._recipe?.id && !knownRecipeIds.has(extension._recipe?.id)
+    );
+
+    return unavailable.map((x) => ({
+      metadata: x._recipe,
+      kind: "recipe",
+      isStub: true,
+      updated_at: x._recipe.updated_at,
+      sharing: x._recipe.sharing,
+    }));
+  }, [knownRecipeIds, resolvedExtensions]);
+
   return {
-    installables: [...extensionsWithoutRecipe, ...personalOrTeamBlueprints],
+    installables: [
+      ...extensionsWithoutRecipe,
+      ...knownPersonalOrTeamRecipes,
+      ...unknownRecipes,
+    ],
     isLoading:
-      recipes.isFetching ||
+      recipesState.isFetching ||
       cloudExtensions.isLoading ||
       resolvedExtensionsIsLoading,
-    error: cloudExtensions.error ?? recipes.error ?? resolveError,
+    error: cloudExtensions.error ?? recipesState.error ?? resolveError,
   };
 }
 

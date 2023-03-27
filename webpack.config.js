@@ -409,6 +409,10 @@ module.exports = (env, options) =>
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
+
+        // DataDog RUM
+        DATADOG_APPLICATION_ID: null,
+        DATADOG_CLIENT_TOKEN: null,
       }),
 
       new MiniCssExtractPlugin({
