@@ -61,7 +61,7 @@ export type InstallableViewItemActions = {
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
-  const { installable, status, sharing } = installableViewItem;
+  const { installable, status, sharing, unavailable } = installableViewItem;
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
@@ -245,6 +245,7 @@ function useInstallableViewItemActions(
   };
 
   const showPublishAction =
+    !unavailable &&
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
     // Extensions can be published
@@ -253,7 +254,7 @@ function useInstallableViewItemActions(
       sharing.listingId == null);
 
   const viewInMarketplaceHref =
-    isDeployment || showPublishAction
+    isDeployment || showPublishAction || unavailable
       ? null
       : // If showPublishAction is false, then the listing for the recipe is defined
         `${MARKETPLACE_URL}${sharing.listingId}/`;
@@ -262,12 +263,15 @@ function useInstallableViewItemActions(
     viewPublish: showPublishAction ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
-    viewShare: isDeployment ? null : viewShare,
+    viewShare: isDeployment || unavailable ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isRestricted ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
     // no activation-time integrations/options associated with them.)
-    reinstall: hasBlueprint && isInstalled && !isRestricted ? reinstall : null,
+    reinstall:
+      hasBlueprint && isInstalled && !isRestricted && !unavailable
+        ? reinstall
+        : null,
     viewLogs: status === "Inactive" ? null : viewLogs,
     activate: status === "Inactive" ? activate : null,
     requestPermissions: hasPermissions ? null : requestPermissions,

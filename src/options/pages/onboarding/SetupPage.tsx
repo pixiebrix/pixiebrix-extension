@@ -29,7 +29,7 @@ import PartnerSetupCard from "@/options/pages/onboarding/partner/PartnerSetupCar
 import { useLocation } from "react-router";
 import { clearServiceCache } from "@/background/messenger/api";
 import notify from "@/utils/notify";
-import { fetchNewPackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/baseRegistry";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <Row className="w-100 mx-0">
@@ -61,7 +61,7 @@ const SetupPage: React.FunctionComponent = () => {
   // useAsyncState with ignored output to track loading state
   const [_, serviceDefinitionsLoading] = useAsyncState(async () => {
     try {
-      await fetchNewPackages();
+      await syncRemotePackages();
       // Must happen after the call to fetch service definitions
       await clearServiceCache();
     } catch (error) {

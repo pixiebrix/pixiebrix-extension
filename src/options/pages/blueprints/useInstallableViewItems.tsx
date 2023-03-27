@@ -34,6 +34,7 @@ import {
   getUpdatedAt,
   isDeployment,
   isExtension,
+  isUnavailableRecipe,
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
@@ -143,6 +144,7 @@ function useInstallableViewItems(installables: Installable[]): {
             installable
           ),
           icon: installableIcon(installable),
+          unavailable: isUnavailableRecipe(installable),
           installable,
         } satisfies InstallableViewItem;
       }),

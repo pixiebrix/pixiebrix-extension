@@ -20,10 +20,18 @@ import {
   recipeDefinitionFactory,
   sharingDefinitionFactory,
 } from "@/testUtils/factories";
-import { getSharingType } from "./installableUtils";
+import {
+  getSharingType,
+  isExtension,
+  isUnavailableRecipe,
+} from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
-import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import {
+  type Installable,
+  type UnavailableRecipe,
+} from "@/options/pages/blueprints/blueprintsTypes";
+import { type ResolvedExtension } from "@/core";
 
 describe("getSharingType", () => {
   test("personal extension", () => {
@@ -134,5 +142,36 @@ describe("getSharingType", () => {
 
     expect(type).toBe("Public");
     expect(label).toBe("Public");
+  });
+});
+
+describe("isExtension", () => {
+  it("returns true for an extension", () => {
+    const installable = extensionFactory() as ResolvedExtension;
+    expect(isExtension(installable)).toBe(true);
+  });
+
+  it("returns false for a recipe", () => {
+    const installable = recipeDefinitionFactory();
+    expect(isExtension(installable)).toBe(false);
+  });
+});
+
+describe("isUnavailableRecipe", () => {
+  it("returns false for a recipe definition", () => {
+    const installable = recipeDefinitionFactory();
+    expect(isUnavailableRecipe(installable)).toBe(false);
+  });
+
+  it("returns true for UnavailableRecipe", () => {
+    const installable = {
+      isStub: true,
+    } as UnavailableRecipe;
+    expect(isUnavailableRecipe(installable)).toBe(true);
+  });
+
+  it("returns false for an extension", () => {
+    const installable = extensionFactory() as ResolvedExtension;
+    expect(isUnavailableRecipe(installable)).toBe(false);
   });
 });

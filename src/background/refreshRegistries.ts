@@ -16,12 +16,20 @@
  */
 
 import { refreshServices } from "./locator";
-import { fetchNewPackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/baseRegistry";
+import { expectContext } from "@/utils/expectContext";
 
+/**
+ * Method to refresh packages and services in the background context.
+ *
+ * @see useRefreshRegistries
+ */
 export async function refreshRegistries(): Promise<void> {
+  expectContext("background");
+
   await Promise.all([
     // Call the @/baseRegistry copy of fetchNewPackages so it invalidates in-memory registries
-    fetchNewPackages(),
+    syncRemotePackages(),
     refreshServices(),
   ]);
 }

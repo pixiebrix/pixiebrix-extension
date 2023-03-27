@@ -24,6 +24,7 @@ import useInstallableViewItemActions from "./useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faExclamationTriangle,
   faPause,
   faShieldAlt,
   faSync,
@@ -36,7 +37,22 @@ const Status: React.VoidFunctionComponent<{
   const { activate, reinstall, requestPermissions } =
     useInstallableViewItemActions(installableViewItem);
 
-  const { hasUpdate, status, installedVersionNumber } = installableViewItem;
+  const { hasUpdate, status, installedVersionNumber, unavailable } =
+    installableViewItem;
+
+  if (unavailable) {
+    return (
+      <div className="text-warning">
+        <div className={styles.root}>
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          <span className={styles.textStatus}>
+            Active
+            <span className={styles.versionNumber}>No longer available</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   if (activate) {
     return (

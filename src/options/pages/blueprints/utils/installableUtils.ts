@@ -29,63 +29,127 @@ import {
   type Installable,
   type SharingSource,
   type SharingType,
+  type UnavailableRecipe,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 
-export const isExtension = (
+/**
+ * Returns true if installable is an UnavailableRecipe
+ * @param installable the installable
+ * @see UnavailableRecipe
+ */
+export function isUnavailableRecipe(
   installable: Installable
-): installable is ResolvedExtension => "extensionPointId" in installable;
+): installable is UnavailableRecipe {
+  return "isStub" in installable && installable.isStub;
+}
 
-export const isExtensionFromRecipe = (installable: Installable) =>
-  isExtension(installable) && Boolean(installable._recipe);
-
-export const isBlueprint = (
+/**
+ * Returns true if the installable is a singleton extension, not a recipe.
+ * @param installable the installable
+ */
+export function isExtension(
   installable: Installable
-): installable is RecipeDefinition => !isExtension(installable);
+): installable is ResolvedExtension {
+  return "extensionPointId" in installable;
+}
 
-export const getUniqueId = (installable: Installable): UUID | RegistryId =>
-  isExtension(installable) ? installable.id : installable.metadata.id;
+/**
+ * Return true if the installable is an IExtension that originated from a recipe.
+ * @param installable the installable
+ */
+export function isExtensionFromRecipe(installable: Installable): boolean {
+  return isExtension(installable) && Boolean(installable._recipe);
+}
 
-export const getLabel = (installable: Installable): string =>
-  isExtension(installable) ? installable.label : installable.metadata.name;
+/**
+ * Return true if the installable is a RecipeDefinition or UnavailableRecipe
+ * @param installable the installable
+ */
+export function isBlueprint(
+  installable: Installable
+): installable is RecipeDefinition | UnavailableRecipe {
+  return !isExtension(installable);
+}
+
+/**
+ * Returns a unique id for the installable. Suitable for use as a React key
+ * @param installable the installable
+ */
+export function getUniqueId(installable: Installable): UUID | RegistryId {
+  return isExtension(installable) ? installable.id : installable.metadata.id;
+}
+
+/**
+ * Returns the human-readable label for the installable
+ * @param installable the installable
+ */
+export function getLabel(installable: Installable): string {
+  return isExtension(installable)
+    ? installable.label
+    : installable.metadata.name;
+}
 
 export const getDescription = (installable: Installable): string => {
-  let description = isExtension(installable)
+  const description = isExtension(installable)
     ? installable._recipe?.description
     : installable.metadata.description;
 
   if (!description && isExtension(installable)) {
-    description = "Created in the Page Editor";
+    return "Created in the Page Editor";
   }
 
   return description;
 };
 
-export const getPackageId = (installable: Installable): RegistryId =>
-  isExtension(installable) ? installable._recipe?.id : installable.metadata.id;
+/**
+ * Return the registry id associated with an installable, or null
+ * @param installable the installable
+ */
+export function getPackageId(installable: Installable): RegistryId | null {
+  return isExtension(installable)
+    ? installable._recipe?.id
+    : installable.metadata.id;
+}
 
-export const getUpdatedAt = (installable: Installable): string =>
-  isExtension(installable)
+export function getUpdatedAt(installable: Installable): string | null {
+  return isExtension(installable)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on IExtension here
       installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
+}
 
-const isPublic = (installable: Installable): boolean =>
-  isExtension(installable)
+function isPublic(installable: Installable): boolean {
+  return isExtension(installable)
     ? installable._recipe?.sharing?.public
     : installable.sharing.public;
+}
 
-const isPersonalExtension = (extension: IExtension) =>
-  !extension._recipe && !extension._deployment;
+function isPersonalExtension(extension: IExtension): boolean {
+  return !extension._recipe && !extension._deployment;
+}
 
-const hasSourceRecipeWithScope = (extension: IExtension, scope: string) =>
-  scope && extension._recipe?.id.startsWith(scope + "/");
+function hasSourceRecipeWithScope(
+  extension: IExtension,
+  scope: string
+): boolean {
+  return scope && extension._recipe?.id.startsWith(scope + "/");
+}
 
-const hasRecipeScope = (recipe: RecipeDefinition, scope: string) =>
-  Boolean(recipe.metadata?.id.startsWith(scope + "/"));
+function hasRecipeScope(
+  recipe: RecipeDefinition | UnavailableRecipe,
+  scope: string
+) {
+  return Boolean(recipe.metadata?.id.startsWith(scope + "/"));
+}
 
-const isPersonal = (installable: Installable, userScope: string) => {
+/**
+ * Returns true if the user directly owns the installable
+ * @param installable the installable
+ * @param userScope the user's scope, or null if it's not set
+ */
+function isPersonal(installable: Installable, userScope: string | null) {
   if (isExtension(installable)) {
     return (
       isPersonalExtension(installable) ||
@@ -94,12 +158,12 @@ const isPersonal = (installable: Installable, userScope: string) => {
   }
 
   return hasRecipeScope(installable, userScope);
-};
+}
 
-export const getInstalledVersionNumber = (
+export function getInstalledVersionNumber(
   installedExtensions: UnresolvedExtension[],
   installable: Installable
-): string | null => {
+): string | null {
   if (isExtension(installable)) {
     return installable._recipe?.version;
   }
@@ -110,12 +174,12 @@ export const getInstalledVersionNumber = (
   );
 
   return installedExtension?._recipe?.version;
-};
+}
 
-export const isDeployment = (
+export function isDeployment(
   installable: Installable,
   installedExtensions: UnresolvedExtension[]
-) => {
+): boolean {
   if (isExtension(installable)) {
     return Boolean(installable._deployment);
   }
@@ -126,17 +190,19 @@ export const isDeployment = (
       installedExtension._recipe?.id === recipeId &&
       installedExtension?._deployment
   );
-};
+}
 
 /**
- * Checks if a Blueprint has been made public but is not yet published to the Marketplace.
+ * Returns true if a Blueprint has been made public but is not yet published to the Marketplace.
  */
-export const isRecipePendingPublish = (
+export function isRecipePendingPublish(
   recipe: RecipeDefinition,
   marketplaceListings: Record<RegistryId, MarketplaceListing>
-) => recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
+): boolean {
+  return recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
+}
 
-export const getSharingType = ({
+export function getSharingType({
   installable,
   organizations,
   scope,
@@ -146,7 +212,7 @@ export const getSharingType = ({
   organizations: Organization[];
   scope: string;
   installedExtensions: UnresolvedExtension[];
-}): SharingSource => {
+}): SharingSource {
   let sharingType: SharingType = null;
   const organization = getOrganization(installable, organizations);
 
@@ -177,7 +243,7 @@ export const getSharingType = ({
     label,
     organization,
   };
-};
+}
 
 export function updateAvailable(
   availableRecipes: RecipeDefinition[],
@@ -185,6 +251,11 @@ export function updateAvailable(
   installable: Installable
 ): boolean {
   let installedExtension: ResolvedExtension | UnresolvedExtension = null;
+
+  if (isUnavailableRecipe(installable)) {
+    // Unavailable recipes are never update-able
+    return false;
+  }
 
   if (isBlueprint(installable)) {
     installedExtension = installedExtensions?.find(
@@ -236,10 +307,10 @@ export function updateAvailable(
   return false;
 }
 
-const getOrganization = (
+function getOrganization(
   installable: Installable,
   organizations: Organization[]
-) => {
+): Organization {
   const sharing = isExtension(installable)
     ? installable._recipe?.sharing
     : installable.sharing;
@@ -253,7 +324,7 @@ const getOrganization = (
   return organizations.find((org) =>
     sharing.organizations.includes(org.id as UUID)
   );
-};
+}
 
 /**
  * Select UnresolvedExtensions currently installed from the installable.

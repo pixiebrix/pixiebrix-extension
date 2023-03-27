@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Status paused 1`] = `
+<DocumentFragment>
+  <div
+    class="text-muted"
+  >
+    <div
+      class="root"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-pause fa-w-14 "
+        data-icon="pause"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 448 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M144 479H48c-26.5 0-48-21.5-48-48V79c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48zm304-48V79c0-26.5-21.5-48-48-48h-96c-26.5 0-48 21.5-48 48v352c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48z"
+          fill="currentColor"
+        />
+      </svg>
+      <span
+        class="textStatus"
+      >
+        Paused
+      </span>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Status shows activate 1`] = `
+<DocumentFragment>
+  <button
+    class="btn btn-outline-primary btn-sm"
+    type="button"
+  >
+    Activate
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Status shows active 1`] = `
+<DocumentFragment>
+  <div
+    class="text-success"
+  >
+    <div
+      class="root"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-check fa-w-16 "
+        data-icon="check"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+          fill="currentColor"
+        />
+      </svg>
+      <span
+        class="textStatus"
+      >
+        Active
+      </span>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Status shows warning for unavailable 1`] = `
+<DocumentFragment>
+  <div
+    class="text-warning"
+  >
+    <div
+      class="root"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-exclamation-triangle fa-w-18 "
+        data-icon="exclamation-triangle"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 576 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+          fill="currentColor"
+        />
+      </svg>
+      <span
+        class="textStatus"
+      >
+        Active
+        <span
+          class="versionNumber"
+        >
+          No longer available
+        </span>
+      </span>
+    </div>
+  </div>
+</DocumentFragment>
+`;

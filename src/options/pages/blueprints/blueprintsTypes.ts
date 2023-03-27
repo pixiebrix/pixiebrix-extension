@@ -21,8 +21,22 @@ import { type RecipeDefinition } from "@/types/definitions";
 import { type ReactNode } from "react";
 import { type Organization } from "@/types/contract";
 
+/**
+ * A recipe that has been deleted (or user no longer has access) from the registry, but is still installed locally.
+ * @since 1.7.22
+ */
+export type UnavailableRecipe = Pick<
+  RecipeDefinition,
+  "kind" | "metadata" | "updated_at" | "sharing"
+> & {
+  isStub: true;
+};
+
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Installable = RecipeDefinition | ResolvedExtension;
+export type Installable =
+  | RecipeDefinition
+  | ResolvedExtension
+  | UnavailableRecipe;
 
 export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
 export type SharingSource = {
@@ -31,7 +45,11 @@ export type SharingSource = {
   organization: Organization;
 };
 
-export type InstallableStatus = "Active" | "Inactive" | "Paused";
+export type InstallableStatus =
+  | "Active"
+  | "Inactive"
+  // The installable is a deployment that has been paused
+  | "Paused";
 
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableViewItem = {
@@ -49,6 +67,10 @@ export type InstallableViewItem = {
   icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
   installable: Installable;
+  /**
+   * True if the source package is no longer available
+   */
+  unavailable: boolean;
 };
 
 export type BlueprintsPageContentProps = {

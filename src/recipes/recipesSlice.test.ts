@@ -20,7 +20,7 @@ import { serializeError } from "serialize-error";
 import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
 import { type RecipesRootState } from "./recipesTypes";
 import recipesRegistry from "./registry";
-import { fetchNewPackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/baseRegistry";
 
 jest.mock("./registry", () => ({
   __esModule: true,
@@ -32,16 +32,16 @@ jest.mock("./registry", () => ({
 jest.mock("@/baseRegistry", () => ({
   __esModule: true,
   ...jest.requireActual("@/baseRegistry"),
-  fetchNewPackages: jest.fn(),
+  syncRemotePackages: jest.fn(),
 }));
-
-const fetchNewPackagesMock = fetchNewPackages as jest.MockedFn<
-  typeof fetchNewPackages
->;
 
 afterEach(() => {
   jest.resetAllMocks();
 });
+
+const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
+  typeof syncRemotePackages
+>;
 
 describe("loadRecipesFromCache", () => {
   test("calls registry and dispatches setRecipesFromCache action", async () => {
@@ -75,7 +75,7 @@ describe("refreshRecipes", () => {
       undefined
     );
 
-    expect(fetchNewPackagesMock).not.toHaveBeenCalled();
+    expect(syncRemotePackagesMock).not.toHaveBeenCalled();
   });
 
   test("fetches recipes and updates the state", async () => {
@@ -92,7 +92,7 @@ describe("refreshRecipes", () => {
     );
 
     expect(dispatch).toHaveBeenCalledWith(recipesActions.startLoading());
-    expect(fetchNewPackagesMock).toHaveBeenCalledTimes(1);
+    expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
     expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setRecipes(cachedRecipes)
@@ -103,7 +103,7 @@ describe("refreshRecipes", () => {
     const dispatch = jest.fn();
 
     const error = new Error("test");
-    fetchNewPackagesMock.mockRejectedValueOnce(error);
+    syncRemotePackagesMock.mockRejectedValueOnce(error);
 
     const thunkFunction = recipesActions.refreshRecipes();
     await thunkFunction(

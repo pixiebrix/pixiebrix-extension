@@ -35,7 +35,7 @@ import {
   type RecipeDefinition,
 } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
-import { partition, pick } from "lodash";
+import { cloneDeep, partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -67,6 +67,15 @@ const extensionsSlice = createSlice({
   name: "extensions",
   initialState: initialExtensionsState,
   reducers: {
+    // Helper method to directly update extensions in tests. Can't use installCloudExtension because CloudExtension
+    // doesn't have the _recipe field
+    UNSAFE_setExtensions(
+      state,
+      { payload }: PayloadAction<PersistedExtension[]>
+    ) {
+      state.extensions = cloneDeep(payload);
+    },
+
     installCloudExtension(
       state,
       { payload }: PayloadAction<{ extension: CloudExtension }>

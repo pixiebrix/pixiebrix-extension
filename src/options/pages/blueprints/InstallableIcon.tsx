@@ -17,15 +17,26 @@
 
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCube,
+  faCubes,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
-import { isBlueprint } from "@/options/pages/blueprints/utils/installableUtils";
+import {
+  isBlueprint,
+  isUnavailableRecipe,
+} from "@/options/pages/blueprints/utils/installableUtils";
 import cx from "classnames";
 import styles from "./InstallableIcon.module.scss";
 
 function getDefaultInstallableIcon(installable: Installable) {
+  if (isUnavailableRecipe(installable)) {
+    return faExclamationCircle;
+  }
+
   if (isBlueprint(installable) && installable.extensionPoints.length > 1) {
     return faCubes;
   }
@@ -33,7 +44,7 @@ function getDefaultInstallableIcon(installable: Installable) {
   return faCube;
 }
 
-const DEFAULT_TEXT_ICON_COLOR = "#241C32";
+export const DEFAULT_TEXT_ICON_COLOR = "#241C32";
 
 const InstallableIcon: React.FunctionComponent<{
   listing: MarketplaceListing;

@@ -38,7 +38,7 @@ export function useRecipe(
 }
 
 /**
- * Pulls all recipes from the registry
+ * Pulls all recipes from the registry, and triggers refresh if they're not available locally.
  */
 export function useAllRecipes(): UseCachedQueryResult<RecipeDefinition[]> {
   const dispatch = useDispatch();
