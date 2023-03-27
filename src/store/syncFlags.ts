@@ -42,4 +42,5 @@ export function syncFlagOn(flag: string): boolean {
 }
 
 // Load flags on initial module load
+// XXX: might consider exporting as init method that entry modules can call, instead of automatically calling
 void initFlags();
