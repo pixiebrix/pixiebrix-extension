@@ -27,7 +27,10 @@ import {
 } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
-import { type Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import {
+  type Installable,
+  UnavailableRecipe,
+} from "@/options/pages/blueprints/blueprintsTypes";
 import { type ResolvedExtension } from "@/core";
 
 describe("getSharingType", () => {
@@ -158,6 +161,13 @@ describe("isUnavailableRecipe", () => {
   it("returns false for a recipe definition", () => {
     const installable = recipeDefinitionFactory();
     expect(isUnavailableRecipe(installable)).toBe(false);
+  });
+
+  it("returns true for UnavailableRecipe", () => {
+    const installable = {
+      isStub: true,
+    } as UnavailableRecipe;
+    expect(isUnavailableRecipe(installable)).toBe(true);
   });
 
   it("returns false for an extension", () => {

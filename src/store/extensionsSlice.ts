@@ -70,7 +70,8 @@ const extensionsSlice = createSlice({
       state.extensions = [];
     },
 
-    // Helper reducers method to directly update extensions in tests
+    // Helper for tests reducers method to directly update extensions in tests. Can't use installCloudExtension because
+    // CloudExtension doesn't have the _recipe field
     UNSAFE_setExtensions(
       state,
       { payload }: PayloadAction<PersistedExtension[]>
