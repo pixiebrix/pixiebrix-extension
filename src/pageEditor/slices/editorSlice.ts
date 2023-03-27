@@ -322,6 +322,9 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
+    resetEditor() {
+      return initialState;
+    },
     toggleInsert(state, action: PayloadAction<ExtensionPointType>) {
       state.inserting = action.payload;
       state.beta = false;

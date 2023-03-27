@@ -1101,4 +1101,49 @@ describe("var analysis integration tests", () => {
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(0);
   });
+
+  it("should handle trigger custom event", async () => {
+    const extension = triggerFormStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeTemplateExpression(
+            "nunjucks",
+            "{{ @input.event.thiscouldbeanything }} was pressed"
+          ),
+        },
+      },
+    ]);
+
+    extension.extensionPoint.definition.trigger = "custom";
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(0);
+  });
+
+  it("should handle trigger selectionchange event", async () => {
+    const extension = triggerFormStateFactory(undefined, [
+      {
+        id: EchoBlock.BLOCK_ID,
+        config: {
+          message: makeTemplateExpression(
+            "nunjucks",
+            // Only @input.event.selectedText is available for selectionchange
+            "{{ @input.event.key }} was pressed"
+          ),
+        },
+      },
+    ]);
+
+    extension.extensionPoint.definition.trigger = "selectionchange";
+
+    const analysis = new VarAnalysis([]);
+    await analysis.run(extension);
+
+    const annotations = analysis.getAnnotations();
+    expect(annotations).toHaveLength(1);
+  });
 });

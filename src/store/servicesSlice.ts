@@ -19,6 +19,7 @@ import { type RawServiceConfiguration, type UUID } from "@/core";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;
@@ -58,11 +59,10 @@ const servicesSlice = createSlice({
         config,
       } as RawServiceConfiguration;
     },
-    resetServices(state) {
-      state.configured = {};
-    },
   },
-
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialServicesState);
+  },
   /* eslint-enable security/detect-object-injection */
 });
 

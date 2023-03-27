@@ -20,6 +20,7 @@ import { type Filters, type SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type InstallableViewItem } from "./blueprintsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
 
 type View = "list" | "grid";
 
@@ -74,6 +75,9 @@ const blueprintsSlice = createSlice({
     setSearchQuery(state, { payload: searchQuery }: PayloadAction<string>) {
       state.searchQuery = searchQuery;
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialState);
   },
 });
 

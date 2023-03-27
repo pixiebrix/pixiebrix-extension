@@ -27,6 +27,7 @@ import { DEFAULT_THEME } from "@/options/types";
 import { isValidTheme } from "@/utils/themeUtils";
 import { type RegistryId } from "@/core";
 import { isRegistryId } from "@/types/helpers";
+import { revertAll } from "@/store/commonActions";
 
 export const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -112,6 +113,9 @@ const settingsSlice = createSlice({
         reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
       });
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialSettingsState);
   },
 });
 
