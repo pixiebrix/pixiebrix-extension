@@ -31,11 +31,13 @@ import { watchNavigation } from "@/pageEditor/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
 import { markAppStart } from "@/utils/performance";
+import { initPerformanceMonitoring } from "@/telemetry/performance";
 
 markAppStart();
 
 registerMessenger();
 void initGoogle();
+void initPerformanceMonitoring();
 watchNavigation();
 initToaster();
 

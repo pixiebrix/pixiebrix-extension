@@ -56,6 +56,10 @@ export async function readAuthData(): Promise<
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
+/**
+ * Returns true if the specified flag is on for the current user.
+ * @param flag the feature flag to check
+ */
 export async function flagOn(flag: string): Promise<boolean> {
   const authData = await readAuthData();
   return authData.flags?.includes(flag);
