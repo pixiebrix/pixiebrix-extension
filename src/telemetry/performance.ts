@@ -18,24 +18,34 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/services/baseService";
+import { expectContext, forbidContext } from "@/utils/expectContext";
+import { flagOn } from "@/auth/token";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;
 const clientToken = process.env.DATADOG_CLIENT_TOKEN;
 
+const RUM_FLAG = "telemetry-performance";
+
 /**
  * Initialize Datadog Real User Monitoring (RUM) for performance monitoring.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
-  const dnt = await getDNT();
+  expectContext("extension");
+  forbidContext("contentScript");
+
   const baseUrl = await getBaseURL();
 
-  if (dnt) {
+  if (await getDNT()) {
+    return;
+  }
+
+  if (!(await flagOn(RUM_FLAG))) {
     return;
   }
 
   if (!applicationId || !clientToken) {
-    console.warn("Missing Datadog application ID or client token");
+    console.warn("Datadog application ID or client token not configured");
     return;
   }
 
@@ -54,6 +64,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
     trackResources: true,
     trackLongTasks: true,
     defaultPrivacyLevel: "mask",
+    // List the URLs/origins for sending trace headers
     // https://docs.datadoghq.com/real_user_monitoring/connect_rum_and_traces/?tab=browserrum#usage
     allowedTracingUrls: [baseUrl],
   });
