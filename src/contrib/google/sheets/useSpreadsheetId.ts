@@ -31,7 +31,6 @@ import { useAsyncEffect } from "use-async-effect";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isVarExpression } from "@/runtime/mapArgs";
-import useFlags from "@/hooks/useFlags";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
@@ -80,8 +79,6 @@ function useSpreadsheetId(basePath: string): string | null {
 
   const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
 
-  const { flagOn } = useFlags();
-
   /**
    * Note about when this effect will fire:
    *
@@ -104,7 +101,6 @@ function useSpreadsheetId(basePath: string): string | null {
   useAsyncEffect(async () => {
     dispatch(spreadsheetSlice.actions.setLoading());
     if (
-      flagOn("gsheets-mod-inputs") &&
       isVarExpression(fieldValue) &&
       startsWith(fieldValue.__value__, "@options.") &&
       !isEmpty(optionsArgs)

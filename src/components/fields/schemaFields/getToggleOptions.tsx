@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
+import { addListener } from "@/auth/token";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -33,6 +34,12 @@ type ToggleOptionInputs = {
   isArrayItem: boolean;
   allowExpressions: boolean;
 };
+
+// TODO: extract/abstract this pattern if we need to synchronously access flags anywhere else
+const localFeatureFlags: string[] = [];
+addListener(({ flags }) => {
+  localFeatureFlags.splice(0, localFeatureFlags.length, ...flags);
+});
 
 // TODO refactor this function to be more readable (complexity of 28)
 // eslint-disable-next-line complexity
@@ -214,7 +221,11 @@ export function getToggleOptions({
       Widget: widgetsRegistry.SheetsFileWidget,
       interpretValue: () => "",
     });
-    handleVarOption();
+
+    if (localFeatureFlags.includes("gsheets-mod-inputs")) {
+      handleVarOption();
+    }
+
     handleOptionalValue();
     return options;
   }
