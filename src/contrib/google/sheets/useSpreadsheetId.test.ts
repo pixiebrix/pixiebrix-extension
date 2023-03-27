@@ -23,6 +23,7 @@ import {
 } from "@/testUtils/factories";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -56,10 +57,7 @@ describe("useSpreadsheetId", () => {
   test("works with service value", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: {
-          __type__: "var",
-          __value__: "@google",
-        },
+        spreadsheetId: makeVariableExpression("@google"),
         services: [
           {
             id: GOOGLE_SHEET_SERVICE_ID,
@@ -78,10 +76,7 @@ describe("useSpreadsheetId", () => {
   test("works with mod input", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: {
-          __type__: "var",
-          __value__: "@options.sheetId",
-        },
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
         optionsArgs: {
           sheetId: TEST_SPREADSHEET_ID,
         },
@@ -96,10 +91,7 @@ describe("useSpreadsheetId", () => {
   test("returns null when options value doesn't exist", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: {
-          __type__: "var",
-          __value__: "@options.sheetId",
-        },
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
         optionsArgs: {
           notASheetId: "abc",
           anotherInput: "foo",
@@ -115,10 +107,7 @@ describe("useSpreadsheetId", () => {
   test("returns null with no services and variable field value", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: {
-          __type__: "var",
-          __value__: "@data.sheetId",
-        },
+        spreadsheetId: makeVariableExpression("@data.sheetId"),
       },
     });
 
