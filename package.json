@@ -219,7 +219,7 @@
     "@types/semver": "^7.3.8",
     "@types/sinonjs__fake-timers": "^8.1.2",
     "@types/webextension-polyfill": "^0.10.0",
-    "@types/webpack": "^5.28.0",
+    "@types/webpack": "^5.28.1",
     "@types/webpack-env": "^1.16.2",
     "@types/whatwg-mimetype": "^3.0.0",
     "axios-mock-adapter": "^1.21.3",
