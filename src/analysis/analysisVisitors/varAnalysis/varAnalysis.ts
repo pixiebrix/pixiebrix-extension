@@ -210,7 +210,8 @@ function setVarsFromSchema({
           ? VarExistence.DEFINITELY
           : VarExistence.MAYBE;
 
-      // If the items is an array, then we allow any child to simplify the validation logic
+      // If additionalProperties, then we allow any child to simplify the validation logic, even
+      // if it declares additional property constraints
       const allowAnyChild =
         propertySchema.additionalProperties != null ||
         !isEmpty(propertySchema.additionalProperties);

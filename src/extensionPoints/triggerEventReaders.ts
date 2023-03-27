@@ -217,7 +217,7 @@ export class CustomEventReader extends Reader {
 }
 
 /**
- * An event reader to show a helpful message the output preview for the trigger
+ * An event reader to show a helpful message in the output preview for the trigger
  * @param trigger the trigger type.
  * @see getEventReader
  */
