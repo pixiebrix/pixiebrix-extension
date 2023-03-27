@@ -44,6 +44,10 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
 
+function mockFlagOn() {
+  flagOnMock.mockImplementation((flag) => flag === "gsheets-mod-inputs");
+}
+
 describe("useSpreadsheetId", () => {
   beforeEach(() => {
     flagOnMock.mockClear();
@@ -61,39 +65,61 @@ describe("useSpreadsheetId", () => {
     );
   });
 
-  test("works with string value", async () => {
-    const { result } = renderHook(() => useSpreadsheetId(""), {
-      initialValues: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-    expect(result.current).toEqual(TEST_SPREADSHEET_ID);
-  });
+  const cases = [
+    {
+      flagOn: "ON",
+      setupFlag: mockFlagOn,
+    },
+    {
+      flagOn: "OFF",
+      setupFlag: () => flagOnMock.mockReturnValue(false),
+    },
+  ];
 
-  test("works with service value", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
-      initialValues: {
-        spreadsheetId: {
-          __type__: "var",
-          __value__: "@google",
+  test.each(cases)(
+    "works with string value (flag gsheets-mod-inputs $flagOn)",
+    async ({ setupFlag }) => {
+      setupFlag();
+
+      const { result } = renderHook(() => useSpreadsheetId(""), {
+        initialValues: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
         },
-        services: [
-          {
-            id: GOOGLE_SHEET_SERVICE_ID,
-            outputKey: "google",
-            config: uuidSequence(2),
+      });
+      expect(result.current).toEqual(TEST_SPREADSHEET_ID);
+    }
+  );
+
+  test.each(cases)(
+    "works with service value (flag gsheets-mod-inputs $flagOn)",
+    async ({ setupFlag }) => {
+      setupFlag();
+
+      const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+        initialValues: {
+          spreadsheetId: {
+            __type__: "var",
+            __value__: "@google",
           },
-        ],
-      },
-    });
+          services: [
+            {
+              id: GOOGLE_SHEET_SERVICE_ID,
+              outputKey: "google",
+              config: uuidSequence(2),
+            },
+          ],
+        },
+      });
 
-    await waitForEffect();
+      await waitForEffect();
 
-    expect(result.current).toBe(TEST_SPREADSHEET_ID);
-  });
+      expect(result.current).toBe(TEST_SPREADSHEET_ID);
+    }
+  );
 
   test("works with mod input", async () => {
-    flagOnMock.mockImplementation((flag) => flag === "gsheets-mod-inputs");
+    // This state could only occur with the flag on
+    mockFlagOn();
 
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
@@ -113,6 +139,9 @@ describe("useSpreadsheetId", () => {
   });
 
   test("returns null when options value doesn't exist", async () => {
+    // This state could only occur with the flag on
+    mockFlagOn();
+
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: {
@@ -132,6 +161,9 @@ describe("useSpreadsheetId", () => {
   });
 
   test("returns null with no services and variable field value", async () => {
+    // This state could only occur with the flag on
+    mockFlagOn();
+
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: {

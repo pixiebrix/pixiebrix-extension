@@ -61,7 +61,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
     excludeRandomClasses,
     selectionTools,
     varAutosuggest,
-    googleSheetsModInputs,
   } = useSelector(selectSettings);
 
   return (
@@ -124,20 +123,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               dispatch(
                 settingsSlice.actions.setFlag({
                   flag: "varAutosuggest",
-                  value,
-                })
-              );
-            }}
-          />
-          <ExperimentalFeature
-            id="googleSheetsModInputs"
-            label="Allow Google Sheets as a mod input field type"
-            description="Toggle on to enable Google Sheets in mod inputs"
-            isEnabled={googleSheetsModInputs}
-            onChange={(value) => {
-              dispatch(
-                settingsSlice.actions.setFlag({
-                  flag: "googleSheetsModInputs",
                   value,
                 })
               );
