@@ -19,15 +19,8 @@ import { Card } from "react-bootstrap";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
-import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/servicesSlice";
 import { clearPackages } from "@/baseRegistry";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { authSlice } from "@/auth/authSlice";
 import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
-import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
-import settingsSlice from "@/store/settingsSlice";
-import workshopSlice from "@/store/workshopSlice";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";
 import { reportEvent } from "@/telemetry/events";
@@ -36,14 +29,7 @@ import { type Permissions } from "webextension-polyfill";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { persistor } from "@/store/optionsStore";
-
-const { resetOptions } = extensionsSlice.actions;
-const { resetServices } = servicesSlice.actions;
-const { resetRecipes } = recipesSlice.actions;
-const { resetAuth } = authSlice.actions;
-const { resetScreen: resetBlueprintsScreen } = blueprintsSlice.actions;
-const { resetSettings } = settingsSlice.actions;
-const { resetWorkshop } = workshopSlice.actions;
+import { revertAll } from "@/store/commonActions";
 
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
@@ -88,13 +74,8 @@ const FactoryResetSettings: React.FunctionComponent = () => {
 
             try {
               // Reset all persisted state -- see optionsStore.ts
-              dispatch(resetBlueprintsScreen());
-              dispatch(resetOptions());
-              dispatch(resetServices());
-              dispatch(resetRecipes());
-              dispatch(resetAuth());
-              dispatch(resetSettings());
-              dispatch(resetWorkshop());
+              dispatch(revertAll());
+
               dispatch(sessionChangesActions.resetSessionChanges());
               // Force all open page editors to be reloaded
               dispatch(sessionChangesActions.setSessionChanges({ sessionId }));

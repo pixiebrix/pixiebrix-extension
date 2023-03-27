@@ -19,6 +19,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { orderBy } from "lodash";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
 
 type RecentBrick = {
   id: string;
@@ -56,9 +57,6 @@ const workshopSlice = createSlice({
   name: "workshop",
   initialState: initialWorkshopState,
   reducers: {
-    resetWorkshop() {
-      return initialWorkshopState;
-    },
     setScopes(state, { payload: scopes }) {
       state.filters.scopes = scopes;
     },
@@ -89,6 +87,9 @@ const workshopSlice = createSlice({
         ).slice(0, state.maxRecent);
       }
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => initialWorkshopState);
   },
 });
 
