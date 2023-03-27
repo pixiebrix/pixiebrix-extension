@@ -64,16 +64,17 @@ export async function initPerformanceMonitoring(): Promise<void> {
     trackUserInteractions: true,
     trackResources: true,
     trackLongTasks: true,
+    trackFrustrations: true,
     defaultPrivacyLevel: "mask",
     // List the URLs/origins for sending trace headers
     // https://docs.datadoghq.com/real_user_monitoring/connect_rum_and_traces/?tab=browserrum#usage
     allowedTracingUrls: [baseUrl],
   });
 
+  datadogRum.startSessionReplayRecording();
+
   // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
   datadogRum.setUser({
     id: userId,
   });
-
-  datadogRum.startSessionReplayRecording();
 }
