@@ -29,7 +29,7 @@ import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import {
   type Installable,
-  UnavailableRecipe,
+  type UnavailableRecipe,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { type ResolvedExtension } from "@/core";
 
