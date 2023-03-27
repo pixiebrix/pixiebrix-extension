@@ -252,6 +252,11 @@ type HookWrapperResult<
    */
   act: (callback: () => Promise<void>) => Promise<undefined>;
 
+  /**
+   * Await all async side effects
+   */
+  waitForEffect: () => Promise<void>;
+
   getFormState: () => Promise<FormikValues>;
 };
 
@@ -301,6 +306,11 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
         return store;
       },
       act: actHook,
+      async waitForEffect() {
+        await actHook(async () => {
+          // Awaiting the async state update
+        });
+      },
       async getFormState() {
         // Wire-up a handler to grab the form state
         let formState: FormikValues = null;

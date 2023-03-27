@@ -30,10 +30,14 @@ import { isEmpty, isEqual } from "lodash";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
 import { dereference } from "@/validators/generic";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
+import {
+  BASE_SHEET_SCHEMA,
+  SHEET_SERVICE_SCHEMA,
+} from "@/contrib/google/sheets/schemas";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import useFlags from "@/hooks/useFlags";
 
 const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
@@ -103,6 +107,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = joinName(name, configKey);
   const spreadsheetId = useSpreadsheetId(basePath);
+  const { flagOn } = useFlags();
 
   const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
     string | Expression
@@ -147,6 +152,15 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     BASE_SHEET_SCHEMA
   );
 
+  const oldSheetSchema: Schema = {
+    title: "Spreadsheet",
+    oneOf: [SHEET_SERVICE_SCHEMA, sheetSchema ?? BASE_SHEET_SCHEMA],
+  };
+
+  const sheetFieldSchema = flagOn("gsheets-mod-inputs")
+    ? sheetSchema
+    : oldSheetSchema;
+
   return (
     <div className="my-2">
       {isLoadingSheetSchema ? (
@@ -161,7 +175,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         >
           <SchemaField
             name={joinName(basePath, "spreadsheetId")}
-            schema={sheetSchema}
+            schema={sheetFieldSchema}
             isRequired
           />
         </FormErrorContext.Provider>

@@ -21,9 +21,21 @@ import {
   sanitizedServiceConfigurationFactory,
   uuidSequence,
 } from "@/testUtils/factories";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
+import MockedFunction = jest.MockedFunction;
+
+const flagOnMock = jest.fn() as MockedFunction<(flag: string) => boolean>;
+
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: () => ({
+    permit: jest.fn(),
+    restrict: jest.fn(),
+    flagOn: flagOnMock,
+    flagOff: jest.fn(),
+  }),
+}));
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -33,6 +45,10 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 >;
 
 describe("useSpreadsheetId", () => {
+  beforeEach(() => {
+    flagOnMock.mockClear();
+  });
+
   beforeAll(() => {
     servicesLocateMock.mockResolvedValue(
       sanitizedServiceConfigurationFactory({
@@ -55,7 +71,7 @@ describe("useSpreadsheetId", () => {
   });
 
   test("works with service value", async () => {
-    const { result } = renderHook(() => useSpreadsheetId(""), {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: {
           __type__: "var",
@@ -74,5 +90,59 @@ describe("useSpreadsheetId", () => {
     await waitForEffect();
 
     expect(result.current).toBe(TEST_SPREADSHEET_ID);
+  });
+
+  test("works with mod input", async () => {
+    flagOnMock.mockImplementation((flag) => flag === "gsheets-mod-inputs");
+
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: {
+          __type__: "var",
+          __value__: "@options.sheetId",
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+  });
+
+  test("returns null when options value doesn't exist", async () => {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: {
+          __type__: "var",
+          __value__: "@options.sheetId",
+        },
+        optionsArgs: {
+          notASheetId: "abc",
+          anotherInput: "foo",
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBeNull();
+  });
+
+  test("returns null with no services and variable field value", async () => {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: {
+          __type__: "var",
+          __value__: "@data.sheetId",
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBeNull();
   });
 });
