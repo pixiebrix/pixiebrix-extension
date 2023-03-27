@@ -30,6 +30,7 @@ import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
 import { initTelemetry } from "@/background/messenger/api";
 import registerMessenger from "@/options/messenger/registration";
+import { initPerformanceMonitoring } from "@/telemetry/performance";
 
 function init(): void {
   render(<App />, document.querySelector("#container"));
@@ -39,4 +40,5 @@ registerMessenger();
 void initGoogle();
 initToaster();
 initTelemetry();
+void initPerformanceMonitoring();
 init();
