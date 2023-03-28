@@ -19,8 +19,15 @@ import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { type Schema } from "@/core";
-import { isRealDefinition } from "@/components/fields/schemaFields/schemaUtils";
+import { isSchemaDefinition } from "@/components/fields/schemaFields/schemaUtils";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
+/**
+ * A widget for rendering a nested object with fixed properties.
+ * @param props
+ * @constructor
+ * @see isCustomizableObjectSchema
+ */
 const FixedInnerObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
@@ -28,9 +35,19 @@ const FixedInnerObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
     let objectSchema = schema;
 
     if (schema.oneOf) {
-      objectSchema = objectSchema.oneOf
-        .filter((x) => isRealDefinition(x))
-        .find((x) => (x as Schema).type === "object") as Schema;
+      const matches = objectSchema.oneOf.filter(
+        (x) => isSchemaDefinition(x) && x.type === "object"
+      );
+
+      if (matches.length > 1) {
+        return WorkshopMessageWidget;
+      }
+
+      objectSchema = matches[0] as Schema;
+    }
+
+    if (schema.allOf || schema.anyOf) {
+      return WorkshopMessageWidget;
     }
 
     return genericOptionsFactory(objectSchema, null, {

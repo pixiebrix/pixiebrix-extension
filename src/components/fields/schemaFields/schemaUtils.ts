@@ -57,7 +57,7 @@ export function castSchema(
   };
 }
 
-export function isRealDefinition(
+export function isSchemaDefinition(
   schemaDefinition: JSONSchema7Definition
 ): schemaDefinition is Schema {
   return typeof schemaDefinition === "object";

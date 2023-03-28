@@ -19,10 +19,17 @@ import { type Schema } from "@/core";
 import { isEmpty } from "lodash";
 
 /**
- * Return true if the schema allows custom properties.
- * @param schema
+ * Return true if the schema allows user to provide custom properties.
+ * @param objectSchema the object schema
  */
-export function isCustomizableObjectSchema(schema: Schema): boolean {
+export function isCustomizableObjectSchema(objectSchema: Schema): boolean {
   // Allow additional properties for empty schema (empty schema allows shape)
-  return isEmpty(schema) || "additionalProperties" in schema;
+  if (isEmpty(objectSchema)) {
+    return true;
+  }
+
+  return (
+    "additionalProperties" in objectSchema &&
+    objectSchema.additionalProperties !== false
+  );
 }

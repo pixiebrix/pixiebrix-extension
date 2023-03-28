@@ -276,7 +276,10 @@ export function getToggleOptions({
         : widgetsRegistry.FixedInnerObjectWidget
       : widgetsRegistry.ObjectWidget;
     pushOptions({
-      label: "Object properties",
+      label:
+        Widget === widgetsRegistry.FixedInnerObjectWidget
+          ? "Advanced properties"
+          : "Object properties",
       value: "object",
       symbol: <OptionIcon icon="object" />,
       Widget,
