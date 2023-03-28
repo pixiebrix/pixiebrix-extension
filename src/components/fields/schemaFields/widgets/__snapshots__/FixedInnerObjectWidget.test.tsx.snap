@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FixedInnerObjectWidget handle oneOf object 1`] = `
+<div>
+  <form
+    action="#"
+  >
+    <div
+      class="formGroup form-group row"
+    >
+      <label
+        class="label form-label col-form-label col-xl-2 col-lg-3"
+        for="test.foo"
+      >
+        foo
+      </label>
+      <div
+        class="col-xl-10 col-lg-9"
+      >
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              id="test.foo"
+              name="test.foo"
+              rows="1"
+            >
+              bar
+            </textarea>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-test.foo"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
+
+exports[`FixedInnerObjectWidget handle simple object 1`] = `
+<div>
+  <form
+    action="#"
+  >
+    <div
+      class="formGroup form-group row"
+    >
+      <label
+        class="label form-label col-form-label col-xl-2 col-lg-3"
+        for="test.foo"
+      >
+        foo
+      </label>
+      <div
+        class="col-xl-10 col-lg-9"
+      >
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              id="test.foo"
+              name="test.foo"
+              rows="1"
+            >
+              bar
+            </textarea>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-test.foo"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;

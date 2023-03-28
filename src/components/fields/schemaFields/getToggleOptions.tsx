@@ -13,17 +13,18 @@ import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
 import {
+  isDatabaseField,
+  isGoogleSheetIdField,
+  isIconField,
   isKeyStringField,
   isSelectField,
-  isDatabaseField,
-  isIconField,
-  isGoogleSheetIdField,
   isSimpleServiceField,
 } from "./fieldTypeCheckers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -266,12 +267,19 @@ export function getToggleOptions({
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     isEmpty(fieldSchema)
   ) {
+    const custom = isCustomizableObjectSchema(fieldSchema);
+
     // Don't allow editing objects inside other objects
     const Widget = isObjectProperty
-      ? widgetsRegistry.WorkshopMessageWidget
+      ? custom
+        ? widgetsRegistry.WorkshopMessageWidget
+        : widgetsRegistry.FixedInnerObjectWidget
       : widgetsRegistry.ObjectWidget;
     pushOptions({
-      label: "Object properties",
+      label:
+        Widget === widgetsRegistry.FixedInnerObjectWidget
+          ? "Advanced properties"
+          : "Object properties",
       value: "object",
       symbol: <OptionIcon icon="object" />,
       Widget,

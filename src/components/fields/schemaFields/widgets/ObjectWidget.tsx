@@ -21,13 +21,13 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { type SafeString, type Schema } from "@/core";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isEmpty } from "lodash";
 import { type FieldValidator, useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { freshIdentifier, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 
 type PropertyRowProps = {
   name: string;
@@ -183,7 +183,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)
-  const additionalProperties = isEmpty(schema) || schema.additionalProperties;
+  const isCustomizable = isCustomizableObjectSchema(schema);
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -282,9 +282,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
           ))}
         </tbody>
       </Table>
-      {additionalProperties && (
-        <Button onClick={addProperty}>Add Property</Button>
-      )}
+      {isCustomizable && <Button onClick={addProperty}>Add Property</Button>}
     </div>
   );
 };
