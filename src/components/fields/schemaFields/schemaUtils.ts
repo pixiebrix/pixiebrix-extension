@@ -16,7 +16,6 @@
  */
 
 import { type Schema } from "@/core";
-import { type JSONSchema7Definition } from "json-schema";
 
 type SchemaProperties = Record<string, Schema>;
 
