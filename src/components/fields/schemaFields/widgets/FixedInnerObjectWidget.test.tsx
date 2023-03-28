@@ -30,9 +30,7 @@ describe("FixedInnerObjectWidget", () => {
     const wrapper = render(
       <FixedInnerObjectWidget name="test" schema={{ allOf: [] }} />
     );
-    expect(
-      wrapper.container.querySelector('[value="Use Workshop to edit"]')
-    ).not.toBeNull();
+    expect(wrapper.queryByDisplayValue("Use Workshop to edit")).not.toBeNull();
   });
 
   it("handle simple object", () => {
@@ -46,9 +44,7 @@ describe("FixedInnerObjectWidget", () => {
         initialValues: { test: { foo: "bar" } },
       }
     );
-    expect(
-      wrapper.container.querySelector('[value="Use Workshop to edit"]')
-    ).toBeNull();
+    expect(wrapper.queryByDisplayValue("Use Workshop to edit")).toBeNull();
     expect(wrapper.container).toMatchSnapshot();
   });
 
@@ -65,9 +61,7 @@ describe("FixedInnerObjectWidget", () => {
         initialValues: { test: { foo: "bar" } },
       }
     );
-    expect(
-      wrapper.container.querySelector('[value="Use Workshop to edit"]')
-    ).toBeNull();
+    expect(wrapper.queryByDisplayValue("Use Workshop to edit")).toBeNull();
     expect(wrapper.container).toMatchSnapshot();
   });
 });

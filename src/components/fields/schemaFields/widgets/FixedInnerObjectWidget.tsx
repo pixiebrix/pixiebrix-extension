@@ -27,7 +27,7 @@ import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/Work
  * @constructor
  * @see isCustomizableObjectSchema
  */
-const FixedInnerObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
+const FixedInnerObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
   const Fields = useMemo(() => {
@@ -46,6 +46,11 @@ const FixedInnerObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
     }
 
     if (schema.allOf || schema.anyOf) {
+      return WorkshopMessageWidget;
+    }
+
+    if (objectSchema.type !== "object") {
+      // Bail if somehow a non-object schema was passed in
       return WorkshopMessageWidget;
     }
 
