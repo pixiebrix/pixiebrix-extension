@@ -19,7 +19,6 @@ import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { type Schema } from "@/core";
-import { isSchemaDefinition } from "@/components/fields/schemaFields/schemaUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 /**
@@ -36,7 +35,7 @@ const FixedInnerObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
 
     if (schema.oneOf) {
       const matches = objectSchema.oneOf.filter(
-        (x) => isSchemaDefinition(x) && x.type === "object"
+        (x) => typeof x !== "boolean" && x.type === "object"
       );
 
       if (matches.length > 1) {
