@@ -56,9 +56,3 @@ export function castSchema(
     properties: schemaOrProperties as SchemaProperties,
   };
 }
-
-export function isSchemaDefinition(
-  schemaDefinition: JSONSchema7Definition
-): schemaDefinition is Schema {
-  return typeof schemaDefinition === "object";
-}
