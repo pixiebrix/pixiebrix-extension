@@ -28,6 +28,10 @@ module.exports = {
   core: {
     builder: "webpack5",
   },
+  typescript: {
+    // Remove this after upgrading to Storybook 7
+    reactDocgen: "react-docgen-typescript-plugin",
+  },
   features: {
     // Not currently compatible with Storyshots: https://github.com/storybookjs/storybook/issues/18994
     // Enable for Storybook since it has significant performance benefits
