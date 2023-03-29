@@ -41,10 +41,6 @@ import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import useFlags from "@/hooks/useFlags";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
-const DEFAULT_HEADER_SCHEMA: Schema = {
-  type: "string",
-};
-
 const HeaderField: React.FunctionComponent<{
   name: string;
   spreadsheetId: string | null;
