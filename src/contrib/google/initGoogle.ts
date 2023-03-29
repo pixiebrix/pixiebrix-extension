@@ -27,7 +27,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 let initialized = false;
 
 type Listener = () => void;
-let listeners = new Set<Listener>();
+const listeners = new Set<Listener>();
 
 declare global {
   interface Window {
@@ -44,7 +44,13 @@ async function onGAPILoad(): Promise<void> {
       apiKey: API_KEY,
       discoveryDocs: [...SHEETS_DOCS],
     });
+
+    initialized = true;
     console.info("gapi initialized");
+
+    for (const listener of listeners) {
+      listener();
+    }
   } catch (error) {
     // Catch explicitly instead of letting it reach to top-level rejected promise handler
     // https://github.com/google/google-api-javascript-client/issues/64#issuecomment-336488275
@@ -52,9 +58,16 @@ async function onGAPILoad(): Promise<void> {
   }
 }
 
+/**
+ * Return true if GAPI is supported by the browser.
+ */
+export function isGoogleSupported(): boolean {
+  // TODO: Use feature detection instead of sniffing the user agent
+  return isChrome() && !isMV3();
+}
+
 async function _initGoogle(): Promise<boolean> {
-  if (!isChrome() || isMV3()) {
-    // TODO: Use feature detection instead of sniffing the user agent
+  if (!isGoogleSupported()) {
     console.info(
       "Google API not enabled because it's not supported by this browser"
     );
@@ -71,12 +84,6 @@ async function _initGoogle(): Promise<boolean> {
   await injectScriptTag(
     "https://apis.google.com/js/client.js?onload=onGAPILoad"
   );
-
-  initialized = true;
-
-  for (const listener of listeners) {
-    listener();
-  }
 
   return true;
 }

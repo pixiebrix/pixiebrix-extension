@@ -43,6 +43,12 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
 
+jest.mock("@/contrib/google/initGoogle", () => ({
+  isGoogleInitialized: jest.fn().mockResolvedValue(true),
+  isGoogleSupported: jest.fn().mockResolvedValue(true),
+  subscribe: jest.fn().mockImplementation(() => () => {}),
+}));
+
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
   ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
   // Mock so we don't have to have full Page Editor state in tests

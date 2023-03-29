@@ -20,6 +20,7 @@ import { useSyncExternalStore } from "use-sync-external-store/shim";
 import initGoogle, {
   subscribe,
   isGoogleInitialized,
+  isGoogleSupported,
 } from "@/contrib/google/initGoogle";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
@@ -39,24 +40,35 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
     []
   );
 
+  if (!isGoogleSupported()) {
+    return (
+      <div>
+        The Google API is not supported in this browser. Please use Google
+        Chrome.
+      </div>
+    );
+  }
+
   if (isInitialized) {
     return <>{children}</>;
   }
 
   return (
     <div>
-      <span>
-        The Google API is not initialized. Please click the button below to
-        initialize it.
-      </span>
-      <AsyncButton onClick={initGoogleAction}>Retry</AsyncButton>
+      <div>
+        The Google API is not initialized. Please click the button to initialize
+        it.
+      </div>
+      <div className="mt-2">
+        <AsyncButton onClick={initGoogleAction}>Initialize</AsyncButton>
+      </div>
     </div>
   );
 };
 
 export function requireGoogleHOC<P>(
-  Component: React.ComponentType<P>
-): React.ComponentType<P> {
+  Component: React.FunctionComponent<P>
+): React.FunctionComponent<P> {
   const WrappedComponent = (props: P) => (
     <RequireGoogleApi>
       <Component {...props} />
