@@ -24,13 +24,13 @@ import {
   type ServiceSlice,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isEmpty, isEqual, startsWith } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { pickDependency } from "@/services/useDependency";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isVarExpression } from "@/runtime/mapArgs";
+import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
@@ -100,25 +100,14 @@ function useSpreadsheetId(basePath: string): string | null {
    */
   useAsyncEffect(async () => {
     dispatch(spreadsheetSlice.actions.setLoading());
-    if (
-      isVarExpression(fieldValue) &&
-      startsWith(fieldValue.__value__, "@options.") &&
-      !isEmpty(optionsArgs)
-    ) {
-      const optionsKey = fieldValue.__value__.replace("@options.", "");
-      if (isEmpty(optionsKey)) {
-        dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
-        return;
-      }
 
-      // Leaving this lint warning for now, this DOES come from user input
-      const optionsValue = optionsArgs[optionsKey];
-      if (typeof optionsValue === "string") {
-        dispatch(spreadsheetSlice.actions.setSpreadsheetId(optionsValue));
-      } else {
-        dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
-      }
-    } else if (isServiceValueFormat(fieldValue)) {
+    const optionsValue = getOptionsArgForFieldValue(fieldValue, optionsArgs);
+    if (typeof optionsValue === "string" && !isEmpty(optionsValue)) {
+      dispatch(spreadsheetSlice.actions.setSpreadsheetId(optionsValue));
+      return;
+    }
+
+    if (isServiceValueFormat(fieldValue)) {
       if (fieldValue == null || isEmpty(servicesValue)) {
         // A service value can be null, but here we don't want to try and load anything if it is null
         dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
@@ -159,9 +148,11 @@ function useSpreadsheetId(basePath: string): string | null {
         dispatch(spreadsheetSlice.actions.setError(error));
         setError(getErrorMessage(error));
       }
-    } else {
-      dispatch(spreadsheetSlice.actions.setSpreadsheetId(fieldValue));
+
+      return;
     }
+
+    dispatch(spreadsheetSlice.actions.setSpreadsheetId(fieldValue));
   }, [fieldValue]);
 
   return state.spreadsheetId;

@@ -104,27 +104,12 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const spreadsheetId = useSpreadsheetId(basePath);
   const { flagOn } = useFlags();
 
-  const [{ value: tabNameValue }, , { setValue: setTabNameValue }] = useField<
-    string | Expression
-  >(joinName(basePath, "tabName"));
+  const [{ value: tabNameValue }] = useField<string | Expression>(
+    joinName(basePath, "tabName")
+  );
 
   const [{ value: rowValuesValue }, , { setValue: setRowValuesValue }] =
     useField(joinName(basePath, "rowValues"));
-
-  // Clear tab name when spreadsheetId changes, if the value is not an expression, or is empty
-  useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
-    // `spreadsheetId` is null when useAsyncState is loading
-    if (oldValue == null) {
-      return;
-    }
-
-    if (
-      !isTemplateExpression(tabNameValue) ||
-      isEmpty(tabNameValue.__value__)
-    ) {
-      setTabNameValue(null);
-    }
-  });
 
   // Clear row values when tabName changes, if the value is not an expression, or is empty
   useOnChangeEffect(
