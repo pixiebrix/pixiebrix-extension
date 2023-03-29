@@ -16,7 +16,7 @@
  */
 
 import { useField, useFormikContext } from "formik";
-import { type Expression } from "@/core";
+import { type Expression, type UserOptions } from "@/core";
 import { joinName } from "@/utils";
 import { useReducer } from "react";
 import {
@@ -24,12 +24,13 @@ import {
   type ServiceSlice,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { pickDependency } from "@/services/useDependency";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
@@ -74,6 +75,8 @@ function useSpreadsheetId(basePath: string): string | null {
     joinName(basePath, "spreadsheetId")
   );
 
+  const [{ value: optionsArgs }] = useField<UserOptions>("optionsArgs");
+
   const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
 
   /**
@@ -97,8 +100,15 @@ function useSpreadsheetId(basePath: string): string | null {
    */
   useAsyncEffect(async () => {
     dispatch(spreadsheetSlice.actions.setLoading());
+
+    const optionsValue = getOptionsArgForFieldValue(fieldValue, optionsArgs);
+    if (typeof optionsValue === "string" && !isEmpty(optionsValue)) {
+      dispatch(spreadsheetSlice.actions.setSpreadsheetId(optionsValue));
+      return;
+    }
+
     if (isServiceValueFormat(fieldValue)) {
-      if (fieldValue == null) {
+      if (fieldValue == null || isEmpty(servicesValue)) {
         // A service value can be null, but here we don't want to try and load anything if it is null
         dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
         return;
@@ -138,9 +148,11 @@ function useSpreadsheetId(basePath: string): string | null {
         dispatch(spreadsheetSlice.actions.setError(error));
         setError(getErrorMessage(error));
       }
-    } else {
-      dispatch(spreadsheetSlice.actions.setSpreadsheetId(fieldValue));
+
+      return;
     }
+
+    dispatch(spreadsheetSlice.actions.setSpreadsheetId(fieldValue));
   }, [fieldValue]);
 
   return state.spreadsheetId;

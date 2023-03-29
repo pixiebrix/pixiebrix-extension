@@ -19,36 +19,55 @@ import React, { useEffect, useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
-import { type Schema } from "@/core";
+import { type Expression, type Schema } from "@/core";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isExpression } from "@/runtime/mapArgs";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
+import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,
   spreadsheetId,
 }) => {
-  const [tabNames, loading, error] = useAsyncState(async () => {
-    if (spreadsheetId) {
-      return sheets.getTabNames(spreadsheetId);
-    }
-
-    return [];
-  }, [spreadsheetId]);
-
   const [
     { value: tabNameValue },
     ,
     { setValue: setTabNameValue, setError: setTabNameError },
-  ] = useField<string>(name);
+  ] = useField<string | Expression>(name);
 
+  const [tabNames, loading, error] = useAsyncState(
+    async () => {
+      if (spreadsheetId) {
+        return sheets.getTabNames(spreadsheetId);
+      }
+
+      return [];
+    },
+    [spreadsheetId],
+    []
+  );
+
+  // Clear tab name when spreadsheetId changes, if the current value is not
+  // an expression, which means it is a selected tab name from another sheet.
+  useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
+    // `spreadsheetId` is null when useAsyncState is loading
+    if (oldValue == null) {
+      return;
+    }
+
+    if (!isTemplateExpression(tabNameValue)) {
+      setTabNameValue(makeTemplateExpression("nunjucks", ""));
+    }
+  });
+
+  // If we've loaded tab names and the tab name is not set, set it to the first tab name.
+  // Check to make sure there's not an error, so we're not setting it to the first value
+  // of a stale list of tabs, and check the tab name value itself to prevent an infinite
+  // re-render loop here.
   useEffect(() => {
-    // If we've loaded tab names and the tab name is not set, set it to the first tab name.
-    // Check to make sure there's not an error, so we're not setting it to the first value
-    // of a stale list of tabs, and check the tab name value itself to prevent an infinite
-    // re-render loop here.
     if (loading || error || isEmpty(tabNames)) {
       return;
     }
@@ -57,7 +76,6 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       !tabNameValue ||
       (isExpression(tabNameValue) && isEmpty(tabNameValue.__value__))
     ) {
-      //
       setTabNameValue(tabNames[0]);
     }
   }, [error, loading, setTabNameValue, tabNameValue, tabNames]);
@@ -75,7 +93,6 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   useEffect(
     () => {
       if (!loading && error) {
-        // NOTE: This isn't currently shown in the UI, the field uses analysis to show errors, not Formik.
         setTabNameError("Error loading tab names: " + getErrorMessage(error));
       }
     },

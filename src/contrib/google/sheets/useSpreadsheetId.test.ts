@@ -21,9 +21,9 @@ import {
   sanitizedServiceConfigurationFactory,
   uuidSequence,
 } from "@/testUtils/factories";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -55,12 +55,9 @@ describe("useSpreadsheetId", () => {
   });
 
   test("works with service value", async () => {
-    const { result } = renderHook(() => useSpreadsheetId(""), {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: {
-          __type__: "var",
-          __value__: "@google",
-        },
+        spreadsheetId: makeVariableExpression("@google"),
         services: [
           {
             id: GOOGLE_SHEET_SERVICE_ID,
@@ -74,5 +71,48 @@ describe("useSpreadsheetId", () => {
     await waitForEffect();
 
     expect(result.current).toBe(TEST_SPREADSHEET_ID);
+  });
+
+  test("works with mod input", async () => {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+  });
+
+  test("returns null when options value doesn't exist", async () => {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        optionsArgs: {
+          notASheetId: "abc",
+          anotherInput: "foo",
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBeNull();
+  });
+
+  test("returns null with no services and variable field value", async () => {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: makeVariableExpression("@data.sheetId"),
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBeNull();
   });
 });
