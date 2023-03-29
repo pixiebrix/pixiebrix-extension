@@ -196,7 +196,7 @@ async function select(
   if (elements.length > 1 && !multi) {
     throw new MultipleElementsFoundError(
       selectorString,
-      "Multiple elements found for selector. To return a list of values, supply multi=true"
+      "Multiple elements found for selector. To return a list of values, toggle on Advanced Properties for the input and supply multi=true"
     );
   }
 
