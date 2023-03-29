@@ -36,12 +36,29 @@ import {
 import { services, sheets } from "@/background/messenger/api";
 import { syncFlagOn } from "@/store/syncFlags";
 import useFlags from "@/hooks/useFlags";
+import {
+  isGoogleSupported,
+  isGoogleInitialized,
+} from "@/contrib/google/initGoogle";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
 const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
+>;
+
+jest.mock("@/contrib/google/initGoogle", () => ({
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn().mockImplementation(() => () => {}),
+}));
+
+const isGoogleSupportedMock = isGoogleSupported as jest.MockedFunction<
+  typeof isGoogleSupported
+>;
+const isGoogleInitializedMock = isGoogleInitialized as jest.MockedFunction<
+  typeof isGoogleInitialized
 >;
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
@@ -96,6 +113,8 @@ function mockFlagOn(on = true) {
 
 beforeEach(() => {
   mockFlagOn(false);
+  isGoogleInitializedMock.mockReturnValue(true);
+  isGoogleSupportedMock.mockReturnValue(true);
 });
 
 beforeAll(() => {
@@ -432,5 +451,37 @@ describe("LookupSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("@myTab")).toBeVisible();
     expect(screen.getByDisplayValue("@myHeader")).toBeVisible();
     expect(screen.getByDisplayValue("@query")).toBeVisible();
+  });
+
+  it("should require GAPI support", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+    isGoogleSupportedMock.mockReturnValue(false);
+
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: { config: {} },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should require GAPI loaded", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+    isGoogleSupportedMock.mockReturnValue(true);
+
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: { config: {} },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
