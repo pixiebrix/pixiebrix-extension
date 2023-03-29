@@ -150,13 +150,19 @@ function setCommonAttributes(common: Element, items: Element[]) {
 
 function ignoreDivChildNode(node: Node): boolean {
   return (
-    [Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType) ||
+    ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE] as number[]).includes(
+      node.nodeType
+    ) ||
     (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === "")
   );
 }
 
 function removeUnstyledLayout(node: Node): Node | null {
-  if ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType)) {
+  if (
+    ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE] as number[]).includes(
+      node.nodeType
+    )
+  ) {
     return null;
   }
 

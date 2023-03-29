@@ -88,6 +88,7 @@ const ListItem: BsPrefixRefForwardingComponent<
   "a",
   NavLinkProps & { label: string; icon: IconProp }
 > = ({ label, icon, ...otherProps }) => (
+  // @ts-expect-error -- react-bootstrap types are finicky in Typescript 5
   <Nav.Link
     className="media"
     data-testid={`${kebabCase(label)}-blueprint-tab`}
