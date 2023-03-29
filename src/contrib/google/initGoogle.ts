@@ -24,6 +24,11 @@ import { isMV3 } from "@/mv3/api";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 
+let initialized = false;
+
+type Listener = () => void;
+let listeners = new Set<Listener>();
+
 declare global {
   interface Window {
     onGAPILoad?: () => Promise<void>;
@@ -67,7 +72,28 @@ async function _initGoogle(): Promise<boolean> {
     "https://apis.google.com/js/client.js?onload=onGAPILoad"
   );
 
+  initialized = true;
+
+  for (const listener of listeners) {
+    listener();
+  }
+
   return true;
+}
+
+/**
+ * Return true if the Google API has been initialized.
+ */
+export function isGoogleInitialized(): boolean {
+  return initialized;
+}
+
+export function subscribe(listener: Listener): () => void {
+  listeners.add(listener);
+
+  return () => {
+    listeners.delete(listener);
+  };
 }
 
 // `pMemoize` will avoid multiple injections, while also allow retrying if the first injection fails

@@ -37,6 +37,7 @@ import {
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 
 const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
@@ -200,4 +201,4 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 };
 
-export default LookupSpreadsheetOptions;
+export default requireGoogleHOC(LookupSpreadsheetOptions);
