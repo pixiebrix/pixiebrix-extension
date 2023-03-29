@@ -827,3 +827,49 @@ exports[`LookupSpreadsheetOptions should render successfully 1`] = `
   </form>
 </DocumentFragment>
 `;
+
+exports[`LookupSpreadsheetOptions should require GAPI loaded 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div>
+      <div>
+        The Google API is not initialized. Please click the button to initialize it.
+      </div>
+      <div
+        class="mt-2"
+      >
+        <button
+          class="btn btn-primary"
+          type="button"
+        >
+          Connect
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`LookupSpreadsheetOptions should require GAPI support 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div>
+      The Google API is not supported in this browser. Please use Google Chrome.
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

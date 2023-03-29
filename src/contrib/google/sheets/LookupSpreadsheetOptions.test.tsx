@@ -35,6 +35,10 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import { services, sheets } from "@/background/messenger/api";
+import {
+  isGoogleSupported,
+  isGoogleInitialized,
+} from "@/contrib/google/initGoogle";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -44,10 +48,17 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 >;
 
 jest.mock("@/contrib/google/initGoogle", () => ({
-  isGoogleInitialized: jest.fn().mockResolvedValue(true),
-  isGoogleSupported: jest.fn().mockResolvedValue(true),
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
+
+const isGoogleSupportedMock = isGoogleSupported as jest.MockedFunction<
+  typeof isGoogleSupported
+>;
+const isGoogleInitializedMock = isGoogleInitialized as jest.MockedFunction<
+  typeof isGoogleInitialized
+>;
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
   ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
@@ -244,6 +255,36 @@ describe("LookupSpreadsheetOptions", () => {
             multi: true,
           },
         },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should require GAPI support", async () => {
+    isGoogleSupportedMock.mockReturnValue(false);
+
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: { config: {} },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should require GAPI loaded", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: { config: {} },
       }
     );
 

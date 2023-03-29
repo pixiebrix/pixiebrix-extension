@@ -48,8 +48,8 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 >;
 
 jest.mock("@/contrib/google/initGoogle", () => ({
-  isGoogleInitialized: jest.fn().mockResolvedValue(true),
-  isGoogleSupported: jest.fn().mockResolvedValue(true),
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 

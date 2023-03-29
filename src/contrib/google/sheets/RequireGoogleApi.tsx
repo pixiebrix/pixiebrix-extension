@@ -49,21 +49,21 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
     );
   }
 
-  if (isInitialized) {
-    return <>{children}</>;
+  if (!isInitialized) {
+    return (
+      <div>
+        <div>
+          The Google API is not initialized. Please click the button to
+          initialize it.
+        </div>
+        <div className="mt-2">
+          <AsyncButton onClick={initGoogleAction}>Connect</AsyncButton>
+        </div>
+      </div>
+    );
   }
 
-  return (
-    <div>
-      <div>
-        The Google API is not initialized. Please click the button to initialize
-        it.
-      </div>
-      <div className="mt-2">
-        <AsyncButton onClick={initGoogleAction}>Initialize</AsyncButton>
-      </div>
-    </div>
-  );
+  return <>{children}</>;
 };
 
 export function requireGoogleHOC<P>(
