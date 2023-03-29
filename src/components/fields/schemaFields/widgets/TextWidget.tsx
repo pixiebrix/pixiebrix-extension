@@ -30,7 +30,7 @@ import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { type Schema, type TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { trim } from "lodash";
+import { get, trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
@@ -54,9 +54,23 @@ function schemaSupportsTemplates(schema: Schema): boolean {
     (option) => option.value === "string" && option.label === "Text"
   );
 }
+/**
+  Regex Breakdown
+  -^ - Match the start of the string.
+  -@ - Match the "@" character.
+  -(...) - Create a capturing group.
+  -[a-zA-Z$_] - Match a letter or underscore (these are valid object path identifiers).
+  -[a-zA-Z\d$_]* - Match zero or more letters, digits, or underscores.
+  -(\.[a-zA-Z$_][a-zA-Z\d$_]*|\["[a-zA-Z$_\s][a-zA-Z\d$_\s]*"\])* - Optionally match either a period followed by more object path identifiers or a pair of square brackets enclosing a double-quoted string containing object path identifiers and whitespace characters.
+*/
 
-function isVarValue(value: string): boolean {
-  return value.startsWith("@") && !value.includes(" ");
+// eslint-disable-next-line security/detect-unsafe-regex
+const objectPathRegex =
+  /^@([$A-Z_a-z][\w$]*(\.[$A-Z_a-z][\w$]*|\["[\s$A-Z_a-z][\s\w$]*"])*)/;
+
+// Accepts a string and returns whether it containts a valid nunjuck variable
+export function isVarValue(value: string): boolean {
+  return objectPathRegex.test(value);
 }
 
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
