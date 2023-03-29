@@ -28,7 +28,11 @@ type StringOption = {
 };
 type StringOptionsType = Options<StringOption>;
 
-const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
+const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
+  name,
+  schema,
+  isRequired,
+}) => {
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
@@ -69,7 +73,7 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
   return creatable ? (
     <Creatable
       inputId={name}
-      isClearable
+      isClearable={!isRequired}
       options={options}
       onCreateOption={(value) => {
         setValue(value);
@@ -81,7 +85,7 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
   ) : (
     <Select
       inputId={name}
-      isClearable
+      isClearable={!isRequired}
       options={options}
       value={selectedValue}
       onChange={selectOnChange}
