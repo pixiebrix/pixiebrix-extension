@@ -28,7 +28,7 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
-import { OutputKey } from "@/core";
+import { type OutputKey } from "@/core";
 
 jest.mock("@/background/messenger/api", () => ({
   sheets: {
