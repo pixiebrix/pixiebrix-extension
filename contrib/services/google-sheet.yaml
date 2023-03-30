@@ -3,7 +3,7 @@ kind: service
 metadata:
   id: google/sheet
   version: 0.0.2
-  name: Google Sheet
+  name: "[Deprecated] Google Sheet"
   description: A Google Sheet
   url: https://sheets.google.com
 inputSchema:

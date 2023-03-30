@@ -19,7 +19,7 @@ import "./SheetsFileWidget.module.scss";
 
 import React, { useCallback, useEffect, useState } from "react";
 import { type Data, type SheetMeta } from "@/contrib/google/sheets/types";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
@@ -34,6 +34,9 @@ import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { produce } from "immer";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -42,6 +45,21 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [field, , helpers] = useField<string | Expression>(props);
   const [sheetError, setSheetError] = useState(null);
   const [doc, setDoc] = useState<SheetMeta | null>(null);
+
+  const { values: formState, setValues: setFormState } =
+    useFormikContext<FormState>();
+
+  // Remove unused services from the element - cleanup from deprecated integration support for gsheets
+  useEffect(
+    () => {
+      const newState = produce(formState, (draft) =>
+        produceExcludeUnusedDependencies(draft)
+      );
+      setFormState(newState);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
+    []
+  );
 
   useEffect(
     () => {
