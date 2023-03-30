@@ -76,12 +76,16 @@ describe("TextWidget", () => {
   test("isVarValue()", () => {
     // Valid strings:
     expect(isVarValue("@object.property")).toBe(true);
-    expect(isVarValue("@obj['property']")).toBe(true);
-    expect(isVarValue('@obj["property with spaces"]')).toBe(true);
-    expect(isVarValue("@obj['prop1']['prop2']")).toBe(true);
+    expect(isVarValue("@myObject.property")).toBe(true);
+    expect(isVarValue("@example['property']")).toBe(true);
+    expect(isVarValue('@example["property"]')).toBe(true);
+    expect(isVarValue('@example.property["nestedProperty"]')).toBe(true);
+    expect(isVarValue("@example.property['nestedProperty']")).toBe(true);
+    expect(isVarValue('@example["property"].nestedProperty')).toBe(true);
+    expect(isVarValue("@example.property.nestedProperty")).toBe(true);
 
     // Invalid strings:
-    expect(isVarValue("obj.property")).toBe(false);
+    expect(isVarValue("abc")).toBe(false);
     expect(isVarValue("@123")).toBe(false);
     expect(isVarValue("@")).toBe(false);
   });

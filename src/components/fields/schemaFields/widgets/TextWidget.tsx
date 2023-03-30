@@ -30,7 +30,7 @@ import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { type Schema, type TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { get, trim } from "lodash";
+import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
@@ -56,17 +56,18 @@ function schemaSupportsTemplates(schema: Schema): boolean {
 }
 /**
   Regex Breakdown
-  -^ - Match the start of the string.
-  -@ - Match the "@" character.
-  -(...) - Create a capturing group.
-  -[a-zA-Z$_] - Match a letter or underscore (these are valid object path identifiers).
-  -[a-zA-Z\d$_]* - Match zero or more letters, digits, or underscores.
-  -(\.[a-zA-Z$_][a-zA-Z\d$_]*|\["[a-zA-Z$_\s][a-zA-Z\d$_\s]*"\])* - Optionally match either a period followed by more object path identifiers or a pair of square brackets enclosing a double-quoted string containing object path identifiers and whitespace characters.
+    -^: Assert the start of the string.
+    -@: Check for a @ character at the beginning of the string.
+    -(?!\d): Ensure the first character of the identifier is not a digit.
+    -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
+    -((\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
+    -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
+    -$: Assert the end of the string.
 */
 
 // eslint-disable-next-line security/detect-unsafe-regex
 const objectPathRegex =
-  /^@([$A-Z_a-z][\w$]*(\.[$A-Z_a-z][\w$]*|\["[\s$A-Z_a-z][\s\w$]*"])*)/;
+  /^@(?!\d)([\w$]+)((\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
 
 // Accepts a string and returns whether it containts a valid nunjuck variable
 export function isVarValue(value: string): boolean {
