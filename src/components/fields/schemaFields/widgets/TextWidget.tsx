@@ -107,7 +107,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     if (inputRef) {
       inputRef.current = textAreaRef.current;
     }
-  }, [inputRef]);
+  }, [textAreaRef.current]);
 
   useEffect(() => {
     if (focusInput) {
