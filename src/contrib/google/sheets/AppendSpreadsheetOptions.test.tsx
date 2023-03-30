@@ -49,6 +49,12 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
 
+jest.mock("@/contrib/google/initGoogle", () => ({
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn().mockImplementation(() => () => {}),
+}));
+
 jest.mock("@/hooks/auth", () => ({
   __esModule: true,
   useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),

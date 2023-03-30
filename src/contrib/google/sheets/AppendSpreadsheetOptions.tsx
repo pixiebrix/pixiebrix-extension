@@ -37,6 +37,7 @@ import {
 } from "@/contrib/google/sheets/schemas";
 import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import useFlags from "@/hooks/useFlags";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
@@ -178,4 +179,4 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 };
 
-export default AppendSpreadsheetOptions;
+export default requireGoogleHOC(AppendSpreadsheetOptions);
