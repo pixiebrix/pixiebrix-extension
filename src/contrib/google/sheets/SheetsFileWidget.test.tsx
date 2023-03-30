@@ -22,6 +22,13 @@ import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
+import {
+  blockConfigFactory,
+  formStateFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
+import { validateRegistryId } from "@/types/helpers";
+import { type OutputKey } from "@/core";
 
 jest.mock("@/background/messenger/api", () => ({
   sheets: {
@@ -35,8 +42,29 @@ const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
   typeof sheets.getSheetProperties
 >;
 
+let mockServiceExcludeEnabled = false;
+
+jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => {
+  const actual = jest.requireActual(
+    "@/components/fields/schemaFields/serviceFieldUtils"
+  );
+
+  return {
+    ...actual,
+    produceExcludeUnusedDependencies: jest.fn((x: any) =>
+      mockServiceExcludeEnabled ? x : actual.produceExcludeUnusedDependencies(x)
+    ),
+  };
+});
+
 describe("SheetsFileWidget", () => {
+  beforeEach(() => {
+    mockServiceExcludeEnabled = false;
+  });
+
   it("smoke test", async () => {
+    mockServiceExcludeEnabled = true;
+
     const wrapper = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
@@ -50,6 +78,8 @@ describe("SheetsFileWidget", () => {
   });
 
   it("renders valid sheet on load", async () => {
+    mockServiceExcludeEnabled = true;
+
     getSheetPropertiesMock.mockResolvedValue({
       title: "Test Sheet",
     });
@@ -68,6 +98,8 @@ describe("SheetsFileWidget", () => {
   });
 
   it("falls back to spreadsheet id if fetching properties fails", async () => {
+    mockServiceExcludeEnabled = true;
+
     getSheetPropertiesMock.mockRejectedValue(
       new Error("Error fetching sheet properties")
     );
@@ -86,6 +118,8 @@ describe("SheetsFileWidget", () => {
   });
 
   it("shows workshop fallback on expression", async () => {
+    mockServiceExcludeEnabled = true;
+
     const wrapper = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
@@ -98,5 +132,76 @@ describe("SheetsFileWidget", () => {
     expect(wrapper.container.querySelector("input")).toHaveValue(
       "Use Workshop to edit"
     );
+  });
+
+  it("removes unused service on mount", async () => {
+    const initialValues = formStateFactory(
+      {
+        services: [
+          {
+            id: validateRegistryId("google/sheet"),
+            outputKey: "google" as OutputKey,
+            config: uuidSequence(1),
+          },
+        ],
+      },
+      [
+        blockConfigFactory({
+          config: {
+            spreadsheetId: "abc123",
+          },
+        }),
+      ]
+    );
+
+    const { getFormState } = render(
+      <SheetsFileWidget
+        name="extension.blockPipeline[0].config.spreadsheetId"
+        schema={BASE_SHEET_SCHEMA}
+      />,
+      { initialValues }
+    );
+
+    await waitForEffect();
+
+    const formState = await getFormState();
+
+    expect(formState.services).toHaveLength(0);
+  });
+
+  it("does not remove used service on mount", async () => {
+    const service = {
+      id: validateRegistryId("google/sheet"),
+      outputKey: "google" as OutputKey,
+      config: uuidSequence(1),
+    };
+
+    const initialValues = formStateFactory(
+      {
+        services: [service],
+      },
+      [
+        blockConfigFactory({
+          config: {
+            spreadsheetId: makeVariableExpression("@google"),
+          },
+        }),
+      ]
+    );
+
+    const { getFormState } = render(
+      <SheetsFileWidget
+        name="extension.blockPipeline[0].config.spreadsheetId"
+        schema={BASE_SHEET_SCHEMA}
+      />,
+      { initialValues }
+    );
+
+    await waitForEffect();
+
+    const formState = await getFormState();
+
+    expect(formState.services).toHaveLength(1);
+    expect(formState.services[0]).toEqual(service);
   });
 });
