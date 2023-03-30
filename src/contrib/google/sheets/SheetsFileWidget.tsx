@@ -51,7 +51,9 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
   useEffect(
     () => {
-      // This widget is also used outside the page editor, so this won't always be FormState
+      // This widget is also used outside the Edit tab of the page editor,
+      // so this won't always be FormState. We only need to clean up services
+      // when it is FormState.
       if (!isFormState(formState)) {
         return;
       }
