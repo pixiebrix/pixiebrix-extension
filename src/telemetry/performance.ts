@@ -52,6 +52,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
   const { version_name } = browser.runtime.getManifest();
   const { user: userId } = await getUserData();
 
+  // https://docs.datadoghq.com/real_user_monitoring/browser/
   datadogRum.init({
     applicationId,
     clientToken,
@@ -66,6 +67,8 @@ export async function initPerformanceMonitoring(): Promise<void> {
     trackLongTasks: true,
     trackFrustrations: true,
     defaultPrivacyLevel: "mask",
+    // To support in Page Editor and Sidebar because they're iframes
+    useCrossSiteSessionCookie: true,
     // List the URLs/origins for sending trace headers
     // https://docs.datadoghq.com/real_user_monitoring/connect_rum_and_traces/?tab=browserrum#usage
     allowedTracingUrls: [baseUrl],

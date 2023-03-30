@@ -40,6 +40,12 @@ const ATTR_SKIP_ELEMENT_PATTERNS = [
   /^([\dA-Za-z]+)-chevron-down$/,
 ];
 
+// Use `number` type to support includes() check
+const NON_RENDERED_NODES: number[] = [
+  Node.COMMENT_NODE,
+  Node.CDATA_SECTION_NODE,
+];
+
 /**
  * Attribute names to exclude from button/panel template inference.
  *
@@ -150,13 +156,13 @@ function setCommonAttributes(common: Element, items: Element[]) {
 
 function ignoreDivChildNode(node: Node): boolean {
   return (
-    [Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType) ||
+    NON_RENDERED_NODES.includes(node.nodeType) ||
     (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === "")
   );
 }
 
 function removeUnstyledLayout(node: Node): Node | null {
-  if ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType)) {
+  if (NON_RENDERED_NODES.includes(node.nodeType)) {
     return null;
   }
 
