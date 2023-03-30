@@ -281,3 +281,20 @@ export type FormState =
   | QuickBarFormState
   | QuickBarProviderFormState
   | TourFormState;
+
+export function isFormState(formState: unknown): formState is FormState {
+  if (
+    typeof formState !== "object" ||
+    formState === null ||
+    Array.isArray(formState)
+  ) {
+    return false;
+  }
+
+  return (
+    "uuid" in formState &&
+    "type" in formState &&
+    "extensionPoint" in formState &&
+    "extension" in formState
+  );
+}

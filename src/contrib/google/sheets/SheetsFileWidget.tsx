@@ -34,7 +34,7 @@ import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 
@@ -46,12 +46,16 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [sheetError, setSheetError] = useState(null);
   const [doc, setDoc] = useState<SheetMeta | null>(null);
 
-  const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+  const { values: formState, setValues: setFormState } = useFormikContext();
 
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
   useEffect(
     () => {
+      // This widget is also used outside the page editor, so this won't always be FormState
+      if (!isFormState(formState)) {
+        return;
+      }
+
       const newState = produce(formState, (draft) =>
         produceExcludeUnusedDependencies(draft)
       );
