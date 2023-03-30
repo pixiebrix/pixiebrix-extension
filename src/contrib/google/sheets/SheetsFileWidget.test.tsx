@@ -42,8 +42,29 @@ const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
   typeof sheets.getSheetProperties
 >;
 
+let mockServiceExcludeEnabled = false;
+
+jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => {
+  const actual = jest.requireActual(
+    "@/components/fields/schemaFields/serviceFieldUtils"
+  );
+
+  return {
+    ...actual,
+    produceExcludeUnusedDependencies: jest.fn((x: any) =>
+      mockServiceExcludeEnabled ? x : actual.produceExcludeUnusedDependencies(x)
+    ),
+  };
+});
+
 describe("SheetsFileWidget", () => {
+  beforeEach(() => {
+    mockServiceExcludeEnabled = false;
+  });
+
   it("smoke test", async () => {
+    mockServiceExcludeEnabled = true;
+
     const wrapper = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
@@ -57,6 +78,8 @@ describe("SheetsFileWidget", () => {
   });
 
   it("renders valid sheet on load", async () => {
+    mockServiceExcludeEnabled = true;
+
     getSheetPropertiesMock.mockResolvedValue({
       title: "Test Sheet",
     });
@@ -75,6 +98,8 @@ describe("SheetsFileWidget", () => {
   });
 
   it("falls back to spreadsheet id if fetching properties fails", async () => {
+    mockServiceExcludeEnabled = true;
+
     getSheetPropertiesMock.mockRejectedValue(
       new Error("Error fetching sheet properties")
     );
@@ -93,6 +118,8 @@ describe("SheetsFileWidget", () => {
   });
 
   it("shows workshop fallback on expression", async () => {
+    mockServiceExcludeEnabled = true;
+
     const wrapper = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
