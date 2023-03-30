@@ -24,7 +24,6 @@ import { sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import {
   blockConfigFactory,
-  extensionFactory,
   formStateFactory,
   uuidSequence,
 } from "@/testUtils/factories";
