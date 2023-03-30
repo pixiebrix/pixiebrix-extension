@@ -39,6 +39,8 @@ import {
 } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
+import { syncFlagOn } from "@/store/syncFlags";
+import useFlags from "@/hooks/useFlags";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -46,6 +48,12 @@ const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
+
+jest.mock("@/contrib/google/initGoogle", () => ({
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn().mockImplementation(() => () => {}),
+}));
 
 jest.mock("@/hooks/auth", () => ({
   __esModule: true,
@@ -63,6 +71,33 @@ const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
 const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
   typeof sheets.getHeaders
 >;
+
+jest.mock("@/store/syncFlags", () => ({
+  syncFlagOn: jest.fn(),
+}));
+
+const syncFlagOnMock = syncFlagOn as jest.MockedFunction<typeof syncFlagOn>;
+
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useFlagsMock = useFlags as jest.MockedFunction<typeof useFlags>;
+
+function mockFlagOn(on = true) {
+  syncFlagOnMock.mockReturnValue(on);
+  useFlagsMock.mockReturnValue({
+    permit: jest.fn(),
+    restrict: jest.fn(),
+    flagOn: jest.fn(() => on),
+    flagOff: jest.fn(),
+  });
+}
+
+beforeEach(() => {
+  mockFlagOn(false);
+});
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -88,7 +123,7 @@ beforeAll(() => {
 
 describe("getToggleOptions", () => {
   // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
-  it("should include toggle options", async () => {
+  it("should include file picker and service toggle options when flag is off", async () => {
     const baseSchema = await dereference(BASE_SHEET_SCHEMA);
 
     const result = getToggleOptions({
@@ -114,17 +149,44 @@ describe("getToggleOptions", () => {
       }),
     ]);
   });
+
+  it("should include file picker and variable toggle options when flag is on", async () => {
+    mockFlagOn();
+
+    const baseSchema = await dereference(BASE_SHEET_SCHEMA);
+
+    const result = getToggleOptions({
+      fieldSchema: baseSchema,
+      customToggleModes: [],
+      isRequired: true,
+      allowExpressions: true,
+      isObjectProperty: false,
+      isArrayItem: false,
+    });
+
+    expect(result).toEqual([
+      // The Google File Picker
+      expect.objectContaining({
+        Widget: expect.toBeOneOf([SheetsFileWidget]),
+        value: "string",
+      }),
+      // Variable
+      expect.objectContaining({
+        value: "var",
+      }),
+    ]);
+  });
 });
 
 describe("AppendSpreadsheetOptions", () => {
-  it("should render successfully", async () => {
+  test("should render successfully with string spreadsheetId value and empty nunjucks tabName", async () => {
     const rendered = render(
       <AppendSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: {
           config: {
             spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: "",
+            tabName: makeTemplateExpression("nunjucks", ""),
             rowValues: {},
           },
         },
@@ -136,12 +198,50 @@ describe("AppendSpreadsheetOptions", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("can choose tab and row values will load automatically", async () => {
+  test("should render successfully with string spreadsheetId value and null tabName", async () => {
+    const rendered = render(
+      <AppendSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: null,
+            rowValues: {},
+          },
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should render successfully with string spreadsheetId value and selected tabName", async () => {
+    const rendered = render(
+      <AppendSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: "Tab2",
+            rowValues: {},
+          },
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("can choose tab and row values will load automatically with empty nunjucks tabName", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "",
+          tabName: makeTemplateExpression("nunjucks", ""),
           rowValues: {},
         },
       },
@@ -172,18 +272,23 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
   });
 
-  it("loads in tab names with spreadsheet ID and empty nunjucks tabName", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
+  it("can choose tab and row values will load automatically with null tabName", async () => {
+    const { rerender } = render(
+      <AppendSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: null,
+            rowValues: {},
+          },
         },
-      },
-    });
+      }
+    );
 
     await waitForEffect();
+
+    const tabChooser = await screen.findByLabelText("Tab Name");
 
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
@@ -193,9 +298,31 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("Column2")).toBeVisible();
     expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+
+    // Choose Tab2
+    await userEvent.click(tabChooser);
+    const tab2Option = await screen.findByText("Tab2");
+    await userEvent.click(tab2Option);
+
+    // Shows the header names for Tab2
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
+
+    // Should not change on rerender
+    rerender(<AppendSpreadsheetOptions name="" configKey="config" />);
+
+    await waitForEffect();
+
+    // Shows the header names for Tab2
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
   });
 
-  it("does not load tabs when spreadsheetId is null", async () => {
+  it("does not load tabs when spreadsheetId is null with empty nunjucks tabName", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -250,6 +377,92 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
 
+  it("loads in tab names with spreadsheet service integration and null tabName", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@google"),
+          tabName: null,
+          rowValues: {},
+        },
+        services: [
+          {
+            id: GOOGLE_SHEET_SERVICE_ID,
+            outputKey: "google",
+            config: uuidSequence(2),
+          },
+        ],
+      },
+    });
+
+    await waitForEffect();
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    // Shows the header names for Tab1
+    expect(screen.getByDisplayValue("Column1")).toBeVisible();
+    expect(screen.getByDisplayValue("Column2")).toBeVisible();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+  });
+
+  it("loads in tab names with mod input spreadsheetId and empty nunjucks tabName", async () => {
+    mockFlagOn();
+
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: makeTemplateExpression("nunjucks", ""),
+          rowValues: {},
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    // Shows the header names for Tab1
+    expect(screen.getByDisplayValue("Column1")).toBeVisible();
+    expect(screen.getByDisplayValue("Column2")).toBeVisible();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+  });
+
+  it("loads in tab names with mod input spreadsheetId and null tabName", async () => {
+    mockFlagOn();
+
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: null,
+          rowValues: {},
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    // Shows the header names for Tab1
+    expect(screen.getByDisplayValue("Column1")).toBeVisible();
+    expect(screen.getByDisplayValue("Column2")).toBeVisible();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+  });
+
   it("allows any rowValues fields for variable tab name", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
@@ -270,15 +483,15 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
 
-  it("does not clear initial values on first render", async () => {
+  it("does not clear initial values with string spreadsheetId value and nunjucks tabName", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "Tab2",
+          tabName: makeTemplateExpression("nunjucks", "Tab2"),
           rowValues: {
-            Foo: "valueA",
-            Bar: "valueB",
+            Foo: makeTemplateExpression("nunjucks", "valueA"),
+            Bar: makeTemplateExpression("nunjucks", "valueB"),
           },
         },
       },
@@ -288,6 +501,93 @@ describe("AppendSpreadsheetOptions", () => {
 
     // Ensure title loaded
     expect(screen.getByDisplayValue("Test Sheet")).toBeVisible();
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Ensure row values have both names and values
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("valueA")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("valueB")).toBeVisible();
+  });
+
+  it("does not clear initial values with string spreadsheetId value and selected tabName", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: "Tab2",
+          rowValues: {
+            Foo: makeTemplateExpression("nunjucks", "valueA"),
+            Bar: makeTemplateExpression("nunjucks", "valueB"),
+          },
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Ensure title loaded
+    expect(screen.getByDisplayValue("Test Sheet")).toBeVisible();
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Ensure row values have both names and values
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("valueA")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("valueB")).toBeVisible();
+  });
+
+  it("does not clear initial values on first render with var spreadsheetId value and nunjucks tabName and flag on", async () => {
+    mockFlagOn();
+
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: makeTemplateExpression("nunjucks", "Tab2"),
+          rowValues: {
+            Foo: makeTemplateExpression("nunjucks", "valueA"),
+            Bar: makeTemplateExpression("nunjucks", "valueB"),
+          },
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Ensure row values have both names and values
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("valueA")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("valueB")).toBeVisible();
+  });
+
+  it("does not clear initial values on first render with var spreadsheetId value and selected tabName and flag on", async () => {
+    mockFlagOn();
+
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: "Tab2",
+          rowValues: {
+            Foo: makeTemplateExpression("nunjucks", "valueA"),
+            Bar: makeTemplateExpression("nunjucks", "valueB"),
+          },
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
     // Ensure tab name has not changed -- use getByText for react-select value
     expect(screen.getByText("Tab2")).toBeVisible();
     // Ensure row values have both names and values

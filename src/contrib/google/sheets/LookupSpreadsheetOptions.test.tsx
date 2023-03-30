@@ -19,8 +19,7 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, screen } from "@testing-library/react";
 import {
   makeTemplateExpression,
   makeVariableExpression,
@@ -35,12 +34,31 @@ import {
   uuidSequence,
 } from "@/testUtils/factories";
 import { services, sheets } from "@/background/messenger/api";
+import { syncFlagOn } from "@/store/syncFlags";
+import useFlags from "@/hooks/useFlags";
+import {
+  isGoogleSupported,
+  isGoogleInitialized,
+} from "@/contrib/google/initGoogle";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
 const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
+>;
+
+jest.mock("@/contrib/google/initGoogle", () => ({
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn().mockImplementation(() => () => {}),
+}));
+
+const isGoogleSupportedMock = isGoogleSupported as jest.MockedFunction<
+  typeof isGoogleSupported
+>;
+const isGoogleInitializedMock = isGoogleInitialized as jest.MockedFunction<
+  typeof isGoogleInitialized
 >;
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
@@ -70,6 +88,35 @@ const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
   typeof useAuthOptions
 >;
 
+jest.mock("@/store/syncFlags", () => ({
+  syncFlagOn: jest.fn(),
+}));
+
+const syncFlagOnMock = syncFlagOn as jest.MockedFunction<typeof syncFlagOn>;
+
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useFlagsMock = useFlags as jest.MockedFunction<typeof useFlags>;
+
+function mockFlagOn(on = true) {
+  syncFlagOnMock.mockReturnValue(on);
+  useFlagsMock.mockReturnValue({
+    permit: jest.fn(),
+    restrict: jest.fn(),
+    flagOn: jest.fn(() => on),
+    flagOff: jest.fn(),
+  });
+}
+
+beforeEach(() => {
+  mockFlagOn(false);
+  isGoogleInitializedMock.mockReturnValue(true);
+  isGoogleSupportedMock.mockReturnValue(true);
+});
+
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockResolvedValue(
@@ -93,16 +140,16 @@ beforeAll(() => {
 });
 
 describe("LookupSpreadsheetOptions", () => {
-  it("should render successfully", async () => {
+  it("should render successfully with string spreadsheetId value and empty nunjucks tabName", async () => {
     const rendered = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: {
           config: {
             spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: "",
-            header: "",
-            query: "",
+            tabName: makeTemplateExpression("nunjucks", ""),
+            header: makeTemplateExpression("nunjucks", ""),
+            query: makeTemplateExpression("nunjucks", ""),
             multi: false,
           },
         },
@@ -114,7 +161,49 @@ describe("LookupSpreadsheetOptions", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("should show tab names automatically when config is selected, when starting with a blank nunjucks tabName", async () => {
+  it("should render successfully with string spreadsheetId value and null tabName", async () => {
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: null,
+            header: makeTemplateExpression("nunjucks", ""),
+            query: makeTemplateExpression("nunjucks", ""),
+            multi: false,
+          },
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should render successfully with string spreadsheetId value and selected tabName", async () => {
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: "Tab2",
+            header: makeTemplateExpression("nunjucks", ""),
+            query: makeTemplateExpression("nunjucks", ""),
+            multi: false,
+          },
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should show tab names automatically when config is selected, with null spreadsheetId value and empty nunjucks tabName", async () => {
     useAuthOptionsMock.mockReturnValue([
       [
         // Provide 2 so ServiceSelectWidget won't select one by default
@@ -141,7 +230,9 @@ describe("LookupSpreadsheetOptions", () => {
           // Causes integration configuration checker to be shown
           spreadsheetId: null,
           tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
+          header: makeTemplateExpression("nunjucks", ""),
+          query: makeTemplateExpression("nunjucks", ""),
+          multi: false,
         },
         services: [],
       },
@@ -151,16 +242,12 @@ describe("LookupSpreadsheetOptions", () => {
 
     // Simulate user selecting a sheet integration configuration
     const spreadsheetSelect = await screen.findByLabelText("Spreadsheet");
-    await selectEvent.select(spreadsheetSelect, "Test 1");
+    await act(async () => {
+      await selectEvent.select(spreadsheetSelect, "Test 1");
+    });
 
-    // Toggle the Tab Name field to select
-    const tabNameToggle = screen
-      .getByTestId("toggle-config.tabName")
-      .querySelector("button");
-    await selectEvent.select(tabNameToggle, "Select...");
-
-    const tabOption = await screen.findByText("Tab1");
-    expect(tabOption).toBeVisible();
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
 
     // Ensure headers loaded in for Tab1
     const headerSelect = await screen.findByLabelText("Column Header");
@@ -176,13 +263,74 @@ describe("LookupSpreadsheetOptions", () => {
     expect(screen.queryByText("Bar")).not.toBeInTheDocument();
   });
 
-  it("can choose tab and header values will load automatically", async () => {
+  it("loads in tab names and header values with string spreadsheetId value and empty nunjucks tabName", async () => {
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "",
-          rowValues: {},
+          tabName: makeTemplateExpression("nunjucks", ""),
+          header: makeTemplateExpression("nunjucks", ""),
+          query: makeTemplateExpression("nunjucks", ""),
+          multi: false,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    const tabChooser = await screen.findByLabelText("Tab Name");
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    let headerChooser = await screen.findByLabelText("Column Header");
+    // Shows the header names for Tab1 in the dropdown
+    selectEvent.openMenu(headerChooser);
+    // Input value and select option in the dropdown, 2 instances
+    const column1Options = screen.getAllByText("Column1");
+    expect(column1Options).toHaveLength(2);
+    expect(column1Options[0]).toBeVisible();
+    expect(column1Options[1]).toBeVisible();
+    expect(screen.getByText("Column2")).toBeVisible();
+    // Does not show headers for Tab2
+    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bar")).not.toBeInTheDocument();
+
+    // Choose Tab2
+    await act(async () => {
+      await selectEvent.select(tabChooser, "Tab2");
+    });
+
+    // Need to grab the chooser again because props changed and the header select component was re-rendered
+    headerChooser = await screen.findByLabelText("Column Header");
+
+    // Shows the header names for Tab2 in the dropdown
+    selectEvent.openMenu(headerChooser);
+    // Input value and select option in the dropdown, 2 instances
+    const fooOptions = screen.getAllByText("Foo");
+    expect(fooOptions).toHaveLength(2);
+    expect(fooOptions[0]).toBeVisible();
+    expect(fooOptions[1]).toBeVisible();
+    expect(screen.getByText("Bar")).toBeVisible();
+    // Does not show the headers for Tab1
+    expect(screen.queryByText("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByText("Column2")).not.toBeInTheDocument();
+  });
+
+  it("loads in tab names and header values with mod input variable spreadsheetId value and empty nunjucks tabName", async () => {
+    mockFlagOn();
+
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: makeTemplateExpression("nunjucks", ""),
+          header: makeTemplateExpression("nunjucks", ""),
+          query: makeTemplateExpression("nunjucks", ""),
+          multi: false,
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
         },
       },
     });
@@ -195,25 +343,28 @@ describe("LookupSpreadsheetOptions", () => {
     expect(screen.getByText("Tab1")).toBeVisible();
 
     // Shows the header names for Tab1 in the dropdown
-    const headerSelect = await screen.findByLabelText("Column Header");
-    selectEvent.openMenu(headerSelect);
+    let headerChooser = await screen.findByLabelText("Column Header");
+    selectEvent.openMenu(headerChooser);
     // Input value and select option in the dropdown, 2 instances
     const column1Options = screen.getAllByText("Column1");
     expect(column1Options).toHaveLength(2);
     expect(column1Options[0]).toBeVisible();
     expect(column1Options[1]).toBeVisible();
-
     expect(screen.getByText("Column2")).toBeVisible();
+    // Does not show headers for Tab2
     expect(screen.queryByText("Foo")).not.toBeInTheDocument();
     expect(screen.queryByText("Bar")).not.toBeInTheDocument();
 
     // Choose Tab2
-    await userEvent.click(tabChooser);
-    const tab2Option = await screen.findByText("Tab2");
-    await userEvent.click(tab2Option);
+    await act(async () => {
+      await selectEvent.select(tabChooser, "Tab2");
+    });
+
+    // Need to grab the chooser again because props changed and the header select component was re-rendered
+    headerChooser = await screen.findByLabelText("Column Header");
 
     // Shows the header names for Tab2 in the dropdown
-    selectEvent.openMenu(headerSelect);
+    selectEvent.openMenu(headerChooser);
     // Input value and select option in the dropdown, 2 instances
     const fooOptions = screen.getAllByText("Foo");
     expect(fooOptions).toHaveLength(2);
@@ -225,19 +376,107 @@ describe("LookupSpreadsheetOptions", () => {
     expect(screen.queryByText("Column2")).not.toBeInTheDocument();
   });
 
-  it("renders with variable inputs", async () => {
+  it("does not clear initial tabName and header values with string spreadsheetId value and flag off", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: "Tab2",
+          header: "Bar",
+          query: makeTemplateExpression("nunjucks", "testQuery"),
+          multi: true,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Ensure title loaded
+    expect(screen.getByDisplayValue("Test Sheet")).toBeVisible();
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Ensure header has not changed -- use getByText for react-select value
+    expect(screen.getByText("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("testQuery")).toBeVisible();
+  });
+
+  it("does not clear initial tabName and header values with string spreadsheetId value and flag on", async () => {
+    mockFlagOn();
+
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: "Tab2",
+          header: "Bar",
+          query: makeTemplateExpression("nunjucks", "testQuery"),
+          multi: true,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Ensure title loaded
+    expect(screen.getByDisplayValue("Test Sheet")).toBeVisible();
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Ensure header has not changed -- use getByText for react-select value
+    expect(screen.getByText("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("testQuery")).toBeVisible();
+  });
+
+  it("does not clear initial variable values", async () => {
+    mockFlagOn();
+
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: makeVariableExpression("@myTab"),
+          header: makeVariableExpression("@myHeader"),
+          query: makeVariableExpression("@query"),
+          multi: true,
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Ensure tab name has not changed -- use getByText for react-select value
+    expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
+    expect(screen.getByDisplayValue("@myTab")).toBeVisible();
+    expect(screen.getByDisplayValue("@myHeader")).toBeVisible();
+    expect(screen.getByDisplayValue("@query")).toBeVisible();
+  });
+
+  it("should require GAPI support", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+    isGoogleSupportedMock.mockReturnValue(false);
+
     const rendered = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: makeVariableExpression("@myTab"),
-            header: makeVariableExpression("@myHeader"),
-            query: makeVariableExpression("@query"),
-            multi: true,
-          },
-        },
+        initialValues: { config: {} },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("should require GAPI loaded", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+    isGoogleSupportedMock.mockReturnValue(true);
+
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: { config: {} },
       }
     );
 
