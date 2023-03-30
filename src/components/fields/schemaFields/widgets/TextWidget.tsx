@@ -65,8 +65,9 @@ function schemaSupportsTemplates(schema: Schema): boolean {
     -$: Assert the end of the string.
 */
 
-// eslint-disable-next-line security/detect-unsafe-regex
 const objectPathRegex =
+  // Disable eslint for this line. It's risky regex for long strings but works ok for our use
+  // eslint-disable-next-line security/detect-unsafe-regex
   /^@(?!\d)([\w$]+)((\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
 
 // Accepts a string and returns whether it containts a valid nunjuck variable
@@ -106,7 +107,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     if (inputRef) {
       inputRef.current = textAreaRef.current;
     }
-  }, [textAreaRef.current]);
+  }, [inputRef]);
 
   useEffect(() => {
     if (focusInput) {
