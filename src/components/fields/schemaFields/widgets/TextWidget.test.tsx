@@ -19,7 +19,9 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type Schema } from "@/core";
 import { render, screen } from "@/pageEditor/testHelpers";
-import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import TextWidget, {
+  isVarValue,
+} from "@/components/fields/schemaFields/widgets/TextWidget";
 import userEvent from "@testing-library/user-event";
 import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
 
@@ -69,5 +71,28 @@ describe("TextWidget", () => {
     expect(formState).toStrictEqual({
       [fieldName]: stringToExpression("abc", "nunjucks"),
     });
+  });
+
+  test("isVarValue()", () => {
+    // Valid strings:
+    expect(isVarValue("@object")).toBe(true);
+    expect(isVarValue("@object.property")).toBe(true);
+    expect(isVarValue("@myObject.property")).toBe(true);
+    expect(isVarValue("@example['property']")).toBe(true);
+    expect(isVarValue('@example["property"]')).toBe(true);
+    expect(isVarValue('@example["spaced property name"]')).toBe(true);
+    expect(isVarValue('@example.property["nestedProperty"]')).toBe(true);
+    expect(isVarValue('@example.property["nested spaced property"]')).toBe(
+      true
+    );
+    expect(isVarValue("@example.property['nestedProperty']")).toBe(true);
+    expect(isVarValue('@example["property"].nestedProperty')).toBe(true);
+    expect(isVarValue("@example.property.nestedProperty")).toBe(true);
+
+    // Invalid strings:
+    expect(isVarValue("abc")).toBe(false);
+    expect(isVarValue("@property extra text")).toBe(false);
+    expect(isVarValue("@123")).toBe(false);
+    expect(isVarValue("@")).toBe(false);
   });
 });

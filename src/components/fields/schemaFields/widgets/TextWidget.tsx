@@ -54,9 +54,25 @@ function schemaSupportsTemplates(schema: Schema): boolean {
     (option) => option.value === "string" && option.label === "Text"
   );
 }
+/**
+  Regex Breakdown
+    -^: Assert the start of the string.
+    -@: Check for a @ character at the beginning of the string.
+    -(?!\d): Ensure the first character of the identifier is not a digit.
+    -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
+    -((\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
+    -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
+    -$: Assert the end of the string.
+*/
 
-function isVarValue(value: string): boolean {
-  return value.startsWith("@") && !value.includes(" ");
+const objectPathRegex =
+  // Disable eslint for this line. It's risky regex for long strings but works ok for our use
+  // eslint-disable-next-line security/detect-unsafe-regex
+  /^@(?!\d)([\w$]+)((\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
+
+// Accepts a string and returns whether it containts a valid nunjuck variable
+export function isVarValue(value: string): boolean {
+  return objectPathRegex.test(value);
 }
 
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
