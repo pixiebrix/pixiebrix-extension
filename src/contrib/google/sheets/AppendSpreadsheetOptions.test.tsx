@@ -78,12 +78,6 @@ jest.mock("@/store/syncFlags", () => ({
 
 const syncFlagOnMock = syncFlagOn as jest.MockedFunction<typeof syncFlagOn>;
 
-jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
-  ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
-  // Mock so we don't have to have full Page Editor state in tests
-  produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
-}));
-
 jest.mock("@/hooks/useFlags", () => ({
   __esModule: true,
   default: jest.fn(),

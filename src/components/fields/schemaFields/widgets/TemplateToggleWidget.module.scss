@@ -43,4 +43,8 @@
 .symbol {
   display: inline-block;
   width: 30px;
+
+  > svg {
+    width: 100% !important;
+  }
 }
