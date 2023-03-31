@@ -19,18 +19,16 @@ import { useField, useFormikContext } from "formik";
 import { type Expression, type UserOptions } from "@/core";
 import { joinName } from "@/utils";
 import { useReducer } from "react";
-import {
-  keyToFieldValue,
-  type ServiceSlice,
-} from "@/components/fields/schemaFields/serviceFieldUtils";
+import { type ServiceSlice } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty } from "lodash";
 import { pickDependency } from "@/services/useDependency";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
+import { getSheetServiceOutputKey } from "@/contrib/google/sheets/getSheetServiceOutputKey";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
@@ -115,9 +113,11 @@ function useSpreadsheetId(basePath: string): string | null {
       }
 
       try {
-        const sheetsService = servicesValue.find((service) =>
-          isEqual(keyToFieldValue(service.outputKey), fieldValue)
+        const serviceOutputKey = getSheetServiceOutputKey(fieldValue);
+        const sheetsService = servicesValue.find(
+          (service) => service.outputKey === serviceOutputKey
         );
+
         if (!sheetsService) {
           throw new Error(
             "Could not find service for spreadsheetId field value: " +
