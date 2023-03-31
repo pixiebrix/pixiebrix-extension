@@ -73,6 +73,25 @@ describe("useSpreadsheetId", () => {
     expect(result.current).toBe(TEST_SPREADSHEET_ID);
   });
 
+  test("works with legacy service usage", async () => {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+      initialValues: {
+        spreadsheetId: makeVariableExpression("@sheet.spreadsheetId"),
+        services: [
+          {
+            id: GOOGLE_SHEET_SERVICE_ID,
+            outputKey: "sheet",
+            config: uuidSequence(2),
+          },
+        ],
+      },
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+  });
+
   test("works with mod input", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
