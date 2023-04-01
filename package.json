@@ -220,7 +220,7 @@
     "@types/webpack": "^5.28.1",
     "@types/webpack-env": "^1.16.2",
     "@types/whatwg-mimetype": "^3.0.0",
-    "axios-mock-adapter": "^1.21.3",
+    "axios-mock-adapter": "^1.21.4",
     "compass-mixins": "^0.12.10",
     "concurrently": "^8.0.1",
     "cooky-cutter": "^1.5.4",
