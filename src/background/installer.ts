@@ -20,7 +20,7 @@ import { type Runtime } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
-import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
+import { allowsTrack, DNT_STORAGE_KEY } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
@@ -28,6 +28,8 @@ import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
+import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
+import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -187,7 +189,6 @@ async function install({
 }: Runtime.OnInstalledDetailsType) {
   // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
   // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
-
   console.debug("onInstalled", { reason, previousVersion });
   const { version } = browser.runtime.getManifest();
 
@@ -198,7 +199,12 @@ async function install({
 
     // XXX: under what conditions could onInstalled fire, but the extension is already linked?
     if (!(await isLinked())) {
-      void openInstallPage();
+      const ssoUrl = await readManagedStorageByKey("ssoUrl");
+      if (ssoUrl) {
+        void launchSsoFlow(ssoUrl);
+      } else {
+        void openInstallPage();
+      }
     }
   } else if (reason === "update") {
     // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page

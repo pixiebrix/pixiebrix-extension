@@ -35,7 +35,7 @@ import {
 } from "@/services/constants";
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settingsTypes";
-import { type ManualStorageKey, readStorage } from "@/chrome";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 /**
  * Map from partner keys to partner service IDs
@@ -108,9 +108,6 @@ function decidePartnerServiceIds({
   return PARTNER_MAP.get(partnerId) ?? new Set();
 }
 
-const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
-const PARTNER_MANAGED_KEY = "partnerId" as ManualStorageKey;
-
 /**
  * Hook for determining if the extension has required integrations for the partner.
  *
@@ -129,17 +126,10 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   } = useSelector(selectSettings);
   const configuredServices = useSelector(selectConfiguredServices);
 
-  // Control Room URL specified by IT department during force-install
-  const [managedControlRoomUrl] = useAsyncState(
-    async () => readStorage(CONTROL_ROOM_URL_MANAGED_KEY, undefined, "managed"),
-    []
-  );
-
-  // Partner Id/Key specified by IT department during force-install
-  const [managedPartnerId] = useAsyncState(
-    async () => readStorage(PARTNER_MANAGED_KEY, undefined, "managed"),
-    []
-  );
+  // Read enterprise managed state
+  const { data: managedState = {} } = useManagedStorageState();
+  const { controlRoomUrl: managedControlRoomUrl, partnerId: managedPartnerId } =
+    managedState;
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;

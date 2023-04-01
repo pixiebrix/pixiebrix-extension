@@ -19,11 +19,7 @@ import { type Deployment, type Me } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
-import {
-  getExtensionVersion,
-  type ManualStorageKey,
-  readStorage,
-} from "@/chrome";
+import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -59,16 +55,14 @@ import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
 const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
-
-// See managedStorageSchema.json
-const MANAGED_CAMPAIGN_IDS_KEY = "campaignIds" as ManualStorageKey;
-const MANAGED_ORGANIZATION_ID_KEY = "managedOrganizationId" as ManualStorageKey;
 
 async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
   await saveOptions(state);
@@ -354,18 +348,17 @@ export async function updateDeployments(): Promise<void> {
 
   const now = Date.now();
 
-  const [linked, { organizationId }, settings] = await Promise.all([
-    isLinked(),
-    readAuthData(),
-    getSettingsState(),
-  ]);
-
-  if (!linked) {
-    const [campaignIds = [], managedOrganizationId] = await Promise.all([
-      readStorage(MANAGED_CAMPAIGN_IDS_KEY, undefined, "managed"),
-      readStorage(MANAGED_ORGANIZATION_ID_KEY, undefined, "managed"),
+  const [linked, { organizationId }, settings, managedStorage] =
+    await Promise.all([
+      isLinked(),
+      readAuthData(),
+      getSettingsState(),
+      readManagedStorage(),
     ]);
 
+  const { campaignIds = [], managedOrganizationId, ssoUrl } = managedStorage;
+
+  if (!linked) {
     // If the Browser extension is unlinked (it doesn't have the API key), one of the following must be true:
     // - The user has managed install, and they have not linked their extension yet
     // - The user is part of an organization, and somehow lost their token: 1) the token is no longer valid
@@ -374,25 +367,29 @@ export async function updateDeployments(): Promise<void> {
     //   need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any deployments
     //   installed anyway.
 
-    if (organizationId != null) {
+    if (ssoUrl != null) {
       reportEvent("OrganizationExtensionLink", {
         organizationId,
         managedOrganizationId,
-        initial: false,
+        // Initial marks whether this is the initial background deployment install
+        initial: !organizationId,
         campaignIds,
+        sso: true,
       });
 
-      void browser.runtime.openOptionsPage();
+      void launchSsoFlow(ssoUrl);
 
       return;
     }
 
-    if (managedOrganizationId != null) {
+    if (managedOrganizationId != null || organizationId != null) {
       reportEvent("OrganizationExtensionLink", {
         organizationId,
         managedOrganizationId,
-        initial: true,
+        // Initial marks whether this is the initial background deployment install
+        initial: !organizationId,
         campaignIds,
+        sso: false,
       });
 
       void browser.runtime.openOptionsPage();
@@ -460,11 +457,7 @@ export async function updateDeployments(): Promise<void> {
       uid: await getUID(),
       version: getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
-      campaignIds: await readStorage(
-        MANAGED_CAMPAIGN_IDS_KEY,
-        undefined,
-        "managed"
-      ),
+      campaignIds,
     });
 
   if (deploymentResponseStatus >= 400) {
