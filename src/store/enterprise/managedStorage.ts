@@ -18,7 +18,6 @@
 import { pollUntilTruthy } from "@/utils";
 import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
 import { isEmpty, once, remove } from "lodash";
-import { type UnknownObject } from "@/types";
 import { expectContext } from "@/utils/expectContext";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 
@@ -36,33 +35,15 @@ function notifyAll(): void {
   }
 }
 
-async function readManagedStorageImmediately<T = unknown>(
-  storageKey: keyof ManagedStorageState
-): Promise<T>;
-async function readManagedStorageImmediately<T = unknown>(
-  storageKey: null
-): Promise<UnknownObject>;
-async function readManagedStorageImmediately<T = unknown>(
-  storageKey: keyof ManagedStorageState | null
-): Promise<T | UnknownObject> {
-  let storageValue;
-
+async function readManagedStorageImmediately(): Promise<ManagedStorageState> {
   try {
-    // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
-    // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-    storageValue = await browser.storage.managed.get(storageKey);
+    // Get all managed storage values
+    return await browser.storage.managed.get(null);
   } catch {
     // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
-    // We don't officially support Opera, but to keep the error telemetry clean.
-    storageValue = {};
+    // We don't officially support Opera, but to keep the error telemetry clean if someone installs on Opera
+    return {};
   }
-
-  if (storageKey == null) {
-    return storageValue;
-  }
-
-  // eslint-disable-next-line security/detect-object-injection -- type-checked key
-  return storageValue[storageKey];
 }
 
 // It's possible that managed storage is not available on the initial install event
@@ -75,9 +56,9 @@ async function readManagedStorageImmediately<T = unknown>(
 const waitForInitialManagedStorage = pMemoize(async () => {
   managedStorageState = await pollUntilTruthy<ManagedStorageState>(
     async () => {
-      const value = await readManagedStorageImmediately(null);
-      if (typeof value === "object" && !isEmpty(value)) {
-        return value;
+      const values = await readManagedStorageImmediately();
+      if (typeof values === "object" && !isEmpty(values)) {
+        return values;
       }
     },
     {
@@ -183,7 +164,7 @@ export const initManagedStorage = once(() => {
     // See: https://github.com/clarkbw/jest-webextension-mock/issues/170
     browser.storage.onChanged.addListener(async (changes, area) => {
       if (area === "managed") {
-        managedStorageState = await readManagedStorageImmediately(null);
+        managedStorageState = await readManagedStorageImmediately();
         notifyAll();
       }
     });

@@ -46,9 +46,14 @@ function optionsStore(initialState?: any) {
   });
 }
 
-jest.mock("@/chrome", () => ({
-  readStorage: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("lodash", () => {
+  const lodash = jest.requireActual("lodash");
+  return {
+    ...lodash,
+    // Handle multiple calls to managedStorage:initManagedStorage across tests
+    once: (fn: any) => fn,
+  };
+});
 
 jest.mock("@/services/api", () => ({
   util: {
