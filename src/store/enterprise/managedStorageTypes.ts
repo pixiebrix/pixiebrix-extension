@@ -40,7 +40,7 @@ export type ManagedStorageState = {
    */
   campaignIds?: string[];
   /**
-   * The SSO URL specified by IT department during force-install
+   * The SSO URL for automatically performing SSO/SAML authentication.
    */
   ssoUrl?: string;
   /**

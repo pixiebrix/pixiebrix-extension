@@ -196,8 +196,11 @@ async function install({
       version,
     });
 
-    // XXX: under what conditions could onInstalled fire, but the extension is already linked?
+    // XXX: under what conditions could onInstalled fire, but the extension is already linked? Is this the case during
+    // development/loading an update of the extension from the file system?
     if (!(await isLinked())) {
+      // PERFORMANCE: readManagedStorageByKey waits up to 2 seconds for managed storage to be available. Shouldn't be
+      // notice-able for end-user relative to the extension download/install time
       const ssoUrl = await readManagedStorageByKey("ssoUrl");
       // Don't launch the SSO page. The SSO flow will be launched by deployment.ts:updateDeployments
       if (!ssoUrl) {

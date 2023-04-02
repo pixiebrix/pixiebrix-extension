@@ -83,7 +83,12 @@ const waitForInitialManagedStorage = pMemoize(async () => {
 
 /**
  * Read a single-value from enterprise managed storage.
+ *
+ * If managed storage has not been initialized yet, reads from the managed storage API. Waits up to
+ * MAX_MANAGED_STORAGE_WAIT_MILLIS for the data to be available.
+ *
  * @param key the key to read.
+ * @see MAX_MANAGED_STORAGE_WAIT_MILLIS
  */
 export async function readManagedStorageByKey<
   K extends keyof ManagedStorageState
@@ -103,6 +108,11 @@ export async function readManagedStorageByKey<
 
 /**
  * Read a managed storage state from enterprise managed storage.
+ *
+ * If managed storage has not been initialized yet, reads from the managed storage API. Waits up to
+ * MAX_MANAGED_STORAGE_WAIT_MILLIS for the data to be available.
+ *
+ * @see MAX_MANAGED_STORAGE_WAIT_MILLIS
  */
 export async function readManagedStorage(): Promise<ManagedStorageState> {
   expectContext("extension");
@@ -116,8 +126,9 @@ export async function readManagedStorage(): Promise<ManagedStorageState> {
 }
 
 /**
- * Get a synchronous snapshot of the managed storage state.
+ * Get a _synchronous_ snapshot of the managed storage state.
  * @see useSyncManagedStorage
+ * @see readManagedStorage
  */
 export function getSnapshot(): ManagedStorageState | undefined {
   expectContext("extension");
