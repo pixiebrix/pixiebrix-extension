@@ -55,6 +55,18 @@ jest.mock("lodash", () => {
   };
 });
 
+// `pMemoize` has problems when used in tests because the promise can leak across tests. pMemoizeClear doesn't work
+// because the promise hasn't resolved yet
+jest.mock("p-memoize", () => {
+  const memoize = jest.requireActual("p-memoize");
+  return {
+    ...memoize,
+    __esModule: true,
+    pMemoizeClear: jest.fn(),
+    default: jest.fn().mockImplementation((fn) => fn),
+  };
+});
+
 jest.mock("@/services/api", () => ({
   util: {
     resetApiState: jest.fn().mockReturnValue({ type: "notarealreset" }),
