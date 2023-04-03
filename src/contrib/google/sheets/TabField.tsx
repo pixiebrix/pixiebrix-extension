@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
@@ -32,6 +32,8 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,
   spreadsheetId,
 }) => {
+  const inputRef = useRef<HTMLTextAreaElement>();
+
   const [
     { value: tabNameValue },
     ,
@@ -66,9 +68,14 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   // If we've loaded tab names and the tab name is not set, set it to the first tab name.
   // Check to make sure there's not an error, so we're not setting it to the first value
   // of a stale list of tabs, and check the tab name value itself to prevent an infinite
-  // re-render loop here.
+  // re-render loop here. Don't automatically modify the input if it's currently focused.
   useEffect(() => {
-    if (loading || error || isEmpty(tabNames)) {
+    if (
+      loading ||
+      error ||
+      isEmpty(tabNames) ||
+      document.activeElement === inputRef.current
+    ) {
       return;
     }
 
@@ -116,6 +123,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       schema={fieldSchema}
       isRequired
       defaultType="select"
+      inputRef={inputRef}
     />
   );
 };
