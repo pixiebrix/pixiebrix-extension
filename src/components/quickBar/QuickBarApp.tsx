@@ -54,7 +54,7 @@ let autoShow = false;
  *
  * @see toggleQuickBar
  */
-export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
+export const QUICKBAR_EVENT_NAME = "pixiebrix-quick-bar";
 
 function useAutoShow(): void {
   const { query } = useKBar();
@@ -86,8 +86,8 @@ const KBarComponent: React.FC = () => {
     showing: state.visualState !== VisualState.hidden,
   }));
 
-  // Save the selection at the time the quickbar is shown so it can be used in quick bar actions even after the user
-  // types in the quickbar search box. Restore the selection when the quick bar is hidden.
+  // Save the selection at the time the quick bar is shown so it can be used in quick bar actions even after the user
+  // types in the quick bar search box. Restore the selection when the quick bar is hidden.
   // Must be in a useEffect, otherwise when the user types in the quick bar search box, the selection is lost because
   // there's no selection on the render.
   useEffect(() => {
@@ -115,6 +115,7 @@ const KBarComponent: React.FC = () => {
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
           <div
+            data-testid="quickBar"
             className="cke_editable"
             contentEditable
             suppressContentEditableWarning
@@ -146,6 +147,9 @@ export const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
+/**
+ * Show the quick bar.
+ */
 export const toggleQuickBar = () => {
   // There's a race between when this method will run and when initQuickBarApp will be run from the quickbar
   // extension point. So, use autoShow to handle case where we call initQuickBarApp first, and dispatchEvent
@@ -160,9 +164,9 @@ export const initQuickBarApp = once(() => {
   expectContext("contentScript");
 
   const container = document.createElement("div");
-  container.id = "pixiebrix-quickbar-container";
+  container.id = "pixiebrix-quick-bar-container";
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
 
-  console.debug("Initialized quickbar");
+  console.debug("Initialized quick bar");
 });

@@ -15,32 +15,88 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import {
   QUICKBAR_EVENT_NAME,
   QuickBarApp,
 } from "@/components/quickBar/QuickBarApp";
 import React from "react";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
+import selectionController from "@/utils/selectionController";
+import userEvent from "@testing-library/user-event";
+
+// Could alternatively mock the internal calls, but this is easier if we trust the component
+jest.mock("@/components/Stylesheets", () => ({
+  __esModule: true,
+  Stylesheets({ children }: any) {
+    return <>{children}</>;
+  },
+}));
+
+// :shrug: I couldn't get "shadow-dom-testing-library" to play nice
+jest.mock("react-shadow-root", () => ({
+  __esModule: true,
+  default({ children }: any) {
+    return <>{children}</>;
+  },
+}));
+
+jest.mock("@/utils/selectionController", () => ({
+  __esModule: true,
+  default: {
+    save: jest.fn(),
+    restore: jest.fn(),
+    get: jest.fn(),
+  },
+}));
 
 beforeAll(() => {
   mockAnimationsApi();
 });
 
+const saveSelectionMock = selectionController.save as jest.MockedFunction<
+  typeof selectionController.save
+>;
+
 describe("QuickBarApp", () => {
+  beforeEach(() => {
+    saveSelectionMock.mockClear();
+  });
+
   it("should render nothing when not toggled", () => {
-    const wrapper = render(<QuickBarApp />);
-    expect(wrapper.container).toMatchSnapshot();
+    render(<QuickBarApp />);
+
+    expect(screen.queryByTestId("quickBar")).not.toBeInTheDocument();
+    expect(document.body.outerHTML).toMatchSnapshot();
   });
 
   it("should render toggled", async () => {
-    const wrapper = render(<QuickBarApp />);
+    render(<QuickBarApp />);
 
     await act(async () => {
       window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
     });
 
-    // XXX: figure out how to snapshot the portal
-    expect(wrapper.container).toMatchSnapshot();
+    expect(document.body.outerHTML).toMatchSnapshot();
+    expect(screen.getByTestId("quickBar")).toBeInTheDocument();
+  });
+
+  it("should preserve selection", async () => {
+    render(<QuickBarApp />);
+
+    await act(async () => {
+      window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
+    });
+
+    expect(document.body.outerHTML).toMatchSnapshot();
+    expect(screen.getByTestId("quickBar")).toBeInTheDocument();
+
+    expect(saveSelectionMock).toHaveBeenCalledOnce();
+
+    await act(async () => {
+      await userEvent.type(screen.getByRole("combobox"), "test");
+    });
+
+    expect(saveSelectionMock).toHaveBeenCalledOnce();
   });
 });
