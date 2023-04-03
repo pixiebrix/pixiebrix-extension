@@ -25,6 +25,7 @@ import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import { uniqBy } from "lodash";
 
 type InstallablesState = {
   installables: Installable[];
@@ -111,13 +112,17 @@ function useInstallables(): InstallablesState {
         extension._recipe?.id && !knownRecipeIds.has(extension._recipe?.id)
     );
 
-    return unavailable.map((x) => ({
-      metadata: x._recipe,
-      kind: "recipe",
-      isStub: true,
-      updated_at: x._recipe.updated_at,
-      sharing: x._recipe.sharing,
-    }));
+    // Show one entry per missing recipe
+    return uniqBy(
+      unavailable.map((x) => ({
+        metadata: x._recipe,
+        kind: "recipe",
+        isStub: true,
+        updated_at: x._recipe.updated_at,
+        sharing: x._recipe.sharing,
+      })),
+      (x) => x.metadata.id
+    );
   }, [knownRecipeIds, resolvedExtensions]);
 
   return {
