@@ -19,7 +19,7 @@ import React from "react";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   makeTemplateExpression,
@@ -595,5 +595,48 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
     expect(screen.getByDisplayValue("Bar")).toBeVisible();
     expect(screen.getByDisplayValue("valueB")).toBeVisible();
+  });
+
+  it("does not automatically toggle the field to select and choose the first item, if the input is focused by the user", async () => {
+    mockFlagOn();
+
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: makeTemplateExpression("nunjucks", "Tab2"),
+          rowValues: {
+            Foo: makeTemplateExpression("nunjucks", "valueA"),
+            Bar: makeTemplateExpression("nunjucks", "valueB"),
+          },
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    await act(async () => {
+      await userEvent.clear(screen.getByLabelText("Tab Name"));
+    });
+
+    await waitForEffect();
+
+    // Ensure tab name has NOT toggled to select, and still contains an empty text expression
+    const tabNameField = screen.getByLabelText("Tab Name");
+    expect(tabNameField).toBeVisible();
+    // TextWidget uses HTMLTextAreaElement, while react-select uses HTMLInputElement
+    expect(tabNameField).toBeInstanceOf(HTMLTextAreaElement);
+    expect(tabNameField).toHaveValue("");
+    // Ensure tab name has not been reset to the first item, use queryByText to match react-select value
+    expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
+
+    // Due to the way getFormState() is implemented, we cannot currently use it here to
+    // pull the form state and check the field value, because it actually clicks the submit
+    // button to submit the form and get the state values, and clicking the button changes
+    // the focused field in the document, which causes the tab-names-loading/default logic
+    // to run, and the field gets toggled back to 'select' inputMode.
   });
 });
