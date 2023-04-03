@@ -27,6 +27,7 @@ import {
 } from "@/testUtils/factories";
 import { validateTimestamp } from "@/types/helpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import { range } from "lodash";
 
 jest.mock("@/services/api", () => ({
   useGetCloudExtensionsQuery: jest.fn(),
@@ -61,9 +62,7 @@ describe("useInstallables", () => {
   it("handles empty state", async () => {
     const wrapper = renderHook(() => useInstallables());
 
-    await wrapper.act(async () => {
-      // NOP -- wait for async state to resolve
-    });
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       installables: [],
@@ -90,9 +89,42 @@ describe("useInstallables", () => {
       },
     });
 
-    await wrapper.act(async () => {
-      // NOP -- wait for async state to resolve
+    await wrapper.waitForEffect();
+
+    expect(wrapper.result.current).toEqual({
+      installables: [
+        expect.objectContaining({
+          isStub: true,
+        }),
+      ],
+      isLoading: false,
+      error: false,
     });
+  });
+
+  it("multiple unavailable are single installable", async () => {
+    const metadata = recipeMetadataFactory();
+
+    const wrapper = renderHook(() => useInstallables(), {
+      setupRedux(dispatch) {
+        dispatch(
+          // eslint-disable-next-line new-cap -- unsave
+          extensionsSlice.actions.UNSAFE_setExtensions(
+            range(3).map(() =>
+              persistedExtensionFactory({
+                _recipe: {
+                  ...metadata,
+                  updated_at: validateTimestamp(new Date().toISOString()),
+                  sharing: { public: false, organizations: [] },
+                },
+              })
+            )
+          )
+        );
+      },
+    });
+
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       installables: [
@@ -131,9 +163,7 @@ describe("useInstallables", () => {
       },
     });
 
-    await wrapper.act(async () => {
-      // NOP -- wait for async state to resolve
-    });
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       installables: [
@@ -158,9 +188,7 @@ describe("useInstallables", () => {
 
     const wrapper = renderHook(() => useInstallables());
 
-    await wrapper.act(async () => {
-      // NOP -- wait for async state to resolve
-    });
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       installables: [
@@ -196,9 +224,7 @@ describe("useInstallables", () => {
       },
     });
 
-    await wrapper.act(async () => {
-      // NOP -- wait for async state to resolve
-    });
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       installables: [
