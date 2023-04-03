@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QuickBarApp should render 1`] = `<div />`;
+
+exports[`QuickBarApp should render nothing when not toggled 1`] = `<div />`;
+
+exports[`QuickBarApp should render toggled 1`] = `<div />`;

@@ -48,9 +48,13 @@ import FocusLock from "react-focus-lock";
 let autoShow = false;
 
 /**
- * Window event name to programmatically trigger quick bar
+ * Window event name to programmatically trigger quick bar.
+ *
+ * Exposed for testing. Use `toggleQuickBar` to trigger the QuickBar.
+ *
+ * @see toggleQuickBar
  */
-const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
+export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
 function useAutoShow(): void {
   const { query } = useKBar();
@@ -89,7 +93,7 @@ const KBarComponent: React.FC = () => {
   useEffect(() => {
     if (showing) {
       selection.save();
-      console.debug("Saving  last selection:", selection.get());
+      console.debug("Saving last selection:", selection.get());
     } else {
       console.debug("Restoring last selection:", selection.get());
       selection.restore();
@@ -130,7 +134,7 @@ const KBarComponent: React.FC = () => {
   );
 };
 
-const QuickBarApp: React.FC = () => (
+export const QuickBarApp: React.FC = () => (
   /* Disable exit animation due to #3724. `enterMs` is required too */
   <KBarProvider
     options={{
@@ -160,5 +164,5 @@ export const initQuickBarApp = once(() => {
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
 
-  console.debug("Initialized quick bar");
+  console.debug("Initialized quickbar");
 });
