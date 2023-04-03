@@ -82,14 +82,19 @@ const KBarComponent: React.FC = () => {
     showing: state.visualState !== VisualState.hidden,
   }));
 
-  // Implement saving and restoring last selection in KBarComponent and remove KBarToggle Component.
-  if (showing) {
-    selection.save();
-    console.debug("Saving last selection:", selection.get());
-  } else {
-    console.debug("Restoring last selection:", selection.get());
-    selection.restore();
-  }
+  // Save the selection at the time the quickbar is shown so it can be used in quick bar actions even after the user
+  // types in the quickbar search box. Restore the selection when the quick bar is hidden.
+  // Must be in a useEffect, otherwise when the user types in the quick bar search box, the selection is lost because
+  // there's no selection on the render.
+  useEffect(() => {
+    if (showing) {
+      selection.save();
+      console.debug("Saving  last selection:", selection.get());
+    } else {
+      console.debug("Restoring last selection:", selection.get());
+      selection.restore();
+    }
+  }, [showing]);
 
   // We're using the Shadow DOM to isolate the style. However, that also means keydown events look like they're
   // coming from the div instead of the search input.
