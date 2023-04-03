@@ -50,13 +50,11 @@ jest.mock("@/utils/selectionController", () => ({
   },
 }));
 
-beforeAll(() => {
-  mockAnimationsApi();
-});
-
 const saveSelectionMock = selectionController.save as jest.MockedFunction<
   typeof selectionController.save
 >;
+
+mockAnimationsApi();
 
 describe("QuickBarApp", () => {
   beforeEach(() => {
