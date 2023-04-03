@@ -31,12 +31,12 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
-import { type ManualStorageKey, readStorage } from "@/chrome";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,
   isCommunityControlRoom,
 } from "@/contrib/automationanywhere/aaUtils";
+import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 
 function useInstallUrl() {
   const { data: me } = appApi.endpoints.getMe.useQueryState();
@@ -105,8 +105,6 @@ function usePartnerLoginMode(): "token" | "oauth2" {
   }
 }
 
-const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
-
 /**
  * A card to set up a required partner integration.
  *
@@ -130,13 +128,8 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const [controlRoomUrl] = useAsyncState(
     async () => {
       try {
-        return (
-          (await readStorage(
-            CONTROL_ROOM_URL_MANAGED_KEY,
-            undefined,
-            "managed"
-          )) ?? fallbackControlRoomUrl
-        );
+        // Use readManagedStorageByKey instead of useSyncManagedStorage to fallback to fallbackControlRoomUrl
+        return await readManagedStorageByKey("controlRoomUrl");
       } catch {
         return fallbackControlRoomUrl;
       }

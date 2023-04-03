@@ -22,8 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, type Theme } from "@/options/types";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/store/optionsStore";
-import { useAsyncState } from "@/hooks/common";
-import { type ManualStorageKey, readStorage } from "@/chrome";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
@@ -33,8 +31,7 @@ import {
 } from "@/utils/themeUtils";
 import { appApi } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";
-
-const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 async function activateBackgroundTheme(): Promise<void> {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
@@ -58,13 +55,9 @@ export function useGetTheme(): Theme {
     return isValidTheme(cachedTheme) ? cachedTheme : null;
   }, [me, cachedPartner?.theme]);
 
-  // Read from the browser's managed storage. The IT department can set as part of distributing the browser extension
-  // so the correct theme is applied before authentication.
-  const [managedPartnerId, managedPartnerIdIsLoading] = useAsyncState(
-    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
-    [],
-    null
-  );
+  const { data: managedState, isLoading: managedPartnerIdIsLoading } =
+    useManagedStorageState();
+  const managedPartnerId = managedState?.partnerId;
 
   useEffect(() => {
     if (partnerId === null && !managedPartnerIdIsLoading) {

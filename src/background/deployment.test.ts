@@ -42,6 +42,7 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { parsePackage } from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
@@ -146,6 +147,8 @@ beforeEach(async () => {
   refreshRegistriesMock.mockClear();
   openOptionsPageMock.mockClear();
   isUpdateAvailableMock.mockClear();
+
+  resetManagedStorage();
 });
 
 describe("updateDeployments", () => {
@@ -167,6 +170,34 @@ describe("updateDeployments", () => {
       expect.anything()
     );
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+  });
+
+  test("launches SSO flow if SSO enterprise customer not linked", async () => {
+    readAuthDataMock.mockResolvedValue({
+      organizationId: null,
+    });
+
+    browserManagedStorageMock.mockResolvedValue({
+      ssoUrl: "https://sso.example.com",
+    });
+
+    isLinkedMock.mockResolvedValue(false);
+
+    await updateDeployments();
+
+    expect(reportEvent).toHaveBeenCalledWith(
+      "OrganizationExtensionLink",
+      expect.objectContaining({
+        sso: true,
+      })
+    );
+
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
+
+    expect(browser.tabs.create).toHaveBeenCalledWith({
+      url: "https://sso.example.com",
+      active: false,
+    });
   });
 
   test("opens options page if enterprise customer becomes unlinked", async () => {

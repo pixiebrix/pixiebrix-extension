@@ -70,27 +70,26 @@ export class RuntimeNotFoundError extends Error {
   override name = "RuntimeNotFoundError";
 }
 
+/**
+ * Read a value from Chrome storage.
+ *
+ * Does not support enterprise managed storage. Use `readManagedStorage` for that.
+ *
+ * @param storageKey the storage key
+ * @param defaultValue default value to return if the key is not defined in storage. To distinguish between a missing
+ * key and a value of `undefined`, pass a Symbol as the default value.
+ * @param area the storage area
+ * @see readManagedStorage
+ */
 export async function readStorage<T = unknown>(
   storageKey: ManualStorageKey,
   defaultValue?: T,
-  area: "local" | "managed" | "session" = "local"
+  area: "local" | "session" = "local"
 ): Promise<T | undefined> {
-  let result: UnknownObject;
-
-  try {
-    // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
-    // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-    // eslint-disable-next-line security/detect-object-injection -- type-checked
-    result = await browser.storage[area].get(storageKey);
-  } catch (error) {
-    if (area === "managed") {
-      // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
-      // We don't officially support Opera, but to keep the error telemetry clean.
-      result = {};
-    } else {
-      throw error;
-    }
-  }
+  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
+  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
+  // eslint-disable-next-line security/detect-object-injection -- type-checked
+  const result: UnknownObject = await browser.storage[area].get(storageKey);
 
   if (Object.hasOwn(result, storageKey)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwn

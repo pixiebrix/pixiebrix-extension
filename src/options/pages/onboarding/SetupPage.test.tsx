@@ -28,12 +28,12 @@ import { appApi } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
-import { readStorage } from "@/chrome";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type Me } from "@/types/contract";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -46,9 +46,26 @@ function optionsStore(initialState?: any) {
   });
 }
 
-jest.mock("@/chrome", () => ({
-  readStorage: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("lodash", () => {
+  const lodash = jest.requireActual("lodash");
+  return {
+    ...lodash,
+    // Handle multiple calls to managedStorage:initManagedStorage across tests
+    once: (fn: any) => fn,
+  };
+});
+
+// `pMemoize` has problems when used in tests because the promise can leak across tests. pMemoizeClear doesn't work
+// because the promise hasn't resolved yet
+jest.mock("p-memoize", () => {
+  const memoize = jest.requireActual("p-memoize");
+  return {
+    ...memoize,
+    __esModule: true,
+    pMemoizeClear: jest.fn(),
+    default: jest.fn().mockImplementation((fn) => fn),
+  };
+});
 
 jest.mock("@/services/api", () => ({
   util: {
@@ -87,8 +104,10 @@ function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
   (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
+  resetManagedStorage();
+  await browser.storage.managed.clear();
 });
 
 describe("SetupPage", () => {
@@ -277,14 +296,10 @@ describe("SetupPage", () => {
       data: {} as any,
     });
 
-    const managedConfiguration: Record<string, string> = {
+    await browser.storage.managed.set({
       partnerId: "automation-anywhere",
       controlRoomUrl: "https://notarealcontrolroom.com",
-    };
-
-    (readStorage as jest.Mock).mockImplementation(
-      (key: string) => managedConfiguration[key]
-    );
+    });
 
     render(
       <Provider store={optionsStore({})}>

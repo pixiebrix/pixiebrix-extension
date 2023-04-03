@@ -20,13 +20,12 @@ import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isExtensionContext } from "webext-detect-page";
 import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";
+import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
-
-const MANAGED_HOSTNAME_KEY = "serviceUrl" as ManualStorageKey;
 
 export function withoutTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -46,11 +45,8 @@ export async function getBaseURL(): Promise<string> {
       return withoutTrailingSlash(configured);
     }
 
-    const managed = await readStorage<string>(
-      MANAGED_HOSTNAME_KEY,
-      undefined,
-      "managed"
-    );
+    const managed = await readManagedStorageByKey("serviceUrl");
+
     if (!isEmpty(managed)) {
       return withoutTrailingSlash(managed);
     }

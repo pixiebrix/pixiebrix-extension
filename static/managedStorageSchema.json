@@ -9,6 +9,11 @@
       "type": "string",
       "description": "PixieBrix partner ID"
     },
+    "ssoUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to perform single sign-on, including scheme"
+    },
     "controlRoomUrl": {
       "type": "string",
       "format": "uri",
