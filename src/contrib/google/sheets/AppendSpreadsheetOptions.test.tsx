@@ -41,8 +41,10 @@ import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
 import { syncFlagOn } from "@/store/syncFlags";
 import useFlags from "@/hooks/useFlags";
+import { selectSchemaFieldType } from "@/testUtils/formHelpers";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
+const OTHER_TEST_SPREADSHEET_ID = uuidSequence(2);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
 const servicesLocateMock = services.locate as jest.MockedFunction<
@@ -110,14 +112,34 @@ beforeAll(() => {
       },
     })
   );
-  getSheetPropertiesMock.mockResolvedValue({ title: "Test Sheet" });
-  getTabNamesMock.mockResolvedValue(["Tab1", "Tab2"]);
+  getSheetPropertiesMock.mockImplementation(async (spreadsheetId: string) =>
+    spreadsheetId === TEST_SPREADSHEET_ID
+      ? { title: "Test Sheet" }
+      : { title: "Other Sheet" }
+  );
+  getTabNamesMock.mockImplementation(async (spreadsheetId: string) =>
+    spreadsheetId === TEST_SPREADSHEET_ID
+      ? ["Tab1", "Tab2"]
+      : ["OtherTab1", "OtherTab2"]
+  );
   getHeadersMock.mockImplementation(async ({ tabName }) => {
-    if (tabName === "Tab1") {
-      return ["Column1", "Column2"];
-    }
+    switch (tabName) {
+      case "Tab1": {
+        return ["Column1", "Column2"];
+      }
 
-    return ["Foo", "Bar"];
+      case "Tab2": {
+        return ["Foo", "Bar"];
+      }
+
+      case "OtherTab1": {
+        return ["OtherColumn1", "OtherColumn2"];
+      }
+
+      default: {
+        return ["OtherFoo", "OtherBar"];
+      }
+    }
   });
 });
 
@@ -638,5 +660,86 @@ describe("AppendSpreadsheetOptions", () => {
     // button to submit the form and get the state values, and clicking the button changes
     // the focused field in the document, which causes the tab-names-loading/default logic
     // to run, and the field gets toggled back to 'select' inputMode.
+  });
+
+  it("does not clear selected tabName and rowValues fieldValues until a different spreadsheetId is loaded", async () => {
+    mockFlagOn();
+
+    const initialValues = {
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
+        },
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+    };
+
+    const { updateFormState } = render(
+      <AppendSpreadsheetOptions name="" configKey="config" />,
+      { initialValues }
+    );
+
+    await waitForEffect();
+
+    // Toggle the field to sheet picker
+    await act(async () => {
+      // The Google sheet picker uses "string" as the FieldInputMode
+      await selectSchemaFieldType("config.spreadsheetId", "string");
+    });
+
+    // Ensure other fields have not changed yet. The spreadsheetId field value
+    // will be an empty nunjucks template here, and the tab names array has not
+    // loaded, so the tab name field will be automatically toggled to text
+    // field input mode, and the value preserved.
+    expect(screen.getByDisplayValue("Tab2")).toBeVisible();
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("valueA")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("valueB")).toBeVisible();
+
+    // Update the form state value outside the Google sheet picker, so that we don't need to mock that
+    await act(async () => {
+      updateFormState({
+        ...initialValues,
+        config: {
+          ...initialValues.config,
+          spreadsheetId: TEST_SPREADSHEET_ID,
+        },
+      });
+    });
+
+    // SpreadsheetId is the same, ensure other fields have not changed
+    // The tab names array will be loaded here, so this will be a react-select text value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    expect(screen.getByDisplayValue("Foo")).toBeVisible();
+    expect(screen.getByDisplayValue("valueA")).toBeVisible();
+    expect(screen.getByDisplayValue("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("valueB")).toBeVisible();
+
+    // Update the form state value to the other test spreadsheet id
+    await act(async () => {
+      updateFormState({
+        ...initialValues,
+        config: {
+          ...initialValues.config,
+          spreadsheetId: OTHER_TEST_SPREADSHEET_ID,
+        },
+      });
+    });
+
+    // Fields should be cleared and the other sheet values loaded
+    // The tab names array will be loaded here, so this will be a react-select text value
+    expect(screen.getByText("OtherTab1")).toBeVisible();
+    // The rowValues object fields should be showing headers for OtherTab1
+    expect(screen.getByDisplayValue("OtherColumn1")).toBeVisible();
+    expect(screen.getByDisplayValue("OtherColumn2")).toBeVisible();
+    // The old rowValues entry values should be cleared
+    expect(screen.queryByDisplayValue("valueA")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("valueB")).not.toBeInTheDocument();
   });
 });

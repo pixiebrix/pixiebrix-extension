@@ -52,16 +52,27 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
     []
   );
 
+  const lastGoodSpreadsheetId = useRef<string | null>(spreadsheetId);
+
   // Clear tab name when spreadsheetId changes, if the current value is not
   // an expression, which means it is a selected tab name from another sheet.
   useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
     // `spreadsheetId` is null when useAsyncState is loading
-    if (oldValue == null) {
+    // Do not clear values until a new spreadsheetId is available
+    if (oldValue == null || isEmpty(newValue)) {
       return;
     }
 
+    // Do not clear values if the new spreadsheetId is the same as the last good one
+    if (newValue === lastGoodSpreadsheetId.current) {
+      return;
+    }
+
+    lastGoodSpreadsheetId.current = newValue;
+
     if (!isTemplateExpression(tabNameValue)) {
       setTabNameValue(makeTemplateExpression("nunjucks", ""));
+      setTabNameError(null);
     }
   });
 
@@ -84,8 +95,10 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       (isExpression(tabNameValue) && isEmpty(tabNameValue.__value__))
     ) {
       setTabNameValue(tabNames[0]);
+      setTabNameError(null);
     }
-  }, [error, loading, setTabNameValue, tabNameValue, tabNames]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
+  }, [error, loading, tabNameValue, tabNames]);
 
   const fieldSchema = useMemo<Schema>(
     () => ({
