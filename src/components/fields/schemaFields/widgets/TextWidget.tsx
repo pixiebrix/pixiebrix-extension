@@ -17,6 +17,7 @@
 
 import React, {
   type KeyboardEventHandler,
+  type MutableRefObject,
   useCallback,
   useContext,
   useEffect,
@@ -96,18 +97,15 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
-  const textAreaRef = useRef<HTMLTextAreaElement>();
+  const defaultTextAreaRef = useRef<HTMLTextAreaElement>();
+  const textAreaRef: MutableRefObject<HTMLTextAreaElement> =
+    (inputRef as MutableRefObject<HTMLTextAreaElement>) ?? defaultTextAreaRef;
 
   useEffect(() => {
     if (textAreaRef.current) {
       fitTextarea.watch(textAreaRef.current);
     }
-
-    // Sync the ref values
-    if (inputRef) {
-      inputRef.current = textAreaRef.current;
-    }
-  }, [textAreaRef.current]);
+  }, [textAreaRef]);
 
   useEffect(() => {
     if (focusInput) {

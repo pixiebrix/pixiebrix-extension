@@ -48,7 +48,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   setFieldDescription,
   defaultType,
-  inputRef: inputRefProp, // Cut out from the rest of the props, not used
+  inputRef: inputRefProp,
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
@@ -56,7 +56,8 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     schemaFieldProps.name,
     schemaFieldProps.schema
   );
-  const inputRef = useRef<HTMLTextAreaElement>();
+  const defaultInputRef = useRef<HTMLElement>();
+  const inputRef = inputRefProp ?? defaultInputRef;
   const selectedOption = getOptionForInputMode(inputModeOptions, inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);
