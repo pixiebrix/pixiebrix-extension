@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook, act } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { Provider } from "react-redux";
 import { appApi } from "@/services/api";
@@ -27,10 +27,22 @@ import servicesSlice, { type ServicesState } from "@/store/servicesSlice";
 import { type AuthState } from "@/auth/authTypes";
 import settingsSlice from "@/store/settingsSlice";
 import { type SettingsState } from "@/store/settingsTypes";
-import { waitForEffect } from "@/testUtils/testHelpers";
+
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { type RawServiceConfiguration } from "@/core";
 import { type Me } from "@/types/contract";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+
+// `waitForEffect` for @testing-library/react-hooks
+const waitForEffect = async () =>
+  act(async () => {
+    // Awaiting the async state update
+  });
+
+jest.mock("@/store/enterprise/useManagedStorageState", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({ data: {}, isLoading: false }),
+}));
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -68,6 +80,16 @@ function testStore(initialState?: {
     preloadedState: initialState,
   });
 }
+
+const useManagedStorageStateMock =
+  useManagedStorageState as jest.MockedFunction<typeof useManagedStorageState>;
+
+beforeEach(() => {
+  useManagedStorageStateMock.mockReturnValue({
+    data: {},
+    isLoading: false,
+  });
+});
 
 describe("useRequiredPartnerAuth", () => {
   test("no partner", async () => {
@@ -157,6 +179,33 @@ describe("useRequiredPartnerAuth", () => {
         },
       } as any,
     });
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: true,
+      partnerKey: "automation-anywhere",
+      requiresIntegration: true,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
+  test("requires integration for managed storage partner", async () => {
+    const store = testStore();
+
+    useManagedStorageStateMock.mockReturnValue({
+      data: { partnerId: "automation-anywhere" },
+      isLoading: false,
+    });
+
+    // Unauthenticated user
+    mockMeQuery({ data: {} as any, isLoading: false, isSuccess: true });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
