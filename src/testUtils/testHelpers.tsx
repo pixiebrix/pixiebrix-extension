@@ -219,10 +219,10 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
               {({ handleSubmit, setValues }) => {
                 updateFormState = setValues;
                 return (
-                  <form onSubmit={handleSubmit}>
+                  <Form onSubmit={handleSubmit}>
                     {children}
                     <button type="submit">Submit</button>
-                  </form>
+                  </Form>
                 );
               }}
             </Formik>
