@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "jest-location-mock";
 import DocumentReader from "@/blocks/readers/DocumentReader";
 
 const brick = new DocumentReader();
 
 describe("DocumentReader", () => {
   it("reads current title", async () => {
-    document.head.innerHTML = `<title>Original</title><link rel="canonical" href="https://example.com" />`;
+    document.head.innerHTML =
+      '<title>Original</title><link rel="canonical" href="https://example.com" />';
     window.location.assign("https://example.com");
 
     await expect(brick.read()).resolves.toStrictEqual({
