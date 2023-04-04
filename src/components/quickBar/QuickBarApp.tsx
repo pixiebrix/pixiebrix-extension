@@ -54,7 +54,7 @@ let autoShow = false;
  *
  * @see toggleQuickBar
  */
-export const QUICKBAR_EVENT_NAME = "pixiebrix-quick-bar";
+export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
 function useAutoShow(): void {
   const { query } = useKBar();
