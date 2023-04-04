@@ -32,6 +32,7 @@ class DocumentReader extends Reader {
   async read() {
     return {
       url: document.location.href,
+      title: document.title,
       timestamp: new Date().toISOString(),
     };
   }
@@ -53,13 +54,17 @@ class DocumentReader extends Reader {
         format: "uri",
         description: "The current URL",
       },
+      title: {
+        type: "string",
+        description: "The current title",
+      },
       timestamp: {
         type: "string",
         format: "date-time",
         description: "The current time in ISO format",
       },
     },
-    required: ["url", "timestamp"],
+    required: ["url", "title", "timestamp"],
   };
 
   async isAvailable() {
