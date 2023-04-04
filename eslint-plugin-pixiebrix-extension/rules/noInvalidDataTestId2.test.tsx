@@ -18,6 +18,7 @@
 import { RuleTester } from "eslint";
 
 const ruleTester = new RuleTester({
+  parser: "@babel/eslint-parser",
   parserOptions: { ecmaVersion: 2020 },
 });
 

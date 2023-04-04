@@ -18,7 +18,16 @@
 const noInvalidDataTestId = require("./noInvalidDataTestId");
 const { RuleTester } = require("eslint");
 
-const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 2020 } });
+const ruleTester = new RuleTester({
+  parser: require.resolve("@typescript-eslint/parser"),
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+    requireConfigFile: false,
+  },
+});
+
+// const ruleTester = new RuleTester();
 
 ruleTester.run("noInvalidDataTestId", noInvalidDataTestId, {
   valid: [{ code: '<div data-testid="myTestDiv" />' }],

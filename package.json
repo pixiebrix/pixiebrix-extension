@@ -162,6 +162,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.21.3",
     "@fortawesome/fontawesome-common-types": "^0.2.36",
     "@shopify/jest-dom-mocks": "^4.1.2",
     "@sindresorhus/tsconfig": "^3.0.1",
@@ -220,6 +221,7 @@
     "@types/webpack": "^5.28.1",
     "@types/webpack-env": "^1.16.2",
     "@types/whatwg-mimetype": "^3.0.0",
+    "@typescript-eslint/parser": "^5.57.1",
     "axios-mock-adapter": "^1.21.4",
     "compass-mixins": "^0.12.10",
     "concurrently": "^8.0.1",
@@ -231,6 +233,8 @@
     "dotenv": "^15.0.0",
     "eslint": "^8.37.0",
     "eslint-config-pixiebrix": "^0.22.1",
+    "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
+    "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "fake-indexeddb": "^4.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.5.0",
@@ -266,9 +270,7 @@
     "webpack-target-webextension": "^1.0.4",
     "yaml-jest-transform": "^2.0.2",
     "yaml-loader": "^0.7.0",
-    "zip-dir": "^2.0.0",
-    "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
-    "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension"
+    "zip-dir": "^2.0.0"
   },
   "webExt": {
     "sourceDir": "dist",
