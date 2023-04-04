@@ -48,9 +48,13 @@ import FocusLock from "react-focus-lock";
 let autoShow = false;
 
 /**
- * Window event name to programmatically trigger quick bar
+ * Window event name to programmatically trigger quick bar.
+ *
+ * Exposed for testing. Use `toggleQuickBar` to trigger the QuickBar.
+ *
+ * @see toggleQuickBar
  */
-const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
+export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
 function useAutoShow(): void {
   const { query } = useKBar();
@@ -82,14 +86,19 @@ const KBarComponent: React.FC = () => {
     showing: state.visualState !== VisualState.hidden,
   }));
 
-  // Implement saving and restoring last selection in KBarComponent and remove KBarToggle Component.
-  if (showing) {
-    selection.save();
-    console.debug("Saving last selection:", selection.get());
-  } else {
-    console.debug("Restoring last selection:", selection.get());
-    selection.restore();
-  }
+  // Save the selection at the time the quick bar is shown so it can be used in quick bar actions even after the user
+  // types in the quick bar search box. Restore the selection when the quick bar is hidden.
+  // Must be in a useEffect, otherwise when the user types in the quick bar search box, the selection is lost because
+  // there's no selection on the render.
+  useEffect(() => {
+    if (showing) {
+      selection.save();
+      console.debug("Saving last selection:", selection.get());
+    } else {
+      console.debug("Restoring last selection:", selection.get());
+      selection.restore();
+    }
+  }, [showing]);
 
   // We're using the Shadow DOM to isolate the style. However, that also means keydown events look like they're
   // coming from the div instead of the search input.
@@ -106,6 +115,7 @@ const KBarComponent: React.FC = () => {
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
           <div
+            data-testid="quickBar"
             className="cke_editable"
             contentEditable
             suppressContentEditableWarning
@@ -125,7 +135,7 @@ const KBarComponent: React.FC = () => {
   );
 };
 
-const QuickBarApp: React.FC = () => (
+export const QuickBarApp: React.FC = () => (
   /* Disable exit animation due to #3724. `enterMs` is required too */
   <KBarProvider
     options={{
@@ -137,6 +147,9 @@ const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
+/**
+ * Show the quick bar.
+ */
 export const toggleQuickBar = () => {
   // There's a race between when this method will run and when initQuickBarApp will be run from the quickbar
   // extension point. So, use autoShow to handle case where we call initQuickBarApp first, and dispatchEvent
