@@ -28,7 +28,7 @@ import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
-import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -201,11 +201,18 @@ async function install({
     if (!(await isLinked())) {
       // PERFORMANCE: readManagedStorageByKey waits up to 2 seconds for managed storage to be available. Shouldn't be
       // notice-able for end-user relative to the extension download/install time
-      const ssoUrl = await readManagedStorageByKey("ssoUrl");
-      // Don't launch the SSO page. The SSO flow will be launched by deployment.ts:updateDeployments
-      if (!ssoUrl) {
-        void openInstallPage();
+      const { ssoUrl, partnerId, controlRoomUrl } = await readManagedStorage();
+      if (ssoUrl) {
+        // Don't launch the SSO page automatically. The SSO flow will be launched by deployment.ts:updateDeployments
+        return;
       }
+
+      if (partnerId === "automation-anywhere" && isEmpty(controlRoomUrl)) {
+        // Don't launch the install page automatically if only the partner id is specified
+        return;
+      }
+
+      void openInstallPage();
     }
   } else if (reason === "update") {
     // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page

@@ -68,6 +68,12 @@ export const getChromeEventMocks = () => ({
   hasListeners: jest.fn(),
 });
 
+/**
+ * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
+ *
+ * NOTE: this assumes you're using "react-dom/test-utils". For hooks you have to use act from
+ * "@testing-library/react-hooks"
+ */
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update

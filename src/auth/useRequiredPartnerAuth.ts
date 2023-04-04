@@ -175,7 +175,16 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       return false;
     }
 
-    if (hasControlRoom || authMethodOverride === "partner-oauth2") {
+    // Require partner OAuth2 if:
+    // - A Control Room URL is configured - on the cached organization or in managed storage
+    // - The partner is Automation Anywhere in managed storage. (This is necessary, because the control room URL is
+    //   not known at bot agent install time for registry HKLM hive installs)
+    // - The user used Advanced Settings > Authentication Method to force partner OAuth2
+    if (
+      hasControlRoom ||
+      managedPartnerId === "automation-anywhere" ||
+      authMethodOverride === "partner-oauth2"
+    ) {
       // Future improvement: check that the Control Room URL from readPartnerAuthData matches the expected
       // Control Room URL
       const { token: partnerToken } = await readPartnerAuthData();
@@ -183,7 +192,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     }
 
     return false;
-  }, [authMethodOverride, localAuth, hasControlRoom]);
+  }, [authMethodOverride, localAuth, hasControlRoom, managedPartnerId]);
 
   useEffect(() => {
     // Listen for token invalidation
@@ -202,6 +211,8 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const requiresIntegration =
     // Primary organization has a partner and linked control room
     (hasPartner && Boolean(organization?.control_room)) ||
+    // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
+    managedPartnerId === "automation-anywhere" ||
     // Community edition users are required to be linked until they join an organization
     (me?.partner && isCommunityEditionUser) ||
     // User has overridden local settings
@@ -223,7 +234,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   return {
     hasPartner,
-    partnerKey: partner?.theme,
+    partnerKey: partner?.theme ?? managedPartnerId,
     requiresIntegration,
     hasConfiguredIntegration:
       requiresIntegration &&
