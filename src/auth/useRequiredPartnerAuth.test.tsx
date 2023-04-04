@@ -31,6 +31,7 @@ import { type SettingsState } from "@/store/settingsTypes";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { type RawServiceConfiguration } from "@/core";
 import { type Me } from "@/types/contract";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 // `waitForEffect` for @testing-library/react-hooks
 const waitForEffect = async () =>
@@ -38,17 +39,10 @@ const waitForEffect = async () =>
     // Awaiting the async state update
   });
 
-afterEach(async () => {
-  await browser.storage.managed.clear();
-});
-
-jest.mock("@/auth/token", () => {
-  const actual = jest.requireActual("@/auth/token");
-  return {
-    ...actual,
-    readPartnerAuthData: jest.fn().mockResolvedValue({}),
-  };
-});
+jest.mock("@/store/enterprise/useManagedStorageState", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({ data: {}, isLoading: false }),
+}));
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -86,6 +80,16 @@ function testStore(initialState?: {
     preloadedState: initialState,
   });
 }
+
+const useManagedStorageStateMock =
+  useManagedStorageState as jest.MockedFunction<typeof useManagedStorageState>;
+
+beforeEach(() => {
+  useManagedStorageStateMock.mockReturnValue({
+    data: {},
+    isLoading: false,
+  });
+});
 
 describe("useRequiredPartnerAuth", () => {
   test("no partner", async () => {
@@ -195,7 +199,10 @@ describe("useRequiredPartnerAuth", () => {
   test("requires integration for managed storage partner", async () => {
     const store = testStore();
 
-    await browser.storage.managed.set({ partnerId: "automation-anywhere" });
+    useManagedStorageStateMock.mockReturnValue({
+      data: { partnerId: "automation-anywhere" },
+      isLoading: false,
+    });
 
     // Unauthenticated user
     mockMeQuery({ data: {} as any, isLoading: false, isSuccess: true });
