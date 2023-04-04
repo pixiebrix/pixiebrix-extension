@@ -38,9 +38,9 @@ const configs = {
 };
 
 const rules = Object.fromEntries(
-  // eslint-disable-next-line security/detect-non-literal-require
   ruleFiles.map((file) => [
     path.basename(file, ".js"),
+    // eslint-disable-next-line security/detect-non-literal-require
     require("./rules/" + file),
   ])
 );
