@@ -33,6 +33,17 @@ jest.mock("@/components/Stylesheets", () => ({
   },
 }));
 
+jest.mock("kbar", () => {
+  const originalModule = jest.requireActual("kbar");
+  return {
+    ...originalModule,
+    // KBarAnimator trouble with animations/mockAnimationsApi
+    KBarAnimator: jest
+      .fn()
+      .mockImplementation((props) => <>{props.children}</>),
+  };
+});
+
 // :shrug: I couldn't get "shadow-dom-testing-library" to play nice
 jest.mock("react-shadow-root", () => ({
   __esModule: true,
@@ -55,6 +66,7 @@ const saveSelectionMock = selectionController.save as jest.MockedFunction<
 >;
 
 mockAnimationsApi();
+jest.useFakeTimers();
 
 describe("QuickBarApp", () => {
   beforeEach(() => {
@@ -73,26 +85,39 @@ describe("QuickBarApp", () => {
 
     await act(async () => {
       window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
+
+      // Fast-forward until all timers have been executed
+      jest.advanceTimersByTime(2000);
     });
 
+    // Snapshotting is flakey due to animation (aria-expanded)
     expect(document.body.outerHTML).toMatchSnapshot();
-    expect(screen.getByTestId("quickBar")).toBeInTheDocument();
+    expect(screen.getByTestId("quickBar")).toBeVisible();
+    expect(screen.getByRole("combobox")).toBeVisible();
   });
 
-  it("should preserve selection", async () => {
+  it("should preserve selection information when typing", async () => {
+    // Avoid timeout when using useFakeTimers: https://github.com/testing-library/user-event/issues/833
+    const user = userEvent.setup({ delay: null });
+
     render(<QuickBarApp />);
 
     await act(async () => {
       window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
+
+      // Fast-forward until all timers have been executed
+      jest.advanceTimersByTime(2000);
     });
 
-    expect(document.body.outerHTML).toMatchSnapshot();
-    expect(screen.getByTestId("quickBar")).toBeInTheDocument();
-
+    expect(screen.getByTestId("quickBar")).toBeVisible();
+    expect(screen.getByRole("combobox")).toBeVisible();
     expect(saveSelectionMock).toHaveBeenCalledOnce();
 
     await act(async () => {
-      await userEvent.type(screen.getByRole("combobox"), "test");
+      await user.type(screen.getByRole("combobox"), "test");
+
+      // Fast-forward until all timers have been executed
+      jest.advanceTimersByTime(2000);
     });
 
     expect(saveSelectionMock).toHaveBeenCalledOnce();
