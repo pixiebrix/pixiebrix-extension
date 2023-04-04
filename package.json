@@ -266,7 +266,9 @@
     "webpack-target-webextension": "^1.0.4",
     "yaml-jest-transform": "^2.0.2",
     "yaml-loader": "^0.7.0",
-    "zip-dir": "^2.0.0"
+    "zip-dir": "^2.0.0",
+    "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
+    "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension"
   },
   "webExt": {
     "sourceDir": "dist",
