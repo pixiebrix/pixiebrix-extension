@@ -31,7 +31,6 @@ import { useDispatch } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
-import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
@@ -129,11 +128,6 @@ const ElementWizard: React.FunctionComponent<{
             {wizardSteps.map((step) => (
               <WizardNavItem key={step.step} step={step} />
             ))}
-
-            {/* spacer */}
-            <div className="mr-2" />
-
-            <AskQuestionModalButton />
 
             {/* spacer */}
             <div className="flex-grow-1" />

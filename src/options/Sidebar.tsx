@@ -24,7 +24,6 @@ import {
   faCubes,
   faHammer,
   faInfoCircle,
-  faSeedling,
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { SidebarLink } from "./SidebarLink";
@@ -32,6 +31,7 @@ import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
 import { appApi } from "@/services/api";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { faSlack } from "@fortawesome/free-brands-svg-icons";
 
 const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 
@@ -83,7 +83,11 @@ const Sidebar: React.FunctionComponent = () => {
                 className="nav-link"
               >
                 <span className="menu-title">Marketplace</span>
-                <FontAwesomeIcon icon={faStoreAlt} className="menu-icon" />
+                <FontAwesomeIcon
+                  icon={faStoreAlt}
+                  className="menu-icon"
+                  fixedWidth
+                />
               </a>
             </li>
           )}
@@ -91,13 +95,17 @@ const Sidebar: React.FunctionComponent = () => {
             // Hide for partner users because we don't support custom community links yet
             <li className="nav-item">
               <a
-                href="https://community.pixiebrix.com"
+                href="https://slack.pixiebrix.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="nav-link"
               >
-                <span className="menu-title">Community</span>
-                <FontAwesomeIcon icon={faSeedling} className="menu-icon" />
+                <span className="menu-title">Community Slack</span>
+                <FontAwesomeIcon
+                  icon={faSlack}
+                  className="menu-icon"
+                  fixedWidth
+                />
               </a>
             </li>
           )}
@@ -110,7 +118,11 @@ const Sidebar: React.FunctionComponent = () => {
               className="nav-link"
             >
               <span className="menu-title">Documentation</span>
-              <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
+              <FontAwesomeIcon
+                icon={faInfoCircle}
+                className="menu-icon"
+                fixedWidth
+              />
             </a>
           </li>
         </ul>
