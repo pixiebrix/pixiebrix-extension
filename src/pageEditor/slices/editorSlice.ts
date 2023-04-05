@@ -736,7 +736,6 @@ export const editorSlice = createSlice({
         pipelineIndex: number;
       }>
     ) {
-      console.log({ testaction: action });
       const { block, pipelinePath, pipelineIndex } = action.payload;
 
       const element = state.elements.find(
