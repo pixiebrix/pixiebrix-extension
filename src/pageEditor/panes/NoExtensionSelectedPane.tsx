@@ -29,7 +29,7 @@ const NoExtensionSelectedPane: React.FunctionComponent = () => (
       <p>Select a mod in the sidebar to edit</p>
       <p>
         Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add to the page.
+        sidebar to add a mod to the page.
       </p>
 
       <IntroButtons />

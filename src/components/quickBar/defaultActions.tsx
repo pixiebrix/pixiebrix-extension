@@ -21,11 +21,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAppleAlt,
   faInfoCircle,
-  faSeedling,
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { faSlack } from "@fortawesome/free-brands-svg-icons";
 
 const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
@@ -67,13 +67,13 @@ const defaultActions: Action[] = [
   },
   {
     id: "community",
-    name: "Open Community",
+    name: "Open Community Slack",
     keywords: "community, how to",
     section: PIXIEBRIX_SECTION,
     priority: Priority.LOW,
-    icon: <FontAwesomeIcon icon={faSeedling} fixedWidth />,
+    icon: <FontAwesomeIcon icon={faSlack} fixedWidth />,
     perform() {
-      window.location.href = "https://community.pixiebrix.com/";
+      window.location.href = "https://slack.pixiebrix.com/";
     },
   },
   {

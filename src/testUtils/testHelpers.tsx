@@ -68,6 +68,12 @@ export const getChromeEventMocks = () => ({
   hasListeners: jest.fn(),
 });
 
+/**
+ * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
+ *
+ * NOTE: this assumes you're using "react-dom/test-utils". For hooks you have to use act from
+ * "@testing-library/react-hooks"
+ */
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update
@@ -162,8 +168,22 @@ type WrapperResult<
     ThunkMiddlewareFor<S>
   ]
 > = RenderResult & {
-  getReduxStore: () => EnhancedStore<S, A, M>;
-  getFormState: () => Promise<FormikValues>;
+  getReduxStore(): EnhancedStore<S, A, M>;
+
+  /**
+   * Submit the form and return the current values
+   */
+  getFormState(): Promise<FormikValues>;
+
+  /**
+   * Update the formik state without interacting with the UI
+   * @param newValues the new FormikValues to override the current form state
+   * @param shouldValidate whether or not to run validation on the new values
+   */
+  updateFormState(
+    newValues: React.SetStateAction<FormikValues>,
+    shouldValidate?: boolean
+  ): void;
 };
 
 type ConfigureStore<
@@ -187,6 +207,11 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     setupRedux(store.dispatch, { store });
 
+    let updateFormState: (
+      newValues: React.SetStateAction<FormikValues>,
+      shouldValidate?: boolean
+    ) => void = noop;
+
     const Wrapper: React.FC = initialValues
       ? ({ children }) => (
           <Provider store={store}>
@@ -197,12 +222,15 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
                 submitHandler?.(values);
               }}
             >
-              {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                  {children}
-                  <button type="submit">Submit</button>
-                </Form>
-              )}
+              {({ handleSubmit, setValues }) => {
+                updateFormState = setValues;
+                return (
+                  <Form onSubmit={handleSubmit}>
+                    {children}
+                    <button type="submit">Submit</button>
+                  </Form>
+                );
+              }}
             </Formik>
           </Provider>
         )
@@ -227,6 +255,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
         return formState;
       },
+      updateFormState,
     };
   };
 }
@@ -245,19 +274,22 @@ type HookWrapperResult<
     ThunkMiddlewareFor<S>
   ]
 > = RenderHookResult<TProps, TResult> & {
-  getReduxStore: () => EnhancedStore<S, A, M>;
+  getReduxStore(): EnhancedStore<S, A, M>;
 
   /**
    * The act function which should be used with the renderHook
    */
-  act: (callback: () => Promise<void>) => Promise<undefined>;
+  act(callback: () => Promise<void>): Promise<undefined>;
 
   /**
    * Await all async side effects
    */
-  waitForEffect: () => Promise<void>;
+  waitForEffect(): Promise<void>;
 
-  getFormState: () => Promise<FormikValues>;
+  /**
+   * Submit the form and return the current values
+   */
+  getFormState(): Promise<FormikValues>;
 };
 
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
