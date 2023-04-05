@@ -117,9 +117,7 @@ describe("ObjectWidget", () => {
     // Blur the value input to set the value
     await userEvent.click(nameInput);
 
-    const formState = await getFormState();
-
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: {
         myProp: stringToExpression("myValue", "nunjucks"),
       },
@@ -159,10 +157,8 @@ describe("ObjectWidget", () => {
     // Select "Exclude"
     await userEvent.click(screen.getByText("Exclude"));
 
-    const formState = await getFormState();
-
     // Expect excluded property to be removed from the state
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: {
         foo: "bar",
       },
@@ -207,10 +203,8 @@ describe("ObjectWidget", () => {
     // Select "Exclude"
     await userEvent.click(screen.getByText("Exclude"));
 
-    const formState = await getFormState();
-
     // Expect excluded property to be removed from the state
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: {
         foo: "fooValue",
       },

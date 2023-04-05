@@ -622,21 +622,24 @@ describe("AppendSpreadsheetOptions", () => {
   it("does not automatically toggle the field to select and choose the first item, if the input is focused by the user", async () => {
     mockFlagOn();
 
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", "Tab2"),
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
+    const { getFormState } = render(
+      <AppendSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            spreadsheetId: makeVariableExpression("@options.sheetId"),
+            tabName: makeTemplateExpression("nunjucks", "Tab2"),
+            rowValues: {
+              Foo: makeTemplateExpression("nunjucks", "valueA"),
+              Bar: makeTemplateExpression("nunjucks", "valueB"),
+            },
+          },
+          optionsArgs: {
+            sheetId: TEST_SPREADSHEET_ID,
           },
         },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-      },
-    });
+      }
+    );
 
     await waitForEffect();
 
@@ -655,11 +658,9 @@ describe("AppendSpreadsheetOptions", () => {
     // Ensure tab name has not been reset to the first item, use queryByText to match react-select value
     expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
 
-    // Due to the way getFormState() is implemented, we cannot currently use it here to
-    // pull the form state and check the field value, because it actually clicks the submit
-    // button to submit the form and get the state values, and clicking the button changes
-    // the focused field in the document, which causes the tab-names-loading/default logic
-    // to run, and the field gets toggled back to 'select' inputMode.
+    expect(getFormState().config.tabName).toEqual(
+      makeTemplateExpression("nunjucks", "")
+    );
   });
 
   it("does not clear selected tabName and rowValues fieldValues until a different spreadsheetId is loaded", async () => {
