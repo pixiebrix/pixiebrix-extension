@@ -28,6 +28,8 @@ import { AnnotationType } from "@/types";
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;
 const schemeRegexp = /^\*|https?$/;
 const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
+// All URLs is required for certain interactions, e.g., taking screenshots without activeTab
+const allUrls = "<all_urls>";
 
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
 
@@ -122,6 +124,10 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     fieldName: string
   ): Promise<void> {
     for (const [index, url] of Object.entries(urls)) {
+      if (url === allUrls) {
+        continue;
+      }
+
       if (isEmpty(url)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),
