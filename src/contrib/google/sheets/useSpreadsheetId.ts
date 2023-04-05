@@ -106,13 +106,19 @@ function useSpreadsheetId(basePath: string): string | null {
     }
 
     if (isServiceValueFormat(fieldValue)) {
-      if (fieldValue == null || isEmpty(servicesValue)) {
+      if (fieldValue == null) {
         // A service value can be null, but here we don't want to try and load anything if it is null
         dispatch(spreadsheetSlice.actions.setSpreadsheetId(null));
         return;
       }
 
       try {
+        if (isEmpty(servicesValue)) {
+          throw new Error(
+            "Invalid spreadsheetId variable, please use a Mod Inputs variable instead"
+          );
+        }
+
         const serviceOutputKey = getSheetServiceOutputKey(fieldValue);
         const sheetsService = servicesValue.find(
           (service) => service.outputKey === serviceOutputKey
@@ -120,8 +126,7 @@ function useSpreadsheetId(basePath: string): string | null {
 
         if (!sheetsService) {
           throw new Error(
-            "Could not find service for spreadsheetId field value: " +
-              JSON.stringify(fieldValue)
+            "Unable to locate a matching Google Sheets service integration on this mod, please use a Mod Inputs variable instead"
           );
         }
 

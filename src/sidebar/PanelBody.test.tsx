@@ -58,7 +58,7 @@ describe("PanelBody", () => {
       />
     );
 
-    expect(result).toMatchSnapshot();
+    expect(result.asFragment()).toMatchSnapshot();
   });
 
   it("renders business error", () => {
@@ -78,7 +78,7 @@ describe("PanelBody", () => {
       />
     );
 
-    expect(result).toMatchSnapshot();
+    expect(result.asFragment()).toMatchSnapshot();
   });
 
   it("renders cancellation", () => {
@@ -98,7 +98,7 @@ describe("PanelBody", () => {
       />
     );
 
-    expect(result).toMatchSnapshot();
+    expect(result.asFragment()).toMatchSnapshot();
   });
 
   it("renders html brick", async () => {
@@ -127,6 +127,6 @@ describe("PanelBody", () => {
     await waitForEffect();
 
     // There's a shadow root in BodyContainer, so the snapshot cuts off at the div
-    expect(result).toMatchSnapshot();
+    expect(result.asFragment()).toMatchSnapshot();
   });
 });

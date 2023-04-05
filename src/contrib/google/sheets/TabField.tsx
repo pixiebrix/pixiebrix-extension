@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
@@ -32,6 +32,8 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,
   spreadsheetId,
 }) => {
+  const inputRef = useRef<HTMLTextAreaElement>();
+
   const [
     { value: tabNameValue },
     ,
@@ -50,25 +52,41 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
     []
   );
 
+  const lastGoodSpreadsheetId = useRef<string | null>(spreadsheetId);
+
   // Clear tab name when spreadsheetId changes, if the current value is not
   // an expression, which means it is a selected tab name from another sheet.
   useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
     // `spreadsheetId` is null when useAsyncState is loading
-    if (oldValue == null) {
+    // Do not clear values until a new spreadsheetId is available
+    if (oldValue == null || isEmpty(newValue)) {
       return;
     }
 
+    // Do not clear values if the new spreadsheetId is the same as the last good one
+    if (newValue === lastGoodSpreadsheetId.current) {
+      return;
+    }
+
+    lastGoodSpreadsheetId.current = newValue;
+
     if (!isTemplateExpression(tabNameValue)) {
       setTabNameValue(makeTemplateExpression("nunjucks", ""));
+      setTabNameError(null);
     }
   });
 
   // If we've loaded tab names and the tab name is not set, set it to the first tab name.
   // Check to make sure there's not an error, so we're not setting it to the first value
   // of a stale list of tabs, and check the tab name value itself to prevent an infinite
-  // re-render loop here.
+  // re-render loop here. Don't automatically modify the input if it's currently focused.
   useEffect(() => {
-    if (loading || error || isEmpty(tabNames)) {
+    if (
+      loading ||
+      error ||
+      isEmpty(tabNames) ||
+      document.activeElement === inputRef.current
+    ) {
       return;
     }
 
@@ -77,8 +95,10 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       (isExpression(tabNameValue) && isEmpty(tabNameValue.__value__))
     ) {
       setTabNameValue(tabNames[0]);
+      setTabNameError(null);
     }
-  }, [error, loading, setTabNameValue, tabNameValue, tabNames]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
+  }, [error, loading, tabNameValue, tabNames]);
 
   const fieldSchema = useMemo<Schema>(
     () => ({
@@ -116,6 +136,7 @@ const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
       schema={fieldSchema}
       isRequired
       defaultType="select"
+      inputRef={inputRef}
     />
   );
 };
