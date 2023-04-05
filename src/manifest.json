@@ -30,7 +30,7 @@
   "sandbox": {
     "pages": ["sandbox.html"]
   },
-  "optional_permissions": ["clipboardWrite", "*://*/*"],
+  "optional_permissions": ["clipboardWrite", "*://*/*", "<all_urls>"],
   "permissions": [
     "activeTab",
     "storage",
