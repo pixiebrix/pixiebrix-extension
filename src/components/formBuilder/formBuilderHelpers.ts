@@ -79,6 +79,11 @@ export const FIELD_TYPES_WITHOUT_DEFAULT = [
     propertyType: "string",
     uiWidget: "imageCrop",
   }),
+  stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+  stringifyUiType({
+    propertyType: "string",
+    uiWidget: "googleSheet",
+  }),
 ];
 
 /**
