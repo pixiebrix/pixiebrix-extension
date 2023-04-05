@@ -93,6 +93,10 @@ import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
+import {
+  keyToFieldValue,
+  selectServiceVariables,
+} from "@/components/fields/schemaFields/serviceFieldUtils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -808,6 +812,12 @@ export const editorSlice = createSlice({
           ? pipeline[index - 1] // Last item, select previous
           : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
+
+      const used = selectServiceVariables(element);
+
+      element.services = element.services.filter((x) =>
+        used.has(keyToFieldValue(x.outputKey).__value__)
+      );
 
       syncElementNodeUIStates(state, element);
 

@@ -576,7 +576,7 @@ const internalFormStateFactory = define<FormState>({
 export const formStateFactory = (
   override?: FactoryConfig<FormState>,
   pipelineOverride?: BlockPipeline
-) => {
+): FormState => {
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
