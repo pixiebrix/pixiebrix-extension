@@ -33,17 +33,6 @@ const GetStarted: React.FunctionComponent = () => (
       To start, navigate to a web page that you&apos;d like to modify and then
       click the &quot;Add&quot; button.
     </p>
-    <p>
-      Try the{" "}
-      <a
-        href="https://www.pixiebrix.com/playground/playground"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        PixieBrix Playground
-      </a>
-      .
-    </p>
   </>
 );
 
