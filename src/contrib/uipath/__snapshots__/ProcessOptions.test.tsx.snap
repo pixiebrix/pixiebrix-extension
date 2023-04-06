@@ -651,7 +651,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
                     <th
                       scope="col"
                     >
-                      Property
+                      Property name
                     </th>
                     <th
                       scope="col"

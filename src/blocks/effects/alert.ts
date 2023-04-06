@@ -23,6 +23,8 @@ import { validateRegistryId } from "@/types/helpers";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
 
+export const ALERT_PERSISTENT_OPTION = "window";
+
 export class AlertEffect extends Effect {
   constructor() {
     super(

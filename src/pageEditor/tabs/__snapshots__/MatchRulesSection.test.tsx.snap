@@ -147,7 +147,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                               <th
                                 scope="col"
                               >
-                                Property
+                                Property name
                               </th>
                               <th
                                 scope="col"
