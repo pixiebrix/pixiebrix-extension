@@ -131,3 +131,8 @@ export async function openExtensionOptions() {
   await browser.runtime.openOptionsPage();
   return true;
 }
+
+export async function installStarterBlueprints() {
+  console.log("Implement me!");
+  return true;
+}
