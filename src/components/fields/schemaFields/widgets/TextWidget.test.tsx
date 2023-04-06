@@ -66,9 +66,7 @@ describe("TextWidget", () => {
 
     await userEvent.type(screen.getByRole("textbox"), "abc");
 
-    const formState = await getFormState();
-
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: stringToExpression("abc", "nunjucks"),
     });
   });

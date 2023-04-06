@@ -112,9 +112,7 @@ describe("ArrayWidget", () => {
     // Change the item value
     await userEvent.type(itemInput, "myValue");
 
-    const formState = await getFormState();
-
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: [stringToExpression("myValue", "nunjucks")],
     });
   });
@@ -150,10 +148,8 @@ describe("ArrayWidget", () => {
     // Select "Remove" since we're in an array
     await userEvent.click(screen.getByText("Remove"));
 
-    const formState = await getFormState();
-
     // Expect excluded property to be removed from the state
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: ["abc"],
     });
   });
