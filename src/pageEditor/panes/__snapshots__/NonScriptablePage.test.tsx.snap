@@ -25,17 +25,6 @@ exports[`NonScriptablePage it renders 1`] = `
           <p>
             To start, navigate to a web page that you'd like to modify and then click the "Add" button.
           </p>
-          <p>
-            Try the 
-            <a
-              href="https://www.pixiebrix.com/playground/playground"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              PixieBrix Playground
-            </a>
-            .
-          </p>
         </div>
         <div
           class="d-flex align-items-center justify-content-center col-lg-3"
