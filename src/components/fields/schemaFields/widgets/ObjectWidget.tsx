@@ -259,7 +259,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
       <Table size="sm" className="mb-0">
         <thead>
           <tr>
-            <th scope="col">Property</th>
+            <th scope="col">Property name</th>
             <th scope="col">Value</th>
           </tr>
         </thead>

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Select, { type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, sortBy, uniq } from "lodash";
@@ -35,6 +35,14 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
 }) => {
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
+
+  // Set default value
+  useEffect(() => {
+    if (fieldValue == null && schema.default != null) {
+      setValue(schema.default);
+    }
+    // eslint-disable-next-line -- Only run on mount
+  }, []);
 
   // Need to handle expressions because this field could be toggled to "var"
   // and the Widget won't change until the input mode can be inferred again

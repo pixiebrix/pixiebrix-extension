@@ -38,12 +38,12 @@ export class JQueryReader extends Transformer {
     required: ["selectors"],
     properties: {
       selectors: {
+        title: "Element selectors",
         type: "object",
         additionalProperties: {
           oneOf: [
             {
               type: "string",
-              description: "A jQuery selector",
               format: "selector",
             },
             {
@@ -51,7 +51,6 @@ export class JQueryReader extends Transformer {
               properties: {
                 selector: {
                   type: "string",
-                  description: "A jQuery selector",
                   format: "selector",
                 },
                 multi: {

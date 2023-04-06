@@ -29,17 +29,20 @@ export const URL_INPUT_SPEC: Schema = {
   properties: {
     url: {
       type: "string",
-      description: "The URL",
+      title: "URL",
+      description: "The URL that will open in the new tab",
       format: "uri",
     },
     params: {
       type: "object",
+      title: "URL parameters",
       description: "URL parameters, will be automatically encoded",
       additionalProperties: { type: ["string", "number", "boolean"] },
     },
     spaceEncoding: {
       type: "string",
-      description: "Encode space using %20 vs. +",
+      title: "Space Encoding",
+      description: "Select an option for encoding a space in the URL",
       default: URL_INPUT_SPACE_ENCODING_DEFAULT,
       enum: ["percent", "plus"],
     },
