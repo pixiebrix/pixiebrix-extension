@@ -30,13 +30,14 @@ export const URL_INPUT_SPEC: Schema = {
     url: {
       type: "string",
       title: "URL",
-      description: "The URL that will open in the new tab",
+      description: "The URL that will open",
       format: "uri",
     },
     params: {
       type: "object",
       title: "URL parameters",
-      description: "URL parameters, will be automatically encoded",
+      description:
+        "Enter parameters that will automatically be encoded in your URL. These follow the ‘?’ in the URL bar.",
       additionalProperties: { type: ["string", "number", "boolean"] },
     },
     spaceEncoding: {

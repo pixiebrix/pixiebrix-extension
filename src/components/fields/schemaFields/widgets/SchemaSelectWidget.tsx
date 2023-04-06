@@ -36,14 +36,6 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
-  // Set default value
-  useEffect(() => {
-    if (fieldValue == null && schema.default != null) {
-      setValue(schema.default);
-    }
-    // eslint-disable-next-line -- Only run on mount
-  }, []);
-
   // Need to handle expressions because this field could be toggled to "var"
   // and the Widget won't change until the input mode can be inferred again
   // from the new value.
