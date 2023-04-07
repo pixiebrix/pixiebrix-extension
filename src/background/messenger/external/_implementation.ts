@@ -134,6 +134,5 @@ export async function openExtensionOptions() {
 }
 
 export async function activateStarterBlueprints() {
-  console.log("installing starter blueprints!")
-  return await installStarterBlueprints();
+  return installStarterBlueprints();
 }
