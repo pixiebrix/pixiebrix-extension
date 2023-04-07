@@ -20,7 +20,7 @@ import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import { executeScript } from "webext-content-scripts";
 import webextAlert from "./webextAlert";
 import { memoizeUntilSettled, isMac } from "@/utils";
-import { notify } from "@/options/messenger/api";
+import { notify } from "@/extensionConsole/messenger/api";
 import { browserAction, type Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/utils/permissions";
 
