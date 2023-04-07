@@ -107,7 +107,6 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
       refreshRegistries(),
     ]);
 
-    console.log("returning installed: ", installed);
     return installed;
   } catch (error) {
     reportError(error);
