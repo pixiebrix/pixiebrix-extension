@@ -127,7 +127,9 @@ const debouncedInstallStarterBlueprints = debounce(
 
 export async function firstTimeInstallStarterBlueprints(): Promise<boolean> {
   console.log("Inside firsttimeinstallstarterblueprints");
-  return await debouncedInstallStarterBlueprints();
+  const installed = await debouncedInstallStarterBlueprints();
+  console.log("returning installed from first time", installed);
+  return installed;
 }
 
 function initStarterBlueprints(): void {
