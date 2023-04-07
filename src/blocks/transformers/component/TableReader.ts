@@ -47,6 +47,7 @@ export class TableReader extends Transformer {
       },
       selector: {
         type: "string",
+        title: "Element selector",
         format: "selector",
         description: "CSS/jQuery selector to select the HTML table element",
       },

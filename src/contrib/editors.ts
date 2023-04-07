@@ -53,6 +53,8 @@ import RemoteMethodOptions, {
 } from "@/pageEditor/fields/RemoteMethodOptions";
 import { TourStepTransformer } from "@/blocks/transformers/tourStep/tourStep";
 import TourStepOptions from "@/blocks/transformers/tourStep/TourStepOptions";
+import { ALERT_EFFECT_ID } from "@/blocks/effects/alert";
+import AlertOptions from "@/pageEditor/fields/AlertOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -76,4 +78,5 @@ export default function registerEditors() {
   optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
   optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
   optionsRegistry.set(TourStepTransformer.BLOCK_ID, TourStepOptions);
+  optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
 }

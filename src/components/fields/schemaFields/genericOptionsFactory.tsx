@@ -41,7 +41,7 @@ export type BlockOptionProps = {
 };
 
 const NoOptions: React.FunctionComponent = () => (
-  <div>No options available</div>
+  <div>This brick does not require any configuration</div>
 );
 
 type FieldConfig = {

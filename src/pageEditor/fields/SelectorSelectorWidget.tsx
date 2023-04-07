@@ -113,7 +113,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   isClearable = false,
   root,
   disabled = false,
-  placeholder = "Choose a selector...",
+  placeholder = "Select an element",
 
   // By default, sort by preference in `element` selection mode. Don't sort in `container` mode because
   // the order is based on structure (because selectors for multiple elements are returned).

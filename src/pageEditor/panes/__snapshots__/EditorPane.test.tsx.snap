@@ -720,7 +720,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                             autocomplete="off"
                             class="form-control input notClearable"
                             disabled=""
-                            placeholder="Choose a selector..."
+                            placeholder="Select an element"
                             type="search"
                             value=""
                           />
