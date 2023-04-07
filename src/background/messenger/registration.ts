@@ -46,7 +46,7 @@ import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import initPartnerTheme from "@/background/partnerTheme";
-import firstTimeInstallStarterBlueprints from "@/background/starterBlueprints";
+import { firstTimeInstallStarterBlueprints }  from "@/background/starterBlueprints";
 
 import {
   clearExtensionDebugLogs,
