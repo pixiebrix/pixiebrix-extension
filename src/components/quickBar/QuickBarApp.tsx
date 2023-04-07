@@ -38,9 +38,7 @@ import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
-
 import FocusLock from "react-focus-lock";
-import { isMac } from "@/utils";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -150,7 +148,7 @@ export const QuickBarApp: React.FC = () => (
       // https://kbar.vercel.app/docs/concepts/shortcuts
       // https://github.com/jamiebuilds/tinykeys#keybinding-syntax
       // https://github.com/timc1/kbar/blob/main/src/InternalEvents.tsx#L28
-      toggleShortcut: "$mod+M",
+      toggleShortcut: "$mod+m",
     }}
   >
     <AutoShow />
