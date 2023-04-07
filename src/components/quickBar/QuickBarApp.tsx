@@ -139,12 +139,21 @@ export const QuickBarApp: React.FC = () => (
   <KBarProvider
     options={{
       animations: { enterMs: 300, exitMs: 0 },
-      // Set to same a default Chrome shortcut
-      // 1. If the user has a custom shortcut for PixieBrix, the Chrome shortcut will take precedence
-      // 2. If the user has another extension bound to $mod+M, that extension will take precedence. The user will be
-      //   prompted to set a Chrome-level shortcut for PixieBrix
-      // 3. If somehow the user doesn't have a Chrome-level shortcut bound to PixieBrix, this page-level shortcut will
-      //   take effect. (However, it's likely the 'minimize' shortcut on the OS will take precedence)
+      // Setting `toggleShortcut` to same as the Chrome-level PixieBrix `toggle-quick-bar` command shortcut defined
+      // in manifest.json. However, it generally won't take effect. (And KBar does not support disabling it's shortcut)
+      //
+      // There are 4 cases for the relationship between this KBar page shortcut and the PixieBrix
+      // `toggle-quick-bar` command shortcut:
+      //
+      // 1. User has PixieBrix `toggle-quick-bar` command shortcut: that shortcut will take precedence over this
+      //  KBar shortcut
+      // 2. User has another extension command bound to $mod+m: that extension's shortcut will take precedence.
+      // 3. User doesn't have a Chrome extension shortcut bound to $mod+m: the Chrome minimize shortcut
+      //  will take precedence; see https://support.google.com/chrome/answer/157179?hl=en&co=GENIE.Platform%3DDesktop
+      // 4. Finally, if user disabled all extension and Chrome shortcuts for $mod+m, then this KBar shortcut will
+      //  take effect.
+      //
+      // Reference:
       // https://kbar.vercel.app/docs/concepts/shortcuts
       // https://github.com/jamiebuilds/tinykeys#keybinding-syntax
       // https://github.com/timc1/kbar/blob/main/src/InternalEvents.tsx#L28
