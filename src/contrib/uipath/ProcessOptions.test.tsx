@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@/options/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories";

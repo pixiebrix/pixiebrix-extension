@@ -16,9 +16,9 @@
  */
 
 import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/utils/themeUtils";
+import { getThemeLogo } from "@/themes/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import { DEFAULT_THEME } from "@/options/types";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { browserAction } from "@/mv3/api";
 import { expectContext } from "@/utils/expectContext";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";

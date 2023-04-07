@@ -17,7 +17,7 @@
 
 import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { render } from "@/options/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- Formik just needed as wrapper
 import { Formik } from "formik";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
