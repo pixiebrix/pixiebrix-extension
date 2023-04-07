@@ -79,8 +79,7 @@
       "suggested_key": {
         "default": "Ctrl+K",
         "mac": "Command+K"
-      },
-      "global": true
+      }
     }
   },
   "background": {

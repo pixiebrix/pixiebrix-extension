@@ -137,9 +137,7 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    const formState = await getFormState();
-
-    expect(formState.services).toHaveLength(0);
+    expect(getFormState().services).toHaveLength(0);
   });
 
   it("does not remove used service on mount", async () => {
@@ -172,7 +170,7 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    const formState = await getFormState();
+    const formState = getFormState();
 
     expect(formState.services).toHaveLength(1);
     expect(formState.services[0]).toEqual(service);

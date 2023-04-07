@@ -125,8 +125,7 @@ describe("RegistryIdWidget", () => {
     await userEvent.clear(idInput);
     await userEvent.type(idInput, newTestId);
 
-    const formState = await getFormState();
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       testField: `${anotherOrganization.scope}/${newTestId}`,
     });
   });
