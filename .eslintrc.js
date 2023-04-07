@@ -2,7 +2,7 @@ const restrictedZones = [
   "background",
   "contentScript",
   "pageEditor",
-  "options",
+  "extensionConsole",
   "sidebar",
   "pageScript",
 ].map((exporter) => ({
