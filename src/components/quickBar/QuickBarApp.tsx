@@ -141,8 +141,15 @@ export const QuickBarApp: React.FC = () => (
   <KBarProvider
     options={{
       animations: { enterMs: 300, exitMs: 0 },
+      // Set to same a default Chrome shortcut
+      // 1. If the user has a custom shortcut for PixieBrix, the Chrome shortcut will take precedence
+      // 2. If the user has another extension bound to $mod+M, that extension will take precedence. The user will be
+      //   prompted to set a Chrome-level shortcut for PixieBrix
+      // 3. If somehow the user doesn't have a Chrome-level shortcut bound to PixieBrix, this page-level shortcut will
+      //   take effect. (However, it's likely the 'minimize' shortcut on the OS will take precedence)
       // https://kbar.vercel.app/docs/concepts/shortcuts
       // https://github.com/jamiebuilds/tinykeys#keybinding-syntax
+      // https://github.com/timc1/kbar/blob/main/src/InternalEvents.tsx#L28
       toggleShortcut: "$mod+M",
     }}
   >
