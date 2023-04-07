@@ -38,7 +38,6 @@ import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
-
 import FocusLock from "react-focus-lock";
 
 /**
@@ -140,6 +139,25 @@ export const QuickBarApp: React.FC = () => (
   <KBarProvider
     options={{
       animations: { enterMs: 300, exitMs: 0 },
+      // Setting `toggleShortcut` to same as the Chrome-level PixieBrix `toggle-quick-bar` command shortcut defined
+      // in manifest.json. However, it generally won't take effect. (And KBar does not support disabling it's shortcut)
+      //
+      // There are 4 cases for the relationship between this KBar page shortcut and the PixieBrix
+      // `toggle-quick-bar` command shortcut:
+      //
+      // 1. User has PixieBrix `toggle-quick-bar` command shortcut: that shortcut will take precedence over this
+      //  KBar shortcut
+      // 2. User has another extension command bound to $mod+m: that extension's shortcut will take precedence.
+      // 3. User doesn't have a Chrome extension shortcut bound to $mod+m: the Chrome minimize shortcut
+      //  will take precedence; see https://support.google.com/chrome/answer/157179?hl=en&co=GENIE.Platform%3DDesktop
+      // 4. Finally, if user disabled all extension and Chrome shortcuts for $mod+m, then this KBar shortcut will
+      //  take effect.
+      //
+      // Reference:
+      // https://kbar.vercel.app/docs/concepts/shortcuts
+      // https://github.com/jamiebuilds/tinykeys#keybinding-syntax
+      // https://github.com/timc1/kbar/blob/main/src/InternalEvents.tsx#L28
+      toggleShortcut: "$mod+m",
     }}
   >
     <AutoShow />
