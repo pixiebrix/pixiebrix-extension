@@ -75,10 +75,10 @@
   },
   "commands": {
     "toggle-quick-bar": {
-      "description": "Toggle quick bar",
+      "description": "Toggle Quick Bar",
       "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "Command+K"
+        "default": "Ctrl+M",
+        "mac": "Command+M"
       }
     }
   },
