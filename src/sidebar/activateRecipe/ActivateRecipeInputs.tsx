@@ -17,7 +17,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { type RecipeDefinition } from "@/types/definitions";
-import useWizard from "@/options/pages/marketplace/useWizard";
+import useWizard from "@/activation/useWizard";
 import Form, {
   type OnSubmit,
   type RenderBody,
@@ -26,9 +26,9 @@ import Form, {
 import styles from "./ActivateRecipePanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faMagic } from "@fortawesome/free-solid-svg-icons";
-import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import useMarketplaceActivateRecipe from "@/hooks/activateRecipe/useMarketplaceActivateRecipe";
+import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";

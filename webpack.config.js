@@ -284,7 +284,7 @@ module.exports = (env, options) =>
         "contentScript/contentScript",
         "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
-        "options/options",
+        "extensionConsole/options",
         "sidebar/sidebar",
         "sandbox/sandbox",
 

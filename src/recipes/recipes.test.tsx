@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import { useAllRecipes } from "./recipesHooks";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import { act, render } from "@/pageEditor/testHelpers";
-import { validateSchema } from "@/options/pages/brickEditor/validate";
+import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";

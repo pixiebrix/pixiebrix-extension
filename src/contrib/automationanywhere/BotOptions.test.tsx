@@ -19,7 +19,7 @@ import React from "react";
 import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { type IService, type OutputKey } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { render } from "@/options/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";

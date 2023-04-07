@@ -30,7 +30,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
-import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
+import ServiceEditorModal from "@/extensionConsole/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
 import servicesSlice from "@/store/servicesSlice";

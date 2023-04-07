@@ -29,7 +29,7 @@ import servicesSlice, {
 import {
   type BlueprintModalsRootState,
   blueprintModalsSlice,
-} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
+} from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -43,12 +43,12 @@ import { persistSettingsConfig } from "@/store/settingsStorage";
 import { type SettingsRootState } from "@/store/settingsTypes";
 import blueprintsSlice, {
   persistBlueprintsConfig,
-} from "@/options/pages/blueprints/blueprintsSlice";
+} from "@/extensionConsole/pages/blueprints/blueprintsSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
+import { type BlueprintsRootState } from "@/extensionConsole/pages/blueprints/blueprintsSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";

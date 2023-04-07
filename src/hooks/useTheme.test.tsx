@@ -24,7 +24,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { renderHook } from "@testing-library/react-hooks";
 import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
 import { Provider } from "react-redux";
-import { DEFAULT_THEME } from "@/options/types";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { appApi } from "@/services/api";
 import { type Me } from "@/types/contract";
 
