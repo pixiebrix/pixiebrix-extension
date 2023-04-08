@@ -16,11 +16,13 @@
  */
 
 import { groupBy, lowerCase, sortBy } from "lodash";
-import { type IExtension, type RegistryId, type UUID } from "@/core";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/pageEditor/utils";
 import { isExtension } from "@/pageEditor/sidebar/common";
+import { UUID } from "@/types/stringTypes";
+import { IExtension } from "@/types/extensionTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 type ArrangeElementsArgs = {
   elements: FormState[];

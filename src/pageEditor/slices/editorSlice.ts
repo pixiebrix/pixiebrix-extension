@@ -21,24 +21,15 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import {
-  type RecipeMetadata,
-  type RegistryId,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BlockConfig } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
-import {
-  type OptionsDefinition,
-  type RecipeMetadataFormState,
-} from "@/types/definitions";
 import {
   type AddBlockLocation,
   type EditorRootState,
   type EditorState,
   ModalKey,
+  RecipeMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -97,6 +88,11 @@ import {
   keyToFieldValue,
   selectServiceVariables,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
+import { UUID } from "@/types/stringTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { OptionsDefinition } from "@/types/recipeTypes";
+import { IExtension } from "@/types/extensionTypes";
+import { UserOptions } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -565,7 +561,7 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<RecipeMetadata>
+      action: PayloadAction<IExtension["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(

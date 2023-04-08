@@ -16,19 +16,18 @@
  */
 
 import { isEmpty } from "lodash";
-import {
-  type Metadata,
-  type Schema,
-  type UnresolvedExtension,
-  type UserOptions,
-} from "@/core";
-import {
-  type OptionsDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
+import { type Metadata } from "@/types/registryTypes";
+
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { UserOptions } from "@/types/runtimeTypes";
+import {
+  OptionsDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { Schema } from "@/types/schemaTypes";
+import { UnresolvedExtension } from "@/types/extensionTypes";
 
 /**
  * Infer optionsSchema from the options provided to the extension.

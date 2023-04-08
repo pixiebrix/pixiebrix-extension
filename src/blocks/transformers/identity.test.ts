@@ -16,7 +16,7 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 import { IdentityTransformer } from "@/blocks/transformers/identity";
 
 const brick = new IdentityTransformer();

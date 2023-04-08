@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TemplateEngine, type Expression } from "@/core";
 import { type BlockPipeline } from "@/blocks/types";
 import { type PipelineExpression } from "@/runtime/mapArgs";
+import { Expression, TemplateEngine } from "@/types/runtimeTypes";
 
 export function makeTemplateExpression(
   template: TemplateEngine,

@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type IExtensionPoint, type IService } from "@/core";
 import { type BlockType } from "@/runtime/runtimeTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { IService } from "@/types/serviceTypes";
+import { IBlock } from "@/types/blockTypes";
 
 export default async function getType(
   // HACK: including IService and IExtensionPoint here is a hack to fix some call-sites. This method can only return

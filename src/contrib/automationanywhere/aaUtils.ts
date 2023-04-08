@@ -16,7 +16,7 @@
  */
 
 import { boolean } from "@/utils";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import {
   type Execution,
   type Interface,
@@ -24,7 +24,7 @@ import {
   type Variable,
 } from "@/contrib/automationanywhere/contract";
 import { type JSONSchema7Type } from "json-schema";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { mapValues } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";

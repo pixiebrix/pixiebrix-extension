@@ -22,7 +22,7 @@ import { PropertyTableRenderer } from "./propertyTable";
 import { CustomFormRenderer } from "./customForm";
 import { TableRenderer } from "./table";
 import { DocumentRenderer } from "./document";
-import { type IBlock } from "@/core";
+import { type IBlock } from "@/types/blockTypes";
 
 function getAllRenderers(): IBlock[] {
   return [

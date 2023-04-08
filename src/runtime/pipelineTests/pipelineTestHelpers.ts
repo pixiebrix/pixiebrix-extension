@@ -1,12 +1,5 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { Block, type UnknownObject } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import {
-  type ApiVersion,
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-} from "@/core";
 import { type InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import {
@@ -16,6 +9,14 @@ import {
 } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
+import {
+  ApiVersion,
+  BlockArg,
+  BlockOptions,
+  UserOptions,
+} from "@/types/runtimeTypes";
+import { Block } from "@/types/blockTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 const logger = new ConsoleLogger();
 
@@ -236,7 +237,7 @@ export function simpleInput(input: UnknownObject): InitialValues {
     input,
     root: null,
     serviceContext: {},
-    optionsArgs: {},
+    optionsArgs: {} as UserOptions,
   };
 }
 

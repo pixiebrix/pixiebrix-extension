@@ -15,14 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  KEYS_OF_UI_SCHEMA,
-  type SafeString,
-  type Schema,
-  type SchemaDefinition,
-  type SchemaPropertyType,
-  type UiSchema,
-} from "@/core";
 import { type RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
@@ -31,6 +23,13 @@ import { type WritableDraft } from "immer/dist/types/types-external";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { isEmpty } from "lodash";
+import {
+  Schema,
+  SchemaDefinition,
+  SchemaPropertyType,
+  UiSchema,
+} from "@/types/schemaTypes";
+import { SafeString } from "@/types/stringTypes";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",

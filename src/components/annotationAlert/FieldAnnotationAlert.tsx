@@ -23,7 +23,7 @@ import cx from "classnames";
 import styles from "./FieldAnnotationAlert.module.scss";
 import { isEmpty } from "lodash";
 import AsyncButton from "@/components/AsyncButton";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({

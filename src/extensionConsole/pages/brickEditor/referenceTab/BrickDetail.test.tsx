@@ -22,7 +22,7 @@ import { TableRenderer } from "@/blocks/renderers/table";
 import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
 import { type MarketplaceListing } from "@/types/contract";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 
 jest.mock("@/services/api", () => ({
   appApi: {

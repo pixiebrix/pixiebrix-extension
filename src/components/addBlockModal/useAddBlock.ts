@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type OutputKey } from "@/core";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
@@ -36,6 +35,8 @@ import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { OutputKey } from "@/types/runtimeTypes";
+import { IBlock } from "@/types/blockTypes";
 
 type TestAddBlockResult = {
   error?: string;

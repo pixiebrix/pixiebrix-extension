@@ -17,7 +17,7 @@
 
 import React from "react";
 import SelectorSelectorWidget from "@/pageEditor/fields/SelectorSelectorWidget";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";

@@ -23,10 +23,6 @@ import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import {
-  type Definition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
 import useReinstall from "@/extensionConsole/pages/blueprints/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
@@ -41,7 +37,9 @@ import {
   useDeletePackageMutation,
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { Definition } from "@/types/registryTypes";
 
 type SubmitOptions = {
   create: boolean;

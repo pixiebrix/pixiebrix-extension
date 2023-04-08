@@ -16,7 +16,6 @@
  */
 
 import { useField, useFormikContext } from "formik";
-import { type Expression, type UserOptions } from "@/core";
 import { joinName } from "@/utils";
 import { useReducer } from "react";
 import { type ServiceSlice } from "@/components/fields/schemaFields/serviceFieldUtils";
@@ -29,6 +28,7 @@ import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetServiceOutputKey } from "@/contrib/google/sheets/getSheetServiceOutputKey";
+import { Expression, UserOptions } from "@/types/runtimeTypes";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;

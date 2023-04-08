@@ -18,7 +18,6 @@
 import { appApi } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
-import { type RegistryId } from "@/core";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { selectSettings } from "@/store/settingsSelectors";
 import { useAsyncState } from "@/hooks/common";
@@ -36,6 +35,7 @@ import {
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { RegistryId } from "@/types/registryTypes";
 
 /**
  * Map from partner keys to partner service IDs

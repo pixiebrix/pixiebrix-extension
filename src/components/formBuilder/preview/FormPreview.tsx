@@ -39,7 +39,7 @@ import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type WritableDraft } from "immer/dist/internal";
-import { KEYS_OF_UI_SCHEMA, type Schema } from "@/core";
+import { KEYS_OF_UI_SCHEMA, Schema } from "@/types/schemaTypes";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;

@@ -25,8 +25,8 @@ import {
   type FrameworkMeta,
   READ_WINDOW,
 } from "@/pageScript/messenger/constants";
-import { type ReaderOutput } from "@/core";
 import { type ElementInfo } from "@/pageScript/frameworks";
+import { JsonObject } from "type-fest";
 
 export type PathSpec =
   | string
@@ -58,7 +58,7 @@ export const setComponentData = createSendScriptMessage<void, WritePayload>(
 );
 
 export const getComponentData = createSendScriptMessage<
-  ReaderOutput,
+  JsonObject,
   ReadPayload
 >(GET_COMPONENT_DATA);
 

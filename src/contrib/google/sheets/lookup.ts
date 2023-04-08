@@ -16,19 +16,17 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { Transformer, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type SanitizedServiceConfiguration,
-  type Schema,
-} from "@/core";
 import { sheets } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { zip } from "lodash";
 import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
+import { Schema } from "@/types/schemaTypes";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"

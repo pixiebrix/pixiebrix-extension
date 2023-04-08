@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type IBrick } from "@/core";
 import { Button, ListGroup } from "react-bootstrap";
 import cx from "classnames";
 // TODO: Refactor to properly share styles across components (e.g. full component inheritance);
@@ -24,6 +23,7 @@ import cx from "classnames";
 import styles from "@/extensionConsole/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
+import { IBrick } from "@/types/brickInstanceTypes";
 
 const BrickResult: React.FunctionComponent<{
   brick: IBrick;

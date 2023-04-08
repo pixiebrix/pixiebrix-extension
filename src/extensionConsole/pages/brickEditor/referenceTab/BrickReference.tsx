@@ -27,7 +27,6 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { type IBlock, type IExtensionPoint, type IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
@@ -39,6 +38,9 @@ import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { IService } from "@/types/serviceTypes";
+import { IBlock } from "@/types/blockTypes";
 
 const BrickReference: React.FunctionComponent<{
   bricks: ReferenceEntry[];

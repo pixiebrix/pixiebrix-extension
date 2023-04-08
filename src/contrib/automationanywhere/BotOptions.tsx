@@ -22,7 +22,7 @@ import {
   COMMON_PROPERTIES,
   ENTERPRISE_EDITION_COMMON_PROPERTIES,
 } from "@/contrib/automationanywhere/RunBot";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import useDependency from "@/services/useDependency";

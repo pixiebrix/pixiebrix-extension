@@ -21,7 +21,6 @@ import {
   selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -39,6 +38,7 @@ import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 import { lt } from "semver";
 import { useRecipe } from "@/recipes/recipesHooks";
+import { RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432

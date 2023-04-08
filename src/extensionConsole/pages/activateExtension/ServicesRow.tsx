@@ -20,16 +20,18 @@ import styles from "@/extensionConsole/pages/activateRecipe/ServicesBody.module.
 import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import { type ServiceDependency } from "@/core";
 import useFetch from "@/hooks/useFetch";
-import { type ServiceDefinition } from "@/types/definitions";
+import {
+  type ServiceDefinition,
+  type ServiceDependency,
+} from "@/types/serviceTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import AuthWidget from "@/components/auth/AuthWidget";
 import { joinName } from "@/utils";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 
 const ServicesRow: React.FunctionComponent<{

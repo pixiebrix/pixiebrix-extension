@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type OutputKey, type SafeString } from "@/core";
 import { freshIdentifier } from "@/utils";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
@@ -28,6 +27,9 @@ import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
+import { OutputKey } from "@/types/runtimeTypes";
+import { IBlock } from "@/types/blockTypes";
+import { SafeString } from "@/types/stringTypes";
 
 export function showOutputKey(blockType: BlockType): boolean {
   return blockType !== "effect" && blockType !== "renderer";

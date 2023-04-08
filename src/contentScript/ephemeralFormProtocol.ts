@@ -16,7 +16,7 @@
  */
 
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";

@@ -15,17 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Config,
-  type EmptyConfig,
-  type IBlock,
-  type IExtension,
-  type IExtensionPoint,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type RegistryId,
-  type ResolvedExtension,
-} from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
 import { cloneDeep, isEmpty, isPlainObject, mapValues, pick } from "lodash";
@@ -38,16 +27,22 @@ import {
   type ExtensionPointConfig as ExtensionDefinition,
   type RecipeDefinition,
   type ResolvedExtensionPointConfig,
-} from "@/types/definitions";
+} from "@/types/recipeTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
-import { type UnknownObject } from "@/types";
+import { UnknownObject } from "@/types/objectTypes";
+import {
+  Definition,
+  InnerDefinitionRef,
+  RegistryId,
+} from "@/types/registryTypes";
+import { InnerDefinitions } from "@/types/recipeTypes";
+import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
+import { EmptyObject } from "type-fest";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { IBlock } from "@/types/blockTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
-
-interface RawConfig<T extends string = string> extends Config {
-  kind: T;
-}
 
 export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
@@ -56,7 +51,7 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
 
 async function ensureBlock(
   definitions: InnerDefinitions,
-  config: RawConfig<"reader" | "component">
+  config: Definition<"reader" | "component">
 ) {
   // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
   const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
@@ -102,7 +97,7 @@ async function ensureReaders(
 
       const block = await ensureBlock(
         definitions,
-        definition as RawConfig<"reader">
+        definition as Definition<"reader">
       );
       return block.id;
     }
@@ -168,7 +163,7 @@ async function ensureExtensionPoint(
 
 async function ensureInner(
   definitions: InnerDefinitions,
-  config: Config
+  config: Definition
 ): Promise<IBlock | IExtensionPoint> {
   if (typeof config.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
@@ -183,7 +178,7 @@ async function ensureInner(
     case "component": {
       return ensureBlock(
         definitions,
-        config as RawConfig<"reader" | "component">
+        config as Definition<"reader" | "component">
       );
     }
 
@@ -194,11 +189,11 @@ async function ensureInner(
 }
 
 /**
- * Return a new copy of the extension with its inner references re-written.
+ * Return a new copy of the IExtension with its inner references re-written.
  */
-export async function resolveDefinitions<T extends Config = EmptyConfig>(
-  extension: IExtension<T>
-): Promise<ResolvedExtension<T>> {
+export async function resolveDefinitions<
+  T extends UnknownObject = UnknownObject
+>(extension: IExtension<T>): Promise<ResolvedExtension<T>> {
   if (isEmpty(extension.definitions)) {
     return extension as ResolvedExtension<T>;
   }

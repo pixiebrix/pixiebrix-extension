@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RawServiceConfiguration, type ServiceConfig } from "@/core";
 import serviceRegistry from "@/services/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
@@ -30,6 +29,7 @@ import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
+import { RawServiceConfiguration, ServiceConfig } from "@/types/serviceTypes";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<

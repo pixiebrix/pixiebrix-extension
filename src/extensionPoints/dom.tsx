@@ -17,7 +17,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { type RendererOutput } from "@/core";
+import { RendererOutput } from "@/types/runtimeTypes";
 
 interface RenderOptions {
   shadowDOM: boolean;

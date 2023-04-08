@@ -19,11 +19,6 @@ import React, { useCallback, useEffect } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import {
-  type Expression,
-  type SanitizedServiceConfiguration,
-  type Schema,
-} from "@/core";
 import { useField } from "formik";
 import { proxyService } from "@/background/messenger/api";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
@@ -39,6 +34,9 @@ import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
+import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { Expression } from "@/types/runtimeTypes";
+import { Schema } from "@/types/schemaTypes";
 
 async function fetchRobots(
   config: SanitizedServiceConfiguration

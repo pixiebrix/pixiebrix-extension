@@ -16,17 +16,6 @@
  */
 
 import React from "react";
-import { Renderer, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type ComponentRef,
-  type RegistryId,
-  type SanitizedServiceConfiguration,
-  type Schema,
-  type UiSchema,
-  type UUID,
-} from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { type JsonObject } from "type-fest";
 import { dataStore, proxyService } from "@/background/messenger/api";
@@ -45,6 +34,13 @@ import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
 import { getTopLevelFrame } from "webext-messenger";
+import { UUID } from "@/types/stringTypes";
+import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { Schema, UiSchema } from "@/types/schemaTypes";
+import { UnknownObject } from "@/types/objectTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { BlockArg, BlockOptions, ComponentRef } from "@/types/runtimeTypes";
+import { Renderer } from "@/types/blocks/rendererTypes";
 
 const fields = {
   DescriptionField,
@@ -115,6 +111,7 @@ function assertObject(value: unknown): asserts value is UnknownObject {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
 async function getInitialData(

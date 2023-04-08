@@ -15,24 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ApiVersion,
-  type BlockIcon,
-  type EmptyConfig,
-  type IBlock,
-  type IExtensionPoint,
-  type IReader,
-  type Logger,
-  type Metadata,
-  type RegistryId,
-  type ResolvedExtension,
-  type RunArgs,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { type Availability, type ReaderConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { ApiVersion, RunArgs } from "@/types/runtimeTypes";
+import { RegistryId, Metadata } from "@/types/registryTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { EmptyObject } from "type-fest";
+import { BlockIcon } from "@/types/iconTypes";
+import { ResolvedExtension } from "@/types/extensionTypes";
+import { Schema } from "@/types/schemaTypes";
+import { Logger } from "@/types/loggerTypes";
+import { IReader } from "@/types/blocks/readerTypes";
+import { IBlock } from "@/types/blockTypes";
+import { UUID } from "@/types/stringTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 export type ExtensionPointType =
   | "panel"
@@ -124,7 +121,7 @@ export function assertExtensionPointConfig(
   }
 }
 
-export abstract class ExtensionPoint<TConfig extends EmptyConfig>
+export abstract class ExtensionPoint<TConfig extends UnknownObject>
   implements IExtensionPoint
 {
   public readonly id: RegistryId;

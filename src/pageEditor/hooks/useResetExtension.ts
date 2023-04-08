@@ -25,7 +25,7 @@ import reportError from "@/telemetry/reportError";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
 type Config = {

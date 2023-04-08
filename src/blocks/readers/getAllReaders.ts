@@ -31,7 +31,7 @@ import ManifestReader from "./ManifestReader";
 import ProfileReader from "./ProfileReader";
 import SessionReader from "./SessionReader";
 import TimestampReader from "./TimestampReader";
-import { type IBlock } from "@/core";
+import { type IBlock } from "@/types/blockTypes";
 
 function getAllReaders(): IBlock[] {
   return [

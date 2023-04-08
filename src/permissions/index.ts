@@ -16,12 +16,6 @@
  */
 
 import extensionPointRegistry from "@/extensionPoints/registry";
-import {
-  type IExtension,
-  type IExtensionPoint,
-  type ServiceAuthPair,
-} from "@/core";
-import { type ResolvedExtensionPointConfig } from "@/types/definitions";
 import { type Permissions } from "webextension-polyfill";
 import { castArray, compact, uniq } from "lodash";
 import serviceRegistry from "@/services/registry";
@@ -30,6 +24,10 @@ import { resolveDefinitions } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
 import { expectContext } from "@/utils/expectContext";
+import { ResolvedExtensionPointConfig } from "@/types/recipeTypes";
+import { ServiceAuthPair } from "@/types/serviceTypes";
+import { IExtension } from "@/types/extensionTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([

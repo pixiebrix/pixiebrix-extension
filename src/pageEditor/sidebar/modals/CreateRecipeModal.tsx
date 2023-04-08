@@ -38,11 +38,6 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import {
-  type RecipeDefinition,
-  type RecipeMetadataFormState,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
 import { selectScope } from "@/auth/authSelectors";
 import {
   buildRecipe,
@@ -65,7 +60,6 @@ import { object, string } from "yup";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { type RecipeMetadata, type RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -76,13 +70,17 @@ import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
+import { RecipeDefinition, UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { IExtension } from "@/types/extensionTypes";
+import { RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedRecipeDefinition,
   response: PackageUpsertResponse
-): RecipeMetadata {
+): IExtension["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),

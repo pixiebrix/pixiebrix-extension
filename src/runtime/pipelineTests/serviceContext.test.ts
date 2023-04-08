@@ -15,11 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ApiVersion,
-  type SanitizedServiceConfiguration,
-  type ServiceDependency,
-} from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -35,6 +30,11 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { pixieServiceFactory } from "@/services/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { ApiVersion } from "@/types/runtimeTypes";
+import {
+  SanitizedServiceConfiguration,
+  ServiceDependency,
+} from "@/types/serviceTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

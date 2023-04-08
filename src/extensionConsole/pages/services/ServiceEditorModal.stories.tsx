@@ -21,7 +21,7 @@ import ServiceEditorModal from "./ServiceEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
-import { type ServiceDefinition } from "@/types/definitions";
+import { type ServiceDefinition } from "@/types/serviceTypes";
 
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";

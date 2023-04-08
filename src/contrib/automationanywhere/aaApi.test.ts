@@ -19,11 +19,11 @@ import { cachedSearchBots } from "@/contrib/automationanywhere/aaApi";
 import { proxyService } from "@/background/messenger/api";
 import { type RemoteResponse } from "@/types/contract";
 import pDefer, { type DeferredPromise } from "p-defer";
-import {
-  type SanitizedConfig,
-  type SanitizedServiceConfiguration,
-} from "@/core";
 import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
+import {
+  SanitizedConfig,
+  SanitizedServiceConfiguration,
+} from "@/types/serviceTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn(),

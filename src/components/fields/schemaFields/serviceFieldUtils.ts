@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Expression, type OutputKey, type ServiceKeyVar } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   isExpression,
@@ -23,6 +22,7 @@ import {
   isVarExpression,
 } from "@/runtime/mapArgs";
 import { produce } from "immer";
+import { Expression, OutputKey, ServiceKeyVar } from "@/types/runtimeTypes";
 
 export type ServiceSlice = Pick<FormState, "services" | "extension">;
 

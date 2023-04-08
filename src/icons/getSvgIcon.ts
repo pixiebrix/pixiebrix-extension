@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IconConfig } from "@/core";
+import { IconConfig } from "@/types/iconTypes";
 
 export default async function getSvgIcon({
   library = "bootstrap",

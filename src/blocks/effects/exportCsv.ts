@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
 
 export class ExportCsv extends Effect {

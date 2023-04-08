@@ -15,16 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ApiVersion,
-  type EmptyConfig,
-  type IExtension,
-  type Metadata,
-  type RegistryId,
-  type SafeString,
-  type Schema,
-  type UUID,
-} from "@/core";
+import { type Metadata, RegistryId } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
@@ -40,7 +31,7 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import { type Except } from "type-fest";
+import { EmptyObject, type Except } from "type-fest";
 import {
   uuidv4,
   validateRegistryId,
@@ -52,9 +43,9 @@ import {
   type ReaderConfig,
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { isExpression } from "@/runtime/mapArgs";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import {
   getMinimalSchema,
   getMinimalUiSchema,
@@ -66,6 +57,10 @@ import {
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { makeEmptyPermissions } from "@/utils/permissions";
+import { ApiVersion } from "@/types/runtimeTypes";
+import { IExtension } from "@/types/extensionTypes";
+import { Schema } from "@/types/schemaTypes";
+import { SafeString, UUID } from "@/types/stringTypes";
 
 export interface WizardStep {
   step: string;
@@ -262,7 +257,7 @@ export function cleanIsAvailable({
 
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
-  TConfig extends EmptyConfig,
+  TConfig extends EmptyObject,
   TType extends string
 >(
   config: IExtension<TConfig>,

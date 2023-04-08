@@ -23,7 +23,6 @@ import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { reportEvent } from "@/telemetry/events";
-import { type UUID, type IExtension, type ResolvedExtension } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
@@ -34,6 +33,8 @@ import { loadOptions } from "@/store/extensionsStorage";
 import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { CancelError } from "@/errors/businessErrors";
+import { UUID } from "@/types/stringTypes";
+import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
 
 const MENU_PREFIX = "pixiebrix-";
 

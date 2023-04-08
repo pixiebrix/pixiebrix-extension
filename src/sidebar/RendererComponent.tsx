@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
-import { type RegistryId, type RendererOutput } from "@/core";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type PanelRunMeta } from "@/sidebar/types";
 import { type SubmitPanelAction } from "@/blocks/errors";
+import { RegistryId } from "@/types/registryTypes";
+import { RendererOutput } from "@/types/runtimeTypes";
 
 /**
  * React component to display the output of a renderer brick

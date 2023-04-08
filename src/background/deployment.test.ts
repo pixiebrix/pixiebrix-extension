@@ -24,7 +24,6 @@ import {
   sharingDefinitionFactory,
 } from "@/testUtils/factories";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import { type PersistedExtension, type Timestamp } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
@@ -43,6 +42,8 @@ import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateType
 import { parsePackage } from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
+import { PersistedExtension } from "@/types/extensionTypes";
+import { Timestamp } from "@/types/stringTypes";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 

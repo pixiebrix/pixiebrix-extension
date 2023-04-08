@@ -18,7 +18,7 @@
 import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { fireTextInput } from "@/testUtils/formHelpers";

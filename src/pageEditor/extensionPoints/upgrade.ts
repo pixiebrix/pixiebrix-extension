@@ -18,15 +18,12 @@
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import { inputProperties } from "@/helpers";
-import { type UnknownObject } from "@/types";
-import {
-  type Expression,
-  type RegistryId,
-  type SchemaDefinition,
-  type TemplateEngine,
-} from "@/core";
+import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { RegistryId } from "@/types/registryTypes";
+import { Expression, TemplateEngine } from "@/types/runtimeTypes";
+import { SchemaDefinition } from "@/types/schemaTypes";
 
 const VARIABLE_REGEX = /^@\S+$/;
 

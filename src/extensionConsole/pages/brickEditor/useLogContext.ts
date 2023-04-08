@@ -16,11 +16,11 @@
  */
 
 import { useDebounce } from "use-debounce";
-import { type MessageContext, type RawConfig } from "@/core";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { useDispatch } from "react-redux";
 import { logActions } from "@/components/logViewer/logSlice";
 import { useEffect } from "react";
+import { MessageContext } from "@/types/loggerTypes";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 

@@ -24,7 +24,7 @@ import { Col, Row } from "react-bootstrap";
 import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { useRecipe } from "@/recipes/recipesHooks";
 import InstallableIcon from "@/extensionConsole/pages/blueprints/InstallableIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";

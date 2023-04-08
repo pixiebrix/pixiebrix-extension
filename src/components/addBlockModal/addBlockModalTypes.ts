@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type RegistryId } from "@/core";
+import { IBlock } from "@/types/blockTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 export type BlockResult = IBlock & {
   isPopular?: boolean;

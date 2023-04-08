@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type ReaderRoot,
-  type Schema,
-} from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
+import { Schema } from "@/types/schemaTypes";
+import { BlockArg, BlockOptions, ReaderRoot } from "@/types/runtimeTypes";
 
 export class WaitEffect extends Effect {
   constructor() {

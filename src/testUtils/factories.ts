@@ -24,26 +24,6 @@ import {
   type FactoryConfig,
 } from "cooky-cutter";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import {
-  type ApiVersion,
-  type IBlock,
-  type IExtension,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type Metadata,
-  type OutputKey,
-  type PersistedExtension,
-  type RecipeMetadata,
-  type RegistryId,
-  type RenderedArgs,
-  type SafeString,
-  type SanitizedConfig,
-  type SanitizedServiceConfiguration,
-  type Schema,
-  type ServiceDependency,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { type TraceError, type TraceRecord } from "@/telemetry/trace";
 import {
   validateRegistryId,
@@ -62,11 +42,6 @@ import {
   type SidebarFormState,
   type TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
-import {
-  type ExtensionPointConfig,
-  type RecipeDefinition,
-  type SharingDefinition,
-} from "@/types/definitions";
 import {
   type ExtensionPointConfig as ExtensionPointDefinition,
   type ExtensionPointDefinition as ExtensionPointConfigDefinition,
@@ -106,6 +81,32 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { SafeString, UUID } from "@/types/stringTypes";
+import { IExtension, PersistedExtension } from "@/types/extensionTypes";
+import {
+  ApiVersion,
+  OutputKey,
+  RenderedArgs,
+  UserOptions,
+} from "@/types/runtimeTypes";
+import {
+  SanitizedConfig,
+  SanitizedServiceConfiguration,
+  ServiceDependency,
+} from "@/types/serviceTypes";
+import { Schema } from "@/types/schemaTypes";
+import { IBlock } from "@/types/blockTypes";
+import {
+  InnerDefinitionRef,
+  RegistryId,
+  Metadata,
+  Sharing,
+} from "@/types/registryTypes";
+import {
+  ExtensionPointConfig,
+  InnerDefinitions,
+  RecipeDefinition,
+} from "@/types/recipeTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -191,12 +192,12 @@ export const recipeMetadataFactory = define<Metadata>({
   version: validateSemVerString("1.0.0"),
 });
 
-export const sharingDefinitionFactory = define<SharingDefinition>({
+export const sharingDefinitionFactory = define<Sharing>({
   public: false,
   organizations: () => [] as UUID[],
 });
 
-export const installedRecipeMetadataFactory = define<RecipeMetadata>({
+export const installedRecipeMetadataFactory = define<IExtension["_recipe"]>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",

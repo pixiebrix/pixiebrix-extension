@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension, type Metadata } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -43,6 +43,7 @@ import {
   TourExtensionPoint,
 } from "@/extensionPoints/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
+import { IExtension } from "@/types/extensionTypes";
 
 function fromNativeElement(
   url: string,

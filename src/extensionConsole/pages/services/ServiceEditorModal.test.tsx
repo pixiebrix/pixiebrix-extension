@@ -24,9 +24,9 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
-import { type RawServiceConfiguration } from "@/core";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
+import { RawServiceConfiguration } from "@/types/serviceTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();

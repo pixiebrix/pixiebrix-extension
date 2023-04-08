@@ -19,18 +19,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import {
-  type IBlock,
-  type IExtension,
-  type IExtensionPoint,
-  type IReader,
-  type ReaderOutput,
-  type ResolvedExtension,
-  type RunArgs,
-  RunReason,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
@@ -66,6 +54,14 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
+import { Schema } from "@/types/schemaTypes";
+import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
+import { IBlock } from "@/types/blockTypes";
+import { JsonObject } from "type-fest";
+import { UUID } from "@/types/stringTypes";
+import { RunArgs, RunReason } from "@/types/runtimeTypes";
+import { IReader } from "@/types/blocks/readerTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
   heading: string;
@@ -155,7 +151,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   }
 
   private async runExtension(
-    readerContext: ReaderOutput,
+    readerContext: JsonObject,
     extension: ResolvedExtension<SidebarConfig>
   ) {
     // Generate our own run id so that we know it (to pass to upsertPanel)

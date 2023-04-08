@@ -18,30 +18,22 @@
 /**
  * Type contract between the backend and front-end.
  */
-import {
-  type RecipeDefinition,
-  type SharingDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
-import {
-  type SanitizedConfig,
-  type Metadata,
-  type UUID,
-  type Config,
-  type EmptyConfig,
-  type PersistedExtension,
-  type Timestamp,
-  type RegistryId,
-  type SemVerString,
-} from "@/core";
-
 import { type components } from "@/types/swagger";
-import { type Except } from "type-fest";
+import { type Except, type JsonObject } from "type-fest";
 import { type AxiosResponse } from "axios";
 import {
   type IconName,
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type SanitizedConfig } from "@/types/serviceTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
+import {
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { type PersistedExtension } from "@/types/extensionTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 type Kind =
   | "block"
@@ -177,8 +169,8 @@ export type RegistryPackage = Pick<
 /**
  * A personal user extension synced/saved to the cloud.
  */
-export type CloudExtension<T extends Config = EmptyConfig> = Except<
-  PersistedExtension<T>,
+export type CloudExtension<Config extends UnknownObject = JsonObject> = Except<
+  PersistedExtension<Config>,
   "active"
 > & {
   _remoteUserExtensionBrand: never;
@@ -192,7 +184,7 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
 export type BlueprintResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedRecipeDefinition;
-  sharing: SharingDefinition;
+  sharing: RecipeDefinition["sharing"];
   updated_at: Timestamp;
 };
 

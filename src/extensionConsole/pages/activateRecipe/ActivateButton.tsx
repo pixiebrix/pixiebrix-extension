@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useLocation } from "react-router";
 import useEnsurePermissions from "@/activation/useEnsurePermissions";
 import notify from "@/utils/notify";

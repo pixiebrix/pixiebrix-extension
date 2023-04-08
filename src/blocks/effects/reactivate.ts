@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect, type UnknownObject } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { reactivateTab } from "@/contentScript/lifecycle";
 import { expectContext } from "@/utils/expectContext";
+import { Effect } from "@/types/blocks/effectTypes";
+import { JsonObject } from "type-fest";
 
 export class ReactivateEffect extends Effect {
   constructor() {
@@ -35,7 +37,7 @@ export class ReactivateEffect extends Effect {
   };
 
   async effect(
-    arg: BlockArg<UnknownObject>,
+    arg: BlockArg<JsonObject>,
     { logger }: BlockOptions
   ): Promise<void> {
     expectContext("contentScript");

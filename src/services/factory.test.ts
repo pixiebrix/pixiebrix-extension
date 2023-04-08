@@ -19,9 +19,12 @@ import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
 import automationAnywhereOAuth2 from "@contrib/services/automation-anywhere-oauth2.yaml";
 import greenhouse from "@contrib/services/greenhouse.yaml";
 import { fromJS } from "@/services/factory";
-import { type ServiceDefinition } from "@/types/definitions";
-import { type SanitizedConfig, type ServiceConfig } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
+import {
+  SanitizedConfig,
+  ServiceConfig,
+  ServiceDefinition,
+} from "@/types/serviceTypes";
 
 describe("LocalDefinedService", () => {
   test("includes version", () => {

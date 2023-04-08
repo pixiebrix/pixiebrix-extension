@@ -18,7 +18,6 @@
 import React, { useMemo, useState } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import { type Expression, type Schema } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -35,6 +34,8 @@ import { useField } from "formik";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
+import { Expression } from "@/types/runtimeTypes";
+import { Schema } from "@/types/schemaTypes";
 
 function useLocalRobot() {
   expectContext(

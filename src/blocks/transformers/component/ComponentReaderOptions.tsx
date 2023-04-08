@@ -8,7 +8,7 @@ import {
   type FrameworkMeta,
 } from "@/pageScript/messenger/constants";
 import { isNullOrBlank, joinName } from "@/utils";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { useSelector } from "react-redux";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";

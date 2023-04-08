@@ -28,7 +28,7 @@ import { type MoveBrickControlProps } from "@/pageEditor/tabs/editTab/editorNode
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type React from "react";
-import { type OutputKey } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
 
 type FormikError = string | FormikErrorTree;
 

@@ -20,16 +20,13 @@ import {
   registerTour,
 } from "@/extensionPoints/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import {
-  type BlockOptions,
-  type RecipeMetadata,
-  type ResolvedExtension,
-} from "@/core";
 import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
+import { BlockOptions } from "@/types/runtimeTypes";
 
 describe("runSubTour", () => {
   test("it runs a sub-tour", async () => {
@@ -43,7 +40,7 @@ describe("runSubTour", () => {
       extension: {
         id: uuidv4(),
         label: "Test Extension",
-        _recipe: { id: blueprintId } as RecipeMetadata,
+        _recipe: { id: blueprintId } as IExtension["_recipe"],
       } as ResolvedExtension,
       allowUserRun: false,
       run: () => ({

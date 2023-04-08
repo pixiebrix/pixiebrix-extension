@@ -15,12 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IExtensionPoint,
-  type ReaderOutput,
-  type ReaderRoot,
-  type UUID,
-} from "@/core";
 import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/vendors/Overlay";
@@ -34,6 +28,10 @@ import {
   ensureSidebar,
 } from "@/contentScript/sidebarController";
 import { type TourDefinition } from "@/extensionPoints/tourExtension";
+import { JsonObject } from "type-fest";
+import { ReaderRoot } from "@/types/runtimeTypes";
+import { UUID } from "@/types/stringTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions = new Map<string, IExtensionPoint>();
@@ -56,7 +54,7 @@ export async function clearDynamicElements({
 export async function runExtensionPointReader(
   { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
   rootSelector: string | undefined
-): Promise<ReaderOutput> {
+): Promise<JsonObject> {
   expectContext("contentScript");
 
   const { activeElement } = document;

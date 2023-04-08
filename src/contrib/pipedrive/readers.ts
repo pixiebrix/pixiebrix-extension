@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
+import { Reader } from "@/types/blocks/readerTypes";
 import { startCase, mapValues } from "lodash";
 import { withReadWindow } from "@/pageScript/messenger/api";
 import { type PathSpec } from "@/blocks/readers/window";

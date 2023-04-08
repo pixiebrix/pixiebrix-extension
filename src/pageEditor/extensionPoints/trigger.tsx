@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension, type Metadata } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -46,6 +46,7 @@ import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
+import { IExtension } from "@/types/extensionTypes";
 
 function fromNativeElement(
   url: string,

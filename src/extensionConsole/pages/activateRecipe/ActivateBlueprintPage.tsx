@@ -19,7 +19,7 @@ import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { useLocation, useParams } from "react-router";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import ActivateWizard from "@/extensionConsole/pages/activateRecipe/ActivateWizard";

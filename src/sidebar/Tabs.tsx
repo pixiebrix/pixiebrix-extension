@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect } from "react";
 import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
 import { eventKeyForEntry } from "@/sidebar/utils";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -16,8 +16,9 @@
  */
 /* eslint-disable unicorn/no-array-callback-reference -- $.find false positives */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
 import { $safeFind } from "@/helpers";

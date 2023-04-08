@@ -27,7 +27,6 @@ import {
   selectExtensions,
   selectExtensionsForRecipe,
 } from "@/store/extensionsSelectors";
-import { type RegistryId, type UnresolvedExtension, type UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
@@ -57,6 +56,9 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import { UUID } from "@/types/stringTypes";
+import { UnresolvedExtension } from "@/types/extensionTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;

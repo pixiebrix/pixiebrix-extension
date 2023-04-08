@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type IBrick } from "@/core";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -42,8 +41,14 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
+import { IBlock } from "@/types/blockTypes";
+import { IService } from "@/types/serviceTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
 
-function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
+function getDefaultBrickIcon(
+  brick: IBlock | IService | IExtensionPoint,
+  blockType: BlockType
+): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }
@@ -100,7 +105,7 @@ const SIZE_REGEX = /^(?<size>\d)x$/i;
  * listing and searches all the listings.
  */
 const BrickIcon: React.FunctionComponent<{
-  brick: IBrick;
+  brick: IBlock | IService | IExtensionPoint;
   size?: "1x" | "2x";
 
   /**

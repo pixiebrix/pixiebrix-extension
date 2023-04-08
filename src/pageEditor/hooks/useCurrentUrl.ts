@@ -17,7 +17,7 @@
 
 import { once } from "lodash";
 import { useEffect, useState } from "react";
-import { type Target } from "@/types";
+import { type Target } from "@/types/messengerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type WebNavigation } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";

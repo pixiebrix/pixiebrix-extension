@@ -23,7 +23,7 @@ import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 import Form from "@/components/form/Form";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 
 export default {
   title: "Widgets/TextWidget",

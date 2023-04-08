@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { KEYS_OF_UI_SCHEMA, type Schema } from "@/core";
 import { produce } from "immer";
 import {
   DEFAULT_FIELD_TYPE,
@@ -34,6 +33,7 @@ import { initRenamingCases } from "./formEditor.testCases";
 import { UI_WIDGET } from "./schemaFieldNames";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
+import { KEYS_OF_UI_SCHEMA, Schema } from "@/types/schemaTypes";
 
 describe("replaceStringInArray", () => {
   let array: string[];

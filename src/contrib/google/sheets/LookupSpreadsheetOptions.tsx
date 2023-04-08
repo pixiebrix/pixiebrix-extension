@@ -18,7 +18,8 @@
 import React, { useEffect, useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { type Expression, type Schema } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { joinName } from "@/utils";
 import TabField from "@/contrib/google/sheets/TabField";
 import { useAsyncState } from "@/hooks/common";

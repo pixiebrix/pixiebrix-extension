@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PersistedExtension, type UnresolvedExtension } from "@/core";
+import {
+  PersistedExtension,
+  UnresolvedExtension,
+} from "@/types/extensionTypes";
 
 export type OptionsState =
   | LegacyExtensionObjectShapeState

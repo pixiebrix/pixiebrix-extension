@@ -16,7 +16,7 @@
  */
 
 import { defaultBlockConfig, isOfficial } from "./util";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import IfElse from "./transformers/controlFlow/IfElse";
 import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
 

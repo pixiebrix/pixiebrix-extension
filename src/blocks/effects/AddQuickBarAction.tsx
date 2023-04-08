@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type IconConfig,
-  type Schema,
-} from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -29,6 +22,10 @@ import Icon from "@/icons/Icon";
 import React from "react";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
+import { IconConfig } from "@/types/iconTypes";
+import { Schema } from "@/types/schemaTypes";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/blocks/effectTypes";
 
 type ActionConfig = {
   title: string;

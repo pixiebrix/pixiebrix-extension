@@ -15,36 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ApiVersion,
-  type Config,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type Metadata,
-  type OutputKey,
-  type RecipeMetadata,
-  type RegistryId,
-  type Schema,
-  type TemplateEngine,
-  type Timestamp,
-  type UUID,
-} from "@/core";
-import { type Permissions } from "webextension-polyfill";
 import { type UiSchema } from "@rjsf/core";
+import { type UnknownObject } from "@/types/objectTypes";
 import { pick } from "lodash";
+import {
+  type Definition,
+  InnerDefinitionRef,
+  type RegistryId,
+} from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { Permissions } from "webextension-polyfill";
+import { OutputKey, TemplateEngine } from "@/types/runtimeTypes";
+import { JsonObject } from "type-fest";
 
-export type EditablePackage = {
-  /**
-   * The surrogate key of the package
-   */
-  id: UUID;
+// XXX: move to registryTypes file
+export type InnerDefinitions = Record<string, UnknownObject>;
 
-  /**
-   * The registry id of the package
-   */
-  name: RegistryId;
+/**
+ * @see resolveDefinitions
+ */
+export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
+  id: RegistryId;
+
+  _resolvedExtensionPointConfigBrand: never;
 };
 
+/**
+ * A section defining which options are available during recipe activation
+ * @see RecipeDefinition.options
+ */
+export interface OptionsDefinition {
+  schema: Schema;
+  uiSchema?: UiSchema;
+}
+
+/**
+ * An extension point configured in a recipe.
+ */
 export type ExtensionPointConfig = {
   /**
    * The id of the ExtensionPoint.
@@ -77,49 +85,8 @@ export type ExtensionPointConfig = {
   /**
    * The extension configuration.
    */
-  config: Config;
+  config: JsonObject;
 };
-
-export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
-  _resolvedExtensionPointConfigBrand: never;
-
-  id: RegistryId;
-};
-
-/**
- * A section defining which options are available during recipe activation
- * @see RecipeDefinition.options
- */
-export interface OptionsDefinition {
-  schema: Schema;
-  uiSchema?: UiSchema;
-}
-
-/**
- * Information about who a package has been shared with. Currently used only on recipes in the interface to indicate
- * which team they were shared from
- */
-export type SharingDefinition = {
-  /**
-   * True fi the package has been shared publicly on PixieBrix
-   */
-  public: boolean;
-  /**
-   * Organizations the package has been shared with. Only includes the organizations that are visible to the user.
-   */
-  organizations: UUID[];
-};
-
-export type Kind = "recipe" | "service" | "reader" | "component";
-
-/**
- * A PixieBrix brick or extension point definition
- */
-export interface Definition {
-  apiVersion: ApiVersion;
-  kind: Kind;
-  metadata: Metadata;
-}
 
 /**
  * A version of RecipeDefinition without the metadata properties that should not be included with the submitted
@@ -136,6 +103,22 @@ export interface UnsavedRecipeDefinition extends Definition {
   definitions?: InnerDefinitions;
   options?: OptionsDefinition;
 }
+
+/**
+ * Information about who a package has been shared with. Currently used only on recipes in the interface to indicate
+ * which team they were shared from
+ */
+// Not exported -- use RecipeDefinition["sharing"] instead to reference
+type SharingDefinition = {
+  /**
+   * True fi the package has been shared publicly on PixieBrix
+   */
+  public: boolean;
+  /**
+   * Organizations the package has been shared with. Only includes the organizations that are visible to the user.
+   */
+  organizations: UUID[];
+};
 
 /**
  * Config of a Package returned from the PixieBrix API. Used to install extensions.
@@ -171,7 +154,7 @@ export interface RecipeDefinition extends UnsavedRecipeDefinition {
  */
 export function selectSourceRecipeMetadata(
   recipeDefinition: RecipeDefinition
-): RecipeMetadata {
+): Pick<RecipeDefinition, "sharing" | "updated_at"> {
   if (recipeDefinition.metadata?.id == null) {
     throw new TypeError("Expected a RecipeDefinition");
   }
@@ -181,66 +164,3 @@ export function selectSourceRecipeMetadata(
     ...pick(recipeDefinition, ["sharing", "updated_at"]),
   };
 }
-
-export interface KeyAuthenticationDefinition {
-  baseURL?: string;
-  headers?: Record<string, string>;
-  params?: Record<string, string>;
-}
-
-export interface TokenAuthenticationDefinition {
-  baseURL?: string;
-  token: {
-    url: string;
-    data: Record<string, unknown>;
-  };
-  headers: Record<string, string>;
-}
-
-export interface BasicAuthenticationDefinition {
-  baseURL?: string;
-  basic: {
-    username: string;
-    password: string;
-  };
-  headers: Record<string, string>;
-}
-
-export interface OAuth2AuthenticationDefinition {
-  baseURL?: string;
-  oauth2: {
-    client_id: string;
-    authorizeUrl: string;
-    tokenUrl: string;
-  };
-  headers: Record<string, string>;
-}
-
-export interface OAuth2AuthorizationGrantDefinition {
-  oauth2: {
-    grantType: "authorization_code";
-  };
-  headers: Record<string, string>;
-}
-
-export interface ServiceDefinition<
-  TAuth =
-    | KeyAuthenticationDefinition
-    | OAuth2AuthenticationDefinition
-    | OAuth2AuthorizationGrantDefinition
-    | TokenAuthenticationDefinition
-    | BasicAuthenticationDefinition
-> {
-  metadata: Metadata;
-  inputSchema: Schema;
-  uiSchema?: UiSchema;
-  isAvailable?: {
-    matchPatterns: string | string[];
-  };
-  authentication: TAuth;
-}
-
-export type RecipeMetadataFormState = Pick<
-  Metadata,
-  "id" | "name" | "version" | "description"
->;

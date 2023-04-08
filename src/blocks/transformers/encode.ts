@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {

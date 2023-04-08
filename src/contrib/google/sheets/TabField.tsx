@@ -19,7 +19,6 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
-import { type Expression, type Schema } from "@/core";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
@@ -27,6 +26,8 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import { Expression } from "@/types/runtimeTypes";
+import { Schema } from "@/types/schemaTypes";
 
 const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,

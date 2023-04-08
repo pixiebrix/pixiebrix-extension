@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
-import { type BlockArg, type SafeHTML, type Schema } from "@/core";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import { assumeSafe } from "@/utils/sanitize";
+import { Schema } from "@/types/schemaTypes";
+import { BlockArg } from "@/types/runtimeTypes";
+import { SafeHTML } from "@/types/stringTypes";
 
 export class IFrameRenderer extends Renderer {
   constructor() {

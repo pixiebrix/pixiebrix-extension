@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
@@ -41,6 +34,10 @@ import {
 } from "@/services/constants";
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
+import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"

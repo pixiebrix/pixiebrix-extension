@@ -18,11 +18,11 @@
 import type React from "react";
 import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
-import { type Expression, type OutputKey, type ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { produce } from "immer";
 import { isEqual, set } from "lodash";
 import { keyToFieldValue, type ServiceSlice } from "./serviceFieldUtils";
+import { Expression, OutputKey, ServiceKeyVar } from "@/types/runtimeTypes";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 

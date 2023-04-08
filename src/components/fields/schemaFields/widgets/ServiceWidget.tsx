@@ -22,15 +22,6 @@ import React, {
   useMemo,
 } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import {
-  type Expression,
-  type OutputKey,
-  type RegistryId,
-  type SafeString,
-  type ServiceDependency,
-  type ServiceKeyVar,
-  type UUID,
-} from "@/core";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
 import { type AuthOption } from "@/auth/authTypes";
@@ -49,6 +40,10 @@ import {
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
+import { Expression, OutputKey, ServiceKeyVar } from "@/types/runtimeTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { SafeString, UUID } from "@/types/stringTypes";
+import { ServiceDependency } from "@/types/serviceTypes";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */

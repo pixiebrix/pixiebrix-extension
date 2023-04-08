@@ -16,17 +16,13 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type RegistryId,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
 import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",

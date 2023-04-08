@@ -18,7 +18,7 @@
 import { makeBlueprint } from "@/extensionConsole/pages/blueprints/utils/exportBlueprint";
 import { extensionFactory } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
-import { type UnresolvedExtension } from "@/core";
+import { UnresolvedExtension } from "@/types/extensionTypes";
 
 describe("makeBlueprint", () => {
   it("smoke test", () => {

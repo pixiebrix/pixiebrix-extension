@@ -21,12 +21,6 @@ import axios, {
   type AxiosResponse,
   type Method,
 } from "axios";
-import {
-  type IService,
-  type MessageContext,
-  type SanitizedServiceConfiguration,
-  type ServiceConfig,
-} from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
@@ -61,6 +55,12 @@ import {
 } from "@/errors/networkErrorHelpers";
 import safeJsonStringify from "json-stringify-safe";
 import { deserializeError, serializeError } from "serialize-error";
+import {
+  IService,
+  SanitizedServiceConfiguration,
+  ServiceConfig,
+} from "@/types/serviceTypes";
+import { MessageContext } from "@/types/loggerTypes";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)

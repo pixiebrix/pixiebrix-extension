@@ -16,10 +16,11 @@
  */
 
 import React from "react";
-import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
+import { UUID } from "@/types/stringTypes";
+import { BlockArgContext, BlockOptions } from "@/types/runtimeTypes";
 
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;

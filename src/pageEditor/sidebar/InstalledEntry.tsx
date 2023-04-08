@@ -18,7 +18,6 @@
 import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
-import { type IExtension, type UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -32,7 +31,7 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import {
   disableOverlay,
@@ -47,6 +46,8 @@ import {
   selectActiveElement,
   selectActiveRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
+import { UUID } from "@/types/stringTypes";
+import { IExtension } from "@/types/extensionTypes";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point

@@ -63,7 +63,8 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/blocks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type OutputKey, type UUID } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";

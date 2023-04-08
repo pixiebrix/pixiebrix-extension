@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type ReaderOutput, type ReaderRoot, type Schema } from "@/core";
+import { Reader } from "@/types/blocks/readerTypes";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
+import { Schema } from "@/types/schemaTypes";
+import { JsonObject } from "type-fest";
+import { ReaderRoot } from "@/types/runtimeTypes";
 
 /**
  * Read HTML from the document or the current element.
@@ -66,7 +68,7 @@ export class HtmlReader extends Reader {
     return true;
   }
 
-  async read(root: ReaderRoot): Promise<ReaderOutput> {
+  async read(root: ReaderRoot): Promise<JsonObject> {
     const element = isHTMLElement(root) ? root : document.documentElement;
 
     return {

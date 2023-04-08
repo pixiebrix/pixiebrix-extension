@@ -36,7 +36,6 @@ import {
   Row,
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
-import { type IBlock, type IBrick, type RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
@@ -51,6 +50,9 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
+import { RegistryId } from "@/types/registryTypes";
+import { IBlock } from "@/types/blockTypes";
+import { IBrick } from "@/types/brickInstanceTypes";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;

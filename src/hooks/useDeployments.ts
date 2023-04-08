@@ -27,7 +27,7 @@ import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "redux";
-import { type IExtension } from "@/core";
+import { type IExtension } from "@/types/extensionTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";

@@ -33,12 +33,13 @@ import { services } from "@/background/messenger/api";
 import ZapierModal from "@/extensionConsole/pages/services/ZapierModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
-import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import { reportEvent } from "@/telemetry/events";
+import { IService, RawServiceConfiguration } from "@/types/serviceTypes";
+import { UUID } from "@/types/stringTypes";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 

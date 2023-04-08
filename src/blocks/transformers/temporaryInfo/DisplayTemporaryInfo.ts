@@ -15,14 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer, type UnknownObject } from "@/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import {
@@ -52,7 +45,11 @@ import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelContr
 import { once } from "lodash";
 import { AbortPanelAction, ClosePanelAction } from "@/blocks/errors";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type Except } from "type-fest";
+import { type Except, JsonObject } from "type-fest";
+import { UUID } from "@/types/stringTypes";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { Schema } from "@/types/schemaTypes";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
@@ -139,7 +136,7 @@ export async function displayTemporaryInfo({
   popoverOptions,
   onOutsideClick,
   onCloseClick,
-}: TemporaryDisplayInputs): Promise<UnknownObject> {
+}: TemporaryDisplayInputs): Promise<JsonObject> {
   const nonce = uuidv4();
   const entry = await getPanelEntry();
   let onReady: () => void;
@@ -348,7 +345,7 @@ class DisplayTemporaryInfo extends Transformer {
       runRendererPipeline,
       abortSignal,
     }: BlockOptions
-  ): Promise<UnknownObject | null> {
+  ): Promise<JsonObject | null> {
     expectContext("contentScript");
 
     const target = isRootAware ? root : document;

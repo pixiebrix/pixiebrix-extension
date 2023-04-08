@@ -21,7 +21,7 @@ import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Select, { components, type OptionProps } from "react-select";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import {
   useGetPackageQuery,
   useListPackageVersionsQuery,

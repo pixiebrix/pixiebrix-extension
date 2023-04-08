@@ -18,22 +18,22 @@
 import axios, { type AxiosResponse } from "axios";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
-  type IService,
-  type AuthData,
-  type RawServiceConfiguration,
-  type UUID,
-  type OAuth2Context,
-} from "@/core";
-import {
   computeChallenge,
   generateVerifier,
   getRandomString,
 } from "@/vendors/pkce";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { type UnknownObject } from "@/types";
 import { BusinessError } from "@/errors/businessErrors";
 import { memoizeUntilSettled } from "@/utils";
+import { UUID } from "@/types/stringTypes";
+import {
+  AuthData,
+  IService,
+  OAuth2Context,
+  RawServiceConfiguration,
+} from "@/types/serviceTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type Schema } from "@/core";
+import { Reader } from "@/types/blocks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
 import axios from "axios";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {

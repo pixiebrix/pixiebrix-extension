@@ -29,7 +29,7 @@ import { ensureAuth } from "@/contrib/google/auth";
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";

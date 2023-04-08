@@ -16,7 +16,7 @@
  */
 
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useCallback } from "react";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";

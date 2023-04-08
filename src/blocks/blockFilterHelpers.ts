@@ -23,7 +23,7 @@ import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 
 const PANEL_TYPES = ["actionPanel", "panel"];

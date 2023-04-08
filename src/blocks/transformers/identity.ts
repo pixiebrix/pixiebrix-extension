@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export class IdentityTransformer extends Transformer {
   override async isPure(): Promise<boolean> {

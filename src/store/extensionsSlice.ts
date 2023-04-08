@@ -20,20 +20,6 @@ import { type CloudExtension, type Deployment } from "@/types/contract";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
-import {
-  type DeploymentContext,
-  type IExtension,
-  type OutputKey,
-  type PersistedExtension,
-  type RecipeMetadata,
-  type RegistryId,
-  type UserOptions,
-  type UUID,
-} from "@/core";
-import {
-  type ExtensionPointConfig,
-  type RecipeDefinition,
-} from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, partition, pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
@@ -46,6 +32,11 @@ import {
 import { type Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
+import { IExtension, PersistedExtension } from "@/types/extensionTypes";
+import { UUID } from "@/types/stringTypes";
+import { RecipeDefinition, ExtensionPointConfig } from "@/types/recipeTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { OutputKey, UserOptions } from "@/types/runtimeTypes";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
@@ -53,7 +44,7 @@ const initialExtensionsState: ExtensionOptionsState = {
 
 function selectDeploymentContext(
   deployment: Deployment
-): DeploymentContext | undefined {
+): IExtension["_deployment"] | undefined {
   if (deployment) {
     return {
       id: deployment.id,
@@ -96,7 +87,10 @@ const extensionsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<{ extensionId: UUID; recipeMetadata: RecipeMetadata }>
+      }: PayloadAction<{
+        extensionId: UUID;
+        recipeMetadata: IExtension["_recipe"];
+      }>
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
@@ -310,7 +304,7 @@ const extensionsSlice = createSlice({
 
     updateRecipeMetadataForExtensions(
       state,
-      action: PayloadAction<RecipeMetadata>
+      action: PayloadAction<IExtension["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeExtensions = state.extensions.filter(

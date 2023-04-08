@@ -49,7 +49,7 @@ import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import ToggleQuickbarEffect from "@/blocks/effects/ToggleQuickbarEffect";
 import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
-import { type IBlock } from "@/core";
+import { type IBlock } from "@/types/blockTypes";
 
 function getAllEffects(): IBlock[] {
   return [

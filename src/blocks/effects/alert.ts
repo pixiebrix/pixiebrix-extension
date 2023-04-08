@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
+import { Schema } from "@/types/schemaTypes";
+import { BlockArg } from "@/types/runtimeTypes";
+import { Effect } from "@/types/blocks/effectTypes";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
 

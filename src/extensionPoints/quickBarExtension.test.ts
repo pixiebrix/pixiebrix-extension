@@ -16,10 +16,10 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type Metadata, type ResolvedExtension, RunReason } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
 import { uuidSequence } from "@/testUtils/factories";
 import { type BlockPipeline } from "@/blocks/types";
 import {
@@ -39,6 +39,8 @@ import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
+import { ResolvedExtension } from "@/types/extensionTypes";
+import { RunReason } from "@/types/runtimeTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

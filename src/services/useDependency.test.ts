@@ -21,7 +21,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act } from "@testing-library/react-hooks";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
-import { type Service } from "@/types";
+import { type Service } from "@/types/serviceTypes";
 import { requestPermissions } from "@/utils/permissions";
 
 // Not currently test:

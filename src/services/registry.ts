@@ -18,8 +18,8 @@
 import { readReduxStorage, type ReduxStorageKey } from "@/chrome";
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
-import { type RawServiceConfiguration, type RegistryId } from "@/core";
-import { type Service } from "@/types";
+import { RawServiceConfiguration, type Service } from "@/types/serviceTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 const storageKey = "persist:servicesOptions" as ReduxStorageKey;
 

@@ -16,15 +16,6 @@
  */
 
 import React from "react";
-import {
-  type IBlock,
-  type IconConfig,
-  type IExtensionPoint,
-  type IReader,
-  type ResolvedExtension,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
@@ -64,6 +55,13 @@ import {
   QuickbarQueryReader,
   quickbarQueryReaderShim,
 } from "@/extensionPoints/quickbarQueryReader";
+import { IconConfig } from "@/types/iconTypes";
+import { IReader } from "@/types/blocks/readerTypes";
+import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { UUID } from "@/types/stringTypes";
+import { Schema } from "@/types/schemaTypes";
+import { ResolvedExtension } from "@/types/extensionTypes";
+import { IBlock } from "@/types/blockTypes";
 
 export type QuickBarProviderConfig = {
   /**

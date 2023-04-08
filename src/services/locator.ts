@@ -16,16 +16,6 @@
  */
 
 import { type SanitizedAuth } from "@/types/contract";
-import {
-  type SanitizedServiceConfiguration,
-  type IService,
-  type RawServiceConfiguration,
-  type ServiceConfig,
-  type SanitizedConfig,
-  type KeyedConfig,
-  type RegistryId,
-  type UUID,
-} from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
@@ -39,7 +29,17 @@ import {
   NotConfiguredError,
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/baseRegistry";
-import { type Service } from "@/types";
+import {
+  IService,
+  KeyedConfig,
+  RawServiceConfiguration,
+  SanitizedConfig,
+  SanitizedServiceConfiguration,
+  type Service,
+  ServiceConfig,
+} from "@/types/serviceTypes";
+import { UUID } from "@/types/stringTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",

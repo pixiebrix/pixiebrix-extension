@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArg, type SafeHTML } from "@/core";
 import sanitize from "@/utils/sanitize";
+import { BlockArg } from "@/types/runtimeTypes";
+import { SafeHTML } from "@/types/stringTypes";
 
 export class HtmlRenderer extends Renderer {
   constructor() {

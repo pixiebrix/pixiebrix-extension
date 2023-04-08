@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TemplateEngine } from "@/core";
+import { type TemplateEngine } from "@/types/runtimeTypes";
 import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types";
 import { type JsonObject } from "type-fest";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
 } from "@/sandbox/messenger/executor";
+import { UnknownObject } from "@/types/objectTypes";
 
 export type AsyncTemplateRenderer = (
   template: string,

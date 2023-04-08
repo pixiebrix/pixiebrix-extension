@@ -21,11 +21,11 @@ import {
   type MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
-import { type Metadata, type ResolvedExtension, RunReason } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { uuidSequence } from "@/testUtils/factories";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/blocks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
@@ -35,6 +35,8 @@ import {
 } from "@/extensionPoints/extensionPointTestUtils";
 import { type BlockPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
+import { ResolvedExtension } from "@/types/extensionTypes";
+import { RunReason } from "@/types/runtimeTypes";
 
 jest.mock("@/runtime/reducePipeline", () => ({
   reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),

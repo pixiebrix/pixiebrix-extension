@@ -24,7 +24,7 @@ import {
 } from "webext-dynamic-content-scripts/utils";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
-import type { Target } from "@/types";
+import type { Target } from "@/types/messengerTypes";
 import {
   getTargetState,
   ENSURE_CONTENT_SCRIPT_READY,

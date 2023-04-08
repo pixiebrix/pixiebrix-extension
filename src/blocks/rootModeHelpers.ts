@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ReaderRoot, type RegistryId } from "@/core";
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/helpers";
+import { ReaderRoot } from "@/types/runtimeTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 /**
  * Special prop used to upgrade DOM bricks to be root-aware

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Expression, type UserOptions } from "@/core";
 import { isEmpty } from "lodash";
 import { isVarExpression } from "@/runtime/mapArgs";
+import { Expression, UserOptions } from "@/types/runtimeTypes";
 
 export function getOptionsArgForFieldValue(
   fieldValue: string | Expression,

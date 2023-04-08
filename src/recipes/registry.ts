@@ -16,19 +16,12 @@
  */
 
 import BaseRegistry from "@/baseRegistry";
-import {
-  type RegistryId,
-  type Schema,
-  type SchemaProperties,
-  type UiSchema,
-} from "@/core";
-import {
-  type OptionsDefinition,
-  type RecipeDefinition,
-} from "@/types/definitions";
 import { propertiesToSchema } from "@/validators/generic";
 import produce from "immer";
 import { sortBy } from "lodash";
+import { Schema, SchemaProperties, UiSchema } from "@/types/schemaTypes";
+import { OptionsDefinition, RecipeDefinition } from "@/types/recipeTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 type UnnormalizedOptionsDefinition = {
   schema: Schema | SchemaProperties;

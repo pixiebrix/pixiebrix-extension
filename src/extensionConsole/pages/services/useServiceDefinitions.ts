@@ -17,7 +17,6 @@
 
 import { useSelector } from "react-redux";
 import { type RootState } from "@/store/optionsStore";
-import { type IService, type RawServiceConfiguration, type UUID } from "@/core";
 import { useParams } from "react-router";
 import { useMemo } from "react";
 import { sortBy } from "lodash";
@@ -25,6 +24,7 @@ import registry from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
+import { IService, RawServiceConfiguration } from "@/types/serviceTypes";
 
 interface ServiceDefinitions {
   serviceDefinitions: IService[];

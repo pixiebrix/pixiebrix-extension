@@ -15,14 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/definitions";
-import {
-  type IExtension,
-  type RegistryId,
-  type ResolvedExtension,
-  type UnresolvedExtension,
-  type UUID,
-} from "@/core";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
@@ -33,6 +26,13 @@ import {
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import {
+  IExtension,
+  ResolvedExtension,
+  UnresolvedExtension,
+} from "@/types/extensionTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { UUID } from "@/types/stringTypes";
 
 /**
  * Returns true if installable is an UnavailableRecipe

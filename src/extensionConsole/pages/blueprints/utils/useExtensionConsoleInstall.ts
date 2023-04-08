@@ -16,7 +16,7 @@
  */
 
 import { reportEvent } from "@/telemetry/events";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import notify from "@/utils/notify";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";

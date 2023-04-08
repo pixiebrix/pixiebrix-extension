@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MessageContext, type RegistryId, type UUID } from "@/core";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { MessageContext } from "@/types/loggerTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { UUID } from "@/types/stringTypes";
 
 type LogsContext = {
   title: string;

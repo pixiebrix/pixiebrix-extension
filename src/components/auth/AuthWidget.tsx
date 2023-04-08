@@ -22,11 +22,6 @@ import { useField } from "formik";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import registry from "@/services/registry";
-import {
-  type RawServiceConfiguration,
-  type RegistryId,
-  type UUID,
-} from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
@@ -39,6 +34,9 @@ import createMenuListWithAddButton from "@/components/form/widgets/createMenuLis
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import { RegistryId } from "@/types/registryTypes";
+import { UUID } from "@/types/stringTypes";
+import { RawServiceConfiguration } from "@/types/serviceTypes";
 
 const { updateServiceConfig } = servicesSlice.actions;
 

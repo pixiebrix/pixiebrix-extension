@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/blocks/transformers/url";
 import { LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT, makeURL } from "@/utils";

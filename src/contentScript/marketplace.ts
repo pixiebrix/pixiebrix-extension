@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { loadOptions } from "@/store/extensionsStorage";
 import { compact, isEmpty, startsWith } from "lodash";
 import { validateRegistryId } from "@/types/helpers";

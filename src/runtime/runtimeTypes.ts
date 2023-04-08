@@ -16,13 +16,10 @@
  */
 
 import { type BlockConfig } from "@/blocks/types";
-import {
-  type BlockArg,
-  type IBlock,
-  type OutputKey,
-  type RegistryId,
-  type UUID,
-} from "@/core";
+import { RegistryId } from "@/types/registryTypes";
+import { IBlock } from "@/types/blockTypes";
+import { UUID } from "@/types/stringTypes";
+import { BlockArg, OutputKey } from "@/types/runtimeTypes";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**

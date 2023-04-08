@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type ReaderOutput, type Schema } from "@/core";
+import { Reader } from "@/types/blocks/readerTypes";
 import * as session from "@/contentScript/context";
 import { getExtensionAuth } from "@/auth/token";
+import { JsonObject } from "type-fest";
+import { Schema } from "@/types/schemaTypes";
 
 class SessionReader extends Reader {
   defaultOutputKey = "session";
@@ -31,7 +32,7 @@ class SessionReader extends Reader {
     );
   }
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     return {
       sessionId: session.sessionId,
       navigationId: session.navigationId,

@@ -33,7 +33,7 @@ import {
   typedBlockFactory,
 } from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalExtensionPointMetaFactory,
   lookupExtensionPoint,
@@ -42,7 +42,6 @@ import {
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { type InnerDefinitionRef, type UnresolvedExtension } from "@/core";
 import { type MenuDefinition } from "@/extensionPoints/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
@@ -50,17 +49,18 @@ import {
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import {
-  type EditablePackage,
-  type OptionsDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
-import {
   type ExtensionPointConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { EditablePackage, InnerDefinitionRef } from "@/types/registryTypes";
+import {
+  OptionsDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { UnresolvedExtension } from "@/types/extensionTypes";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/telemetry/events");
@@ -571,7 +571,7 @@ describe("isRecipeEditable", () => {
         id: null,
         name: recipe.metadata.id,
       },
-    ];
+    ] as EditablePackage[];
 
     expect(isRecipeEditable(editablePackages, recipe)).toBe(true);
   });
@@ -583,7 +583,7 @@ describe("isRecipeEditable", () => {
         id: null,
         name: validateRegistryId("test/recipe"),
       },
-    ];
+    ] as EditablePackage[];
 
     expect(isRecipeEditable(editablePackages, recipe)).toBe(false);
   });
@@ -594,7 +594,7 @@ describe("isRecipeEditable", () => {
         id: null,
         name: validateRegistryId("test/recipe"),
       },
-    ];
+    ] as EditablePackage[];
 
     expect(isRecipeEditable(editablePackages, null)).toBe(false);
   });

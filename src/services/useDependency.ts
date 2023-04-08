@@ -18,17 +18,17 @@
 import { useAsyncState } from "@/hooks/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
-import {
-  type RegistryId,
-  type SanitizedServiceConfiguration,
-  type ServiceDependency,
-} from "@/core";
 import { castArray, compact, head } from "lodash";
 import serviceRegistry from "@/services/registry";
-import { type Service } from "@/types";
+import {
+  SanitizedServiceConfiguration,
+  type Service,
+  ServiceDependency,
+} from "@/types/serviceTypes";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions, services } from "@/background/messenger/api";
 import notify from "@/utils/notify";
+import { RegistryId } from "@/types/registryTypes";
 
 type Listener = () => void;
 

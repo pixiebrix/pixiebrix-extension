@@ -16,11 +16,12 @@
  */
 
 import React from "react";
-import { Renderer } from "@/types";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArg, type BlockOptions, type SafeHTML } from "@/core";
 import { sortBy, isPlainObject } from "lodash";
 import { isValidUrl } from "@/utils";
+import { SafeHTML } from "@/types/stringTypes";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
 
 interface Item {
   key: string;

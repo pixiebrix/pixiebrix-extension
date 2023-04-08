@@ -15,17 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
 import { checkAvailable } from "@/blocks/available";
-import {
-  type Metadata,
-  type IReader,
-  type Schema,
-  type ReaderOutput,
-  type ReaderRoot,
-  type ApiVersion,
-  type SemVerString,
-} from "@/core";
 import { type Availability } from "@/blocks/types";
 import { Validator } from "@cfworker/json-schema";
 import { dereference } from "@/validators/generic";
@@ -33,6 +23,11 @@ import readerSchema from "@schemas/reader.json";
 import { type Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
+import { ApiVersion, ReaderRoot } from "@/types/runtimeTypes";
+import { Schema } from "@/types/schemaTypes";
+import { JsonObject } from "type-fest";
+import { IReader, Reader } from "@/types/blocks/readerTypes";
+import { SemVerString } from "@/types/registryTypes";
 
 export interface ReaderTypeConfig {
   type: string;
@@ -73,7 +68,7 @@ function validateReaderDefinition(
 export type Read<TConfig = unknown> = (
   config: TConfig,
   root: ReaderRoot
-) => Promise<ReaderOutput>;
+) => Promise<JsonObject>;
 
 const _readerFactories = new Map<string, Read>();
 
@@ -116,7 +111,7 @@ export function readerFactory(component: unknown): IReader {
       return true;
     }
 
-    async read(root: ReaderRoot): Promise<ReaderOutput> {
+    async read(root: ReaderRoot): Promise<JsonObject> {
       const doRead = _readerFactories.get(reader.type);
       if (doRead) {
         return doRead(reader, root);

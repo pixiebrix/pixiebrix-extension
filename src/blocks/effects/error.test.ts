@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 import { ErrorEffect } from "@/blocks/effects/error";
 
 const brick = new ErrorEffect();

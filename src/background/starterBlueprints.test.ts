@@ -21,8 +21,8 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
-import { type PersistedExtension, type RecipeMetadata } from "@/core";
 import { refreshRegistries } from "./refreshRegistries";
+import { IExtension, PersistedExtension } from "@/types/extensionTypes";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -135,7 +135,7 @@ describe("installStarterBlueprints", () => {
     const recipe = recipeFactory();
 
     const extension = extensionFactory({
-      _recipe: { id: recipe.metadata.id } as RecipeMetadata,
+      _recipe: { id: recipe.metadata.id } as IExtension["_recipe"],
     }) as PersistedExtension;
     await saveOptions({
       extensions: [extension],

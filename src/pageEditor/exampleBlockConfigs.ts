@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
-import { type RegistryId, type Schema } from "@/core";
+import { type UnknownObject } from "@/types/objectTypes";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/blocks/renderers/customForm";
@@ -29,6 +28,8 @@ import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import TourStep from "@/blocks/transformers/tourStep/tourStep";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
+import { RegistryId } from "@/types/registryTypes";
+import { Schema } from "@/types/schemaTypes";
 
 /**
  * Get a default block config for a block

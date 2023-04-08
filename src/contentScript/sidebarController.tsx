@@ -18,13 +18,6 @@
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import {
-  type ExtensionRef,
-  type RegistryId,
-  type RunArgs,
-  RunReason,
-  type UUID,
-} from "@/core";
 import type {
   FormEntry,
   PanelEntry,
@@ -44,6 +37,10 @@ import {
   removeSidebarFrame,
 } from "./sidebarDomControllerLite";
 import { type Except } from "type-fest";
+import { RunArgs, RunReason } from "@/types/runtimeTypes";
+import { UUID } from "@/types/stringTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { ExtensionRef } from "@/types/extensionTypes";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 

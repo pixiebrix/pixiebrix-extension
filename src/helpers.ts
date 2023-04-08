@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type SchemaProperties } from "@/core";
 import {
   getErrorMessage,
   JQUERY_INVALID_SELECTOR_ERROR,
 } from "@/errors/errorHelpers";
 import { InvalidSelectorError } from "@/errors/businessErrors";
+import { Schema, SchemaProperties } from "@/types/schemaTypes";
 
 /**
  * Return the names of top-level required properties that are missing

@@ -19,7 +19,7 @@ import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 import {
   cancelAllTours,
   markTourStart,

@@ -33,7 +33,7 @@ import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { type MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";

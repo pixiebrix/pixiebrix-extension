@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type IReader, type ReaderOutput } from "@/core";
 import { mapValues } from "lodash";
+import { IReader, Reader } from "@/types/blocks/readerTypes";
+import { JsonObject } from "type-fest";
 
 class CompositeReader extends Reader {
   private readonly _readers: Record<string, IReader>;
@@ -58,7 +58,7 @@ class CompositeReader extends Reader {
     return awareness.some(Boolean);
   }
 
-  async read(root: HTMLElement | Document): Promise<ReaderOutput> {
+  async read(root: HTMLElement | Document): Promise<JsonObject> {
     const readOne = async (key: string, reader: IReader) => [
       key,
       await reader.read(root),

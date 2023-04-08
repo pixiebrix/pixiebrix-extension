@@ -15,35 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Service } from "@/types";
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
-import {
-  type OAuth2Context,
-  type AuthData,
-  type Schema,
-  type UiSchema,
-  type ServiceConfig,
-  type TokenContext,
-  type SanitizedConfig,
-  type SemVerString,
-} from "@/core";
 import { testMatchPatterns } from "@/blocks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
-import {
-  type ServiceDefinition,
-  type KeyAuthenticationDefinition,
-  type OAuth2AuthenticationDefinition,
-  type TokenAuthenticationDefinition,
-  type OAuth2AuthorizationGrantDefinition,
-  type BasicAuthenticationDefinition,
-} from "@/types/definitions";
 import { type AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils";
 import { missingProperties } from "@/helpers";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
+import { Schema, UiSchema } from "@/types/schemaTypes";
+import {
+  AuthData,
+  BasicAuthenticationDefinition,
+  KeyAuthenticationDefinition,
+  OAuth2AuthenticationDefinition,
+  OAuth2AuthorizationGrantDefinition,
+  OAuth2Context,
+  SanitizedConfig,
+  Service,
+  ServiceConfig,
+  ServiceDefinition,
+  TokenAuthenticationDefinition,
+  TokenContext,
+} from "@/types/serviceTypes";
+import { SemVerString } from "@/types/registryTypes";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has

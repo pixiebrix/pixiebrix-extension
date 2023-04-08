@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Logger,
-  type Schema,
-} from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
 import { boolean } from "@/utils";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { type RequireExactlyOne } from "type-fest";
@@ -35,6 +29,9 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 import { isEmpty } from "lodash";
+import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { Schema } from "@/types/schemaTypes";
+import { Logger } from "@/types/loggerTypes";
 
 type SetValueData = RequireExactlyOne<
   {

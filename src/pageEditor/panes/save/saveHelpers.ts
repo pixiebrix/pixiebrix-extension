@@ -16,22 +16,11 @@
  */
 
 import {
-  type RegistryId,
+  EditablePackage,
+  InnerDefinitionRef,
   type Metadata,
-  type IExtension,
-  type SafeString,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type UnresolvedExtension,
-} from "@/core";
-import {
-  type EditablePackage,
-  type ExtensionPointConfig,
-  type OptionsDefinition,
-  type RecipeDefinition,
-  type RecipeMetadataFormState,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
+  RegistryId,
+} from "@/types/registryTypes";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
@@ -44,6 +33,16 @@ import {
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
 import { type Except } from "type-fest";
+import {
+  ExtensionPointConfig,
+  InnerDefinitions,
+  OptionsDefinition,
+  RecipeDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { IExtension, UnresolvedExtension } from "@/types/extensionTypes";
+import { SafeString } from "@/types/stringTypes";
+import { RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -63,7 +62,7 @@ export function generateScopeBrickId(
 export function isRecipeEditable(
   editablePackages: EditablePackage[],
   recipe: RecipeDefinition
-) {
+): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
   const recipeId = recipe?.metadata?.id;

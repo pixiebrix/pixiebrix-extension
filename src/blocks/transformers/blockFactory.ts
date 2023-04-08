@@ -15,26 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block } from "@/types";
+import { Block, IBlock } from "@/types/blockTypes";
 import { readerFactory } from "@/blocks/readers/factory";
 import {
-  Validator,
   type Schema as ValidatorSchema,
+  Validator,
 } from "@cfworker/json-schema";
 import { castArray } from "lodash";
 import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import {
-  type ApiVersion,
-  type BlockArg,
-  type BlockOptions,
-  type Config,
-  type IBlock,
-  type Metadata,
-  type RegistryId,
-  type Schema,
-  type SemVerString,
-  type UiSchema,
-} from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
@@ -43,8 +31,12 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
+import { ApiVersion, BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { Schema, UiSchema } from "@/types/schemaTypes";
+import { Metadata, RegistryId, SemVerString } from "@/types/registryTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
-type ComponentConfig = {
+type BlockDefinition = {
   apiVersion?: ApiVersion;
   kind: "component";
   metadata: Metadata;
@@ -67,7 +59,7 @@ type ComponentConfig = {
 
 function validateBlockDefinition(
   component: unknown
-): asserts component is ComponentConfig {
+): asserts component is BlockDefinition {
   const validator = new Validator(
     dereference(blockSchema as Schema) as ValidatorSchema
   );
@@ -88,7 +80,7 @@ function validateBlockDefinition(
  * A non-native (i.e., non-JS) Block. Typically defined in YAML/JSON.
  */
 class ExternalBlock extends Block {
-  public readonly component: ComponentConfig;
+  public readonly component: BlockDefinition;
 
   readonly apiVersion: ApiVersion;
 
@@ -98,7 +90,7 @@ class ExternalBlock extends Block {
 
   readonly version: SemVerString;
 
-  constructor(component: ComponentConfig) {
+  constructor(component: BlockDefinition) {
     const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
     this.apiVersion = component.apiVersion ?? "v1";
@@ -172,7 +164,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: Config): IBlock {
+export function fromJS(component: UnknownObject): IBlock {
   if (component.kind == null) {
     throw new InvalidDefinitionError(
       "Component definition is missing a 'kind' property",

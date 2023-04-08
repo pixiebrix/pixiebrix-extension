@@ -18,7 +18,7 @@
 import { object } from "yup";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, isEmpty, mapValues } from "lodash";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { buildYup } from "schema-to-yup";
 import { useAsyncState } from "@/hooks/common";
 

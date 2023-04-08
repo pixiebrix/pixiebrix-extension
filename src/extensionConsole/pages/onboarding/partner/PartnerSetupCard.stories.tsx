@@ -24,7 +24,7 @@ import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
 import servicesSlice from "@/store/servicesSlice";
 import { uuidv4 } from "@/types/helpers";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { type AuthState } from "@/auth/authTypes";
 import { appApi } from "@/services/api";

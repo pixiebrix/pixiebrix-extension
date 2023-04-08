@@ -24,7 +24,7 @@ import {
 import { getApiClient } from "@/services/apiClient";
 import { recipeDefinitionFactory } from "@/testUtils/factories";
 import { produce } from "immer";
-import { type SemVerString } from "@/core";
+import { type SemVerString } from "@/types/registryTypes";
 
 jest.mock("@/services/apiClient");
 const getApiClientMock = getApiClient as jest.Mock;

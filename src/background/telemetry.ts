@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, once, throttle, uniq } from "lodash";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
-import { type Data, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { loadOptions } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
@@ -28,6 +28,7 @@ import {
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, openDB } from "idb/with-async-ittr";
+import { UnknownObject } from "@/types/objectTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -184,7 +185,7 @@ export async function sendDeploymentAlert({
   data,
 }: {
   deploymentId: string;
-  data: Data;
+  data: UnknownObject;
 }) {
   const client = await getLinkedApiClient();
   await client.post(`/api/deployments/${deploymentId}/alerts/`, data);

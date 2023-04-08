@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type BlockOptions, type Schema } from "@/core";
 import { render } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
@@ -33,6 +32,8 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 
 import { dataStore } from "@/background/messenger/api";
+import { Schema } from "@/types/schemaTypes";
+import { BlockOptions } from "@/types/runtimeTypes";
 
 const dataStoreGetMock = dataStore.get as jest.MockedFunction<
   typeof dataStore.get

@@ -15,16 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type BlockArg,
-  type BlockArgContext,
-  type Logger,
-  type ReaderRoot,
-  type RenderedArgs,
-  type ServiceContext,
-  type UserOptions,
-  type UUID,
-} from "@/core";
+import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
 import {
   clearExtensionDebugLogs,
@@ -53,7 +44,6 @@ import {
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type ResolvedBlockConfig } from "@/runtime/runtimeTypes";
-import { type UnknownObject } from "@/types";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
@@ -65,6 +55,16 @@ import {
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/sidebar/types";
 import { getLoggingConfig } from "@/telemetry/logging";
+import { UUID } from "@/types/stringTypes";
+import {
+  BlockArg,
+  BlockArgContext,
+  ReaderRoot,
+  RenderedArgs,
+  ServiceContext,
+  UserOptions,
+} from "@/types/runtimeTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 /**
  * CommonOptions for running pipelines and blocks

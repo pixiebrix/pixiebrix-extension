@@ -31,7 +31,7 @@ import {
 import { type Analysis } from "./analysisTypes";
 import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";
 import { serializeError } from "serialize-error";
 

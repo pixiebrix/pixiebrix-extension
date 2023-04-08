@@ -41,7 +41,7 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   PIXIEBRIX_SERVICE_ID,
 } from "@/services/constants";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 describe("makeUpdatedFilter", () => {

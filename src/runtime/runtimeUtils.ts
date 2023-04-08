@@ -22,15 +22,6 @@ import {
 } from "@/components/fields/schemaFields/schemaUtils";
 import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import {
-  type BlockArgContext,
-  type ElementReference,
-  type IBlock,
-  type IExtension,
-  type Logger,
-  type ReaderRoot,
-  type RenderedArgs,
-} from "@/core";
 import { isEmpty } from "lodash";
 import { type BlockConfig, type BlockWindow } from "@/blocks/types";
 import {
@@ -44,6 +35,15 @@ import { isInnerExtensionPoint } from "@/registry/internal";
 import { BusinessError } from "@/errors/businessErrors";
 import { validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
+import { IBlock } from "@/types/blockTypes";
+import { Logger } from "@/types/loggerTypes";
+import {
+  BlockArgContext,
+  ElementReference,
+  ReaderRoot,
+  RenderedArgs,
+} from "@/types/runtimeTypes";
+import { IExtension } from "@/types/extensionTypes";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block

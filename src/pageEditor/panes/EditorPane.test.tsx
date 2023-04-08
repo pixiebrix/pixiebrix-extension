@@ -53,11 +53,9 @@ import {
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
 import { type PipelineExpression } from "@/runtime/mapArgs";
-import { type OutputKey, type RegistryId } from "@/core";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
 import { type MarketplaceListing } from "@/types/contract";
-import { type EditablePackage } from "@/types/definitions";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
@@ -71,6 +69,8 @@ import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
+import { EditablePackage, RegistryId } from "@/types/registryTypes";
+import { OutputKey } from "@/types/runtimeTypes";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -171,7 +171,7 @@ beforeAll(async () => {
     packages.push({
       id: uuidSequence(i),
       name: registryId,
-    });
+    } as EditablePackage);
   }
 
   (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({

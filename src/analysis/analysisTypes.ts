@@ -16,10 +16,10 @@
  */
 
 import { type BlockPosition } from "@/blocks/types";
-import { type UUID } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
-import { type BaseAnnotation } from "@/types";
+import { BaseAnnotation } from "@/types/annotationTypes";
+import { UUID } from "@/types/stringTypes";
 
 export enum AnalysisAnnotationActionType {
   AddValueToArray,
@@ -33,6 +33,7 @@ export type AnalysisAnnotationAction = {
   extraCallback?: () => Promise<void>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type AnalysisAnnotation = BaseAnnotation & {
   /**
    * Position of the annotation within the extension configuration

@@ -37,10 +37,9 @@ import {
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik, type FormikErrors, type FormikValues } from "formik";
 import { type Middleware } from "redux";
-import { type Expression, type ExpressionType } from "@/core";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type BlockPipeline } from "@/blocks/types";
 import {
@@ -49,6 +48,7 @@ import {
   type RenderHookOptions,
   type RenderHookResult,
 } from "@testing-library/react-hooks";
+import { Expression, ExpressionType } from "@/types/runtimeTypes";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });

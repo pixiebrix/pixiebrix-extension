@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
-import { type SafeHTML } from "@/core";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 import sanitize from "@/utils/sanitize";
 import { BusinessError } from "@/errors/businessErrors";
 

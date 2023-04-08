@@ -15,15 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import {
-  type ApiVersion,
-  type BlockArg,
-  type BlockOptions,
-  type Expression,
-  type ReaderRoot,
-} from "@/core";
 import blockRegistry from "@/blocks/registry";
 import {
   echoBlock,
@@ -32,6 +24,15 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import { Reader } from "@/types/blocks/readerTypes";
+import {
+  ApiVersion,
+  BlockArg,
+  BlockOptions,
+  Expression,
+  ReaderRoot,
+} from "@/types/runtimeTypes";
+import { Block } from "@/types/blockTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

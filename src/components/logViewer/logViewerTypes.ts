@@ -16,7 +16,7 @@
  */
 
 import { type LogEntry } from "@/telemetry/logging";
-import { type MessageContext } from "@/core";
+import { type MessageContext } from "@/types/loggerTypes";
 
 export type LogState = {
   /**

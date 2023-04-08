@@ -19,13 +19,13 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { FieldArray, useField } from "formik";
 import { Button } from "react-bootstrap";
 import React, { useMemo } from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import {
   booleanPredicate,
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";

@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ResolvedExtensionPointConfig } from "@/types/definitions";
-import { type ServiceDependency } from "@/core";
+import { type ServiceDependency } from "@/types/serviceTypes";
 import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -29,6 +28,7 @@ import {
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { type CloudExtension } from "@/types/contract";
+import { ResolvedExtensionPointConfig } from "@/types/recipeTypes";
 
 function useEnsurePermissions(
   extension: CloudExtension,

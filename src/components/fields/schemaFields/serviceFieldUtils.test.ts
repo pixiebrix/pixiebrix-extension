@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type OutputKey, type UUID } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   blockConfigFactory,
