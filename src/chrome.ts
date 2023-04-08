@@ -174,8 +174,8 @@ type Command = "toggle-quick-bar";
 export async function openShortcutsTab({
   command = "toggle-quick-bar",
 }: { command?: Command } = {}): Promise<void> {
-  // eslint-disable-next-line security/detect-object-injection -- type-checked
   const description =
+    // eslint-disable-next-line security/detect-object-injection -- type-checked
     browser.runtime.getManifest().commands[command]?.description;
   await browser.tabs.create({
     url: `${SHORTCUTS_URL}#:~:text=${encodeURIComponent(description)}`,
