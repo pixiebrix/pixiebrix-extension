@@ -728,6 +728,9 @@ export type IExtensionPoint = Metadata & {
    */
   syncInstall: boolean;
 
+  /**
+   * Install the extension point on the page. Return true if the extension point was installed.
+   */
   install(): Promise<boolean>;
 
   /**

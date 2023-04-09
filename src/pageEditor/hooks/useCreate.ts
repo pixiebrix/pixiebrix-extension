@@ -115,16 +115,34 @@ export function checkPermissions(element: FormState): Promise<boolean> {
   });
 }
 
+type CreateOptions = {
+  /**
+   * True to save a copy of the extension to the user's account
+   */
+  pushToCloud: boolean;
+  /**
+   * Should the permissions be checked before saving?
+   */
+  checkPermissions: boolean;
+  /**
+   * Should the user be notified of the save?
+   */
+  notifySuccess: boolean;
+  /**
+   * Should mods be reactivated on all tabs?
+   */
+  reactivateEveryTab: boolean;
+};
+
 /**
  * @param element the page editor formik state
- * @param pushToCloud true to save a copy of the extension to the user's account
- * @param checkPermissions should the permissions be checked before saving? Defaults to true.
+
+ * @param checkPermissions
  * @returns errorMessage an error message, or null if no error error occurred
  */
 type CreateCallback = (config: {
   element: FormState;
-  pushToCloud: boolean;
-  checkPermissions?: boolean;
+  options: CreateOptions;
 }) => Promise<string | null>;
 
 function onStepError(error: unknown, step: string): string {
@@ -149,10 +167,9 @@ function useCreate(): CreateCallback {
   const saveElement = useCallback(
     async (
       element: FormState,
-      pushToCloud: boolean,
-      shouldCheckPermissions = true
+      options: CreateOptions
     ): Promise<string | null> => {
-      if (shouldCheckPermissions) {
+      if (options.checkPermissions) {
         void checkPermissions(element);
       }
 
@@ -208,11 +225,16 @@ function useCreate(): CreateCallback {
                 rawExtension,
                 extensionPointConfig.definition
               ),
-              pushToCloud,
+              pushToCloud: options.pushToCloud,
             })
           );
         } else {
-          dispatch(saveExtension({ extension: rawExtension, pushToCloud }));
+          dispatch(
+            saveExtension({
+              extension: rawExtension,
+              pushToCloud: options.pushToCloud,
+            })
+          );
         }
 
         dispatch(markSaved(element.uuid));
@@ -220,22 +242,27 @@ function useCreate(): CreateCallback {
         return onStepError(error, "saving extension");
       }
 
-      reactivateEveryTab();
+      if (options.reactivateEveryTab) {
+        reactivateEveryTab();
+      }
 
-      notify.success("Saved");
+      if (options.notifySuccess) {
+        notify.success("Saved mod");
+      }
+
       return null;
     },
     [dispatch, editablePackages, sessionId]
   );
 
   return useCallback(
-    async ({ element, pushToCloud, checkPermissions }) => {
+    async ({ element, options }) => {
       try {
-        return await saveElement(element, pushToCloud, checkPermissions);
+        return await saveElement(element, options);
       } catch (error) {
-        console.error("Error saving extension", { error });
+        console.error("Error saving mod", { error });
         notify.error({
-          message: "Save error",
+          message: "Error saving mod",
           error,
         });
         return "Save error";

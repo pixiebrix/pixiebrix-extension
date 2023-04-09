@@ -20,11 +20,11 @@ import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
-  getInstalled,
+  getActiveExtensionPoints,
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
-  removeDynamicExtension,
+  removeEditorExtension,
   removeInstalledExtension,
 } from "@/contentScript/lifecycle";
 import {
@@ -90,7 +90,7 @@ declare global {
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removeInstalledExtension;
-    REMOVE_DYNAMIC_EXTENSION: typeof removeDynamicExtension;
+    REMOVE_DYNAMIC_EXTENSION: typeof removeEditorExtension;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -116,7 +116,7 @@ declare global {
     RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
-    INSTALLED_EXTENSION_POINTS: typeof getInstalled;
+    INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     RUN_BRICK: typeof runBrick;
@@ -150,7 +150,7 @@ export default function registerMessenger(): void {
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removeInstalledExtension,
-    REMOVE_DYNAMIC_EXTENSION: removeDynamicExtension,
+    REMOVE_DYNAMIC_EXTENSION: removeEditorExtension,
     RESET_TAB: resetTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
@@ -176,7 +176,7 @@ export default function registerMessenger(): void {
     RUN_EXTENSION_POINT_READER: runExtensionPointReader,
     ENABLE_OVERLAY: enableOverlay,
     DISABLE_OVERLAY: disableOverlay,
-    INSTALLED_EXTENSION_POINTS: getInstalled,
+    INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
     CHECK_AVAILABLE: checkAvailable,
     HANDLE_NAVIGATE: handleNavigate,
 

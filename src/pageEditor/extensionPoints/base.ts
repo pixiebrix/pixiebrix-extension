@@ -200,8 +200,10 @@ export function makeInitialBaseState(
 }
 
 /**
- * Create metadata for a temporary extension point definition. When the extension point is saved, it will be moved
- * into the `definitions` section of the extension.
+ * Create metadata for a temporary extension point definition. When the extension point is saved, it will be assigned
+ * an id based on its hash, and included in the `definitions` section of the recipe/extension.
+ *
+ * @see makeInternalId
  */
 export function internalExtensionPointMetaFactory(): Metadata {
   return {

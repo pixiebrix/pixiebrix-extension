@@ -76,6 +76,7 @@ import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
+import { reactivateEveryTab } from "@/background/messenger/api";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -130,18 +131,29 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
           draft.recipe = selectRecipeMetadata(newRecipe, response);
         });
         dispatch(editorActions.addElement(recipeElement));
-        // Don't push to cloud since we're saving it with the recipe
+
         await createExtension({
           element: recipeElement,
-          pushToCloud: false,
-          checkPermissions: false,
+          options: {
+            // Don't push to cloud since we're saving it with the recipe
+            pushToCloud: false,
+            // Already did a permissions check above
+            checkPermissions: false,
+            // Will notify and reactivate for the whole recipe
+            notifySuccess: false,
+            reactivateEveryTab: false,
+          },
         });
+
         if (!keepLocalCopy) {
           await removeExtension({
             extensionId: activeElement.uuid,
             shouldShowConfirmation: false,
           });
         }
+
+        notify.success("Created mod");
+        reactivateEveryTab();
       }),
     [
       activeElement,

@@ -36,17 +36,28 @@ function useSaveExtension(): ExtensionSaver {
   async function save(element: FormState): Promise<void> {
     setIsSaving(true);
 
-    const error = await create({ element, pushToCloud: true });
-    if (error) {
-      notify.error(error);
-    } else {
-      reportEvent("PageEditorSave", {
-        sessionId,
-        extensionId: element.uuid,
+    try {
+      const error = await create({
+        element,
+        options: {
+          pushToCloud: true,
+          checkPermissions: true,
+          notifySuccess: true,
+          reactivateEveryTab: true,
+        },
       });
-    }
 
-    setIsSaving(false);
+      if (error) {
+        notify.error(error);
+      } else {
+        reportEvent("PageEditorSave", {
+          sessionId,
+          extensionId: element.uuid,
+        });
+      }
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return {

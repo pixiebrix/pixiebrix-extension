@@ -47,6 +47,7 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
 import { mergePermissions, requestPermissions } from "@/utils/permissions";
+import { reactivateEveryTab } from "@/background/messenger/api";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -136,6 +137,8 @@ function useSaveRecipe(): RecipeSaver {
         !deletedElementIds.has(element.uuid)
     );
 
+    // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
+    // long to confirm?
     // Check permissions as early as possible
     // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
     void ensurePermissions(dirtyRecipeElements).catch((error) => {
@@ -181,8 +184,17 @@ function useSaveRecipe(): RecipeSaver {
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
       dirtyRecipeElements.map(async (element) =>
-        // Permissions were already checked earlier in the save function here
-        create({ element, pushToCloud: false, checkPermissions: false })
+        create({
+          element,
+          options: {
+            pushToCloud: false,
+            // Permissions were already checked earlier in the save function here
+            checkPermissions: false,
+            // Notified and reactivated once in safeSave below
+            notifySuccess: false,
+            reactivateEveryTab: false,
+          },
+        })
       )
     );
 
@@ -218,6 +230,7 @@ function useSaveRecipe(): RecipeSaver {
       const success = await save(recipeId);
       if (success) {
         notify.success("Saved mod");
+        reactivateEveryTab();
       }
     } catch (error: unknown) {
       notify.error({

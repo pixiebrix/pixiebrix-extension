@@ -113,13 +113,20 @@ const useSavingWizard = () => {
    */
   const saveNonRecipeElement = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
-    const error = await create({ element, pushToCloud: true });
+    const error = await create({
+      element,
+      options: {
+        pushToCloud: true,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
     closeWizard(error);
   };
 
   /**
-   * Creates personal extension from the existing one
-   * It will not be a part of the Recipe
+   * Creates personal extension from a page editor element. It will not be a part of the Recipe
    */
   const saveElementAsPersonalExtension = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
@@ -135,7 +142,18 @@ const useSavingWizard = () => {
 
     dispatch(editorActions.addElement(personalElement));
     await reset({ extensionId: element.uuid, shouldShowConfirmation: false });
-    const error = await create({ element: personalElement, pushToCloud: true });
+
+    const error = await create({
+      element: personalElement,
+      options: {
+        pushToCloud: true,
+        // Should already have permissions because it already exists
+        checkPermissions: false,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
+
     if (!error) {
       dispatch(editorActions.removeElement(element.uuid));
       dispatch(optionsActions.removeExtension({ extensionId: element.uuid }));
@@ -191,9 +209,18 @@ const useSavingWizard = () => {
       return;
     }
 
-    // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
-    // because it will already be available via the blueprint
-    const createExtensionError = await create({ element, pushToCloud: false });
+    const createExtensionError = await create({
+      element,
+      options: {
+        // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
+        // because it will already be available via the blueprint
+        pushToCloud: false,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
+
     if (createExtensionError) {
       closeWizard(createExtensionError);
       return;
@@ -249,7 +276,16 @@ const useSavingWizard = () => {
       return;
     }
 
-    const error = await create({ element, pushToCloud: true });
+    const error = await create({
+      element,
+      options: {
+        pushToCloud: true,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
+
     if (error) {
       closeWizard(error);
       return;

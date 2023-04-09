@@ -21,7 +21,10 @@ import {
   type ReaderRoot,
   type UUID,
 } from "@/core";
-import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
+import {
+  clearEditorExtension,
+  runEditorExtension,
+} from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/vendors/Overlay";
 import { resolveDefinitions } from "@/registry/internal";
@@ -45,7 +48,7 @@ export async function clearDynamicElements({
 }): Promise<void> {
   expectContext("contentScript");
 
-  clearDynamic(uuid);
+  clearEditorExtension(uuid);
   if (uuid) {
     _temporaryExtensions.delete(uuid);
   } else {
@@ -125,14 +128,14 @@ export async function updateDynamicElement({
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
   // will automatically replace the old panel because the panels are keyed by extension id
   if (extensionPoint.kind !== "actionPanel") {
-    clearDynamic(extensionConfig.id, { clearTrace: false });
+    clearEditorExtension(extensionConfig.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveDefinitions(extensionConfig);
 
   extensionPoint.addExtension(resolved);
-  await runDynamic(extensionConfig.id, extensionPoint);
+  await runEditorExtension(extensionConfig.id, extensionPoint);
 
   if (extensionPoint.kind === "actionPanel") {
     await ensureSidebar();

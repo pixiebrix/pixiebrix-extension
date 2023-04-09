@@ -32,7 +32,7 @@ import {
 } from "@/core";
 import { type Availability, type ReaderConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 
 export type ExtensionPointType =
   | "panel"
@@ -129,6 +129,11 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 {
   public readonly id: RegistryId;
 
+  /**
+   * A unique nonce for this instance of the extension point to aide with debugging.
+   */
+  public readonly instanceNonce: UUID;
+
   public readonly name: string;
 
   public readonly icon: BlockIcon;
@@ -164,16 +169,19 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     this.name = metadata.name;
     this.icon = metadata.icon;
     this.description = metadata.description;
+    this.instanceNonce = uuidv4();
     this.logger = logger.childLogger({ extensionPointId: this.id });
   }
 
   /**
-   * Internal method to unregister extension's triggers/observers/etc. from the page.
+   * Internal helper method to unregister extension's triggers/observers/etc. from the page.
    *
-   * When this method is called, the extensions will still be in this.extensions. The caller is responsible for
+   * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
    * updating this.extensions after the call to removeExtensions
+   *
+   * @see syncExtensions
    */
-  protected abstract removeExtensions(extensionIds: UUID[]): void;
+  protected abstract unregisterExtensionEvents(extensionIds: UUID[]): void;
 
   syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
@@ -182,20 +190,24 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     const removed = this.extensions.filter(
       (currentExtension) => !updatedIds.has(currentExtension.id)
     );
-    this.removeExtensions(removed.map((x) => x.id));
+    this.unregisterExtensionEvents(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated extensions
     this.extensions.splice(0, this.extensions.length);
     this.extensions.push(...extensions);
 
-    console.debug("syncExtensions for extension point %s", this.id, {
-      before,
-      after: extensions.map((x) => x.id),
-      removed: removed.map((x) => x.id),
-    });
+    console.debug(
+      "ExtensionPoint:syncExtensions for extension point %s",
+      this.id,
+      {
+        before,
+        after: extensions.map((x) => x.id),
+        removed: removed.map((x) => x.id),
+      }
+    );
   }
 
-  removeExtension(extensionId: UUID) {
+  removeExtension(extensionId: UUID): void {
     this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
   }
 
