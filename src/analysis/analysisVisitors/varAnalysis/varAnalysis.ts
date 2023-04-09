@@ -48,7 +48,7 @@ import { type ListDocumentElement } from "@/components/documentBuilder/documentB
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { fromJS } from "@/extensionPoints/factory";
 import { Schema } from "@/types/schemaTypes";
-import { Expression } from "@/types/runtimeTypes";
+import { Expression, TemplateEngine } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";

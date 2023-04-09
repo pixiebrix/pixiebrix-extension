@@ -59,6 +59,7 @@ import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { UUID } from "@/types/stringTypes";
 import { UnresolvedExtension } from "@/types/extensionTypes";
 import { RegistryId } from "@/types/registryTypes";
+import { UserOptions } from "@/types/runtimeTypes";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -240,7 +241,8 @@ async function installDeployment(
         deployment,
         locateAllForService
       ),
-      optionsArgs: deployment.options_config,
+      // Assume backend properly validates the options
+      optionsArgs: deployment.options_config as UserOptions,
     })
   );
 

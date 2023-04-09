@@ -30,8 +30,9 @@ import { type MenuDefinition } from "@/extensionPoints/contextMenu";
 import ensureRecipePermissions from "@/recipes/ensureRecipePermissions";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { InnerDefinitions, type RecipeDefinition } from "@/types/recipeTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
+import { InnerDefinitions } from "@/types/registryTypes";
 
 jest.mock("@/recipes/ensureRecipePermissions", () => ({
   __esModule: true,

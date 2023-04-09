@@ -17,6 +17,7 @@ import {
 } from "@/types/runtimeTypes";
 import { Block } from "@/types/blockTypes";
 import { UnknownObject } from "@/types/objectTypes";
+import { Schema } from "@/types/schemaTypes";
 
 const logger = new ConsoleLogger();
 

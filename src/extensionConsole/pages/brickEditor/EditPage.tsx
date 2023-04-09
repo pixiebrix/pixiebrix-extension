@@ -38,15 +38,15 @@ import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidge
 import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
 import { useIsMounted } from "@/hooks/common";
-import { UnknownObject } from "@/types/objectTypes";
 import { UUID } from "@/types/stringTypes";
+import { Definition } from "@/types/registryTypes";
 
 const { touchBrick } = workshopSlice.actions;
 
 type ParsedBrickInfo = {
   isBlueprint: boolean;
   isInstalled: boolean;
-  config: UnknownObject;
+  config: Definition;
 };
 
 function useParseBrick(config: string | null): ParsedBrickInfo {
@@ -57,7 +57,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
       return { isBlueprint: false, isInstalled: false, config: undefined };
     }
 
-    const configJSON = loadBrickYaml(config) as UnknownObject;
+    const configJSON = loadBrickYaml(config) as Definition;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {

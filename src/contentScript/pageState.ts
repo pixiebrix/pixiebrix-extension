@@ -17,26 +17,25 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { type JsonObject } from "type-fest";
 import { expectContext } from "@/utils/expectContext";
+import { type JsonObject } from "type-fest";
 
-const extensionState = new Map<UUID, UnknownObject>();
+const extensionState = new Map<UUID, JsonObject>();
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 
 /**
  * The blueprint page state, or null for shared state
  */
-const blueprintState = new Map<RegistryId | null, UnknownObject>();
+const blueprintState = new Map<RegistryId | null, JsonObject>();
 
 function mergeState(
-  previous: UnknownObject,
-  update: UnknownObject,
+  previous: JsonObject,
+  update: JsonObject,
   strategy: MergeStrategy
-): UnknownObject {
+): JsonObject {
   const cloned = cloneDeep(update);
 
   switch (strategy) {
@@ -107,7 +106,7 @@ export function setPageState({
     throw new Error("extensionId is required");
   }
 
-  const notifyOnChange = (previous: unknown, next: unknown) => {
+  const notifyOnChange = (previous: JsonObject, next: JsonObject) => {
     dispatchStageChangeEventOnChange({
       previous,
       next,
@@ -157,7 +156,7 @@ export function getPageState({
   namespace: string;
   extensionId: UUID;
   blueprintId: RegistryId | null;
-}) {
+}): JsonObject {
   expectContext("contentScript");
 
   switch (namespace) {

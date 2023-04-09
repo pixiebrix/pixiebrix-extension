@@ -18,11 +18,10 @@
 import { type AxiosRequestConfig } from "axios";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BlockIcon } from "@/types/iconTypes";
-import { type JsonObject, JsonValue } from "type-fest";
-import { Metadata } from "@/types/registryTypes";
+import { type JsonObject, type JsonValue } from "type-fest";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 

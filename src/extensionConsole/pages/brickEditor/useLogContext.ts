@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { logActions } from "@/components/logViewer/logSlice";
 import { useEffect } from "react";
 import { MessageContext } from "@/types/loggerTypes";
+import { Definition } from "@/types/registryTypes";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 
@@ -37,9 +38,9 @@ function useLogContext(config: string | null) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    let json: RawConfig;
+    let json: Definition;
     try {
-      json = loadBrickYaml(debouncedConfig) as RawConfig;
+      json = loadBrickYaml(debouncedConfig) as Definition;
     } catch {
       // The config won't always be valid YAML when editing
       return;

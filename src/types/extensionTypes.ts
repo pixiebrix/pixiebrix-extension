@@ -19,6 +19,7 @@ import { type Permissions } from "webextension-polyfill";
 import { type Except } from "type-fest";
 import {
   type InnerDefinitionRef,
+  type InnerDefinitions,
   type RegistryId,
   type Sharing,
   type Metadata,
@@ -29,9 +30,8 @@ import {
   type TemplateEngine,
   type UserOptions,
 } from "@/types/runtimeTypes";
-import { type InnerDefinitions } from "@/types/recipeTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 
 /**
  * RecipeMetadata that includes sharing information.

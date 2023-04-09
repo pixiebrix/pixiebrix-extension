@@ -18,6 +18,8 @@
 import { Reader } from "@/types/blocks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import axios from "axios";
+import { type JsonObject } from "type-fest";
+import safeJsonStringify from "json-stringify-safe";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
@@ -66,7 +68,7 @@ export class ImageExifReader extends Reader {
     );
   }
 
-  async read(elementOrDocument: HTMLElement | Document) {
+  async read(elementOrDocument: HTMLElement | Document): Promise<JsonObject> {
     const ExifReader = await import(
       /* webpackChunkName: "exifreader" */ "exifreader"
     );
@@ -75,7 +77,8 @@ export class ImageExifReader extends Reader {
 
     if (element?.tagName === "IMG") {
       const buffer = await getData(element);
-      return ExifReader.load(buffer);
+      // Ensure serializable output
+      return JSON.parse(safeJsonStringify(ExifReader.load(buffer)));
     }
 
     throw new Error(

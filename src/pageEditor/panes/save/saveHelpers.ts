@@ -20,6 +20,7 @@ import {
   InnerDefinitionRef,
   type Metadata,
   RegistryId,
+  InnerDefinitions,
 } from "@/types/registryTypes";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
@@ -35,7 +36,6 @@ import {
 import { type Except } from "type-fest";
 import {
   ExtensionPointConfig,
-  InnerDefinitions,
   OptionsDefinition,
   RecipeDefinition,
   UnsavedRecipeDefinition,

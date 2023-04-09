@@ -101,12 +101,9 @@ import {
   RegistryId,
   Metadata,
   Sharing,
-} from "@/types/registryTypes";
-import {
-  ExtensionPointConfig,
   InnerDefinitions,
-  RecipeDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/registryTypes";
+import { ExtensionPointConfig, RecipeDefinition } from "@/types/recipeTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -496,7 +493,7 @@ export const innerExtensionPointRecipeFactory = ({
     kind: "recipe",
     apiVersion: "v3",
     metadata: recipeMetadataFactory,
-    sharing: (): SharingDefinition => ({ public: false, organizations: [] }),
+    sharing: (): Sharing => ({ public: false, organizations: [] }),
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: (): InnerDefinitions => ({
       [extensionPointRef]: {
@@ -553,6 +550,7 @@ export const deploymentFactory = define<Deployment>({
     "package"
   ),
   package: deploymentPackageFactory,
+  options_config: {},
 });
 
 const internalFormStateFactory = define<FormState>({

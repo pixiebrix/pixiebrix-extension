@@ -32,17 +32,21 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { UnknownObject } from "@/types/objectTypes";
 import {
-  Definition,
   InnerDefinitionRef,
+  InnerDefinitions,
   RegistryId,
 } from "@/types/registryTypes";
-import { InnerDefinitions } from "@/types/recipeTypes";
 import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
-import { EmptyObject } from "type-fest";
 import { IExtensionPoint } from "@/types/extensionPointTypes";
 import { IBlock } from "@/types/blockTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
+type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
+  UnknownObject & {
+    kind: K;
+  };
+
+type InnerDefinition = InnerExtensionPoint | InnerBlock;
 
 export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
@@ -51,10 +55,15 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
 
 async function ensureBlock(
   definitions: InnerDefinitions,
-  config: Definition<"reader" | "component">
+  innerDefinition: InnerDefinition
 ) {
   // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
-  const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
+  const obj = pick(innerDefinition, [
+    "inputSchema",
+    "kind",
+    "pipeline",
+    "definition",
+  ]);
   const registryId = makeInternalId(obj);
 
   if (await blockRegistry.exists(registryId)) {
@@ -68,7 +77,7 @@ async function ensureBlock(
     ...obj,
     metadata: {
       id: registryId,
-      name: `Anonymous ${config.kind}`,
+      name: `Anonymous ${innerDefinition.kind}`,
     },
   });
 
@@ -97,7 +106,7 @@ async function ensureReaders(
 
       const block = await ensureBlock(
         definitions,
-        definition as Definition<"reader">
+        definition as InnerBlock<"component">
       );
       return block.id;
     }
@@ -163,27 +172,29 @@ async function ensureExtensionPoint(
 
 async function ensureInner(
   definitions: InnerDefinitions,
-  config: Definition
+  innerDefinition: InnerDefinitions[string]
 ): Promise<IBlock | IExtensionPoint> {
-  if (typeof config.kind !== "string") {
+  if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
   }
 
-  switch (config.kind) {
+  switch (innerDefinition.kind) {
     case "extensionPoint": {
-      return ensureExtensionPoint(definitions, config as InnerExtensionPoint);
+      return ensureExtensionPoint(
+        definitions,
+        innerDefinition as InnerExtensionPoint
+      );
     }
 
     case "reader":
     case "component": {
-      return ensureBlock(
-        definitions,
-        config as Definition<"reader" | "component">
-      );
+      return ensureBlock(definitions, innerDefinition as InnerBlock);
     }
 
     default: {
-      throw new Error(`Invalid kind for inner definition: ${config.kind}`);
+      throw new Error(
+        `Invalid kind for inner definition: ${innerDefinition.kind}`
+      );
     }
   }
 }

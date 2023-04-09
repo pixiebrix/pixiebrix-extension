@@ -21,16 +21,14 @@ import { pick } from "lodash";
 import {
   type Definition,
   InnerDefinitionRef,
+  InnerDefinitions,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { Permissions } from "webextension-polyfill";
 import { OutputKey, TemplateEngine } from "@/types/runtimeTypes";
-import { JsonObject } from "type-fest";
-
-// XXX: move to registryTypes file
-export type InnerDefinitions = Record<string, UnknownObject>;
+import { IExtension } from "@/types/extensionTypes";
 
 /**
  * @see resolveDefinitions
@@ -45,10 +43,10 @@ export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
  * A section defining which options are available during recipe activation
  * @see RecipeDefinition.options
  */
-export interface OptionsDefinition {
+export type OptionsDefinition = {
   schema: Schema;
   uiSchema?: UiSchema;
-}
+};
 
 /**
  * An extension point configured in a recipe.
@@ -85,7 +83,7 @@ export type ExtensionPointConfig = {
   /**
    * The extension configuration.
    */
-  config: JsonObject;
+  config: UnknownObject;
 };
 
 /**
@@ -146,7 +144,7 @@ export interface RecipeDefinition extends UnsavedRecipeDefinition {
 }
 
 /**
- * Select information about the recipe used to install an IExtension
+ * Select information about the RecipeDefinition used to install an IExtension
  *
  * TODO: find a better module for this method
  *
@@ -154,7 +152,7 @@ export interface RecipeDefinition extends UnsavedRecipeDefinition {
  */
 export function selectSourceRecipeMetadata(
   recipeDefinition: RecipeDefinition
-): Pick<RecipeDefinition, "sharing" | "updated_at"> {
+): IExtension["_recipe"] {
   if (recipeDefinition.metadata?.id == null) {
     throw new TypeError("Expected a RecipeDefinition");
   }

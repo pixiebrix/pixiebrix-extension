@@ -27,7 +27,7 @@ import { ApiVersion, ReaderRoot } from "@/types/runtimeTypes";
 import { Schema } from "@/types/schemaTypes";
 import { JsonObject } from "type-fest";
 import { IReader, Reader } from "@/types/blocks/readerTypes";
-import { SemVerString } from "@/types/registryTypes";
+import { SemVerString, Metadata } from "@/types/registryTypes";
 
 export interface ReaderTypeConfig {
   type: string;

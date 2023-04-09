@@ -21,7 +21,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { ApiVersion, RunArgs } from "@/types/runtimeTypes";
 import { RegistryId, Metadata } from "@/types/registryTypes";
 import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { EmptyObject } from "type-fest";
 import { BlockIcon } from "@/types/iconTypes";
 import { ResolvedExtension } from "@/types/extensionTypes";
 import { Schema } from "@/types/schemaTypes";

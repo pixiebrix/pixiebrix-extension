@@ -24,6 +24,7 @@ import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { isEmpty } from "lodash";
 import {
+  KEYS_OF_UI_SCHEMA,
   Schema,
   SchemaDefinition,
   SchemaPropertyType,

@@ -31,7 +31,7 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import { EmptyObject, type Except } from "type-fest";
+import { type Except } from "type-fest";
 import {
   uuidv4,
   validateRegistryId,
@@ -257,7 +257,7 @@ export function cleanIsAvailable({
 
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
-  TConfig extends EmptyObject,
+  TConfig extends UnknownObject,
   TType extends string
 >(
   config: IExtension<TConfig>,

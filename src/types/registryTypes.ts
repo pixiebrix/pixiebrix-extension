@@ -18,6 +18,7 @@
 import { type BlockIcon } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`
@@ -27,14 +28,15 @@ export type RegistryId = string & {
   _registryIdBrand: never;
 };
 
-// TODO: rationalize these types
-export type Kind = "recipe" | "service" | "reader" | "component";
-export type RawConfigKind =
+/**
+ * The kind of definition in the external registry
+ */
+export type Kind =
+  | "recipe"
   | "service"
-  | "extensionPoint"
-  | "component"
   | "reader"
-  | "recipe";
+  | "component"
+  | "extensionPoint";
 
 /**
  * Simple semantic version number, major.minor.patch
@@ -76,21 +78,33 @@ export interface Metadata {
  * the definition to the frontend.
  */
 export type Sharing = {
+  /**
+   * True if the registry package is public
+   */
   readonly public: boolean;
+  /**
+   * The UUIDs of the organizations that have access to the package. (And are visible to the user.)
+   */
   readonly organizations: UUID[];
 };
 
 /**
- * A PixieBrix registry entity
+ * A definition in the PixieBrix registry
  */
-export interface Definition<K extends RawConfigKind = RawConfigKind> {
+export interface Definition<K extends Kind = Kind> {
   apiVersion: ApiVersion;
   kind: K;
   metadata: Metadata;
 }
 
 /**
- * A reference to an entry if the recipe's `definitions` map
+ * The inner definitions section of a definition.
+ */
+export type InnerDefinitions = Record<string, UnknownObject>;
+
+/**
+ * A reference to an entry in the recipe's `definitions` map.
+ * @see InnerDefinitions
  */
 export type InnerDefinitionRef = string & {
   // Nominal subtyping

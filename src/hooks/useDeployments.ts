@@ -93,6 +93,7 @@ async function activateDeployment(
         deployment,
         services.locateAllForId
       ),
+      // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
     })
   );

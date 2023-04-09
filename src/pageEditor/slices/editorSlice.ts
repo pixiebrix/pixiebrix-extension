@@ -578,7 +578,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         elementId: UUID;
-        recipeMetadata: RecipeMetadata;
+        recipeMetadata: IExtension["_recipe"];
         keepLocalCopy: boolean;
       }>
     ) {

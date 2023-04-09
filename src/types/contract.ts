@@ -27,13 +27,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { type SanitizedConfig } from "@/types/serviceTypes";
-import { type RegistryId, type SemVerString } from "@/types/registryTypes";
+import {
+  type RegistryId,
+  type SemVerString,
+  type Metadata,
+} from "@/types/registryTypes";
 import {
   type RecipeDefinition,
   type UnsavedRecipeDefinition,
 } from "@/types/recipeTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { UserOptions } from "@/types/runtimeTypes";
 
 type Kind =
   | "block"
@@ -142,6 +147,7 @@ export type Deployment = Except<
   "id" | "package"
 > & {
   id: UUID;
+  options_config: UserOptions;
   package: Except<
     components["schemas"]["DeploymentDetail"]["package"],
     // Patch types for the following properties which our automatic schema generation generated the wrong types for

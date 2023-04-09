@@ -25,6 +25,7 @@ import { useAsyncState } from "@/hooks/common";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { IService, RawServiceConfiguration } from "@/types/serviceTypes";
+import { UUID } from "@/types/stringTypes";
 
 interface ServiceDefinitions {
   serviceDefinitions: IService[];

@@ -19,6 +19,7 @@ import { Reader } from "@/types/blocks/readerTypes";
 import { startCase, mapValues } from "lodash";
 import { withReadWindow } from "@/pageScript/messenger/api";
 import { type PathSpec } from "@/blocks/readers/window";
+import { JsonObject } from "type-fest";
 
 export async function checkRoute(expectedRoute: string): Promise<boolean> {
   const { route } = await withReadWindow({
@@ -56,14 +57,14 @@ export class PipedriveReader extends Reader {
     return checkRoute(this.resourceType);
   }
 
-  async read() {
+  async read(): Promise<JsonObject> {
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31265
     return withReadWindow({
       pathSpec: mapValues(
         this.pathSpec,
         (x: string) => `${this.ROOT_PATH}.${x}`
       ) as any,
-    });
+    }) as unknown as JsonObject;
   }
 }
 

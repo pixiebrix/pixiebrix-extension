@@ -30,7 +30,7 @@ import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { RegistryId } from "@/types/registryTypes";
-import { RendererOutput } from "@/types/runtimeTypes";
+import { BlockArg, RendererOutput } from "@/types/runtimeTypes";
 import { MessageContext } from "@/types/loggerTypes";
 
 type BodyProps = {
