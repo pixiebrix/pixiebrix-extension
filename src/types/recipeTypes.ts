@@ -29,15 +29,6 @@ import { type Permissions } from "webextension-polyfill";
 import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
 
 /**
- * @see resolveDefinitions
- */
-export type ResolvedExtensionPointConfig = ExtensionDefinition & {
-  id: RegistryId;
-
-  _resolvedExtensionPointConfigBrand: never;
-};
-
-/**
  * A section defining which options are available during recipe activation
  * @see RecipeDefinition.options
  */
@@ -83,6 +74,17 @@ export type ExtensionDefinition = {
    * The extension configuration.
    */
   config: UnknownObject;
+};
+
+/**
+ * An ExtensionDefinition with all inner definition references resolved.
+ * @see resolveDefinitions
+ */
+export type ResolvedExtensionDefinition = ExtensionDefinition & {
+  // Known to be a registry id instead of an InnerDefinitionRef
+  id: RegistryId;
+
+  _resolvedExtensionDefinitionBrand: never;
 };
 
 /**

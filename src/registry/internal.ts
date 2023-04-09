@@ -26,7 +26,7 @@ import { resolveObj } from "@/utils";
 import {
   type ExtensionDefinition as ExtensionDefinition,
   type RecipeDefinition,
-  type ResolvedExtensionPointConfig,
+  type ResolvedExtensionDefinition,
 } from "@/types/recipeTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
@@ -239,9 +239,9 @@ export async function resolveDefinitions<
 export async function resolveRecipe(
   recipe: RecipeDefinition,
   selected: ExtensionDefinition[]
-): Promise<ResolvedExtensionPointConfig[]> {
+): Promise<ResolvedExtensionDefinition[]> {
   if (isEmpty(recipe.definitions)) {
-    return selected as ResolvedExtensionPointConfig[];
+    return selected as ResolvedExtensionDefinition[];
   }
 
   const ensured = await resolveObj(
@@ -254,7 +254,7 @@ export async function resolveRecipe(
     (definition) =>
       (definitions.has(definition.id)
         ? { ...definition, id: definitions.get(definition.id).id }
-        : definition) as ResolvedExtensionPointConfig
+        : definition) as ResolvedExtensionDefinition
   );
 }
 

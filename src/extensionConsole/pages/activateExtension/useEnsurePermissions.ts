@@ -28,7 +28,7 @@ import {
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { type CloudExtension } from "@/types/contract";
-import { type ResolvedExtensionPointConfig } from "@/types/recipeTypes";
+import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
 
 function useEnsurePermissions(
   extension: CloudExtension,
@@ -51,7 +51,7 @@ function useEnsurePermissions(
             services: Object.fromEntries(
               services.map((service) => [service.outputKey, service.id])
             ),
-          } as ResolvedExtensionPointConfig)
+          } as ResolvedExtensionDefinition)
       ),
       configured.map(({ id, config }) => ({ id, config }))
     );

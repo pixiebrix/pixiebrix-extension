@@ -24,7 +24,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
 import { expectContext } from "@/utils/expectContext";
-import { type ResolvedExtensionPointConfig } from "@/types/recipeTypes";
+import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
@@ -73,7 +73,7 @@ function normalizeOptionalPermissions(
 }
 
 export async function collectPermissions(
-  extensionPoints: ResolvedExtensionPointConfig[],
+  extensionPoints: ResolvedExtensionDefinition[],
   serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
@@ -81,7 +81,7 @@ export async function collectPermissions(
   );
 
   const extensionPointPromises = extensionPoints.map(
-    async ({ id, permissions = {}, config }: ResolvedExtensionPointConfig) => {
+    async ({ id, permissions = {}, config }: ResolvedExtensionDefinition) => {
       const extensionPoint = await extensionPointRegistry.lookup(id);
 
       let inner: Permissions.Permissions = {};
