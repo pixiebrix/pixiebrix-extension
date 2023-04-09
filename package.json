@@ -229,7 +229,7 @@
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^3.4.1",
     "dotenv": "^15.0.0",
-    "eslint": "^8.37.0",
+    "eslint": "^8.38.0",
     "eslint-config-pixiebrix": "^0.22.1",
     "fake-indexeddb": "^4.0.0",
     "identity-obj-proxy": "^3.0.0",
