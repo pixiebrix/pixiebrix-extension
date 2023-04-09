@@ -24,7 +24,7 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
 import { resolveObj } from "@/utils";
 import {
-  type ExtensionDefinition as ExtensionDefinition,
+  type ExtensionDefinition,
   type RecipeDefinition,
   type ResolvedExtensionDefinition,
 } from "@/types/recipeTypes";
