@@ -25,7 +25,7 @@ import {
   queueReactivateTab,
   reactivateTab,
   removeEditorExtension,
-  removeInstalledExtension,
+  removePersistedExtension,
 } from "@/contentScript/lifecycle";
 import {
   getFormDefinition,
@@ -89,7 +89,7 @@ declare global {
     TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
-    REMOVE_INSTALLED_EXTENSION: typeof removeInstalledExtension;
+    REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     REMOVE_DYNAMIC_EXTENSION: typeof removeEditorExtension;
     RESET_TAB: typeof resetTab;
 
@@ -149,7 +149,7 @@ export default function registerMessenger(): void {
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
-    REMOVE_INSTALLED_EXTENSION: removeInstalledExtension,
+    REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     REMOVE_DYNAMIC_EXTENSION: removeEditorExtension,
     RESET_TAB: resetTab,
 

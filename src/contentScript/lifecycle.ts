@@ -162,9 +162,9 @@ export function getActiveExtensionPoints(): IExtensionPoint[] {
 }
 
 /**
- * Remove an extension from an extension point on the page if it's installed (i.e. clean-saved extension)
+ * Remove an extension from an extension point on the page if a persisted extension (i.e. in extensionsSlice)
  */
-export function removeInstalledExtension(extensionId: UUID): void {
+export function removePersistedExtension(extensionId: UUID): void {
   // Leaving the extension point in _activeExtensionPoints. Could consider removing if this was the last extension
   const extensionPoint = _persistedExtensions.get(extensionId);
   extensionPoint?.removeExtension(extensionId);
@@ -267,7 +267,7 @@ export async function runEditorExtension(
 ): Promise<void> {
   // Uninstall the installed extension point instance in favor of the dynamic extensionPoint
   if (_persistedExtensions.has(extensionId)) {
-    removeInstalledExtension(extensionId);
+    removePersistedExtension(extensionId);
   }
 
   // Uninstall the previous extension point instance in favor of the updated extensionPoint
@@ -292,8 +292,8 @@ export async function runEditorExtension(
  *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
  */
-async function loadInstalledExtensions() {
-  console.debug("lifecycle:loadInstalledExtensions");
+async function loadPersistedExtensions() {
+  console.debug("lifecycle:loadPersistedExtensions");
   const options = await loadOptions();
 
   // Exclude the following:
@@ -344,11 +344,11 @@ async function loadInstalledExtensions() {
 /**
  * Add the extensions to their respective extension points, and return the extension points with extensions.
  */
-async function loadInstalledExtensionsOnce(): Promise<IExtensionPoint[]> {
+async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
   if (_initialLoad || _reloadOnNextNavigate) {
     _initialLoad = false;
     _reloadOnNextNavigate = false;
-    await loadInstalledExtensions();
+    await loadPersistedExtensions();
   }
 
   return getActiveExtensionPoints();
@@ -426,7 +426,7 @@ export async function handleNavigate({
 
   updateNavigationId();
 
-  const extensionPoints = await loadInstalledExtensionsOnce();
+  const extensionPoints = await loadPersistedExtensionsOnce();
 
   if (extensionPoints.length > 0) {
     _navSequence++;
@@ -463,7 +463,7 @@ export async function queueReactivateTab() {
 }
 
 export async function reactivateTab() {
-  await loadInstalledExtensions();
+  await loadPersistedExtensions();
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
 }
