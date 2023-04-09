@@ -36,7 +36,7 @@ import MockDate from "mockdate";
 import { type BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
-import { OutputKey, RenderedArgs } from "@/types/runtimeTypes";
+import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

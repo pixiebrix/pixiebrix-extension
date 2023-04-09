@@ -45,11 +45,11 @@ import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelContr
 import { once } from "lodash";
 import { AbortPanelAction, ClosePanelAction } from "@/blocks/errors";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type Except, JsonObject } from "type-fest";
-import { UUID } from "@/types/stringTypes";
+import { type Except, type JsonObject } from "type-fest";
+import { type UUID } from "@/types/stringTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers

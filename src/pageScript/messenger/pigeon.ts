@@ -18,10 +18,10 @@
 import { serializeError } from "serialize-error";
 import { cleanValue } from "@/utils";
 import {
-  ActionType,
-  Message,
-  Meta,
-  SerializedError,
+  type ActionType,
+  type Message,
+  type Meta,
+  type SerializedError,
 } from "@/types/messengerTypes";
 
 /** @file The first messenger before webext-messenger. Deprecated, see https://github.com/pixiebrix/webext-messenger/issues/5 */

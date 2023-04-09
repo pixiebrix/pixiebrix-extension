@@ -25,7 +25,7 @@ import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { Expression } from "@/types/runtimeTypes";
+import { type Expression } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 
 const TEMPLATE_ERROR_MESSAGE =

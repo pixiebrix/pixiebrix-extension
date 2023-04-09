@@ -16,8 +16,8 @@
  */
 
 import { Reader } from "@/types/blocks/readerTypes";
-import { JsonObject } from "type-fest";
-import { Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A reader "stub" for dynamic Quick Bar query.

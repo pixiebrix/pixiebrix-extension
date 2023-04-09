@@ -34,8 +34,8 @@ import { setCachedAuthData } from "@/background/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { syncRemotePackages } from "@/baseRegistry";
-import { RegistryId } from "@/types/registryTypes";
-import { RawServiceConfiguration } from "@/types/serviceTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
 
 const serviceMap = new Map([
   [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],

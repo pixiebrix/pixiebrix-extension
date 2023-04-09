@@ -28,10 +28,10 @@ import {
   ensureSidebar,
 } from "@/contentScript/sidebarController";
 import { type TourDefinition } from "@/extensionPoints/tourExtension";
-import { JsonObject } from "type-fest";
-import { ReaderRoot } from "@/types/runtimeTypes";
-import { UUID } from "@/types/stringTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type JsonObject } from "type-fest";
+import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions = new Map<string, IExtensionPoint>();

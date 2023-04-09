@@ -17,10 +17,10 @@
 
 import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { IExtension } from "@/types/extensionTypes";
-import { UserOptions } from "@/types/runtimeTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type UserOptions } from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe

@@ -20,7 +20,7 @@ import {
   JQUERY_INVALID_SELECTOR_ERROR,
 } from "@/errors/errorHelpers";
 import { InvalidSelectorError } from "@/errors/businessErrors";
-import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 
 /**
  * Return the names of top-level required properties that are missing

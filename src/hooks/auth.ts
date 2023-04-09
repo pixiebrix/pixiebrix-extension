@@ -22,7 +22,7 @@ import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
-import { RawServiceConfiguration } from "@/types/serviceTypes";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();

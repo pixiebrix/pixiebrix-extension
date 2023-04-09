@@ -40,7 +40,7 @@ import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import useFlags from "@/hooks/useFlags";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",

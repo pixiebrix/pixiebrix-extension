@@ -20,7 +20,7 @@ import testItRenders, {
 } from "@/testUtils/testItRenders";
 import { type Except } from "type-fest";
 import FormPreview, { type FormPreviewProps } from "./FormPreview";
-import { Schema, UiSchema } from "@/types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 
 describe("FormPreview", () => {
   const defaultProps: Except<FormPreviewProps, "activeField"> = {

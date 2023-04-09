@@ -24,7 +24,7 @@ import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
-import { PersistedExtension } from "@/types/extensionTypes";
+import { type PersistedExtension } from "@/types/extensionTypes";
 
 function optionsStore(initialState?: {
   extensions: PersistedExtension[];

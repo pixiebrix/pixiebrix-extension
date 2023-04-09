@@ -22,8 +22,8 @@ import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { type Permissions } from "webextension-polyfill";
-import { RecipeDefinition } from "@/types/recipeTypes";
-import { ServiceAuthPair } from "@/types/serviceTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ServiceAuthPair } from "@/types/serviceTypes";
 
 type PermissionsState = {
   /**

@@ -17,8 +17,8 @@
 
 import { Reader } from "@/types/blocks/readerTypes";
 import selection from "@/utils/selectionController";
-import { JsonObject } from "type-fest";
-import { Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A reader "stub" for the context menu reader.

@@ -29,8 +29,8 @@ import {
   getCachedAuthData,
   getUserData,
 } from "@/background/messenger/api";
-import { BlockOptions } from "@/types/runtimeTypes";
-import { AuthData } from "@/types/serviceTypes";
+import { type BlockOptions } from "@/types/runtimeTypes";
+import { type AuthData } from "@/types/serviceTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn().mockResolvedValue({

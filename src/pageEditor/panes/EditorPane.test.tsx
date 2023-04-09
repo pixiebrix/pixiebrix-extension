@@ -69,8 +69,8 @@ import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { EditablePackage, RegistryId } from "@/types/registryTypes";
-import { OutputKey } from "@/types/runtimeTypes";
+import { type EditablePackage, type RegistryId } from "@/types/registryTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 

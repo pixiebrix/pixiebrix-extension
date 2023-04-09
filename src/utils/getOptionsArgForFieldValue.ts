@@ -17,7 +17,7 @@
 
 import { isEmpty } from "lodash";
 import { isVarExpression } from "@/runtime/mapArgs";
-import { Expression, UserOptions } from "@/types/runtimeTypes";
+import { type Expression, type UserOptions } from "@/types/runtimeTypes";
 
 export function getOptionsArgForFieldValue(
   fieldValue: string | Expression,

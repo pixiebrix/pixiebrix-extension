@@ -21,8 +21,8 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
 
 export class GetAPITransformer extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/get");

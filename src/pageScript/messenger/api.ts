@@ -26,7 +26,7 @@ import {
   READ_WINDOW,
 } from "@/pageScript/messenger/constants";
 import { type ElementInfo } from "@/pageScript/frameworks";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 export type PathSpec =
   | string

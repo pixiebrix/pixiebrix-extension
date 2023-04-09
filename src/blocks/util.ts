@@ -21,10 +21,10 @@ import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
-import { RegistryId } from "@/types/registryTypes";
-import { Schema } from "@/types/schemaTypes";
-import { UnknownObject } from "@/types/objectTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");

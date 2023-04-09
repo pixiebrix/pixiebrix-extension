@@ -16,8 +16,8 @@
  */
 
 import { Reader } from "@/types/blocks/readerTypes";
-import { JsonObject } from "type-fest";
-import { Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 export class PageSemanticReader extends Reader {
   defaultOutputKey = "metadata";

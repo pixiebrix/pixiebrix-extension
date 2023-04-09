@@ -21,7 +21,7 @@ import {
   BusinessError,
   MultipleElementsFoundError,
 } from "@/errors/businessErrors";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 type CastType = "string" | "boolean" | "number";
 

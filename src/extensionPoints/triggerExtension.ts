@@ -68,14 +68,14 @@ import {
   pickEventProperties,
 } from "@/extensionPoints/triggerEventReaders";
 import CompositeReader from "@/blocks/readers/CompositeReader";
-import { IReader } from "@/types/blocks/readerTypes";
-import { UUID } from "@/types/stringTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { IBlock } from "@/types/blockTypes";
-import { Schema } from "@/types/schemaTypes";
-import { ReaderRoot } from "@/types/runtimeTypes";
-import { JsonObject } from "type-fest";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type JsonObject } from "type-fest";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;

@@ -26,7 +26,11 @@ import useCreate from "@/pageEditor/hooks/useCreate";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
-import { type Metadata, RegistryId, SemVerString } from "@/types/registryTypes";
+import {
+  type Metadata,
+  type RegistryId,
+  type SemVerString,
+} from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
@@ -41,8 +45,11 @@ import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
-import { IExtension, PersistedExtension } from "@/types/extensionTypes";
-import { UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import {
+  type IExtension,
+  type PersistedExtension,
+} from "@/types/extensionTypes";
+import { type UnsavedRecipeDefinition } from "@/types/recipeTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 

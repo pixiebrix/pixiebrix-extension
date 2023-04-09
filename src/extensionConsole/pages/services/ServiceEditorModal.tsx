@@ -41,9 +41,12 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
-import { IService, RawServiceConfiguration } from "@/types/serviceTypes";
-import { UUID } from "@/types/stringTypes";
-import { Schema } from "@/types/schemaTypes";
+import {
+  type IService,
+  type RawServiceConfiguration,
+} from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 type OwnProps = {
   configuration: RawServiceConfiguration;

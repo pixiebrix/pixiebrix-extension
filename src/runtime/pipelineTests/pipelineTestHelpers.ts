@@ -10,14 +10,14 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import {
-  ApiVersion,
-  BlockArg,
-  BlockOptions,
-  UserOptions,
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+  type UserOptions,
 } from "@/types/runtimeTypes";
 import { Block } from "@/types/blockTypes";
-import { UnknownObject } from "@/types/objectTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 const logger = new ConsoleLogger();
 

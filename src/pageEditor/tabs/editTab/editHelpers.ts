@@ -27,9 +27,9 @@ import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
-import { OutputKey } from "@/types/runtimeTypes";
-import { IBlock } from "@/types/blockTypes";
-import { SafeString } from "@/types/stringTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type SafeString } from "@/types/stringTypes";
 
 export function showOutputKey(blockType: BlockType): boolean {
   return blockType !== "effect" && blockType !== "renderer";

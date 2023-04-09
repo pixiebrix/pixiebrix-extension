@@ -35,7 +35,7 @@ import {
   type ExtensionPointConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { Logger } from "@/types/loggerTypes";
+import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
@@ -71,13 +71,13 @@ import {
 } from "@/errors/businessErrors";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
-import { IconConfig } from "@/types/iconTypes";
-import { Schema } from "@/types/schemaTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { IBlock } from "@/types/blockTypes";
-import { JsonObject } from "type-fest";
-import { RunArgs, RunReason } from "@/types/runtimeTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IconConfig } from "@/types/iconTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type JsonObject } from "type-fest";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

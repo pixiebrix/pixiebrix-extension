@@ -21,9 +21,9 @@ import { sortBy } from "lodash";
 import { type BlockConfig } from "@/blocks/types";
 import objectHash from "object-hash";
 import { type ErrorObject } from "serialize-error";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { OutputKey, RenderedArgs } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";

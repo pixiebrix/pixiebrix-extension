@@ -33,7 +33,7 @@
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue } from "type-fest";
-import { SerializedError } from "@/types/messengerTypes";
+import { type SerializedError } from "@/types/messengerTypes";
 
 const TIMEOUT_MS = 3000;
 

@@ -38,8 +38,8 @@ import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidge
 import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
 import { useIsMounted } from "@/hooks/common";
-import { UUID } from "@/types/stringTypes";
-import { Definition } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Definition } from "@/types/registryTypes";
 
 const { touchBrick } = workshopSlice.actions;
 

@@ -23,8 +23,8 @@ import {
 } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
 import { type BlockConfig } from "@/blocks/types";
-import { RegistryId } from "@/types/registryTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 /**
  * A block along with inferred/calculated information

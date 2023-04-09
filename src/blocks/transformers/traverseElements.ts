@@ -18,8 +18,12 @@
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { propertiesToSchema } from "@/validators/generic";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions, ElementReference } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type ElementReference,
+} from "@/types/runtimeTypes";
 
 export class TraverseElements extends Transformer {
   override async isPure(): Promise<boolean> {

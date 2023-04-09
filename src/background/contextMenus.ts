@@ -33,8 +33,11 @@ import { loadOptions } from "@/store/extensionsStorage";
 import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { CancelError } from "@/errors/businessErrors";
-import { UUID } from "@/types/stringTypes";
-import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type IExtension,
+  type ResolvedExtension,
+} from "@/types/extensionTypes";
 
 const MENU_PREFIX = "pixiebrix-";
 

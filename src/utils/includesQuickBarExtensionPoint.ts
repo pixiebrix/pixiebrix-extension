@@ -18,7 +18,7 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
-import { ResolvedExtensionPointConfig } from "@/types/recipeTypes";
+import { type ResolvedExtensionPointConfig } from "@/types/recipeTypes";
 
 export default async function includesQuickBarExtensionPoint(
   extensionPointConfigs?: ResolvedExtensionPointConfig[]

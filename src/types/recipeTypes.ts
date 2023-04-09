@@ -20,15 +20,15 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { pick } from "lodash";
 import {
   type Definition,
-  InnerDefinitionRef,
-  InnerDefinitions,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
-import { Permissions } from "webextension-polyfill";
-import { OutputKey, TemplateEngine } from "@/types/runtimeTypes";
-import { IExtension } from "@/types/extensionTypes";
+import { type Permissions } from "webextension-polyfill";
+import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 /**
  * @see resolveDefinitions

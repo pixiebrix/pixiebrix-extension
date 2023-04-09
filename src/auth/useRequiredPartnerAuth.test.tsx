@@ -31,7 +31,7 @@ import { type SettingsState } from "@/store/settingsTypes";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { type Me } from "@/types/contract";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
-import { RawServiceConfiguration } from "@/types/serviceTypes";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
 
 // `waitForEffect` for @testing-library/react-hooks
 const waitForEffect = async () =>

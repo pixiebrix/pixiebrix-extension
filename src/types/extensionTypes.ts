@@ -82,7 +82,7 @@ type DeploymentMetadata = {
   active?: boolean;
 };
 
-// XXX: technically Config should extension JsonObject, but that's annoying to work with at callsites.
+// XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
 export type IExtension<Config extends UnknownObject = UnknownObject> = {
   /**
    * UUID of the extension.

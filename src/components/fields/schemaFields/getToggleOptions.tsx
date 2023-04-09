@@ -25,8 +25,8 @@ import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 import { syncFlagOn } from "@/store/syncFlags";
-import { Schema } from "@/types/schemaTypes";
-import { ExpressionType } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ExpressionType } from "@/types/runtimeTypes";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;

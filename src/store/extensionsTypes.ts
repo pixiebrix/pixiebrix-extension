@@ -16,8 +16,8 @@
  */
 
 import {
-  PersistedExtension,
-  UnresolvedExtension,
+  type PersistedExtension,
+  type UnresolvedExtension,
 } from "@/types/extensionTypes";
 
 export type OptionsState =

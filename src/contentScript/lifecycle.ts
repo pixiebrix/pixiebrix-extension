@@ -32,11 +32,11 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
 
 let _initialLoadNavigation = true;
 // Track the extensions installed on the page

@@ -21,8 +21,12 @@ import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions, ReaderRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type ReaderRoot,
+} from "@/types/runtimeTypes";
 
 export class WaitEffect extends Effect {
   constructor() {

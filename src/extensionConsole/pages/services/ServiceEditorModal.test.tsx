@@ -26,7 +26,7 @@ import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { RawServiceConfiguration } from "@/types/serviceTypes";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();

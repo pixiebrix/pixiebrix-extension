@@ -27,8 +27,8 @@ import SelectWidget, {
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { UUID } from "@/types/stringTypes";
-import { Expression } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Expression } from "@/types/runtimeTypes";
 
 const DatabaseWidget: React.FunctionComponent<{
   /**

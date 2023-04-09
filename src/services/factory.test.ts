@@ -21,9 +21,9 @@ import greenhouse from "@contrib/services/greenhouse.yaml";
 import { fromJS } from "@/services/factory";
 import { BusinessError } from "@/errors/businessErrors";
 import {
-  SanitizedConfig,
-  ServiceConfig,
-  ServiceDefinition,
+  type SanitizedConfig,
+  type ServiceConfig,
+  type ServiceDefinition,
 } from "@/types/serviceTypes";
 
 describe("LocalDefinedService", () => {

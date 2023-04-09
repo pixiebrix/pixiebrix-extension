@@ -18,7 +18,7 @@
 import { type WritableDraft } from "immer/dist/types/types-external";
 import {
   type EditorState,
-  RecipeMetadataFormState,
+  type RecipeMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -31,7 +31,7 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 

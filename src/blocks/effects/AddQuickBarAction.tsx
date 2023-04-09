@@ -22,9 +22,9 @@ import Icon from "@/icons/Icon";
 import React from "react";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
-import { IconConfig } from "@/types/iconTypes";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type IconConfig } from "@/types/iconTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 
 type ActionConfig = {

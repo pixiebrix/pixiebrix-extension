@@ -21,9 +21,9 @@ import { inputProperties } from "@/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { RegistryId } from "@/types/registryTypes";
-import { Expression, TemplateEngine } from "@/types/runtimeTypes";
-import { SchemaDefinition } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import { type SchemaDefinition } from "@/types/schemaTypes";
 
 const VARIABLE_REGEX = /^@\S+$/;
 

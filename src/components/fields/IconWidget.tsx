@@ -19,7 +19,7 @@ import React, { Suspense, lazy } from "react";
 import { type IconOption } from "@/icons/types";
 import { useField } from "formik";
 import { type CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { IconLibrary } from "@/types/iconTypes";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const IconSelector = lazy(
   async () =>

@@ -25,7 +25,7 @@ import { type IconOption } from "@/icons/types";
 import { icons } from "@/icons/list";
 import Icon from "./Icon";
 import { sortBy } from "lodash";
-import { IconLibrary } from "@/types/iconTypes";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const iconOptions: IconOption[] = sortBy(
   [...icons].flatMap(([library, libraryCache]) =>

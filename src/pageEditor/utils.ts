@@ -39,10 +39,10 @@ import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTem
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
-import { Target } from "@/types/messengerTypes";
-import { IExtension } from "@/types/extensionTypes";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type Target } from "@/types/messengerTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");

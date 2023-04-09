@@ -70,10 +70,13 @@ import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
-import { RecipeDefinition, UnsavedRecipeDefinition } from "@/types/recipeTypes";
-import { IExtension } from "@/types/extensionTypes";
-import { RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
-import { RegistryId } from "@/types/registryTypes";
+import {
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 

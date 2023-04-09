@@ -16,11 +16,11 @@
  */
 
 import {
-  EditablePackage,
-  InnerDefinitionRef,
+  type EditablePackage,
+  type InnerDefinitionRef,
   type Metadata,
-  RegistryId,
-  InnerDefinitions,
+  type RegistryId,
+  type InnerDefinitions,
 } from "@/types/registryTypes";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
@@ -35,14 +35,17 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { type Except } from "type-fest";
 import {
-  ExtensionPointConfig,
-  OptionsDefinition,
-  RecipeDefinition,
-  UnsavedRecipeDefinition,
+  type ExtensionPointConfig,
+  type OptionsDefinition,
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
 } from "@/types/recipeTypes";
-import { IExtension, UnresolvedExtension } from "@/types/extensionTypes";
-import { SafeString } from "@/types/stringTypes";
-import { RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import {
+  type IExtension,
+  type UnresolvedExtension,
+} from "@/types/extensionTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

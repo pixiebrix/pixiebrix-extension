@@ -20,7 +20,7 @@ import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils";
-import { RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 type Source = "remote" | "builtin";
 

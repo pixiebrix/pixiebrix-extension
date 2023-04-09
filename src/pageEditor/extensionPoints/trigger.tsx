@@ -46,7 +46,7 @@ import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
-import { IExtension } from "@/types/extensionTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 function fromNativeElement(
   url: string,

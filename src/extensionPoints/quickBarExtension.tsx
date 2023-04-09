@@ -53,13 +53,13 @@ import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { IconConfig } from "@/types/iconTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { IReader } from "@/types/blocks/readerTypes";
-import { Schema } from "@/types/schemaTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { IBlock } from "@/types/blockTypes";
-import { UUID } from "@/types/stringTypes";
+import { type IconConfig } from "@/types/iconTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 

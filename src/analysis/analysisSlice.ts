@@ -23,7 +23,7 @@ import {
 } from "@/analysis/analysisTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type ErrorObject } from "serialize-error";
-import { UUID } from "@/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},

@@ -50,7 +50,7 @@ import {
   type DocumentElement,
   type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,

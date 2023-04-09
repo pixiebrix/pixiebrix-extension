@@ -24,8 +24,8 @@ import {
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
 import { Effect } from "@/types/blocks/effectTypes";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 export class AttachAutocomplete extends Effect {
   constructor() {

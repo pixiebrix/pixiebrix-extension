@@ -16,8 +16,8 @@
  */
 
 import { zip } from "lodash";
-import { IReader, Reader } from "@/types/blocks/readerTypes";
-import { JsonObject } from "type-fest";
+import { type IReader, Reader } from "@/types/blocks/readerTypes";
+import { type JsonObject } from "type-fest";
 
 class ArrayCompositeReader extends Reader {
   private readonly _readers: IReader[];

@@ -23,8 +23,8 @@ import {
 import blockRegistry from "@/blocks/registry";
 import { Block } from "@/types/blockTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { Schema } from "@/types/schemaTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 beforeEach(() => {
   blockRegistry.clear();

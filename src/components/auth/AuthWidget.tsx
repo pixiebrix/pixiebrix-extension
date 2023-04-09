@@ -34,9 +34,9 @@ import createMenuListWithAddButton from "@/components/form/widgets/createMenuLis
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
-import { RawServiceConfiguration } from "@/types/serviceTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
 
 const { updateServiceConfig } = servicesSlice.actions;
 

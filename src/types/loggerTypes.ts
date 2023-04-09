@@ -18,7 +18,7 @@
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type contextNames } from "webext-detect-page";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 // `ContextName`s from webext-detect-page
 type ContextName = keyof typeof contextNames | "unknown";

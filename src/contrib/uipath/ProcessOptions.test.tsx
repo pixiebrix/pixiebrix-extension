@@ -28,8 +28,8 @@ import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useDependency from "@/services/useDependency";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { OutputKey } from "@/types/runtimeTypes";
-import { IService } from "@/types/serviceTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type IService } from "@/types/serviceTypes";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,

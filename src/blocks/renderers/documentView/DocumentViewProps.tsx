@@ -17,8 +17,8 @@
 
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { type SubmitPanelAction } from "@/blocks/errors";
-import { BlockArgContext, BlockOptions } from "@/types/runtimeTypes";
-import { UUID } from "@/types/stringTypes";
+import { type BlockArgContext, type BlockOptions } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type DocumentViewProps = {
   /**

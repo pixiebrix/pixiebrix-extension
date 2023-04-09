@@ -35,7 +35,7 @@ import {
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
-import { RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * Map from partner keys to partner service IDs

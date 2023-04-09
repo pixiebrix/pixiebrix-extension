@@ -40,10 +40,14 @@ import {
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
-import { Expression, OutputKey, ServiceKeyVar } from "@/types/runtimeTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { SafeString, UUID } from "@/types/stringTypes";
-import { ServiceDependency } from "@/types/serviceTypes";
+import {
+  type Expression,
+  type OutputKey,
+  type ServiceKeyVar,
+} from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */

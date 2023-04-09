@@ -22,7 +22,7 @@ import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
 import { isEmpty } from "lodash";
-import { Schema, SchemaDefinition } from "@/types/schemaTypes";
+import { type Schema, type SchemaDefinition } from "@/types/schemaTypes";
 
 export function fieldLabel(name: string): string {
   return name.split(".").at(-1);

@@ -18,8 +18,12 @@
 import { Renderer } from "@/types/blocks/rendererTypes";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
-import { BlockArg, BlockOptions, ComponentRef } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type ComponentRef,
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export class DocumentRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/document");

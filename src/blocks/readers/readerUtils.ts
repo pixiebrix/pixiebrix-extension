@@ -22,8 +22,8 @@ import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { resolveObj } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
-import { IReader } from "@/types/blocks/readerTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export function selectReaderIds(config: ReaderConfig): RegistryId[] {
   if (typeof config === "string") {

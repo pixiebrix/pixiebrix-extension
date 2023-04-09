@@ -38,8 +38,8 @@ import {
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
-import { UnsavedRecipeDefinition } from "@/types/recipeTypes";
-import { Definition } from "@/types/registryTypes";
+import { type UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { type Definition } from "@/types/registryTypes";
 
 type SubmitOptions = {
   create: boolean;

@@ -53,7 +53,7 @@ import {
   isDatabaseField,
   isGoogleSheetIdField,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { Schema, SchemaPropertyType } from "@/types/schemaTypes";
+import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 
 const imageForCroppingSourceSchema: Schema = {

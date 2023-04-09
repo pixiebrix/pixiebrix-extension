@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 
 export type FormDefinition = {
   schema: Schema;

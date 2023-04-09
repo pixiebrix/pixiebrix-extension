@@ -17,8 +17,8 @@
 
 import { Reader } from "@/types/blocks/readerTypes";
 import selectionController from "@/utils/selectionController";
-import { Schema } from "@/types/schemaTypes";
-import { JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
 
 export class SelectionReader extends Reader {
   constructor() {

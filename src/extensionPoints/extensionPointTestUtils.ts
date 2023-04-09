@@ -19,9 +19,9 @@ import { JSDOM } from "jsdom";
 import { Reader } from "@/types/blocks/readerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { ElementReference } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
-import { JsonObject } from "type-fest";
+import { type ElementReference } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
 
 /**
  * Helper function returns a promise that resolves after all other promise mocks, even if they are chained

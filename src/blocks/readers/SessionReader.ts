@@ -18,8 +18,8 @@
 import { Reader } from "@/types/blocks/readerTypes";
 import * as session from "@/contentScript/context";
 import { getExtensionAuth } from "@/auth/token";
-import { JsonObject } from "type-fest";
-import { Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 class SessionReader extends Reader {
   defaultOutputKey = "session";

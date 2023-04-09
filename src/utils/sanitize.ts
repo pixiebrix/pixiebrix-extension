@@ -16,7 +16,7 @@
  */
 
 import createDOMPurify, { type Config, type DOMPurifyI } from "dompurify";
-import { SafeHTML } from "@/types/stringTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 
 let DOMPurify: DOMPurifyI;
 

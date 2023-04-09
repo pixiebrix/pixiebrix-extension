@@ -41,9 +41,9 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
-import { IBlock } from "@/types/blockTypes";
-import { IService } from "@/types/serviceTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type IService } from "@/types/serviceTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 function getDefaultBrickIcon(
   brick: IBlock | IService | IExtensionPoint,

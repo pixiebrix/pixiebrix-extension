@@ -33,8 +33,8 @@ import PermissionsBody from "@/extensionConsole/pages/activateRecipe/Permissions
 import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
-import { RecipeDefinition } from "@/types/recipeTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript

@@ -21,8 +21,8 @@ import { type RemoteResponse } from "@/types/contract";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
 import {
-  SanitizedConfig,
-  SanitizedServiceConfiguration,
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
 } from "@/types/serviceTypes";
 
 jest.mock("@/background/messenger/api", () => ({

@@ -28,8 +28,8 @@ import {
 } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
-import { RegistryId } from "@/types/registryTypes";
-import { SafeString } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type SafeString } from "@/types/stringTypes";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;

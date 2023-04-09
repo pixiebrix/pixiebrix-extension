@@ -37,8 +37,8 @@ import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioIt
 import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { RegistryId } from "@/types/registryTypes";
-import { IExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 type FormState = {
   recipeId: RegistryId;

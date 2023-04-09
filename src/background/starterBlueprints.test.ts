@@ -22,7 +22,10 @@ import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { extensionFactory, recipeFactory } from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
-import { IExtension, PersistedExtension } from "@/types/extensionTypes";
+import {
+  type IExtension,
+  type PersistedExtension,
+} from "@/types/extensionTypes";
 
 const axiosMock = new MockAdapter(axios);
 

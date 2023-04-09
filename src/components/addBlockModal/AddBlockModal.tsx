@@ -65,8 +65,8 @@ import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
-import { RegistryId } from "@/types/registryTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";

@@ -30,16 +30,16 @@ import {
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/baseRegistry";
 import {
-  IService,
-  KeyedConfig,
-  RawServiceConfiguration,
-  SanitizedConfig,
-  SanitizedServiceConfiguration,
+  type IService,
+  type KeyedConfig,
+  type RawServiceConfiguration,
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
   type Service,
-  ServiceConfig,
+  type ServiceConfig,
 } from "@/types/serviceTypes";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",

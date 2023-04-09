@@ -16,9 +16,9 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { MessageContext } from "@/types/loggerTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 type LogsContext = {
   title: string;

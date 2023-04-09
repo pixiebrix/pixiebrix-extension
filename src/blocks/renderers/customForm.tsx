@@ -34,12 +34,16 @@ import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
 import { getTopLevelFrame } from "webext-messenger";
-import { UUID } from "@/types/stringTypes";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { Schema, UiSchema } from "@/types/schemaTypes";
-import { UnknownObject } from "@/types/objectTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { BlockArg, BlockOptions, ComponentRef } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type ComponentRef,
+} from "@/types/runtimeTypes";
 import { Renderer } from "@/types/blocks/rendererTypes";
 
 const fields = {

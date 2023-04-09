@@ -19,7 +19,7 @@ import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import MarkdownLazy from "@/components/MarkdownLazy";
-import { BlockArg, ComponentRef } from "@/types/runtimeTypes";
+import { type BlockArg, type ComponentRef } from "@/types/runtimeTypes";
 
 export class MarkdownRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/markdown");

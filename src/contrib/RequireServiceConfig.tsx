@@ -20,8 +20,8 @@ import useDependency from "@/services/useDependency";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import { Button } from "react-bootstrap";
 import { extractServiceIds } from "@/services/serviceUtils";
-import { Schema } from "@/types/schemaTypes";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 type ConfigProps = {
   serviceSchema: Schema;

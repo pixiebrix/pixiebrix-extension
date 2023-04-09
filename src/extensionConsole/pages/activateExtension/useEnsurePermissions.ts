@@ -28,7 +28,7 @@ import {
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { type CloudExtension } from "@/types/contract";
-import { ResolvedExtensionPointConfig } from "@/types/recipeTypes";
+import { type ResolvedExtensionPointConfig } from "@/types/recipeTypes";
 
 function useEnsurePermissions(
   extension: CloudExtension,

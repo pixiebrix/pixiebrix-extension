@@ -21,14 +21,14 @@ import { useFormikContext } from "formik";
 import { castArray, compact, head } from "lodash";
 import serviceRegistry from "@/services/registry";
 import {
-  SanitizedServiceConfiguration,
+  type SanitizedServiceConfiguration,
   type Service,
-  ServiceDependency,
+  type ServiceDependency,
 } from "@/types/serviceTypes";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions, services } from "@/background/messenger/api";
 import notify from "@/utils/notify";
-import { RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 type Listener = () => void;
 

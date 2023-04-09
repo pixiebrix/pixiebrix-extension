@@ -19,8 +19,8 @@ import { Effect } from "@/types/blocks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
 
 function makeProperties(
   obj: Record<string, unknown>,

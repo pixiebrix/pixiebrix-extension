@@ -23,11 +23,11 @@ import readerSchema from "@schemas/reader.json";
 import { type Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { ApiVersion, ReaderRoot } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
-import { JsonObject } from "type-fest";
-import { IReader, Reader } from "@/types/blocks/readerTypes";
-import { SemVerString, Metadata } from "@/types/registryTypes";
+import { type ApiVersion, type ReaderRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
+import { type IReader, Reader } from "@/types/blocks/readerTypes";
+import { type SemVerString, type Metadata } from "@/types/registryTypes";
 
 export interface ReaderTypeConfig {
   type: string;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata, RegistryId } from "@/types/registryTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
@@ -57,10 +57,10 @@ import {
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { makeEmptyPermissions } from "@/utils/permissions";
-import { ApiVersion } from "@/types/runtimeTypes";
-import { IExtension } from "@/types/extensionTypes";
-import { Schema } from "@/types/schemaTypes";
-import { SafeString, UUID } from "@/types/stringTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
 
 export interface WizardStep {
   step: string;

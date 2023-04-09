@@ -17,9 +17,9 @@
 
 import { Renderer } from "@/types/blocks/rendererTypes";
 import { assumeSafe } from "@/utils/sanitize";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg } from "@/types/runtimeTypes";
-import { SafeHTML } from "@/types/stringTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 
 export class IFrameRenderer extends Renderer {
   constructor() {

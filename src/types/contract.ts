@@ -38,7 +38,7 @@ import {
 } from "@/types/recipeTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { UserOptions } from "@/types/runtimeTypes";
+import { type UserOptions } from "@/types/runtimeTypes";
 
 type Kind =
   | "block"

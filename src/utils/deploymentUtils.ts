@@ -20,10 +20,10 @@ import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { IExtension } from "@/types/extensionTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)

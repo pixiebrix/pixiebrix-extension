@@ -20,8 +20,8 @@ import { type Framework } from "@/pageScript/messenger/constants";
 import { getCssSelector } from "css-selector-generator";
 import { castArray, compact } from "lodash";
 import { getComponentData, type ReadPayload } from "@/pageScript/messenger/api";
-import { ReaderRoot } from "@/types/runtimeTypes";
-import { JsonObject } from "type-fest";
+import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type JsonObject } from "type-fest";
 
 export type FrameworkConfig = ReadPayload & {
   /**

@@ -17,7 +17,7 @@
 
 /* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
 
-import { IconLibrary } from "@/types/iconTypes";
+import { type IconLibrary } from "@/types/iconTypes";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
 

@@ -34,9 +34,9 @@ import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { Expression } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 async function fetchRobots(
   config: SanitizedServiceConfiguration

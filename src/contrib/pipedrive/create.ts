@@ -19,8 +19,8 @@ import { Effect } from "@/types/blocks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations

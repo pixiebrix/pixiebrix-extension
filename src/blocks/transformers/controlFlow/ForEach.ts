@@ -20,8 +20,12 @@ import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions, OutputKey } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type BlockArg,
+  type BlockOptions,
+  type OutputKey,
+} from "@/types/runtimeTypes";
 
 class ForEach extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");

@@ -16,7 +16,11 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import { EditablePackage, Kind, type RegistryId } from "@/types/registryTypes";
+import {
+  type EditablePackage,
+  type Kind,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
@@ -41,8 +45,11 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { serializeError } from "serialize-error";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { ServiceDefinition } from "@/types/serviceTypes";
-import { RecipeDefinition, UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { type ServiceDefinition } from "@/types/serviceTypes";
+import {
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
 
 type QueryArgs = {
   /**

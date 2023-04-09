@@ -17,7 +17,7 @@
 
 import { withReadWindow } from "@/pageScript/messenger/api";
 import { registerFactory } from "@/blocks/readers/factory";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 type PathSpecObj = Record<string, string>;
 export type PathSpec = string | PathSpecObj;

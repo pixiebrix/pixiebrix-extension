@@ -48,7 +48,7 @@ import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/Templ
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
 import { UnstyledButton } from "@/components/UnstyledButton";
-import { Expression, TemplateEngine } from "@/types/runtimeTypes";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 
 /**
  * An independent class name

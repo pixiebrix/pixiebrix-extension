@@ -31,9 +31,9 @@ import {
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { IExtension } from "@/types/extensionTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {

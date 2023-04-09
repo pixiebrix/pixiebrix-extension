@@ -32,11 +32,17 @@ import {
 import { type Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
-import { IExtension, PersistedExtension } from "@/types/extensionTypes";
-import { UUID } from "@/types/stringTypes";
-import { RecipeDefinition, ExtensionPointConfig } from "@/types/recipeTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { OutputKey, UserOptions } from "@/types/runtimeTypes";
+import {
+  type IExtension,
+  type PersistedExtension,
+} from "@/types/extensionTypes";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type RecipeDefinition,
+  type ExtensionPointConfig,
+} from "@/types/recipeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OutputKey, type UserOptions } from "@/types/runtimeTypes";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],

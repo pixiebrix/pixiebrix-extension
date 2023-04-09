@@ -32,8 +32,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "@/registry/localRegistry";
 import { useAsyncState } from "@/hooks/common";
 import { type Organization } from "@/types/contract";
-import { UUID } from "@/types/stringTypes";
-import { Sharing } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Sharing } from "@/types/registryTypes";
 
 const SharingTag: React.FunctionComponent<{
   block: ReferenceEntry;

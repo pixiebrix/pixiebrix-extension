@@ -53,12 +53,12 @@ import {
 } from "@/extensionPoints/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
-import { UUID } from "@/types/stringTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { IBlock } from "@/types/blockTypes";
-import { Schema } from "@/types/schemaTypes";
-import { RunArgs, RunReason } from "@/types/runtimeTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type TourConfig = {
   /**

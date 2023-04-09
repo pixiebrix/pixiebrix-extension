@@ -20,8 +20,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useMemo } from "react";
 import { recipesActions } from "./recipesSlice";
-import { RegistryId } from "@/types/registryTypes";
-import { UseCachedQueryResult } from "@/types/sliceTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
 /**
  * Lookup a recipe from the registry by ID, or null if it doesn't exist

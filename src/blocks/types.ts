@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import {
-  ElementReference,
-  Expression,
-  OutputKey,
-  TemplateEngine,
+  type ElementReference,
+  type Expression,
+  type OutputKey,
+  type TemplateEngine,
 } from "@/types/runtimeTypes";
-import { UUID } from "@/types/stringTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API

@@ -18,8 +18,8 @@
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { Reader } from "@/types/blocks/readerTypes";
-import { ReaderRoot } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * Read attributes, text, etc. from an HTML element.

@@ -23,9 +23,9 @@ import {
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
-import { UnresolvedExtension } from "@/types/extensionTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
+import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * Use this helper outside the Page Editor context to uninstall a recipe and all of its extensions.

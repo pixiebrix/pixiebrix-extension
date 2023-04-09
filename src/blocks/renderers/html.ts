@@ -18,8 +18,8 @@
 import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
-import { BlockArg } from "@/types/runtimeTypes";
-import { SafeHTML } from "@/types/stringTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 
 export class HtmlRenderer extends Renderer {
   constructor() {

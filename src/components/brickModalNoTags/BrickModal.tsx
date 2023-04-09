@@ -50,9 +50,9 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import { RegistryId } from "@/types/registryTypes";
-import { IBlock } from "@/types/blockTypes";
-import { IBrick } from "@/types/brickInstanceTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;

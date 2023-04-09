@@ -26,8 +26,8 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
-import { Expression } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,

@@ -18,7 +18,7 @@
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type Except } from "type-fest";
 import { type RecipesRootState } from "./recipesTypes";
-import { UseCachedQueryResult } from "@/types/sliceTypes";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
 type AllRecipesSelector = Except<
   UseCachedQueryResult<RecipeDefinition[]>,

@@ -35,8 +35,8 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { isExpression } from "@/runtime/mapArgs";
-import { UUID } from "@/types/stringTypes";
-import { BlockArgContext } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type BlockArgContext } from "@/types/runtimeTypes";
 
 type Location = "modal" | "panel";
 

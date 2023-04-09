@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
+import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 
 export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE: TemplateEngine = "mustache";
 

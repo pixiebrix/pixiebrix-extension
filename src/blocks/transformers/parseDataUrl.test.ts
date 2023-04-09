@@ -16,7 +16,7 @@
  */
 
 import { ParseDataUrl } from "@/blocks/transformers/parseDataUrl";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 const block = new ParseDataUrl();
 

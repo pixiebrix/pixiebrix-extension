@@ -30,10 +30,10 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { pixieServiceFactory } from "@/services/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { ApiVersion } from "@/types/runtimeTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import {
-  SanitizedServiceConfiguration,
-  ServiceDependency,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
 } from "@/types/serviceTypes";
 
 jest.mock("@/telemetry/logging", () => {

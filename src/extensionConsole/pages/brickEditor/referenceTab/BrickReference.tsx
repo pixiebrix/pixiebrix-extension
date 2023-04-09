@@ -38,9 +38,9 @@ import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { IService } from "@/types/serviceTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IService } from "@/types/serviceTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 const BrickReference: React.FunctionComponent<{
   bricks: ReferenceEntry[];

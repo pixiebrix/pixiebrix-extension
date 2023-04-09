@@ -32,7 +32,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IReader, Reader } from "@/types/blocks/readerTypes";
+import { type IReader, Reader } from "@/types/blocks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -41,7 +41,7 @@ import {
   KEYBOARD_TRIGGERS,
   type Trigger,
 } from "@/extensionPoints/triggerExtensionTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export function pickEventProperties(nativeEvent: Event): JsonObject {
   if (nativeEvent instanceof KeyboardEvent) {

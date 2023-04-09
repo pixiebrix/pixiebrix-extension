@@ -56,11 +56,11 @@ import {
 import safeJsonStringify from "json-stringify-safe";
 import { deserializeError, serializeError } from "serialize-error";
 import {
-  IService,
-  SanitizedServiceConfiguration,
-  ServiceConfig,
+  type IService,
+  type SanitizedServiceConfiguration,
+  type ServiceConfig,
 } from "@/types/serviceTypes";
-import { MessageContext } from "@/types/loggerTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)

@@ -48,7 +48,7 @@ import {
   type RenderHookOptions,
   type RenderHookResult,
 } from "@testing-library/react-hooks";
-import { Expression, ExpressionType } from "@/types/runtimeTypes";
+import { type Expression, type ExpressionType } from "@/types/runtimeTypes";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });

@@ -17,8 +17,8 @@
 
 import { type Primitive } from "type-fest";
 import type React from "react";
-import { RecipeDefinition } from "@/types/recipeTypes";
-import { ServiceAuthPair } from "@/types/serviceTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ServiceAuthPair } from "@/types/serviceTypes";
 
 export type WizardStep = {
   key: string;

@@ -27,12 +27,12 @@ import {
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
-  IExtension,
-  ResolvedExtension,
-  UnresolvedExtension,
+  type IExtension,
+  type ResolvedExtension,
+  type UnresolvedExtension,
 } from "@/types/extensionTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * Returns true if installable is an UnavailableRecipe

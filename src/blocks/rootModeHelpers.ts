@@ -18,8 +18,8 @@
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/helpers";
-import { ReaderRoot } from "@/types/runtimeTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * Special prop used to upgrade DOM bricks to be root-aware

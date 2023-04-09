@@ -37,9 +37,9 @@ import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type MessengerMeta } from "webext-messenger";
-import { SerializedError } from "@/types/messengerTypes";
-import { MessageContext } from "@/types/loggerTypes";
-import { UUID } from "@/types/stringTypes";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

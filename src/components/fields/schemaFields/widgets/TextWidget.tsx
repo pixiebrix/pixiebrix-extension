@@ -40,8 +40,8 @@ import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
-import { Schema } from "@/types/schemaTypes";
-import { TemplateEngine } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type TemplateEngine } from "@/types/runtimeTypes";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({

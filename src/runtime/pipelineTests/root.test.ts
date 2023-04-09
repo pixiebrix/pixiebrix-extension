@@ -26,11 +26,11 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { Reader } from "@/types/blocks/readerTypes";
 import {
-  ApiVersion,
-  BlockArg,
-  BlockOptions,
-  Expression,
-  ReaderRoot,
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+  type Expression,
+  type ReaderRoot,
 } from "@/types/runtimeTypes";
 import { Block } from "@/types/blockTypes";
 

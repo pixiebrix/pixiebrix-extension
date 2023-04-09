@@ -28,11 +28,11 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
 import {
-  SanitizedServiceConfiguration,
+  type SanitizedServiceConfiguration,
   type Service,
 } from "@/types/serviceTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { OutputKey } from "@/types/runtimeTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,

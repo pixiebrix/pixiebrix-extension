@@ -40,7 +40,7 @@ import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { UserOptions } from "@/types/runtimeTypes";
+import { type UserOptions } from "@/types/runtimeTypes";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,

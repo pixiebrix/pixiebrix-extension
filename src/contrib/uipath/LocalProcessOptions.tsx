@@ -34,8 +34,8 @@ import { useField } from "formik";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
-import { Expression } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 function useLocalRobot() {
   expectContext(

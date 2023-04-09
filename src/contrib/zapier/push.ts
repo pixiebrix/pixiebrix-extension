@@ -23,10 +23,10 @@ import { type Webhook } from "@/contrib/zapier/contract";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { Effect } from "@/types/blocks/effectTypes";
-import { UnknownObject } from "@/types/objectTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 

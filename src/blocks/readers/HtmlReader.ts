@@ -17,9 +17,9 @@
 
 import { Reader } from "@/types/blocks/readerTypes";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
-import { Schema } from "@/types/schemaTypes";
-import { JsonObject } from "type-fest";
-import { ReaderRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
+import { type ReaderRoot } from "@/types/runtimeTypes";
 
 /**
  * Read HTML from the document or the current element.

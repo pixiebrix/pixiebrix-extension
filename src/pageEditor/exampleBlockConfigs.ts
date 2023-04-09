@@ -28,8 +28,8 @@ import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import TourStep from "@/blocks/transformers/tourStep/tourStep";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
-import { RegistryId } from "@/types/registryTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * Get a default block config for a block

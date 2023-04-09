@@ -22,7 +22,11 @@ import {
   isVarExpression,
 } from "@/runtime/mapArgs";
 import { produce } from "immer";
-import { Expression, OutputKey, ServiceKeyVar } from "@/types/runtimeTypes";
+import {
+  type Expression,
+  type OutputKey,
+  type ServiceKeyVar,
+} from "@/types/runtimeTypes";
 
 export type ServiceSlice = Pick<FormState, "services" | "extension">;
 

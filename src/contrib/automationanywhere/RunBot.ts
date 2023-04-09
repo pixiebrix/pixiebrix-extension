@@ -34,10 +34,10 @@ import {
 } from "@/services/constants";
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
-import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"

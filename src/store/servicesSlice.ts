@@ -19,8 +19,8 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
-import { RawServiceConfiguration } from "@/types/serviceTypes";
-import { UUID } from "@/types/stringTypes";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export interface ServicesState {
   configured: Record<string, RawServiceConfiguration>;

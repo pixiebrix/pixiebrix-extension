@@ -54,14 +54,17 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
-import { Schema } from "@/types/schemaTypes";
-import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
-import { IBlock } from "@/types/blockTypes";
-import { JsonObject } from "type-fest";
-import { UUID } from "@/types/stringTypes";
-import { RunArgs, RunReason } from "@/types/runtimeTypes";
-import { IReader } from "@/types/blocks/readerTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type IExtension,
+  type ResolvedExtension,
+} from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type JsonObject } from "type-fest";
+import { type UUID } from "@/types/stringTypes";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
   heading: string;

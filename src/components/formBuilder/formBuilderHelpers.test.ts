@@ -33,7 +33,7 @@ import { initRenamingCases } from "./formEditor.testCases";
 import { UI_WIDGET } from "./schemaFieldNames";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
-import { KEYS_OF_UI_SCHEMA, Schema } from "@/types/schemaTypes";
+import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 
 describe("replaceStringInArray", () => {
   let array: string[];

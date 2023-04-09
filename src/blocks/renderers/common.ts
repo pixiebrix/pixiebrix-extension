@@ -20,8 +20,8 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import sanitize from "@/utils/sanitize";
 import { type UnknownObject } from "@/types/objectTypes";
 import { escape } from "lodash";
-import { SafeHTML } from "@/types/stringTypes";
-import { RendererOutput } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
+import { type RendererOutput } from "@/types/runtimeTypes";
 
 // Require SafeHTML here, because if we just accepted unknown, this would return `true` even for unsanitized strings
 function isRendererOutput(

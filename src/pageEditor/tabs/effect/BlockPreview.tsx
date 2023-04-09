@@ -43,10 +43,10 @@ import { type BlockType } from "@/runtime/runtimeTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
-import { RegistryId } from "@/types/registryTypes";
-import { IBlock } from "@/types/blockTypes";
-import { ApiVersion, BlockArgContext } from "@/types/runtimeTypes";
-import { ServiceDependency } from "@/types/serviceTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type ApiVersion, type BlockArgContext } from "@/types/runtimeTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 
 /**
  * Bricks to preview even if there's no trace.

@@ -51,15 +51,15 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { IconConfig } from "@/types/iconTypes";
-import { UUID } from "@/types/stringTypes";
-import { Schema } from "@/types/schemaTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { IBlock } from "@/types/blockTypes";
-import { IReader } from "@/types/blocks/readerTypes";
-import { JsonObject } from "type-fest";
-import { RendererOutput, RunArgs } from "@/types/runtimeTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IconConfig } from "@/types/iconTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type JsonObject } from "type-fest";
+import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type PanelConfig = {
   heading?: string;

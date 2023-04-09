@@ -24,11 +24,11 @@ import { sheets } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
-import { Schema } from "@/types/schemaTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 import { Effect } from "@/types/blocks/effectTypes";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 type CellValue = string | number | null;
 

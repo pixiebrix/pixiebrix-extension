@@ -24,10 +24,10 @@ import { resolveDefinitions } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
 import { expectContext } from "@/utils/expectContext";
-import { ResolvedExtensionPointConfig } from "@/types/recipeTypes";
-import { ServiceAuthPair } from "@/types/serviceTypes";
-import { IExtension } from "@/types/extensionTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
+import { type ResolvedExtensionPointConfig } from "@/types/recipeTypes";
+import { type ServiceAuthPair } from "@/types/serviceTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([

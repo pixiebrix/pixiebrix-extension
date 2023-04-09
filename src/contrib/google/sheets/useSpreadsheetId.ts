@@ -28,7 +28,7 @@ import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetServiceOutputKey } from "@/contrib/google/sheets/getSheetServiceOutputKey";
-import { Expression, UserOptions } from "@/types/runtimeTypes";
+import { type Expression, type UserOptions } from "@/types/runtimeTypes";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;

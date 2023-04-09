@@ -46,8 +46,8 @@ import {
   selectActiveElement,
   selectActiveRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { UUID } from "@/types/stringTypes";
-import { IExtension } from "@/types/extensionTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point

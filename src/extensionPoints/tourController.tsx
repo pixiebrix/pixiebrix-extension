@@ -26,10 +26,10 @@ import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { MessageContext } from "@/types/loggerTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 /**
  * A run of a tour.

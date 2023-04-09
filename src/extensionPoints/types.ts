@@ -18,17 +18,17 @@
 import { type Availability, type ReaderConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
-import { ApiVersion, RunArgs } from "@/types/runtimeTypes";
-import { RegistryId, Metadata } from "@/types/registryTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { BlockIcon } from "@/types/iconTypes";
-import { ResolvedExtension } from "@/types/extensionTypes";
-import { Schema } from "@/types/schemaTypes";
-import { Logger } from "@/types/loggerTypes";
-import { IReader } from "@/types/blocks/readerTypes";
-import { IBlock } from "@/types/blockTypes";
-import { UUID } from "@/types/stringTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
+import { type RegistryId, type Metadata } from "@/types/registryTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type BlockIcon } from "@/types/iconTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Logger } from "@/types/loggerTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type ExtensionPointType =
   | "panel"

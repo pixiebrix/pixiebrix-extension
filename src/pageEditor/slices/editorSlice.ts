@@ -29,7 +29,7 @@ import {
   type EditorRootState,
   type EditorState,
   ModalKey,
-  RecipeMetadataFormState,
+  type RecipeMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -88,11 +88,11 @@ import {
   keyToFieldValue,
   selectServiceVariables,
 } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { OptionsDefinition } from "@/types/recipeTypes";
-import { IExtension } from "@/types/extensionTypes";
-import { UserOptions } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type UserOptions } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

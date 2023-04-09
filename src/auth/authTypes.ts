@@ -21,8 +21,8 @@ import {
   type Milestone,
 } from "@/types/contract";
 import { type Except } from "type-fest";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export interface AuthOption {
   label: string;

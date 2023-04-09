@@ -35,7 +35,7 @@ import {
 } from "@/extensionPoints/extensionPointTestUtils";
 import { type BlockPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
-import { ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 jest.mock("@/runtime/reducePipeline", () => ({

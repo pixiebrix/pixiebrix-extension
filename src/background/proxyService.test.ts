@@ -29,7 +29,10 @@ import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
-import { RawServiceConfiguration, ServiceConfig } from "@/types/serviceTypes";
+import {
+  type RawServiceConfiguration,
+  type ServiceConfig,
+} from "@/types/serviceTypes";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<

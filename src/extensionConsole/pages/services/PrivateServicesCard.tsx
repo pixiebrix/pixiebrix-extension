@@ -29,8 +29,11 @@ import { type ServicesState } from "@/store/servicesSlice";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
-import { IService, RawServiceConfiguration } from "@/types/serviceTypes";
-import { UUID } from "@/types/stringTypes";
+import {
+  type IService,
+  type RawServiceConfiguration,
+} from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
 
 type TableData = {
   service: IService;

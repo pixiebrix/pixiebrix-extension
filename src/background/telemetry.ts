@@ -28,7 +28,7 @@ import {
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, openDB } from "idb/with-async-ittr";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

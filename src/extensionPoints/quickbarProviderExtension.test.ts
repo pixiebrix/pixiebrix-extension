@@ -40,7 +40,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import defaultActions from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 jest.mock("@/telemetry/logging", () => {

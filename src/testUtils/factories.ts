@@ -81,29 +81,35 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { SafeString, UUID } from "@/types/stringTypes";
-import { IExtension, PersistedExtension } from "@/types/extensionTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
 import {
-  ApiVersion,
-  OutputKey,
-  RenderedArgs,
-  UserOptions,
+  type IExtension,
+  type PersistedExtension,
+} from "@/types/extensionTypes";
+import {
+  type ApiVersion,
+  type OutputKey,
+  type RenderedArgs,
+  type UserOptions,
 } from "@/types/runtimeTypes";
 import {
-  SanitizedConfig,
-  SanitizedServiceConfiguration,
-  ServiceDependency,
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
 } from "@/types/serviceTypes";
-import { Schema } from "@/types/schemaTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type IBlock } from "@/types/blockTypes";
 import {
-  InnerDefinitionRef,
-  RegistryId,
-  Metadata,
-  Sharing,
-  InnerDefinitions,
+  type InnerDefinitionRef,
+  type RegistryId,
+  type Metadata,
+  type Sharing,
+  type InnerDefinitions,
 } from "@/types/registryTypes";
-import { ExtensionPointConfig, RecipeDefinition } from "@/types/recipeTypes";
+import {
+  type ExtensionPointConfig,
+  type RecipeDefinition,
+} from "@/types/recipeTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560

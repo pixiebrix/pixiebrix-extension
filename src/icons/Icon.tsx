@@ -20,7 +20,7 @@ import styles from "./Icon.module.scss";
 import { useAsyncEffect } from "use-async-effect";
 import getSvgIcon from "@/icons/getSvgIcon";
 import cx from "classnames";
-import { IconLibrary } from "@/types/iconTypes";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const Icon: React.FunctionComponent<{
   icon?: string;

@@ -56,10 +56,10 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
-import { UUID } from "@/types/stringTypes";
-import { UnresolvedExtension } from "@/types/extensionTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UserOptions } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UserOptions } from "@/types/runtimeTypes";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;

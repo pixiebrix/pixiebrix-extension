@@ -28,8 +28,8 @@ import {
   teapotBlock,
   testOptions,
 } from "./pipelineTestHelpers";
-import { ApiVersion, OutputKey } from "@/types/runtimeTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

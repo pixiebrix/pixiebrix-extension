@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block, IBlock } from "@/types/blockTypes";
+import { Block, type IBlock } from "@/types/blockTypes";
 import { readerFactory } from "@/blocks/readers/factory";
 import {
   type Schema as ValidatorSchema,
@@ -31,10 +31,18 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { ApiVersion, BlockArg, BlockOptions } from "@/types/runtimeTypes";
-import { Schema, UiSchema } from "@/types/schemaTypes";
-import { Metadata, RegistryId, SemVerString } from "@/types/registryTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import {
+  type ApiVersion,
+  type BlockArg,
+  type BlockOptions,
+} from "@/types/runtimeTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import {
+  type Metadata,
+  type RegistryId,
+  type SemVerString,
+} from "@/types/registryTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 type BlockDefinition = {
   apiVersion?: ApiVersion;

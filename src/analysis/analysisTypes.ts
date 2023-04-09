@@ -18,8 +18,8 @@
 import { type BlockPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
-import { BaseAnnotation } from "@/types/annotationTypes";
-import { UUID } from "@/types/stringTypes";
+import { type BaseAnnotation } from "@/types/annotationTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export enum AnalysisAnnotationActionType {
   AddValueToArray,

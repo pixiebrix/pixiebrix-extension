@@ -20,14 +20,14 @@ import { pickBy } from "lodash";
 import { resolveObj } from "@/utils";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
-import { Schema } from "@/types/schemaTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import {
-  SanitizedServiceConfiguration,
-  ServiceDependency,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
 } from "@/types/serviceTypes";
-import { UUID } from "@/types/stringTypes";
-import { ServiceContext } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ServiceContext } from "@/types/runtimeTypes";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",

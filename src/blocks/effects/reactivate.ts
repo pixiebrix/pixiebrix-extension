@@ -20,7 +20,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { reactivateTab } from "@/contentScript/lifecycle";
 import { expectContext } from "@/utils/expectContext";
 import { Effect } from "@/types/blocks/effectTypes";
-import { JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 export class ReactivateEffect extends Effect {
   constructor() {

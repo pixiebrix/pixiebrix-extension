@@ -27,8 +27,8 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
-import { Schema } from "@/types/schemaTypes";
-import { SafeString } from "@/types/stringTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeString } from "@/types/stringTypes";
 
 type PropertyRowProps = {
   name: string;

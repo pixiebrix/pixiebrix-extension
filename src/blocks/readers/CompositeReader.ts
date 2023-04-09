@@ -16,8 +16,8 @@
  */
 
 import { mapValues } from "lodash";
-import { IReader, Reader } from "@/types/blocks/readerTypes";
-import { JsonObject } from "type-fest";
+import { type IReader, Reader } from "@/types/blocks/readerTypes";
+import { type JsonObject } from "type-fest";
 
 class CompositeReader extends Reader {
   private readonly _readers: Record<string, IReader>;

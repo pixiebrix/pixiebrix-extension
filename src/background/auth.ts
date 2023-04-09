@@ -26,14 +26,14 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { BusinessError } from "@/errors/businessErrors";
 import { memoizeUntilSettled } from "@/utils";
-import { UUID } from "@/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
-  AuthData,
-  IService,
-  OAuth2Context,
-  RawServiceConfiguration,
+  type AuthData,
+  type IService,
+  type OAuth2Context,
+  type RawServiceConfiguration,
 } from "@/types/serviceTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 

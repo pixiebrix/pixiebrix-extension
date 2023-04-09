@@ -29,9 +29,9 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 import { isEmpty } from "lodash";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
-import { Logger } from "@/types/loggerTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Logger } from "@/types/loggerTypes";
 
 type SetValueData = RequireExactlyOne<
   {

@@ -27,8 +27,12 @@ import { uniq } from "lodash";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
-import { Schema } from "@/types/schemaTypes";
-import { ApiVersion, Expression, TemplateEngine } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type ApiVersion,
+  type Expression,
+  type TemplateEngine,
+} from "@/types/runtimeTypes";
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,

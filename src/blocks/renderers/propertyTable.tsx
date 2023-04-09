@@ -20,8 +20,8 @@ import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
 import { isValidUrl } from "@/utils";
-import { SafeHTML } from "@/types/stringTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 interface Item {
   key: string;

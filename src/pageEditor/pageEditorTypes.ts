@@ -33,8 +33,8 @@ import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
-import { OptionsDefinition } from "@/types/recipeTypes";
-import { Metadata } from "@/types/registryTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type Metadata } from "@/types/registryTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

@@ -33,8 +33,8 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { OutputKey } from "@/types/runtimeTypes";
-import { ServiceDependency } from "@/types/serviceTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 
 jest.mock("@/blocks/registry");
 

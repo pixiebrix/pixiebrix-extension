@@ -32,8 +32,8 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 
 import { dataStore } from "@/background/messenger/api";
-import { Schema } from "@/types/schemaTypes";
-import { BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockOptions } from "@/types/runtimeTypes";
 
 const dataStoreGetMock = dataStore.get as jest.MockedFunction<
   typeof dataStore.get

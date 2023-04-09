@@ -31,7 +31,7 @@ import {
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
 import { type BlockPipeline } from "@/blocks/types";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",

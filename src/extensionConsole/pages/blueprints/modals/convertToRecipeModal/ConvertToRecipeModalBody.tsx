@@ -48,9 +48,9 @@ import { type StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
-import { RegistryId, SemVerString } from "@/types/registryTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import {
-  RecipeDefinition,
+  type RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/recipeTypes";
 

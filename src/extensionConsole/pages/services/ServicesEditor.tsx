@@ -38,8 +38,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import { reportEvent } from "@/telemetry/events";
-import { IService, RawServiceConfiguration } from "@/types/serviceTypes";
-import { UUID } from "@/types/stringTypes";
+import {
+  type IService,
+  type RawServiceConfiguration,
+} from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 

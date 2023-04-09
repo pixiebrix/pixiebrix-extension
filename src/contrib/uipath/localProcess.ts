@@ -19,8 +19,8 @@ import { Transformer } from "@/types/blocks/transformerTypes";
 import type { JobResult } from "@uipath/robot/dist/models";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { Schema, SchemaProperties } from "@/types/schemaTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
 
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 

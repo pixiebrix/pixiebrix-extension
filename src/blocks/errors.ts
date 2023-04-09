@@ -20,9 +20,9 @@ import { type OutputUnit } from "@cfworker/json-schema";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { type JsonObject } from "type-fest";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { MessageContext } from "@/types/loggerTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";

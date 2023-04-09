@@ -43,7 +43,7 @@ import {
   TourExtensionPoint,
 } from "@/extensionPoints/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
-import { IExtension } from "@/types/extensionTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 function fromNativeElement(
   url: string,

@@ -42,8 +42,8 @@ import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { ApiVersion, BlockArgContext } from "@/types/runtimeTypes";
-import { UUID } from "@/types/stringTypes";
+import { type ApiVersion, type BlockArgContext } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type RunBlockArgs = {
   apiVersion: ApiVersion;

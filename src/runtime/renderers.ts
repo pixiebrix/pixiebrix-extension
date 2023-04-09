@@ -24,7 +24,7 @@ import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
 } from "@/sandbox/messenger/executor";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type AsyncTemplateRenderer = (
   template: string,

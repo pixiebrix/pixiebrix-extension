@@ -25,8 +25,11 @@ import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
-import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
-import { BlockOptions } from "@/types/runtimeTypes";
+import {
+  type IExtension,
+  type ResolvedExtension,
+} from "@/types/extensionTypes";
+import { type BlockOptions } from "@/types/runtimeTypes";
 
 describe("runSubTour", () => {
   test("it runs a sub-tour", async () => {

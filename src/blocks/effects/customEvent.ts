@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
-import { JsonObject } from "type-fest";
-import { Schema } from "@/types/schemaTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 
 class CustomEventEffect extends Effect {

@@ -25,12 +25,12 @@ import googleSheetSchema from "@schemas/googleSheetId.json";
 import { isEmpty } from "lodash";
 import {
   KEYS_OF_UI_SCHEMA,
-  Schema,
-  SchemaDefinition,
-  SchemaPropertyType,
-  UiSchema,
+  type Schema,
+  type SchemaDefinition,
+  type SchemaPropertyType,
+  type UiSchema,
 } from "@/types/schemaTypes";
-import { SafeString } from "@/types/stringTypes";
+import { type SafeString } from "@/types/stringTypes";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",

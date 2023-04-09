@@ -22,11 +22,11 @@ import { zip } from "lodash";
 import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"

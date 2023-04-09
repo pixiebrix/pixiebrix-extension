@@ -17,8 +17,8 @@
 
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "reselect";
-import { UnresolvedExtension } from "@/types/extensionTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export function selectExtensions({
   options,

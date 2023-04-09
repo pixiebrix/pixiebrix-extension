@@ -29,9 +29,9 @@ import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type SubmitPanelAction } from "@/blocks/errors";
-import { RegistryId } from "@/types/registryTypes";
-import { BlockArg, RendererOutput } from "@/types/runtimeTypes";
-import { MessageContext } from "@/types/loggerTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BlockArg, type RendererOutput } from "@/types/runtimeTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 type BodyProps = {
   blockId: RegistryId;

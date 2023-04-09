@@ -16,9 +16,9 @@
  */
 
 import { type BlockType } from "@/runtime/runtimeTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { IService } from "@/types/serviceTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IService } from "@/types/serviceTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 export default async function getType(
   // HACK: including IService and IExtensionPoint here is a hack to fix some call-sites. This method can only return

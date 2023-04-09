@@ -17,7 +17,7 @@
 
 import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { type Metadata, RegistryId } from "@/types/registryTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
   type ExtensionPointConfig,
@@ -29,12 +29,12 @@ import {
 } from "@/blocks/types";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
-import { ApiVersion, UserOptions } from "@/types/runtimeTypes";
-import { UUID } from "@/types/stringTypes";
-import { ServiceDependency } from "@/types/serviceTypes";
-import { IExtension } from "@/types/extensionTypes";
-import { OptionsDefinition } from "@/types/recipeTypes";
-import { Target } from "@/types/messengerTypes";
+import { type ApiVersion, type UserOptions } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type Target } from "@/types/messengerTypes";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

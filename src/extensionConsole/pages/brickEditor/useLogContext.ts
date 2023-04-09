@@ -20,8 +20,8 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import { useDispatch } from "react-redux";
 import { logActions } from "@/components/logViewer/logSlice";
 import { useEffect } from "react";
-import { MessageContext } from "@/types/loggerTypes";
-import { Definition } from "@/types/registryTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type Definition } from "@/types/registryTypes";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 

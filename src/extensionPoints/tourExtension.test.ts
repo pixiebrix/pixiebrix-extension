@@ -32,7 +32,7 @@ import blockRegistry from "@/blocks/registry";
 import { isTourInProgress } from "@/extensionPoints/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import defaultActions from "@/components/quickBar/defaultActions";
-import { ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 const rootReader = new RootReader();

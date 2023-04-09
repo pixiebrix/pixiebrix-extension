@@ -23,7 +23,7 @@ import cx from "classnames";
 import styles from "@/extensionConsole/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
-import { IBrick } from "@/types/brickInstanceTypes";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 const BrickResult: React.FunctionComponent<{
   brick: IBrick;

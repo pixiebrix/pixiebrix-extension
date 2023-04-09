@@ -37,10 +37,10 @@ import {
   removeSidebarFrame,
 } from "./sidebarDomControllerLite";
 import { type Except } from "type-fest";
-import { RunArgs, RunReason } from "@/types/runtimeTypes";
-import { UUID } from "@/types/stringTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { ExtensionRef } from "@/types/extensionTypes";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ExtensionRef } from "@/types/extensionTypes";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 

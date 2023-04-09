@@ -32,13 +32,16 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
-  InnerDefinitionRef,
-  InnerDefinitions,
-  RegistryId,
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type RegistryId,
 } from "@/types/registryTypes";
-import { IExtension, ResolvedExtension } from "@/types/extensionTypes";
-import { IExtensionPoint } from "@/types/extensionPointTypes";
-import { IBlock } from "@/types/blockTypes";
+import {
+  type IExtension,
+  type ResolvedExtension,
+} from "@/types/extensionTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =

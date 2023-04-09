@@ -35,8 +35,8 @@ import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
-import { OutputKey } from "@/types/runtimeTypes";
-import { IBlock } from "@/types/blockTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 type TestAddBlockResult = {
   error?: string;

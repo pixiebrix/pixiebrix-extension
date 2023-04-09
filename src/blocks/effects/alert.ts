@@ -18,8 +18,8 @@
 import { propertiesToSchema } from "@/validators/generic";
 import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
-import { Schema } from "@/types/schemaTypes";
-import { BlockArg } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArg } from "@/types/runtimeTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BaseAnnotation } from "@/types/annotationTypes";
+import { type BaseAnnotation } from "@/types/annotationTypes";
 
 export type FieldAnnotationAction = {
   caption: string;

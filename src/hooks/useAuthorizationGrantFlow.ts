@@ -18,8 +18,8 @@
 import { getBaseURL } from "@/services/baseService";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { IService, ServiceDefinition } from "@/types/serviceTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type IService, type ServiceDefinition } from "@/types/serviceTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 type FlowOptions = {
   target: "_blank" | "_self";

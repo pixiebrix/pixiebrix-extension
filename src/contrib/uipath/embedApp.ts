@@ -22,12 +22,12 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
 import pTimeout from "p-timeout";
-import { RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { Renderer } from "@/types/blocks/rendererTypes";
-import { Schema } from "@/types/schemaTypes";
-import { SafeHTML } from "@/types/stringTypes";
-import { BlockArg, BlockOptions } from "@/types/runtimeTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeHTML } from "@/types/stringTypes";
+import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 interface RunDetails {
   blockId: RegistryId;

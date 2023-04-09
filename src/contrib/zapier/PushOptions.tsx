@@ -36,8 +36,8 @@ import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { joinName } from "@/utils";
-import { Expression } from "@/types/runtimeTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 function useHooks(): {
   hooks: Webhook[];
