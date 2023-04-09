@@ -232,7 +232,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     this.abortController.signal.addEventListener("abort", callback);
   }
 
-  unregisterExtensionEvents(): void {
+  clearExtensionInterfaceAndEvents(): void {
     // NOP: the unregisterExtensionEvents method doesn't need to unregister anything from the page because the
     // observers/handlers are installed for the extensionPoint instance itself, not the extensions. I.e., there's a
     // single load/click/etc. trigger that's shared by all extensions using this extension point.

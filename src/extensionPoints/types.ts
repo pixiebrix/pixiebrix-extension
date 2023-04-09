@@ -174,14 +174,16 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   }
 
   /**
-   * Internal helper method to unregister extension's triggers/observers/etc. from the page.
+   * Internal helper method to clear an extension's UI and triggers/observers/etc. from the page.
    *
    * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
-   * updating this.extensions after the call to removeExtensions
+   * updating this.extensions as necessary.
    *
    * @see syncExtensions
    */
-  protected abstract unregisterExtensionEvents(extensionIds: UUID[]): void;
+  protected abstract clearExtensionInterfaceAndEvents(
+    extensionIds: UUID[]
+  ): void;
 
   syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
@@ -190,7 +192,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     const removed = this.extensions.filter(
       (currentExtension) => !updatedIds.has(currentExtension.id)
     );
-    this.unregisterExtensionEvents(removed.map((x) => x.id));
+    this.clearExtensionInterfaceAndEvents(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated extensions
     this.extensions.splice(0, this.extensions.length);

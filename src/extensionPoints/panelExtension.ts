@@ -165,7 +165,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     return blockList(extension.config.body);
   }
 
-  unregisterExtensionEvents(): void {
+  clearExtensionInterfaceAndEvents(): void {
     // FIXME: implement this to avoid unnecessary firing
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }
