@@ -35,7 +35,7 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { type Except } from "type-fest";
 import {
-  type ExtensionPointConfig,
+  type ExtensionDefinition,
   type OptionsDefinition,
   type RecipeDefinition,
   type UnsavedRecipeDefinition,
@@ -183,7 +183,7 @@ export function replaceRecipeExtension(
     const extensionPointId = element.extensionPoint.metadata.id;
     const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
 
-    const commonExtensionConfig: Except<ExtensionPointConfig, "id"> = {
+    const commonExtensionConfig: Except<ExtensionDefinition, "id"> = {
       ...pick(rawExtension, [
         "label",
         "config",
@@ -267,8 +267,8 @@ export function replaceRecipeExtension(
 
 function selectExtensionPointConfig(
   extension: IExtension
-): ExtensionPointConfig {
-  const extensionPoint: ExtensionPointConfig = {
+): ExtensionDefinition {
+  const extensionPoint: ExtensionDefinition = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
     id: extension.extensionPointId,
   };
@@ -394,14 +394,14 @@ export function buildRecipe({
 
 type BuildExtensionPointsResult = {
   innerDefinitions: InnerDefinitions;
-  extensionPoints: ExtensionPointConfig[];
+  extensionPoints: ExtensionDefinition[];
 };
 
 function buildExtensionPoints(
   extensions: IExtension[]
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
-  const extensionPoints: ExtensionPointConfig[] = [];
+  const extensionPoints: ExtensionDefinition[] = [];
 
   for (const extension of extensions) {
     // When an extensionPointId is an @inner/* style reference, or if the

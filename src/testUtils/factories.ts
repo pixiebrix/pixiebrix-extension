@@ -107,7 +107,7 @@ import {
   type InnerDefinitions,
 } from "@/types/registryTypes";
 import {
-  type ExtensionPointConfig,
+  type ExtensionDefinition,
   type RecipeDefinition,
 } from "@/types/recipeTypes";
 
@@ -354,7 +354,7 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
-export const extensionPointConfigFactory = define<ExtensionPointConfig>({
+export const extensionPointConfigFactory = define<ExtensionDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services(): Record<OutputKey, RegistryId> {
@@ -445,7 +445,7 @@ export const versionedExtensionPointRecipeFactory = ({
  * Factory to create a RecipeDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const extensionPoints: ExtensionPointConfig[] = [];
+  const extensionPoints: ExtensionDefinition[] = [];
   for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic

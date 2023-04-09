@@ -31,7 +31,7 @@ import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
 /**
  * @see resolveDefinitions
  */
-export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
+export type ResolvedExtensionPointConfig = ExtensionDefinition & {
   id: RegistryId;
 
   _resolvedExtensionPointConfigBrand: never;
@@ -47,9 +47,10 @@ export type OptionsDefinition = {
 };
 
 /**
- * An extension point configured in a recipe.
+ * An extension defined in a recipe.
+ * @see RecipeDefinition.extensionPoints
  */
-export type ExtensionPointConfig = {
+export type ExtensionDefinition = {
   /**
    * The id of the ExtensionPoint.
    */
@@ -95,7 +96,7 @@ export type ExtensionPointConfig = {
  */
 export interface UnsavedRecipeDefinition extends Definition {
   kind: "recipe";
-  extensionPoints: ExtensionPointConfig[];
+  extensionPoints: ExtensionDefinition[];
   definitions?: InnerDefinitions;
   options?: OptionsDefinition;
 }
