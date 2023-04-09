@@ -30,7 +30,7 @@ import {
 } from "@/types/recipeTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 import {
   InnerDefinitionRef,
   InnerDefinitions,
@@ -137,18 +137,18 @@ async function ensureReaders(
 
 async function ensureExtensionPoint(
   definitions: InnerDefinitions,
-  originalConfig: InnerExtensionPoint
+  originalInnerDefinition: InnerExtensionPoint
 ) {
-  const config = cloneDeep(originalConfig);
+  const innerDefinition = cloneDeep(originalInnerDefinition);
 
   // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
   // clash if they use the same name for different readers
-  config.definition.reader = await ensureReaders(
+  innerDefinition.definition.reader = await ensureReaders(
     definitions,
-    config.definition.reader
+    innerDefinition.definition.reader
   );
 
-  const obj = pick(config, ["kind", "definition"]);
+  const obj = pick(innerDefinition, ["kind", "definition"]);
   const registryId = makeInternalId(obj);
 
   if (await extensionPointRegistry.exists(registryId)) {
@@ -216,8 +216,8 @@ export async function resolveDefinitions<
 
   return produce(extension, async (draft) => {
     const ensured = await resolveObj(
-      mapValues(draft.definitions, async (config) =>
-        ensureInner(draft.definitions, config)
+      mapValues(draft.definitions, async (definition) =>
+        ensureInner(draft.definitions, definition)
       )
     );
     const definitions = new Map(Object.entries(ensured));
@@ -248,10 +248,10 @@ export async function resolveRecipe(
   );
   const definitions = new Map(Object.entries(ensured));
   return selected.map(
-    (config) =>
-      (definitions.has(config.id)
-        ? { ...config, id: definitions.get(config.id).id }
-        : config) as ResolvedExtensionPointConfig
+    (definition) =>
+      (definitions.has(definition.id)
+        ? { ...definition, id: definitions.get(definition.id).id }
+        : definition) as ResolvedExtensionPointConfig
   );
 }
 
