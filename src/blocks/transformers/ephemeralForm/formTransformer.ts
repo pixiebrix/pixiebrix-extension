@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import {
@@ -121,7 +121,7 @@ export class FormTransformer extends Transformer {
       cancelable = true,
       submitCaption = "Submit",
       location = "modal",
-    }: BlockArg,
+    }: BlockArgs,
     { logger, abortSignal }: BlockOptions
   ): Promise<unknown> {
     expectContext("contentScript");

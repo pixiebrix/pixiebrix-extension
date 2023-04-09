@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
   type FrameworkConfig,
@@ -75,7 +75,7 @@ export class ComponentReader extends Transformer {
     return true;
   }
 
-  async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
+  async transform(args: BlockArgs, { root }: BlockOptions): Promise<unknown> {
     return frameworkReadFactory(args.framework)(
       args as unknown as FrameworkConfig,
       root

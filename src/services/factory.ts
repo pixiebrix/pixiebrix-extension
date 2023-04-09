@@ -35,7 +35,7 @@ import {
   type OAuth2Context,
   type SanitizedConfig,
   Service,
-  type ServiceConfig,
+  type SecretsConfig,
   type ServiceDefinition,
   type TokenAuthenticationDefinition,
   type TokenContext,
@@ -171,7 +171,7 @@ class LocalDefinedService<
     return uniq(compact(patterns));
   }
 
-  getTokenContext(serviceConfig: ServiceConfig): TokenContext {
+  getTokenContext(serviceConfig: SecretsConfig): TokenContext {
     if (this.isToken) {
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
@@ -183,7 +183,7 @@ class LocalDefinedService<
     return undefined;
   }
 
-  getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
+  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (
         this._definition.authentication as OAuth2AuthenticationDefinition
@@ -216,7 +216,7 @@ class LocalDefinedService<
   }
 
   private authenticateRequestKey(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -252,7 +252,7 @@ class LocalDefinedService<
   }
 
   private authenticateBasicRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -299,7 +299,7 @@ class LocalDefinedService<
   }
 
   private authenticateRequestToken(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
     tokenData: AuthData
   ): AxiosRequestConfig {
@@ -331,7 +331,7 @@ class LocalDefinedService<
   }
 
   authenticateRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
     authData?: AuthData
   ): AxiosRequestConfig {

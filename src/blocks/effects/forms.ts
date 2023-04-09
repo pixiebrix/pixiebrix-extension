@@ -29,7 +29,7 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 import { isEmpty } from "lodash";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
 
@@ -205,7 +205,7 @@ export class SetInputValue extends Effect {
     {
       inputs,
       isRootAware,
-    }: BlockArg<{
+    }: BlockArgs<{
       inputs: Array<{ selector: string; value: unknown }>;
       isRootAware?: boolean;
     }>,
@@ -286,7 +286,7 @@ export class FormFill extends Effect {
       fieldSelectors = {},
       submit = false,
       isRootAware = false,
-    }: BlockArg,
+    }: BlockArgs,
     { logger, root }: BlockOptions
   ): Promise<void> {
     const submitRoot = isRootAware ? root : document;

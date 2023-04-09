@@ -25,7 +25,7 @@ import { produce } from "immer";
 import {
   type Expression,
   type OutputKey,
-  type ServiceKeyVar,
+  type ServiceVarRef,
 } from "@/types/runtimeTypes";
 
 export type ServiceSlice = Pick<FormState, "services" | "extension">;
@@ -72,8 +72,8 @@ export function selectServiceVariables(
   return variables;
 }
 
-export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
-  const value = key == null ? null : (`@${key}` as ServiceKeyVar);
+export function keyToFieldValue(key: OutputKey): Expression<ServiceVarRef> {
+  const value = key == null ? null : (`@${key}` as ServiceVarRef);
   return {
     __type__: "var",
     __value__: value,

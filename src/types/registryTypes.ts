@@ -46,24 +46,28 @@ export type SemVerString = string & {
 };
 
 /**
- * Metadata about a block, extension point, or service
+ * Metadata about a block, extension point, service, or recipe.
  */
 export interface Metadata {
+  /**
+   * Registry id in the external registry
+   */
   readonly id: RegistryId;
+
+  /**
+   * Human-readably name
+   */
   readonly name: string;
-  // XXX: why is this optional? Should default to the version of the extension?
-  readonly version?: SemVerString;
+
   readonly description?: string;
+
+  // Currently optional because it defaults to the browser extension version for blocks defined in JS
+  readonly version?: SemVerString;
 
   /**
    * @deprecated experimental prop that will likely be removed in the future
    */
   readonly icon?: BlockIcon;
-
-  /**
-   * @deprecated experimental prop that will likely be removed in the future
-   */
-  readonly author?: string;
 
   /**
    * PixieBrix extension version required to install the brick/run the extension

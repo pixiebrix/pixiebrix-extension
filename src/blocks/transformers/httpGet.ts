@@ -22,7 +22,7 @@ import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 
 export class GetAPITransformer extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/get");
@@ -65,7 +65,7 @@ export class GetAPITransformer extends Transformer {
     ["url"]
   );
 
-  async transform({ service, ...requestProps }: BlockArg): Promise<unknown> {
+  async transform({ service, ...requestProps }: BlockArgs): Promise<unknown> {
     if (!isNullOrBlank(service) && typeof service !== "object") {
       throw new PropError(
         "Expected configured service",

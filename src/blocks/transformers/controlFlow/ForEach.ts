@@ -22,7 +22,7 @@ import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type OutputKey,
 } from "@/types/runtimeTypes";
@@ -74,7 +74,7 @@ class ForEach extends Transformer {
       elements,
       body: bodyPipeline,
       elementKey = validateOutputKey("element"),
-    }: BlockArg<{
+    }: BlockArgs<{
       elements: unknown[];
       body: PipelineExpression;
       elementKey: OutputKey;

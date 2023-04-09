@@ -36,7 +36,7 @@ import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
@@ -160,7 +160,7 @@ export class RunBot extends Transformer {
   };
 
   async transform(
-    args: BlockArg<BotArgs>,
+    args: BlockArgs<BotArgs>,
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
     const {

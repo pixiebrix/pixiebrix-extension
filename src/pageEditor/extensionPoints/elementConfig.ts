@@ -29,7 +29,7 @@ import {
 } from "@/blocks/types";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
-import { type ApiVersion, type UserOptions } from "@/types/runtimeTypes";
+import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { type IExtension } from "@/types/extensionTypes";
@@ -99,7 +99,7 @@ export interface BaseFormState<
    * The input options from the extension's blueprint
    * @since 1.4.3
    */
-  optionsArgs: UserOptions;
+  optionsArgs: OptionsArgs;
 
   services: ServiceDependency[];
 

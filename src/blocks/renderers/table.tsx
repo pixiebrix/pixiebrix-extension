@@ -20,7 +20,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
 import makeDataTable, { type Row } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 // Type ColumnDefinition = {
@@ -87,7 +87,7 @@ export class TableRenderer extends Renderer {
   );
 
   async render(
-    { columns, data: userData }: BlockArg,
+    { columns, data: userData }: BlockArgs,
     { ctxt = [] }: BlockOptions
   ): Promise<SafeHTML> {
     let data = userData ?? ctxt;

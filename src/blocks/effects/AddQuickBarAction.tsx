@@ -24,7 +24,7 @@ import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 
 type ActionConfig = {
@@ -105,7 +105,7 @@ class AddQuickBarAction extends Effect {
       action: actionPipeline,
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
-    }: BlockArg<ActionConfig>,
+    }: BlockArgs<ActionConfig>,
     { root, logger, runPipeline }: BlockOptions
   ): Promise<void> {
     // Keep track of run number for tracing

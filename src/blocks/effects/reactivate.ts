@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { reactivateTab } from "@/contentScript/lifecycle";
 import { expectContext } from "@/utils/expectContext";
@@ -37,7 +37,7 @@ export class ReactivateEffect extends Effect {
   };
 
   async effect(
-    arg: BlockArg<JsonObject>,
+    arg: BlockArgs<JsonObject>,
     { logger }: BlockOptions
   ): Promise<void> {
     expectContext("contentScript");

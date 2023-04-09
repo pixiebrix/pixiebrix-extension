@@ -18,7 +18,7 @@
 import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 export class HtmlRenderer extends Renderer {
@@ -37,7 +37,7 @@ export class HtmlRenderer extends Renderer {
     },
   });
 
-  async render({ html }: BlockArg): Promise<SafeHTML> {
+  async render({ html }: BlockArgs): Promise<SafeHTML> {
     return sanitize(html);
   }
 }

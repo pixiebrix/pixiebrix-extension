@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { compact } from "lodash";
@@ -69,7 +69,7 @@ export class FormData extends Transformer {
   };
 
   async transform(
-    { selector, isRootAware = false }: BlockArg,
+    { selector, isRootAware = false }: BlockArgs,
     { root }: BlockOptions
   ): Promise<Record<string, unknown>> {
     const $elements = $safeFindElementsWithRootMode({

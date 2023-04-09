@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { runSubTour } from "@/extensionPoints/tourController";
@@ -43,7 +43,7 @@ export class RunSubTourEffect extends Effect {
   );
 
   async effect(
-    { tour }: BlockArg<{ tour: string }>,
+    { tour }: BlockArgs<{ tour: string }>,
     { logger }: BlockOptions
   ): Promise<void> {
     if (isEmpty(logger.context.blueprintId)) {

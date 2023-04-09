@@ -31,12 +31,12 @@ import {
 import { DoesNotExistError } from "@/baseRegistry";
 import {
   type IService,
-  type KeyedConfig,
+  type ServiceConfig,
   type RawServiceConfiguration,
   type SanitizedConfig,
   type SanitizedServiceConfiguration,
   type Service,
-  type ServiceConfig,
+  type SecretsConfig,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -55,7 +55,7 @@ enum ServiceLevel {
 /** Return config excluding any secrets/keys. */
 function excludeSecrets(
   service: IService,
-  config: KeyedConfig
+  config: ServiceConfig
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
@@ -85,7 +85,7 @@ type Option = {
   serviceId: RegistryId;
   level: ServiceLevel;
   local: boolean;
-  config: ServiceConfig | SanitizedConfig;
+  config: SecretsConfig | SanitizedConfig;
 };
 
 let wasInitialized = false;

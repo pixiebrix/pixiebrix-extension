@@ -20,18 +20,20 @@ import { type Except } from "type-fest";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
+  type Metadata,
   type RegistryId,
   type Sharing,
-  type Metadata,
 } from "@/types/registryTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type ApiVersion,
+  type OptionsArgs,
   type TemplateEngine,
-  type UserOptions,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
+import { pick } from "lodash";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 
 /**
  * RecipeMetadata that includes sharing information.
@@ -148,7 +150,7 @@ export type IExtension<Config extends UnknownObject = UnknownObject> = {
   /**
    * Options the end-user has configured (i.e., during blueprint activation)
    */
-  optionsArgs?: UserOptions;
+  optionsArgs?: OptionsArgs;
 
   /**
    * The extension configuration for the extension point.
@@ -245,3 +247,23 @@ export type ExtensionRef = {
    */
   blueprintId: RegistryId | null;
 };
+
+/**
+ * Select information about the RecipeDefinition used to install an IExtension
+ *
+ * TODO: move to extensionHelpers file once we have it
+ *
+ * @see IExtension._recipe
+ */
+export function selectSourceRecipeMetadata(
+  recipeDefinition: RecipeDefinition
+): IExtension["_recipe"] {
+  if (recipeDefinition.metadata?.id == null) {
+    throw new TypeError("Expected a RecipeDefinition");
+  }
+
+  return {
+    ...recipeDefinition.metadata,
+    ...pick(recipeDefinition, ["sharing", "updated_at"]),
+  };
+}

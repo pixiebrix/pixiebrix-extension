@@ -20,7 +20,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type ElementReference,
 } from "@/types/runtimeTypes";
@@ -96,7 +96,7 @@ export class TraverseElements extends Transformer {
     {
       selector,
       traversal = "find",
-    }: BlockArg<{
+    }: BlockArgs<{
       selector: string;
       traversal: string;
     }>,

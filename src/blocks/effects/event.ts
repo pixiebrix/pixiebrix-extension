@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
@@ -81,7 +81,7 @@ export class ElementEvent extends Effect {
   }
 
   async effect(
-    { selector, isRootAware, event }: BlockArg,
+    { selector, isRootAware, event }: BlockArgs,
     { logger, root }: BlockOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({

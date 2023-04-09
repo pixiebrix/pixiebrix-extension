@@ -19,7 +19,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
@@ -65,7 +65,7 @@ export class AlertEffect extends Effect {
     message,
     type = "window",
     duration = Number.POSITIVE_INFINITY,
-  }: BlockArg<{
+  }: BlockArgs<{
     message: string | number | boolean;
     type: "window" | "info" | "success" | "warning" | "error";
     duration?: number;

@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isEmpty } from "lodash";
@@ -117,7 +117,7 @@ export class ParseDate extends Transformer {
     },
   };
 
-  async transform({ date }: BlockArg<{ date: string }>): Promise<unknown> {
+  async transform({ date }: BlockArgs<{ date: string }>): Promise<unknown> {
     const { parseDate } = await import(
       /* webpackChunkName: "chrono-node" */ "chrono-node"
     );

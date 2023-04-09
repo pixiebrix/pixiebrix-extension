@@ -22,7 +22,7 @@ import { fromJS } from "@/services/factory";
 import { BusinessError } from "@/errors/businessErrors";
 import {
   type SanitizedConfig,
-  type ServiceConfig,
+  type SecretsConfig,
   type ServiceDefinition,
 } from "@/types/serviceTypes";
 
@@ -87,7 +87,7 @@ describe("LocalDefinedService", () => {
     const service = fromJS(
       automationAnywhereOAuth2 as unknown as ServiceDefinition
     );
-    const oauth2 = service.getOAuth2Context({} as unknown as ServiceConfig);
+    const oauth2 = service.getOAuth2Context({} as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
   });
 
@@ -99,7 +99,7 @@ describe("LocalDefinedService", () => {
     );
     const oauth2 = service.getOAuth2Context({
       clientId,
-    } as unknown as ServiceConfig);
+    } as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe(clientId);
   });
 });
@@ -111,7 +111,7 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
     expect(service.isBasicHttpAuth).toBeTrue();
 
     const config = service.authenticateRequest(
-      { apiToken: "topsecret" } as unknown as ServiceConfig,
+      { apiToken: "topsecret" } as unknown as SecretsConfig,
       { url: "/v1/candidates/", method: "get" }
     );
 
@@ -129,7 +129,7 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
 
     expect(() =>
       service.authenticateRequest(
-        { notTheKey: "topsecret" } as unknown as ServiceConfig,
+        { notTheKey: "topsecret" } as unknown as SecretsConfig,
         { url: "/v1/candidates/", method: "get" }
       )
     ).toThrow(BusinessError);

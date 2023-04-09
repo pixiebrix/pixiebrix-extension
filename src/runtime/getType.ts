@@ -16,14 +16,12 @@
  */
 
 import { type BlockType } from "@/runtime/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { type IService } from "@/types/serviceTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 export default async function getType(
   // HACK: including IService and IExtensionPoint here is a hack to fix some call-sites. This method can only return
   // block types
-  block: IBlock | IService | IExtensionPoint
+  block: IBrick
 ): Promise<BlockType | null> {
   if ("inferType" in block) {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.

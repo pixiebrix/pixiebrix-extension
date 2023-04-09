@@ -11,9 +11,8 @@ import { BusinessError } from "@/errors/businessErrors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type BlockArgContext,
+  type BlockArgsContext,
   type ServiceContext,
-  type UserOptions,
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 
@@ -35,7 +34,7 @@ type RunMetadata = {
 type RunPipelineParams = {
   nonce: UUID;
   pipeline: BlockPipeline;
-  context: BlockArgContext;
+  context: BlockArgsContext;
   options: ApiVersionOptions;
   meta: RunMetadata;
   messageContext: MessageContext;
@@ -118,7 +117,7 @@ export async function runEffectPipeline({
     pipeline,
     {
       input: context["@input"] ?? {},
-      optionsArgs: (context["@options"] ?? {}) as UserOptions,
+      optionsArgs: context["@options"] ?? {},
       // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
       // it would be the page that contains the React tree (i.e., the frame of the sidebar)
       root: null,

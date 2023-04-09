@@ -17,15 +17,15 @@
 
 /**
  * The icon for a brick, should start with `fa`
- * @deprecated
+ * @deprecated icons are now defined in listings
  */
 export type BlockIcon = string;
 
 export type IconLibrary = "bootstrap" | "simple-icons" | "custom";
 
-export interface IconConfig {
+export type IconConfig = {
   id: string;
   library?: IconLibrary;
   size?: number;
   color?: string;
-}
+};

@@ -17,7 +17,7 @@
 /* eslint-disable unicorn/no-array-callback-reference -- $.find false positives */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
@@ -123,7 +123,7 @@ export class HighlightEffect extends Effect {
       // Default to "document" for backward compatability. New bricks configured in the Page Editor will have
       // rootMode = "inherit" by default (see JSON Schema above)
       rootMode = "document",
-    }: BlockArg<{
+    }: BlockArgs<{
       rootMode: "document" | "inherit";
       condition: string | number | boolean;
       backgroundColor: string;

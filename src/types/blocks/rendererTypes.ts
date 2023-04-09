@@ -17,14 +17,14 @@
 
 import { Block } from "@/types/blockTypes";
 import {
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type RendererOutput,
 } from "@/types/runtimeTypes";
 
 export abstract class Renderer extends Block {
   abstract render(
-    inputs: BlockArg,
+    inputs: BlockArgs,
     options: BlockOptions
   ): Promise<RendererOutput>;
 
@@ -33,7 +33,7 @@ export abstract class Renderer extends Block {
     return false;
   }
 
-  async run(value: BlockArg, options: BlockOptions): Promise<RendererOutput> {
+  async run(value: BlockArgs, options: BlockOptions): Promise<RendererOutput> {
     return this.render(value, options);
   }
 }

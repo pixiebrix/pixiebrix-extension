@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -75,7 +75,7 @@ class ForEachElement extends Transformer {
       body: bodyPipeline,
       // For backward compatibility, don't default to "element"
       elementKey,
-    }: BlockArg<{
+    }: BlockArgs<{
       selector: string;
       body: PipelineExpression;
       elementKey?: string;

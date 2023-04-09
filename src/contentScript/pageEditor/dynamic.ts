@@ -29,7 +29,7 @@ import {
 } from "@/contentScript/sidebarController";
 import { type TourDefinition } from "@/extensionPoints/tourExtension";
 import { type JsonObject } from "type-fest";
-import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
@@ -58,7 +58,7 @@ export async function runExtensionPointReader(
   expectContext("contentScript");
 
   const { activeElement } = document;
-  let root: ReaderRoot = null;
+  let root: SelectorRoot = null;
 
   // Handle element-based reader context for triggers
   if (rootSelector) {

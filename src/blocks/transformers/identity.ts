@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export class IdentityTransformer extends Transformer {
@@ -38,7 +38,7 @@ export class IdentityTransformer extends Transformer {
     additionalProperties: true,
   };
 
-  async transform(arg: BlockArg): Promise<BlockArg> {
+  async transform(arg: BlockArgs): Promise<BlockArgs> {
     return arg;
   }
 }

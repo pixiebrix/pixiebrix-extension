@@ -58,7 +58,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import {
   type IService,
   type SanitizedServiceConfiguration,
-  type ServiceConfig,
+  type SecretsConfig,
 } from "@/types/serviceTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 
@@ -149,7 +149,7 @@ async function authenticate(
       throw new ExtensionNotLinkedError();
     }
 
-    return service.authenticateRequest({ apiKey } as unknown as ServiceConfig, {
+    return service.authenticateRequest({ apiKey } as unknown as SecretsConfig, {
       ...request,
       url: await absoluteApiUrl(request.url),
     });

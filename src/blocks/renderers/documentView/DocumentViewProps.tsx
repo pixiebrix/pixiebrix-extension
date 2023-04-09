@@ -17,7 +17,7 @@
 
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { type SubmitPanelAction } from "@/blocks/errors";
-import { type BlockArgContext, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgsContext, type BlockOptions } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export type DocumentViewProps = {
@@ -29,7 +29,7 @@ export type DocumentViewProps = {
    * Top-level elements in the document.
    */
   body: DocumentElement[];
-  options: BlockOptions<BlockArgContext>;
+  options: BlockOptions<BlockArgsContext>;
   meta: {
     runId: UUID;
     extensionId: UUID;

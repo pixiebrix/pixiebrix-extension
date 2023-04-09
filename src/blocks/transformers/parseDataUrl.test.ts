@@ -16,7 +16,7 @@
  */
 
 import { ParseDataUrl } from "@/blocks/transformers/parseDataUrl";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 const block = new ParseDataUrl();
 
@@ -30,7 +30,7 @@ describe("parseDataUrl", () => {
       {
         url,
         decode: true,
-      } as unknown as BlockArg,
+      } as unknown as BlockArgs,
       {} as BlockOptions
     );
 
@@ -50,7 +50,7 @@ describe("parseDataUrl", () => {
       {
         url,
         decodeText: false,
-      } as unknown as BlockArg,
+      } as unknown as BlockArgs,
       {} as BlockOptions
     );
 

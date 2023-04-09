@@ -42,7 +42,7 @@ import {
   type ExtensionPointConfig,
 } from "@/types/recipeTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OutputKey, type UserOptions } from "@/types/runtimeTypes";
+import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
@@ -111,7 +111,7 @@ const extensionsSlice = createSlice({
         recipe: RecipeDefinition;
         services?: Record<RegistryId, UUID>;
         extensionPoints: ExtensionPointConfig[];
-        optionsArgs?: UserOptions;
+        optionsArgs?: OptionsArgs;
         deployment?: Deployment;
       }>
     ) {

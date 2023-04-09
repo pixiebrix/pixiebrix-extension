@@ -33,7 +33,10 @@ import { type Logger } from "@/types/loggerTypes";
  */
 export type ApiVersion = "v1" | "v2" | "v3";
 
-export type ReaderRoot = HTMLElement | Document;
+/**
+ * The HTMLElement or Document that the brick is targeting, or that a selector is being evaluated against.
+ */
+export type SelectorRoot = HTMLElement | Document;
 
 /**
  * A reference to an element on the page.
@@ -43,11 +46,18 @@ export type ElementReference = UUID & {
   _elementReferenceBrand: never;
 };
 
+/**
+ * A reference to a React component produced by a Renderer brick.
+ * @see Renderer
+ */
 export type ComponentRef = {
   Component: ComponentType;
-  props: Record<string, unknown>;
+  props: UnknownObject;
 };
 
+/**
+ * The output of a Renderer brick.
+ */
 export type RendererOutput = SafeHTML | ComponentRef;
 
 /**
@@ -58,10 +68,10 @@ export type OutputKey = string & {
 };
 
 /**
- * A key with a "@"-prefix that refers to a service
+ * A variable with a "@"-prefix that refers to a service
  */
-export type ServiceKeyVar = string & {
-  _serviceKeyVarBrand: never;
+export type ServiceVarRef = string & {
+  _serviceVarRefBrand: never;
 };
 
 /**
@@ -166,26 +176,25 @@ export type RunArgs = {
 };
 
 /**
- * Activation-time mod options.
+ * Activation-time mod options arguments provided by the end-user or deployment admin.
  */
-export type UserOptions = Record<string, Primitive>;
+export type OptionsArgs = Record<string, Primitive>;
 
 /**
  * Values available to a block to render its arguments.
- * @see BlockArg
+ * @see BlockArgs
  * @see RenderedArgs
  * @see BlockConfig.outputKey
  */
-export type BlockArgContext = Record<string, unknown> & {
-  _blockArgContextBrand: never;
-  "@input": Record<string, unknown>;
-  "@options"?: UserOptions;
+export type BlockArgsContext = UnknownObject & {
+  // Nominal typing
+  _blockArgsContextBrand: never;
+  "@input": UnknownObject;
+  "@options"?: OptionsArgs;
 };
 
 /**
  * The JSON Schema validated arguments to pass into the `run` method of an IBlock.
- *
- * Singular name (as opposed to plural) because it's passed as a single argument to the `run` method.
  *
  * Uses `any` for values so that blocks don't have to assert/cast all their argument types. The input values
  * are validated using JSON Schema in `reducePipeline`.
@@ -194,7 +203,7 @@ export type BlockArgContext = Record<string, unknown> & {
  * @see IBlock.run
  * @see reducePipeline
  */
-export type BlockArg<
+export type BlockArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
   T extends Record<string, any> = Record<string, any>
 > = T & {
@@ -203,7 +212,7 @@ export type BlockArg<
 
 /**
  * The non-validated arguments to pass into the `run` method of an IBlock.
- * @see BlockArg
+ * @see BlockArgs
  */
 export type RenderedArgs = UnknownObject & {
   _renderedArgBrand: never;
@@ -211,10 +220,10 @@ export type RenderedArgs = UnknownObject & {
 
 /**
  * Service context passed to blocks.
- * @see BlockArgContext
+ * @see BlockArgsContext
  */
 export type ServiceContext = Record<
-  ServiceKeyVar,
+  ServiceVarRef,
   {
     __service: SanitizedServiceConfiguration;
     [prop: string]: string | SanitizedServiceConfiguration | null;
@@ -230,7 +239,7 @@ export type BlockOptions<
   /**
    * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
    *
-   * @see BlockArgContext
+   * @see BlockArgsContext
    */
   ctxt: TCtxt;
 
@@ -242,7 +251,7 @@ export type BlockOptions<
   /**
    * Implicit root element (or document) for calls the select/read from the DOM
    */
-  root: ReaderRoot;
+  root: SelectorRoot;
 
   /**
    * True if the brick is executing in headless mode.
@@ -265,7 +274,7 @@ export type BlockOptions<
     },
     // Should be UnknownObject, but can't use to introduce a circular dependency
     extraContext?: Record<string, unknown>,
-    root?: ReaderRoot
+    root?: SelectorRoot
   ) => Promise<unknown>;
 
   /**
@@ -284,7 +293,7 @@ export type BlockOptions<
     },
     // Should be UnknownObject, but can't use to introduce a circular dependency
     extraContext?: Record<string, unknown>,
-    root?: ReaderRoot
+    root?: SelectorRoot
   ) => Promise<unknown>; // Should be PanelPayload
 
   /**

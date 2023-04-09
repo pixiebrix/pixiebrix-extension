@@ -33,7 +33,7 @@ import { type BlockType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import {
   type ApiVersion,
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
 } from "@/types/runtimeTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -147,7 +147,7 @@ class ExternalBlock extends Block {
     }
   }
 
-  async run(arg: BlockArg, options: BlockOptions): Promise<unknown> {
+  async run(arg: BlockArgs, options: BlockOptions): Promise<unknown> {
     options.logger.debug("Running component pipeline", {
       arg,
     });

@@ -26,7 +26,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { Renderer } from "@/types/blocks/rendererTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeHTML } from "@/types/stringTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 interface RunDetails {
@@ -122,7 +122,7 @@ export class UiPathAppRenderer extends Renderer {
       title = "UiPath App",
       height = 400,
       width = "100%",
-    }: BlockArg,
+    }: BlockArgs,
     { logger }: BlockOptions
   ): Promise<SafeHTML> {
     const nonce = uuidv4();

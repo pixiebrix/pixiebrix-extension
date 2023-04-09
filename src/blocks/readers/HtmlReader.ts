@@ -19,7 +19,7 @@ import { Reader } from "@/types/blocks/readerTypes";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
 
 /**
  * Read HTML from the document or the current element.
@@ -68,7 +68,7 @@ export class HtmlReader extends Reader {
     return true;
   }
 
-  async read(root: ReaderRoot): Promise<JsonObject> {
+  async read(root: SelectorRoot): Promise<JsonObject> {
     const element = isHTMLElement(root) ? root : document.documentElement;
 
     return {

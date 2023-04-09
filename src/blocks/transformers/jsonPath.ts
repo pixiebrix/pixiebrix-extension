@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export class JSONPathTransformer extends Transformer {
@@ -44,7 +44,7 @@ export class JSONPathTransformer extends Transformer {
   };
 
   async transform(
-    { path }: BlockArg,
+    { path }: BlockArgs,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
     const { JSONPath } = await import(

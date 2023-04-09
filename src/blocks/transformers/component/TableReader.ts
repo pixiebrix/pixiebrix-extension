@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { parseDomTable, getAllTables } from "@/utils/parseDomTable";
@@ -84,7 +84,7 @@ export class TableReader extends Transformer {
   }
 
   async transform(
-    { selector, orientation = "infer" }: BlockArg,
+    { selector, orientation = "infer" }: BlockArgs,
     { root }: BlockOptions
   ): Promise<unknown> {
     const table = selector ? findSingleElement(selector, root) : root;
@@ -147,7 +147,7 @@ export class TablesReader extends Transformer {
     return true;
   }
 
-  async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
+  async transform(_: BlockArgs, { root }: BlockOptions): Promise<unknown> {
     return Object.fromEntries([
       ...getAllTables(root).entries(),
       ...getAllDefinitionLists(root).entries(),

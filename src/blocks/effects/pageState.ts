@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
@@ -68,7 +68,7 @@ export class SetPageState extends Transformer {
       data,
       mergeStrategy = "shallow",
       namespace = "blueprint",
-    }: BlockArg<{
+    }: BlockArgs<{
       data: JsonObject;
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
@@ -117,7 +117,7 @@ export class GetPageState extends Transformer {
   }
 
   async transform(
-    { namespace = "blueprint" }: BlockArg<{ namespace?: Namespace }>,
+    { namespace = "blueprint" }: BlockArgs<{ namespace?: Namespace }>,
     { logger }: BlockOptions
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;

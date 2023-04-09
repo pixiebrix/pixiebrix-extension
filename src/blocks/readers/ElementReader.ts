@@ -18,7 +18,7 @@
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { Reader } from "@/types/blocks/readerTypes";
-import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 /**
@@ -38,7 +38,7 @@ export class ElementReader extends Reader {
     );
   }
 
-  async read(elementOrDocument: ReaderRoot) {
+  async read(elementOrDocument: SelectorRoot) {
     const element = isHTMLElement(elementOrDocument)
       ? elementOrDocument
       : document.body;

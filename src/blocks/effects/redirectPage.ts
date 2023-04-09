@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/blocks/transformers/url";
 import { LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT, makeURL } from "@/utils";
@@ -37,7 +37,7 @@ export class NavigateURLEffect extends Effect {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArg): Promise<void> {
+  }: BlockArgs): Promise<void> {
     document.location.href = makeURL(url, params, spaceEncoding);
   }
 }
@@ -58,7 +58,7 @@ export class OpenURLEffect extends Effect {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArg): Promise<void> {
+  }: BlockArgs): Promise<void> {
     await openTab({
       url: makeURL(url, params, spaceEncoding),
     });

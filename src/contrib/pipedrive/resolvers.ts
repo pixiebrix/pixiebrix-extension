@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -61,7 +61,7 @@ export class ResolvePerson extends Transformer {
     pipedriveService,
     name,
     organization,
-  }: BlockArg): Promise<unknown> {
+  }: BlockArgs): Promise<unknown> {
     let organization_id;
 
     if (organization) {

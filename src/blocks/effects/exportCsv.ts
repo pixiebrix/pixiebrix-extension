@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
 
@@ -56,7 +56,7 @@ export class ExportCsv extends Effect {
   };
 
   async effect(
-    { filename = "exported", useBOM = false, data }: BlockArg,
+    { filename = "exported", useBOM = false, data }: BlockArgs,
     { ctxt }: BlockOptions
   ): Promise<void> {
     const { ExportToCsv } = await import(

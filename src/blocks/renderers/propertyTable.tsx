@@ -21,7 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
 import { isValidUrl } from "@/utils";
 import { type SafeHTML } from "@/types/stringTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 interface Item {
   key: string;
@@ -115,7 +115,7 @@ export class PropertyTableRenderer extends Renderer {
     []
   );
 
-  async render({ data }: BlockArg, { ctxt }: BlockOptions): Promise<SafeHTML> {
+  async render({ data }: BlockArgs, { ctxt }: BlockOptions): Promise<SafeHTML> {
     const PropertyTree = await import(
       /* webpackChunkName: "widgets" */
       "./PropertyTree"

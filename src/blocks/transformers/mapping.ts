@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -62,7 +62,7 @@ export class MappingTransformer extends Transformer {
     key,
     missing = "null",
     mapping,
-  }: BlockArg): Promise<unknown> {
+  }: BlockArgs): Promise<unknown> {
     if (key == null || key === "") {
       return null;
     }

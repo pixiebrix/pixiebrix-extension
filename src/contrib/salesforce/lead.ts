@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { proxyService } from "@/background/messenger/api";
 
@@ -69,7 +69,7 @@ export class AddLead extends Effect {
     required: ["salesforce", "LastName", "Company"],
   };
 
-  async effect({ salesforce, ...data }: BlockArg): Promise<void> {
+  async effect({ salesforce, ...data }: BlockArgs): Promise<void> {
     await proxyService(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",

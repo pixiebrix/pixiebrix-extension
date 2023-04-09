@@ -49,10 +49,8 @@ import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
-import {
-  type RecipeDefinition,
-  selectSourceRecipeMetadata,
-} from "@/types/recipeTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { selectSourceRecipeMetadata } from "@/types/extensionTypes";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;

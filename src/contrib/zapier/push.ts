@@ -26,7 +26,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
@@ -64,7 +64,7 @@ export class PushZap extends Effect {
   override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
-    { pushKey, data }: BlockArg<{ pushKey: string; data: UnknownObject }>,
+    { pushKey, data }: BlockArgs<{ pushKey: string; data: UnknownObject }>,
     options: BlockOptions
   ): Promise<void> {
     const { data: webhooks } = await proxyService<{

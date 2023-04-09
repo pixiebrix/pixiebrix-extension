@@ -18,7 +18,7 @@
 import { Renderer } from "@/types/blocks/rendererTypes";
 import { assumeSafe } from "@/utils/sanitize";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 export class IFrameRenderer extends Renderer {
@@ -63,7 +63,7 @@ export class IFrameRenderer extends Renderer {
     height = "100%",
     width = "100%",
     safeMode = false,
-  }: BlockArg<{
+  }: BlockArgs<{
     url: string;
     title?: string;
     height?: string;

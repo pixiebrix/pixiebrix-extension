@@ -17,7 +17,7 @@
 
 import { type JsonObject } from "type-fest";
 import { Block, type IBlock } from "@/types/blockTypes";
-import { type BlockArg, type ReaderRoot } from "@/types/runtimeTypes";
+import { type BlockArgs, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 /**
@@ -27,9 +27,12 @@ export interface IReader extends IBlock {
   /** Return true if the Reader is for a page/element. */
   isAvailable: ($elements?: JQuery) => Promise<boolean>;
 
-  read: (root: ReaderRoot) => Promise<JsonObject>;
+  read: (root: SelectorRoot) => Promise<JsonObject>;
 }
 
+/**
+ * Abstract base class for Readers.
+ */
 export abstract class Reader extends Block implements IReader {
   readonly inputSchema: Schema = {};
 
@@ -42,9 +45,9 @@ export abstract class Reader extends Block implements IReader {
 
   abstract isAvailable($elements?: JQuery): Promise<boolean>;
 
-  abstract read(root: HTMLElement | Document): Promise<JsonObject>;
+  abstract read(root: SelectorRoot): Promise<JsonObject>;
 
-  async run({ root }: BlockArg): Promise<JsonObject> {
+  async run({ root }: BlockArgs): Promise<JsonObject> {
     return this.read(root);
   }
 }

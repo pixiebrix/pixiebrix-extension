@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
@@ -83,7 +83,7 @@ class InsertHtml extends Effect {
       html,
       position = "append",
       replacementId,
-    }: BlockArg<{
+    }: BlockArgs<{
       anchor: string;
       html: string;
       replacementId?: string;

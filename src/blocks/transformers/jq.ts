@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
@@ -56,7 +56,7 @@ export class JQTransformer extends Transformer {
   );
 
   async transform(
-    { filter, data }: BlockArg,
+    { filter, data }: BlockArgs,
     { ctxt, logger }: BlockOptions
   ): Promise<unknown> {
     const input = isNullOrBlank(data) ? ctxt : data;

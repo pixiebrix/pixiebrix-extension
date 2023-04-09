@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
   makeURL,
@@ -86,7 +86,7 @@ export class UrlParams extends Transformer {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArg): Promise<{ url: string }> {
+  }: BlockArgs): Promise<{ url: string }> {
     return {
       url: makeURL(url, params, spaceEncoding),
     };

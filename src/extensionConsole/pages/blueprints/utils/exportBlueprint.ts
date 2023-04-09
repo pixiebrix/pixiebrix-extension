@@ -21,7 +21,7 @@ import { type Metadata } from "@/types/registryTypes";
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { isInnerExtensionPoint } from "@/registry/internal";
-import { type UserOptions } from "@/types/runtimeTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
   type OptionsDefinition,
   type UnsavedRecipeDefinition,
@@ -32,7 +32,7 @@ import { type UnresolvedExtension } from "@/types/extensionTypes";
 /**
  * Infer optionsSchema from the options provided to the extension.
  */
-function inferOptionsSchema(optionsArgs: UserOptions): OptionsDefinition {
+function inferOptionsSchema(optionsArgs: OptionsArgs): OptionsDefinition {
   if (isEmpty(optionsArgs)) {
     return undefined;
   }

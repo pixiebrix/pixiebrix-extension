@@ -40,7 +40,7 @@ import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
@@ -360,7 +360,7 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
-    }: BlockArg<{
+    }: BlockArgs<{
       storage?: Storage;
       successMessage?: string;
       recordId?: string | null;

@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
@@ -50,7 +50,7 @@ export class TelemetryEffect extends Effect {
   };
 
   async effect(
-    { eventName, data = {} }: BlockArg,
+    { eventName, data = {} }: BlockArgs,
     { logger }: BlockOptions
   ): Promise<void> {
     if ("$eventName" in data) {

@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -67,7 +67,7 @@ class Retry extends Transformer {
       body: bodyPipeline,
       maxRetries = Number.MAX_SAFE_INTEGER,
       intervalMillis,
-    }: BlockArg<{
+    }: BlockArgs<{
       body: PipelineExpression;
       intervalMillis?: number;
       maxRetries?: number;

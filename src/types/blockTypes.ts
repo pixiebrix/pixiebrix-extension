@@ -19,7 +19,7 @@ import { type BlockConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BlockIcon } from "@/types/iconTypes";
 
@@ -102,7 +102,7 @@ export interface IBlock extends Metadata {
    */
   defaultOutputKey?: string;
 
-  run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
+  run: (value: BlockArgs, options: BlockOptions) => Promise<unknown>;
 }
 
 /**
@@ -151,7 +151,7 @@ export abstract class Block implements IBlock {
     this.icon = icon;
   }
 
-  abstract run(value: BlockArg, options: BlockOptions): Promise<unknown>;
+  abstract run(value: BlockArgs, options: BlockOptions): Promise<unknown>;
 }
 
 /**

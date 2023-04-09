@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -67,7 +67,7 @@ export class DetectElement extends Transformer {
   }
 
   async transform(
-    { selector, isRootAware }: BlockArg,
+    { selector, isRootAware }: BlockArgs,
     { root }: BlockOptions
   ): Promise<Record<string, unknown>> {
     const $result = $safeFindElementsWithRootMode({

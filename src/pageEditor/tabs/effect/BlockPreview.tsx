@@ -45,7 +45,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IBlock } from "@/types/blockTypes";
-import { type ApiVersion, type BlockArgContext } from "@/types/runtimeTypes";
+import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 
 /**
@@ -155,7 +155,7 @@ const BlockPreview: React.FunctionComponent<{
   const blockRootMode = blockConfig.rootMode ?? "inherit";
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, context: BlockArgContext) => {
+    async (blockConfig: BlockConfig, context: BlockArgsContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
 
@@ -184,7 +184,7 @@ const BlockPreview: React.FunctionComponent<{
 
   useEffect(() => {
     if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
-      void debouncedRun(blockConfig, context as unknown as BlockArgContext);
+      void debouncedRun(blockConfig, context as unknown as BlockArgsContext);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
@@ -254,7 +254,7 @@ const BlockPreview: React.FunctionComponent<{
           size="sm"
           disabled={!traceRecord}
           onClick={() => {
-            void debouncedRun(blockConfig, context as BlockArgContext);
+            void debouncedRun(blockConfig, context as BlockArgsContext);
           }}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh Preview

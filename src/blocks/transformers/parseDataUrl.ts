@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { truncate } from "lodash";
@@ -78,7 +78,7 @@ export class ParseDataUrl extends Transformer {
   async transform({
     url,
     decodeText = true,
-  }: BlockArg<{
+  }: BlockArgs<{
     url: string;
     decodeText: boolean;
   }>): Promise<unknown> {

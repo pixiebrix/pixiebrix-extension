@@ -36,7 +36,7 @@ import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSel
 import { useAsyncState } from "@/hooks/common";
 import { isExpression } from "@/runtime/mapArgs";
 import { type UUID } from "@/types/stringTypes";
-import { type BlockArgContext } from "@/types/runtimeTypes";
+import { type BlockArgsContext } from "@/types/runtimeTypes";
 
 type Location = "modal" | "panel";
 
@@ -143,7 +143,7 @@ export default function useDocumentPreviewRunBlock(
   const context = {
     ...traceRecord?.templateContext,
     ...serviceContext,
-  } as BlockArgContext;
+  } as BlockArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";

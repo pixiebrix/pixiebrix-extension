@@ -27,10 +27,10 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { Reader } from "@/types/blocks/readerTypes";
 import {
   type ApiVersion,
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type Expression,
-  type ReaderRoot,
+  type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { Block } from "@/types/blockTypes";
 
@@ -55,7 +55,7 @@ class RootAwareBlock extends Block {
     return true;
   }
 
-  async run(arg: BlockArg, { root }: BlockOptions) {
+  async run(arg: BlockArgs, { root }: BlockOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,
@@ -78,7 +78,7 @@ class RootAwareReader extends Reader {
     return true;
   }
 
-  async read(root: ReaderRoot) {
+  async read(root: SelectorRoot) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,

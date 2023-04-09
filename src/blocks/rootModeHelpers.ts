@@ -18,7 +18,7 @@
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/helpers";
-import { type ReaderRoot } from "@/types/runtimeTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
@@ -54,7 +54,7 @@ export function $safeFindElementsWithRootMode({
   blockId,
 }: {
   selector?: string;
-  root: ReaderRoot;
+  root: SelectorRoot;
   isRootAware?: boolean;
   blockId: RegistryId;
   selectorProp?: string;

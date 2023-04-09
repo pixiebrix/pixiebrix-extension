@@ -22,7 +22,7 @@ import { serializeError } from "serialize-error";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type OutputKey,
 } from "@/types/runtimeTypes";
@@ -73,7 +73,7 @@ class TryExcept extends Transformer {
       try: tryPipeline,
       except: exceptPipeline,
       errorKey = validateOutputKey("error"),
-    }: BlockArg<{
+    }: BlockArgs<{
       try: PipelineExpression;
       except?: PipelineExpression;
       errorKey: OutputKey;

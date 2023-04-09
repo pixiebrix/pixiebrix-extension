@@ -90,7 +90,7 @@ import {
   type ApiVersion,
   type OutputKey,
   type RenderedArgs,
-  type UserOptions,
+  type OptionsArgs,
 } from "@/types/runtimeTypes";
 import {
   type SanitizedConfig,
@@ -563,7 +563,7 @@ const internalFormStateFactory = define<FormState>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs: null as UserOptions,
+  optionsArgs: null as OptionsArgs,
   services(): ServiceDependency[] {
     return [];
   },

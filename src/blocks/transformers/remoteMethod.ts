@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
@@ -72,7 +72,7 @@ export class RemoteMethod extends Transformer {
 
   inputSchema: Schema = propertiesToSchema(inputProperties, ["url"]);
 
-  async transform({ service, ...requestConfig }: BlockArg): Promise<unknown> {
+  async transform({ service, ...requestConfig }: BlockArgs): Promise<unknown> {
     if (service && typeof service !== "object") {
       throw new PropError(
         "Expected configured service",

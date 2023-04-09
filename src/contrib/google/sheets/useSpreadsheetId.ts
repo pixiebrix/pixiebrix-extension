@@ -28,7 +28,7 @@ import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetServiceOutputKey } from "@/contrib/google/sheets/getSheetServiceOutputKey";
-import { type Expression, type UserOptions } from "@/types/runtimeTypes";
+import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
 
 type SpreadsheetState = {
   spreadsheetId: string | null;
@@ -73,7 +73,7 @@ function useSpreadsheetId(basePath: string): string | null {
     joinName(basePath, "spreadsheetId")
   );
 
-  const [{ value: optionsArgs }] = useField<UserOptions>("optionsArgs");
+  const [{ value: optionsArgs }] = useField<OptionsArgs>("optionsArgs");
 
   const [state, dispatch] = useReducer(spreadsheetSlice.reducer, initialState);
 

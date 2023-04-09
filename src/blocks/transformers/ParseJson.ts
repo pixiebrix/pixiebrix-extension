@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -43,7 +43,7 @@ class ParseJson extends Transformer {
     },
   });
 
-  async transform({ content }: BlockArg): Promise<unknown> {
+  async transform({ content }: BlockArgs): Promise<unknown> {
     try {
       return JSON.parse(content);
     } catch (error) {

@@ -11,9 +11,9 @@ import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import {
   type ApiVersion,
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
-  type UserOptions,
+  type OptionsArgs,
 } from "@/types/runtimeTypes";
 import { Block } from "@/types/blockTypes";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -28,7 +28,7 @@ class ContextBlock extends Block {
 
   inputSchema = propertiesToSchema({});
 
-  async run(arg: BlockArg, { ctxt }: BlockOptions) {
+  async run(arg: BlockArgs, { ctxt }: BlockOptions) {
     return ctxt;
   }
 }
@@ -45,7 +45,7 @@ export class EchoBlock extends Block {
     },
   });
 
-  async run({ message }: BlockArg) {
+  async run({ message }: BlockArgs) {
     return { message };
   }
 }
@@ -57,7 +57,7 @@ class RootAwareBlock extends Block {
 
   inputSchema = propertiesToSchema({});
 
-  async run(_arg: BlockArg, { root }: BlockOptions) {
+  async run(_arg: BlockArgs, { root }: BlockOptions) {
     return {
       tagName: (root as HTMLElement).tagName,
     };
@@ -89,7 +89,7 @@ class IdentityBlock extends Block {
     data: {},
   });
 
-  async run(arg: BlockArg) {
+  async run(arg: BlockArgs) {
     return arg;
   }
 }
@@ -105,7 +105,7 @@ class ThrowBlock extends Block {
     },
   });
 
-  async run({ message }: BlockArg<{ message: string }>) {
+  async run({ message }: BlockArgs<{ message: string }>) {
     throw new BusinessError(message);
   }
 }
@@ -156,7 +156,7 @@ class PipelineBlock extends Block {
     pipeline: pipelineSchema,
   });
 
-  async run({ pipeline }: BlockArg<{ pipeline: PipelineExpression }>) {
+  async run({ pipeline }: BlockArgs<{ pipeline: PipelineExpression }>) {
     return {
       length: pipeline.__value__.length,
     };
@@ -193,7 +193,7 @@ class DeferBlock extends Block {
       element,
       array = [],
       elementKey = "element",
-    }: BlockArg<{
+    }: BlockArgs<{
       element: UnknownObject;
       array: unknown[];
       elementKey?: string;
@@ -238,7 +238,7 @@ export function simpleInput(input: UnknownObject): InitialValues {
     input,
     root: null,
     serviceContext: {},
-    optionsArgs: {} as UserOptions,
+    optionsArgs: {} as OptionsArgs,
   };
 }
 

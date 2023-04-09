@@ -18,7 +18,7 @@
 import { Effect } from "@/types/blocks/effectTypes";
 import { CancelError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 
 export class CancelEffect extends Effect {
   constructor() {
@@ -40,7 +40,7 @@ export class CancelEffect extends Effect {
     },
   };
 
-  async effect({ message }: BlockArg): Promise<void> {
+  async effect({ message }: BlockArgs): Promise<void> {
     throw new CancelError(message ?? "Action cancelled");
   }
 }

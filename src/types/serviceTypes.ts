@@ -23,15 +23,6 @@ import { type BlockIcon } from "@/types/iconTypes";
 import { type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
-type SanitizedBrand = { _sanitizedConfigBrand: null };
-
-type SecretBrand = { _serviceConfigBrand: null };
-
-/**
- * A one-level deep config.
- */
-export type KeyedConfig = Record<string, string | null>;
-
 export interface ServiceDependency {
   /**
    * The registry id of the service.
@@ -61,17 +52,26 @@ export type ServiceAuthPair = {
   config: UUID;
 };
 
-/**
- * Nominal typing to distinguish from `ServiceConfig`
- * @see `ServiceConfig`
- */
-export type SanitizedConfig = KeyedConfig & SanitizedBrand;
+type SanitizedBrand = { _sanitizedConfigBrand: null };
+
+type SecretBrand = { _serviceConfigBrand: null };
 
 /**
- * Nominal typing to distinguish from SanitizedConfig
- * @see `SanitizedConfig`
+ * A one-level deep service config that might have already been sanitized.
  */
-export type ServiceConfig = KeyedConfig & SecretBrand;
+export type ServiceConfig = Record<string, string | null>;
+
+/**
+ * Nominal typing to distinguish from `ServiceConfig`
+ * @see SecretsConfig
+ */
+export type SanitizedConfig = ServiceConfig & SanitizedBrand;
+
+/**
+ * Nominal typing to distinguish from `SanitizedConfig`
+ * @see SanitizedConfig
+ */
+export type SecretsConfig = ServiceConfig & SecretBrand;
 
 /**
  * Data received from the 3rd-party service during an OAuth or token-exchange flow.
@@ -85,20 +85,6 @@ export interface AuthData {
    */
   _oauthBrand: null;
   [key: string]: unknown;
-}
-
-export interface TokenContext {
-  url: string;
-  data: JsonObject;
-}
-
-export interface OAuth2Context {
-  host?: string;
-  authorizeUrl?: string;
-  tokenUrl?: string;
-  client_id: string;
-  client_secret?: string;
-  code_challenge_method?: "S256";
 }
 
 /** Service configuration provided by a user. */
@@ -125,7 +111,7 @@ export type RawServiceConfiguration = {
   /**
    * Configuration including all data
    */
-  config: ServiceConfig;
+  config: SecretsConfig;
 };
 
 export interface SanitizedServiceConfiguration {
@@ -154,13 +140,91 @@ export interface SanitizedServiceConfiguration {
   proxy: boolean;
 }
 
+export type KeyAuthenticationDefinition = {
+  baseURL?: string;
+  headers?: Record<string, string>;
+  params?: Record<string, string>;
+};
+
+export type TokenAuthenticationDefinition = {
+  baseURL?: string;
+  token: {
+    url: string;
+    data: Record<string, JsonValue>;
+  };
+  headers: Record<string, string>;
+};
+
+export type BasicAuthenticationDefinition = {
+  baseURL?: string;
+  basic: {
+    username: string;
+    password: string;
+  };
+  headers: Record<string, string>;
+};
+
+export type OAuth2AuthenticationDefinition = {
+  baseURL?: string;
+  oauth2: {
+    client_id: string;
+    authorizeUrl: string;
+    tokenUrl: string;
+  };
+  headers: Record<string, string>;
+};
+
+export type OAuth2AuthorizationGrantDefinition = {
+  oauth2: {
+    grantType: "authorization_code";
+  };
+  headers: Record<string, string>;
+};
+
+export interface ServiceDefinition<
+  TAuth =
+    | KeyAuthenticationDefinition
+    | OAuth2AuthenticationDefinition
+    | OAuth2AuthorizationGrantDefinition
+    | TokenAuthenticationDefinition
+    | BasicAuthenticationDefinition
+> {
+  metadata: Metadata;
+  inputSchema: Schema;
+  uiSchema?: UiSchema;
+  isAvailable?: {
+    matchPatterns: string | string[];
+  };
+  authentication: TAuth;
+}
+
+/**
+ * Rendered context for making token-authenticated requests.
+ */
+export type TokenContext = {
+  url: string;
+  data: JsonObject;
+};
+
+/**
+ * Rendered context for making OAuth2 requests.
+ */
+export type OAuth2Context = {
+  host?: string;
+  authorizeUrl?: string;
+  tokenUrl?: string;
+  client_id: string;
+  client_secret?: string;
+  code_challenge_method?: "S256";
+};
+
 /**
  * A service that can be dependency injected and used to authenticate external requests.
  *
  * The input/output schema is the same since it's directly user configured.
  */
 export interface IService<
-  TConfig extends KeyedConfig = KeyedConfig,
+  TConfig extends ServiceConfig = ServiceConfig,
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
   TSecret = TConfig & { _serviceConfigBrand: null },
   TOAuth extends AuthData = AuthData
@@ -198,8 +262,11 @@ export interface IService<
   ) => AxiosRequestConfig;
 }
 
+/**
+ * Abstract base class for services.
+ */
 export abstract class Service<
-  TConfig extends KeyedConfig = KeyedConfig,
+  TConfig extends ServiceConfig = ServiceConfig,
   TOAuth extends AuthData = AuthData
 > implements IService<TConfig>
 {
@@ -237,62 +304,4 @@ export abstract class Service<
     requestConfig: AxiosRequestConfig,
     authConfig?: TOAuth
   ): AxiosRequestConfig;
-}
-
-export interface KeyAuthenticationDefinition {
-  baseURL?: string;
-  headers?: Record<string, string>;
-  params?: Record<string, string>;
-}
-
-export interface TokenAuthenticationDefinition {
-  baseURL?: string;
-  token: {
-    url: string;
-    data: Record<string, JsonValue>;
-  };
-  headers: Record<string, string>;
-}
-
-export interface BasicAuthenticationDefinition {
-  baseURL?: string;
-  basic: {
-    username: string;
-    password: string;
-  };
-  headers: Record<string, string>;
-}
-
-export interface OAuth2AuthenticationDefinition {
-  baseURL?: string;
-  oauth2: {
-    client_id: string;
-    authorizeUrl: string;
-    tokenUrl: string;
-  };
-  headers: Record<string, string>;
-}
-
-export interface OAuth2AuthorizationGrantDefinition {
-  oauth2: {
-    grantType: "authorization_code";
-  };
-  headers: Record<string, string>;
-}
-
-export interface ServiceDefinition<
-  TAuth =
-    | KeyAuthenticationDefinition
-    | OAuth2AuthenticationDefinition
-    | OAuth2AuthorizationGrantDefinition
-    | TokenAuthenticationDefinition
-    | BasicAuthenticationDefinition
-> {
-  metadata: Metadata;
-  inputSchema: Schema;
-  uiSchema?: UiSchema;
-  isAvailable?: {
-    matchPatterns: string | string[];
-  };
-  authentication: TAuth;
 }

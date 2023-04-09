@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { $safeFind } from "@/helpers";
 import { uniq } from "lodash";
@@ -107,7 +107,7 @@ class ReplaceTextEffect extends Effect {
       replacement,
       selector,
       isRegex = false,
-    }: BlockArg<{
+    }: BlockArgs<{
       pattern: string;
       replacement: string;
       isRegex?: boolean;

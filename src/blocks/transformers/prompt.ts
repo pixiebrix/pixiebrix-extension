@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors/businessErrors";
@@ -55,7 +55,7 @@ export class Prompt extends Transformer {
     },
   });
 
-  async transform({ message, defaultValue }: BlockArg): Promise<unknown> {
+  async transform({ message, defaultValue }: BlockArgs): Promise<unknown> {
     // eslint-disable-next-line no-alert -- purpose of this brick is to show an alert
     const value = window.prompt(message, defaultValue);
 

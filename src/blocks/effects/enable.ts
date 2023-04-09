@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -45,7 +45,7 @@ export class EnableEffect extends Effect {
   );
 
   async effect(
-    args: BlockArg<{ selector: string; isRootAware?: boolean }>,
+    args: BlockArgs<{ selector: string; isRootAware?: boolean }>,
     { root }: BlockOptions
   ): Promise<void> {
     const elements = $safeFindElementsWithRootMode({

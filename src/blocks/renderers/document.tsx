@@ -19,7 +19,7 @@ import { Renderer } from "@/types/blocks/rendererTypes";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  type BlockArg,
+  type BlockArgs,
   type BlockOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
@@ -47,7 +47,7 @@ export class DocumentRenderer extends Renderer {
   };
 
   async render(
-    { body }: BlockArg,
+    { body }: BlockArgs,
     options: BlockOptions
   ): Promise<ComponentRef> {
     return {

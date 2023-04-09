@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { random } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -68,7 +68,7 @@ export class RandomNumber extends Transformer {
     lower = 0,
     upper = 1,
     floating = false,
-  }: BlockArg<{
+  }: BlockArgs<{
     lower?: number;
     upper?: number;
     floating?: boolean;

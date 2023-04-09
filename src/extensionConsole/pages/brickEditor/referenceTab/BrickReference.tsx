@@ -38,9 +38,7 @@ import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { type IService } from "@/types/serviceTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 const BrickReference: React.FunctionComponent<{
   bricks: ReferenceEntry[];
@@ -80,7 +78,7 @@ const BrickReference: React.FunctionComponent<{
     return null;
   }, [selected]);
 
-  const fuse: Fuse<IBlock | IService | IExtensionPoint> = useMemo(
+  const fuse: Fuse<IBrick> = useMemo(
     () =>
       new Fuse(sortedBricks, {
         // Prefer name, then id

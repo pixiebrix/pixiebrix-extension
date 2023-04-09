@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -64,7 +64,7 @@ export class LogEffect extends Effect {
       message,
       level = "info",
       data,
-    }: BlockArg<{ message: string; level: Level; data: unknown }>,
+    }: BlockArgs<{ message: string; level: Level; data: unknown }>,
     { ctxt }: BlockOptions
   ): Promise<void> {
     const logMethod = LEVEL_MAP.get(level) ?? console.info;

@@ -23,7 +23,7 @@ import readerSchema from "@schemas/reader.json";
 import { type Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { type ApiVersion, type ReaderRoot } from "@/types/runtimeTypes";
+import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { type IReader, Reader } from "@/types/blocks/readerTypes";
@@ -67,7 +67,7 @@ function validateReaderDefinition(
 
 export type Read<TConfig = unknown> = (
   config: TConfig,
-  root: ReaderRoot
+  root: SelectorRoot
 ) => Promise<JsonObject>;
 
 const _readerFactories = new Map<string, Read>();
@@ -111,7 +111,7 @@ export function readerFactory(component: unknown): IReader {
       return true;
     }
 
-    async read(root: ReaderRoot): Promise<JsonObject> {
+    async read(root: SelectorRoot): Promise<JsonObject> {
       const doRead = _readerFactories.get(reader.type);
       if (doRead) {
         return doRead(reader, root);

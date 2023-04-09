@@ -17,11 +17,11 @@
 
 import { isEmpty } from "lodash";
 import { isVarExpression } from "@/runtime/mapArgs";
-import { type Expression, type UserOptions } from "@/types/runtimeTypes";
+import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
 
 export function getOptionsArgForFieldValue(
   fieldValue: string | Expression,
-  optionsArgs: UserOptions
+  optionsArgs: OptionsArgs
 ): string | null {
   if (
     isEmpty(optionsArgs) ||

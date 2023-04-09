@@ -43,7 +43,7 @@ import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/Servic
 import {
   type Expression,
   type OutputKey,
-  type ServiceKeyVar,
+  type ServiceVarRef,
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
@@ -83,7 +83,7 @@ export function defaultOutputKey(
 function lookupAuthId(
   dependencies: ServiceDependency[],
   authOptions: AuthOption[],
-  value: ServiceKeyVar
+  value: ServiceVarRef
 ): UUID {
   const dependency =
     value == null
@@ -177,7 +177,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, , helpers] =
-    useField<Expression<ServiceKeyVar>>(props);
+    useField<Expression<ServiceVarRef>>(props);
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);

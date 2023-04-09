@@ -17,7 +17,6 @@
 
 import { type UiSchema } from "@rjsf/core";
 import { type UnknownObject } from "@/types/objectTypes";
-import { pick } from "lodash";
 import {
   type Definition,
   type InnerDefinitionRef,
@@ -28,7 +27,6 @@ import { type Schema } from "@/types/schemaTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { type Permissions } from "webextension-polyfill";
 import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
-import { type IExtension } from "@/types/extensionTypes";
 
 /**
  * @see resolveDefinitions
@@ -141,24 +139,4 @@ export interface RecipeDefinition extends UnsavedRecipeDefinition {
    * serializer adds it to the response.
    */
   updated_at: Timestamp;
-}
-
-/**
- * Select information about the RecipeDefinition used to install an IExtension
- *
- * TODO: find a better module for this method
- *
- * @see IExtension._recipe
- */
-export function selectSourceRecipeMetadata(
-  recipeDefinition: RecipeDefinition
-): IExtension["_recipe"] {
-  if (recipeDefinition.metadata?.id == null) {
-    throw new TypeError("Expected a RecipeDefinition");
-  }
-
-  return {
-    ...recipeDefinition.metadata,
-    ...pick(recipeDefinition, ["sharing", "updated_at"]),
-  };
 }

@@ -25,7 +25,7 @@ import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
@@ -88,7 +88,7 @@ export class GoogleSheetsLookup extends Transformer {
       header,
       query,
       multi,
-    }: BlockArg<{
+    }: BlockArgs<{
       spreadsheetId: string | SanitizedServiceConfiguration;
       tabName: string;
       header: string;

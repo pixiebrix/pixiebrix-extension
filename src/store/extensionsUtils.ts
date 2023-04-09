@@ -18,7 +18,7 @@
 import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type IExtension } from "@/types/extensionTypes";
-import { type UserOptions } from "@/types/runtimeTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -28,7 +28,7 @@ import { type UUID } from "@/types/stringTypes";
  */
 export function inferRecipeOptions(
   extensions: Array<Pick<IExtension, "optionsArgs">>
-): UserOptions {
+): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't
   // use the options), so we can just take the optionsArgs for any of the extensions
   return extensions[0]?.optionsArgs ?? {};

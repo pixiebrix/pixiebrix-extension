@@ -92,7 +92,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsDefinition } from "@/types/recipeTypes";
 import { type IExtension } from "@/types/extensionTypes";
-import { type UserOptions } from "@/types/runtimeTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -832,7 +832,7 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    editRecipeOptionsValues(state, action: PayloadAction<UserOptions>) {
+    editRecipeOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {
         return;

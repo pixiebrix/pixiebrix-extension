@@ -31,7 +31,7 @@ import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
 import {
   type RawServiceConfiguration,
-  type ServiceConfig,
+  type SecretsConfig,
 } from "@/types/serviceTypes";
 
 const axiosMock = new MockAdapter(axios);
@@ -79,21 +79,21 @@ serviceRegistry.register([
   {
     id: PIXIEBRIX_SERVICE_ID,
     authenticateRequest: (
-      serviceConfig: ServiceConfig,
+      serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_API,
     authenticateRequest: (
-      serviceConfig: ServiceConfig,
+      serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_TOKEN_API,
     authenticateRequest: (
-      serviceConfig: ServiceConfig,
+      serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig
     ) => requestConfig,
     isToken: true,

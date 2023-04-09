@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArg } from "@/types/runtimeTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -40,7 +40,7 @@ export class ErrorEffect extends Effect {
     },
   };
 
-  async effect({ message }: BlockArg): Promise<void> {
+  async effect({ message }: BlockArgs): Promise<void> {
     throw new BusinessError(message ?? "Unknown business error");
   }
 }

@@ -16,7 +16,7 @@
  */
 
 import { Block } from "@/types/blockTypes";
-import { type BlockArg, type BlockOptions } from "@/types/runtimeTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export abstract class Transformer extends Block {
   override async isRootAware(): Promise<boolean> {
@@ -24,9 +24,9 @@ export abstract class Transformer extends Block {
     return false;
   }
 
-  abstract transform(value: BlockArg, options: BlockOptions): Promise<unknown>;
+  abstract transform(value: BlockArgs, options: BlockOptions): Promise<unknown>;
 
-  async run(value: BlockArg, options: BlockOptions): Promise<unknown> {
+  async run(value: BlockArgs, options: BlockOptions): Promise<unknown> {
     return this.transform(value, options);
   }
 }
