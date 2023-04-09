@@ -115,7 +115,6 @@ function assertObject(value: unknown): asserts value is UnknownObject {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
 async function getInitialData(

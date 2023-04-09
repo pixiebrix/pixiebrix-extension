@@ -23,7 +23,7 @@ import { type SettingsRootState } from "@/store/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
+import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BlockConfig } from "@/blocks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
@@ -34,7 +34,6 @@ import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type OptionsDefinition } from "@/types/recipeTypes";
-import { type Metadata } from "@/types/registryTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",

@@ -33,7 +33,6 @@ export type AnalysisAnnotationAction = {
   extraCallback?: () => Promise<void>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type AnalysisAnnotation = BaseAnnotation & {
   /**
    * Position of the annotation within the extension configuration
