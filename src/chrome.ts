@@ -162,3 +162,22 @@ export async function reloadIfNewVersionIsReady(): Promise<
 
   return status as "throttled" | "no_update";
 }
+
+export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
+
+type Command = "toggle-quick-bar";
+
+/**
+ * Open shortcuts tab, and automatically highlight/scroll to the specified command.
+ * @param command the command to scroll to/highlight
+ */
+export async function openShortcutsTab({
+  command = "toggle-quick-bar",
+}: { command?: Command } = {}): Promise<void> {
+  const description =
+    // eslint-disable-next-line security/detect-object-injection -- type-checked
+    browser.runtime.getManifest().commands[command]?.description;
+  await browser.tabs.create({
+    url: `${SHORTCUTS_URL}#:~:text=${encodeURIComponent(description)}`,
+  });
+}

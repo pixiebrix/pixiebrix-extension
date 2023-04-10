@@ -30,6 +30,7 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { type ServiceAuthPair } from "@/core";
 import { useFormikContext } from "formik";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
@@ -45,11 +46,11 @@ const QuickBarAlert = () => (
     <FontAwesomeIcon icon={faExclamationTriangle} /> This mod contains a Quick
     Bar action, but you have not{" "}
     <a
-      href="chrome://extensions/shortcuts"
+      href={SHORTCUTS_URL}
       onClick={(event) => {
         // Can't link to chrome:// URLs directly
         event.preventDefault();
-        void browser.tabs.create({ url: event.currentTarget.href });
+        void openShortcutsTab();
       }}
     >
       <u>configured your Quick Bar shortcut</u>.
