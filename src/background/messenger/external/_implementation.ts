@@ -23,7 +23,7 @@ import { linkExtension } from "@/auth/token";
 import { type TokenAuthData } from "@/auth/authTypes";
 import { reportEvent } from "@/telemetry/events";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
-import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
+import { debouncedInstallStarterBlueprints } from "@/background/starterBlueprints";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -134,5 +134,5 @@ export async function openExtensionOptions() {
 }
 
 export async function installStarterBlueprints() {
-  return installStarterBlueprintsInBackground();
+  return debouncedInstallStarterBlueprints();
 }

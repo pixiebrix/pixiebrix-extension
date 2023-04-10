@@ -114,7 +114,7 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
   }
 };
 
-const debouncedInstallStarterBlueprints = debounce(
+export const debouncedInstallStarterBlueprints = debounce(
   memoizeUntilSettled(_installStarterBlueprints),
   BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
   {
