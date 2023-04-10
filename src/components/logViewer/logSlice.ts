@@ -16,7 +16,7 @@
  */
 
 import { clearLog, getLog, type LogEntry } from "@/telemetry/logging";
-import { type MessageContext } from "@/core";
+import { type MessageContext } from "@/types/loggerTypes";
 import {
   createAsyncThunk,
   createSlice,

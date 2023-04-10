@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RawServiceConfiguration, type ServiceConfig } from "@/core";
 import serviceRegistry from "@/services/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
@@ -30,6 +29,10 @@ import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
+import {
+  type RawServiceConfiguration,
+  type SecretsConfig,
+} from "@/types/serviceTypes";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -76,21 +79,21 @@ serviceRegistry.register([
   {
     id: PIXIEBRIX_SERVICE_ID,
     authenticateRequest: (
-      serviceConfig: ServiceConfig,
+      serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_API,
     authenticateRequest: (
-      serviceConfig: ServiceConfig,
+      serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_TOKEN_API,
     authenticateRequest: (
-      serviceConfig: ServiceConfig,
+      serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig
     ) => requestConfig,
     isToken: true,

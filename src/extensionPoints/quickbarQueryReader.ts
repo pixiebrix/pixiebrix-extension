@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type ReaderOutput, type Schema } from "@/core";
+import { Reader } from "@/types/blocks/readerTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A reader "stub" for dynamic Quick Bar query.
@@ -36,7 +37,7 @@ export class QuickbarQueryReader extends Reader {
     return true;
   }
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader, because it's made available
     // by the browser API in the menu handler
     throw new Error("QuickbarQueryReader.read() should not be called directly");

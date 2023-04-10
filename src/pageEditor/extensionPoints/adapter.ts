@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension } from "@/core";
+import { type IExtension } from "@/types/extensionTypes";
 import { registry } from "@/background/messenger/api";
 import {
   type ExtensionPointConfig,

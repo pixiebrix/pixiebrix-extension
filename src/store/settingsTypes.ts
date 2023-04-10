@@ -16,7 +16,7 @@
  */
 
 import { type Theme } from "@/themes/themeTypes";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 
 type InstallMode = "local" | "remote";
 

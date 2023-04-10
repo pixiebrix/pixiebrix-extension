@@ -23,7 +23,7 @@ import {
   recipeDefinitionFactory,
   sidebarEntryFactory,
 } from "@/testUtils/factories";
-import { type UseCachedQueryResult } from "@/core";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { uuidv4 } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";

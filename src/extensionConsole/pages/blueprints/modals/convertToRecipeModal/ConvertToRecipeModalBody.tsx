@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { selectScope } from "@/auth/authSelectors";
-import { type RegistryId, type SemVerString } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { Button, Modal } from "react-bootstrap";
@@ -38,10 +37,6 @@ import {
   useDeleteCloudExtensionMutation,
   useGetCloudExtensionsQuery,
 } from "@/services/api";
-import {
-  type RecipeDefinition,
-  selectSourceRecipeMetadata,
-} from "@/types/definitions";
 import { type FormikHelpers } from "formik";
 import { makeBlueprint } from "@/extensionConsole/pages/blueprints/utils/exportBlueprint";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -53,6 +48,9 @@ import { type StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { selectSourceRecipeMetadata } from "@/types/extensionTypes";
 
 type ConvertInstallableFormState = {
   blueprintId: RegistryId;

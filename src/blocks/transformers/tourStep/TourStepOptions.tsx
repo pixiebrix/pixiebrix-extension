@@ -30,7 +30,7 @@ import {
   isPipelineExpression,
   type PipelineExpression,
 } from "@/runtime/mapArgs";
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import SwitchButtonWidget, {

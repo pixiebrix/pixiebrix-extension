@@ -40,16 +40,14 @@ import {
   zip,
 } from "lodash";
 import { type JsonObject, type Primitive } from "type-fest";
-import {
-  type ApiVersion,
-  type RegistryId,
-  type SafeString,
-  type Schema,
-} from "@/core";
-import { type UnknownObject } from "@/types";
 import safeJsonStringify from "json-stringify-safe";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const specialCharsRegex = /[\s.[\]]/;
 

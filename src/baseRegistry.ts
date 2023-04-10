@@ -18,9 +18,9 @@
 import { type Kind } from "@/registry/localRegistry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type RegistryId } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils";
+import { type RegistryId } from "@/types/registryTypes";
 
 type Source = "remote" | "builtin";
 

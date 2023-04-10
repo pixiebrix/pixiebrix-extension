@@ -24,7 +24,7 @@ import {
 // eslint-disable-next-line no-restricted-imports -- Needed for this test
 import { Formik } from "formik";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { configureStore } from "@reduxjs/toolkit";
 import {
   actions,

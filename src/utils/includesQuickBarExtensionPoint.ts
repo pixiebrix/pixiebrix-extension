@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ResolvedExtensionPointConfig } from "@/types/definitions";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
+import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
 
 export default async function includesQuickBarExtensionPoint(
-  extensionPointConfigs?: ResolvedExtensionPointConfig[]
+  extensionPointConfigs?: ResolvedExtensionDefinition[]
 ): Promise<boolean> {
   if (!extensionPointConfigs) {
     return;

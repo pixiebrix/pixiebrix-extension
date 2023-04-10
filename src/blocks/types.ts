@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type RegistryId } from "@/types/registryTypes";
 import {
   type ElementReference,
   type Expression,
   type OutputKey,
-  type RegistryId,
   type TemplateEngine,
-  type UUID,
-} from "@/core";
-import { type UnknownObject } from "@/types";
+} from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
@@ -106,6 +106,7 @@ export type BlockConfig = {
   /**
    * The configuration of the block
    */
+  // XXX: in the future, should use JsonObject here, but will require extra type assertions in the codebase.
   config: UnknownObject;
 
   /**

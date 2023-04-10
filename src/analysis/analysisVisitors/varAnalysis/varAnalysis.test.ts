@@ -41,7 +41,6 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
-import { type Schema } from "@/core";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -51,6 +50,7 @@ import {
   type DocumentElement,
   type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   __esModule: true,

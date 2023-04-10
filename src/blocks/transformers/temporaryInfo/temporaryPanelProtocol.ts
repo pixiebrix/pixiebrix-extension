@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
 import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";

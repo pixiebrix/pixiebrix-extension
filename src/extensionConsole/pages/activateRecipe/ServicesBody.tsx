@@ -19,18 +19,18 @@ import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
-import { type ServiceAuthPair } from "@/core";
+import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 
 interface OwnProps {
   blueprint: RecipeDefinition;

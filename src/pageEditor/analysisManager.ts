@@ -22,7 +22,7 @@ import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { type TraceRecord } from "@/telemetry/trace";
 import { isAnyOf, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "./pageEditorTypes";

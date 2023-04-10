@@ -16,10 +16,10 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type Metadata, type ResolvedExtension, RunReason } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
 import { uuidSequence } from "@/testUtils/factories";
 import { type BlockPipeline } from "@/blocks/types";
 import {
@@ -37,6 +37,8 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { RunReason } from "@/types/runtimeTypes";
 
 beforeAll(() => {
   requestIdleCallback.mock();

@@ -37,7 +37,7 @@ import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
 const EditTab: React.FC<{

@@ -19,13 +19,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import {
-  type IBlock,
-  type IExtensionPoint,
-  type IReader,
-  type ResolvedExtension,
-  type Schema,
-} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
@@ -64,6 +57,11 @@ import {
 } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError } from "@/errors/businessErrors";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline

@@ -20,7 +20,6 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories";
-import { type AuthData, type BlockOptions } from "@/core";
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
@@ -30,6 +29,8 @@ import {
   getCachedAuthData,
   getUserData,
 } from "@/background/messenger/api";
+import { type BlockOptions } from "@/types/runtimeTypes";
+import { type AuthData } from "@/types/serviceTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn().mockResolvedValue({

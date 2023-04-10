@@ -21,12 +21,6 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import {
-  type IService,
-  type RawServiceConfiguration,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
@@ -47,6 +41,12 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
+import {
+  type IService,
+  type RawServiceConfiguration,
+} from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 type OwnProps = {
   configuration: RawServiceConfiguration;

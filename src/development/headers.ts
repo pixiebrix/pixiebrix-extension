@@ -45,7 +45,6 @@ const blockDefinitions = blockRegistry.builtins.map((block) => ({
     version: process.env.NPM_PACKAGE_VERSION,
     name: block.name,
     description: block.description,
-    author: block.author,
   },
   inputSchema: block.inputSchema,
   outputSchema: block.outputSchema,

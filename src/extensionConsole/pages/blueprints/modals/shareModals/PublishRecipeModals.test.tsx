@@ -25,7 +25,7 @@ import {
   recipeFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
 

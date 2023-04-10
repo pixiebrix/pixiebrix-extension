@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
-import { type BlockArg, type SafeHTML, type Schema } from "@/core";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import { assumeSafe } from "@/utils/sanitize";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 
 export class IFrameRenderer extends Renderer {
   constructor() {
@@ -61,7 +63,7 @@ export class IFrameRenderer extends Renderer {
     height = "100%",
     width = "100%",
     safeMode = false,
-  }: BlockArg<{
+  }: BlockArgs<{
     url: string;
     title?: string;
     height?: string;

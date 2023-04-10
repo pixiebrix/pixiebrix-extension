@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
 import { useRecipe } from "@/recipes/recipesHooks";

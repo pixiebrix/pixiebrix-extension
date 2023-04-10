@@ -19,14 +19,14 @@ import React from "react";
 import { useField } from "formik";
 import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import {
   type OptionsFactory,
   useOptionsResolver,
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 
 type RemoteMultiSelectWidgetProps = {
   id?: string;

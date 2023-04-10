@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId, type UUID } from "@/core";
 import {
   type Me,
   type OrganizationTheme,
   type Milestone,
 } from "@/types/contract";
 import { type Except } from "type-fest";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export interface AuthOption {
   label: string;

@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
 import { type BlockConfig } from "@/blocks/types";
 import { mapValues } from "lodash";
@@ -122,7 +123,7 @@ export class JQueryReader extends Transformer {
   }
 
   async transform(
-    { selectors }: BlockArg<{ selectors: SelectorMap }>,
+    { selectors }: BlockArgs<{ selectors: SelectorMap }>,
     { root }: BlockOptions
   ): Promise<unknown> {
     return readJQuery({ type: "jquery", selectors }, root);

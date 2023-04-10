@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { activateTab, closeTab } from "@/background/messenger/api";
 

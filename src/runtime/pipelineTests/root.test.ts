@@ -15,15 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import {
-  type ApiVersion,
-  type BlockArg,
-  type BlockOptions,
-  type Expression,
-  type ReaderRoot,
-} from "@/core";
 import blockRegistry from "@/blocks/registry";
 import {
   echoBlock,
@@ -32,6 +24,15 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import { Reader } from "@/types/blocks/readerTypes";
+import {
+  type ApiVersion,
+  type BlockArgs,
+  type BlockOptions,
+  type Expression,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
+import { Block } from "@/types/blockTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");
@@ -54,7 +55,7 @@ class RootAwareBlock extends Block {
     return true;
   }
 
-  async run(arg: BlockArg, { root }: BlockOptions) {
+  async run(arg: BlockArgs, { root }: BlockOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,
@@ -77,7 +78,7 @@ class RootAwareReader extends Reader {
     return true;
   }
 
-  async read(root: ReaderRoot) {
+  async read(root: SelectorRoot) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,

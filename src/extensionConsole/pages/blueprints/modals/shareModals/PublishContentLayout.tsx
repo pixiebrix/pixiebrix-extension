@@ -16,7 +16,7 @@
  */
 
 import React, { type ReactElement } from "react";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSelectors";

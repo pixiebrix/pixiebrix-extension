@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Logger,
-  type Schema,
-} from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
 import { boolean } from "@/utils";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { type RequireExactlyOne } from "type-fest";
@@ -35,6 +29,9 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 import { isEmpty } from "lodash";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Logger } from "@/types/loggerTypes";
 
 type SetValueData = RequireExactlyOne<
   {
@@ -208,7 +205,7 @@ export class SetInputValue extends Effect {
     {
       inputs,
       isRootAware,
-    }: BlockArg<{
+    }: BlockArgs<{
       inputs: Array<{ selector: string; value: unknown }>;
       isRootAware?: boolean;
     }>,
@@ -289,7 +286,7 @@ export class FormFill extends Effect {
       fieldSelectors = {},
       submit = false,
       isRootAware = false,
-    }: BlockArg,
+    }: BlockArgs,
     { logger, root }: BlockOptions
   ): Promise<void> {
     const submitRoot = isRootAware ? root : document;

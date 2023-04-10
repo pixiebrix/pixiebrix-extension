@@ -24,8 +24,8 @@ import React, { useMemo } from "react";
 import { type IconOption } from "@/icons/types";
 import { icons } from "@/icons/list";
 import Icon from "./Icon";
-import { type IconLibrary } from "@/core";
 import { sortBy } from "lodash";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const iconOptions: IconOption[] = sortBy(
   [...icons].flatMap(([library, libraryCache]) =>

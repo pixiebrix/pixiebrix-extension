@@ -19,11 +19,6 @@ import { type JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import {
-  type MessageContext,
-  type SemVerString,
-  type SerializedError,
-} from "@/core";
-import {
   hasSpecificErrorCause,
   selectSpecificError,
 } from "@/errors/errorHelpers";
@@ -39,6 +34,9 @@ import {
 import { type ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type SemVerString } from "@/types/registryTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

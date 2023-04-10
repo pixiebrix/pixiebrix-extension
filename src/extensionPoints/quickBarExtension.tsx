@@ -20,15 +20,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import {
-  type IBlock,
-  type IconConfig,
-  type IExtensionPoint,
-  type IReader,
-  type ResolvedExtension,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
@@ -62,6 +53,13 @@ import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { type IconConfig } from "@/types/iconTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 

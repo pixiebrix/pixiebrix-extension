@@ -16,10 +16,11 @@
  */
 
 import React from "react";
-import { type BlockArgContext, type BlockOptions, type UUID } from "@/core";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
+import { type UUID } from "@/types/stringTypes";
+import { type BlockArgsContext, type BlockOptions } from "@/types/runtimeTypes";
 
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;
@@ -28,13 +29,13 @@ type DocumentState = {
     runId: UUID;
     extensionId: UUID;
   };
-  options: BlockOptions<BlockArgContext>;
+  options: BlockOptions<BlockArgsContext>;
 };
 
 const blankContext = {
   "@input": {},
   "@options": {},
-} as BlockArgContext;
+} as BlockArgsContext;
 
 export const initialValue: DocumentState = {
   onAction() {

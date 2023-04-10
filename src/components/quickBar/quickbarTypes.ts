@@ -16,7 +16,8 @@
  */
 
 import { type Action } from "kbar";
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * `kbar` action with additional metadata about the source of the action.

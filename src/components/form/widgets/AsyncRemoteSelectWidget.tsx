@@ -20,10 +20,10 @@ import {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import AsyncSelect from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";

@@ -28,7 +28,6 @@ import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import { useDispatch, useSelector } from "react-redux";
-import { type RawConfig, type UUID } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
@@ -39,13 +38,15 @@ import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidge
 import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
 import { useIsMounted } from "@/hooks/common";
+import { type UUID } from "@/types/stringTypes";
+import { type Definition } from "@/types/registryTypes";
 
 const { touchBrick } = workshopSlice.actions;
 
 type ParsedBrickInfo = {
   isBlueprint: boolean;
   isInstalled: boolean;
-  config: RawConfig;
+  config: Definition;
 };
 
 function useParseBrick(config: string | null): ParsedBrickInfo {
@@ -56,7 +57,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
       return { isBlueprint: false, isInstalled: false, config: undefined };
     }
 
-    const configJSON = loadBrickYaml(config) as RawConfig;
+    const configJSON = loadBrickYaml(config) as Definition;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {

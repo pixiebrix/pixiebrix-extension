@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension } from "@/core";
+import { type IExtension } from "@/types/extensionTypes";
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";

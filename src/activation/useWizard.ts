@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/definitions";
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -27,7 +26,6 @@ import {
 } from "@/extensionConsole/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { type Schema } from "@/core";
 import { isPrimitive } from "@/utils";
 import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
@@ -35,6 +33,8 @@ import PermissionsBody from "@/extensionConsole/pages/activateRecipe/Permissions
 import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript

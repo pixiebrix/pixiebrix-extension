@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export class JSONPathTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
@@ -43,7 +44,7 @@ export class JSONPathTransformer extends Transformer {
   };
 
   async transform(
-    { path }: BlockArg,
+    { path }: BlockArgs,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
     const { JSONPath } = await import(

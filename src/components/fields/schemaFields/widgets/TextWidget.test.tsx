@@ -17,7 +17,7 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { render, screen } from "@/pageEditor/testHelpers";
 import TextWidget, {
   isVarValue,

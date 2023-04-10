@@ -16,7 +16,7 @@
  */
 
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { type ServiceDependency } from "@/core";
+import { type ServiceDependency } from "@/types/serviceTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 

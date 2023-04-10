@@ -18,7 +18,7 @@
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {

@@ -24,9 +24,9 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type Except } from "type-fest";
-import { type UseCachedQueryResult } from "@/core";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 

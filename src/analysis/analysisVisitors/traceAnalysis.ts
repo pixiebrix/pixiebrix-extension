@@ -23,14 +23,14 @@ import {
   type TraceRecord,
 } from "@/telemetry/trace";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/blocks/errors";
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { AnnotationType } from "@/types";
 import { type ErrorObject } from "serialize-error";
+import { AnnotationType } from "@/types/annotationTypes";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;

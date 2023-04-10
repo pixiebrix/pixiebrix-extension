@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import FieldTemplate from "@/components/form/FieldTemplate";

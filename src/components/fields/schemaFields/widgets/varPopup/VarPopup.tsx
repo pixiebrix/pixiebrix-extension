@@ -25,7 +25,7 @@ import VarMenu from "./VarMenu";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import fitTextarea from "fit-textarea";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { getPathFromArray } from "@/runtime/pathHelpers";
 
 type VarPopupProps = {

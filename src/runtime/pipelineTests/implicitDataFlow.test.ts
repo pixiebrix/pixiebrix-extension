@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion, type OutputKey } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BlockPipeline } from "@/blocks/types";
@@ -29,7 +28,8 @@ import {
   teapotBlock,
   testOptions,
 } from "./pipelineTestHelpers";
-import { type UnknownObject } from "@/types";
+import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

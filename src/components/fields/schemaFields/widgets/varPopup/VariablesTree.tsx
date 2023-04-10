@@ -18,7 +18,7 @@
 import React from "react";
 import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
 import { jsonTreeTheme } from "@/themes/light";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 import { type Theme } from "react-base16-styling";
 import { type UnknownRecord } from "type-fest/source/internal";

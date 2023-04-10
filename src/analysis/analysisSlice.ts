@@ -21,9 +21,9 @@ import {
   type AnalysisState,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type UUID } from "@/core";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type ErrorObject } from "serialize-error";
+import { type UUID } from "@/types/stringTypes";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},

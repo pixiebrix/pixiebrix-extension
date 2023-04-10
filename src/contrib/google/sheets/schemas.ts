@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 
 export const BASE_SHEET_SCHEMA: Schema = {
   $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",

@@ -17,7 +17,7 @@
 
 import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 
 // Used by the app
 export function selectOrganizations(

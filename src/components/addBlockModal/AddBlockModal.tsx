@@ -26,7 +26,6 @@ import React, {
 } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { compact, isEmpty } from "lodash";
-import { type IBlock, type RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { BLOCK_ITEM_FIXED_HEIGHT_PX } from "./BlockGridItem";
@@ -66,6 +65,8 @@ import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";

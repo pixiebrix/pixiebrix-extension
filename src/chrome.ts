@@ -17,7 +17,7 @@
 
 import { forbidContext } from "@/utils/expectContext";
 import { type JsonValue } from "type-fest";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { foreverPendingPromise } from "@/utils";
 import pTimeout from "p-timeout";
 

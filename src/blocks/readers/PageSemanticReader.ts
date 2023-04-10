@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type ReaderOutput, type Schema } from "@/core";
+import { Reader } from "@/types/blocks/readerTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 export class PageSemanticReader extends Reader {
   defaultOutputKey = "metadata";
@@ -33,7 +34,7 @@ export class PageSemanticReader extends Reader {
     return false;
   }
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     const [{ Handler }, { Parser }] = await Promise.all([
       import(/* webpackChunkName: "htmlparsers" */ "htmlmetaparser"),
       import(/* webpackChunkName: "htmlparsers" */ "htmlparser2"),
@@ -45,7 +46,7 @@ export class PageSemanticReader extends Reader {
           if (error) {
             reject(error);
           } else {
-            resolve(result as unknown as ReaderOutput);
+            resolve(result as unknown as JsonObject);
           }
         },
         {

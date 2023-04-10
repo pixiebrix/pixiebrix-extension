@@ -24,13 +24,13 @@ import {
 } from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type Target } from "@/types";
+import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { startCase } from "lodash";
 import { type PanelButton } from "@/sidebar/types";
 import { ClosePanelAction } from "@/blocks/errors";

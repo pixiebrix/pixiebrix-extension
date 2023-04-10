@@ -1,21 +1,20 @@
 import { type BlockPipeline, type Branch } from "@/blocks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import {
-  type BlockArgContext,
-  type MessageContext,
-  type ServiceContext,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type BlockArgsContext,
+  type ServiceContext,
+} from "@/types/runtimeTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 type RunMetadata = {
   /**
@@ -35,7 +34,7 @@ type RunMetadata = {
 type RunPipelineParams = {
   nonce: UUID;
   pipeline: BlockPipeline;
-  context: BlockArgContext;
+  context: BlockArgsContext;
   options: ApiVersionOptions;
   meta: RunMetadata;
   messageContext: MessageContext;
@@ -67,7 +66,7 @@ export async function runRendererPipeline({
       pipeline,
       {
         input: context["@input"] ?? {},
-        optionsArgs: (context["@options"] ?? {}) as UserOptions,
+        optionsArgs: context["@options"] ?? {},
         // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
         // it would be the page that contains the React tree (i.e., the frame of the sidebar)
         root: null,
@@ -118,7 +117,7 @@ export async function runEffectPipeline({
     pipeline,
     {
       input: context["@input"] ?? {},
-      optionsArgs: (context["@options"] ?? {}) as UserOptions,
+      optionsArgs: context["@options"] ?? {},
       // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
       // it would be the page that contains the React tree (i.e., the frame of the sidebar)
       root: null,

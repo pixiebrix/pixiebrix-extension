@@ -29,11 +29,12 @@ import {
   baseExtensionStateFactory,
 } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
-import { type OutputKey, type ServiceDependency } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 
 jest.mock("@/blocks/registry");
 

@@ -16,7 +16,7 @@
  */
 
 import { type ServicesState } from "@/store/servicesSlice";
-import { type RawServiceConfiguration } from "@/core";
+import { type RawServiceConfiguration } from "@/types/serviceTypes";
 
 export const selectConfiguredServices = ({
   services,

@@ -1,0 +1,307 @@
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { type AxiosRequestConfig } from "axios";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { type BlockIcon } from "@/types/iconTypes";
+import { type JsonObject, type JsonValue } from "type-fest";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
+
+export interface ServiceDependency {
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * The output key for the dependency (without the leading "@")
+   */
+  outputKey: OutputKey;
+
+  /**
+   * The UUID of the service configuration.
+   */
+  config?: UUID;
+}
+
+export type ServiceAuthPair = {
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * UUID of the service configuration.
+   */
+  config: UUID;
+};
+
+type SanitizedBrand = { _sanitizedConfigBrand: null };
+
+type SecretBrand = { _serviceConfigBrand: null };
+
+/**
+ * A one-level deep service config that might have already been sanitized.
+ */
+export type ServiceConfig = Record<string, string | null>;
+
+/**
+ * Nominal typing to distinguish from `ServiceConfig`
+ * @see SecretsConfig
+ */
+export type SanitizedConfig = ServiceConfig & SanitizedBrand;
+
+/**
+ * Nominal typing to distinguish from `SanitizedConfig`
+ * @see SanitizedConfig
+ */
+export type SecretsConfig = ServiceConfig & SecretBrand;
+
+/**
+ * Data received from the 3rd-party service during an OAuth or token-exchange flow.
+ *
+ * @see setCachedAuthData
+ * @see getCachedAuthData
+ */
+export interface AuthData {
+  /**
+   * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
+   */
+  _oauthBrand: null;
+  [key: string]: unknown;
+}
+
+/** Service configuration provided by a user. */
+export type RawServiceConfiguration = {
+  // Nominal typing to distinguish from SanitizedServiceConfiguration
+  _rawServiceConfigurationBrand: null;
+
+  /**
+   * UUID of the service configuration
+   */
+  id: UUID | undefined;
+
+  /**
+   * Registry identifier for the service, e.g., `@pixiebrix/api`.
+   */
+  serviceId: RegistryId;
+
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same service in the
+   * interface.
+   */
+  label: string | undefined;
+
+  /**
+   * Configuration including all data
+   */
+  config: SecretsConfig;
+};
+
+export interface SanitizedServiceConfiguration {
+  // Nominal typing to distinguish from RawServiceConfiguration
+  _sanitizedServiceConfigurationBrand: null;
+
+  /**
+   * UUID of the service configuration.
+   */
+  id?: UUID;
+
+  /**
+   * Registry identifier for the service, e.g., @pixiebrix/api
+   */
+  serviceId: RegistryId;
+
+  /**
+   * Sanitized configuration, i.e., excluding secrets and keys.
+   */
+  config: SanitizedConfig;
+
+  /**
+   * True if the service must be proxied for remote configs, e.g., because it has a secret it needs
+   * to use to authenticate.
+   */
+  proxy: boolean;
+}
+
+export type KeyAuthenticationDefinition = {
+  baseURL?: string;
+  headers?: Record<string, string>;
+  params?: Record<string, string>;
+};
+
+export type TokenAuthenticationDefinition = {
+  baseURL?: string;
+  token: {
+    url: string;
+    data: Record<string, JsonValue>;
+  };
+  headers: Record<string, string>;
+};
+
+export type BasicAuthenticationDefinition = {
+  baseURL?: string;
+  basic: {
+    username: string;
+    password: string;
+  };
+  headers: Record<string, string>;
+};
+
+export type OAuth2AuthenticationDefinition = {
+  baseURL?: string;
+  oauth2: {
+    client_id: string;
+    authorizeUrl: string;
+    tokenUrl: string;
+  };
+  headers: Record<string, string>;
+};
+
+export type OAuth2AuthorizationGrantDefinition = {
+  oauth2: {
+    grantType: "authorization_code";
+  };
+  headers: Record<string, string>;
+};
+
+export interface ServiceDefinition<
+  TAuth =
+    | KeyAuthenticationDefinition
+    | OAuth2AuthenticationDefinition
+    | OAuth2AuthorizationGrantDefinition
+    | TokenAuthenticationDefinition
+    | BasicAuthenticationDefinition
+> {
+  metadata: Metadata;
+  inputSchema: Schema;
+  uiSchema?: UiSchema;
+  isAvailable?: {
+    matchPatterns: string | string[];
+  };
+  authentication: TAuth;
+}
+
+/**
+ * Rendered context for making token-authenticated requests.
+ */
+export type TokenContext = {
+  url: string;
+  data: JsonObject;
+};
+
+/**
+ * Rendered context for making OAuth2 requests.
+ */
+export type OAuth2Context = {
+  host?: string;
+  authorizeUrl?: string;
+  tokenUrl?: string;
+  client_id: string;
+  client_secret?: string;
+  code_challenge_method?: "S256";
+};
+
+/**
+ * A service that can be dependency injected and used to authenticate external requests.
+ *
+ * The input/output schema is the same since it's directly user configured.
+ */
+export interface IService<
+  TConfig extends ServiceConfig = ServiceConfig,
+  TSanitized = TConfig & { _sanitizedConfigBrand: null },
+  TSecret = TConfig & { _serviceConfigBrand: null },
+  TOAuth extends AuthData = AuthData
+> extends Metadata {
+  schema: Schema;
+
+  /**
+   * A uiSchema for the service configuration.
+   * @since 1.7.16
+   */
+  uiSchema?: UiSchema;
+
+  isOAuth2: boolean;
+
+  isAuthorizationGrant: boolean;
+
+  isToken: boolean;
+
+  /**
+   * True if service uses basic access authentication to authenticate
+   * https://en.wikipedia.org/wiki/Basic_access_authentication
+   */
+  isBasicHttpAuth: boolean;
+
+  getOrigins: (serviceConfig: TSanitized) => string[];
+
+  getOAuth2Context: (serviceConfig: TSecret) => OAuth2Context;
+
+  getTokenContext: (serviceConfig: TSecret) => TokenContext;
+
+  authenticateRequest: (
+    serviceConfig: TSecret,
+    requestConfig: AxiosRequestConfig,
+    oauthConfig?: TOAuth
+  ) => AxiosRequestConfig;
+}
+
+/**
+ * Abstract base class for services.
+ */
+export abstract class Service<
+  TConfig extends ServiceConfig = ServiceConfig,
+  TOAuth extends AuthData = AuthData
+> implements IService<TConfig>
+{
+  abstract schema: Schema;
+
+  abstract hasAuth: boolean;
+
+  abstract get isOAuth2(): boolean;
+
+  abstract get isAuthorizationGrant(): boolean;
+
+  abstract get isToken(): boolean;
+
+  abstract get isBasicHttpAuth(): boolean;
+
+  protected constructor(
+    public id: RegistryId,
+    public name: string,
+    public description?: string,
+    public icon?: BlockIcon
+  ) {
+    // No body necessary https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties
+  }
+
+  abstract getOrigins(serviceConfig: TConfig & SanitizedBrand): string[];
+
+  abstract getOAuth2Context(
+    serviceConfig: TConfig & SecretBrand
+  ): OAuth2Context;
+
+  abstract getTokenContext(serviceConfig: TConfig & SecretBrand): TokenContext;
+
+  abstract authenticateRequest(
+    serviceConfig: TConfig & SecretBrand,
+    requestConfig: AxiosRequestConfig,
+    authConfig?: TOAuth
+  ): AxiosRequestConfig;
+}

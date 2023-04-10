@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";

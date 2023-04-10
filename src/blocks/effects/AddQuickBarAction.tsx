@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type IconConfig,
-  type Schema,
-} from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -29,6 +22,10 @@ import Icon from "@/icons/Icon";
 import React from "react";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
+import { type IconConfig } from "@/types/iconTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/blocks/effectTypes";
 
 type ActionConfig = {
   title: string;
@@ -108,7 +105,7 @@ class AddQuickBarAction extends Effect {
       action: actionPipeline,
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
-    }: BlockArg<ActionConfig>,
+    }: BlockArgs<ActionConfig>,
     { root, logger, runPipeline }: BlockOptions
   ): Promise<void> {
     // Keep track of run number for tracing

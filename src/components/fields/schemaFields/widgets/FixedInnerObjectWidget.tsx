@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 /**

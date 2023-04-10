@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import useWizard from "@/activation/useWizard";
 import Form, {
   type OnSubmit,

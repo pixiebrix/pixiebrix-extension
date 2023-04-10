@@ -47,7 +47,7 @@ import Retry from "@/blocks/transformers/controlFlow/Retry";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import TraverseElements from "@/blocks/transformers/traverseElements";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
-import { type IBlock } from "@/core";
+import { type IBlock } from "@/types/blockTypes";
 import { SelectElement } from "@/blocks/transformers/selectElement";
 
 function getAllTransformers(): IBlock[] {

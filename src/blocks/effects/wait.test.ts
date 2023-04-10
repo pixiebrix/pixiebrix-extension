@@ -18,7 +18,7 @@
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidSequence } from "@/testUtils/factories";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 import { WaitElementEffect } from "@/blocks/effects/wait";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";

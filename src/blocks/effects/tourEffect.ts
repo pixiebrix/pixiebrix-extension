@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
@@ -126,7 +127,7 @@ export class TourEffect extends Effect {
       disableInteraction = false,
       steps = [] as Step[],
       isRootAware = false,
-    }: BlockArg,
+    }: BlockArgs,
     { root, abortSignal: blockAbortSignal, logger }: BlockOptions
   ): Promise<void> {
     const { extensionId, label, extensionLabel, blueprintId } = logger.context;

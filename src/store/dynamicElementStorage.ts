@@ -20,7 +20,8 @@ import {
   type ReduxStorageKey,
   setReduxStorage,
 } from "@/chrome";
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
 import { mapValues } from "lodash";

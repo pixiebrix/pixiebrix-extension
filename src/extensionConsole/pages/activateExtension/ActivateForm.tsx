@@ -29,7 +29,7 @@ import ServicesRow from "@/extensionConsole/pages/activateExtension/ServicesRow"
 import { type FormState } from "@/extensionConsole/pages/activateExtension/activateTypes";
 import PermissionsRow from "@/extensionConsole/pages/activateExtension/PermissionsRow";
 import extensionsSlice from "@/store/extensionsSlice";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import ActivateButton from "@/extensionConsole/pages/activateExtension/ActivateButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

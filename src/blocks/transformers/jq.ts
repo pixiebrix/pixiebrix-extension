@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
@@ -55,7 +56,7 @@ export class JQTransformer extends Transformer {
   );
 
   async transform(
-    { filter, data }: BlockArg,
+    { filter, data }: BlockArgs,
     { ctxt, logger }: BlockOptions
   ): Promise<unknown> {
     const input = isNullOrBlank(data) ? ctxt : data;

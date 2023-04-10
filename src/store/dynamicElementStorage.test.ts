@@ -23,7 +23,7 @@ import {
   installedRecipeMetadataFactory,
   uuidSequence,
 } from "@/testUtils/factories";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { type NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {

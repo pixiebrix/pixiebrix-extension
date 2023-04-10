@@ -21,7 +21,7 @@ import { action } from "@storybook/addon-actions";
 import CssClassWidget, { parseValue } from "./CssClassWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik, useField } from "formik";
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";

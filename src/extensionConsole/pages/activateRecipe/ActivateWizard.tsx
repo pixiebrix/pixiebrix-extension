@@ -18,7 +18,7 @@
 import styles from "./ActivateWizard.module.scss";
 
 import React, { useEffect } from "react";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Col, Form, Row } from "react-bootstrap";
 import { truncate } from "lodash";

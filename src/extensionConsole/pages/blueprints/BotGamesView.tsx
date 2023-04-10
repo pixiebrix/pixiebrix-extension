@@ -20,7 +20,7 @@ import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useRecipe } from "@/recipes/recipesHooks";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { containsPermissions } from "@/background/messenger/api";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";

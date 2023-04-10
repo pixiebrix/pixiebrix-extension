@@ -27,7 +27,6 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { type IBlock, type IExtensionPoint, type IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
@@ -39,6 +38,7 @@ import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 const BrickReference: React.FunctionComponent<{
   bricks: ReferenceEntry[];
@@ -78,7 +78,7 @@ const BrickReference: React.FunctionComponent<{
     return null;
   }, [selected]);
 
-  const fuse: Fuse<IBlock | IService | IExtensionPoint> = useMemo(
+  const fuse: Fuse<IBrick> = useMemo(
     () =>
       new Fuse(sortedBricks, {
         // Prefer name, then id

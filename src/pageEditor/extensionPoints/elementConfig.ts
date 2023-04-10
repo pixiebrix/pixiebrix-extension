@@ -17,16 +17,7 @@
 
 import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-  type ApiVersion,
-  type IExtension,
-  type Metadata,
-  type RecipeMetadata,
-  type RegistryId,
-  type ServiceDependency,
-  type UserOptions,
-  type UUID,
-} from "@/core";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
   type ExtensionPointConfig,
@@ -36,10 +27,14 @@ import {
   type BlockPipeline,
   type NormalizedAvailability,
 } from "@/blocks/types";
-import { type Target } from "@/types";
-import { type OptionsDefinition } from "@/types/definitions";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
+import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type Target } from "@/types/messengerTypes";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
@@ -104,7 +99,7 @@ export interface BaseFormState<
    * The input options from the extension's blueprint
    * @since 1.4.3
    */
-  optionsArgs: UserOptions;
+  optionsArgs: OptionsArgs;
 
   services: ServiceDependency[];
 
@@ -123,7 +118,7 @@ export interface BaseFormState<
    * is not part of a recipe.
    * @see IExtension._recipe
    */
-  recipe: RecipeMetadata | undefined;
+  recipe: IExtension["_recipe"] | undefined;
 
   /**
    * Information about the recipe (i.e., blueprint) options,

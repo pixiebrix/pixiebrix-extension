@@ -17,8 +17,8 @@
 
 import type React from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { type Expression } from "@/core";
-import { type UnknownObject } from "@/types";
+import { type Expression } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type JSONSchema7Array } from "json-schema";
 

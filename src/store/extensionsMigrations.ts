@@ -19,7 +19,7 @@ import {
   type MigrationManifest,
   type PersistedState,
 } from "redux-persist/es/types";
-import { type PersistedExtension } from "@/core";
+import { type PersistedExtension } from "@/types/extensionTypes";
 import {
   type ExtensionOptionsState,
   type LegacyExtensionObjectShapeState,

@@ -15,12 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IExtension,
-  type RecipeMetadata,
-  type RegistryId,
-  type UUID,
-} from "@/core";
 import { createSelector } from "reselect";
 import {
   type EditorRootState,
@@ -37,7 +31,10 @@ import {
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { AnnotationType } from "@/types";
+import { type IExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -206,10 +203,10 @@ export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
   selectExtensions,
   (elements, extensions) => {
-    const elementRecipes: RecipeMetadata[] = elements
+    const elementRecipes: Array<IExtension["_recipe"]> = elements
       .filter((element) => Boolean(element.recipe))
       .map((element) => element.recipe);
-    const extensionRecipes: RecipeMetadata[] = extensions
+    const extensionRecipes: Array<IExtension["_recipe"]> = extensions
       .filter((extension) => Boolean(extension._recipe))
       .map((extension) => extension._recipe);
 

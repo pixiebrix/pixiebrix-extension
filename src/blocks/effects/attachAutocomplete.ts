@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { type AutocompleteItem } from "autocompleter";
 import {
@@ -25,6 +23,9 @@ import {
 } from "@/blocks/rootModeHelpers";
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export class AttachAutocomplete extends Effect {
   constructor() {
@@ -61,7 +62,7 @@ export class AttachAutocomplete extends Effect {
       selector,
       options,
       isRootAware = false,
-    }: BlockArg<{
+    }: BlockArgs<{
       selector: string;
       options: string[];
       isRootAware?: boolean;

@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useMemo, useRef } from "react";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";

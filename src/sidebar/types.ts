@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { type JsonObject } from "type-fest";

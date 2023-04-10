@@ -26,7 +26,7 @@ import {
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
   enableOverlay,

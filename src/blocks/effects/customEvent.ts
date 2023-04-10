@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect, type UnknownObject } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type JsonObject } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
+import { Effect } from "@/types/blocks/effectTypes";
 
 class CustomEventEffect extends Effect {
   constructor() {
@@ -51,7 +53,7 @@ class CustomEventEffect extends Effect {
     {
       eventName,
       data = {},
-    }: BlockArg<{ eventName: string; data?: UnknownObject }>,
+    }: BlockArgs<{ eventName: string; data?: JsonObject }>,
     { root }: BlockOptions
   ): Promise<void> {
     const event = new CustomEvent(eventName, { detail: data, bubbles: true });

@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
+import { Effect } from "@/types/blocks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type SanitizedServiceConfiguration,
-} from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
@@ -60,7 +57,7 @@ export class AddOrganization extends Effect {
       pipedrive,
       name,
       owner_id,
-    }: BlockArg<{
+    }: BlockArgs<{
       name: string;
       owner_id: number;
       pipedrive: SanitizedServiceConfiguration;
@@ -132,7 +129,7 @@ export class AddPerson extends Effect {
   );
 
   async effect(
-    { pipedrive, name, owner_id, email, phone }: BlockArg,
+    { pipedrive, name, owner_id, email, phone }: BlockArgs,
     { logger }: BlockOptions
   ): Promise<void> {
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
-import { type Expression } from "@/core";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type Expression } from "@/types/runtimeTypes";
 import {
   type DeferExpression,
   type PipelineExpression,
