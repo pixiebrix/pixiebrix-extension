@@ -124,10 +124,6 @@ export const debouncedInstallStarterBlueprints = debounce(
   }
 );
 
-export async function firstTimeInstallStarterBlueprints(): Promise<boolean> {
-  return debouncedInstallStarterBlueprints();
-}
-
 function initStarterBlueprints(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
