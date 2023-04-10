@@ -46,7 +46,7 @@ import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import initPartnerTheme from "@/background/partnerTheme";
-import { firstTimeInstallStarterBlueprints } from "@/background/starterBlueprints";
+import { debouncedInstallStarterBlueprints } from "@/background/starterBlueprints";
 
 import {
   clearExtensionDebugLogs,
@@ -99,7 +99,7 @@ declare global {
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
 
-    INSTALL_STARTER_BLUEPRINTS: typeof firstTimeInstallStarterBlueprints;
+    INSTALL_STARTER_BLUEPRINTS: typeof debouncedInstallStarterBlueprints;
 
     GET_UID: typeof uid;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
@@ -166,7 +166,7 @@ export default function registerMessenger(): void {
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
 
-    INSTALL_STARTER_BLUEPRINTS: firstTimeInstallStarterBlueprints,
+    INSTALL_STARTER_BLUEPRINTS: debouncedInstallStarterBlueprints,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
