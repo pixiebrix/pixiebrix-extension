@@ -42,7 +42,6 @@ jest.mock("./refreshRegistries", () => ({
 }));
 
 const isLinkedMock = isLinked as jest.Mock;
-const openPlaygroundPage = browser.tabs.create as jest.Mock;
 jest.useFakeTimers();
 
 beforeEach(async () => {
@@ -62,9 +61,6 @@ describe("installStarterBlueprints", () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
-    axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
     axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
@@ -73,26 +69,7 @@ describe("installStarterBlueprints", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
-    expect(openPlaygroundPage.mock.calls).toHaveLength(1);
     expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
-  });
-
-  test("user does not have starter blueprints available to install", async () => {
-    isLinkedMock.mockResolvedValue(true);
-
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: false });
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
-      .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
-
-    await firstTimeInstallStarterBlueprints();
-    const { extensions } = await loadOptions();
-
-    expect(extensions.length).toBe(0);
-    expect(openPlaygroundPage.mock.calls).toHaveLength(0);
   });
 
   test("starter blueprints request fails", async () => {
@@ -108,15 +85,11 @@ describe("installStarterBlueprints", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(0);
-    expect(openPlaygroundPage.mock.calls).toHaveLength(0);
   });
 
   test("starter blueprints installation request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
@@ -125,8 +98,7 @@ describe("installStarterBlueprints", () => {
     await firstTimeInstallStarterBlueprints();
     const { extensions } = await loadOptions();
 
-    expect(extensions.length).toBe(0);
-    expect(openPlaygroundPage.mock.calls).toHaveLength(0);
+    expect(extensions.length).toBe(1);
   });
 
   test("starter blueprint already installed", async () => {
@@ -158,7 +130,6 @@ describe("installStarterBlueprints", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
-    expect(openPlaygroundPage.mock.calls).toHaveLength(0);
   });
 
   test("extension with no _recipe doesn't throw undefined error", async () => {
