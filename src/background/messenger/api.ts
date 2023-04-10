@@ -133,6 +133,6 @@ export const captureTab = getMethod("CAPTURE_TAB", bg);
 export const getUserData = getMethod("GET_USER_DATA", bg);
 
 export const installStarterBlueprints = getMethod(
-  "ACTIVATE_STARTER_BLUEPRINTS",
+  "INSTALL_STARTER_BLUEPRINTS",
   bg
 );

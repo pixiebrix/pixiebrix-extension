@@ -99,7 +99,7 @@ declare global {
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
 
-    ACTIVATE_STARTER_BLUEPRINTS: typeof firstTimeInstallStarterBlueprints;
+    INSTALL_STARTER_BLUEPRINTS: typeof firstTimeInstallStarterBlueprints;
 
     GET_UID: typeof uid;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
@@ -166,7 +166,7 @@ export default function registerMessenger(): void {
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
 
-    ACTIVATE_STARTER_BLUEPRINTS: firstTimeInstallStarterBlueprints,
+    INSTALL_STARTER_BLUEPRINTS: firstTimeInstallStarterBlueprints,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
