@@ -31,7 +31,10 @@
 
 .textContainer {
   padding: 3rem;
-  text-align: start;
+  font-size: 1.2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .recipeName {
@@ -78,4 +81,25 @@
   font-size: 1.1rem;
   font-weight: 500;
   line-height: 120%;
+}
+
+.shortcutContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.shortcutKey {
+  box-sizing: border-box;
+  height: 56px;
+  width: 56px;
+  background: linear-gradient(180deg, #f8f5fe 49.48%, #ebe5fe 100%);
+  border: 1.5px solid #d3bbff;
+  box-shadow: 0 3px 0 2px #b395ee;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
