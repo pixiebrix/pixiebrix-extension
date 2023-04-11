@@ -43,6 +43,8 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const { data: serviceConfigs } = useGetServicesQuery();
 
+  console.log("service configs", serviceConfigs);
+
   const visibleServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
     // the only service, the wizard won't render the ServicesBody component at all
