@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension, type Metadata } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
+import { type IExtension } from "@/types/extensionTypes";
 import {
   baseFromExtension,
   baseSelectExtension,

@@ -1,4 +1,4 @@
-import { type IExtension } from "@/core";
+import { type IExtension } from "@/types/extensionTypes";
 import { type JsonObject } from "type-fest";
 
 /**

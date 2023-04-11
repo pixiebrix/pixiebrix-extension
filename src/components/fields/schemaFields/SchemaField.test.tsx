@@ -20,12 +20,6 @@ import { render, screen, waitFor } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import {
-  type ApiVersion,
-  type Expression,
-  type Schema,
-  type TemplateEngine,
-} from "@/core";
 import { createFormikTemplate } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
@@ -33,6 +27,12 @@ import { uniq } from "lodash";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type ApiVersion,
+  type Expression,
+  type TemplateEngine,
+} from "@/types/runtimeTypes";
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,

@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type RegistryId, type Schema } from "@/core";
-import { type UnknownObject } from "@/types";
 import { castArray, mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");

@@ -17,7 +17,6 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type Expression, type Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
@@ -37,6 +36,8 @@ import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { joinName } from "@/utils";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 function useHooks(): {
   hooks: Webhook[];

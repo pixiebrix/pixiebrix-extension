@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 

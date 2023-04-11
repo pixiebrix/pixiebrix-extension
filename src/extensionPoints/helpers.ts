@@ -17,13 +17,13 @@
 
 import { castArray, noop, once, stubFalse } from "lodash";
 import initialize from "@/vendors/initialize";
-import {
-  type IExtension,
-  type MessageContext,
-  type ResolvedExtension,
-} from "@/core";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
+import {
+  type IExtension,
+  type ResolvedExtension,
+} from "@/types/extensionTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 function getAncestors(node: Node): Node[] {
   const ancestors = [node];

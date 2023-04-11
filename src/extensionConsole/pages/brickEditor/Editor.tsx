@@ -29,7 +29,7 @@ import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import BrickReference from "@/extensionConsole/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";

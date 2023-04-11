@@ -27,12 +27,12 @@ import useMarketplaceActivateRecipe from "./useMarketplaceActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type MenuDefinition } from "@/extensionPoints/contextMenu";
-import { type InnerDefinitions } from "@/core";
 import ensureRecipePermissions from "@/recipes/ensureRecipePermissions";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
+import { type InnerDefinitions } from "@/types/registryTypes";
 
 jest.mock("@/recipes/ensureRecipePermissions", () => ({
   __esModule: true,

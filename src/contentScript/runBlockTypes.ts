@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockArg, type MessageContext, type RegistryId } from "@/core";
 import { type Availability } from "@/blocks/types";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 
 export interface RemoteBlockOptions {
   ctxt: unknown;
@@ -29,6 +31,6 @@ export interface RunBlock {
   sourceTabId?: number;
   nonce?: string;
   blockId: RegistryId;
-  blockArgs: BlockArg;
+  blockArgs: BlockArgs;
   options: RemoteBlockOptions;
 }

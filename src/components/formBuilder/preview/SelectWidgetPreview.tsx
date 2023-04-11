@@ -18,7 +18,7 @@
 import { type WidgetProps } from "@rjsf/core";
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 
 const RjsfSelectWidget = RjsfTheme.widgets.SelectWidget;
 

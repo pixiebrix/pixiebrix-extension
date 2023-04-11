@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type SanitizedServiceConfiguration,
-  type Schema,
-} from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
 import { isEqual, isPlainObject, unary, uniq } from "lodash";
@@ -31,6 +24,11 @@ import { sheets } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
+import { type Schema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 type CellValue = string | number | null;
 
@@ -262,7 +260,7 @@ export class GoogleSheetsAppend extends Effect {
       tabName,
       shape = "infer",
       rowValues: rawValues = {},
-    }: BlockArg<{
+    }: BlockArgs<{
       spreadsheetId: string | SanitizedServiceConfiguration;
       tabName: string;
       shape: Shape;

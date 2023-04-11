@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";

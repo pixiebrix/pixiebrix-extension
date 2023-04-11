@@ -16,8 +16,9 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { boolean } from "@/utils";
 
 export class SendSimpleSlackMessage extends Effect {
@@ -69,7 +70,7 @@ export class SendSimpleSlackMessage extends Effect {
     iconEmoji,
     botName,
     unfurlLinks,
-  }: BlockArg): Promise<void> {
+  }: BlockArgs): Promise<void> {
     await proxyService(null, {
       url: hookUrl,
       method: "post",
@@ -188,7 +189,7 @@ export class SendAdvancedSlackMessage extends Effect {
     botName,
     unfurlLinks,
     attachments,
-  }: BlockArg): Promise<void> {
+  }: BlockArgs): Promise<void> {
     if (!hookUrl) {
       throw new Error("hookUrl not configured");
     }

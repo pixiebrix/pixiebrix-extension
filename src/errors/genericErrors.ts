@@ -21,7 +21,7 @@
  * This helps avoids circular references.
  */
 
-import { type MessageContext } from "@/core";
+import { type MessageContext } from "@/types/loggerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**

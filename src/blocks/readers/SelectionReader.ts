@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type ReaderOutput, type Schema } from "@/core";
+import { Reader } from "@/types/blocks/readerTypes";
 import selectionController from "@/utils/selectionController";
+import { type Schema } from "@/types/schemaTypes";
+import { type JsonObject } from "type-fest";
 
 export class SelectionReader extends Reader {
   constructor() {
@@ -48,7 +49,7 @@ export class SelectionReader extends Reader {
     },
   };
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     return {
       selectionText: selectionController.get(),
     };

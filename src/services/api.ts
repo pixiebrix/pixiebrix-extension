@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId, type UUID } from "@/core";
-import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
+import { type UUID } from "@/types/stringTypes";
 import {
   type EditablePackage,
   type Kind,
-  type RecipeDefinition,
-  type ServiceDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
+  type RegistryId,
+} from "@/types/registryTypes";
+import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import {
@@ -45,8 +43,13 @@ import {
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { serializeError } from "serialize-error";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { type ServiceDefinition } from "@/types/serviceTypes";
+import {
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
 
 type QueryArgs = {
   /**

@@ -27,7 +27,6 @@ import {
   selectExtensions,
   selectExtensionsForRecipe,
 } from "@/store/extensionsSelectors";
-import { type RegistryId, type UnresolvedExtension, type UUID } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
@@ -57,6 +56,10 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import { type UUID } from "@/types/stringTypes";
+import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -238,7 +241,8 @@ async function installDeployment(
         deployment,
         locateAllForService
       ),
-      optionsArgs: deployment.options_config,
+      // Assume backend properly validates the options
+      optionsArgs: deployment.options_config as OptionsArgs,
     })
   );
 

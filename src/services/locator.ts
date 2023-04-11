@@ -16,16 +16,6 @@
  */
 
 import { type SanitizedAuth } from "@/types/contract";
-import {
-  type SanitizedServiceConfiguration,
-  type IService,
-  type RawServiceConfiguration,
-  type ServiceConfig,
-  type SanitizedConfig,
-  type KeyedConfig,
-  type RegistryId,
-  type UUID,
-} from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
@@ -39,7 +29,17 @@ import {
   NotConfiguredError,
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/baseRegistry";
-import { type Service } from "@/types";
+import {
+  type IService,
+  type ServiceConfig,
+  type RawServiceConfiguration,
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
+  type Service,
+  type SecretsConfig,
+} from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -55,7 +55,7 @@ enum ServiceLevel {
 /** Return config excluding any secrets/keys. */
 function excludeSecrets(
   service: IService,
-  config: KeyedConfig
+  config: ServiceConfig
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
@@ -85,7 +85,7 @@ type Option = {
   serviceId: RegistryId;
   level: ServiceLevel;
   local: boolean;
-  config: ServiceConfig | SanitizedConfig;
+  config: SecretsConfig | SanitizedConfig;
 };
 
 let wasInitialized = false;

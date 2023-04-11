@@ -30,10 +30,10 @@
  * Relevant discussion: https://github.com/w3c/webextensions/issues/78
  */
 
-import { type SerializedError } from "@/core";
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue } from "type-fest";
+import { type SerializedError } from "@/types/messengerTypes";
 
 const TIMEOUT_MS = 3000;
 

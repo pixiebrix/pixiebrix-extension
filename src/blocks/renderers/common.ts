@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Logger, type RendererOutput, type SafeHTML } from "@/core";
+import { type Logger } from "@/types/loggerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import sanitize from "@/utils/sanitize";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { escape } from "lodash";
+import { type SafeHTML } from "@/types/stringTypes";
+import { type RendererOutput } from "@/types/runtimeTypes";
 
 // Require SafeHTML here, because if we just accepted unknown, this would return `true` even for unsanitized strings
 function isRendererOutput(

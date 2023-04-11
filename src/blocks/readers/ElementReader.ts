@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type ReaderRoot, type Schema } from "@/core";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import { Reader } from "@/types/blocks/readerTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * Read attributes, text, etc. from an HTML element.
@@ -37,7 +38,7 @@ export class ElementReader extends Reader {
     );
   }
 
-  async read(elementOrDocument: ReaderRoot) {
+  async read(elementOrDocument: SelectorRoot) {
     const element = isHTMLElement(elementOrDocument)
       ? elementOrDocument
       : document.body;

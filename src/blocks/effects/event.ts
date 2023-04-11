@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
   $safeFindElementsWithRootMode,
@@ -80,7 +81,7 @@ export class ElementEvent extends Effect {
   }
 
   async effect(
-    { selector, isRootAware, event }: BlockArg,
+    { selector, isRootAware, event }: BlockArgs,
     { logger, root }: BlockOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({

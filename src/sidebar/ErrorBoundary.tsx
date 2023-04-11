@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -16,7 +16,7 @@
  */
 
 import { sortedFields } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 
 describe("sortedFields", () => {
   test("it sorts by type first", () => {

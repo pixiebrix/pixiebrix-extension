@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/definitions";
-import { type ServiceAuthPair } from "@/core";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { collectPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { requestPermissions } from "@/utils/permissions";

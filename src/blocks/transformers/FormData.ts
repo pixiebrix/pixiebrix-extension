@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { compact } from "lodash";
 import {
@@ -68,7 +69,7 @@ export class FormData extends Transformer {
   };
 
   async transform(
-    { selector, isRootAware = false }: BlockArg,
+    { selector, isRootAware = false }: BlockArgs,
     { root }: BlockOptions
   ): Promise<Record<string, unknown>> {
     const $elements = $safeFindElementsWithRootMode({

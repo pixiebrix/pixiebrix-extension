@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { compact, isEmpty, uniq } from "lodash";
 import {
   isDatabaseField,

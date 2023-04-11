@@ -21,7 +21,6 @@ import {
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { type ApiVersion, type BlockArgContext, type UUID } from "@/core";
 import { type BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
@@ -43,6 +42,8 @@ import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type RunBlockArgs = {
   apiVersion: ApiVersion;
@@ -51,7 +52,7 @@ export type RunBlockArgs = {
    * Context to render the BlockArg, should include @input, @options, and service context
    * @see makeServiceContext
    */
-  context: BlockArgContext;
+  context: BlockArgsContext;
   /**
    * Root jQuery selector to determine the root if the rootMode is "inherit".
    * @see BlockConfig.rootMode

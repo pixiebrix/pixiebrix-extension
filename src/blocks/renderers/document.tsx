@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type ComponentRef,
-  type Schema,
-} from "@/core";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
+import {
+  type BlockArgs,
+  type BlockOptions,
+  type ComponentRef,
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export class DocumentRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/document");
@@ -47,7 +47,7 @@ export class DocumentRenderer extends Renderer {
   };
 
   async render(
-    { body }: BlockArg,
+    { body }: BlockArgs,
     options: BlockOptions
   ): Promise<ComponentRef> {
     return {

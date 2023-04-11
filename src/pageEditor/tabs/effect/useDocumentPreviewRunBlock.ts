@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockArgContext, type UUID } from "@/core";
 import { useEffect, useReducer } from "react";
 import { usePreviewInfo } from "@/pageEditor/tabs/effect/BlockPreview";
 import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -36,6 +35,8 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { isExpression } from "@/runtime/mapArgs";
+import { type UUID } from "@/types/stringTypes";
+import { type BlockArgsContext } from "@/types/runtimeTypes";
 
 type Location = "modal" | "panel";
 
@@ -142,7 +143,7 @@ export default function useDocumentPreviewRunBlock(
   const context = {
     ...traceRecord?.templateContext,
     ...serviceContext,
-  } as BlockArgContext;
+  } as BlockArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";

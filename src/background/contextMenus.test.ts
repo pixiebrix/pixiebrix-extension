@@ -31,7 +31,7 @@ import {
 } from "@/extensionPoints/contextMenu";
 import * as backgroundApi from "@/background/messenger/api";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type IExtension } from "@/core";
+import { type IExtension } from "@/types/extensionTypes";
 import chromeP from "webext-polyfill-kinda";
 
 jest.mock("webext-dynamic-content-scripts/distribution/active-tab");

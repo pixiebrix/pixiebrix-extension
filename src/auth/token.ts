@@ -27,7 +27,7 @@ import {
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/baseRegistry";
 
 // `chrome.storage.local` keys

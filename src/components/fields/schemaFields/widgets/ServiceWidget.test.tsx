@@ -23,7 +23,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 // eslint-disable-next-line no-restricted-imports -- test
 import { Formik } from "formik";

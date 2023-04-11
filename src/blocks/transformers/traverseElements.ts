@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-  type ElementReference,
-} from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { propertiesToSchema } from "@/validators/generic";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type BlockArgs,
+  type BlockOptions,
+  type ElementReference,
+} from "@/types/runtimeTypes";
 
 export class TraverseElements extends Transformer {
   override async isPure(): Promise<boolean> {
@@ -96,7 +96,7 @@ export class TraverseElements extends Transformer {
     {
       selector,
       traversal = "find",
-    }: BlockArg<{
+    }: BlockArgs<{
       selector: string;
       traversal: string;
     }>,

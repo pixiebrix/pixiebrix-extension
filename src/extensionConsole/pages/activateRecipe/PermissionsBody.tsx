@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,8 +28,9 @@ import { useAsyncState } from "@/hooks/common";
 import { allSettledValues } from "@/utils";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type ServiceAuthPair } from "@/core";
+import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { useFormikContext } from "formik";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
@@ -45,11 +46,11 @@ const QuickBarAlert = () => (
     <FontAwesomeIcon icon={faExclamationTriangle} /> This mod contains a Quick
     Bar action, but you have not{" "}
     <a
-      href="chrome://extensions/shortcuts"
+      href={SHORTCUTS_URL}
       onClick={(event) => {
         // Can't link to chrome:// URLs directly
         event.preventDefault();
-        void browser.tabs.create({ url: event.currentTarget.href });
+        void openShortcutsTab();
       }}
     >
       <u>configured your Quick Bar shortcut</u>.

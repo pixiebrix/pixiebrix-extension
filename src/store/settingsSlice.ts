@@ -25,7 +25,7 @@ import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { isValidTheme } from "@/themes/themeUtils";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
 

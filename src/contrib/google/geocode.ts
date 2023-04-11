@@ -17,13 +17,11 @@
 
 import { isEmpty } from "lodash";
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type SanitizedServiceConfiguration,
-  type Schema,
-} from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
 
 interface GeocodedAddress {
   state?: string;
@@ -120,7 +118,7 @@ export class GeocodeTransformer extends Transformer {
     },
   });
 
-  async transform({ service, address }: BlockArg): Promise<GeocodedAddress> {
+  async transform({ service, address }: BlockArgs): Promise<GeocodedAddress> {
     return geocodeAddress(service, address);
   }
 }

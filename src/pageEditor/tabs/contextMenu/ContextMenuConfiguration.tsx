@@ -66,7 +66,6 @@ const ContextMenuConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.contexts"
-        label="Menu context"
         as={MultiSelectWidget}
         options={contextOptions}
         description={
@@ -76,7 +75,7 @@ const ContextMenuConfiguration: React.FC<{
             right-clicking on a link.
           </span>
         }
-        {...makeLockableFieldProps("Contexts", isLocked)}
+        {...makeLockableFieldProps("Menu context", isLocked)}
       />
 
       <UrlMatchPatternField

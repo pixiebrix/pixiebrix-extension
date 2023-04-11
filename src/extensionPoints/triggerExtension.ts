@@ -19,16 +19,7 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import {
-  type IBlock,
-  type IExtensionPoint,
-  type IReader,
-  type ReaderOutput,
-  type ReaderRoot,
-  type ResolvedExtension,
-  type Schema,
-  type UUID,
-} from "@/core";
+
 import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
@@ -77,6 +68,14 @@ import {
   pickEventProperties,
 } from "@/extensionPoints/triggerEventReaders";
 import CompositeReader from "@/blocks/readers/CompositeReader";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
+import { type JsonObject } from "type-fest";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -306,9 +305,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private async runExtension(
-    ctxt: ReaderOutput,
+    ctxt: JsonObject,
     extension: ResolvedExtension<TriggerConfig>,
-    root: ReaderRoot
+    root: SelectorRoot
   ) {
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)
@@ -391,7 +390,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    * @throws Error on non-extension error, e.g., reader error for the default reader
    */
   private async _runTrigger(
-    root: ReaderRoot,
+    root: SelectorRoot,
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     {
       nativeEvent,
@@ -454,7 +453,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    * DO NOT CALL DIRECTLY: should call debouncedRunTriggersAndNotify.
    */
   private readonly _runTriggersAndNotify = async (
-    roots: ReaderRoot[],
+    roots: SelectorRoot[],
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     { nativeEvent }: { nativeEvent: Event | null }
   ): Promise<void> => {

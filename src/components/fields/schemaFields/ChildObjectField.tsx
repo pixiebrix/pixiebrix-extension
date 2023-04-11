@@ -23,7 +23,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";

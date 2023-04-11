@@ -20,11 +20,11 @@ import {
   type ValidationResult,
   Validator,
 } from "@cfworker/json-schema";
-import { type Schema, type SchemaProperties } from "@/core";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import { isEmpty, pickBy } from "lodash";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {

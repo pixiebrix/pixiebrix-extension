@@ -27,14 +27,10 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
-  type DeploymentContext,
   type Metadata,
-  type PersistedExtension,
-  type RecipeMetadata,
   type RegistryId,
   type SemVerString,
-} from "@/core";
-import { type UnsavedRecipeDefinition } from "@/types/definitions";
+} from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
@@ -49,6 +45,11 @@ import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import {
+  type IExtension,
+  type PersistedExtension,
+} from "@/types/extensionTypes";
+import { type UnsavedRecipeDefinition } from "@/types/recipeTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -64,7 +65,7 @@ let savingDeferred: DeferredPromise<void>;
 export function selectRecipeMetadata(
   unsavedRecipe: UnsavedRecipeDefinition,
   response: PackageUpsertResponse
-): RecipeMetadata {
+): IExtension["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -230,7 +231,7 @@ const useSavingWizard = () => {
       recipe.metadata.id,
       selectRecipeMetadata(newRecipe, createRecipeResponse.data),
       // Unlink the installed extensions from the deployment
-      { _deployment: null as DeploymentContext }
+      { _deployment: null as IExtension["_deployment"] }
     );
 
     closeWizard(createExtensionError);
@@ -301,7 +302,7 @@ const useSavingWizard = () => {
 
   const updateExtensionRecipeLinks = (
     recipeId: RegistryId,
-    recipeMetadata: RecipeMetadata,
+    recipeMetadata: IExtension["_recipe"],
     extraUpdate: Partial<PersistedExtension> = {}
   ) => {
     // 1) Update the extensions in the Redux optionsSlice

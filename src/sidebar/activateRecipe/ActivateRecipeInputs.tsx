@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import useWizard from "@/activation/useWizard";
 import Form, {
   type OnSubmit,
@@ -40,6 +40,7 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -166,14 +167,12 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           <div className="my-2">
             <Button
               variant="info"
-              href="chrome://extensions/shortcuts"
+              href={SHORTCUTS_URL}
               onClick={(event) => {
+                // `react-bootstrap` will render as an anchor tag when href is set
                 // // Can't link to chrome:// URLs directly
                 event.preventDefault();
-                // `react-bootstrap` will render as an anchor tag when href is set
-                void browser.tabs.create({
-                  url: (event.currentTarget as HTMLAnchorElement).href,
-                });
+                void openShortcutsTab();
               }}
             >
               Set up Quick Bar shortcut

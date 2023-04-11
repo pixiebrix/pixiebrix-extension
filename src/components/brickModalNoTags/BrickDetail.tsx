@@ -1,5 +1,4 @@
 import React from "react";
-import { type IBrick } from "@/core";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
@@ -7,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 const BrickDetail: React.FunctionComponent<{
   brick: IBrick;

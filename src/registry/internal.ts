@@ -15,17 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Config,
-  type EmptyConfig,
-  type IBlock,
-  type IExtension,
-  type IExtensionPoint,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type RegistryId,
-  type ResolvedExtension,
-} from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
 import { cloneDeep, isEmpty, isPlainObject, mapValues, pick } from "lodash";
@@ -35,19 +24,32 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
 import { resolveObj } from "@/utils";
 import {
-  type ExtensionPointConfig as ExtensionDefinition,
+  type ExtensionDefinition,
   type RecipeDefinition,
-  type ResolvedExtensionPointConfig,
-} from "@/types/definitions";
+  type ResolvedExtensionDefinition,
+} from "@/types/recipeTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
+import {
+  type InnerDefinitionRef,
+  type InnerDefinitions,
+  type RegistryId,
+} from "@/types/registryTypes";
+import {
+  type IExtension,
+  type ResolvedExtension,
+} from "@/types/extensionTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IBlock } from "@/types/blockTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
+type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
+  UnknownObject & {
+    kind: K;
+  };
 
-interface RawConfig<T extends string = string> extends Config {
-  kind: T;
-}
+type InnerDefinition = InnerExtensionPoint | InnerBlock;
 
 export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
@@ -56,10 +58,15 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
 
 async function ensureBlock(
   definitions: InnerDefinitions,
-  config: RawConfig<"reader" | "component">
+  innerDefinition: InnerDefinition
 ) {
   // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
-  const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
+  const obj = pick(innerDefinition, [
+    "inputSchema",
+    "kind",
+    "pipeline",
+    "definition",
+  ]);
   const registryId = makeInternalId(obj);
 
   if (await blockRegistry.exists(registryId)) {
@@ -70,7 +77,7 @@ async function ensureBlock(
     ...obj,
     metadata: {
       id: registryId,
-      name: `Anonymous ${config.kind}`,
+      name: `Anonymous ${innerDefinition.kind}`,
     },
   });
 
@@ -99,7 +106,7 @@ async function ensureReaders(
 
       const block = await ensureBlock(
         definitions,
-        definition as RawConfig<"reader">
+        definition as InnerBlock<"component">
       );
       return block.id;
     }
@@ -130,18 +137,18 @@ async function ensureReaders(
 
 async function ensureExtensionPoint(
   definitions: InnerDefinitions,
-  originalConfig: InnerExtensionPoint
+  originalInnerDefinition: InnerExtensionPoint
 ) {
-  const config = cloneDeep(originalConfig);
+  const innerDefinition = cloneDeep(originalInnerDefinition);
 
   // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
   // clash if they use the same name for different readers
-  config.definition.reader = await ensureReaders(
+  innerDefinition.definition.reader = await ensureReaders(
     definitions,
-    config.definition.reader
+    innerDefinition.definition.reader
   );
 
-  const obj = pick(config, ["kind", "definition"]);
+  const obj = pick(innerDefinition, ["kind", "definition"]);
   const registryId = makeInternalId(obj);
 
   if (await extensionPointRegistry.exists(registryId)) {
@@ -162,37 +169,39 @@ async function ensureExtensionPoint(
 
 async function ensureInner(
   definitions: InnerDefinitions,
-  config: Config
+  innerDefinition: InnerDefinitions[string]
 ): Promise<IBlock | IExtensionPoint> {
-  if (typeof config.kind !== "string") {
+  if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
   }
 
-  switch (config.kind) {
+  switch (innerDefinition.kind) {
     case "extensionPoint": {
-      return ensureExtensionPoint(definitions, config as InnerExtensionPoint);
+      return ensureExtensionPoint(
+        definitions,
+        innerDefinition as InnerExtensionPoint
+      );
     }
 
     case "reader":
     case "component": {
-      return ensureBlock(
-        definitions,
-        config as RawConfig<"reader" | "component">
-      );
+      return ensureBlock(definitions, innerDefinition as InnerBlock);
     }
 
     default: {
-      throw new Error(`Invalid kind for inner definition: ${config.kind}`);
+      throw new Error(
+        `Invalid kind for inner definition: ${innerDefinition.kind}`
+      );
     }
   }
 }
 
 /**
- * Return a new copy of the extension with its inner references re-written.
+ * Return a new copy of the IExtension with its inner references re-written.
  */
-export async function resolveDefinitions<T extends Config = EmptyConfig>(
-  extension: IExtension<T>
-): Promise<ResolvedExtension<T>> {
+export async function resolveDefinitions<
+  T extends UnknownObject = UnknownObject
+>(extension: IExtension<T>): Promise<ResolvedExtension<T>> {
   if (isEmpty(extension.definitions)) {
     return extension as ResolvedExtension<T>;
   }
@@ -204,8 +213,8 @@ export async function resolveDefinitions<T extends Config = EmptyConfig>(
 
   return produce(extension, async (draft) => {
     const ensured = await resolveObj(
-      mapValues(draft.definitions, async (config) =>
-        ensureInner(draft.definitions, config)
+      mapValues(draft.definitions, async (definition) =>
+        ensureInner(draft.definitions, definition)
       )
     );
     const definitions = new Map(Object.entries(ensured));
@@ -224,9 +233,9 @@ export async function resolveDefinitions<T extends Config = EmptyConfig>(
 export async function resolveRecipe(
   recipe: RecipeDefinition,
   selected: ExtensionDefinition[]
-): Promise<ResolvedExtensionPointConfig[]> {
+): Promise<ResolvedExtensionDefinition[]> {
   if (isEmpty(recipe.definitions)) {
-    return selected as ResolvedExtensionPointConfig[];
+    return selected as ResolvedExtensionDefinition[];
   }
 
   const ensured = await resolveObj(
@@ -236,10 +245,10 @@ export async function resolveRecipe(
   );
   const definitions = new Map(Object.entries(ensured));
   return selected.map(
-    (config) =>
-      (definitions.has(config.id)
-        ? { ...config, id: definitions.get(config.id).id }
-        : config) as ResolvedExtensionPointConfig
+    (definition) =>
+      (definitions.has(definition.id)
+        ? { ...definition, id: definitions.get(definition.id).id }
+        : definition) as ResolvedExtensionDefinition
   );
 }
 

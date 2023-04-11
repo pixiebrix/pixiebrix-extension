@@ -25,7 +25,6 @@ import {
   selectEditorModalVisibilities,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeMetadata, type RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
 import Form, {
@@ -38,6 +37,8 @@ import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioIt
 import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 type FormState = {
   recipeId: RegistryId;
@@ -65,7 +66,7 @@ const AddToRecipeModal: React.FC = () => {
   const removeExtension = useRemoveExtension();
 
   const recipeMetadataById = useMemo(() => {
-    const result: Record<RegistryId, RecipeMetadata> = {};
+    const result: Record<RegistryId, IExtension["_recipe"]> = {};
     for (const metadata of recipeMetadatas) {
       result[metadata.id] = metadata;
     }

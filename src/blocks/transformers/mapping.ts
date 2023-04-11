@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
 export class MappingTransformer extends Transformer {
@@ -61,7 +62,7 @@ export class MappingTransformer extends Transformer {
     key,
     missing = "null",
     mapping,
-  }: BlockArg): Promise<unknown> {
+  }: BlockArgs): Promise<unknown> {
     if (key == null || key === "") {
       return null;
     }

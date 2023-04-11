@@ -28,7 +28,7 @@ import {
   extensionFactory,
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories";
-import { type PersistedExtension } from "@/core";
+import { type PersistedExtension } from "@/types/extensionTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";

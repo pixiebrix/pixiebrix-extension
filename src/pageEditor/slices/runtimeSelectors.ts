@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { type RuntimeState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";

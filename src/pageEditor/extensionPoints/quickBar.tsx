@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension, type Metadata } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
+import { type IExtension } from "@/types/extensionTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -52,6 +53,7 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type QuickBarFormState } from "./formStateTypes";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
@@ -184,10 +186,10 @@ export const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
         <FontAwesomeIcon icon={faExclamationTriangle} />
         &nbsp;You have not{" "}
         <a
-          href="chrome://extensions/shortcuts"
+          href={SHORTCUTS_URL}
           onClick={(event) => {
             event.preventDefault();
-            void browser.tabs.create({ url: event.currentTarget.href });
+            void openShortcutsTab();
           }}
         >
           configured a Quick Bar shortcut
@@ -210,10 +212,10 @@ export const InsertModeHelpText: React.FunctionComponent = () => {
           <kbd style={{ fontFamily: "system" }}>{shortcut}</kbd>&nbsp; to open
           the Quick Bar.{" "}
           <a
-            href="chrome://extensions/shortcuts"
+            href={SHORTCUTS_URL}
             onClick={(event) => {
               event.preventDefault();
-              void browser.tabs.create({ url: event.currentTarget.href });
+              void openShortcutsTab();
             }}
           >
             Change your Quick Bar shortcut
@@ -224,10 +226,10 @@ export const InsertModeHelpText: React.FunctionComponent = () => {
           <FontAwesomeIcon icon={faExclamationTriangle} />
           &nbsp;You have not{" "}
           <a
-            href="chrome://extensions/shortcuts"
+            href={SHORTCUTS_URL}
             onClick={(event) => {
               event.preventDefault();
-              void browser.tabs.create({ url: event.currentTarget.href });
+              void openShortcutsTab();
             }}
           >
             configured a Quick Bar shortcut

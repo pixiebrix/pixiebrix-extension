@@ -32,7 +32,7 @@ import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { isNullOrBlank } from "@/utils";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,

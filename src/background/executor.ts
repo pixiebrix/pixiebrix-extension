@@ -24,7 +24,7 @@ import {
   type MessengerMeta,
 } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
-import { type Target } from "@/types";
+import { type Target } from "@/types/messengerTypes";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBlock } from "@/contentScript/runBlockTypes";

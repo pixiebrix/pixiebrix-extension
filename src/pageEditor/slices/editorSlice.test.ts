@@ -36,7 +36,7 @@ import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { type OutputKey } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBlockConfig } from "@/blocks/util";
 import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";

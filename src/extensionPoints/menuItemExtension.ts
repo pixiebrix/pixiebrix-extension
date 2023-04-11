@@ -35,18 +35,8 @@ import {
   type ExtensionPointConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import {
-  type IBlock,
-  type IconConfig,
-  type IExtensionPoint,
-  type Logger,
-  type Metadata,
-  type ReaderOutput,
-  type ResolvedExtension,
-  type RunArgs,
-  RunReason,
-  type Schema,
-} from "@/core";
+import { type Logger } from "@/types/loggerTypes";
+import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
@@ -81,6 +71,13 @@ import {
 } from "@/errors/businessErrors";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
+import { type IconConfig } from "@/types/iconTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type JsonObject } from "type-fest";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -474,7 +471,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private async runExtension(
     menu: HTMLElement,
-    ctxtPromise: Promise<ReaderOutput>,
+    ctxtPromise: Promise<JsonObject>,
     extension: ResolvedExtension<MenuItemExtensionConfig>
   ) {
     if (!extension.id) {
@@ -766,7 +763,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       // eslint-disable-next-line no-await-in-loop -- TODO: Make it run in parallel if possible while maintaining the order
       const reader = await this.defaultReader();
 
-      let ctxtPromise: Promise<ReaderOutput>;
+      let ctxtPromise: Promise<JsonObject>;
 
       for (const extension of this.extensions) {
         // Run in order so that the order stays the same for where they get rendered. The service

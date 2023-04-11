@@ -16,7 +16,8 @@
  */
 
 import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const STORAGE_KEY = "TOUR";
 const ENTRY_OBJECT_STORE = "tourRuns";

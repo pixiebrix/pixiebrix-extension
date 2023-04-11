@@ -18,10 +18,10 @@
 import React, { useCallback } from "react";
 import {
   PACKAGE_REGEX,
-  uuidv4,
   testIsSemVerString,
-  validateSemVerString,
+  uuidv4,
   validateRegistryId,
+  validateSemVerString,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -38,11 +38,6 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import {
-  type RecipeDefinition,
-  type RecipeMetadataFormState,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
 import { selectScope } from "@/auth/authSelectors";
 import {
   buildRecipe,
@@ -65,7 +60,6 @@ import { object, string } from "yup";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { type RecipeMetadata, type RegistryId } from "@/core";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -76,14 +70,20 @@ import { pick } from "lodash";
 import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
-import { reactivateEveryTab } from "@/background/messenger/api";
+import {
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedRecipeDefinition,
   response: PackageUpsertResponse
-): RecipeMetadata {
+): IExtension["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -131,29 +131,18 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
           draft.recipe = selectRecipeMetadata(newRecipe, response);
         });
         dispatch(editorActions.addElement(recipeElement));
-
+        // Don't push to cloud since we're saving it with the recipe
         await createExtension({
           element: recipeElement,
-          options: {
-            // Don't push to cloud since we're saving it with the recipe
-            pushToCloud: false,
-            // Already did a permissions check above
-            checkPermissions: false,
-            // Will notify and reactivate for the whole recipe
-            notifySuccess: false,
-            reactivateEveryTab: false,
-          },
+          pushToCloud: false,
+          checkPermissions: false,
         });
-
         if (!keepLocalCopy) {
           await removeExtension({
             extensionId: activeElement.uuid,
             shouldShowConfirmation: false,
           });
         }
-
-        notify.success("Created mod");
-        reactivateEveryTab();
       }),
     [
       activeElement,

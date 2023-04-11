@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import type React from "react";
 import { type FieldInputMode } from "./fieldInputMode";
 import type * as Yup from "yup";

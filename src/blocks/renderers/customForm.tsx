@@ -16,17 +16,6 @@
  */
 
 import React from "react";
-import { Renderer, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type ComponentRef,
-  type RegistryId,
-  type SanitizedServiceConfiguration,
-  type Schema,
-  type UiSchema,
-  type UUID,
-} from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { type JsonObject } from "type-fest";
 import { dataStore, proxyService } from "@/background/messenger/api";
@@ -45,6 +34,17 @@ import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
 import { getTopLevelFrame } from "webext-messenger";
+import { type UUID } from "@/types/stringTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import {
+  type BlockArgs,
+  type BlockOptions,
+  type ComponentRef,
+} from "@/types/runtimeTypes";
+import { Renderer } from "@/types/blocks/rendererTypes";
 
 const fields = {
   DescriptionField,
@@ -359,7 +359,7 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
-    }: BlockArg<{
+    }: BlockArgs<{
       storage?: Storage;
       successMessage?: string;
       recordId?: string | null;

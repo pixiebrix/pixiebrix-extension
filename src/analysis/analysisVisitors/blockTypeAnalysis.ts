@@ -19,7 +19,7 @@ import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { TourEffect } from "@/blocks/effects/tourEffect";
 

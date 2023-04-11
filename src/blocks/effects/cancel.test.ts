@@ -18,7 +18,7 @@
 import { CancelEffect } from "@/blocks/effects/cancel";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { CancelError } from "@/errors/businessErrors";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 
 const brick = new CancelEffect();
 

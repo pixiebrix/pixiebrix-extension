@@ -20,7 +20,6 @@ import {
   type ExtensionPointDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
-import { type EmptyConfig, type IExtension, type UUID } from "@/core";
 import { type Except } from "type-fest";
 import {
   type PanelConfig,
@@ -31,10 +30,13 @@ import {
   type MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { type ElementInfo } from "@/pageScript/frameworks";
+import { type IExtension } from "@/types/extensionTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
-  TExtension extends EmptyConfig = EmptyConfig
+  TExtension extends UnknownObject = UnknownObject
 > {
   type: ExtensionPointType;
   extensionPointConfig: ExtensionPointConfig<TExtensionPoint>;

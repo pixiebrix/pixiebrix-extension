@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type OutputKey,
-  type Schema,
-} from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type BlockArgs,
+  type BlockOptions,
+  type OutputKey,
+} from "@/types/runtimeTypes";
 
 class ForEach extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");
@@ -74,7 +74,7 @@ class ForEach extends Transformer {
       elements,
       body: bodyPipeline,
       elementKey = validateOutputKey("element"),
-    }: BlockArg<{
+    }: BlockArgs<{
       elements: unknown[];
       body: PipelineExpression;
       elementKey: OutputKey;

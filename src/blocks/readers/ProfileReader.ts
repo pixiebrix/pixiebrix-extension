@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
+import { Reader } from "@/types/blocks/readerTypes";
 import { getUserData } from "@/background/messenger/api";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { type UserData } from "@/auth/authTypes";
 
 class ProfileReader extends Reader {

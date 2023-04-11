@@ -22,12 +22,9 @@ import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensi
 import { type SettingsRootState } from "@/store/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type ExtensionPointType } from "@/extensionPoints/types";
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BlockConfig } from "@/blocks/types";
-import {
-  type OptionsDefinition,
-  type RecipeMetadataFormState,
-} from "@/types/definitions";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type FormState } from "./extensionPoints/formStateTypes";
@@ -36,6 +33,7 @@ import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -229,3 +227,8 @@ export type RootState = AuthRootState &
   SessionChangesRootState & {
     savingExtension: SavingExtensionState;
   };
+
+export type RecipeMetadataFormState = Pick<
+  Metadata,
+  "id" | "name" | "version" | "description"
+>;

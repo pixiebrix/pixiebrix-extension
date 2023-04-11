@@ -31,7 +31,7 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";

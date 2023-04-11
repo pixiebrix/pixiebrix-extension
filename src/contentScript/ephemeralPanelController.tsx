@@ -18,7 +18,7 @@
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { expectContext } from "@/utils/expectContext";
 import panelInThisTab from "@/blocks/transformers/temporaryInfo/messenger/api";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { type Except } from "type-fest";
 
 /**

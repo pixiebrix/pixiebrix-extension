@@ -17,10 +17,11 @@
 
 import { type Read } from "@/blocks/readers/factory";
 import { type Framework } from "@/pageScript/messenger/constants";
-import { type ReaderOutput, type ReaderRoot } from "@/core";
 import { getCssSelector } from "css-selector-generator";
 import { castArray, compact } from "lodash";
 import { getComponentData, type ReadPayload } from "@/pageScript/messenger/api";
+import { type SelectorRoot } from "@/types/runtimeTypes";
+import { type JsonObject } from "type-fest";
 
 export type FrameworkConfig = ReadPayload & {
   /**
@@ -29,7 +30,7 @@ export type FrameworkConfig = ReadPayload & {
   attrs?: string | string[];
 };
 
-export function isHTMLElement(root: ReaderRoot): root is HTMLElement {
+export function isHTMLElement(root: SelectorRoot): root is HTMLElement {
   return root && root !== document;
 }
 
@@ -52,8 +53,8 @@ export function frameworkReadFactory(
 ): Read<FrameworkConfig> {
   async function read(
     reader: FrameworkConfig,
-    root: ReaderRoot
-  ): Promise<ReaderOutput> {
+    root: SelectorRoot
+  ): Promise<JsonObject> {
     const {
       selector,
       rootProp,

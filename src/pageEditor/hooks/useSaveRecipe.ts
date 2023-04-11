@@ -39,7 +39,7 @@ import {
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type Permissions } from "webextension-polyfill";

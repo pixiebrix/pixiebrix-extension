@@ -19,7 +19,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import TraverseElements from "@/blocks/transformers/traverseElements";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 
 const brick = new TraverseElements();

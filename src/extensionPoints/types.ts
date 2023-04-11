@@ -15,24 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ApiVersion,
-  type BlockIcon,
-  type EmptyConfig,
-  type IBlock,
-  type IExtensionPoint,
-  type IReader,
-  type Logger,
-  type Metadata,
-  type RegistryId,
-  type ResolvedExtension,
-  type RunArgs,
-  type Schema,
-  type UUID,
-} from "@/core";
 import { type Availability, type ReaderConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
+import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
+import { type RegistryId, type Metadata } from "@/types/registryTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type BlockIcon } from "@/types/iconTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Logger } from "@/types/loggerTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type ExtensionPointType =
   | "panel"
@@ -124,15 +120,10 @@ export function assertExtensionPointConfig(
   }
 }
 
-export abstract class ExtensionPoint<TConfig extends EmptyConfig>
+export abstract class ExtensionPoint<TConfig extends UnknownObject>
   implements IExtensionPoint
 {
   public readonly id: RegistryId;
-
-  /**
-   * A unique nonce for this instance of the extension point to aide with debugging.
-   */
-  public readonly instanceNonce: UUID;
 
   public readonly name: string;
 
@@ -169,21 +160,16 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     this.name = metadata.name;
     this.icon = metadata.icon;
     this.description = metadata.description;
-    this.instanceNonce = uuidv4();
     this.logger = logger.childLogger({ extensionPointId: this.id });
   }
 
   /**
-   * Internal helper method to clear an extension's UI and triggers/observers/etc. from the page.
+   * Internal method to unregister extension's triggers/observers/etc. from the page.
    *
-   * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
-   * updating this.extensions as necessary.
-   *
-   * @see syncExtensions
+   * When this method is called, the extensions will still be in this.extensions. The caller is responsible for
+   * updating this.extensions after the call to removeExtensions
    */
-  protected abstract clearExtensionInterfaceAndEvents(
-    extensionIds: UUID[]
-  ): void;
+  protected abstract removeExtensions(extensionIds: UUID[]): void;
 
   syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
@@ -192,24 +178,20 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     const removed = this.extensions.filter(
       (currentExtension) => !updatedIds.has(currentExtension.id)
     );
-    this.clearExtensionInterfaceAndEvents(removed.map((x) => x.id));
+    this.removeExtensions(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated extensions
     this.extensions.splice(0, this.extensions.length);
     this.extensions.push(...extensions);
 
-    console.debug(
-      "ExtensionPoint:syncExtensions for extension point %s",
-      this.id,
-      {
-        before,
-        after: extensions.map((x) => x.id),
-        removed: removed.map((x) => x.id),
-      }
-    );
+    console.debug("syncExtensions for extension point %s", this.id, {
+      before,
+      after: extensions.map((x) => x.id),
+      removed: removed.map((x) => x.id),
+    });
   }
 
-  removeExtension(extensionId: UUID): void {
+  removeExtension(extensionId: UUID) {
     this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
   }
 

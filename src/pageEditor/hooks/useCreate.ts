@@ -30,7 +30,7 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/extensionPoints/base";
 import { useGetEditablePackagesQuery } from "@/services/api";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";

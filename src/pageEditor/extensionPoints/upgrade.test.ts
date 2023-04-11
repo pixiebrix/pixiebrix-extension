@@ -21,9 +21,10 @@ import {
   upgradePipelineToV3,
 } from "@/pageEditor/extensionPoints/upgrade";
 import blockRegistry from "@/blocks/registry";
-import { type RegistryId, type Schema } from "@/core";
-import { Block } from "@/types";
+import { Block } from "@/types/blockTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { type Schema } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 beforeEach(() => {
   blockRegistry.clear();

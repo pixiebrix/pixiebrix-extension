@@ -6,9 +6,8 @@ import {
   type OmitOption,
   type StringOption,
 } from "./widgets/templateToggleWidgetTypes";
-import { type ExpressionType, type Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
@@ -26,6 +25,8 @@ import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 import { syncFlagOn } from "@/store/syncFlags";
+import { type Schema } from "@/types/schemaTypes";
+import { type ExpressionType } from "@/types/runtimeTypes";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;

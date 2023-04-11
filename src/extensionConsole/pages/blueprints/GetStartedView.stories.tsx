@@ -28,7 +28,7 @@ import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { recipesSlice } from "@/recipes/recipesSlice";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 
 export default {
   title: "Blueprints/GetStartedView",

@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer, type UnknownObject } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
 import { getPageState, setPageState } from "@/contentScript/pageState";
+import { Transformer } from "@/types/blocks/transformerTypes";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
@@ -67,13 +68,13 @@ export class SetPageState extends Transformer {
       data,
       mergeStrategy = "shallow",
       namespace = "blueprint",
-    }: BlockArg<{
+    }: BlockArgs<{
       data: JsonObject;
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
     { logger }: BlockOptions
-  ): Promise<UnknownObject> {
+  ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
     return setPageState({
@@ -116,9 +117,9 @@ export class GetPageState extends Transformer {
   }
 
   async transform(
-    { namespace = "blueprint" }: BlockArg<{ namespace?: Namespace }>,
+    { namespace = "blueprint" }: BlockArgs<{ namespace?: Namespace }>,
     { logger }: BlockOptions
-  ): Promise<UnknownObject> {
+  ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
     return getPageState({ namespace, blueprintId, extensionId });
   }

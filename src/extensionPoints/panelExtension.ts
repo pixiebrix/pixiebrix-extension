@@ -26,28 +26,16 @@ import {
 } from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
 import {
-  awaitElementOnce,
   acquireElement,
+  awaitElementOnce,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
+import { type Metadata } from "@/types/registryTypes";
+import { type Logger } from "@/types/loggerTypes";
 import {
-  type IBlock,
-  type IconConfig,
-  type ResolvedExtension,
-  type IExtensionPoint,
-  type IReader,
-  type ReaderOutput,
-  type Schema,
-  type UUID,
-  type RendererOutput,
-  type Metadata,
-  type Logger,
-  type RunArgs,
-} from "@/core";
-import {
-  type ExtensionPointDefinition,
-  type ExtensionPointConfig,
   ExtensionPoint,
+  type ExtensionPointConfig,
+  type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
@@ -63,6 +51,15 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { type IconConfig } from "@/types/iconTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import { type JsonObject } from "type-fest";
+import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 export type PanelConfig = {
   heading?: string;
@@ -266,7 +263,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   }
 
   private async runExtension(
-    readerOutput: ReaderOutput,
+    readerOutput: JsonObject,
     extension: ResolvedExtension<PanelConfig>
   ) {
     if (this.uninstalled) {

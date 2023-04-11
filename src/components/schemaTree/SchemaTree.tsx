@@ -18,7 +18,7 @@
 import styles from "./SchemaTree.module.scss";
 
 import React, { useMemo } from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { useTable, useExpanded, type Row, type Cell } from "react-table";

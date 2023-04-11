@@ -31,7 +31,7 @@ import {
   type Installable,
   type UnavailableRecipe,
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import { type ResolvedExtension } from "@/core";
+import { type ResolvedExtension } from "@/types/extensionTypes";
 
 describe("getSharingType", () => {
   test("personal extension", () => {

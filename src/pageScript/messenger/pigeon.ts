@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { serializeError } from "serialize-error";
+import { cleanValue } from "@/utils";
 import {
   type ActionType,
   type Message,
-  type SerializedError,
   type Meta,
-} from "@/core";
-import { serializeError } from "serialize-error";
-import { cleanValue } from "@/utils";
+  type SerializedError,
+} from "@/types/messengerTypes";
 
 /** @file The first messenger before webext-messenger. Deprecated, see https://github.com/pixiebrix/webext-messenger/issues/5 */
 

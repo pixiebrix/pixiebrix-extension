@@ -17,13 +17,6 @@
 
 import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import {
-  type IExtensionPoint,
-  type RegistryId,
-  type ResolvedExtension,
-  RunReason,
-  type UUID,
-} from "@/core";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { pollUntilTruthy } from "@/utils";
@@ -39,6 +32,11 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { RunReason } from "@/types/runtimeTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
 
 /**
  * True if handling the initial page load.

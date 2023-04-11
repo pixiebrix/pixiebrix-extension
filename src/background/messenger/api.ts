@@ -21,9 +21,9 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -131,3 +131,8 @@ export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
 export const captureTab = getMethod("CAPTURE_TAB", bg);
 
 export const getUserData = getMethod("GET_USER_DATA", bg);
+
+export const installStarterBlueprints = getMethod(
+  "INSTALL_STARTER_BLUEPRINTS",
+  bg
+);

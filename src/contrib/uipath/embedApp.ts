@@ -15,21 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer, type UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type RegistryId,
-  type SafeHTML,
-  type Schema,
-} from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { type Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
 import pTimeout from "p-timeout";
+import { type RegistryId } from "@/types/registryTypes";
+import { Renderer } from "@/types/blocks/rendererTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeHTML } from "@/types/stringTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 interface RunDetails {
   blockId: RegistryId;
@@ -124,7 +122,7 @@ export class UiPathAppRenderer extends Renderer {
       title = "UiPath App",
       height = 400,
       width = "100%",
-    }: BlockArg,
+    }: BlockArgs,
     { logger }: BlockOptions
   ): Promise<SafeHTML> {
     const nonce = uuidv4();

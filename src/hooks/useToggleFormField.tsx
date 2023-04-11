@@ -24,7 +24,7 @@ import {
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export function removeField(parent: unknown, fieldName: string): void {

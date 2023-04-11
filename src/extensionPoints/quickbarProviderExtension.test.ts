@@ -17,14 +17,13 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import {
   fromJS,
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
 } from "@/extensionPoints/quickBarProviderExtension";
-import { type ResolvedExtension, RunReason } from "@/core";
 import {
   extensionPointDefinitionFactory as genericExtensionPointFactory,
   uuidSequence,
@@ -41,6 +40,8 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import defaultActions from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { RunReason } from "@/types/runtimeTypes";
 
 jest.mock("@/telemetry/logging", () => {
   const actual = jest.requireActual("@/telemetry/logging");

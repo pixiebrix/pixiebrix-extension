@@ -23,7 +23,7 @@ import { fromJS as deserializeSidebar } from "@/extensionPoints/sidebarExtension
 import { fromJS as deserializeQuickBar } from "@/extensionPoints/quickBarExtension";
 import { fromJS as deserializeQuickBarProvider } from "@/extensionPoints/quickBarProviderExtension";
 import { fromJS as deserializeTour } from "@/extensionPoints/tourExtension";
-import { type IExtensionPoint } from "@/core";
+import { type IExtensionPoint } from "@/types/extensionPointTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 
 const TYPE_MAP = {

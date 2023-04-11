@@ -45,7 +45,7 @@ import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
-import { type OptionsDefinition } from "@/types/definitions";
+import { type OptionsDefinition } from "@/types/recipeTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
 jest.mock("@/telemetry/logging");

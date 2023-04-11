@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { $safeFind } from "@/helpers";
 import { validateRegistryId } from "@/types/helpers";
 import { getTextNodes } from "@/blocks/effects/replaceText";
@@ -110,7 +111,7 @@ class HighlightText extends Effect {
       color = "yellow",
       selector,
       isRegex = false,
-    }: BlockArg<{
+    }: BlockArgs<{
       pattern: string;
       color?: string;
       isRegex?: boolean;

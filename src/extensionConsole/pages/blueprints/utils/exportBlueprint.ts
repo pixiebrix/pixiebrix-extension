@@ -16,24 +16,23 @@
  */
 
 import { isEmpty } from "lodash";
-import {
-  type Metadata,
-  type Schema,
-  type UnresolvedExtension,
-  type UserOptions,
-} from "@/core";
-import {
-  type OptionsDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
+import { type Metadata } from "@/types/registryTypes";
+
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import {
+  type OptionsDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type UnresolvedExtension } from "@/types/extensionTypes";
 
 /**
  * Infer optionsSchema from the options provided to the extension.
  */
-function inferOptionsSchema(optionsArgs: UserOptions): OptionsDefinition {
+function inferOptionsSchema(optionsArgs: OptionsArgs): OptionsDefinition {
   if (isEmpty(optionsArgs)) {
     return undefined;
   }

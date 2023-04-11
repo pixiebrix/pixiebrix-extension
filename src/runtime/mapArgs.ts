@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
 import {
   type AsyncTemplateRenderer,
   type TemplateRenderer,
@@ -28,10 +27,11 @@ import {
   type Expression,
   type ExpressionType,
   type TemplateEngine,
-} from "@/core";
+} from "@/types/runtimeTypes";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
 import { type BlockPipeline } from "@/blocks/types";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",

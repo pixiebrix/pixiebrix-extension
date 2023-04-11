@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type RegistryId,
-  type SanitizedServiceConfiguration,
-  type Schema,
-  type ServiceContext,
-  type ServiceDependency,
-  type UUID,
-} from "@/core";
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
 import { resolveObj } from "@/utils";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
+import { type Schema } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import {
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
+} from "@/types/serviceTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ServiceContext } from "@/types/runtimeTypes";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",

@@ -18,7 +18,7 @@
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
 import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
-import { type SchemaDefinition } from "@/core";
+import { type SchemaDefinition } from "@/types/schemaTypes";
 
 const RjsfSchemaField = RjsfTheme.fields.SchemaField;
 

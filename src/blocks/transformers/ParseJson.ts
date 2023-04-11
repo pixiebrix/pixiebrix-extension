@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
@@ -42,7 +43,7 @@ class ParseJson extends Transformer {
     },
   });
 
-  async transform({ content }: BlockArg): Promise<unknown> {
+  async transform({ content }: BlockArgs): Promise<unknown> {
     try {
       return JSON.parse(content);
     } catch (error) {
