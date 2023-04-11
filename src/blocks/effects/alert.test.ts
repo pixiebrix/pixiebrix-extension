@@ -18,11 +18,21 @@
 import { AlertEffect } from "@/blocks/effects/alert";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { type BlockOptions } from "@/types/runtimeTypes";
+import { validateInput } from "@/validators/generic";
 
 const brick = new AlertEffect();
 
 describe("AlertEffect", () => {
-  it("type defaults to window", async () => {
+  it("type is optional", async () => {
+    await expect(
+      validateInput(brick.inputSchema, { message: "Hello, world!" })
+    ).resolves.toStrictEqual({
+      errors: [],
+      valid: true,
+    });
+  });
+
+  it("type defaults to window if excluded", async () => {
     window.alert = jest.fn();
     await brick.run(
       unsafeAssumeValidArg({ message: "Hello, world!" }),
