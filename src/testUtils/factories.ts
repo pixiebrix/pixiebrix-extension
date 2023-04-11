@@ -836,10 +836,25 @@ const panelEntryFactory = define<PanelEntry>({
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
 });
 
+const serviceMetadataFactory = define<Metadata>({
+  id: (n: number) => validateRegistryId(`@test/service-${n}`),
+  name: (n: number) => `Test Service ${n}`,
+});
+
+const serviceConfigurationFactory = define<{ metadata: Metadata }>({
+  metadata: serviceMetadataFactory,
+});
+
+const serviceConfigurationWithMetadataFactory = define<{
+  config: { metadata: Metadata };
+}>({
+  config: serviceConfigurationFactory,
+});
 export const serviceAuthFactory = define<SanitizedAuth>({
   id: uuidSequence,
   label: (n: number) => `Auth ${n}`,
-  service: sanitizedServiceConfigurationFactory,
+  config: sanitizedServiceConfigurationFactory,
+  service: serviceConfigurationWithMetadataFactory,
 });
 
 export function sidebarEntryFactory(
