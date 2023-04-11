@@ -162,32 +162,52 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               {recipeNameComponent}
               <div>is ready to use!</div>
               <br />
-              {includesQuickbar && !isEmpty(quickbarShortcutKeys) ? (
-                <>
-                  <div>Launch it using you Quick Bar shortcut</div>
-                  <div className={styles.shortcutContainer}>
-                    {quickbarShortcutKeys.map((key, index) => (
-                      <>
-                        {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
-                        <span key={key} className={styles.shortcutKey}>
-                          {key}
-                        </span>
-                      </>
-                    ))}
-                  </div>
-                  <Button
-                    variant="link"
-                    href={SHORTCUTS_URL}
-                    onClick={(event) => {
-                      // `react-bootstrap` will render as an anchor tag when href is set
-                      // Can't link to chrome:// URLs directly
-                      event.preventDefault();
-                      void openShortcutsTab();
-                    }}
-                  >
-                    Change the Quick Bar shortcut.
-                  </Button>
-                </>
+              {includesQuickbar ? (
+                isEmpty(quickbarShortcutKeys) ? (
+                  <span>
+                    Now just{" "}
+                    <Button
+                      variant="link"
+                      href={SHORTCUTS_URL}
+                      onClick={(event) => {
+                        // `react-bootstrap` will render as an anchor tag when href is set
+                        // Can't link to chrome:// URLs directly
+                        event.preventDefault();
+                        void openShortcutsTab();
+                      }}
+                      className={styles.configureLink}
+                    >
+                      Configure your Quick Bar shortcut
+                    </Button>{" "}
+                    to access this mod.
+                  </span>
+                ) : (
+                  <>
+                    <div>Launch it using your Quick Bar shortcut</div>
+                    <div className={styles.shortcutContainer}>
+                      {quickbarShortcutKeys.map((key, index) => (
+                        <>
+                          {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
+                          <span key={key} className={styles.shortcutKey}>
+                            {key}
+                          </span>
+                        </>
+                      ))}
+                    </div>
+                    <Button
+                      variant="link"
+                      href={SHORTCUTS_URL}
+                      onClick={(event) => {
+                        // `react-bootstrap` will render as an anchor tag when href is set
+                        // Can't link to chrome:// URLs directly
+                        event.preventDefault();
+                        void openShortcutsTab();
+                      }}
+                    >
+                      Change the Quick Bar shortcut.
+                    </Button>
+                  </>
+                )
               ) : (
                 <div>Go try it out now, or activate another mod.</div>
               )}
