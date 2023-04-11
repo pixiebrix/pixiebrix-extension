@@ -19,7 +19,7 @@ import { LogEffect } from "./logger";
 import { NavigateURLEffect, OpenURLEffect } from "./redirectPage";
 import { CopyToClipboard } from "./clipboard";
 import { FormFill, SetInputValue } from "./forms";
-import { CloseTabEffect, ActivateTabEffect } from "./tabs";
+import { ActivateTabEffect, CloseTabEffect } from "./tabs";
 import { HighlightEffect } from "./highlight";
 import { SetVueValues } from "./vue";
 import { ElementEvent } from "./event";
@@ -50,6 +50,7 @@ import ToggleQuickbarEffect from "@/blocks/effects/ToggleQuickbarEffect";
 import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { type IBlock } from "@/types/blockTypes";
+import PostMessageEffect from "@/blocks/effects/postMessage";
 
 function getAllEffects(): IBlock[] {
   return [
@@ -86,6 +87,7 @@ function getAllEffects(): IBlock[] {
     new DisableEffect(),
     new InsertHtml(),
     new CustomEventEffect(),
+    new PostMessageEffect(),
     new ReplaceTextEffect(),
     new HighlightText(),
     new ScrollIntoViewEffect(),
