@@ -26,12 +26,29 @@ import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
 import { memoizeUntilSettled } from "@/utils";
+import { type SanitizedAuth } from "@/types/contract";
+import { getSharingType } from "@/hooks/auth";
 
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
 const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
 const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
+
+export async function getBuiltInServiceAuths(): Promise<SanitizedAuth[]> {
+  const client = await maybeGetLinkedApiClient();
+
+  try {
+    const { data: serviceAuths } = await client.get<SanitizedAuth[]>(
+      "/api/services/shared/?meta=1"
+    );
+
+    return serviceAuths.filter((auth) => getSharingType(auth) === "built-in");
+  } catch (error) {
+    reportError(error);
+    return [];
+  }
+}
 
 function installBlueprint(
   state: ExtensionOptionsState,

@@ -15,17 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { debouncedInstallStarterBlueprints } from "@/background/starterBlueprints";
+import {
+  debouncedInstallStarterBlueprints,
+  getBuiltInServiceAuths,
+} from "@/background/starterBlueprints";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
-import { extensionFactory, recipeFactory } from "@/testUtils/factories";
+import {
+  extensionFactory,
+  organizationFactory,
+  recipeFactory,
+  serviceAuthFactory,
+} from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type IExtension,
   type PersistedExtension,
 } from "@/types/extensionTypes";
+import { uuidv4 } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -73,6 +82,29 @@ describe("installStarterBlueprints", () => {
 
     expect(extensions.length).toBe(1);
     expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
+  });
+
+  test("get built-in service auths", async () => {
+    axiosMock
+      .onGet("/api/services/shared/?meta=1")
+      .reply(200, [
+        serviceAuthFactory(),
+        serviceAuthFactory({ organization: organizationFactory() }),
+        serviceAuthFactory({ user: uuidv4() }),
+      ]);
+
+    let builtInServiceAuths = await getBuiltInServiceAuths();
+    expect(builtInServiceAuths.length).toBe(1);
+
+    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+
+    builtInServiceAuths = await getBuiltInServiceAuths();
+    expect(builtInServiceAuths.length).toBe(0);
+
+    axiosMock.onGet("/api/services/shared/?meta=1").reply(500);
+
+    builtInServiceAuths = await getBuiltInServiceAuths();
+    expect(builtInServiceAuths.length).toBe(0);
   });
 
   test("starter blueprints request fails", async () => {

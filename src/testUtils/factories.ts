@@ -53,6 +53,7 @@ import {
   type MarketplaceListing,
   type MarketplaceTag,
   type Milestone,
+  SanitizedAuth,
   UserRole,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
@@ -833,6 +834,12 @@ const panelEntryFactory = define<PanelEntry>({
     validateRegistryId(`@test/panel-recipe-test-${n}`),
   extensionPointId: (n: number) =>
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
+});
+
+export const serviceAuthFactory = define<SanitizedAuth>({
+  id: uuidSequence,
+  label: (n: number) => `Auth ${n}`,
+  service: sanitizedServiceConfigurationFactory,
 });
 
 export function sidebarEntryFactory(

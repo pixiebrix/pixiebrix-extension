@@ -75,7 +75,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     data: remoteAuths,
     isFetching: isRemoteLoading,
     refetch: refreshRemote,
-  } = useGetServiceAuthsQuery();
+  } = useGetSeserrviceAuthsQuery();
 
   const authOptions = useMemo(() => {
     if (isLocalLoading || isRemoteLoading) {
