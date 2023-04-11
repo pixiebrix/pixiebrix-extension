@@ -24,7 +24,6 @@ import {
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
-  removeEditorExtension,
   removePersistedExtension,
 } from "@/contentScript/lifecycle";
 import {
@@ -90,7 +89,6 @@ declare global {
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
-    REMOVE_DYNAMIC_EXTENSION: typeof removeEditorExtension;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -150,7 +148,6 @@ export default function registerMessenger(): void {
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
-    REMOVE_DYNAMIC_EXTENSION: removeEditorExtension,
     RESET_TAB: resetTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,

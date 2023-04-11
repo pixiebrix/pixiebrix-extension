@@ -23,13 +23,12 @@ import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
-import { groupBy, intersection, once } from "lodash";
+import { compact, groupBy, intersection, once } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
@@ -37,6 +36,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 /**
  * True if handling the initial page load.
@@ -153,7 +153,8 @@ function checkInvariants(): void {
 }
 
 /**
- * Returns all the extension points currently running on the page.
+ * Returns all the extension points currently running on the page. Includes both persisted extensions and extensions
+ * being edited in the Page Editor.
  */
 export function getActiveExtensionPoints(): IExtensionPoint[] {
   return [..._activeExtensionPoints];
@@ -170,25 +171,6 @@ export function removePersistedExtension(extensionId: UUID): void {
 }
 
 /**
- * Remove a dynamic extension and uninstall its extension point from the page.
- */
-export function removeEditorExtension(extensionId: UUID): void {
-  const extensionPoint = _editorExtensions.get(extensionId);
-  if (extensionPoint) {
-    if (extensionPoint.kind === "actionPanel") {
-      const sidebar = extensionPoint as SidebarExtensionPoint;
-      // eslint-disable-next-line new-cap -- hack for action panels
-      sidebar.HACK_uninstallExceptExtension(extensionId);
-    } else {
-      extensionPoint.uninstall();
-      _activeExtensionPoints.delete(extensionPoint);
-    }
-  }
-
-  _editorExtensions.delete(extensionId);
-}
-
-/**
  * Remove a page editor extensions extension(s) from the page.
  *
  * NOTE: if the dynamic extension was taking the place of a "permanent" extension, call `reactivate` or a similar
@@ -202,10 +184,11 @@ export function removeEditorExtension(extensionId: UUID): void {
  */
 export function clearEditorExtension(
   extensionId?: UUID,
-  options?: { clearTrace?: boolean }
+  options?: { clearTrace?: boolean; preserveSidebar?: boolean }
 ): void {
-  const { clearTrace } = {
+  const { clearTrace, preserveSidebar } = {
     clearTrace: true,
+    preserveSidebar: false,
     ...options,
   };
 
@@ -215,7 +198,15 @@ export function clearEditorExtension(
       // extension points
       console.debug(`lifecycle:clearEditorExtension: ${extensionId}`);
       const extensionPoint = _editorExtensions.get(extensionId);
-      extensionPoint.uninstall({ global: true });
+
+      if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
+        const sidebar = extensionPoint as SidebarExtensionPoint;
+        // eslint-disable-next-line new-cap -- hack for action panels
+        sidebar.HACK_uninstallExceptExtension(extensionId);
+      } else {
+        extensionPoint.uninstall({ global: true });
+      }
+
       _activeExtensionPoints.delete(extensionPoint);
       _editorExtensions.delete(extensionId);
       sidebar.removeExtension(extensionId);
@@ -270,7 +261,11 @@ export async function runEditorExtension(
 
   // Uninstall the previous extension point instance in favor of the updated extensionPoint
   if (_editorExtensions.has(extensionId)) {
-    removeEditorExtension(extensionId);
+    // Pass preserveSidebar to avoid flickering permanent sidebars
+    clearEditorExtension(extensionId, {
+      clearTrace: false,
+      preserveSidebar: true,
+    });
   }
 
   _editorExtensions.set(extensionId, extensionPoint);
@@ -290,7 +285,7 @@ export async function runEditorExtension(
  *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
  */
-async function loadPersistedExtensions() {
+async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
   console.debug("lifecycle:loadPersistedExtensions");
   const options = await loadOptions();
 
@@ -310,33 +305,39 @@ async function loadPersistedExtensions() {
 
   _persistedExtensions.clear();
 
-  await Promise.all(
-    Object.entries(extensionMap).map(
-      async ([extensionPointId, extensions]: [
-        RegistryId,
-        ResolvedExtension[]
-      ]) => {
-        try {
-          const extensionPoint = await extensionPointRegistry.lookup(
-            extensionPointId
-          );
+  const added = compact(
+    await Promise.all(
+      Object.entries(extensionMap).map(
+        async ([extensionPointId, extensions]: [
+          RegistryId,
+          ResolvedExtension[]
+        ]) => {
+          try {
+            const extensionPoint = await extensionPointRegistry.lookup(
+              extensionPointId
+            );
 
-          extensionPoint.syncExtensions(extensions);
+            extensionPoint.syncExtensions(extensions);
 
-          // Mark the extensions as installed
-          for (const extension of extensions) {
-            _persistedExtensions.set(extension.id, extensionPoint);
+            // Mark the extensions as installed
+            for (const extension of extensions) {
+              _persistedExtensions.set(extension.id, extensionPoint);
+            }
+
+            return extensionPoint;
+          } catch (error) {
+            console.warn(`Error adding extension point: ${extensionPointId}`, {
+              error,
+            });
           }
-        } catch (error) {
-          console.warn(`Error adding extension point: ${extensionPointId}`, {
-            error,
-          });
         }
-      }
+      )
     )
   );
 
   checkInvariants();
+
+  return added;
 }
 
 /**
@@ -346,7 +347,7 @@ async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
   if (_initialLoad || _reloadOnNextNavigate) {
     _initialLoad = false;
     _reloadOnNextNavigate = false;
-    await loadPersistedExtensions();
+    return loadPersistedExtensions();
   }
 
   return getActiveExtensionPoints();

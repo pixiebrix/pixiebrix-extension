@@ -34,11 +34,14 @@ import { type TourDefinition } from "@/extensionPoints/tourExtension";
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 let _overlay: Overlay | null = null;
-const _temporaryExtensions = new Map<string, IExtensionPoint>();
 
+/**
+ * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
+ * @param uuid the uuid of the extension, or null to clear all page editor extensions
+ * @see clearEditorExtension
+ */
 export async function clearDynamicElements({
   uuid,
 }: {
@@ -47,11 +50,6 @@ export async function clearDynamicElements({
   expectContext("contentScript");
 
   clearEditorExtension(uuid);
-  if (uuid) {
-    _temporaryExtensions.delete(uuid);
-  } else {
-    _temporaryExtensions.clear();
-  }
 }
 
 export async function runExtensionPointReader(
@@ -120,8 +118,6 @@ export async function updateDynamicElement({
   }
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
-
-  _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
   // will automatically replace the old panel because the panels are keyed by extension id
