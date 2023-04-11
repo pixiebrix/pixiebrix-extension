@@ -58,7 +58,7 @@ export class AlertEffect extends Effect {
         default: 2500,
       },
     },
-    ["message", "type"]
+    ["message"]
   );
 
   async effect({
