@@ -30,38 +30,11 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
 import { type BlockPipeline } from "@/blocks/types";
-import { RootReader } from "@/extensionPoints/extensionPointTestUtils";
+import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
-
-jest.mock("@/extensionPoints/registry", () => ({
-  __default: true,
-  lookup: jest.fn().mockRejectedValue(new Error("lookup mock not implemented")),
-}));
 
 jest.mock("@/store/extensionsStorage", () => ({
   loadOptions: jest.fn().mockResolvedValue({ extensions: [] }),
-}));
-
-jest.mock("webext-messenger", () => ({
-  getThisFrame: jest.fn().mockResolvedValue({ tab: { id: 1 }, frameId: 0 }),
-  getMethod: jest
-    .fn()
-    .mockImplementation(async (method: string) =>
-      jest
-        .fn()
-        .mockRejectedValue(
-          new Error(`getMethod ${method} mock not implemented`)
-        )
-    ),
-  getNotifier: jest
-    .fn()
-    .mockImplementation(async (method: string) =>
-      jest
-        .fn()
-        .mockRejectedValue(
-          new Error(`getNotifier ${method} mock not implemented`)
-        )
-    ),
 }));
 
 jest.mock("@/telemetry/logging", () => {
@@ -80,9 +53,6 @@ jest.mock("@/utils/injectScriptTag", () => ({
 }));
 
 const loadOptionsMock = loadOptions as jest.MockedFunction<typeof loadOptions>;
-const lookupMock = extensionPointRegistry.lookup as jest.MockedFunction<
-  typeof extensionPointRegistry.lookup
->;
 
 let lifecycleModule: any;
 
@@ -126,7 +96,11 @@ const extensionFactory = define<PersistedExtension<TriggerConfig>>({
 
 describe("lifecycle", () => {
   beforeEach(() => {
-    lifecycleModule = require("@/contentScript/lifecycle");
+    jest.isolateModules(() => {
+      lifecycleModule = require("@/contentScript/lifecycle");
+    });
+
+    loadOptionsMock.mockReset();
 
     window.document.body.innerHTML = "";
     document.body.innerHTML = "";
@@ -141,36 +115,39 @@ describe("lifecycle", () => {
   });
 
   it("first navigation no extensions smoke test", async () => {
-    await expect(lifecycleModule.handleNavigate()).toResolve();
+    await lifecycleModule.handleNavigate();
     expect(loadOptionsMock).toHaveBeenCalledTimes(1);
 
     // No navigation has occurred, so no extensions should be loaded
-    await expect(lifecycleModule.handleNavigate()).toResolve();
+    await lifecycleModule.handleNavigate();
     expect(loadOptionsMock).toHaveBeenCalledTimes(1);
 
-    // No navigation has occurred, so no extensions should be loaded
-    await expect(lifecycleModule.handleNavigate({ force: true })).toResolve();
+    await lifecycleModule.handleNavigate();
     // Still only called once because loadPersistedExtensionsOnce is memoized
     expect(loadOptionsMock).toHaveBeenCalledTimes(1);
   });
 
-  it("installs trigger on first run", async () => {
+  it("installs persisted trigger on first run", async () => {
     const extensionPoint = fromJS(
       extensionPointFactory({
         trigger: "load",
       })()
     );
 
+    extensionPointRegistry.register([extensionPoint]);
+
     const extension = extensionFactory({
       extensionPointId: extensionPoint.id,
     });
 
-    lookupMock.mockResolvedValue(extensionPoint);
     loadOptionsMock.mockResolvedValue({ extensions: [extension] });
 
-    await expect(lifecycleModule.handleNavigate()).toResolve();
+    // Sanity check for the test
+    expect(loadOptionsMock).toHaveBeenCalledTimes(0);
+    await lifecycleModule.handleNavigate();
 
-    // FIXME: need to fix mocking for traces.clear and .find methods
+    await tick();
+
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
       extensionPoint,
     ]);

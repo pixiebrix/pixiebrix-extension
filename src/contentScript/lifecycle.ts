@@ -134,7 +134,7 @@ async function runExtensionPoint(
     return;
   }
 
-  console.debug(`Installed extension: ${extensionPoint.id}`);
+  console.debug(`Installed extension point: ${extensionPoint.id}`);
 
   await extensionPoint.run({ reason, extensionIds });
   _activeExtensionPoints.add(extensionPoint);
