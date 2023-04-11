@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
@@ -30,7 +30,7 @@ type ExtensionSaver = {
 
 function useSaveExtension(): ExtensionSaver {
   const [isSaving, setIsSaving] = useState(false);
-  const create = useCreate();
+  const create = useUpsertFormElement();
   const sessionId = useSelector(selectSessionId);
 
   async function save(element: FormState): Promise<void> {

@@ -38,7 +38,7 @@ import {
 } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -83,7 +83,7 @@ async function ensurePermissions(elements: FormState[]) {
 
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
-  const create = useCreate();
+  const create = useUpsertFormElement();
   const { data: recipes, isLoading: isRecipesLoading } = useAllRecipes();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();

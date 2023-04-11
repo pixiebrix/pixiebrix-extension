@@ -22,7 +22,7 @@ import {
   selectActiveElement,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
@@ -75,7 +75,7 @@ export function selectRecipeMetadata(
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
-  const create = useCreate();
+  const create = useUpsertFormElement();
   const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);

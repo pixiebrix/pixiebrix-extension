@@ -23,9 +23,6 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { reportEvent } from "@/telemetry/events";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { extensionPermissions } from "@/permissions";
-import { requestPermissions } from "@/utils/permissions";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/extensionPoints/base";
@@ -36,12 +33,14 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { checkPermissions } from "@/pageEditor/permissionsHelpers";
+import { type UUID } from "@/types/stringTypes";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
 
-async function upsertConfig(
-  packageUUID: string | null,
+async function upsertPackageConfig(
+  packageUUID: UUID | null,
   kind: "reader" | "extensionPoint",
   config: unknown
 ): Promise<void> {
@@ -70,54 +69,9 @@ function selectErrorMessage(error: unknown): string {
   return getErrorMessage(error);
 }
 
-async function ensurePermissions(element: FormState) {
-  const adapter = ADAPTERS.get(element.type);
-
-  const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
-
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
-
-  // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
-  // registry at this point when called from useCreate
-  const permissions = await extensionPermissions(extension, {
-    extensionPoint,
-  });
-
-  console.debug("Ensuring permissions", {
-    permissions,
-    extensionPointConfig,
-    extension,
-  });
-
-  const hasPermissions = await requestPermissions(permissions);
-
-  if (!hasPermissions) {
-    notify.warning(
-      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
-    );
-  }
-
-  return hasPermissions;
-}
-
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-export function checkPermissions(element: FormState): Promise<boolean> {
-  // eslint-disable-next-line promise/prefer-await-to-then -- return a promise and let the calling party do decide whether to await it or not
-  return ensurePermissions(element).catch((error) => {
-    console.error("Error checking/enabling permissions", { error });
-    notify.warning({
-      message: "Error verifying permissions",
-      error,
-      reportError: true,
-    });
-
-    return false;
-  });
-}
-
-type CreateOptions = {
+type SaveOptions = {
   /**
-   * True to save a copy of the extension to the user's account
+   * True to save a copy of the IExtension to the user's account
    */
   pushToCloud: boolean;
   /**
@@ -138,11 +92,11 @@ type CreateOptions = {
  * @param element the page editor formik state
 
  * @param checkPermissions
- * @returns errorMessage an error message, or null if no error error occurred
+ * @returns errorMessage an error message, or null if no error occurred
  */
-type CreateCallback = (config: {
+type SaveCallback = (config: {
   element: FormState;
-  options: CreateOptions;
+  options: SaveOptions;
 }) => Promise<string | null>;
 
 function onStepError(error: unknown, step: string): string {
@@ -154,7 +108,10 @@ function onStepError(error: unknown, step: string): string {
   return errorMessage;
 }
 
-function useCreate(): CreateCallback {
+/**
+ * Hook to create/update a single IExtension defined by the Page Editor FormState.
+ */
+function useUpsertFormElement(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
   //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
@@ -167,9 +124,10 @@ function useCreate(): CreateCallback {
   const saveElement = useCallback(
     async (
       element: FormState,
-      options: CreateOptions
+      options: SaveOptions
     ): Promise<string | null> => {
       if (options.checkPermissions) {
+        // Good to prompt the creator for permissions if any is missing, but they're not actually required to save
         void checkPermissions(element);
       }
 
@@ -180,6 +138,7 @@ function useCreate(): CreateCallback {
 
       let isEditable = false;
 
+      // Handle the case where the Page Editor is also editing an extension point that exists as a registry item
       if (!hasInnerExtensionPoint) {
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
@@ -198,7 +157,7 @@ function useCreate(): CreateCallback {
                 )?.id
               : null;
 
-            await upsertConfig(
+            await upsertPackageConfig(
               packageId,
               "extensionPoint",
               extensionPointConfig
@@ -272,4 +231,4 @@ function useCreate(): CreateCallback {
   );
 }
 
-export default useCreate;
+export default useUpsertFormElement;

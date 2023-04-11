@@ -31,8 +31,8 @@ import {
   recipeFactory,
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories";
-import useCreateMock from "@/pageEditor/hooks/useCreate";
-import useResetMock from "@/pageEditor/hooks/useResetExtension";
+import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertFormElement";
+import useResetExtensionMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
@@ -49,7 +49,7 @@ import { type OptionsDefinition } from "@/types/recipeTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
 jest.mock("@/telemetry/logging");
-jest.mock("@/pageEditor/hooks/useCreate");
+jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/services/api", () => ({
@@ -138,7 +138,7 @@ test("saves non recipe element", async () => {
   store.dispatch(editorSlice.actions.addElement(element));
 
   const createMock = jest.fn();
-  (useCreateMock as jest.Mock).mockReturnValueOnce(createMock);
+  (useUpsertFormElementMock as jest.Mock).mockReturnValueOnce(createMock);
 
   const { result } = renderUseSavingWizard(store);
 
@@ -152,7 +152,16 @@ test("saves non recipe element", async () => {
 
   expect(result.current.isSaving).toBe(true);
   expect(createMock).toHaveBeenCalledTimes(1);
-  expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: true });
+  expect(createMock).toHaveBeenCalledWith({
+    element,
+    options: {
+      // Single IExtension, so need to push as CloudExtension an handle all permissions/notifications/reactivation
+      pushToCloud: true,
+      checkPermissions: true,
+      notifySuccess: true,
+      reactivateEveryTab: true,
+    },
+  });
 });
 
 describe("saving a Recipe Extension", () => {
@@ -202,11 +211,11 @@ describe("saving a Recipe Extension", () => {
     store.dispatch(editorSlice.actions.addElement(element));
 
     const createMock = jest.fn();
-    (useCreateMock as jest.Mock).mockReturnValue(createMock);
+    (useUpsertFormElementMock as jest.Mock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
     resetMock.mockResolvedValue(undefined);
-    (useResetMock as jest.Mock).mockReturnValue(resetMock);
+    (useResetExtensionMock as jest.Mock).mockReturnValue(resetMock);
 
     const createRecipeMock = jest.fn();
     (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([
@@ -291,7 +300,14 @@ describe("saving a Recipe Extension", () => {
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledWith({
       element: elements[1],
-      pushToCloud: true,
+      options: {
+        // Single IExtension, so need to push as CloudExtension an handle all permissions/notifications/reactivation
+        pushToCloud: true,
+        // FIXME: verify checkPermissions should be false
+        checkPermissions: false,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
     });
 
     // Resolving the create promise to go further in the saveElementAsPersonalExtension
@@ -340,7 +356,17 @@ describe("saving a Recipe Extension", () => {
     expect(createRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
-    expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: false });
+    expect(createMock).toHaveBeenCalledWith({
+      element,
+      options: {
+        pushToCloud: false,
+        // New RecipeDefinition with single ExtensionDefinition, so let create handle permissions
+        // check/notifications/reactivation
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
 
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);
@@ -424,7 +450,16 @@ describe("saving a Recipe Extension", () => {
     expect(updateRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
-    expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: true });
+    expect(createMock).toHaveBeenCalledWith({
+      element,
+      options: {
+        // FIXME: is this correct?
+        pushToCloud: true,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
 
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);

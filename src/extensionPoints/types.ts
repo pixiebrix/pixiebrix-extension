@@ -17,7 +17,7 @@
 
 import { type Availability, type ReaderConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
@@ -125,6 +125,11 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
 {
   public readonly id: RegistryId;
 
+  /**
+   * A unique nonce for this instance of the extension point to aid with debugging.
+   */
+  public readonly instanceNonce: UUID;
+
   public readonly name: string;
 
   public readonly icon: BlockIcon;
@@ -160,16 +165,22 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
     this.name = metadata.name;
     this.icon = metadata.icon;
     this.description = metadata.description;
+    this.instanceNonce = uuidv4();
     this.logger = logger.childLogger({ extensionPointId: this.id });
   }
 
   /**
-   * Internal method to unregister extension's triggers/observers/etc. from the page.
+   * Internal helper method to clear an extension's UI and triggers/observers/etc. from the page.
    *
-   * When this method is called, the extensions will still be in this.extensions. The caller is responsible for
-   * updating this.extensions after the call to removeExtensions
+   * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
+   * updating this.extensions as necessary.
+   *
+   * @see syncExtensions
+   * @see removeExtension
    */
-  protected abstract removeExtensions(extensionIds: UUID[]): void;
+  protected abstract clearExtensionInterfaceAndEvents(
+    extensionIds: UUID[]
+  ): void;
 
   syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
@@ -178,7 +189,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
     const removed = this.extensions.filter(
       (currentExtension) => !updatedIds.has(currentExtension.id)
     );
-    this.removeExtensions(removed.map((x) => x.id));
+    this.clearExtensionInterfaceAndEvents(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated extensions
     this.extensions.splice(0, this.extensions.length);
@@ -191,7 +202,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
     });
   }
 
-  removeExtension(extensionId: UUID) {
+  removeExtension(extensionId: UUID): void {
     this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
   }
 

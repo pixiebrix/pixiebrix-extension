@@ -50,7 +50,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
-import useCreate, { checkPermissions } from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -77,6 +77,7 @@ import {
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IExtension } from "@/types/extensionTypes";
+import { checkPermissions } from "@/pageEditor/permissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -94,7 +95,7 @@ function selectRecipeMetadata(
 function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
-  const createExtension = useCreate();
+  const createExtension = useUpsertFormElement();
   const removeExtension = useRemoveExtension();
   const removeRecipe = useRemoveRecipe();
 
@@ -131,11 +132,17 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
           draft.recipe = selectRecipeMetadata(newRecipe, response);
         });
         dispatch(editorActions.addElement(recipeElement));
-        // Don't push to cloud since we're saving it with the recipe
         await createExtension({
           element: recipeElement,
-          pushToCloud: false,
-          checkPermissions: false,
+          options: {
+            // Don't push to cloud since we're saving it with the recipe
+            pushToCloud: false,
+            // Permissions are already checked above
+            checkPermissions: false,
+            // Need to provide user feedback
+            notifySuccess: true,
+            reactivateEveryTab: true,
+          },
         });
         if (!keepLocalCopy) {
           await removeExtension({
