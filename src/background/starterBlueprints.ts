@@ -71,35 +71,6 @@ async function installBlueprints(
   return installed;
 }
 
-async function getShouldFirstTimeInstall(): Promise<boolean> {
-  const client = await maybeGetLinkedApiClient();
-  if (client == null) {
-    console.debug(
-      "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
-    );
-    return false;
-  }
-
-  try {
-    const {
-      data: { install_starter_blueprints: shouldInstall },
-    } = await client.get("/api/onboarding/starter-blueprints/install/");
-
-    if (shouldInstall) {
-      // If the starter blueprint request fails for some reason, or the user's primary organization
-      // gets removed, we'd still like to mark starter blueprints as installed for this user
-      // so that they don't see onboarding views/randomly have starter blueprints installed
-      // the next time they open the extension
-      await client.post("/api/onboarding/starter-blueprints/install/");
-    }
-
-    return shouldInstall;
-  } catch (error) {
-    reportError(error);
-    return false;
-  }
-}
-
 async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -135,6 +106,7 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
       installBlueprints(starterBlueprints),
       refreshRegistries(),
     ]);
+
     return installed;
   } catch (error) {
     reportError(error);
@@ -142,7 +114,7 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
   }
 };
 
-const debouncedInstallStarterBlueprints = debounce(
+export const debouncedInstallStarterBlueprints = debounce(
   memoizeUntilSettled(_installStarterBlueprints),
   BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
   {
@@ -152,29 +124,12 @@ const debouncedInstallStarterBlueprints = debounce(
   }
 );
 
-export async function firstTimeInstallStarterBlueprints(): Promise<void> {
-  const shouldInstall = await getShouldFirstTimeInstall();
-  if (!shouldInstall) {
-    return;
-  }
-
-  const installed = await debouncedInstallStarterBlueprints();
-
-  if (installed) {
-    void browser.tabs.create({
-      url: PLAYGROUND_URL,
-    });
-  }
-}
-
 function initStarterBlueprints(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
       void debouncedInstallStarterBlueprints();
     }
   });
-
-  void firstTimeInstallStarterBlueprints();
 }
 
 export default initStarterBlueprints;

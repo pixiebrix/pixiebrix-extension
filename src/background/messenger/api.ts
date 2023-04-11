@@ -131,3 +131,8 @@ export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
 export const captureTab = getMethod("CAPTURE_TAB", bg);
 
 export const getUserData = getMethod("GET_USER_DATA", bg);
+
+export const installStarterBlueprints = getMethod(
+  "INSTALL_STARTER_BLUEPRINTS",
+  bg
+);
