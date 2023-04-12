@@ -162,7 +162,6 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.21.3",
     "@fortawesome/fontawesome-common-types": "^0.2.36",
     "@shopify/jest-dom-mocks": "^4.1.2",
     "@sindresorhus/tsconfig": "^3.0.1",
@@ -221,7 +220,6 @@
     "@types/webpack": "^5.28.1",
     "@types/webpack-env": "^1.16.2",
     "@types/whatwg-mimetype": "^3.0.0",
-    "@typescript-eslint/parser": "^5.57.1",
     "axios-mock-adapter": "^1.21.4",
     "compass-mixins": "^0.12.10",
     "concurrently": "^8.0.1",
