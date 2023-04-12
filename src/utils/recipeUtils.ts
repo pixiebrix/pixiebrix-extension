@@ -18,6 +18,9 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { uniq } from "lodash";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 /**
  * Return a valid recipe id, or empty string in case of error.
@@ -36,3 +39,16 @@ export function generateRecipeId(
     return "" as RegistryId;
   }
 }
+
+/**
+ * Return an array of unique service ids that are required to be configured
+ * in order to install this recipe, excluding the PixieBrix service.
+ * @param recipe a RecipeDefinition to extract the service ids from
+ */
+export const getRequiredServiceIds = (recipe: RecipeDefinition) =>
+  uniq(
+    (recipe.extensionPoints ?? [])
+      .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
+      // The PixieBrix service gets automatically configured, so no need to include it
+      .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
+  );

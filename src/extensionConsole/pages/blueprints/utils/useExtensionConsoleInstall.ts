@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { type FormikHelpers } from "formik";
 import { type WizardValues } from "@/activation/wizardTypes";
-import { uniq } from "lodash";
 import {
   containsPermissions,
   reactivateEveryTab,
@@ -30,7 +29,6 @@ import {
 import { collectPermissions } from "@/permissions";
 import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import useMilestones from "@/hooks/useMilestones";
 import { useCreateMilestoneMutation } from "@/services/api";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
@@ -38,6 +36,7 @@ import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/blueprints/Bluepr
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 type InstallRecipeFormCallback = (
   values: WizardValues,
@@ -76,11 +75,7 @@ function useExtensionConsoleInstall(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
       console.debug("Wizard form values", values);
 
-      const requiredServiceIds = uniq(
-        recipe.extensionPoints
-          .flatMap((x) => Object.values(x.services ?? {}))
-          .filter((x) => x !== PIXIEBRIX_SERVICE_ID)
-      );
+      const requiredServiceIds = getRequiredServiceIds(recipe);
       const missingServiceIds = values.services
         .filter(
           ({ id, config }) => requiredServiceIds.includes(id) && config == null

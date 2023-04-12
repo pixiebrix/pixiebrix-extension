@@ -28,6 +28,7 @@ import { refreshRegistries } from "./refreshRegistries";
 import { memoizeUntilSettled } from "@/utils";
 import { type SanitizedAuth } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
+import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -54,6 +55,8 @@ function installBlueprint(
   state: ExtensionOptionsState,
   blueprint: RecipeDefinition
 ): ExtensionOptionsState {
+  const requiredServiceIds = getRequiredServiceIds(blueprint);
+
   return reducer(
     state,
     actions.installRecipe({

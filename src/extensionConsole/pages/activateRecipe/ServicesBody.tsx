@@ -20,7 +20,6 @@ import styles from "./ServicesBody.module.scss";
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
@@ -31,6 +30,7 @@ import { joinName } from "@/utils";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
+import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -43,18 +43,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const { data: serviceConfigs } = useGetServicesQuery();
 
-  console.log("service configs", serviceConfigs);
-
-  const visibleServiceIds = useMemo(
-    // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
-    // the only service, the wizard won't render the ServicesBody component at all
-    () =>
-      new Set(
-        blueprint.extensionPoints
-          .flatMap((x) => Object.values(x.services ?? {}))
-          .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
-      ),
-    [blueprint.extensionPoints]
+  const requiredServiceIds = useMemo(
+    // If the PixieBrix service is the only service, the wizard won't render the
+    // ServicesBody component at all
+    () => getRequiredServiceIds(blueprint),
+    [blueprint]
   );
 
   return (
@@ -66,7 +59,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         ({ id: serviceId }, index) =>
           // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
           // consistent with the index in field.value
-          visibleServiceIds.has(serviceId) && (
+          requiredServiceIds.includes(serviceId) && (
             <div key={serviceId}>
               <ServiceFieldError servicesError={error} fieldIndex={index} />
               <Card className={styles.serviceCard}>
