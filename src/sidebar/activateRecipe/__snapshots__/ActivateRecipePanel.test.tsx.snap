@@ -47,53 +47,6 @@ exports[`ActivateRecipePanel it activates basic recipe automatically and renders
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it renders well-done page 1`] = `
-<DocumentFragment>
-  <div
-    class="root"
-  >
-    <div
-      class="scrollable-area content"
-    >
-      <h1>
-        Well done!
-      </h1>
-      <img
-        alt=""
-        src="test-file-stub"
-        width="300"
-      />
-      <div
-        class="textContainer"
-      >
-        <div
-          class="recipeName"
-        >
-          My Test Listing
-        </div>
-        <div>
-          is ready to use!
-        </div>
-        <br />
-        <div>
-          Go try it out now, or activate another mod.
-        </div>
-      </div>
-    </div>
-    <div
-      class="footer"
-    >
-      <button
-        class="btn btn-primary"
-        type="button"
-      >
-        Ok
-      </button>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
 exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcut is configured 1`] = `
 <DocumentFragment>
   <div
