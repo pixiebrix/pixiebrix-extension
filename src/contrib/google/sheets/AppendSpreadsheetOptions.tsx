@@ -176,7 +176,6 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={joinName(basePath, "rowValues")}
         spreadsheetId={spreadsheetId}
         tabName={tabNameValue}
-        data-testid="rowValues"
       />
     </div>
   );

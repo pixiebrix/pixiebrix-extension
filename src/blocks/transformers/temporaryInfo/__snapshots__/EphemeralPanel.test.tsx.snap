@@ -33,7 +33,7 @@ exports[`EphemeralPanel renders action buttons: modal 1`] = `
       class="modal-body"
     >
       <div
-        data-test-id="panel-body"
+        data-testid="panel-body"
       />
     </div>
     <div
@@ -76,7 +76,7 @@ exports[`EphemeralPanel renders action buttons: popover 1`] = `
       class="popover-body"
     >
       <div
-        data-test-id="panel-body"
+        data-testid="panel-body"
       />
       <hr
         class="actionDivider"
