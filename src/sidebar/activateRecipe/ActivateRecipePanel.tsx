@@ -46,6 +46,20 @@ type ActivateRecipePanelProps = {
   recipeId: RegistryId;
 };
 
+const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
+  const shortcutKeys = shortcut?.split("") ?? [];
+  return (
+    <div className={styles.shortcutContainer}>
+      {shortcutKeys.map((key, index) => (
+        <React.Fragment key={key}>
+          {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
+          <span className={styles.shortcutKey}>{key}</span>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
 const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   recipeId,
 }) => {
@@ -71,8 +85,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
       await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
     );
   }, [resolvedRecipeConfigs]);
-  const { shortcut: quickBarShortcut } = useQuickbarShortcut();
-  const quickbarShortcutKeys = quickBarShortcut?.split("") ?? [];
+  const { shortcut } = useQuickbarShortcut();
 
   const {
     data: listings,
@@ -163,7 +176,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               <div>is ready to use!</div>
               <br />
               {includesQuickbar ? (
-                isEmpty(quickbarShortcutKeys) ? (
+                isEmpty(shortcut) ? (
                   <span>
                     Now just{" "}
                     <Button
@@ -184,14 +197,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
                 ) : (
                   <>
                     <div>Launch it using your Quick Bar shortcut</div>
-                    <div className={styles.shortcutContainer}>
-                      {quickbarShortcutKeys.map((key, index) => (
-                        <React.Fragment key={key}>
-                          {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
-                          <span className={styles.shortcutKey}>{key}</span>
-                        </React.Fragment>
-                      ))}
-                    </div>
+                    <ShortcutKeys shortcut={shortcut} />
                     <Button
                       variant="link"
                       href={SHORTCUTS_URL}
