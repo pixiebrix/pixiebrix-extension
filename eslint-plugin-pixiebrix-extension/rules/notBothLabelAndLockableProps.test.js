@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const notBothTitleAndLockableProps = require("./notBothTitleAndLockableProps");
+const notBothLabelAndLockableProps = require("./notBothLabelAndLockableProps");
 const { RuleTester } = require("eslint");
 
 const ruleTester = new RuleTester({
@@ -28,7 +28,7 @@ const ruleTester = new RuleTester({
   },
 });
 
-ruleTester.run("notBothTitleAndLockableProps", notBothTitleAndLockableProps, {
+ruleTester.run("notBothLabelAndLockableProps", notBothLabelAndLockableProps, {
   valid: [
     {
       code: `
@@ -44,7 +44,7 @@ ruleTester.run("notBothTitleAndLockableProps", notBothTitleAndLockableProps, {
       code: `
         <ConnectedFieldTemplate
           name="fieldName"
-          title="Delay (ms)"
+          label="Delay (ms)"
           as={NumberWidget}
           description="The number of milliseconds to delay"
         />
@@ -57,7 +57,7 @@ ruleTester.run("notBothTitleAndLockableProps", notBothTitleAndLockableProps, {
       code: `
         <ConnectedFieldTemplate
           name={fieldName("debounce", "waitMillis")}
-          title="Delay (ms)"
+          label="Delay (ms)"
           as={NumberWidget}
           description="The number of milliseconds to delay"
           {...makeLockableFieldProps("Delay Millis", isLocked)}
@@ -66,7 +66,7 @@ ruleTester.run("notBothTitleAndLockableProps", notBothTitleAndLockableProps, {
       errors: [
         {
           message:
-            "Disallow usage of both title attribute and makeLockableFieldProps function in the same component JSX node.",
+            "Disallow usage of both label attribute and makeLockableFieldProps function in the same component JSX node.",
         },
       ],
     },

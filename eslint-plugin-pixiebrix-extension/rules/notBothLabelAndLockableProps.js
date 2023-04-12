@@ -31,9 +31,9 @@ module.exports = {
   create(context) {
     return {
       JSXOpeningElement(node) {
-        const hasTitleAttribute = node.attributes.some(
+        const hasLabelAttribute = node.attributes.some(
           (attribute) =>
-            attribute.type === "JSXAttribute" && attribute.name.name === "title"
+            attribute.type === "JSXAttribute" && attribute.name.name === "label"
         );
 
         const hasLockablePropsSpread = node.attributes.some((attribute) => {
@@ -50,11 +50,11 @@ module.exports = {
           return false;
         });
 
-        if (hasTitleAttribute && hasLockablePropsSpread) {
+        if (hasLabelAttribute && hasLockablePropsSpread) {
           context.report({
             node,
             message:
-              "Disallow usage of both title attribute and makeLockableFieldProps function in the same component JSX node.",
+              "Disallow usage of both label attribute and makeLockableFieldProps function in the same component JSX node.",
           });
         }
       },
