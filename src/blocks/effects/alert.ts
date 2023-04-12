@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { showNotification } from "@/utils/notify";
+import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { Effect } from "@/types/blocks/effectTypes";
+
+export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
+
+export const ALERT_PERSISTENT_OPTION = "window";
 
 export class AlertEffect extends Effect {
   constructor() {
     super(
-      "@pixiebrix/browser/alert",
+      ALERT_EFFECT_ID,
       "Window Alert",
       "Show an alert/notification in the browser window"
     );
@@ -32,20 +38,23 @@ export class AlertEffect extends Effect {
   inputSchema: Schema = propertiesToSchema(
     {
       message: {
+        title: "Alert message",
         type: ["string", "number", "boolean"],
-        description: "The text/value you want to display in the alert",
+        description: "The message or value you want to display in the alert",
       },
       type: {
+        title: "Alert type",
         type: "string",
         description:
-          "The alert type/style. 'window' uses the browser's native window alert dialog, which the user must dismiss",
+          'The alert type represents different scenarios for your message. "window" alerts stay on the screen until the user dismisses them',
         enum: ["window", "info", "success", "warning", "error"],
         default: "info",
       },
       duration: {
+        title: "Alert duration",
         type: "number",
         description:
-          "Duration to show the alert, in milliseconds. Ignored for 'window' alerts",
+          "How long, in milliseconds, the alert remains before disappearing",
         default: 2500,
       },
     },
@@ -56,7 +65,11 @@ export class AlertEffect extends Effect {
     message,
     type = "window",
     duration = Number.POSITIVE_INFINITY,
-  }: BlockArg): Promise<void> {
+  }: BlockArgs<{
+    message: string | number | boolean;
+    type: "window" | "info" | "success" | "warning" | "error";
+    duration?: number;
+  }>): Promise<void> {
     const messageString = String(message);
 
     if (type === "window") {

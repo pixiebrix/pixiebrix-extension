@@ -40,9 +40,9 @@ export interface ActionButton {
 
 const EditorTabLayout: React.FC<{
   tabs: TabItem[];
-  actionButtons: ActionButton[];
+  actionButtons?: ActionButton[];
   defaultTabName?: string;
-}> = ({ tabs, actionButtons, defaultTabName }) => {
+}> = ({ tabs, actionButtons = [], defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState(
     defaultTabName ?? tabs[0].name
   );
@@ -69,33 +69,36 @@ const EditorTabLayout: React.FC<{
             </Nav.Item>
           ))}
 
-          {/* spacer */}
-          <div className="flex-grow-1" />
-
-          <ButtonGroup>
-            {actionButtons.map(
-              (
-                { variant, onClick, caption, disabled = false, icon },
-                index
-              ) => (
-                <Button
-                  key={index} // Action buttons shouldn't normally be changing order
-                  size="sm"
-                  variant={variant}
-                  disabled={disabled}
-                  onClick={onClick}
-                >
-                  {icon && (
-                    <FontAwesomeIcon
-                      icon={icon}
-                      className={styles.actionButtonIcon}
-                    />
-                  )}
-                  {caption}
-                </Button>
-              )
-            )}
-          </ButtonGroup>
+          {actionButtons.length > 0 && (
+            <>
+              {/* spacer */}
+              <div className="flex-grow-1" />
+              <ButtonGroup>
+                {actionButtons.map(
+                  (
+                    { variant, onClick, caption, disabled = false, icon },
+                    index
+                  ) => (
+                    <Button
+                      key={index} // Action buttons shouldn't normally be changing order
+                      size="sm"
+                      variant={variant}
+                      disabled={disabled}
+                      onClick={onClick}
+                    >
+                      {icon && (
+                        <FontAwesomeIcon
+                          icon={icon}
+                          className={styles.actionButtonIcon}
+                        />
+                      )}
+                      {caption}
+                    </Button>
+                  )
+                )}
+              </ButtonGroup>
+            </>
+          )}
         </Nav>
 
         <Tab.Content className={styles.content}>

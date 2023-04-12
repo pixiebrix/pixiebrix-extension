@@ -17,7 +17,7 @@
 
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import PipelineVisitor, {
   nestedPosition,

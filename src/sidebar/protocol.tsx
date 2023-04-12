@@ -24,7 +24,8 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 let lastMessageSeen = -1;
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account

@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArg, type BlockOptions, type SafeHTML } from "@/core";
 import { isNullOrBlank, isObject } from "@/utils";
 import makeDataTable, { type Row } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 
 // Type ColumnDefinition = {
 //   label: string;
@@ -86,7 +87,7 @@ export class TableRenderer extends Renderer {
   );
 
   async render(
-    { columns, data: userData }: BlockArg,
+    { columns, data: userData }: BlockArgs,
     { ctxt = [] }: BlockOptions
   ): Promise<SafeHTML> {
     let data = userData ?? ctxt;

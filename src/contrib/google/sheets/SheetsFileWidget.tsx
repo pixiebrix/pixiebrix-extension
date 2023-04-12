@@ -29,7 +29,7 @@ import { ensureAuth } from "@/contrib/google/auth";
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
@@ -42,7 +42,9 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
-  const [field, , helpers] = useField<string | Expression>(props);
+  const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
+    string | Expression
+  >(props);
   const [sheetError, setSheetError] = useState(null);
   const [doc, setDoc] = useState<SheetMeta | null>(null);
 
@@ -70,7 +72,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   useEffect(
     () => {
       if (sheetError?.toString().includes("not found")) {
-        helpers.setError(
+        spreadsheetIdFieldHelpers.setError(
           "The sheet does not exist, or you do not have access to it"
         );
       }
@@ -81,14 +83,14 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 
   useAsyncEffect(
     async (isMounted) => {
-      if (isExpression(field.value)) {
+      if (isExpression(spreadsheetIdField.value)) {
         // Expression would mean it's a service integration, and the
         // service picker shows the service name, so we don't need
         // to load the doc here.
         return;
       }
 
-      const spreadsheetId = field.value;
+      const spreadsheetId = spreadsheetIdField.value;
 
       if (doc?.id === spreadsheetId) {
         // Already up to date
@@ -96,10 +98,15 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
       }
 
       try {
-        if (!isNullOrBlank(field.value) && doc?.id !== spreadsheetId) {
+        if (
+          !isNullOrBlank(spreadsheetIdField.value) &&
+          doc?.id !== spreadsheetId
+        ) {
           setSheetError(null);
 
-          const properties = await sheets.getSheetProperties(field.value);
+          const properties = await sheets.getSheetProperties(
+            spreadsheetIdField.value
+          );
           if (!isMounted()) return;
           setDoc({ id: spreadsheetId, name: properties.title });
         } else {
@@ -112,7 +119,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
         notify.error({ message: "Error retrieving sheet information", error });
       }
     },
-    [doc?.id, field.value, setDoc, setSheetError]
+    [doc?.id, spreadsheetIdField.value, setDoc, setSheetError]
   );
 
   const pickerOrigin = useCurrentOrigin();
@@ -154,7 +161,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
               throw new Error(`${doc.name} is not a spreadsheet`);
             }
 
-            helpers.setValue(data.docs[0].id);
+            spreadsheetIdFieldHelpers.setValue(data.docs[0].id);
             setDoc(doc);
           }
         })
@@ -167,27 +174,27 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
         error,
       });
     }
-  }, [helpers, pickerOrigin]);
+  }, [spreadsheetIdFieldHelpers, pickerOrigin]);
 
-  return isExpression(field.value) ? (
+  return isExpression(spreadsheetIdField.value) ? (
     <WorkshopMessageWidget />
   ) : (
     <InputGroup>
       {doc ? (
         // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
         <Form.Control
-          id={field.name}
+          id={spreadsheetIdField.name}
           type="text"
           disabled
-          value={doc.name ?? field.value ?? ""}
+          value={doc.name ?? spreadsheetIdField.value ?? ""}
         />
       ) : (
         <Form.Control
-          id={field.name}
+          id={spreadsheetIdField.name}
           type="text"
           disabled
-          {...field}
-          value={field.value ?? ""}
+          {...spreadsheetIdField}
+          value={spreadsheetIdField.value ?? ""}
         />
       )}
       <InputGroup.Append>

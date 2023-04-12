@@ -22,7 +22,7 @@ import {
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more other renderers configured for this mod.";

@@ -16,17 +16,13 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type RegistryId,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
 import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
@@ -127,7 +123,7 @@ export class RunProcess extends Transformer {
       awaitResult = false,
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
-    }: BlockArg,
+    }: BlockArgs,
     { logger }: BlockOptions
   ): Promise<unknown> {
     const responsePromise = proxyService<JobsResponse>(uipath, {

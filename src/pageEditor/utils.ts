@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Target } from "@/types";
-import { type IExtension, type RegistryId, type UUID } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type BlockConfig } from "@/blocks/types";
@@ -38,9 +36,13 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
+import { type Target } from "@/types/messengerTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");

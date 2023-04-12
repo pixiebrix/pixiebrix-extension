@@ -21,24 +21,15 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import {
-  type RecipeMetadata,
-  type RegistryId,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BlockConfig } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
-import {
-  type OptionsDefinition,
-  type RecipeMetadataFormState,
-} from "@/types/definitions";
 import {
   type AddBlockLocation,
   type EditorRootState,
   type EditorState,
   ModalKey,
+  type RecipeMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -93,6 +84,15 @@ import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
+import {
+  keyToFieldValue,
+  selectServiceVariables,
+} from "@/components/fields/schemaFields/serviceFieldUtils";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type IExtension } from "@/types/extensionTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -561,7 +561,7 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<RecipeMetadata>
+      action: PayloadAction<IExtension["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(
@@ -578,7 +578,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         elementId: UUID;
-        recipeMetadata: RecipeMetadata;
+        recipeMetadata: IExtension["_recipe"];
         keepLocalCopy: boolean;
       }>
     ) {
@@ -809,6 +809,12 @@ export const editorSlice = createSlice({
           : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
 
+      const used = selectServiceVariables(element);
+
+      element.services = element.services.filter((x) =>
+        used.has(keyToFieldValue(x.outputKey).__value__)
+      );
+
       syncElementNodeUIStates(state, element);
 
       elementUiState.activeNodeId =
@@ -826,7 +832,7 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    editRecipeOptionsValues(state, action: PayloadAction<UserOptions>) {
+    editRecipeOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {
         return;

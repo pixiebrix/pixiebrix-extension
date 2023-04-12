@@ -19,7 +19,7 @@ import { useEffect, useMemo } from "react";
 import { selectSettings } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, type Theme } from "@/options/types";
+import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
 import { activatePartnerTheme } from "@/background/messenger/api";
 import { persistor } from "@/store/optionsStore";
 import {
@@ -28,7 +28,7 @@ import {
   isValidTheme,
   setThemeFavicon,
   type ThemeLogo,
-} from "@/utils/themeUtils";
+} from "@/themes/themeUtils";
 import { appApi } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";

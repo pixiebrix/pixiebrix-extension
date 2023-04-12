@@ -37,7 +37,7 @@ import {
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
 import { joinName } from "@/utils";
 import FieldTemplate from "@/components/form/FieldTemplate";

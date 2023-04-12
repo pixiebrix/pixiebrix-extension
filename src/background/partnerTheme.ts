@@ -16,23 +16,30 @@
  */
 
 import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/utils/themeUtils";
+import { getThemeLogo } from "@/themes/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import { DEFAULT_THEME } from "@/options/types";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { browserAction } from "@/mv3/api";
+import { expectContext } from "@/utils/expectContext";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 
 async function setToolbarIcon(): Promise<void> {
   const { theme } = await getSettingsState();
+  const { partnerId: managedPartnerId } = await readManagedStorage();
 
-  if (theme === DEFAULT_THEME) {
+  const activeTheme = managedPartnerId ?? theme;
+
+  if (activeTheme === DEFAULT_THEME) {
     activateBrowserActionIcon();
     return;
   }
 
-  const themeLogo = getThemeLogo(theme);
+  const themeLogo = getThemeLogo(activeTheme);
   browserAction.setIcon({ path: themeLogo.small });
 }
 
 export default function initPartnerTheme() {
+  expectContext("background");
+
   void setToolbarIcon();
 }

@@ -16,7 +16,7 @@
  */
 
 import React, { type PropsWithChildren } from "react";
-import { type SemVerString } from "@/core";
+import { type SemVerString } from "@/types/registryTypes";
 import styles from "./Entry.module.scss";
 import {
   RecipeHasUpdateIcon,
@@ -38,7 +38,7 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 

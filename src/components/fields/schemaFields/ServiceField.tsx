@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import FieldTemplate from "@/components/form/FieldTemplate";
@@ -36,14 +36,14 @@ export const ServiceFieldDescription: React.FC<{ schema: Schema }> = ({
       </>
     )}
     <span>
-      A configured integration.{" "}
+      Select an integration configuration.{" "}
       <a
         href={`${browser.runtime.getURL("options.html")}#/services`}
         target="_blank"
         rel="noopener noreferrer"
       >
         <FontAwesomeIcon icon={faCloud} />
-        &nbsp;Configure additional integrations on the Integrations page
+        &nbsp;Configure additional integrations here.
       </a>
     </span>
   </>

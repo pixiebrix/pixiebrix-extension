@@ -30,7 +30,7 @@
   "sandbox": {
     "pages": ["sandbox.html"]
   },
-  "optional_permissions": ["clipboardWrite", "*://*/*"],
+  "optional_permissions": ["clipboardWrite", "*://*/*", "<all_urls>"],
   "permissions": [
     "activeTab",
     "storage",
@@ -75,12 +75,11 @@
   },
   "commands": {
     "toggle-quick-bar": {
-      "description": "Toggle quick bar",
+      "description": "Toggle Quick Bar",
       "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "Command+K"
-      },
-      "global": true
+        "default": "Ctrl+M",
+        "mac": "Command+M"
+      }
     }
   },
   "background": {

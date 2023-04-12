@@ -16,7 +16,7 @@
  */
 
 import styles from "./RecipePane.module.scss";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
@@ -25,14 +25,11 @@ import {
 import { Alert } from "react-bootstrap";
 import Centered from "@/components/Centered";
 import EditorTabLayout, {
-  type ActionButton,
   type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
-import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
 import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
-import { type MessageContext } from "@/core";
+import { type MessageContext } from "@/types/loggerTypes";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptionsDefinition from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
@@ -42,7 +39,6 @@ const RecipePane: React.VFC = () => {
   const dispatch = useDispatch();
 
   const activeRecipeId = useSelector(selectActiveRecipeId);
-  const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   const selectionSeq = useSelector(selectSelectionSeq);
   const layoutKey = `${activeRecipeId}-${selectionSeq}`;
@@ -78,18 +74,6 @@ const RecipePane: React.VFC = () => {
     },
   ];
 
-  const buttons: ActionButton[] = [
-    {
-      // Ask a question
-      variant: "info",
-      onClick() {
-        setShowQuestionModal(true);
-      },
-      caption: "Ask a question",
-      icon: faQuestionCircle,
-    },
-  ];
-
   if (!activeRecipeId) {
     return (
       <Centered>
@@ -100,15 +84,7 @@ const RecipePane: React.VFC = () => {
 
   return (
     <div className={styles.root}>
-      <EditorTabLayout
-        key={layoutKey}
-        tabs={tabItems}
-        actionButtons={buttons}
-      />
-      <AskQuestionModal
-        showModal={showQuestionModal}
-        setShowModal={setShowQuestionModal}
-      />
+      <EditorTabLayout key={layoutKey} tabs={tabItems} />
     </div>
   );
 };

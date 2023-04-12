@@ -16,7 +16,7 @@
  */
 
 import { isOfficial } from "@/blocks/util";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import React from "react";
 import { Badge } from "react-bootstrap";
 

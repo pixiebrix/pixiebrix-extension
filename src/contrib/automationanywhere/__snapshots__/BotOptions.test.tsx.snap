@@ -130,7 +130,7 @@ exports[`BotOptions should require selected integration 1`] = `
           class="text-muted form-text"
         >
           <span>
-            A configured integration.
+            Select an integration configuration.
              
             <a
               href="moz-extension://8b413e68-1e0d-4cad-b98e-1eb000799783/options.html#/services"
@@ -152,7 +152,7 @@ exports[`BotOptions should require selected integration 1`] = `
                   fill="currentColor"
                 />
               </svg>
-               Configure additional integrations on the Integrations page
+               Configure additional integrations here.
             </a>
           </span>
         </small>

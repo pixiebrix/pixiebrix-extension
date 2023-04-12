@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ReaderOutput } from "@/core";
 import { asyncMapValues, pollUntilTruthy } from "@/utils";
 import { $safeFind } from "@/helpers";
 import {
   BusinessError,
   MultipleElementsFoundError,
 } from "@/errors/businessErrors";
+import { type JsonObject } from "type-fest";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -220,7 +220,7 @@ async function select(
 export async function readJQuery(
   reader: JQueryConfig,
   root: HTMLElement | Document = document
-): Promise<ReaderOutput> {
+): Promise<JsonObject> {
   const { selectors } = reader;
   if (!root) {
     throw new Error("jQuery reader requires the document or element(s)");

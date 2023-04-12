@@ -19,7 +19,8 @@ import React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
-import { type Expression, type Schema } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
+
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
@@ -39,6 +40,7 @@ import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import useFlags from "@/hooks/useFlags";
+import { type Schema } from "@/types/schemaTypes";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",

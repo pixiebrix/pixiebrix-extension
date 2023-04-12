@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
@@ -66,7 +67,7 @@ class Retry extends Transformer {
       body: bodyPipeline,
       maxRetries = Number.MAX_SAFE_INTEGER,
       intervalMillis,
-    }: BlockArg<{
+    }: BlockArgs<{
       body: PipelineExpression;
       intervalMillis?: number;
       maxRetries?: number;

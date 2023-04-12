@@ -31,7 +31,7 @@ import {
   ignoreNotFound,
 } from "@/pageScript/frameworks/errors";
 import { findElement } from "@/pageScript/frameworks/dom";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const EMBER_MAX_DEPTH = 5;
 

@@ -15,35 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Service } from "@/types";
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
-import {
-  type OAuth2Context,
-  type AuthData,
-  type Schema,
-  type UiSchema,
-  type ServiceConfig,
-  type TokenContext,
-  type SanitizedConfig,
-  type SemVerString,
-} from "@/core";
 import { testMatchPatterns } from "@/blocks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
-import {
-  type ServiceDefinition,
-  type KeyAuthenticationDefinition,
-  type OAuth2AuthenticationDefinition,
-  type TokenAuthenticationDefinition,
-  type OAuth2AuthorizationGrantDefinition,
-  type BasicAuthenticationDefinition,
-} from "@/types/definitions";
 import { type AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils";
 import { missingProperties } from "@/helpers";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import {
+  type AuthData,
+  type BasicAuthenticationDefinition,
+  type KeyAuthenticationDefinition,
+  type OAuth2AuthenticationDefinition,
+  type OAuth2AuthorizationGrantDefinition,
+  type OAuth2Context,
+  type SanitizedConfig,
+  Service,
+  type SecretsConfig,
+  type ServiceDefinition,
+  type TokenAuthenticationDefinition,
+  type TokenContext,
+} from "@/types/serviceTypes";
+import { type SemVerString } from "@/types/registryTypes";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has
@@ -174,7 +171,7 @@ class LocalDefinedService<
     return uniq(compact(patterns));
   }
 
-  getTokenContext(serviceConfig: ServiceConfig): TokenContext {
+  getTokenContext(serviceConfig: SecretsConfig): TokenContext {
     if (this.isToken) {
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
@@ -186,7 +183,7 @@ class LocalDefinedService<
     return undefined;
   }
 
-  getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
+  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (
         this._definition.authentication as OAuth2AuthenticationDefinition
@@ -219,7 +216,7 @@ class LocalDefinedService<
   }
 
   private authenticateRequestKey(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -255,7 +252,7 @@ class LocalDefinedService<
   }
 
   private authenticateBasicRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -302,7 +299,7 @@ class LocalDefinedService<
   }
 
   private authenticateRequestToken(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
     tokenData: AuthData
   ): AxiosRequestConfig {
@@ -334,7 +331,7 @@ class LocalDefinedService<
   }
 
   authenticateRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
     authData?: AuthData
   ): AxiosRequestConfig {

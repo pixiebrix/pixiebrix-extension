@@ -20,12 +20,6 @@ import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
-import {
-  type BlockArg,
-  type MessageContext,
-  type RegistryId,
-  type RendererOutput,
-} from "@/core";
 import { type PanelPayload, type PanelRunMeta } from "@/sidebar/types";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
@@ -35,6 +29,9 @@ import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type SubmitPanelAction } from "@/blocks/errors";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BlockArgs, type RendererOutput } from "@/types/runtimeTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -145,7 +142,7 @@ const PanelBody: React.FunctionComponent<{
         const block = await blockRegistry.lookup(blockId);
         // In the future, the renderer brick should run in the contentScript, not the panel frame
         // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
-        const body = await block.run(args as BlockArg, {
+        const body = await block.run(args as BlockArgs, {
           ctxt,
           root: null,
           logger: new BackgroundLogger({

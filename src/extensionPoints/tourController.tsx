@@ -16,12 +16,6 @@
  */
 
 import React from "react";
-import {
-  type MessageContext,
-  type RegistryId,
-  type ResolvedExtension,
-  type UUID,
-} from "@/core";
 import { remove, reverse } from "lodash";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
@@ -32,6 +26,10 @@ import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 /**
  * A run of a tour.

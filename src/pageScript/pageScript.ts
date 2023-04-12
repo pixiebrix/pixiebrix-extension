@@ -55,7 +55,7 @@ import {
   noopProxy,
   type ReadProxy,
 } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { initialize, type SerializableResponse } from "./messenger/pigeon";
 import { TimeoutError } from "p-timeout";
 

@@ -4,7 +4,7 @@ import {
   removeSidebar,
 } from "@/contentScript/messenger/api";
 import { forEachTabAsync } from "@/background/activeTab";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { uninstallContextMenu } from "./contextMenus";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { clearLog } from "@/telemetry/logging";

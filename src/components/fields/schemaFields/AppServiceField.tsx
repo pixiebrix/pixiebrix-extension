@@ -18,11 +18,15 @@
 import type React from "react";
 import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
-import { type Expression, type OutputKey, type ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { produce } from "immer";
 import { isEqual, set } from "lodash";
 import { keyToFieldValue, type ServiceSlice } from "./serviceFieldUtils";
+import {
+  type Expression,
+  type OutputKey,
+  type ServiceVarRef,
+} from "@/types/runtimeTypes";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 
@@ -38,7 +42,7 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value: serviceOutputKey }, , { setValue: setServiceOutputKey }] =
-    useField<Expression<ServiceKeyVar>>(name);
+    useField<Expression<ServiceVarRef>>(name);
 
   // This currently happens when a brick is copy-pasted into a separate extension
   // that does not yet have root.services configured, but already has the service

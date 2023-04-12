@@ -22,15 +22,6 @@ import {
 } from "@/components/fields/schemaFields/schemaUtils";
 import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import {
-  type BlockArgContext,
-  type ElementReference,
-  type IBlock,
-  type IExtension,
-  type Logger,
-  type ReaderRoot,
-  type RenderedArgs,
-} from "@/core";
 import { isEmpty } from "lodash";
 import { type BlockConfig, type BlockWindow } from "@/blocks/types";
 import {
@@ -44,6 +35,15 @@ import { isInnerExtensionPoint } from "@/registry/internal";
 import { BusinessError } from "@/errors/businessErrors";
 import { validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
+import { type IBlock } from "@/types/blockTypes";
+import { type Logger } from "@/types/loggerTypes";
+import {
+  type BlockArgsContext,
+  type ElementReference,
+  type SelectorRoot,
+  type RenderedArgs,
+} from "@/types/runtimeTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -110,7 +110,7 @@ export async function logIfInvalidOutput(
  */
 async function renderConfigOption(
   blockConfig: BlockConfig,
-  context: BlockArgContext,
+  context: BlockArgsContext,
   fieldName: keyof BlockConfig,
   {
     explicitRender,
@@ -137,7 +137,7 @@ async function renderConfigOption(
  */
 export async function shouldRunBlock(
   blockConfig: BlockConfig,
-  context: BlockArgContext,
+  context: BlockArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
   if (blockConfig.if !== undefined) {
@@ -158,10 +158,10 @@ export async function shouldRunBlock(
  */
 export async function selectBlockRootElement(
   blockConfig: BlockConfig,
-  defaultRoot: ReaderRoot,
-  context: BlockArgContext,
+  defaultRoot: SelectorRoot,
+  context: BlockArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
-): Promise<ReaderRoot> {
+): Promise<SelectorRoot> {
   const rootMode = blockConfig.rootMode ?? "inherit";
 
   let root;

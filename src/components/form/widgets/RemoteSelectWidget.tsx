@@ -20,7 +20,7 @@ import SelectWidget, {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
@@ -29,7 +29,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration,

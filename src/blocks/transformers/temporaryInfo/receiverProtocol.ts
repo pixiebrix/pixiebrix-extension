@@ -18,7 +18,7 @@
 import reportError from "@/telemetry/reportError";
 import { type TemporaryPanelEntry } from "@/sidebar/types";
 import { remove } from "lodash";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 
 let lastMessageSeen = -1;
 

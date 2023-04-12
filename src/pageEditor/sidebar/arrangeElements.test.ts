@@ -22,9 +22,9 @@ import {
   recipeDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type IExtension } from "@/core";
+import { type IExtension } from "@/types/extensionTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 

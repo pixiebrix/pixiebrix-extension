@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type IBrick } from "@/core";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -42,6 +41,7 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
+import { type IBrick } from "@/types/brickInstanceTypes";
 
 function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
   if ("schema" in brick) {

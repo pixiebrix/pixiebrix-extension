@@ -22,12 +22,14 @@ import {
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;
 const schemeRegexp = /^\*|https?$/;
 const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
+// All URLs is required for certain interactions, e.g., taking screenshots without activeTab
+const allUrls = "<all_urls>";
 
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
 
@@ -122,6 +124,10 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     fieldName: string
   ): Promise<void> {
     for (const [index, url] of Object.entries(urls)) {
+      if (url === allUrls) {
+        continue;
+      }
+
       if (isEmpty(url)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),

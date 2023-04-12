@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type DeploymentContext,
-  type IExtension,
-  type RegistryId,
-  type SanitizedServiceConfiguration,
-  type UUID,
-} from "@/core";
 import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { type IExtension } from "@/types/extensionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -34,7 +31,7 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
  * @see IExtension._deployment
  */
 export function isDeploymentActive(extensionLike: {
-  _deployment?: DeploymentContext;
+  _deployment?: IExtension["_deployment"];
 }): boolean {
   return (
     // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments

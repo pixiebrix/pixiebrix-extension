@@ -27,7 +27,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 114;
+const EXPECTED_HEADER_COUNT = 115;
 
 registerBuiltinBlocks();
 registerContribBlocks();
@@ -45,7 +45,6 @@ const blockDefinitions = blockRegistry.builtins.map((block) => ({
     version: process.env.NPM_PACKAGE_VERSION,
     name: block.name,
     description: block.description,
-    author: block.author,
   },
   inputSchema: block.inputSchema,
   outputSchema: block.outputSchema,

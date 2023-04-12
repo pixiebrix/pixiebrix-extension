@@ -34,7 +34,7 @@ import {
   RemoteMenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type Metadata } from "@/core";
+import { type Metadata } from "@/types/registryTypes";
 import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,

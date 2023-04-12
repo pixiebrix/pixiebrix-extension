@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Logger, type SanitizedServiceConfiguration } from "@/core";
+import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { proxyService } from "@/background/messenger/api";
 import {
@@ -47,6 +47,7 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
 import { type AxiosRequestConfig } from "axios";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room

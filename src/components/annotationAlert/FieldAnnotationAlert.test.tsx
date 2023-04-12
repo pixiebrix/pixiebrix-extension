@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotationAction } from "@/components/form/FieldAnnotation";
 
 describe("FieldAnnotationAlert", () => {

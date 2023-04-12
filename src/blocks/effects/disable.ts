@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { type BlockArg, type BlockOptions, type Schema } from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
+
 import { propertiesToSchema } from "@/validators/generic";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
   $safeFindElementsWithRootMode,
 } from "@/blocks/rootModeHelpers";
+import { type Schema } from "@/types/schemaTypes";
+import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export class DisableEffect extends Effect {
   constructor() {
@@ -48,7 +50,7 @@ export class DisableEffect extends Effect {
   }
 
   async effect(
-    args: BlockArg<{ selector: string; isRootAware?: boolean }>,
+    args: BlockArgs<{ selector: string; isRootAware?: boolean }>,
     { root }: BlockOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({

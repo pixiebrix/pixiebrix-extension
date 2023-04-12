@@ -4452,7 +4452,7 @@ exports[`Storyshots Fields/SchemaField Multi Schema 1`] = `
                   <th
                     scope="col"
                   >
-                    Property
+                    Property name
                   </th>
                   <th
                     scope="col"
@@ -4753,7 +4753,7 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   <th
                     scope="col"
                   >
-                    Property
+                    Property name
                   </th>
                   <th
                     scope="col"

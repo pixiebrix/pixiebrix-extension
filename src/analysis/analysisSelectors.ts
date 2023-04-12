@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "@/core";
 import {
   type AnalysisRootState,
   type AnalysisAnnotation,
 } from "./analysisTypes";
+import { type UUID } from "@/types/stringTypes";
 
 // Serves to avoid creating new arrays and ensure reference equality for empty annotations
 const emptyAnnotations = Object.freeze([]) as AnalysisAnnotation[];

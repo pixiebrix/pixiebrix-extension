@@ -18,7 +18,7 @@
 import styles from "./QuickAdd.module.scss";
 
 import React from "react";
-import { type IBrick } from "@/core";
+import { type IBrick } from "@/types/brickInstanceTypes";
 import { Card } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import cx from "classnames";

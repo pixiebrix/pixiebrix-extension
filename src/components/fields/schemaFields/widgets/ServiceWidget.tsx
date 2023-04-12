@@ -22,15 +22,6 @@ import React, {
   useMemo,
 } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import {
-  type Expression,
-  type OutputKey,
-  type RegistryId,
-  type SafeString,
-  type ServiceDependency,
-  type ServiceKeyVar,
-  type UUID,
-} from "@/core";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
 import { type AuthOption } from "@/auth/authTypes";
@@ -49,6 +40,14 @@ import {
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import ServiceSelectWidget from "@/components/fields/schemaFields/widgets/ServiceSelectWidget";
+import {
+  type Expression,
+  type OutputKey,
+  type ServiceVarRef,
+} from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
@@ -84,7 +83,7 @@ export function defaultOutputKey(
 function lookupAuthId(
   dependencies: ServiceDependency[],
   authOptions: AuthOption[],
-  value: ServiceKeyVar
+  value: ServiceVarRef
 ): UUID {
   const dependency =
     value == null
@@ -178,7 +177,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, , helpers] =
-    useField<Expression<ServiceKeyVar>>(props);
+    useField<Expression<ServiceVarRef>>(props);
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);

@@ -17,7 +17,7 @@
 
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { type TypedBlock } from "@/blocks/registry";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { DocumentRenderer } from "@/blocks/renderers/document";

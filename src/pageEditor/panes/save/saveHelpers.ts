@@ -16,22 +16,12 @@
  */
 
 import {
-  type RegistryId,
-  type Metadata,
-  type IExtension,
-  type SafeString,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type UnresolvedExtension,
-} from "@/core";
-import {
   type EditablePackage,
-  type ExtensionPointConfig,
-  type OptionsDefinition,
-  type RecipeDefinition,
-  type RecipeMetadataFormState,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
+  type InnerDefinitionRef,
+  type Metadata,
+  type RegistryId,
+  type InnerDefinitions,
+} from "@/types/registryTypes";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
@@ -44,6 +34,18 @@ import {
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/extensionPoints/base";
 import { type Except } from "type-fest";
+import {
+  type ExtensionDefinition,
+  type OptionsDefinition,
+  type RecipeDefinition,
+  type UnsavedRecipeDefinition,
+} from "@/types/recipeTypes";
+import {
+  type IExtension,
+  type UnresolvedExtension,
+} from "@/types/extensionTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -63,7 +65,7 @@ export function generateScopeBrickId(
 export function isRecipeEditable(
   editablePackages: EditablePackage[],
   recipe: RecipeDefinition
-) {
+): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
   const recipeId = recipe?.metadata?.id;
@@ -181,7 +183,7 @@ export function replaceRecipeExtension(
     const extensionPointId = element.extensionPoint.metadata.id;
     const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
 
-    const commonExtensionConfig: Except<ExtensionPointConfig, "id"> = {
+    const commonExtensionConfig: Except<ExtensionDefinition, "id"> = {
       ...pick(rawExtension, [
         "label",
         "config",
@@ -265,8 +267,8 @@ export function replaceRecipeExtension(
 
 function selectExtensionPointConfig(
   extension: IExtension
-): ExtensionPointConfig {
-  const extensionPoint: ExtensionPointConfig = {
+): ExtensionDefinition {
+  const extensionPoint: ExtensionDefinition = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
     id: extension.extensionPointId,
   };
@@ -392,14 +394,14 @@ export function buildRecipe({
 
 type BuildExtensionPointsResult = {
   innerDefinitions: InnerDefinitions;
-  extensionPoints: ExtensionPointConfig[];
+  extensionPoints: ExtensionDefinition[];
 };
 
 function buildExtensionPoints(
   extensions: IExtension[]
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
-  const extensionPoints: ExtensionPointConfig[] = [];
+  const extensionPoints: ExtensionDefinition[] = [];
 
   for (const extension of extensions) {
     // When an extensionPointId is an @inner/* style reference, or if the

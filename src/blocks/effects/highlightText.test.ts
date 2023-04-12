@@ -20,7 +20,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import HighlightText from "@/blocks/effects/highlightText";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 
 function getDocument(html: string): Document {
   return new JSDOM(html).window.document;

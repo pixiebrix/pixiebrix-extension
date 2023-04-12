@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { pick } from "lodash";
 import { isNullOrBlank } from "@/utils";
@@ -92,7 +93,7 @@ export class UrlParser extends Transformer {
     },
   };
 
-  async transform({ url, base }: BlockArg): Promise<unknown> {
+  async transform({ url, base }: BlockArgs): Promise<unknown> {
     const { isValid, parse } = await import(
       /* webpackChunkName: "psl" */ "psl"
     );

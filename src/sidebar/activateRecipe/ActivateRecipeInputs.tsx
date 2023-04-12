@@ -16,8 +16,8 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { type RecipeDefinition } from "@/types/definitions";
-import useWizard from "@/options/pages/marketplace/useWizard";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import useWizard from "@/activation/useWizard";
 import Form, {
   type OnSubmit,
   type RenderBody,
@@ -26,9 +26,9 @@ import Form, {
 import styles from "./ActivateRecipePanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faMagic } from "@fortawesome/free-solid-svg-icons";
-import { type WizardValues } from "@/options/pages/marketplace/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import useMarketplaceActivateRecipe from "@/hooks/activateRecipe/useMarketplaceActivateRecipe";
+import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
@@ -40,6 +40,7 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -166,14 +167,12 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           <div className="my-2">
             <Button
               variant="info"
-              href="chrome://extensions/shortcuts"
+              href={SHORTCUTS_URL}
               onClick={(event) => {
+                // `react-bootstrap` will render as an anchor tag when href is set
                 // // Can't link to chrome:// URLs directly
                 event.preventDefault();
-                // `react-bootstrap` will render as an anchor tag when href is set
-                void browser.tabs.create({
-                  url: (event.currentTarget as HTMLAnchorElement).href,
-                });
+                void openShortcutsTab();
               }}
             >
               Set up Quick Bar shortcut

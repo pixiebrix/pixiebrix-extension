@@ -27,7 +27,7 @@ import {
   type ODataResponseData,
   type Release,
 } from "@/contrib/uipath/uipathContract";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { proxyService } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 

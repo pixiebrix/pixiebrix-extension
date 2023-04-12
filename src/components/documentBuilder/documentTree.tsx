@@ -18,7 +18,7 @@
 import React, { type ElementType } from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isPipelineExpression } from "@/runtime/mapArgs";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {

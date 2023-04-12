@@ -17,7 +17,8 @@
 
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { type RegistryId, type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 
 export type BlockInfo = {

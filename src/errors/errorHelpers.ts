@@ -20,7 +20,7 @@ import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate, uniq } from "lodash";
 import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
-import { type MessageContext } from "@/core";
+import { type MessageContext } from "@/types/loggerTypes";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641

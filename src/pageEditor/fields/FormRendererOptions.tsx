@@ -16,7 +16,7 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useEffect, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";

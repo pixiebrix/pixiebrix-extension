@@ -35,7 +35,6 @@ import {
   type UiTypeExtra,
   validateNextPropertyName,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { type Schema, type SchemaPropertyType } from "@/core";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget, {
@@ -50,11 +49,12 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { isNullOrBlank } from "@/utils";
-import { AnnotationType } from "@/types";
 import {
   isDatabaseField,
   isGoogleSheetIdField,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",

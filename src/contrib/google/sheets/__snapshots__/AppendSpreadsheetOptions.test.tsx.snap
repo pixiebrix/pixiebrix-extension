@@ -238,7 +238,7 @@ exports[`AppendSpreadsheetOptions should render successfully with string spreads
                       <th
                         scope="col"
                       >
-                        Property
+                        Property name
                       </th>
                       <th
                         scope="col"
@@ -635,7 +635,7 @@ exports[`AppendSpreadsheetOptions should render successfully with string spreads
                       <th
                         scope="col"
                       >
-                        Property
+                        Property name
                       </th>
                       <th
                         scope="col"
@@ -1032,7 +1032,7 @@ exports[`AppendSpreadsheetOptions should render successfully with string spreads
                       <th
                         scope="col"
                       >
-                        Property
+                        Property name
                       </th>
                       <th
                         scope="col"

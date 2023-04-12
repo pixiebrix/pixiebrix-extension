@@ -17,7 +17,7 @@
 
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type Args, isDeferExpression } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";

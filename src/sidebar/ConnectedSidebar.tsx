@@ -38,7 +38,7 @@ import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import DelayedRender from "@/components/DelayedRender";
 import { isEmpty } from "lodash";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.

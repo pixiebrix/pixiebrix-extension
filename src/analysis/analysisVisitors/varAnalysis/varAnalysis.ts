@@ -24,7 +24,6 @@ import {
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { type BlockConfig, type BlockPosition } from "@/blocks/types";
-import type { Expression, Schema, TemplateEngine } from "@/core";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import {
@@ -44,11 +43,13 @@ import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/recipes/registry";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
-import { AnnotationType } from "@/types";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { fromJS } from "@/extensionPoints/factory";
+import { type Schema } from "@/types/schemaTypes";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 

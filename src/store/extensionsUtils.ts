@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IExtension,
-  type RegistryId,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { type IExtension } from "@/types/extensionTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe
@@ -30,7 +28,7 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
  */
 export function inferRecipeOptions(
   extensions: Array<Pick<IExtension, "optionsArgs">>
-): UserOptions {
+): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't
   // use the options), so we can just take the optionsArgs for any of the extensions
   return extensions[0]?.optionsArgs ?? {};

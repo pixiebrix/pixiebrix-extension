@@ -21,7 +21,11 @@ import {
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
+import {
+  blockConfigFactory,
+  formStateFactory,
+  uuidSequence,
+} from "@/testUtils/factories";
 import {
   type EditorRootState,
   type EditorState,
@@ -32,8 +36,10 @@ import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { type OutputKey } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBlockConfig } from "@/blocks/util";
+import { validateRegistryId } from "@/types/helpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 function getTabState(
   state: EditorState,
@@ -43,6 +49,24 @@ function getTabState(
     FOUNDATION_NODE_ID
   ].dataPanel[tabKey];
 }
+
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+
+const standardBrick = blockConfigFactory({
+  id: teapotBlock.id,
+  outputKey: "teapotOutput" as OutputKey,
+  config: defaultBlockConfig(teapotBlock.inputSchema),
+});
+
+const brickWithService = blockConfigFactory({
+  id: echoBlock.id,
+  outputKey: "echoOutput" as OutputKey,
+  config: {
+    spreadsheetId: makeVariableExpression("@google"),
+    tabName: null,
+    rowValues: {},
+  },
+});
 
 describe("DataPanel state", () => {
   let state: EditorState;
@@ -98,33 +122,89 @@ describe("DataPanel state", () => {
   });
 });
 
-describe("Cloning", () => {
-  test("Can clone an extension", async () => {
+describe("Add/Remove Bricks", () => {
+  let editor: EditorState;
+
+  const source = formStateFactory(
+    {
+      label: "Test Extension",
+      services: [
+        {
+          id: GOOGLE_SHEET_SERVICE_ID,
+          config: uuidSequence(2),
+          outputKey: "google" as OutputKey,
+        },
+      ],
+    },
+    [brickWithService, standardBrick]
+  );
+
+  beforeEach(() => {
     blockRegistry.clear();
     blockRegistry.register([echoBlock, teapotBlock]);
 
-    const source = formStateFactory(
-      {
-        label: "Test Extension",
-      },
-      [
-        blockConfigFactory({
-          id: echoBlock.id,
-          outputKey: "echoOutput" as OutputKey,
-          config: defaultBlockConfig(echoBlock.inputSchema),
-        }),
-        blockConfigFactory({
-          id: teapotBlock.id,
-          outputKey: "teapotOutput" as OutputKey,
-          config: defaultBlockConfig(teapotBlock.inputSchema),
-        }),
-      ]
+    editor = editorSlice.reducer(initialState, actions.selectInstalled(source));
+  });
+
+  test("Add Brick", async () => {
+    // Get initial bricks
+    const initialBricks = editor.elements[0].extension.blockPipeline;
+
+    // Add a Brick
+    editor = editorSlice.reducer(
+      editor,
+      actions.addNode({
+        block: standardBrick,
+        pipelinePath: "extension.blockPipeline",
+        pipelineIndex: 0,
+      })
     );
 
-    const editor = editorSlice.reducer(
-      initialState,
-      actions.selectInstalled(source)
+    // Ensure we have one more brick than we started with
+    expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
+      initialBricks.length + 1
     );
+  });
+
+  test("Remove Brick with Service", async () => {
+    // Get initial bricks and services
+    const initialBricks = editor.elements[0].extension.blockPipeline;
+    const initialServices = editor.elements[0].services;
+
+    // Remove the brick with service
+    editor = editorSlice.reducer(
+      editor,
+      actions.removeNode(brickWithService.instanceId)
+    );
+
+    // Ensure Service was removed
+    expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
+      initialBricks.length - 1
+    );
+    expect(editor.elements[0].services).toBeArrayOfSize(
+      initialServices.length - 1
+    );
+  });
+
+  test("Remove Brick without Service", async () => {
+    // Get initial bricks and services
+    const initialBricks = editor.elements[0].extension.blockPipeline;
+    const initialServices = editor.elements[0].services;
+
+    // Remove the brick with service
+    editor = editorSlice.reducer(
+      editor,
+      actions.removeNode(standardBrick.instanceId)
+    );
+
+    // Ensure Service was NOT removed
+    expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
+      initialBricks.length - 1
+    );
+    expect(editor.elements[0].services).toBeArrayOfSize(initialServices.length);
+  });
+
+  test("Can clone an extension", async () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 

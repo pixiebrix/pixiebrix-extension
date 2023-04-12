@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { truncate } from "lodash";
 import { getEncodingName } from "@/vendors/encodings";
@@ -77,7 +78,7 @@ export class ParseDataUrl extends Transformer {
   async transform({
     url,
     decodeText = true,
-  }: BlockArg<{
+  }: BlockArgs<{
     url: string;
     decodeText: boolean;
   }>): Promise<unknown> {

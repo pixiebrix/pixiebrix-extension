@@ -16,8 +16,8 @@
  */
 
 import { withReadWindow } from "@/pageScript/messenger/api";
-import { type ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
+import { type JsonObject } from "type-fest";
 
 type PathSpecObj = Record<string, string>;
 export type PathSpec = string | PathSpecObj;
@@ -38,7 +38,7 @@ async function handleFlatten(
   return typeof values === "object" ? values.value : values;
 }
 
-async function doRead(reader: WindowConfig): Promise<ReaderOutput> {
+async function doRead(reader: WindowConfig): Promise<JsonObject> {
   const { pathSpec: rawPathSpec, waitMillis } = reader;
   return handleFlatten(rawPathSpec, async (pathSpec) =>
     withReadWindow({

@@ -26,9 +26,10 @@ import {
   smartAppendPeriod,
   memoizeUntilSettled,
 } from "@/utils";
-import type { RegistryId, SafeString } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import { type RegistryId } from "@/types/registryTypes";
+import { type SafeString } from "@/types/stringTypes";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;

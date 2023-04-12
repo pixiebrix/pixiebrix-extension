@@ -17,7 +17,6 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { type MessageContext, type SerializedError, type UUID } from "@/core";
 import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
 import { type DBSchema, openDB } from "idb/with-async-ittr";
@@ -38,6 +37,9 @@ import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type MessengerMeta } from "webext-messenger";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

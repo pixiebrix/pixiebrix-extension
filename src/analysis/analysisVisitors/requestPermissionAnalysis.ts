@@ -25,7 +25,7 @@ import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
 import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { requestPermissions } from "@/utils/permissions";
 

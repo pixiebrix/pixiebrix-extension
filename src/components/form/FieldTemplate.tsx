@@ -29,7 +29,7 @@ import cx from "classnames";
 import { isEmpty, isPlainObject } from "lodash";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import LinkifiedString from "@/components/LinkifiedString";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =

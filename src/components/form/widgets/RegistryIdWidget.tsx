@@ -24,7 +24,7 @@ import SelectWidget, {
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";

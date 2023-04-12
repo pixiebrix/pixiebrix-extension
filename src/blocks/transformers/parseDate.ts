@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
@@ -116,7 +117,7 @@ export class ParseDate extends Transformer {
     },
   };
 
-  async transform({ date }: BlockArg<{ date: string }>): Promise<unknown> {
+  async transform({ date }: BlockArgs<{ date: string }>): Promise<unknown> {
     const { parseDate } = await import(
       /* webpackChunkName: "chrono-node" */ "chrono-node"
     );

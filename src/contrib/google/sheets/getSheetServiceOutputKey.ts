@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Expression } from "@/core";
+import { type Expression } from "@/types/runtimeTypes";
 
 export function getSheetServiceOutputKey(
   fieldValue: Expression

@@ -33,8 +33,8 @@
  * - Context invalidated: CS must be injected again
  */
 
-import { type UUID } from "@/core";
-import { type Target } from "@/types";
+import { type UUID } from "@/types/stringTypes";
+import { type Target } from "@/types/messengerTypes";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
 

@@ -16,13 +16,10 @@
  */
 
 import { type BlockConfig } from "@/blocks/types";
-import {
-  type BlockArg,
-  type IBlock,
-  type OutputKey,
-  type RegistryId,
-  type UUID,
-} from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type BlockArgs, type OutputKey } from "@/types/runtimeTypes";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**
@@ -60,7 +57,7 @@ export type RendererPayload = {
   /**
    * The BlockArg to pass to the renderer
    * @see BlockProps.args
-   * @see BlockArg
+   * @see BlockArgs
    */
   args: unknown;
   /**
@@ -76,8 +73,8 @@ export type RendererPayload = {
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
  */
-export function unsafeAssumeValidArg(value: unknown): BlockArg {
-  return value as BlockArg;
+export function unsafeAssumeValidArg(value: unknown): BlockArgs {
+  return value as BlockArgs;
 }
 
 const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;

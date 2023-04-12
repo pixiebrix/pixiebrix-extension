@@ -15,16 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type BlockArg,
-  type BlockArgContext,
-  type Logger,
-  type ReaderRoot,
-  type RenderedArgs,
-  type ServiceContext,
-  type UserOptions,
-  type UUID,
-} from "@/core";
+import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
 import {
   clearExtensionDebugLogs,
@@ -53,7 +44,6 @@ import {
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type ResolvedBlockConfig } from "@/runtime/runtimeTypes";
-import { type UnknownObject } from "@/types";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
@@ -65,6 +55,16 @@ import {
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/sidebar/types";
 import { getLoggingConfig } from "@/telemetry/logging";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type BlockArgs,
+  type BlockArgsContext,
+  type SelectorRoot,
+  type RenderedArgs,
+  type ServiceContext,
+  type OptionsArgs,
+} from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -122,7 +122,7 @@ export type InitialValues = {
    * Option values provided by the user during activation of an extension
    * @see IExtension.optionsArgs
    */
-  optionsArgs: UserOptions;
+  optionsArgs: OptionsArgs;
   /**
    * Service credentials provided by the user during activation of an extension
    * @see IExtension.services
@@ -132,7 +132,7 @@ export type InitialValues = {
    * The document root for root-aware bricks, including readers
    * @see IBlock.isRootAware
    */
-  root: ReaderRoot | null;
+  root: SelectorRoot | null;
 };
 
 export type IntermediateState = {
@@ -147,12 +147,12 @@ export type IntermediateState = {
    * the previous bricks' output keys.
    * @see BlockConfig.outputKey
    */
-  context: BlockArgContext;
+  context: BlockArgsContext;
   /**
    * The document root for root-aware bricks
    * @see IBlock.isRootAware
    */
-  root: ReaderRoot | null;
+  root: SelectorRoot | null;
   /**
    * The stage's position in the BlockPipeline. Used to improve logging and error messages
    * @see BlockPipeline
@@ -169,7 +169,7 @@ export type IntermediateState = {
  * All the data that determine the execution behavior of a block
  * @see IBlock.run
  */
-type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
+type BlockProps<TArgs extends RenderedArgs | BlockArgs = RenderedArgs> = {
   /**
    * The rendered args for the block, which may or may not have been already validated against the inputSchema depending
    * on the static type.
@@ -179,7 +179,7 @@ type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
   /**
    * The available context (The context used to render the args.)
    */
-  context: BlockArgContext;
+  context: BlockArgsContext;
 
   /**
    * The previous output
@@ -191,7 +191,7 @@ type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
    * The root for root-aware blocks
    * @see IBlock.isRootAware
    */
-  root: ReaderRoot | null;
+  root: SelectorRoot | null;
 };
 
 /**
@@ -228,7 +228,7 @@ type BlockOutput = {
    * The updated context, i.e., with the new outputKey.
    * @see BlockConfig.outputKey
    */
-  context: BlockArgContext;
+  context: BlockArgsContext;
 };
 
 type TraceMetadata = {
@@ -265,7 +265,7 @@ type RunBlockOptions = CommonOptions & {
  */
 async function executeBlockWithValidatedProps(
   { config, block }: ResolvedBlockConfig,
-  { args, context, root, previousOutput }: BlockProps<BlockArg>,
+  { args, context, root, previousOutput }: BlockProps<BlockArgs>,
   options: RunBlockOptions
 ): Promise<unknown> {
   const commonOptions = {
@@ -544,7 +544,7 @@ export async function runBlock(
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProps = props as unknown as BlockProps<BlockArg>;
+    const validatedProps = props as unknown as BlockProps<BlockArgs>;
     return await executeBlockWithValidatedProps(
       resolvedConfig,
       validatedProps,
@@ -876,12 +876,12 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
-  let context: BlockArgContext = {
+  let context: BlockArgsContext = {
     // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
-  } as unknown as BlockArgContext;
+  } as unknown as BlockArgsContext;
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;
@@ -937,7 +937,7 @@ export async function reducePipeline(
 export async function reducePipelineExpression(
   pipeline: BlockPipeline,
   context: UnknownObject,
-  root: ReaderRoot,
+  root: SelectorRoot,
   options: ReduceOptions
 ): Promise<unknown> {
   const { explicitDataFlow, logger: pipelineLogger } = options;
@@ -959,7 +959,7 @@ export async function reducePipelineExpression(
       isLastBlock: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: context as BlockArgContext,
+      context: context as BlockArgsContext,
     };
 
     let nextValues: BlockOutput;

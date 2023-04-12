@@ -17,7 +17,7 @@
 
 import React from "react";
 import { inputProperties } from "@/helpers";
-import { type Schema, type UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { isEmpty, sortBy } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
@@ -41,7 +41,7 @@ export type BlockOptionProps = {
 };
 
 const NoOptions: React.FunctionComponent = () => (
-  <div>No options available</div>
+  <div>This brick does not require any configuration</div>
 );
 
 type FieldConfig = {

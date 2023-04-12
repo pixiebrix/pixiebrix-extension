@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
+import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArg, type ComponentRef } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import MarkdownLazy from "@/components/MarkdownLazy";
+import { type BlockArgs, type ComponentRef } from "@/types/runtimeTypes";
 
 export class MarkdownRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/markdown");
@@ -43,7 +43,7 @@ export class MarkdownRenderer extends Renderer {
     ["markdown"]
   );
 
-  async render({ markdown }: BlockArg): Promise<ComponentRef> {
+  async render({ markdown }: BlockArgs): Promise<ComponentRef> {
     return {
       Component: MarkdownLazy,
       props: {

@@ -35,7 +35,7 @@
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidSequence } from "@/testUtils/factories";
-import { type BlockOptions } from "@/core";
+import { type BlockOptions } from "@/types/runtimeTypes";
 import { FormFill, SetInputValue } from "@/blocks/effects/forms";
 import { BusinessError, NoElementsFoundError } from "@/errors/businessErrors";
 

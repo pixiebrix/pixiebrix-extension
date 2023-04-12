@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
+import { Transformer } from "@/types/blocks/transformerTypes";
+import { type BlockArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
@@ -129,7 +130,7 @@ export class RegexTransformer extends Transformer {
   async transform({
     regex,
     input,
-  }: BlockArg): Promise<
+  }: BlockArgs): Promise<
     Record<string, string> | Array<Record<string, string>>
   > {
     let compiled: RegExp;

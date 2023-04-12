@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type ReaderRoot,
-  type Schema,
-} from "@/core";
+import { Effect } from "@/types/blocks/effectTypes";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  type BlockArgs,
+  type BlockOptions,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
 
 export class WaitEffect extends Effect {
   constructor() {
@@ -50,7 +50,7 @@ export class WaitEffect extends Effect {
   };
 
   async effect(
-    { timeMillis = 0 }: BlockArg<{ timeMillis: number }>,
+    { timeMillis = 0 }: BlockArgs<{ timeMillis: number }>,
     { logger }: BlockOptions
   ): Promise<void> {
     if (timeMillis > 0) {
@@ -76,7 +76,7 @@ export async function awaitElement({
   abortSignal,
 }: {
   selector: string;
-  $root: JQuery<ReaderRoot>;
+  $root: JQuery<SelectorRoot>;
   maxWaitMillis: number;
   abortSignal?: AbortSignal;
 }): Promise<JQuery<HTMLElement | Document>> {
@@ -141,7 +141,7 @@ export class WaitElementEffect extends Effect {
       selector,
       maxWaitMillis = 0,
       isRootAware,
-    }: BlockArg<{
+    }: BlockArgs<{
       selector: string | string[];
       maxWaitMillis: number | undefined;
       isRootAware: boolean;

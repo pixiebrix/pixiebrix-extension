@@ -73,3 +73,8 @@ export const getPartnerToken = liftExternal(
   "GET_PARTNER_TOKEN",
   readPartnerAuthData
 );
+
+export const installStarterBlueprints = liftExternal(
+  "INSTALL_STARTER_BLUEPRINTS",
+  local.installStarterBlueprints
+);

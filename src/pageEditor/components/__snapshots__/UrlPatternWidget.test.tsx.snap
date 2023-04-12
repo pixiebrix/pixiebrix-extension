@@ -55,7 +55,7 @@ exports[`UrlPatternWidget render single pattern 1`] = `
                         <th
                           scope="col"
                         >
-                          Property
+                          Property name
                         </th>
                         <th
                           scope="col"

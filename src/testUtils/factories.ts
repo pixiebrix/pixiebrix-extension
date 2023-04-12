@@ -24,26 +24,6 @@ import {
   type FactoryConfig,
 } from "cooky-cutter";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import {
-  type ApiVersion,
-  type IBlock,
-  type IExtension,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type Metadata,
-  type OutputKey,
-  type PersistedExtension,
-  type RecipeMetadata,
-  type RegistryId,
-  type RenderedArgs,
-  type SafeString,
-  type SanitizedConfig,
-  type SanitizedServiceConfiguration,
-  type Schema,
-  type ServiceDependency,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { type TraceError, type TraceRecord } from "@/telemetry/trace";
 import {
   validateRegistryId,
@@ -62,11 +42,6 @@ import {
   type SidebarFormState,
   type TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
-import {
-  type ExtensionPointConfig,
-  type RecipeDefinition,
-  type SharingDefinition,
-} from "@/types/definitions";
 import {
   type ExtensionPointConfig as ExtensionPointDefinition,
   type ExtensionPointDefinition as ExtensionPointConfigDefinition,
@@ -106,6 +81,35 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
+import {
+  type IExtension,
+  type PersistedExtension,
+} from "@/types/extensionTypes";
+import {
+  type ApiVersion,
+  type OutputKey,
+  type RenderedArgs,
+  type OptionsArgs,
+} from "@/types/runtimeTypes";
+import {
+  type SanitizedConfig,
+  type SanitizedServiceConfiguration,
+  type ServiceDependency,
+} from "@/types/serviceTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type IBlock } from "@/types/blockTypes";
+import {
+  type InnerDefinitionRef,
+  type RegistryId,
+  type Metadata,
+  type Sharing,
+  type InnerDefinitions,
+} from "@/types/registryTypes";
+import {
+  type ExtensionDefinition,
+  type RecipeDefinition,
+} from "@/types/recipeTypes";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -191,12 +195,12 @@ export const recipeMetadataFactory = define<Metadata>({
   version: validateSemVerString("1.0.0"),
 });
 
-export const sharingDefinitionFactory = define<SharingDefinition>({
+export const sharingDefinitionFactory = define<Sharing>({
   public: false,
   organizations: () => [] as UUID[],
 });
 
-export const installedRecipeMetadataFactory = define<RecipeMetadata>({
+export const installedRecipeMetadataFactory = define<IExtension["_recipe"]>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
@@ -350,7 +354,7 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
-export const extensionPointConfigFactory = define<ExtensionPointConfig>({
+export const extensionPointConfigFactory = define<ExtensionDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services(): Record<OutputKey, RegistryId> {
@@ -441,7 +445,7 @@ export const versionedExtensionPointRecipeFactory = ({
  * Factory to create a RecipeDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const extensionPoints: ExtensionPointConfig[] = [];
+  const extensionPoints: ExtensionDefinition[] = [];
   for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
@@ -495,7 +499,7 @@ export const innerExtensionPointRecipeFactory = ({
     kind: "recipe",
     apiVersion: "v3",
     metadata: recipeMetadataFactory,
-    sharing: (): SharingDefinition => ({ public: false, organizations: [] }),
+    sharing: (): Sharing => ({ public: false, organizations: [] }),
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: (): InnerDefinitions => ({
       [extensionPointRef]: {
@@ -552,13 +556,14 @@ export const deploymentFactory = define<Deployment>({
     "package"
   ),
   package: deploymentPackageFactory,
+  options_config: {},
 });
 
 const internalFormStateFactory = define<FormState>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs: null as UserOptions,
+  optionsArgs: null as OptionsArgs,
   services(): ServiceDependency[] {
     return [];
   },
@@ -576,7 +581,7 @@ const internalFormStateFactory = define<FormState>({
 export const formStateFactory = (
   override?: FactoryConfig<FormState>,
   pipelineOverride?: BlockPipeline
-) => {
+): FormState => {
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,

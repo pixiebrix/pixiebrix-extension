@@ -32,8 +32,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { type IReader, type ReaderOutput, type Schema } from "@/core";
+import { type IReader, Reader } from "@/types/blocks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -42,6 +41,7 @@ import {
   KEYBOARD_TRIGGERS,
   type Trigger,
 } from "@/extensionPoints/triggerExtensionTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export function pickEventProperties(nativeEvent: Event): JsonObject {
   if (nativeEvent instanceof KeyboardEvent) {
@@ -101,7 +101,7 @@ export class KeyboardEventReader extends Reader {
     return true;
   }
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader
     throw new Error("KeyboardEventReader.read() should not be called directly");
   }
@@ -162,7 +162,7 @@ export class SelectionChangedReader extends Reader {
     return true;
   }
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader
     throw new Error(
       "SelectionChangedReader.read() should not be called directly"
@@ -199,7 +199,7 @@ export class CustomEventReader extends Reader {
     return true;
   }
 
-  async read(): Promise<ReaderOutput> {
+  async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader
     throw new Error(
       "SelectionChangedReader.read() should not be called directly"

@@ -20,7 +20,6 @@ import {
   render,
   type RenderOptions,
   type RenderResult,
-  screen,
 } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -38,11 +37,9 @@ import {
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik, type FormikErrors, type FormikValues } from "formik";
 import { type Middleware } from "redux";
-import userEvent from "@testing-library/user-event";
-import { type Expression, type ExpressionType } from "@/core";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type BlockPipeline } from "@/blocks/types";
 import {
@@ -51,6 +48,7 @@ import {
   type RenderHookOptions,
   type RenderHookResult,
 } from "@testing-library/react-hooks";
+import { type Expression, type ExpressionType } from "@/types/runtimeTypes";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
@@ -68,6 +66,12 @@ export const getChromeEventMocks = () => ({
   hasListeners: jest.fn(),
 });
 
+/**
+ * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
+ *
+ * NOTE: this assumes you're using "react-dom/test-utils". For hooks you have to use act from
+ * "@testing-library/react-hooks"
+ */
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update
@@ -162,8 +166,22 @@ type WrapperResult<
     ThunkMiddlewareFor<S>
   ]
 > = RenderResult & {
-  getReduxStore: () => EnhancedStore<S, A, M>;
-  getFormState: () => Promise<FormikValues>;
+  getReduxStore(): EnhancedStore<S, A, M>;
+
+  /**
+   * Get the current form values
+   */
+  getFormState(): FormikValues;
+
+  /**
+   * Update the formik state without interacting with the UI
+   * @param newValues the new FormikValues to override the current form state
+   * @param shouldValidate whether or not to run validation on the new values
+   */
+  updateFormState(
+    newValues: React.SetStateAction<FormikValues>,
+    shouldValidate?: boolean
+  ): void;
 };
 
 type ConfigureStore<
@@ -181,11 +199,16 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
       ...renderOptions
     }: WrapperOptions = {}
   ): WrapperResult => {
-    let submitHandler: (values: FormikValues) => void = jest.fn();
-
     const store = configureStore();
 
     setupRedux(store.dispatch, { store });
+
+    let formValues: FormikValues = null;
+
+    let updateFormState: (
+      newValues: React.SetStateAction<FormikValues>,
+      shouldValidate?: boolean
+    ) => void = noop;
 
     const Wrapper: React.FC = initialValues
       ? ({ children }) => (
@@ -193,16 +216,18 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             <Formik
               initialValues={initialValues}
               initialErrors={initialErrors}
-              onSubmit={(values) => {
-                submitHandler?.(values);
-              }}
+              onSubmit={jest.fn()}
             >
-              {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                  {children}
-                  <button type="submit">Submit</button>
-                </Form>
-              )}
+              {({ handleSubmit, values, setValues }) => {
+                formValues = values;
+                updateFormState = setValues;
+                return (
+                  <Form onSubmit={handleSubmit}>
+                    {children}
+                    <button type="submit">Submit</button>
+                  </Form>
+                );
+              }}
             </Formik>
           </Provider>
         )
@@ -215,18 +240,10 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
       getReduxStore() {
         return store;
       },
-      async getFormState() {
-        // Wire-up a handler to grab the form state
-        let formState: FormikValues = null;
-        submitHandler = (values) => {
-          formState = values;
-        };
-
-        // Submit the form
-        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
-
-        return formState;
+      getFormState() {
+        return formValues;
       },
+      updateFormState,
     };
   };
 }
@@ -245,19 +262,22 @@ type HookWrapperResult<
     ThunkMiddlewareFor<S>
   ]
 > = RenderHookResult<TProps, TResult> & {
-  getReduxStore: () => EnhancedStore<S, A, M>;
+  getReduxStore(): EnhancedStore<S, A, M>;
 
   /**
    * The act function which should be used with the renderHook
    */
-  act: (callback: () => Promise<void>) => Promise<undefined>;
+  act(callback: () => Promise<void>): Promise<undefined>;
 
   /**
    * Await all async side effects
    */
-  waitForEffect: () => Promise<void>;
+  waitForEffect(): Promise<void>;
 
-  getFormState: () => Promise<FormikValues>;
+  /**
+   * Get the current form values
+   */
+  getFormState(): FormikValues;
 };
 
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
@@ -269,27 +289,25 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
       ...renderOptions
     }: HookWrapperOptions<TProps> = {}
   ): HookWrapperResult<TProps, TResult> => {
-    let submitHandler: (values: FormikValues) => void = jest.fn();
-
     const store = configureStore();
 
     setupRedux(store.dispatch, { store });
 
+    let formValues: FormikValues = null;
+
     const Wrapper: React.FC = initialValues
       ? ({ children }) => (
           <Provider store={store}>
-            <Formik
-              initialValues={initialValues}
-              onSubmit={(values) => {
-                submitHandler?.(values);
+            <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+              {({ handleSubmit, values }) => {
+                formValues = values;
+                return (
+                  <Form onSubmit={handleSubmit}>
+                    {children}
+                    <button type="submit">Submit</button>
+                  </Form>
+                );
               }}
-            >
-              {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                  {children}
-                  <button type="submit">Submit</button>
-                </Form>
-              )}
             </Formik>
           </Provider>
         )
@@ -311,17 +329,8 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
           // Awaiting the async state update
         });
       },
-      async getFormState() {
-        // Wire-up a handler to grab the form state
-        let formState: FormikValues = null;
-        submitHandler = (values) => {
-          formState = values;
-        };
-
-        // Submit the form
-        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
-
-        return formState;
+      getFormState() {
+        return formValues;
       },
     };
   };
