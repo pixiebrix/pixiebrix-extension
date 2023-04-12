@@ -33,7 +33,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { RecipeDefinition } from "@/types/recipeTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
