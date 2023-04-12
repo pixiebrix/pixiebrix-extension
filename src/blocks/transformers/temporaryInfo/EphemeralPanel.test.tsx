@@ -42,7 +42,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
 
 jest.mock("@/sidebar/PanelBody", () => ({
   __esModule: true,
-  default: jest.fn(() => <div data-test-id="panel-body"></div>),
+  default: jest.fn(() => <div data-testid="panel-body"></div>),
 }));
 
 const useTemporaryPanelDefinitionMock =
