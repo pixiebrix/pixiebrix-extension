@@ -259,7 +259,7 @@
     "ts-loader": "^9.4.1",
     "type-fest": "^3.8.0",
     "typescript": "^5.0.2",
-    "typescript-plugin-css-modules": "^5.0.0",
+    "typescript-plugin-css-modules": "^5.0.1",
     "webpack": "^5.79.0",
     "webpack-build-notifier": "^2.3.0",
     "webpack-bundle-analyzer": "^4.8.0",
