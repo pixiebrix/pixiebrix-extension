@@ -29,6 +29,8 @@ import { memoizeUntilSettled } from "@/utils";
 import { type SanitizedAuth } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -51,17 +53,48 @@ export async function getBuiltInServiceAuths(): Promise<SanitizedAuth[]> {
   }
 }
 
+function getAllRequiredServiceIds(
+  blueprints: RecipeDefinition[]
+): RegistryId[] {
+  const requiredServiceIds = blueprints.flatMap((blueprint) =>
+    getRequiredServiceIds(blueprint)
+  );
+  return [...new Set(requiredServiceIds)];
+}
+
+async function getBuiltInAuthsByRequiredServiceIds(
+  serviceIds: RegistryId[]
+): Promise<Record<RegistryId, UUID>> {
+  const builtInServiceAuths = await getBuiltInServiceAuths();
+
+  return Object.fromEntries(
+    serviceIds.map((serviceId) => {
+      const builtInAuth = builtInServiceAuths.find(
+        (auth) => auth.service.config.metadata.id === serviceId
+      );
+
+      if (!builtInAuth) {
+        throw new Error(
+          `No built-in auth found for service ${serviceId}. Check that starter mods have built-in configuration options for all required services.`
+        );
+      }
+
+      return [serviceId, builtInAuth.id];
+    })
+  );
+}
+
 function installBlueprint(
   state: ExtensionOptionsState,
-  blueprint: RecipeDefinition
+  blueprint: RecipeDefinition,
+  services: Record<RegistryId, UUID>
 ): ExtensionOptionsState {
-  const requiredServiceIds = getRequiredServiceIds(blueprint);
-
   return reducer(
     state,
     actions.installRecipe({
       recipe: blueprint,
       extensionPoints: blueprint.extensionPoints,
+      services,
     })
   );
 }
@@ -74,6 +107,10 @@ async function installBlueprints(
     return installed;
   }
 
+  const builtInServiceAuths = await getBuiltInAuthsByRequiredServiceIds(
+    getAllRequiredServiceIds(blueprints)
+  );
+
   let extensionsState = await loadOptions();
   for (const blueprint of blueprints) {
     const blueprintAlreadyInstalled = extensionsState.extensions.some(
@@ -81,7 +118,11 @@ async function installBlueprints(
     );
 
     if (!blueprintAlreadyInstalled) {
-      extensionsState = installBlueprint(extensionsState, blueprint);
+      extensionsState = installBlueprint(
+        extensionsState,
+        blueprint,
+        builtInServiceAuths
+      );
       installed = true;
     }
   }
