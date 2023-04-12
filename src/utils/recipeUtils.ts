@@ -43,9 +43,9 @@ export function generateRecipeId(
 /**
  * Return an array of unique service ids that are required to be configured
  * in order to install this recipe, excluding the PixieBrix service.
- * @param recipe a RecipeDefinition to extract the service ids from
+ * @param recipe the recipe from which to extract service ids
  */
-export const getRequiredServiceIds = (recipe: RecipeDefinition) =>
+export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
   uniq(
     (recipe.extensionPoints ?? [])
       .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
