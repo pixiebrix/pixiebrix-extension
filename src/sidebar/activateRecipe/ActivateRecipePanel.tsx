@@ -186,12 +186,10 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
                     <div>Launch it using your Quick Bar shortcut</div>
                     <div className={styles.shortcutContainer}>
                       {quickbarShortcutKeys.map((key, index) => (
-                        <>
+                        <React.Fragment key={key}>
                           {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
-                          <span key={key} className={styles.shortcutKey}>
-                            {key}
-                          </span>
-                        </>
+                          <span className={styles.shortcutKey}>{key}</span>
+                        </React.Fragment>
                       ))}
                     </div>
                     <Button
