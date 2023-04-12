@@ -31,6 +31,9 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -95,6 +98,30 @@ jest.mock("@/hooks/useQuickbarShortcut", () => ({
   }),
 }));
 
+jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(async () => ({ success: true })),
+}));
+
+jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const includesQuickBarMock =
+  includesQuickBarExtensionPoint as jest.MockedFunction<
+    typeof includesQuickBarExtensionPoint
+  >;
+
+jest.mock("@/hooks/useQuickbarShortcut", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useQuickbarShortcutMock = useQuickbarShortcut as jest.MockedFunction<
+  typeof useQuickbarShortcut
+>;
+
 function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
   return {
     data,
@@ -112,9 +139,56 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
+function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
+  const recipe = recipeDefinitionFactory(recipeOverride);
+  useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
+  const listing = marketplaceListingFactory({
+    package: {
+      id: uuidv4(),
+      name: recipe.metadata.id,
+      kind: "recipe",
+      description: "This is a test listing",
+      verbose_name: "My Test Listing",
+      config: {},
+      author: {
+        scope: "@testAuthor",
+      },
+      organization: {
+        scope: "@testOrg",
+      },
+    },
+  });
+  useGetMarketplaceListingsQueryMock.mockReturnValue({
+    data: {
+      [listing.package.name]: listing,
+    },
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  });
+  const entry = sidebarEntryFactory("activateRecipe", {
+    recipeId: recipe.metadata.id,
+    heading: "Activate Mod",
+  });
+
+  return render(<ActivateRecipePanel recipeId={recipe.metadata.id} />, {
+    setupRedux(dispatch) {
+      dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+    },
+  });
+}
+
+beforeEach(() => {
+  includesQuickBarMock.mockResolvedValue(false);
+  useQuickbarShortcutMock.mockReturnValue({
+    shortcut: null,
+    isConfigured: false,
+  });
+});
+
 describe("ActivateRecipePanel", () => {
-  test("it renders with options, permissions info, and quick bar hotkey info", async () => {
-    const recipe = recipeDefinitionFactory({
+  test("it renders with options, permissions info", async () => {
+    const rendered = setupMocksAndRender({
       options: {
         schema: propertiesToSchema({
           foo: {
@@ -130,46 +204,38 @@ describe("ActivateRecipePanel", () => {
         }),
       },
     });
-    useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
 
-    const listing = marketplaceListingFactory({
-      package: {
-        id: uuidv4(),
-        name: recipe.metadata.id,
-        kind: "recipe",
-        description: "This is a test listing",
-        verbose_name: "My Test Listing",
-        config: {},
-        author: {
-          scope: "@testAuthor",
-        },
-        organization: {
-          scope: "@testOrg",
-        },
-      },
-    });
-    useGetMarketplaceListingsQueryMock.mockReturnValue({
-      data: {
-        [listing.package.name]: listing,
-      },
-      isLoading: false,
-      error: null,
-      refetch: jest.fn(),
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it activates basic recipe automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender();
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders well-done page for quick bar mod shortcut not configured", async () => {
+    includesQuickBarMock.mockResolvedValue(true);
+
+    const rendered = setupMocksAndRender();
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders well-done page for quick bar mod shortcut is configured", async () => {
+    includesQuickBarMock.mockResolvedValue(true);
+    useQuickbarShortcutMock.mockReturnValue({
+      shortcut: "⌘M",
+      isConfigured: true,
     });
 
-    const entry = sidebarEntryFactory("activateRecipe", {
-      recipeId: recipe.metadata.id,
-      heading: "Activate Mod",
-    });
-
-    const rendered = render(
-      <ActivateRecipePanel recipeId={recipe.metadata.id} />,
-      {
-        setupRedux(dispatch) {
-          dispatch(sidebarSlice.actions.showActivateRecipe(entry));
-        },
-      }
-    );
+    const rendered = setupMocksAndRender();
 
     await waitForEffect();
 
