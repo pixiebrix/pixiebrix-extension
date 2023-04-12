@@ -19,15 +19,12 @@ const noInvalidDataTestId = require("./noInvalidDataTestId");
 const { RuleTester } = require("eslint");
 
 const ruleTester = new RuleTester({
-  parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    requireConfigFile: false,
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
 });
-
-// const ruleTester = new RuleTester();
 
 ruleTester.run("noInvalidDataTestId", noInvalidDataTestId, {
   valid: [{ code: '<div data-testid="myTestDiv" />' }],
@@ -35,6 +32,32 @@ ruleTester.run("noInvalidDataTestId", noInvalidDataTestId, {
     {
       code: '<div data-test-id="myTestDiv" />',
       errors: [{ message: "Use data-testid." }],
+      output: '<div data-testid="myTestDiv" />',
+    },
+    {
+      code: '<div data-testId="myTestDiv" />',
+      errors: [{ message: "Use data-testid." }],
+      output: '<div data-testid="myTestDiv" />',
+    },
+    {
+      code: '<div dataTest-id="myTestDiv" />',
+      errors: [{ message: "Use data-testid." }],
+      output: '<div data-testid="myTestDiv" />',
+    },
+    {
+      code: '<div dataTestId="myTestDiv" />',
+      errors: [{ message: "Use data-testid." }],
+      output: '<div data-testid="myTestDiv" />',
+    },
+    {
+      code: '<div testId="myTestDiv" />',
+      errors: [{ message: "Use data-testid." }],
+      output: '<div data-testid="myTestDiv" />',
+    },
+    {
+      code: '<div testid="myTestDiv" />',
+      errors: [{ message: "Use data-testid." }],
+      output: '<div data-testid="myTestDiv" />',
     },
   ],
 });
