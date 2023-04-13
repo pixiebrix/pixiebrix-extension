@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions } from "@/store/extensionsStorage";
 import { uuidSequence } from "@/testUtils/factories";
-import extensionPointRegistry from "@/extensionPoints/registry";
+
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
@@ -33,27 +32,8 @@ import { type BlockPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 
-jest.mock("@/store/extensionsStorage", () => ({
-  loadOptions: jest.fn().mockResolvedValue({ extensions: [] }),
-}));
-
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
-jest.mock("@/utils/injectScriptTag", () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue({ remove: jest.fn() }),
-}));
-
-const loadOptionsMock = loadOptions as jest.MockedFunction<typeof loadOptions>;
-
+let extensionPointRegistry: any;
+let loadOptionsMock: jest.Mock;
 let lifecycleModule: any;
 
 const rootReader = new RootReader();
@@ -97,10 +77,16 @@ const extensionFactory = define<PersistedExtension<TriggerConfig>>({
 describe("lifecycle", () => {
   beforeEach(() => {
     jest.isolateModules(() => {
-      lifecycleModule = require("@/contentScript/lifecycle");
-    });
+      jest.mock("@/store/extensionsStorage", () => ({
+        loadOptions: jest
+          .fn()
+          .mockRejectedValue(new Error("Mock not implemented")),
+      }));
 
-    loadOptionsMock.mockReset();
+      lifecycleModule = require("@/contentScript/lifecycle");
+      extensionPointRegistry = require("@/extensionPoints/registry").default;
+      loadOptionsMock = require("@/store/extensionsStorage").loadOptions;
+    });
 
     window.document.body.innerHTML = "";
     document.body.innerHTML = "";
@@ -115,6 +101,8 @@ describe("lifecycle", () => {
   });
 
   it("first navigation no extensions smoke test", async () => {
+    loadOptionsMock.mockResolvedValue({ extensions: [] });
+
     await lifecycleModule.handleNavigate();
     expect(loadOptionsMock).toHaveBeenCalledTimes(1);
 
@@ -135,7 +123,6 @@ describe("lifecycle", () => {
     );
 
     extensionPointRegistry.register([extensionPoint]);
-
     const extension = extensionFactory({
       extensionPointId: extensionPoint.id,
     });

@@ -48,7 +48,6 @@ import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers"
 import { type OptionsDefinition } from "@/types/recipeTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
-jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");
 

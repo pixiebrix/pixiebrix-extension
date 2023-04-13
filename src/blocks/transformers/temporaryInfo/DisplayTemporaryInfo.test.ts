@@ -51,16 +51,6 @@ import pDefer from "p-defer";
   (path) => `chrome-extension://abc/${path}`
 );
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
   showModal: jest.fn(),
 }));
