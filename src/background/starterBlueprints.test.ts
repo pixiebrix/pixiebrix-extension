@@ -31,9 +31,6 @@ import {
   organizationFactory,
   recipeFactory,
   serviceAuthFactory,
-  serviceConfigurationFactory,
-  serviceConfigurationWithMetadataFactory,
-  serviceMetadataFactory,
 } from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
 import {
@@ -41,10 +38,8 @@ import {
   type PersistedExtension,
 } from "@/types/extensionTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { getRequiredServiceIds } from "@/utils/recipeUtils";
-import { RegistryId } from "@/types/registryTypes";
-import { OutputKey } from "@/types/runtimeTypes";
-import { SanitizedAuth } from "@/types/contract";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -77,6 +72,42 @@ beforeEach(async () => {
 
   jest.clearAllMocks();
 });
+
+const getRecipeWithBuiltInServiceAuths = () => {
+  const extensionServices = {
+    service1: "@pixiebrix/service1",
+    service2: "@pixiebrix/service2",
+  } as Record<OutputKey, RegistryId>;
+
+  const extensionPointDefinition = extensionPointConfigFactory({
+    services: extensionServices,
+  });
+
+  const recipe = recipeFactory({
+    extensionPoints: [extensionPointDefinition],
+  });
+
+  const builtInServiceAuths = [
+    serviceAuthFactory({
+      service: {
+        config: {
+          // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
+          metadata: { id: validateRegistryId("@pixiebrix/service1") },
+        },
+      },
+    }),
+    serviceAuthFactory({
+      service: {
+        config: {
+          // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
+          metadata: { id: validateRegistryId("@pixiebrix/service2") },
+        },
+      },
+    }),
+  ];
+
+  return { recipe, builtInServiceAuths };
+};
 
 describe("installStarterBlueprints", () => {
   test("user has starter blueprints available to install", async () => {
@@ -149,47 +180,9 @@ describe("installStarterBlueprints", () => {
   });
 
   test("getBuiltInAuthsByRequiredServiceIds", async () => {
-    const extensionServices = {
-      service1: "@pixiebrix/service1",
-      service2: "@pixiebrix/service2",
-    } as Record<OutputKey, RegistryId>;
-
-    const extensionPointDefinition = extensionPointConfigFactory({
-      services: extensionServices,
-    });
-
-    const recipe = recipeFactory({
-      extensionPoints: [extensionPointDefinition],
-    });
+    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
     const serviceIds = getAllRequiredServiceIds([recipe]);
-
-    const builtInServiceAuths = [
-      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
-      serviceAuthFactory({
-        service: {
-          config: {
-            metadata: { id: validateRegistryId("@pixiebrix/service1") },
-          },
-        },
-      }),
-      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
-      serviceAuthFactory({
-        service: {
-          config: {
-            metadata: { id: validateRegistryId("@pixiebrix/service2") },
-          },
-        },
-      }),
-      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuthx
-      serviceAuthFactory({
-        service: {
-          config: {
-            metadata: { id: validateRegistryId("@pixiebrix/service3") },
-          },
-        },
-      }),
-    ];
 
     axiosMock
       .onGet("/api/services/shared/?meta=1")
@@ -236,37 +229,7 @@ describe("installStarterBlueprints", () => {
   test("install starter blueprint with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const extensionServices = {
-      service1: "@pixiebrix/service1",
-      service2: "@pixiebrix/service2",
-    } as Record<OutputKey, RegistryId>;
-
-    const extensionPointDefinition = extensionPointConfigFactory({
-      services: extensionServices,
-    });
-
-    const recipe = recipeFactory({
-      extensionPoints: [extensionPointDefinition],
-    });
-
-    const builtInServiceAuths = [
-      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
-      serviceAuthFactory({
-        service: {
-          config: {
-            metadata: { id: validateRegistryId("@pixiebrix/service1") },
-          },
-        },
-      }),
-      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
-      serviceAuthFactory({
-        service: {
-          config: {
-            metadata: { id: validateRegistryId("@pixiebrix/service2") },
-          },
-        },
-      }),
-    ];
+    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
     axiosMock
       .onGet("/api/services/shared/?meta=1")
@@ -283,7 +246,7 @@ describe("installStarterBlueprints", () => {
     const installedExtension = extensions[0];
 
     expect(installedExtension.extensionPointId).toBe(
-      extensionPointDefinition.id
+      recipe.extensionPoints[0].id
     );
     expect(installedExtension.services.length).toBe(2);
 
