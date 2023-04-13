@@ -161,6 +161,22 @@ export function getActiveExtensionPoints(): IExtensionPoint[] {
 }
 
 /**
+ * Test helper to get internal persisted extension state
+ * @constructor
+ */
+export function TEST_getPersistedExtensions(): Map<UUID, IExtensionPoint> {
+  return _persistedExtensions;
+}
+
+/**
+ * Test helper to get internal editor extension state
+ * @constructor
+ */
+export function TEST_getEditorExtensions(): Map<UUID, IExtensionPoint> {
+  return _editorExtensions;
+}
+
+/**
  * Remove an extension from an extension point on the page if a persisted extension (i.e. in extensionsSlice)
  */
 export function removePersistedExtension(extensionId: UUID): void {
@@ -246,7 +262,7 @@ function makeCancelOnNavigate(): () => boolean {
 }
 
 /**
- * Run an extension including unsaved changes in the Page Editor
+ * Run an extension including unsaved changes from the Page Editor
  * @param extensionId
  * @param extensionPoint
  */

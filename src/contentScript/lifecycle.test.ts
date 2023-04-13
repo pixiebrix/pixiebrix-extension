@@ -1,3 +1,4 @@
+/* eslint-disable new-cap -- using exposed TEST_ methods */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -31,6 +32,7 @@ import { type PersistedExtension } from "@/types/extensionTypes";
 import { type BlockPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
+import { resolveDefinitions } from "@/registry/internal";
 
 let extensionPointRegistry: any;
 let loadOptionsMock: jest.Mock;
@@ -138,5 +140,74 @@ describe("lifecycle", () => {
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
       extensionPoint,
     ]);
+  });
+
+  it("runEditorExtension", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+      })()
+    );
+
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.id,
+    });
+
+    extensionPoint.addExtension(await resolveDefinitions(extension));
+
+    await lifecycleModule.runEditorExtension(extension.id, extensionPoint);
+
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+      extensionPoint,
+    ]);
+    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
+    expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
+  });
+
+  it("runEditorExtension removes existing", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+      })()
+    );
+
+    extensionPointRegistry.register([extensionPoint]);
+
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.id,
+    });
+
+    loadOptionsMock.mockResolvedValue({ extensions: [extension] });
+
+    // Sanity check for the test
+    expect(loadOptionsMock).toHaveBeenCalledTimes(0);
+    await lifecycleModule.handleNavigate();
+
+    await tick();
+
+    // Ensure the persisted extension is loaded
+    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+      extensionPoint,
+    ]);
+
+    extensionPoint.addExtension(await resolveDefinitions(extension));
+
+    await lifecycleModule.runEditorExtension(extension.id, extensionPoint);
+
+    // Still only a single extension point
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+      extensionPoint,
+    ]);
+
+    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
+    expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
+
+    await lifecycleModule.handleNavigate({ force: true });
+    await tick();
+
+    // Persisted extension is not re-added on force-add
+    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
+    expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
   });
 });
