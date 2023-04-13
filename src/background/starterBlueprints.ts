@@ -23,7 +23,7 @@ import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
-import { debounce } from "lodash";
+import { debounce, uniq } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
 import { memoizeUntilSettled } from "@/utils";
 import { type SanitizedAuth } from "@/types/contract";
@@ -64,7 +64,7 @@ export function getAllRequiredServiceIds(
   const requiredServiceIds = blueprints.flatMap((blueprint) =>
     getRequiredServiceIds(blueprint)
   );
-  return [...new Set(requiredServiceIds)];
+  return uniq(requiredServiceIds);
 }
 
 export async function getBuiltInAuthsByRequiredServiceIds(
