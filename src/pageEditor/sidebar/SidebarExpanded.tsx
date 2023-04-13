@@ -18,10 +18,10 @@
 import styles from "./Sidebar.module.scss";
 import React, { useEffect, useMemo, useState } from "react";
 import { sortBy } from "lodash";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import {
   Accordion,
   Button,
+  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form,
   InputGroup,
   ListGroup,
