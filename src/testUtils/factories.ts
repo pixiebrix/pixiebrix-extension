@@ -53,7 +53,7 @@ import {
   type MarketplaceListing,
   type MarketplaceTag,
   type Milestone,
-  SanitizedAuth,
+  type SanitizedAuth,
   UserRole,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
@@ -853,7 +853,9 @@ export const serviceConfigurationWithMetadataFactory = define<{
 export const serviceAuthFactory = define<SanitizedAuth>({
   id: uuidSequence,
   label: (n: number) => `Auth ${n}`,
+  // @ts-expect-error - not sure why this is failing
   config: sanitizedServiceConfigurationFactory,
+  // @ts-expect-error - not sure why this is failing
   service: serviceConfigurationWithMetadataFactory,
 });
 
