@@ -17,6 +17,8 @@
 
 import {
   debouncedInstallStarterBlueprints,
+  getAllRequiredServiceIds,
+  getBuiltInAuthsByRequiredServiceIds,
   getBuiltInServiceAuths,
 } from "@/background/starterBlueprints";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
@@ -25,16 +27,24 @@ import axios from "axios";
 import { isLinked } from "@/auth/token";
 import {
   extensionFactory,
+  extensionPointConfigFactory,
   organizationFactory,
   recipeFactory,
   serviceAuthFactory,
+  serviceConfigurationFactory,
+  serviceConfigurationWithMetadataFactory,
+  serviceMetadataFactory,
 } from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type IExtension,
   type PersistedExtension,
 } from "@/types/extensionTypes";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { RegistryId } from "@/types/registryTypes";
+import { OutputKey } from "@/types/runtimeTypes";
+import { SanitizedAuth } from "@/types/contract";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -84,7 +94,7 @@ describe("installStarterBlueprints", () => {
     expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
   });
 
-  test("get built-in service auths", async () => {
+  test("getBuiltInServiceAuths", async () => {
     axiosMock
       .onGet("/api/services/shared/?meta=1")
       .reply(200, [
@@ -105,6 +115,93 @@ describe("installStarterBlueprints", () => {
 
     builtInServiceAuths = await getBuiltInServiceAuths();
     expect(builtInServiceAuths.length).toBe(0);
+  });
+
+  test("getAllRequiredServiceIds", () => {
+    const extensionServices = {
+      service1: "@pixiebrix/service1",
+      service2: "@pixiebrix/service2",
+    } as Record<OutputKey, RegistryId>;
+
+    const extensionPointDefinition = extensionPointConfigFactory({
+      services: extensionServices,
+    });
+
+    const recipe = recipeFactory({
+      extensionPoints: [extensionPointDefinition],
+    });
+
+    // It works on an array of one recipe
+    let serviceIds = getAllRequiredServiceIds([recipe]);
+    expect(serviceIds).toEqual(Object.values(extensionServices));
+
+    // It produces a unique list of service IDs
+    serviceIds = getAllRequiredServiceIds([recipe, recipe]);
+    expect(serviceIds).toEqual(Object.values(extensionServices));
+
+    // It works on an empty array
+    serviceIds = getAllRequiredServiceIds([]);
+    expect(serviceIds).toEqual([]);
+
+    // It works on an array of recipes with no services
+    serviceIds = getAllRequiredServiceIds([recipeFactory()]);
+    expect(serviceIds).toEqual([]);
+  });
+
+  test("getBuiltInAuthsByRequiredServiceIds", async () => {
+    const extensionServices = {
+      service1: "@pixiebrix/service1",
+      service2: "@pixiebrix/service2",
+    } as Record<OutputKey, RegistryId>;
+
+    const extensionPointDefinition = extensionPointConfigFactory({
+      services: extensionServices,
+    });
+
+    const recipe = recipeFactory({
+      extensionPoints: [extensionPointDefinition],
+    });
+
+    const serviceIds = getAllRequiredServiceIds([recipe]);
+
+    const builtInServiceAuths = [
+      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
+      serviceAuthFactory({
+        service: {
+          config: {
+            metadata: { id: validateRegistryId("@pixiebrix/service1") },
+          },
+        },
+      }),
+      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
+      serviceAuthFactory({
+        service: {
+          config: {
+            metadata: { id: validateRegistryId("@pixiebrix/service2") },
+          },
+        },
+      }),
+      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuthx
+      serviceAuthFactory({
+        service: {
+          config: {
+            metadata: { id: validateRegistryId("@pixiebrix/service3") },
+          },
+        },
+      }),
+    ];
+
+    axiosMock
+      .onGet("/api/services/shared/?meta=1")
+      .reply(200, builtInServiceAuths);
+
+    const builtInAuthsByRequiredServiceIds =
+      await getBuiltInAuthsByRequiredServiceIds(serviceIds);
+
+    expect(builtInAuthsByRequiredServiceIds).toEqual({
+      "@pixiebrix/service1": builtInServiceAuths[0].id,
+      "@pixiebrix/service2": builtInServiceAuths[1].id,
+    });
   });
 
   test("starter blueprints request fails", async () => {
@@ -134,6 +231,71 @@ describe("installStarterBlueprints", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+  });
+
+  test("install starter blueprint with built-in auths", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const extensionServices = {
+      service1: "@pixiebrix/service1",
+      service2: "@pixiebrix/service2",
+    } as Record<OutputKey, RegistryId>;
+
+    const extensionPointDefinition = extensionPointConfigFactory({
+      services: extensionServices,
+    });
+
+    const recipe = recipeFactory({
+      extensionPoints: [extensionPointDefinition],
+    });
+
+    const builtInServiceAuths = [
+      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
+      serviceAuthFactory({
+        service: {
+          config: {
+            metadata: { id: validateRegistryId("@pixiebrix/service1") },
+          },
+        },
+      }),
+      // @ts-expect-error - missing required fields; can't figure out how to cast to SanitizedAuth
+      serviceAuthFactory({
+        service: {
+          config: {
+            metadata: { id: validateRegistryId("@pixiebrix/service2") },
+          },
+        },
+      }),
+    ];
+
+    axiosMock
+      .onGet("/api/services/shared/?meta=1")
+      .reply(200, builtInServiceAuths);
+
+    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [recipe]);
+
+    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
+
+    await debouncedInstallStarterBlueprints();
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(1);
+    const installedExtension = extensions[0];
+
+    expect(installedExtension.extensionPointId).toBe(
+      extensionPointDefinition.id
+    );
+    expect(installedExtension.services.length).toBe(2);
+
+    const service1 = installedExtension.services.find(
+      (service) => service.id === "@pixiebrix/service1"
+    );
+    const service2 = installedExtension.services.find(
+      (service) => service.id === "@pixiebrix/service2"
+    );
+
+    expect(service1.config).toBe(builtInServiceAuths[0].id);
+    expect(service2.config).toBe(builtInServiceAuths[1].id);
   });
 
   test("starter blueprint already installed", async () => {

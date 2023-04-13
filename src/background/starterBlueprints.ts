@@ -53,7 +53,7 @@ export async function getBuiltInServiceAuths(): Promise<SanitizedAuth[]> {
   }
 }
 
-function getAllRequiredServiceIds(
+export function getAllRequiredServiceIds(
   blueprints: RecipeDefinition[]
 ): RegistryId[] {
   const requiredServiceIds = blueprints.flatMap((blueprint) =>
@@ -62,7 +62,7 @@ function getAllRequiredServiceIds(
   return [...new Set(requiredServiceIds)];
 }
 
-async function getBuiltInAuthsByRequiredServiceIds(
+export async function getBuiltInAuthsByRequiredServiceIds(
   serviceIds: RegistryId[]
 ): Promise<Record<RegistryId, UUID>> {
   const builtInServiceAuths = await getBuiltInServiceAuths();
@@ -107,8 +107,9 @@ async function installBlueprints(
     return installed;
   }
 
+  const requiredServiceIds = getAllRequiredServiceIds(blueprints);
   const builtInServiceAuths = await getBuiltInAuthsByRequiredServiceIds(
-    getAllRequiredServiceIds(blueprints)
+    requiredServiceIds
   );
 
   let extensionsState = await loadOptions();

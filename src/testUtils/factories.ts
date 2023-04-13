@@ -836,16 +836,16 @@ const panelEntryFactory = define<PanelEntry>({
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
 });
 
-const serviceMetadataFactory = define<Metadata>({
+export const serviceMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`@test/service-${n}`),
   name: (n: number) => `Test Service ${n}`,
 });
 
-const serviceConfigurationFactory = define<{ metadata: Metadata }>({
+export const serviceConfigurationFactory = define<{ metadata: Metadata }>({
   metadata: serviceMetadataFactory,
 });
 
-const serviceConfigurationWithMetadataFactory = define<{
+export const serviceConfigurationWithMetadataFactory = define<{
   config: { metadata: Metadata };
 }>({
   config: serviceConfigurationFactory,
