@@ -40,6 +40,11 @@ const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
 
 export async function getBuiltInServiceAuths(): Promise<SanitizedAuth[]> {
   const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    throw new Error(
+      "getBuiltInServiceAuths was called, but the extension is not linked to a PixieBrix service."
+    );
+  }
 
   try {
     const { data: serviceAuths } = await client.get<SanitizedAuth[]>(
