@@ -60,7 +60,7 @@ const getVisibilityLabel = (auth: SanitizedAuth): string => {
   }
 };
 
-function decideRemoteLabel(auth: SanitizedAuth): string {
+function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
@@ -97,7 +97,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     const sharedOptions = sortBy(
       (remoteAuths ?? []).map((x) => ({
         value: x.id,
-        label: decideRemoteLabel(x),
+        label: getRemoteLabel(x),
         local: false,
         user: x.user,
         serviceId: x.service.config.metadata.id,
