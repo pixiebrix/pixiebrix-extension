@@ -62,9 +62,9 @@ function arrangeElements({
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
       (availableDynamicIds?.includes(formState.uuid) ||
-        activeElementId === formState.uuid ||
         [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)) &&
-      lowerCase(formState.label).includes(lowerCase(query))
+      (activeElementId === formState.uuid ||
+        lowerCase(formState.label).includes(lowerCase(query)))
   );
 
   const grouped = groupBy(
