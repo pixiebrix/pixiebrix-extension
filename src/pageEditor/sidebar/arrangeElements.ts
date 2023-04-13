@@ -30,10 +30,10 @@ type ArrangeElementsArgs = {
   recipes: RecipeDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
-  showAll: boolean;
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
   expandedRecipeId: RegistryId | null;
+  query: string;
 };
 
 type Element = IExtension | FormState;
@@ -44,10 +44,10 @@ function arrangeElements({
   recipes,
   availableInstalledIds,
   availableDynamicIds,
-  showAll,
   activeElementId,
   activeRecipeId,
   expandedRecipeId,
+  query,
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
   const filteredExtensions: IExtension[] = installed.filter(
@@ -55,16 +55,16 @@ function arrangeElements({
       // Note: we can take out this elementIds filter if and when we persist the editor
       // slice and remove installed extensions when they become dynamic elements
       !elementIds.has(extension.id) &&
-      (showAll ||
-        availableInstalledIds?.includes(extension.id) ||
-        [expandedRecipeId, activeRecipeId].includes(extension._recipe?.id))
+      (availableInstalledIds?.includes(extension.id) ||
+        [expandedRecipeId, activeRecipeId].includes(extension._recipe?.id)) &&
+      lowerCase(extension.label).includes(lowerCase(query))
   );
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
-      showAll ||
-      availableDynamicIds?.includes(formState.uuid) ||
-      activeElementId === formState.uuid ||
-      [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)
+      (availableDynamicIds?.includes(formState.uuid) ||
+        activeElementId === formState.uuid ||
+        [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)) &&
+      lowerCase(formState.label).includes(lowerCase(query))
   );
 
   const grouped = groupBy(

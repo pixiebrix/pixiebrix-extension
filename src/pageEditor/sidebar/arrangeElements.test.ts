@@ -122,10 +122,10 @@ describe("arrangeElements()", () => {
       recipes: [],
       availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
       availableDynamicIds: [dynamicOrphanC.uuid],
-      showAll: false,
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([
@@ -146,10 +146,10 @@ describe("arrangeElements()", () => {
         installedBarF.id,
       ],
       availableDynamicIds: [dynamicBarE.uuid, dynamicFooB.uuid],
-      showAll: false,
       activeElementId: dynamicBarE.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toEqual([
@@ -165,10 +165,10 @@ describe("arrangeElements()", () => {
       recipes: [recipeFoo, recipeBar],
       availableInstalledIds: [installedFooA.id],
       availableDynamicIds: [dynamicBarE.uuid],
-      showAll: true,
       activeElementId: dynamicBarE.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([
@@ -185,10 +185,10 @@ describe("arrangeElements()", () => {
       recipes: [],
       availableInstalledIds: [],
       availableDynamicIds: [],
-      showAll: false,
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([dynamicOrphanC]);
@@ -201,10 +201,10 @@ describe("arrangeElements()", () => {
       recipes: [recipeFoo],
       availableInstalledIds: [],
       availableDynamicIds: [ID_ORPHAN_C],
-      showAll: false,
       activeElementId: null,
       activeRecipeId: ID_FOO,
       expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([
@@ -220,10 +220,10 @@ describe("arrangeElements()", () => {
       recipes: [recipeFoo],
       availableInstalledIds: [installedFooA.id],
       availableDynamicIds: [],
-      showAll: false,
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: recipeFoo.metadata.id,
+      query: "",
     });
 
     expect(elements).toStrictEqual([
@@ -238,12 +238,28 @@ describe("arrangeElements()", () => {
       recipes: [],
       availableInstalledIds: [installedOrphanH.id],
       availableDynamicIds: [dynamicOrphanH.uuid],
-      showAll: false,
       activeElementId: ID_ORPHAN_H,
       activeRecipeId: null,
       expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([dynamicOrphanH]);
+  });
+
+  test("search query filters correctly", () => {
+    const elements = arrangeElements({
+      elements: [dynamicOrphanC],
+      installed: [installedOrphanH, installedOrphanG],
+      recipes: [],
+      availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
+      availableDynamicIds: [dynamicOrphanC.uuid],
+      activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
+      expandedRecipeId: null,
+      query: "H",
+    });
+
+    expect(elements).toStrictEqual([installedOrphanH]);
   });
 });
