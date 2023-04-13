@@ -32,11 +32,32 @@ import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { useAsyncState } from "@/hooks/common";
+import { resolveRecipe } from "@/registry/internal";
+import { useAsyncEffect } from "use-async-effect";
+import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+import { Button } from "react-bootstrap";
 
 const { actions } = sidebarSlice;
 
 type ActivateRecipePanelProps = {
   recipeId: RegistryId;
+};
+
+const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
+  const shortcutKeys = shortcut?.split("") ?? [];
+  return (
+    <div className={styles.shortcutContainer}>
+      {shortcutKeys.map((key, index) => (
+        <React.Fragment key={key}>
+          {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
+          <span className={styles.shortcutKey}>{key}</span>
+        </React.Fragment>
+      ))}
+    </div>
+  );
 };
 
 const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
@@ -52,6 +73,19 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   } = useRecipe(recipeId);
 
   const isLoadingRecipe = isUninitialized || isLoading;
+
+  // Quick Bar affordances
+  const [includesQuickbar, setIncludesQuickbar] = useState(false);
+  const [resolvedRecipeConfigs] = useAsyncState(
+    async () => resolveRecipe(recipe, recipe.extensionPoints),
+    [recipe]
+  );
+  useAsyncEffect(async () => {
+    setIncludesQuickbar(
+      await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
+    );
+  }, [resolvedRecipeConfigs]);
+  const { shortcut } = useQuickbarShortcut();
 
   const {
     data: listings,
@@ -141,7 +175,46 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               {recipeNameComponent}
               <div>is ready to use!</div>
               <br />
-              <div>Go try it out now, or activate another mod.</div>
+              {includesQuickbar ? (
+                isEmpty(shortcut) ? (
+                  <span>
+                    Now just{" "}
+                    <Button
+                      variant="link"
+                      href={SHORTCUTS_URL}
+                      onClick={(event) => {
+                        // `react-bootstrap` will render as an anchor tag when href is set
+                        // Can't link to chrome:// URLs directly
+                        event.preventDefault();
+                        void openShortcutsTab();
+                      }}
+                      className={styles.configureLink}
+                    >
+                      Configure your Quick Bar shortcut
+                    </Button>{" "}
+                    to access this mod.
+                  </span>
+                ) : (
+                  <>
+                    <div>Launch it using your Quick Bar shortcut</div>
+                    <ShortcutKeys shortcut={shortcut} />
+                    <Button
+                      variant="link"
+                      href={SHORTCUTS_URL}
+                      onClick={(event) => {
+                        // `react-bootstrap` will render as an anchor tag when href is set
+                        // Can't link to chrome:// URLs directly
+                        event.preventDefault();
+                        void openShortcutsTab();
+                      }}
+                    >
+                      Change the Quick Bar shortcut.
+                    </Button>
+                  </>
+                )
+              ) : (
+                <div>Go try it out now, or activate another mod.</div>
+              )}
             </div>
           </div>
           <div className={styles.footer}>

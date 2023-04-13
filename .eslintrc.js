@@ -38,6 +38,7 @@ module.exports = {
   extends: [
     // Full config: https://github.com/fregante/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
+    "plugin:pixiebrix-extension/all",
   ],
   rules: {
     "import/no-restricted-paths": [
