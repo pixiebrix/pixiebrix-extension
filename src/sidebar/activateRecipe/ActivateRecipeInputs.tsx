@@ -25,7 +25,7 @@ import Form, {
 } from "@/components/form/Form";
 import styles from "./ActivateRecipePanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faMagic } from "@fortawesome/free-solid-svg-icons";
+import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
 import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
@@ -36,11 +36,7 @@ import { collectPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
-import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
-import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -65,22 +61,11 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const activateRecipe = useMarketplaceActivateRecipe();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsPermissions, setNeedsPermissions] = useState(false);
-  const [includesQuickbar, setIncludesQuickbar] = useState(false);
 
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),
     [recipe]
   );
-
-  useAsyncEffect(async () => {
-    setIncludesQuickbar(
-      await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
-    );
-  }, [resolvedRecipeConfigs]);
-
-  const { isConfigured: isQuickbarShortcutConfigured } = useQuickbarShortcut();
-  const needsQuickBarShortcut =
-    includesQuickbar && !isQuickbarShortcutConfigured;
 
   const checkPermissions = useCallback(
     async (values: WizardValues) => {
@@ -156,32 +141,6 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           <div>
             Without permissions, PixieBrix won&apos;t work. We&apos;ll ask for
             these in just a second.
-          </div>
-        </Alert>
-      )}
-      {needsQuickBarShortcut && (
-        <Alert variant="info" className="mt-3">
-          <span className={styles.permissionsBold}>
-            You&apos;re going to need a Quick Bar shortcut.
-          </span>
-          <div className="my-2">
-            <Button
-              variant="info"
-              href={SHORTCUTS_URL}
-              onClick={(event) => {
-                // `react-bootstrap` will render as an anchor tag when href is set
-                // // Can't link to chrome:// URLs directly
-                event.preventDefault();
-                void openShortcutsTab();
-              }}
-            >
-              Set up Quick Bar shortcut
-            </Button>
-          </div>
-          <div>
-            <a href="https://docs.pixiebrix.com/quick-bar-setup">
-              Learn more <FontAwesomeIcon icon={faExternalLinkAlt} />
-            </a>
           </div>
         </Alert>
       )}
