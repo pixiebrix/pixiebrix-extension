@@ -141,7 +141,10 @@ export type SanitizedAuth = Except<
   // Specialized to `SanitizedConfig` to get nominal typing
   config: SanitizedConfig;
   // XXX: update serializer to include proper metadata child serializer
-  service: { config: { metadata: Metadata } };
+  service: Except<
+    components["schemas"]["SanitizedAuth"]["service"],
+    "config"
+  > & { config: { metadata: Metadata } };
   user?: UUID;
 };
 

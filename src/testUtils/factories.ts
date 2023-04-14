@@ -66,7 +66,7 @@ import {
   type AuthUserOrganization,
   type OrganizationAuthState,
 } from "@/auth/authTypes";
-import { type JsonObject } from "type-fest";
+import { type Except, type JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
 import { type Permissions } from "webextension-polyfill";
@@ -111,6 +111,7 @@ import {
   type ExtensionDefinition,
   type RecipeDefinition,
 } from "@/types/recipeTypes";
+import { type components } from "@/types/swagger";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -844,10 +845,13 @@ export const serviceMetadataFactory = define<Metadata>({
 export const serviceConfigurationFactory = define<{ metadata: Metadata }>({
   metadata: serviceMetadataFactory,
 });
-export const serviceConfigurationWithMetadataFactory = define<{
-  config: { metadata: Metadata };
-}>({
+export const serviceConfigurationWithMetadataFactory = define<
+  Except<components["schemas"]["SanitizedAuth"]["service"], "config"> & {
+    config: { metadata: Metadata };
+  }
+>({
   config: serviceConfigurationFactory,
+  name: "Test Service", // TODO: make me a sequence
 });
 
 const sanitizedConfigFactory = define<SanitizedConfig>({
@@ -856,9 +860,11 @@ const sanitizedConfigFactory = define<SanitizedConfig>({
 
 export const serviceAuthFactory = define<SanitizedAuth>({
   id: uuidSequence,
+  organization: {
+    name: "Test Organization", // TODO: make me a sequence
+  },
   label: (n: number) => `Auth ${n}`,
   config: sanitizedConfigFactory,
-  // @ts-expect-error - not sure why this is failing
   service: serviceConfigurationWithMetadataFactory,
 });
 
