@@ -44,8 +44,6 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const { data: serviceConfigs } = useGetServicesQuery();
 
   const requiredServiceIds = useMemo(
-    // If no services are required, the wizard won't render the
-    // ServicesBody component at all
     () => getRequiredServiceIds(blueprint),
     [blueprint]
   );
