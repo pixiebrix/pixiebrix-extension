@@ -844,17 +844,20 @@ export const serviceMetadataFactory = define<Metadata>({
 export const serviceConfigurationFactory = define<{ metadata: Metadata }>({
   metadata: serviceMetadataFactory,
 });
-
 export const serviceConfigurationWithMetadataFactory = define<{
   config: { metadata: Metadata };
 }>({
   config: serviceConfigurationFactory,
 });
+
+const sanitizedConfigFactory = define<SanitizedConfig>({
+  _sanitizedConfigBrand: null,
+});
+
 export const serviceAuthFactory = define<SanitizedAuth>({
   id: uuidSequence,
   label: (n: number) => `Auth ${n}`,
-  // @ts-expect-error - not sure why this is failing
-  config: sanitizedServiceConfigurationFactory,
+  config: sanitizedConfigFactory,
   // @ts-expect-error - not sure why this is failing
   service: serviceConfigurationWithMetadataFactory,
 });

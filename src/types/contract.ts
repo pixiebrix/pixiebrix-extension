@@ -132,7 +132,10 @@ export type PackageUpsertResponse = Except<
   updated_at: Timestamp;
 };
 
-export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
+export type SanitizedAuth = Except<
+  components["schemas"]["SanitizedAuth"],
+  "config"
+> & {
   // XXX: update serialize to required id in response type
   id: UUID;
   // Specialized to `SanitizedConfig` to get nominal typing
