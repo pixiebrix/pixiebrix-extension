@@ -132,6 +132,11 @@ export type PackageUpsertResponse = Except<
   updated_at: Timestamp;
 };
 
+export type SanitizedAuthService = Except<
+  components["schemas"]["SanitizedAuth"]["service"],
+  "config"
+> & { config: { metadata: Metadata } };
+
 export type SanitizedAuth = Except<
   components["schemas"]["SanitizedAuth"],
   "config"
@@ -141,10 +146,7 @@ export type SanitizedAuth = Except<
   // Specialized to `SanitizedConfig` to get nominal typing
   config: SanitizedConfig;
   // XXX: update serializer to include proper metadata child serializer
-  service: Except<
-    components["schemas"]["SanitizedAuth"]["service"],
-    "config"
-  > & { config: { metadata: Metadata } };
+  service: SanitizedAuthService;
   user?: UUID;
 };
 

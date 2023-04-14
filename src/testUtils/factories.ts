@@ -54,6 +54,7 @@ import {
   type MarketplaceTag,
   type Milestone,
   type SanitizedAuth,
+  type SanitizedAuthService,
   UserRole,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
@@ -66,7 +67,7 @@ import {
   type AuthUserOrganization,
   type OrganizationAuthState,
 } from "@/auth/authTypes";
-import { type Except, type JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 import objectHash from "object-hash";
 import { makeEmptyPermissions } from "@/utils/permissions";
 import { type Permissions } from "webextension-polyfill";
@@ -111,7 +112,6 @@ import {
   type ExtensionDefinition,
   type RecipeDefinition,
 } from "@/types/recipeTypes";
-import { type components } from "@/types/swagger";
 
 // UUID sequence generator that's predictable across runs. A couple characters can't be 0
 // https://stackoverflow.com/a/19989922/402560
@@ -837,32 +837,23 @@ const panelEntryFactory = define<PanelEntry>({
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
 });
 
-export const serviceConfigurationWithMetadataFactory = define<
-  Except<components["schemas"]["SanitizedAuth"]["service"], "config"> & {
-    config: { metadata: Metadata };
-  }
->({
+export const sanitizedAuthServiceFactory = define<SanitizedAuthService>({
   config: (n: number) => ({
     metadata: {
       id: validateRegistryId(`@test/service-${n}`),
       name: `Test Service ${n}`,
     },
   }),
-  name: "Test Service", // TODO: make me a sequence
+  name: (n: number) => `Test Service ${n}`,
 });
-
-const sanitizedConfigFactory = define<SanitizedConfig>({
-  _sanitizedConfigBrand: null,
-});
-
-export const serviceAuthFactory = define<SanitizedAuth>({
+export const sanitizedAuthFactory = define<SanitizedAuth>({
   id: uuidSequence,
-  organization: {
-    name: "Test Organization", // TODO: make me a sequence
-  },
+  organization: null,
   label: (n: number) => `Auth ${n}`,
-  config: sanitizedConfigFactory,
-  service: serviceConfigurationWithMetadataFactory,
+  config: {
+    _sanitizedConfigBrand: null,
+  },
+  service: sanitizedAuthServiceFactory,
 });
 
 export function sidebarEntryFactory(
