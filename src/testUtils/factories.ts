@@ -837,20 +837,17 @@ const panelEntryFactory = define<PanelEntry>({
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
 });
 
-export const serviceMetadataFactory = define<Metadata>({
-  id: (n: number) => validateRegistryId(`@test/service-${n}`),
-  name: (n: number) => `Test Service ${n}`,
-});
-
-export const serviceConfigurationFactory = define<{ metadata: Metadata }>({
-  metadata: serviceMetadataFactory,
-});
 export const serviceConfigurationWithMetadataFactory = define<
   Except<components["schemas"]["SanitizedAuth"]["service"], "config"> & {
     config: { metadata: Metadata };
   }
 >({
-  config: serviceConfigurationFactory,
+  config: (n: number) => ({
+    metadata: {
+      id: validateRegistryId(`@test/service-${n}`),
+      name: `Test Service ${n}`,
+    },
+  }),
   name: "Test Service", // TODO: make me a sequence
 });
 
