@@ -45,6 +45,13 @@ jobs:
           echo "BUILD_PATH=builds/pixiebrix-extension-release.zip" >> $GITHUB_ENV
           echo "RUN_GROUP=14130" >> $GITHUB_ENV
         if: github.ref_name != 'main'
+      - name: Determine if CWS release branch
+        # shell script used because GitHub actions doesn't support regex in if statements
+        run: |
+          if [[ $github.ref_name =~ ^release\/[0-9]+.[0-9]+.[0-9]+$ ]]; then
+            echo "BUILD_PATH=builds/pixiebrix-extension-cws.zip" >> $GITHUB_ENV
+            echo "RUN_GROUP=14131" >> $GITHUB_ENV
+          fi
 
       - name: Upload Extension
         run: bash scripts/upload-extension.sh ${{ env.BUILD_PATH }}
