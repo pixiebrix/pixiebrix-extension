@@ -25,7 +25,7 @@ import { mockAnimationsApi } from "jsdom-testing-mocks";
 import selectionController from "@/utils/selectionController";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { ActionGenerator } from "@/components/quickBar/quickbarTypes";
+import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
 
 // Could alternatively mock the internal calls, but this is easier if we trust the component
 jest.mock("@/components/Stylesheets", () => ({
