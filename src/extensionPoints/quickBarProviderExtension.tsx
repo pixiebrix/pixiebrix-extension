@@ -244,8 +244,9 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
     const actionGenerator: ActionGenerator = async ({
       query,
       rootActionId: currentRootActionId,
+      abortSignal,
     }) => {
-      // Remove the old results since they're no longer relevant
+      // Remove the old results during re-generation because they're no longer relevant
       quickBarRegistry.removeExtensionActions(extension.id);
 
       if (
@@ -257,8 +258,10 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
         return;
       }
 
-      const reader = await this.getBaseReader();
-      const serviceContext = await makeServiceContext(extension.services);
+      const [reader, serviceContext] = await Promise.all([
+        this.getBaseReader(),
+        makeServiceContext(extension.services),
+      ]);
 
       const targetElement = guessSelectedElement() ?? document;
 
@@ -279,6 +282,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
         await reduceExtensionPipeline(generator, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
+          abortSignal,
         });
       } catch (error) {
         if (isSpecificError(error, CancelError)) {

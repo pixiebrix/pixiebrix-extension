@@ -34,11 +34,34 @@ export type CustomAction = Action & {
   extensionId?: UUID;
 };
 
-export type ChangeHandler = (actions: CustomAction[]) => void;
+/**
+ * Handler for when the set of registered actions changes
+ *
+ * @see QuickBarRegistry.addListener
+ * @see QuickBarRegistry.removeListener
+ */
+export type ActionsChangeHandler = (activeActions: CustomAction[]) => void;
 
-export type GeneratorArgs = { query: string; rootActionId: string | null };
+/**
+ * Shape of arguments passed to action generators for dynamic QuickBar action generator.
+ *
+ * @see QuickBarProviderExtensionPoint
+ */
+export type GeneratorArgs = {
+  /**
+   * Current user query in the QuickBar.
+   */
+  query: string;
+
+  /**
+   * Current selected root action id, or null if no root action is selected.
+   */
+  rootActionId: string | null;
+};
 
 /**
  * An action generator. The generator is expected to make calls QuickBarRegistry.addAction
  */
-export type ActionGenerator = (args: GeneratorArgs) => Promise<void>;
+export type ActionGenerator = (
+  args: GeneratorArgs & { abortSignal: AbortSignal }
+) => Promise<void>;

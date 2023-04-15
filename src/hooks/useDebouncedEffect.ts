@@ -15,34 +15,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { isEqual } from "lodash";
 
-const useDebouncedEffect = <T>(
-  values: T,
-  onChange: (values: T) => void,
-  delayMillis: number,
-  maxWaitMillis?: number
-) => {
-  const [prev, setPrev] = useState(values);
-
-  const [debounced] = useDebounce(values, delayMillis, {
-    leading: false,
-    trailing: true,
+/**
+ * Hook to run an effect when a value changes, but debounced.
+ * @param value the value to watch
+ * @param onChange the change handler to run
+ * @param delayMillis the delay in milliseconds
+ * @param maxWaitMillis maximum wait time in milliseconds
+ * @param leading whether to trigger on the leading edge (default = false)
+ * @param trailing whether to trigger on the trailing edge (default = true)
+ * @param equalityFn the equality function to use (default = isEqual)
+ *
+ * @see useDebounce
+ */
+function useDebouncedEffect<T>(
+  value: T,
+  onChange: (value: T) => void,
+  {
+    delayMillis,
+    maxWaitMillis,
+    leading = false,
+    trailing = true,
+    equalityFn = isEqual,
+  }: {
+    delayMillis: number;
+    maxWaitMillis?: number;
+    leading?: boolean;
+    trailing?: boolean;
+    equalityFn?: (lhs: T, rhs: T) => boolean;
+  }
+): void {
+  const [debounced] = useDebounce(value, delayMillis, {
+    leading,
+    trailing,
     maxWait: maxWaitMillis,
+    equalityFn,
   });
 
   useEffect(
     () => {
-      if (!isEqual(prev, debounced)) {
-        onChange(debounced);
-        setPrev(debounced);
-      }
+      onChange(debounced);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- leave off prev so it doesn't double-trigger the effect
-    [setPrev, debounced, onChange]
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only watch the debounced value
+    [debounced]
   );
-};
+}
 
 export default useDebouncedEffect;
