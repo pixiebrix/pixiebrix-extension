@@ -821,6 +821,7 @@ const formEntryFactory = define<FormEntry>({
 const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
   type: "temporaryPanel",
   extensionId: uuidSequence,
+  blueprintId: null,
   heading: (n: number) => `Temporary Panel Test ${n}`,
   payload: null,
   nonce: uuidSequence,
@@ -829,10 +830,10 @@ const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
 const panelEntryFactory = define<PanelEntry>({
   type: "panel",
   extensionId: uuidSequence,
-  heading: (n: number) => `Panel Test ${n}`,
-  payload: null,
   blueprintId: (n: number) =>
     validateRegistryId(`@test/panel-recipe-test-${n}`),
+  heading: (n: number) => `Panel Test ${n}`,
+  payload: null,
   extensionPointId: (n: number) =>
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
 });

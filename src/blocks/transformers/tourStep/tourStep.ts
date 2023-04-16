@@ -314,7 +314,7 @@ export class TourStepTransformer extends Transformer {
     {
       abortSignal,
       logger: {
-        context: { extensionId, extensionPointId, blueprintId },
+        context: { extensionId, blueprintId },
       },
       runRendererPipeline,
     }: BlockOptions
@@ -353,6 +353,7 @@ export class TourStepTransformer extends Transformer {
 
       return {
         extensionId,
+        blueprintId,
         heading: title,
         payload,
         actions,

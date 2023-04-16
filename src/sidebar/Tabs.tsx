@@ -175,7 +175,10 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
                 <PanelBody
                   isRootPanel={false}
                   payload={panel.payload}
-                  context={{ extensionId: panel.extensionId }}
+                  context={{
+                    extensionId: panel.extensionId,
+                    blueprintId: panel.blueprintId,
+                  }}
                   onAction={(action: SubmitPanelAction) => {
                     onResolveTemporaryPanel(panel.nonce, action);
                   }}

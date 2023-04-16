@@ -105,6 +105,7 @@ export default function useDocumentPreviewRunBlock(
 
   const {
     uuid: extensionId,
+    recipe,
     apiVersion,
     services,
     extensionPoint,
@@ -186,12 +187,12 @@ export default function useDocumentPreviewRunBlock(
         (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
-        await runRendererBlock(
-          thisTab,
+        await runRendererBlock(thisTab, {
           extensionId,
-          traceRecord.runId,
+          blueprintId: recipe?.id,
+          runId: traceRecord.runId,
           title,
-          {
+          args: {
             apiVersion,
             blockConfig: {
               ...removeEmptyValues(blockConfig),
@@ -200,8 +201,8 @@ export default function useDocumentPreviewRunBlock(
             context,
             rootSelector,
           },
-          location
-        );
+          location,
+        });
         dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {
         dispatch(previewSlice.actions.setError({ error }));

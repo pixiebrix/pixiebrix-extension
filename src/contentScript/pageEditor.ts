@@ -44,9 +44,16 @@ import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTe
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export type RunBlockArgs = {
+  /**
+   * The runtime API version to use
+   */
   apiVersion: ApiVersion;
+  /**
+   * The IBlock configuration.
+   */
   blockConfig: BlockConfig;
   /**
    * Context to render the BlockArg, should include @input, @options, and service context
@@ -141,13 +148,21 @@ type Location = "modal" | "panel";
  * Note: Currently only implemented for the temporary sidebar panels
  * @see useDocumentPreviewRunBlock
  */
-export async function runRendererBlock(
-  extensionId: UUID,
-  runId: UUID,
-  title: string,
-  args: RunBlockArgs,
-  location: Location
-): Promise<void> {
+export async function runRendererBlock({
+  extensionId,
+  blueprintId,
+  runId,
+  title,
+  args,
+  location,
+}: {
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
+  runId: UUID;
+  title: string;
+  args: RunBlockArgs;
+  location: Location;
+}): Promise<void> {
   const nonce = uuidv4();
 
   let payload: PanelPayload;
@@ -179,6 +194,7 @@ export async function runRendererBlock(
       showTemporarySidebarPanel({
         // Pass extension id so previous run is cancelled
         extensionId,
+        blueprintId,
         nonce,
         heading: title,
         payload,
@@ -192,6 +208,7 @@ export async function runRendererBlock(
       try {
         await waitForTemporaryPanel(nonce, {
           extensionId,
+          blueprintId,
           nonce,
           heading: title,
           payload,
