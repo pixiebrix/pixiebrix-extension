@@ -33,11 +33,20 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type RendererOutput } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 
 type BodyProps = {
   blockId: RegistryId;
   body: RendererOutput;
   meta: PanelRunMeta;
+};
+
+/**
+ * Context for panel, with fields required for functionality marked as required.
+ */
+export type PanelContext = MessageContext & {
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
 };
 
 const BodyContainer: React.FC<
@@ -115,7 +124,7 @@ const slice = createSlice({
 const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
   payload: PanelPayload;
-  context: MessageContext;
+  context: PanelContext;
   onAction: (action: SubmitPanelAction) => void;
 }> = ({ payload, context, isRootPanel = false, onAction }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
