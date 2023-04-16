@@ -90,7 +90,7 @@
     "lodash-es": "^4.17.21",
     "marked": "^4.3.0",
     "mustache": "^4.2.0",
-    "nunjucks": "^3.2.3",
+    "nunjucks": "^3.2.4",
     "object-hash": "^2.2.0",
     "one-mutation": "^2.1.0",
     "p-defer": "^4.0.0",
