@@ -337,7 +337,7 @@ class DisplayTemporaryInfo extends Transformer {
     }>,
     {
       logger: {
-        context: { extensionId },
+        context: { extensionId, blueprintId },
       },
       root,
       ctxt,
@@ -370,6 +370,7 @@ class DisplayTemporaryInfo extends Transformer {
         heading: title,
         payload,
         extensionId,
+        blueprintId,
       };
     };
 

@@ -26,6 +26,7 @@ import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import blocksRegistry from "@/blocks/registry";
 import { HtmlRenderer } from "@/blocks/renderers/html";
+import { registryIdFactory } from "@/testUtils/factories";
 
 jest.mock("@/blocks/registry", () => ({
   __esModule: true,
@@ -35,6 +36,9 @@ jest.mock("@/blocks/registry", () => ({
 }));
 
 const lookupMock = blocksRegistry.lookup as jest.Mock;
+
+const extensionId = uuidv4();
+const blueprintId = registryIdFactory();
 
 describe("PanelBody", () => {
   beforeEach(() => {
@@ -46,14 +50,14 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new Error("test error")),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
     };
 
     const result = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
@@ -66,14 +70,14 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new BusinessError("test error")),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
     };
 
     const result = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
@@ -86,14 +90,14 @@ describe("PanelBody", () => {
       key: uuidv4(),
       error: serializeError(new CancelError("test error")),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
     };
 
     const result = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
@@ -105,7 +109,7 @@ describe("PanelBody", () => {
     const payload: RendererPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
       blockId: validateRegistryId("@pixiebrix/html"),
       args: {
         html: "<h1>Test</h1>",
@@ -119,7 +123,7 @@ describe("PanelBody", () => {
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );

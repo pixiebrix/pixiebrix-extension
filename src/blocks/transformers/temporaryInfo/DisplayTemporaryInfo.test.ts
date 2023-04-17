@@ -46,6 +46,7 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import pDefer from "p-defer";
+import { registryIdFactory } from "@/testUtils/factories";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
@@ -119,6 +120,9 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("it returns payload", async () => {
+    const extensionId = uuidv4();
+    const blueprintId = registryIdFactory();
+
     const config = getExampleBlockConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
@@ -134,12 +138,28 @@ describe("DisplayTemporaryInfo", () => {
       }
     );
 
-    await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
+    await reducePipeline(pipeline, simpleInput({}), {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({ extensionId, blueprintId }),
+    });
+
+    expect(showTemporarySidebarPanelMock).toHaveBeenCalledOnceWith({
+      blueprintId,
+      extensionId,
+      nonce: expect.toBeString(),
+      heading: expect.toBeString(),
+      payload: expect.toBeObject(),
+    });
 
     // Check structure for RendererPayload
-    expect(payload).toHaveProperty("blockId", renderer.id);
-    expect(payload).toHaveProperty("args");
-    expect(payload).toHaveProperty("ctxt");
+    expect(payload).toStrictEqual({
+      extensionId: expect.toBeString(),
+      key: expect.toBeString(),
+      runId: expect.toBeString(),
+      blockId: renderer.id,
+      args: expect.toBeObject(),
+      ctxt: expect.toBeObject(),
+    });
   });
 
   test("it returns error", async () => {
