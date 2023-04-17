@@ -19,7 +19,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import useWizard from "@/activation/useWizard";
 import Form, {
-  type OnSubmit,
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
@@ -28,7 +27,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
@@ -43,8 +41,9 @@ type ActivateRecipeInputsProps = {
   isReinstall: boolean;
   onClickCancel: () => void;
   header?: React.ReactNode;
-  submitButtonRef?: React.RefObject<HTMLButtonElement>;
-  onSubmitSuccess?: () => void;
+  formValuesRef?: React.MutableRefObject<WizardValues>;
+  onClickSubmit?: () => void;
+  activateError?: string;
 };
 
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
@@ -52,14 +51,13 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   isReinstall,
   onClickCancel,
   header,
-  submitButtonRef,
-  onSubmitSuccess,
+  formValuesRef,
+  onClickSubmit,
+  activateError,
 }) => {
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
-  const activateRecipe = useMarketplaceActivateRecipe();
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsPermissions, setNeedsPermissions] = useState(false);
 
   const [resolvedRecipeConfigs] = useAsyncState(
@@ -87,7 +85,17 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 
   function onChange(values: WizardValues) {
     void checkPermissions(values);
+    if (formValuesRef) {
+      formValuesRef.current = values;
+    }
   }
+
+  // Set the initialValues to the formValuesRef
+  useEffect(() => {
+    if (formValuesRef) {
+      formValuesRef.current = initialValues;
+    }
+  }, [formValuesRef, initialValues]);
 
   // Check permissions on initial load
   useEffect(() => {
@@ -149,36 +157,27 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 
   const renderSubmit: RenderSubmit = ({ isSubmitting }) => (
     <>
-      {submitError && (
+      {activateError && (
         <Alert variant="danger" className="m-3">
-          {submitError}
+          {activateError}
         </Alert>
       )}
       <div className={styles.footer}>
         <Button type="button" variant="outline-danger" onClick={onClickCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} ref={submitButtonRef}>
+        <Button type="submit" disabled={isSubmitting}>
           <FontAwesomeIcon icon={faMagic} /> Finish Activating
         </Button>
       </div>
     </>
   );
 
-  const onSubmit: OnSubmit<WizardValues> = async (values) => {
-    const { success, error } = await activateRecipe(values, recipe);
-    if (success) {
-      onSubmitSuccess?.();
-    } else {
-      setSubmitError(error);
-    }
-  };
-
   return (
     <Form
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={onClickSubmit}
       renderBody={renderBody}
       renderSubmit={renderSubmit}
       className={styles.form}

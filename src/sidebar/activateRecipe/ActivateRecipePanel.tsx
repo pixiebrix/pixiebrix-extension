@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
@@ -39,6 +39,8 @@ import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoi
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
+import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
+import { type WizardValues } from "@/activation/wizardTypes";
 
 const { actions } = sidebarSlice;
 
@@ -64,6 +66,8 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   recipeId,
 }) => {
   const dispatch = useDispatch();
+  const activateRecipe = useMarketplaceActivateRecipe();
+  const [activateError, setActivateError] = useState<string | null>(null);
 
   const {
     data: recipe,
@@ -121,28 +125,48 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
   );
 
-  const submitRef = useRef<HTMLButtonElement>();
-  const activateRecipe = () => {
-    submitRef.current?.click();
-  };
-
+  const [isActivating, setIsActivating] = useState(false);
   const [recipeActivated, setRecipeActivated] = useState(false);
+  const activateFormValues = useRef<WizardValues>();
+
+  const activate = useCallback(async () => {
+    if (recipeActivated) {
+      return;
+    }
+
+    setIsActivating(true);
+    setActivateError(null);
+
+    const result = await activateRecipe(activateFormValues.current, recipe);
+    if (result.success) {
+      setRecipeActivated(true);
+    } else {
+      setRecipeActivated(false);
+      setActivateError(result.error);
+    }
+
+    setIsActivating(false);
+  }, [activateRecipe, recipe, recipeActivated]);
 
   useEffect(() => {
     if (
       !recipeActivated &&
       !isLoadingRecipe &&
       !recipeError &&
+      !isActivating &&
       // Need to wait for the listing to load also so that the submit button renders
       !isLoadingListing &&
       // If the recipe doesn't have options or services, we can activate immediately
       !hasRecipeOptions &&
-      !needsServiceInputs
+      !needsServiceInputs &&
+      activateFormValues.current
     ) {
-      activateRecipe();
+      void activate();
     }
   }, [
+    activate,
     hasRecipeOptions,
+    isActivating,
     isLoadingListing,
     isLoadingRecipe,
     needsServiceInputs,
@@ -150,7 +174,18 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     recipeError,
   ]);
 
-  if (isLoadingRecipe || isLoadingListing) {
+  useEffect(() => {
+    if (
+      !isLoadingRecipe &&
+      !isLoadingListing &&
+      !isActivating &&
+      !recipeActivated
+    ) {
+      console.log("where am i");
+    }
+  }, [isLoadingListing, isLoadingRecipe, isActivating, recipeActivated]);
+
+  if (isLoadingRecipe || isLoadingListing || isActivating) {
     return <Loader />;
   }
 
@@ -236,10 +271,11 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               </p>
             </>
           }
-          submitButtonRef={submitRef}
-          onSubmitSuccess={() => {
-            setRecipeActivated(true);
+          formValuesRef={activateFormValues}
+          onClickSubmit={() => {
+            void activate();
           }}
+          activateError={activateError}
         />
       )}
     </div>
