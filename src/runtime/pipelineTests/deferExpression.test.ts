@@ -19,16 +19,6 @@ import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { deferBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([deferBlock]);

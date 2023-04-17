@@ -26,16 +26,6 @@ import { makePipelineExpression } from "@/runtime/expressionCreators";
 import ForEachElement from "./ForEachElement";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 const forEachBlock = new ForEachElement();
 
 beforeEach(() => {

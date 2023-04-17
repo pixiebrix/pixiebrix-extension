@@ -38,16 +38,6 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 const addEntryMock = traces.addEntry as jest.MockedFunction<
   typeof traces.addEntry
 >;

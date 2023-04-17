@@ -92,7 +92,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     }
   }
 
-  removeExtensions(extensionIds: UUID[]): void {
+  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug("tourExtension:removeExtensions");
     unregisterTours(this.extensions.map((x) => x.id));
   }

@@ -143,7 +143,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
   override uninstall(): void {
     // Remove generators and all existing actions in the Quick Bar
-    this.removeExtensions(this.extensions.map((x) => x.id));
+    this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
     quickBarRegistry.removeExtensionPointActions(this.id);
     this.extensions.splice(0, this.extensions.length);
   }
@@ -152,7 +152,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
    * Unregister quick bar action providers for the given extension IDs.
    * @param extensionIds the extensions IDs to unregister
    */
-  removeExtensions(extensionIds: UUID[]): void {
+  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeGenerator(this.generators.get(extensionId));
       this.generators.delete(extensionId);
@@ -187,7 +187,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
     if (!testMatchPatterns(this.documentUrlPatterns)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
-      this.removeExtensions(this.extensions.map((x) => x.id));
+      this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
       return;
     }
 

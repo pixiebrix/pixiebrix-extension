@@ -161,7 +161,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     }
   }
 
-  removeExtensions(): void {
+  clearExtensionInterfaceAndEvents(): void {
     // Don't need to do any cleanup since context menu registration is handled globally
   }
 

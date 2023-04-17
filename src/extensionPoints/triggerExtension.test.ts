@@ -48,16 +48,6 @@ beforeEach(() => {
   ensureMocksReset();
 });
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 const rootReaderId = validateRegistryId("test/root-reader");
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>

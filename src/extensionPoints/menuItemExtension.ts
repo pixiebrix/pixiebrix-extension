@@ -279,7 +279,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     this.cancelPending.clear();
   }
 
-  removeExtensions(extensionIds: string[]): void {
+  clearExtensionInterfaceAndEvents(extensionIds: string[]): void {
     console.debug(
       "Remove extensionIds for menuItem extension point: %s",
       this.id,
@@ -319,7 +319,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     for (const element of menus) {
       try {
-        this.removeExtensions(extensions.map((x) => x.id));
+        this.clearExtensionInterfaceAndEvents(extensions.map((x) => x.id));
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (error) {

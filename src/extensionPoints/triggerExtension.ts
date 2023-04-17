@@ -153,11 +153,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   >();
 
   /**
-   * Installed DOM event listeners, e.g., `click`
+   * Installed DOM event listeners, e.g., `click`, or the name of a custom event. Used to keep track of which event
+   * handlers need to be removed when the extension is uninstalled.
+   *
+   * Currently, there's only ever 1 event attached per trigger extension point instance.
+   *
    * @private
    */
-  // XXX: does this need to be a set? Shouldn't there only ever be 1 trigger since the trigger is defined on the
-  // extension point?
   private readonly installedEvents = new Set<string>();
 
   /**
@@ -229,45 +231,41 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     this.abortController.signal.addEventListener("abort", callback);
   }
 
-  removeExtensions(): void {
-    // NOP: the removeExtensions method doesn't need to unregister anything from the page because the
-    // observers/handlers are installed for the extensionPoint itself, not the extensions. I.e., there's a single
-    // load/click/etc. trigger that's shared by all extensions using this extension point.
-    console.debug("triggerExtension:removeExtensions");
+  clearExtensionInterfaceAndEvents(): void {
+    // NOP: the unregisterExtensionEvents method doesn't need to unregister anything from the page because the
+    // observers/handlers are installed for the extensionPoint instance itself, not the extensions. I.e., there's a
+    // single load/click/etc. trigger that's shared by all extensions using this extension point.
   }
 
   override uninstall(): void {
-    console.debug("triggerExtension:uninstall", {
-      id: this.id,
-    });
-
     // Clean up observers
     this.cancelObservers();
 
-    // Find the latest set of DOM elements and uninstall handlers
-    if (this.triggerSelector) {
-      // NOTE: you might think we could use a WeakSet of HTMLElement to track which elements we've actually attached
-      // DOM events too. However, we can't because WeakSet is not an enumerable collection
-      // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
-      const $currentElements = $safeFind(this.triggerSelector);
+    // NOTE: you might think we could use a WeakSet of HTMLElement to track which elements we've actually attached
+    // DOM events too. However, we can't because WeakSet is not an enumerable collection
+    // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
+    const $currentElements: JQuery<HTMLElement | Document> = isEmpty(
+      this.triggerSelector
+    )
+      ? $(document)
+      : $safeFind(this.triggerSelector);
 
-      console.debug(
-        "Removing %s handler from %d element(s)",
-        this.trigger,
-        $currentElements.length
-      );
+    console.debug("TriggerExtensionPoint:uninstall", {
+      id: this.id,
+      instanceNonce: this.instanceNonce,
+      trigger: this.trigger,
+      $currentElements,
+    });
 
-      if ($currentElements.length > 0) {
-        try {
-          // This won't impact with other trigger extension points because the handler reference is unique to `this`
-          for (const event of this.installedEvents) {
-            $currentElements.off(event, this.eventHandler);
-          }
-        } finally {
-          this.installedEvents.clear();
-        }
-      }
+    // This won't impact with other trigger extension points because the handler reference is unique to `this`
+    for (const event of this.installedEvents) {
+      $currentElements.off(event, this.eventHandler);
     }
+
+    this.installedEvents.clear();
+
+    // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
+    this.extensions.splice(0, this.extensions.length);
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -342,7 +340,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
   ) => {
-    console.debug("Handling DOM event", {
+    console.debug("TriggerExtensionPoint:eventHandler", {
+      id: this.id,
+      instanceNonce: this.instanceNonce,
       target: event.target,
       event,
     });
@@ -439,9 +439,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
           // the `delete` could be called while another extension run is still in progress
           this.runningExtensionElements.get(extension.id).delete(root);
-          console.debug("Cleaning up runningExtensionElements", extension.id, {
-            root,
-          });
         }
 
         if (this.shouldReportEvent(extension.id)) {
@@ -546,7 +543,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         requestAnimationFrame: !this.allowBackground,
       });
 
-      console.debug("triggerExtension:attachInterval", {
+      console.debug("TriggerExtensionPoint:attachInterval", {
+        id: this.id,
+        instanceNonce: this.instanceNonce,
         intervalMillis: this.intervalMillis,
       });
     } else {
@@ -649,12 +648,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     $elements: JQuery<HTMLElement | Document>,
     { watch = false }: { watch?: boolean }
   ): void {
-    const domTrigger =
+    const domEventName =
       this.trigger === "custom"
         ? this.customTriggerOptions?.eventName
         : this.trigger;
 
-    if (!domTrigger) {
+    if (!domEventName) {
       throw new BusinessError("No trigger event configured for starter brick");
     }
 
@@ -662,12 +661,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // 1) Navigation events on SPAs where the element remains on the page
     // 2) `watch` mode, because the observer will fire the existing elements on the page. (That re-fire will have
     //  watch: false, see observer handler below.)
-    console.debug(
-      "Removing existing %s handler for extension point",
-      this.trigger
-    );
+    console.debug("TriggerExtensionPoint:attachDOMTrigger", {
+      id: this.id,
+      instanceNonce: this.instanceNonce,
+      trigger: this.trigger,
+      selector: this.triggerSelector,
+      domEventName,
+      watch,
+      targetMode: this.targetMode,
+    });
 
-    if (domTrigger === "hover") {
+    if (domEventName === "hover") {
       // `hoverIntent` JQuery plugin has custom event names
       $elements.off("mouseenter.hoverIntent");
       $elements.off("mouseleave.hoverIntent");
@@ -677,27 +681,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         out: noop,
       });
     } else {
-      $elements.off(domTrigger, this.eventHandler);
-      $elements.on(domTrigger, this.eventHandler);
+      $elements.off(domEventName, this.eventHandler);
+      $elements.on(domEventName, this.eventHandler);
     }
 
-    this.installedEvents.add(domTrigger);
-
-    console.debug(
-      "Installed %s event handler on %d elements",
-      domTrigger,
-      $elements.length,
-      {
-        trigger: domTrigger,
-        selector: this.triggerSelector,
-        targetMode: this.targetMode,
-        watch,
-      }
-    );
+    this.installedEvents.add(domEventName);
 
     if (watch) {
       if ($elements.get(0) === document) {
-        console.warn("Ignoring watchMode for document target");
+        console.warn(
+          "TriggerExtensionPoint: ignoring watchMode for document target"
+        );
         return;
       }
 

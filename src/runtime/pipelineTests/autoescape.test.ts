@@ -20,16 +20,6 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { echoBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([echoBlock]);

@@ -131,12 +131,12 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     return blockList(extension.config.body);
   }
 
-  removeExtensions(): void {
+  clearExtensionInterfaceAndEvents(): void {
     this.extensions.splice(0, this.extensions.length);
   }
 
   public override uninstall(): void {
-    this.removeExtensions();
+    this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id);
     sidebarShowEvents.remove(this.run);
     this.cancelListeners();
@@ -148,7 +148,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
    * @see uninstall
    */
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
-    this.removeExtensions();
+    this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     sidebarShowEvents.remove(this.run);
   }
