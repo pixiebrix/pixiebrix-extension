@@ -237,9 +237,9 @@ describe("arrangeElements()", () => {
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
-      query: "H",
+      query: "C",
     });
 
-    expect(elements).toStrictEqual([installedOrphanH]);
+    expect(elements).toStrictEqual([dynamicOrphanC]);
   });
 });

@@ -63,12 +63,12 @@ function arrangeElements({
 
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
-      availableDynamicIds?.includes(formState.uuid) &&
-      (activeElementId === formState.uuid ||
-        (query.length === 0 &&
-          [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)) ||
-        (query.length > 0 &&
-          lowerCase(formState.label).includes(lowerCase(query))))
+      availableDynamicIds?.includes(formState.uuid) ||
+      activeElementId === formState.uuid ||
+      (query.length === 0 &&
+        [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)) ||
+      (query.length > 0 &&
+        lowerCase(formState.label).includes(lowerCase(query)))
   );
 
   const grouped = groupBy(
