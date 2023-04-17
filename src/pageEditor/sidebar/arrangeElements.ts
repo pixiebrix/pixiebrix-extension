@@ -28,8 +28,6 @@ type ArrangeElementsArgs = {
   elements: FormState[];
   installed: IExtension[];
   recipes: RecipeDefinition[];
-  availableInstalledIds: UUID[];
-  availableDynamicIds: UUID[];
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
   expandedRecipeId: RegistryId | null;
@@ -42,8 +40,6 @@ function arrangeElements({
   elements,
   installed,
   recipes,
-  availableInstalledIds,
-  availableDynamicIds,
   activeElementId,
   activeRecipeId,
   expandedRecipeId,
@@ -56,7 +52,7 @@ function arrangeElements({
       // slice and remove installed extensions when they become dynamic elements
       !elementIds.has(extension.id) &&
       ([expandedRecipeId, activeRecipeId].includes(extension._recipe?.id) ||
-        (query.length === 0 && availableInstalledIds?.includes(extension.id)) ||
+        query.length === 0 ||
         (query.length > 0 &&
           lowerCase(extension.label).includes(lowerCase(query))))
   );
@@ -65,7 +61,7 @@ function arrangeElements({
     (formState) =>
       activeElementId === formState.uuid ||
       [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id) ||
-      (query.length === 0 && availableDynamicIds?.includes(formState.uuid)) ||
+      query.length === 0 ||
       (query.length > 0 &&
         lowerCase(formState.label).includes(lowerCase(query)))
   );

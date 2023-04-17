@@ -120,8 +120,6 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanC],
       installed: [installedOrphanH, installedOrphanG],
       recipes: [],
-      availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanC.uuid],
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
@@ -140,12 +138,6 @@ describe("arrangeElements()", () => {
       elements: [dynamicBarE, dynamicFooB],
       installed: [installedFooA, installedBarF, installedBarD],
       recipes: [recipeFoo, recipeBar],
-      availableInstalledIds: [
-        installedFooA.id,
-        installedBarD.id,
-        installedBarF.id,
-      ],
-      availableDynamicIds: [dynamicBarE.uuid, dynamicFooB.uuid],
       activeElementId: dynamicBarE.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
@@ -158,48 +150,11 @@ describe("arrangeElements()", () => {
     ]);
   });
 
-  test("keep active element when not available", () => {
-    const elements = arrangeElements({
-      elements: [dynamicOrphanC],
-      installed: [],
-      recipes: [],
-      availableInstalledIds: [],
-      availableDynamicIds: [],
-      activeElementId: dynamicOrphanC.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: null,
-      query: "",
-    });
-
-    expect(elements).toStrictEqual([dynamicOrphanC]);
-  });
-
-  test("keep active recipe when elements not available", () => {
-    const elements = arrangeElements({
-      elements: [dynamicFooB, dynamicOrphanC],
-      installed: [installedFooA],
-      recipes: [recipeFoo],
-      availableInstalledIds: [],
-      availableDynamicIds: [ID_ORPHAN_C],
-      activeElementId: null,
-      activeRecipeId: ID_FOO,
-      expandedRecipeId: null,
-      query: "",
-    });
-
-    expect(elements).toStrictEqual([
-      dynamicOrphanC,
-      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
-    ]);
-  });
-
   test("show element if its recipe is expanded", () => {
     const elements = arrangeElements({
       elements: [dynamicFooB],
       installed: [installedFooA],
       recipes: [recipeFoo],
-      availableInstalledIds: [installedFooA.id],
-      availableDynamicIds: [],
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: recipeFoo.metadata.id,
@@ -216,8 +171,6 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanH],
       installed: [installedOrphanH],
       recipes: [],
-      availableInstalledIds: [installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanH.uuid],
       activeElementId: ID_ORPHAN_H,
       activeRecipeId: null,
       expandedRecipeId: null,
@@ -232,8 +185,6 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanC, dynamicOrphanH],
       installed: [installedOrphanH, installedOrphanG],
       recipes: [],
-      availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanC.uuid, dynamicOrphanH.uuid],
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
