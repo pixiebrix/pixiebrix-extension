@@ -229,15 +229,15 @@ describe("arrangeElements()", () => {
 
   test("search query filters correctly", () => {
     const elements = arrangeElements({
-      elements: [dynamicOrphanC],
+      elements: [dynamicOrphanC, dynamicOrphanH],
       installed: [installedOrphanH, installedOrphanG],
       recipes: [],
       availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanC.uuid],
+      availableDynamicIds: [dynamicOrphanC.uuid, dynamicOrphanH.uuid],
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
       expandedRecipeId: null,
-      query: "C",
+      query: "c",
     });
 
     expect(elements).toStrictEqual([dynamicOrphanC]);
