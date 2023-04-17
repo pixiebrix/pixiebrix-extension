@@ -52,9 +52,12 @@ describe("AddQuickBarAction", () => {
   });
 
   test("adds root action", async () => {
+    const abortController = new AbortController();
+
     await brick.run(unsafeAssumeValidArg({ title: "test" }), {
       logger,
       root: document,
+      abortSignal: abortController.signal,
     } as any);
     expect(addActionMock).toHaveBeenCalledWith({
       id: expect.toBeString(),

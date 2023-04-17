@@ -39,11 +39,13 @@ import { MARKETPLACE_URL } from "@/utils/strings";
 const DOCUMENT_BODY_PATH = "config.body";
 
 const PlainTitle: React.FC = () => <span className={styles.title}>Input</span>;
+
 const TextTitle: React.FC<{ title: string }> = ({ title }) => (
   <span className={styles.title}>
     Input: <span className={styles.blockName}>{title}</span>
   </span>
 );
+
 const BreadcrumbTitle: React.FC<{
   crumbTitle: string;
   crumbAction: () => void;
@@ -72,11 +74,13 @@ const ConfigurationTitle: React.FunctionComponent = () => {
     selectActiveNodeId,
     pageEditorActions.setElementActiveNodeId
   );
+  // eslint-disable-next-line security/detect-object-injection -- is a UUID
   const activeNodeInfo = nodesPipelineMap[activeNodeId];
   const { blockConfig: activeNode, parentNodeId } = activeNodeInfo;
   const blockId = activeNode.id;
   const block = allBlocks.get(blockId)?.block;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  // eslint-disable-next-line security/detect-object-injection -- is a registry id
   const listing = listings[blockId];
 
   const [activeNodePreviewElementName, setActiveNodePreviewElementName] =
@@ -98,20 +102,28 @@ const ConfigurationTitle: React.FunctionComponent = () => {
       activeNode,
       joinPathParts(DOCUMENT_BODY_PATH, activeNodePreviewElementName)
     );
-    const activeDocumentElementName =
-      getProperty<string>(elementTypeLabels, activeDocumentElement.type) ??
-      "Unknown element";
-    title = (
-      <BreadcrumbTitle
-        crumbTitle={block?.name}
-        crumbAction={() => {
-          setActiveNodePreviewElementName(null);
-        }}
-        title={activeDocumentElementName}
-      />
-    );
+
+    if (activeDocumentElement == null) {
+      // There's a race condition when adding a new element to the document where activeNodePreviewElementName might
+      // not be available in the activeNode yet.
+      title = <PlainTitle />;
+    } else {
+      const activeDocumentElementName =
+        getProperty<string>(elementTypeLabels, activeDocumentElement.type) ??
+        "Unknown element";
+      title = (
+        <BreadcrumbTitle
+          crumbTitle={block?.name}
+          crumbAction={() => {
+            setActiveNodePreviewElementName(null);
+          }}
+          title={activeDocumentElementName}
+        />
+      );
+    }
   } else if (
     parentNodeId != null &&
+    // eslint-disable-next-line security/detect-object-injection -- is a UUID
     nodesPipelineMap[parentNodeId].blockId === DocumentRenderer.BLOCK_ID
   ) {
     // Editing a direct descendant of a document node

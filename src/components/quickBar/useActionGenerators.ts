@@ -16,13 +16,20 @@
  */
 
 import { useKBar } from "kbar";
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
-let queryPromise: WeakRef<Promise<void>> | null = null;
-
+/**
+ * QuickBar Hook for automatically updating QuickBar actions when the search query or root action changes.
+ *
+ * `quickBarRegistry` automatically manages cancelling any pending generators on calls to `generateActions`.
+ *
+ * @see quickBarRegistry
+ */
 function useActionGenerators(): void {
+  const initialMountRef = useRef(true);
+
   const { searchQuery, currentRootActionId } = useKBar(
     ({ searchQuery, currentRootActionId }) => ({
       searchQuery,
@@ -37,34 +44,33 @@ function useActionGenerators(): void {
         rootActionId: currentRootActionId,
       });
     },
-    // eslint-disable-next-line -- fire immediately when root changes
+    // eslint-disable-next-line -- generate immediately on mount, and when root changes (because some actions only show when their parent is active)
     [currentRootActionId]
   );
 
-  const searchArgs = useMemo(
-    () => ({ searchQuery, currentRootActionId }),
-    [searchQuery, currentRootActionId]
-  );
-
   useDebouncedEffect(
-    searchArgs,
-    (values) => {
-      const promise = queryPromise?.deref() ?? Promise.resolve();
-      // Chain requests to avoid old requests overwriting newer requests
-      // In the future, we'll want to set a nonce on the generator run, and ignore actions for the old nonce. However,
-      // currently there's no great way to pass that through to the AddQuickBarAction brick
-      queryPromise = new WeakRef<Promise<void>>(
-        // eslint-disable-next-line promise/prefer-await-to-then -- creating a new promise
-        promise.then(async () =>
-          quickBarRegistry.generateActions({
-            query: values.searchQuery,
-            rootActionId: values.currentRootActionId,
-          })
-        )
-      );
+    { searchQuery, currentRootActionId },
+    async (values) => {
+      // Avoid duplicate run on initial mount. Run via useEffect above instead.
+      if (initialMountRef.current) {
+        initialMountRef.current = false;
+        return;
+      }
+
+      await quickBarRegistry.generateActions({
+        query: values.searchQuery,
+        rootActionId: values.currentRootActionId,
+      });
     },
-    150,
-    750
+    {
+      delayMillis: 250,
+      // Avoid unnecessary API calls
+      maxWaitMillis: 1500,
+      leading: false,
+      trailing: true,
+      // Only check searchQuery, because changes in currentRootActionId are handled by the useEffect above
+      equalityFn: (lhs, rhs) => lhs.searchQuery === rhs.searchQuery,
+    }
   );
 }
 

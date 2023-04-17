@@ -22,7 +22,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import PanelBody from "@/sidebar/PanelBody";
+import PanelBody, { type PanelContext } from "@/sidebar/PanelBody";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
@@ -44,6 +44,9 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
     options: { ctxt, logger },
     onAction,
   } = useContext(DocumentContext);
+
+  // Logger context will have both extensionId and blueprintId because they're passed from the containing PanelBody
+  const panelContext = logger.context as PanelContext;
 
   const [payload, isLoading, error] =
     useAsyncState<RendererPayload>(async () => {
@@ -67,14 +70,14 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
 
   if (isLoading) {
     return (
-      <PanelBody payload={null} context={logger.context} onAction={onAction} />
+      <PanelBody payload={null} context={panelContext} onAction={onAction} />
     );
   }
 
   if (error) {
     return (
       <PanelBody
-        context={logger.context}
+        context={panelContext}
         onAction={onAction}
         payload={{
           key: `error-${getErrorMessage(error)}`,
@@ -86,7 +89,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   }
 
   return (
-    <PanelBody context={logger.context} payload={payload} onAction={onAction} />
+    <PanelBody context={panelContext} payload={payload} onAction={onAction} />
   );
 };
 

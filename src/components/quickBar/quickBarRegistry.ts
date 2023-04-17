@@ -21,7 +21,7 @@ import { pull, remove } from "lodash";
 import defaultActions from "@/components/quickBar/defaultActions";
 import {
   type ActionGenerator,
-  type ChangeHandler,
+  type ActionsChangeHandler,
   type CustomAction,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
@@ -39,13 +39,19 @@ class QuickBarRegistry {
    * Registry of action listeners, called when the set of actions changes.
    * @private
    */
-  private readonly listeners: ChangeHandler[] = [];
+  private readonly listeners: ActionsChangeHandler[] = [];
 
   /**
    * Registry of action generators. The generators are called when the user types in the Quick Bar.
    * @private
    */
   private readonly actionGenerators: ActionGenerator[] = [];
+
+  /**
+   * Abort controller for the currently running action generator.
+   * @private
+   */
+  private generatorAbortController: AbortController | null = null;
 
   /**
    * Mapping from action generator to the rootActionId.
@@ -100,6 +106,7 @@ class QuickBarRegistry {
 
     if (index >= 0) {
       // Preserve the relative insertion order of actions with the same priority.
+      // eslint-disable-next-line security/detect-object-injection -- guaranteed to be a number
       this.actions[index] = action;
     } else if (action.parent) {
       // Items with a parent must appear _after_ the parent in this.actions. Otherwise, KBar won't properly
@@ -144,7 +151,7 @@ class QuickBarRegistry {
    * Add a action change handler.
    * @param handler the action change handler
    */
-  addListener(handler: ChangeHandler): void {
+  addListener(handler: ActionsChangeHandler): void {
     this.listeners.push(handler);
   }
 
@@ -152,7 +159,7 @@ class QuickBarRegistry {
    * Remove an action change handler.
    * @param handler the action change handler
    */
-  removeListener(handler: ChangeHandler): void {
+  removeListener(handler: ActionsChangeHandler): void {
     pull(this.listeners, handler);
   }
 
@@ -180,14 +187,25 @@ class QuickBarRegistry {
    *
    * The generator is responsible for cleaning up any previously added actions.
    *
-   * @param args
+   * @param args arguments to pass to action generators
    */
   async generateActions(args: GeneratorArgs): Promise<void> {
-    await Promise.allSettled(this.actionGenerators.map(async (x) => x(args)));
+    // Abort previously running generators
+    this.generatorAbortController?.abort();
+
+    // Run all generators in parallel
+    this.generatorAbortController = new AbortController();
+    await Promise.allSettled(
+      this.actionGenerators.map(async (x) =>
+        x({ ...args, abortSignal: this.generatorAbortController.signal })
+      )
+    );
   }
 }
 
-// Singleton registry for the content script
+/**
+ * Singleton registry for the content script
+ */
 const quickBarRegistry = new QuickBarRegistry();
 
 export default quickBarRegistry;
