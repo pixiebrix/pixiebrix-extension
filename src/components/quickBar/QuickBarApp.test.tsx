@@ -148,10 +148,6 @@ describe("QuickBarApp", () => {
 
     await act(async () => {
       window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
-
-      // Fast-forward until all timers have been executed. Can't use runOnlyPendingTimers because the there must be
-      // a setInterval/etc. to get the quick bar into a fully initialized state
-      jest.advanceTimersByTime(2000);
     });
 
     // Runs on mount
