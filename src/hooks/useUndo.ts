@@ -44,8 +44,10 @@ function useUndo<T>(
       history.current = [debouncedValue.current, ...oldHistory];
       debouncedValue.current = value;
     },
-    300,
-    500
+    {
+      delayMillis: 300,
+      maxWaitMillis: 500,
+    }
   );
 
   return useCallback(() => {

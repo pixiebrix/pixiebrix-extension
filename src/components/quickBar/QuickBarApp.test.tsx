@@ -24,6 +24,8 @@ import React from "react";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import selectionController from "@/utils/selectionController";
 import userEvent from "@testing-library/user-event";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
 
 // Could alternatively mock the internal calls, but this is easier if we trust the component
 jest.mock("@/components/Stylesheets", () => ({
@@ -133,5 +135,40 @@ describe("QuickBarApp", () => {
     });
 
     expect(saveSelectionMock).toHaveBeenCalledOnce();
+  });
+
+  it("debounces action generation on typing", async () => {
+    const user = userEvent.setup({ delay: null });
+    const generatorMock: ActionGenerator = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    quickBarRegistry.addGenerator(generatorMock, null);
+
+    render(<QuickBarApp />);
+
+    await act(async () => {
+      window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
+    });
+
+    // Runs on mount
+    expect(generatorMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await user.type(screen.getByRole("combobox"), "test");
+
+      // Fast-forward until all timers have been executed
+      jest.advanceTimersByTime(100);
+    });
+
+    expect(generatorMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      // Fast-forward until all timers have been executed
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(generatorMock).toHaveBeenCalledTimes(2);
+
+    quickBarRegistry.removeGenerator(generatorMock);
   });
 });

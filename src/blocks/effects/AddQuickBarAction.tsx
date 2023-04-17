@@ -28,12 +28,29 @@ import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 
 type ActionConfig = {
+  /**
+   * The title for the Quick Bar Action
+   */
   title: string;
+  /**
+   * An optional subtitle/description for the action
+   */
   subtitle?: string;
+  /**
+   * An optional section for grouping actions
+   */
   section?: string;
-  icon: IconConfig;
+  /**
+   * An optional icon for the action. If not provided, a box will be used.
+   */
+  icon?: IconConfig;
+  /**
+   * Action to run when the Quick Bar Action is run
+   */
   action: PipelineExpression;
-
+  /**
+   * Priority of the action: https://kbar.vercel.app/docs/concepts/priority
+   */
   priority?: number;
 };
 
@@ -73,11 +90,11 @@ class AddQuickBarAction extends Effect {
       },
       subtitle: {
         type: "string",
-        description: "An optional subtitle for the action",
+        description: "An optional subtitle/description for the action",
       },
       section: {
         type: "string",
-        description: "The Quick Bar section to add the action to",
+        description: "An optional section for grouping actions",
       },
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
       action: {
@@ -106,9 +123,14 @@ class AddQuickBarAction extends Effect {
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
     }: BlockArgs<ActionConfig>,
-    { root, logger, runPipeline }: BlockOptions
+    { root, logger, runPipeline, abortSignal }: BlockOptions
   ): Promise<void> {
-    // Keep track of run number for tracing
+    // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
+    if (abortSignal.aborted) {
+      return;
+    }
+
+    // Counter to keep track of the action run number for tracing
     let counter = 0;
 
     // Expected parent id from QuickBarProviderExtensionPoint
