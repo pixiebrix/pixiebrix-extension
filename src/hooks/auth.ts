@@ -29,18 +29,39 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
-function decideRemoteLabel(auth: SanitizedAuth): string {
-  let visibility = "✨ Built-in";
+type AuthSharing = "private" | "shared" | "built-in";
 
+export function getSharingType(auth: SanitizedAuth): AuthSharing {
   if (auth.organization?.name) {
-    visibility = auth.organization.name;
+    return "shared";
   }
 
   if (auth.user) {
-    visibility = "Private";
+    return "private";
   }
 
-  return `${defaultLabel(auth.label)} — ${visibility}`;
+  return "built-in";
+}
+
+const getVisibilityLabel = (auth: SanitizedAuth): string => {
+  const sharingType = getSharingType(auth);
+  switch (sharingType) {
+    case "shared": {
+      return auth.organization.name;
+    }
+
+    case "private": {
+      return "Private";
+    }
+
+    default: {
+      return "✨ Built-in";
+    }
+  }
+};
+
+function getRemoteLabel(auth: SanitizedAuth): string {
+  return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
 export function useAuthOptions(): [AuthOption[], () => void] {
@@ -76,7 +97,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     const sharedOptions = sortBy(
       (remoteAuths ?? []).map((x) => ({
         value: x.id,
-        label: decideRemoteLabel(x),
+        label: getRemoteLabel(x),
         local: false,
         user: x.user,
         serviceId: x.service.config.metadata.id,
