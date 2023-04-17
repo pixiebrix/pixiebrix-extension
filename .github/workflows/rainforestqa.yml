@@ -52,10 +52,12 @@ jobs:
         # shell script used because GitHub actions doesn't support regex in if statements
         # will overwrite the previous step correctly if it's a CWS-release branch
         run: |
-          if [[ $github.ref_name =~ ^release\/[0-9]+.[0-9]+.[0-9]+$ ]]; then
+          if [[ $ref_name =~ ^release\/[0-9]+.[0-9]+.[0-9]+$ ]]; then
             echo "BUILD_PATH=builds/pixiebrix-extension-cws.zip" >> $GITHUB_ENV
             echo "RUN_GROUP=$RAINFOREST_RUN_GROUP_CWS" >> $GITHUB_ENV
           fi
+        env:
+          ref_name: ${{ github.ref_name }}
 
       - name: Upload Extension
         run: bash scripts/upload-extension.sh ${{ env.BUILD_PATH }}
