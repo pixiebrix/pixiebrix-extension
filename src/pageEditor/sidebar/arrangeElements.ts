@@ -55,16 +55,20 @@ function arrangeElements({
       // Note: we can take out this elementIds filter if and when we persist the editor
       // slice and remove installed extensions when they become dynamic elements
       !elementIds.has(extension.id) &&
-      (availableInstalledIds?.includes(extension.id) ||
-        [expandedRecipeId, activeRecipeId].includes(extension._recipe?.id)) &&
-      lowerCase(extension.label).includes(lowerCase(query))
+      ([expandedRecipeId, activeRecipeId].includes(extension._recipe?.id) ||
+        (query.length === 0 && availableInstalledIds?.includes(extension.id)) ||
+        (query.length > 0 &&
+          lowerCase(extension.label).includes(lowerCase(query))))
   );
+
   const filteredDynamicElements: FormState[] = elements.filter(
     (formState) =>
-      (availableDynamicIds?.includes(formState.uuid) ||
-        [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)) &&
+      availableDynamicIds?.includes(formState.uuid) &&
       (activeElementId === formState.uuid ||
-        lowerCase(formState.label).includes(lowerCase(query)))
+        (query.length === 0 &&
+          [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)) ||
+        (query.length > 0 &&
+          lowerCase(formState.label).includes(lowerCase(query))))
   );
 
   const grouped = groupBy(

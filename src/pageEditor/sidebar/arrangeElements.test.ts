@@ -158,26 +158,6 @@ describe("arrangeElements()", () => {
     ]);
   });
 
-  test("handle showAll flag properly", () => {
-    const elements = arrangeElements({
-      elements: [dynamicBarE],
-      installed: [installedFooA, installedOrphanH],
-      recipes: [recipeFoo, recipeBar],
-      availableInstalledIds: [installedFooA.id],
-      availableDynamicIds: [dynamicBarE.uuid],
-      activeElementId: dynamicBarE.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: null,
-      query: "",
-    });
-
-    expect(elements).toStrictEqual([
-      [recipeBar.metadata.id, [dynamicBarE]],
-      [recipeFoo.metadata.id, [installedFooA]],
-      installedOrphanH,
-    ]);
-  });
-
   test("keep active element when not available", () => {
     const elements = arrangeElements({
       elements: [dynamicOrphanC],
