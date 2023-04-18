@@ -23,9 +23,38 @@ import { round } from "lodash";
 import { count as registrySize } from "@/registry/localRegistry";
 import { count as logSize } from "@/telemetry/logging";
 
+/**
+ * https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/estimate
+ */
+type StorageEstimate = {
+  /**
+   * A numeric value in bytes approximating the amount of storage space currently being used by the site or Web app,
+   * out of the available space as indicated by quota. Unit is byte.
+   */
+  usage: number;
+  /**
+   * A numeric value in bytes which provides a conservative approximation of the total storage the user's device or
+   * computer has available for the site origin or Web app. It's possible that there's more than this amount of space
+   * available though you can't rely on that being the case.
+   */
+  quota: number;
+
+  /**
+   * An object containing a breakdown of usage by storage system. All included properties will have a usage greater
+   * than 0 and any storage system with 0 usage will be excluded from the object.
+   */
+  usageDetails: {
+    // https://github.com/whatwg/storage/issues/63#issuecomment-437990804
+    indexedDB?: number;
+    caches?: number;
+    serviceWorkerRegistrations: number;
+    other: number;
+  };
+};
+
 const StorageSettings: React.FunctionComponent = () => {
   const [storageEstimate] = useAsyncState(
-    async () => navigator.storage.estimate(),
+    async () => navigator.storage.estimate() as StorageEstimate,
     []
   );
 
@@ -42,7 +71,7 @@ const StorageSettings: React.FunctionComponent = () => {
               Usage: {round(storageEstimate.usage / 1e6, 1).toLocaleString()} /{" "}
               {round(storageEstimate.quota / 1e6, 0).toLocaleString()} MB
             </p>
-            {Object.entries((storageEstimate as any).usageDetails).map(
+            {Object.entries(storageEstimate.usageDetails ?? {}).map(
               ([key, value]) => (
                 <p key={key}>
                   {key}: {round(value / 1e6, 1)}
