@@ -54,8 +54,8 @@ function arrangeElements({
 
     return (
       activeRecipeId === recipe?.id ||
-      activeElementId === item.uuid ||
       query.length === 0 ||
+      (isFormState(item) && activeElementId === item.uuid) ||
       (query.length > 0 && lowerCase(queryName).includes(lowerCase(query)))
     );
   };
