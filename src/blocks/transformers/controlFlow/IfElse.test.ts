@@ -28,16 +28,6 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 const ifElseBlock = new IfElse();
 
 beforeEach(() => {

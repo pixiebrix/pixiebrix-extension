@@ -47,7 +47,7 @@ import {
 import { cloneDeep, debounce, stubTrue } from "lodash";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -128,15 +128,15 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   async getBlocks(
     extension: ResolvedExtension<SidebarConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.body);
+    return selectAllBlocks(extension.config.body);
   }
 
-  removeExtensions(): void {
+  clearExtensionInterfaceAndEvents(): void {
     this.extensions.splice(0, this.extensions.length);
   }
 
   public override uninstall(): void {
-    this.removeExtensions();
+    this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id);
     sidebarShowEvents.remove(this.run);
     this.cancelListeners();
@@ -148,7 +148,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
    * @see uninstall
    */
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
-    this.removeExtensions();
+    this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     sidebarShowEvents.remove(this.run);
   }

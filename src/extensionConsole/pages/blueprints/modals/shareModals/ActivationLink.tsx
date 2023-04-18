@@ -17,12 +17,13 @@
 
 import { type RegistryId } from "@/types/registryTypes";
 import React from "react";
-import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import AsyncButton from "@/components/AsyncButton";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 type ActivationLinkProps = {
   blueprintId: RegistryId;
@@ -37,16 +38,16 @@ const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
     <InputGroup>
       <Form.Control type="text" readOnly defaultValue={installationLink} />
       <InputGroup.Append>
-        <Button
+        <AsyncButton
           variant="info"
-          onClick={() => {
-            copy(installationLink);
+          onClick={async () => {
+            await writeTextToClipboard(installationLink);
             // Don't close the modal - that allows the user to re-copy the link and verify the link works
             notify.success("Copied activation link to clipboard");
           }}
         >
           <FontAwesomeIcon icon={faCopy} />
-        </Button>
+        </AsyncButton>
       </InputGroup.Append>
     </InputGroup>
   );

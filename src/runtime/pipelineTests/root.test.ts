@@ -34,16 +34,6 @@ import {
 } from "@/types/runtimeTypes";
 import { Block } from "@/types/blockTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 class RootAwareBlock extends Block {
   constructor() {
     super("block/root-aware", "Root Aware Block");

@@ -23,15 +23,28 @@ import { type RunArgs } from "@/types/runtimeTypes";
 import { type IBlock } from "@/types/blockTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type IExtensionPoint = Metadata & {
+  /**
+   * The kind of extension point.
+   */
   kind: string;
 
+  /**
+   * The input schema for extension point-specific configuration.
+   */
   inputSchema: Schema;
 
-  permissions: Permissions.Permissions;
+  /**
+   * Default options to provide to the inputSchema.
+   */
+  defaultOptions: UnknownObject;
 
-  defaultOptions: Record<string, unknown>;
+  /**
+   * Permissions required to use the extension point.
+   */
+  permissions: Permissions.Permissions;
 
   /**
    * Return the IReader used by the extension point. This method should only be called for calculating availability
@@ -48,6 +61,13 @@ export type IExtensionPoint = Metadata & {
    */
   previewReader: () => Promise<IReader>;
 
+  /**
+   * Return true if the extension point is available on the current page. Based on:
+   *
+   * - URL match patterns
+   * - URL pattern rules
+   * - Element selector rules
+   */
   isAvailable: () => Promise<boolean>;
 
   /**
@@ -55,6 +75,9 @@ export type IExtensionPoint = Metadata & {
    */
   syncInstall: boolean;
 
+  /**
+   * Install/add the extension point to the page.
+   */
   install(): Promise<boolean>;
 
   /**
@@ -84,7 +107,9 @@ export type IExtensionPoint = Metadata & {
   run(args: RunArgs): Promise<void>;
 
   /**
-   * Returns any blocks configured in extension.
+   * Returns all blocks configured in the IExtension, including sub pipelines.
+   *
+   * @see PipelineExpression
    */
   getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
 };

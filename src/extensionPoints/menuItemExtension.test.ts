@@ -42,16 +42,6 @@ jest.mock("@/runtime/reducePipeline", () => ({
   reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 const reduceExtensionPipelineMock = reduceExtensionPipeline as jest.Mock;
 
 const rootReaderId = validateRegistryId("test/root-reader");

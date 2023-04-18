@@ -26,6 +26,7 @@ import {
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { type TraceError, type TraceRecord } from "@/telemetry/trace";
 import {
+  uuidv4,
   validateRegistryId,
   validateSemVerString,
   validateTimestamp,
@@ -53,6 +54,8 @@ import {
   type MarketplaceListing,
   type MarketplaceTag,
   type Milestone,
+  type SanitizedAuth,
+  type SanitizedAuthService,
   UserRole,
 } from "@/types/contract";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
@@ -111,10 +114,16 @@ import {
   type RecipeDefinition,
 } from "@/types/recipeTypes";
 
-// UUID sequence generator that's predictable across runs. A couple characters can't be 0
-// https://stackoverflow.com/a/19989922/402560
+/**
+ * UUID sequence generator that's predictable across runs.
+ *
+ * A couple characters can't be 0 https://stackoverflow.com/a/19989922/402560
+ * @param n
+ */
 export const uuidSequence = (n: number) =>
   validateUUID(`${padStart(String(n), 8, "0")}-0000-4000-A000-000000000000`);
+
+export const registryIdFactory = () => validateRegistryId(`test/${uuidv4()}`);
 
 const timestampFactory = () => new Date().toISOString();
 
@@ -320,7 +329,6 @@ export const blockFactory = define<IBlock>({
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
-  defaultOptions: null,
   permissions: makeEmptyPermissions(),
   run: jest.fn(),
 });
@@ -819,6 +827,7 @@ const formEntryFactory = define<FormEntry>({
 const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
   type: "temporaryPanel",
   extensionId: uuidSequence,
+  blueprintId: null,
   heading: (n: number) => `Temporary Panel Test ${n}`,
   payload: null,
   nonce: uuidSequence,
@@ -827,12 +836,31 @@ const temporaryPanelEntryFactory = define<TemporaryPanelEntry>({
 const panelEntryFactory = define<PanelEntry>({
   type: "panel",
   extensionId: uuidSequence,
-  heading: (n: number) => `Panel Test ${n}`,
-  payload: null,
   blueprintId: (n: number) =>
     validateRegistryId(`@test/panel-recipe-test-${n}`),
+  heading: (n: number) => `Panel Test ${n}`,
+  payload: null,
   extensionPointId: (n: number) =>
     validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
+});
+
+export const sanitizedAuthServiceFactory = define<SanitizedAuthService>({
+  config: (n: number) => ({
+    metadata: {
+      id: validateRegistryId(`@test/service-${n}`),
+      name: `Test Service ${n}`,
+    },
+  }),
+  name: (n: number) => `Test Service ${n}`,
+});
+export const sanitizedAuthFactory = define<SanitizedAuth>({
+  id: uuidSequence,
+  organization: null,
+  label: (n: number) => `Auth ${n}`,
+  config: {
+    _sanitizedConfigBrand: null,
+  },
+  service: sanitizedAuthServiceFactory,
 });
 
 export function sidebarEntryFactory(

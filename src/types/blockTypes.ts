@@ -54,11 +54,12 @@ export interface IBlock extends Metadata {
    */
   getOutputSchema?: (config: BlockConfig) => Schema | undefined;
 
-  defaultOptions: Record<string, unknown>;
-
   /**
-   * Returns the optional permissions required to run this block
-   * https://developer.chrome.com/extensions/permission_warnings
+   * Returns the optional permissions required to run this block.
+   *
+   * Only includes this block's permissions, not the permissions of any blocks passed as inputs to the block.
+   *
+   * See https://developer.chrome.com/extensions/permission_warnings
    */
   permissions: Permissions.Permissions;
 
@@ -102,6 +103,11 @@ export interface IBlock extends Metadata {
    */
   defaultOutputKey?: string;
 
+  /**
+   * Run the block.
+   * @param value the rendered input values
+   * @param options the runtime options for the block.
+   */
   run: (value: BlockArgs, options: BlockOptions) => Promise<unknown>;
 }
 
@@ -122,8 +128,6 @@ export abstract class Block implements IBlock {
   outputSchema?: Schema = undefined;
 
   readonly permissions = {};
-
-  readonly defaultOptions = {};
 
   async isPure(): Promise<boolean> {
     // Safe default

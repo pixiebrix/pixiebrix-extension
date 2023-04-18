@@ -30,13 +30,23 @@ import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BlockArgs, type RendererOutput } from "@/types/runtimeTypes";
+import { type RendererOutput } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 
 type BodyProps = {
   blockId: RegistryId;
   body: RendererOutput;
   meta: PanelRunMeta;
+};
+
+/**
+ * Context for panel, with fields required for functionality marked as required.
+ */
+export type PanelContext = MessageContext & {
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
 };
 
 const BodyContainer: React.FC<
@@ -114,7 +124,7 @@ const slice = createSlice({
 const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
   payload: PanelPayload;
-  context: MessageContext;
+  context: PanelContext;
   onAction: (action: SubmitPanelAction) => void;
 }> = ({ payload, context, isRootPanel = false, onAction }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
@@ -142,7 +152,7 @@ const PanelBody: React.FunctionComponent<{
         const block = await blockRegistry.lookup(blockId);
         // In the future, the renderer brick should run in the contentScript, not the panel frame
         // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
-        const body = await block.run(args as BlockArgs, {
+        const body = await block.run(unsafeAssumeValidArg(args), {
           ctxt,
           root: null,
           logger: new BackgroundLogger({

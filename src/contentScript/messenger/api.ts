@@ -30,7 +30,7 @@ export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const removeInstalledExtension = getNotifier(
   "REMOVE_INSTALLED_EXTENSION"
 );
-export const removeDynamicExtension = getNotifier("REMOVE_DYNAMIC_EXTENSION");
+
 export const resetTab = getNotifier("RESET_TAB");
 
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");

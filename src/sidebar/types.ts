@@ -92,14 +92,33 @@ export type PanelButton = PanelAction & {
 };
 
 type BasePanelEntry = {
+  /**
+   * The panel type.
+   */
   type: EntryType;
 };
 
+/**
+ * A panel added to the page by an IExtension.
+ *
+ * @see DisplayTemporaryInfo
+ * @see SidebarExtensionPoint
+ */
 export type BaseExtensionPanelEntry = BasePanelEntry & {
   /**
    * The id of the extension that added the panel
    */
   extensionId: UUID;
+  /**
+   * The blueprint associated with the extension that added the panel.
+   *
+   * Used to:
+   * - Give preference to blueprint side panels when using the "Show Sidebar" brick.
+   * - Pass to the panel for actions that require the blueprint id, e.g., Get Page State, Set Page State, etc.
+   *
+   * @since 1.6.5
+   */
+  blueprintId: RegistryId | null;
   /**
    * Heading for tab name in the sidebar
    */
@@ -108,7 +127,6 @@ export type BaseExtensionPanelEntry = BasePanelEntry & {
    * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
    */
   payload: PanelPayload;
-
   /**
    * Actions to show for the panel
    * @since 1.7.19
@@ -122,14 +140,6 @@ export type BaseExtensionPanelEntry = BasePanelEntry & {
  */
 export type PanelEntry = BaseExtensionPanelEntry & {
   type: "panel";
-  /**
-   * The blueprint associated with the extension that added the panel.
-   *
-   * Used to give preference to blueprint side panels when using the "Show Sidebar" brick.
-   *
-   * @since 1.6.5
-   */
-  blueprintId: RegistryId | null;
   /**
    * The sidebar extension point
    * @see SidebarExtensionPoint
@@ -146,7 +156,6 @@ export type TemporaryPanelEntry = BaseExtensionPanelEntry & {
    * Unique identifier for the temporary panel instance. Used to correlate panel-close action.
    */
   nonce: UUID;
-
   /**
    * True if the panel has an "x" to be closed by the user (default=true)
    * @since 1.7.19
@@ -176,7 +185,13 @@ export type FormEntry = BasePanelEntry & {
 
 export type ActivateRecipeEntry = BasePanelEntry & {
   type: "activateRecipe";
+  /**
+   * The blueprint id of the recipe to activate
+   */
   recipeId: RegistryId;
+  /**
+   * Heading for tab name in the sidebar
+   */
   heading: string;
 };
 

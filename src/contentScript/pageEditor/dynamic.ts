@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
+import {
+  clearEditorExtension,
+  runEditorExtension,
+} from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/vendors/Overlay";
 import { resolveDefinitions } from "@/registry/internal";
@@ -31,11 +34,14 @@ import { type TourDefinition } from "@/extensionPoints/tourExtension";
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
 
 let _overlay: Overlay | null = null;
-const _temporaryExtensions = new Map<string, IExtensionPoint>();
 
+/**
+ * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
+ * @param uuid the uuid of the extension, or null to clear all page editor extensions
+ * @see clearEditorExtension
+ */
 export async function clearDynamicElements({
   uuid,
 }: {
@@ -43,12 +49,7 @@ export async function clearDynamicElements({
 }): Promise<void> {
   expectContext("contentScript");
 
-  clearDynamic(uuid);
-  if (uuid) {
-    _temporaryExtensions.delete(uuid);
-  } else {
-    _temporaryExtensions.clear();
-  }
+  clearEditorExtension(uuid);
 }
 
 export async function runExtensionPointReader(
@@ -118,19 +119,17 @@ export async function updateDynamicElement({
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-  _temporaryExtensions.set(extensionConfig.id, extensionPoint);
-
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
   // will automatically replace the old panel because the panels are keyed by extension id
   if (extensionPoint.kind !== "actionPanel") {
-    clearDynamic(extensionConfig.id, { clearTrace: false });
+    clearEditorExtension(extensionConfig.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveDefinitions(extensionConfig);
 
   extensionPoint.addExtension(resolved);
-  await runDynamic(extensionConfig.id, extensionPoint);
+  await runEditorExtension(extensionConfig.id, extensionPoint);
 
   if (extensionPoint.kind === "actionPanel") {
     await ensureSidebar();
