@@ -33,7 +33,7 @@ import {
 } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent/hoverintent";
@@ -111,7 +111,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   });
 
   async getBlocks(extension: ResolvedExtension<TourConfig>): Promise<IBlock[]> {
-    return blockList(extension.config.tour);
+    return selectAllBlocks(extension.config.tour);
   }
 
   private async runExtensionTour(

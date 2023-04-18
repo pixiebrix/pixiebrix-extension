@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import copy from "copy-text-to-clipboard";
 import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
@@ -68,6 +67,57 @@ function dataURItoBlob(dataURI: string): Blob {
 
   // Write the ArrayBuffer to a blob, and you're done
   return new Blob([ab], { type: mimeString });
+}
+
+async function writeToClipboard(
+  promiseFn: () => Promise<void>,
+  { type }: { type: "text" | "image" }
+): Promise<void> {
+  try {
+    await promiseFn();
+  } catch (error) {
+    if (isDocumentFocusError(error)) {
+      const copyPromise = pDefer<void>();
+
+      const notificationId = notify.info({
+        message: `Click anywhere to copy ${type} to clipboard`,
+        duration: Number.POSITIVE_INFINITY,
+        dismissable: false,
+      });
+
+      const handler = async () => {
+        try {
+          hideNotification(notificationId);
+          await promiseFn();
+          copyPromise.resolve();
+        } catch (error) {
+          if (isDocumentFocusError(error)) {
+            copyPromise.reject(
+              new BusinessError(
+                "Your Browser was unable to determine the user action that initiated the clipboard write."
+              )
+            );
+            return;
+          }
+
+          copyPromise.reject(error);
+        }
+      };
+
+      document.body.addEventListener("click", handler);
+
+      try {
+        await copyPromise.promise;
+      } finally {
+        document.body.removeEventListener("click", handler);
+      }
+
+      // Remember to return to avoid falling through to the original error
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export class CopyToClipboard extends Effect {
@@ -145,57 +195,18 @@ export class CopyToClipboard extends Effect {
           }),
         ];
 
-        try {
-          await navigator.clipboard.write(data);
-        } catch (error) {
-          if (isDocumentFocusError(error)) {
-            const copyPromise = pDefer<void>();
-
-            const notificationId = notify.info({
-              message: "Click anywhere to copy image to clipboard",
-              duration: Number.POSITIVE_INFINITY,
-              dismissable: false,
-            });
-
-            const handler = async () => {
-              try {
-                hideNotification(notificationId);
-                await navigator.clipboard.write(data);
-                copyPromise.resolve();
-              } catch (error) {
-                if (isDocumentFocusError(error)) {
-                  copyPromise.reject(
-                    new BusinessError(
-                      "Your Browser was unable to determine the user action that initiated the clipboard write."
-                    )
-                  );
-                  return;
-                }
-
-                copyPromise.reject(error);
-              }
-            };
-
-            document.body.addEventListener("click", handler);
-
-            try {
-              await copyPromise.promise;
-            } finally {
-              document.body.removeEventListener("click", handler);
-            }
-
-            // Remember to return to avoid falling through to the original error
-            return;
-          }
-
-          throw error;
-        }
+        await writeToClipboard(async () => navigator.clipboard.write(data), {
+          type: "image",
+        });
 
         break;
       }
 
       case "text": {
-        copy(String(text));
+        await writeToClipboard(
+          async () => navigator.clipboard.writeText(String(text)),
+          { type: "text" }
+        );
         break;
       }
 

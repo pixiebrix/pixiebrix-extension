@@ -329,7 +329,6 @@ export const blockFactory = define<IBlock>({
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
-  defaultOptions: null,
   permissions: makeEmptyPermissions(),
   run: jest.fn(),
 });
