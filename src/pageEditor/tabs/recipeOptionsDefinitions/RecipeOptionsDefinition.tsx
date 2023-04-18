@@ -58,6 +58,10 @@ const baseFieldTypes = [
     label: "Database selector",
     value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
   },
+  {
+    label: "Database automatically created at activation",
+    value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+  },
 ];
 
 const formRuntimeContext: RuntimeContext = {
