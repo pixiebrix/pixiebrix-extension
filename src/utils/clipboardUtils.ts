@@ -137,7 +137,7 @@ export async function writeTextToClipboard(text: string): Promise<void> {
   } catch (error) {
     if (isPermissionError(error)) {
       // Legacy method of copying text to clipboard doesn't require clipboard-write in frame CSP. However, it can
-      // sometimes return `true` even if the text wasn't actually copied.
+      // sometimes return `true` even if the text wasn't actually copied so try to use navigator.clipboard first
       const copied = legacyCopyText(text);
       if (!copied) {
         throw new BusinessError("Unable to write text to clipboard");
