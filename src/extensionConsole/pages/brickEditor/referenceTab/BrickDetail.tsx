@@ -20,7 +20,6 @@ import styles from "./BrickDetail.module.scss";
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
-import copy from "copy-text-to-clipboard";
 import AceEditor from "@/vendors/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -83,7 +82,7 @@ const BrickDetail: React.FunctionComponent<{
 
   const copyHandler = useUserAction(
     async () => {
-      copy(makeArgumentYaml(schema));
+      await navigator.clipboard.writeText(makeArgumentYaml(schema));
     },
     {
       successMessage: "Copied input argument YAML to clipboard",

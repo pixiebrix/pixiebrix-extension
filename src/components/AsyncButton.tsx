@@ -19,7 +19,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, type ButtonProps } from "react-bootstrap";
 
 export type AsyncButtonProps = ButtonProps & {
-  onClick: (() => Promise<void>) | (() => void);
+  onClick:
+    | ((event: React.MouseEvent) => Promise<void>)
+    | ((event: React.MouseEvent) => void);
   autoFocus?: boolean;
 };
 
@@ -40,16 +42,19 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
     };
   }, []);
 
-  const handleClick = useCallback(async () => {
-    setPending(true);
-    try {
-      await onClick();
-    } finally {
-      if (mounted.current) {
-        setPending(false);
+  const handleClick = useCallback(
+    async (event: React.MouseEvent) => {
+      setPending(true);
+      try {
+        await onClick(event);
+      } finally {
+        if (mounted.current) {
+          setPending(false);
+        }
       }
-    }
-  }, [onClick]);
+    },
+    [onClick]
+  );
 
   return (
     <Button
@@ -57,7 +62,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
       {...buttonProps}
       onClick={(event) => {
         event.stopPropagation();
-        void handleClick();
+        void handleClick(event);
       }}
     >
       {children}
