@@ -17,7 +17,10 @@
 
 import { groupBy, lowerCase, sortBy } from "lodash";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  type FormState,
+  isFormState,
+} from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/pageEditor/utils";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type UUID } from "@/types/stringTypes";
@@ -46,7 +49,7 @@ function arrangeElements({
   const elementIds = new Set(elements.map((formState) => formState.uuid));
 
   const queryFilter = (item: IExtension | FormState) => {
-    const recipe = item._recipe ?? item.recipe;
+    const recipe = isFormState(item) ? item.recipe : item._recipe;
     const queryName = recipe?.name ?? item.label;
 
     return (
