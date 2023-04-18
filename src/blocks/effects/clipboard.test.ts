@@ -16,19 +16,11 @@
  */
 
 import { CopyToClipboard } from "@/blocks/effects/clipboard";
-import copy from "copy-text-to-clipboard";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 import userEvent from "@testing-library/user-event";
 
 const brick = new CopyToClipboard();
-
-jest.mock("copy-text-to-clipboard", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const copyMock = copy as jest.MockedFunction<typeof copy>;
 
 // From https://en.wikipedia.org/wiki/Data_URI_scheme
 const SMALL_RED_DOT_URI =
@@ -38,12 +30,17 @@ const SMALL_RED_DOT_URI =
 (navigator as any).clipboard = {
   ...navigator.clipboard,
   write: jest.fn(),
+  writeText: jest.fn(),
 };
 
 globalThis.ClipboardItem = jest.fn();
 
 const writeMock = navigator.clipboard.write as jest.MockedFunction<
   typeof navigator.clipboard.write
+>;
+
+const writeTextMock = navigator.clipboard.writeText as jest.MockedFunction<
+  typeof navigator.clipboard.writeText
 >;
 
 describe("CopyToClipboard", () => {
@@ -54,7 +51,7 @@ describe("CopyToClipboard", () => {
   it("copies to clipboard", async () => {
     const text = "Hello, world!";
     await brick.run(unsafeAssumeValidArg({ text }), {} as any);
-    expect(copyMock).toHaveBeenCalledWith(text);
+    expect(writeTextMock).toHaveBeenCalledWith(text);
   });
 
   it("copies null to clipboard", async () => {
@@ -62,7 +59,7 @@ describe("CopyToClipboard", () => {
       unsafeAssumeValidArg({ text: null, contentType: "infer" }),
       {} as any
     );
-    expect(copyMock).toHaveBeenCalledWith("null");
+    expect(writeTextMock).toHaveBeenCalledWith("null");
   });
 
   it("copies boolean clipboard", async () => {
@@ -70,7 +67,7 @@ describe("CopyToClipboard", () => {
       unsafeAssumeValidArg({ text: false, contentType: "infer" }),
       {} as any
     );
-    expect(copyMock).toHaveBeenCalledWith("false");
+    expect(writeTextMock).toHaveBeenCalledWith("false");
   });
 
   it("copies image to clipboard", async () => {
@@ -78,7 +75,7 @@ describe("CopyToClipboard", () => {
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "infer" }),
       {} as any
     );
-    expect(copyMock).not.toHaveBeenCalled();
+    expect(writeTextMock).not.toHaveBeenCalled();
     expect(writeMock).toHaveBeenCalled();
     expect(ClipboardItem).toHaveBeenCalledWith({
       "image/png": expect.any(Blob),

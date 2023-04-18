@@ -31,16 +31,6 @@ import {
 import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([

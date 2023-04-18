@@ -46,7 +46,7 @@ import getSvgIcon from "@/icons/getSvgIcon";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
@@ -159,10 +159,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   async getBlocks(
     extension: ResolvedExtension<PanelConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.body);
+    return selectAllBlocks(extension.config.body);
   }
 
-  removeExtensions(): void {
+  clearExtensionInterfaceAndEvents(): void {
     // FIXME: implement this to avoid unnecessary firing
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }

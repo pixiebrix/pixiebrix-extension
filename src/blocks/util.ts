@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, mapValues, pickBy } from "lodash";
+import { mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type IBlock } from "@/types/blockTypes";
+import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
@@ -64,20 +64,10 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
   return {};
 }
 
-/** Return block definitions for all blocks referenced in a pipeline */
-export async function blockList(
+/** Return IBlocks for all blocks referenced in a pipeline, including any sub-pipelines. */
+export async function selectAllBlocks(
   config: BlockConfig | BlockPipeline
 ): Promise<IBlock[]> {
-  return Promise.all(
-    castArray(config).map(async ({ id }) => {
-      if (id == null) {
-        throw new PipelineConfigurationError(
-          "Pipeline stage is missing a block id",
-          config
-        );
-      }
-
-      return blockRegistry.lookup(id);
-    })
-  );
+  const ids = BlockIdVisitor.collectBlockIds(config);
+  return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));
 }

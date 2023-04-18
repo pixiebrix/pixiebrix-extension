@@ -19,7 +19,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, type ButtonProps } from "react-bootstrap";
 
 export type AsyncButtonProps = ButtonProps & {
-  onClick: (() => Promise<void>) | (() => void);
+  onClick: // Don't simplify to (event: React.MouseEvent) => Promise<void> | void. Union necessary to allow
+  // callsites to pass in a function that returns a Promise<T>. (Because Typescript does not consider Promise<T>
+  // compatible with void return type.
+  | ((event: React.MouseEvent) => Promise<void>)
+    | ((event: React.MouseEvent) => void);
   autoFocus?: boolean;
 };
 
@@ -40,16 +44,19 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
     };
   }, []);
 
-  const handleClick = useCallback(async () => {
-    setPending(true);
-    try {
-      await onClick();
-    } finally {
-      if (mounted.current) {
-        setPending(false);
+  const handleClick = useCallback(
+    async (event: React.MouseEvent) => {
+      setPending(true);
+      try {
+        await onClick(event);
+      } finally {
+        if (mounted.current) {
+          setPending(false);
+        }
       }
-    }
-  }, [onClick]);
+    },
+    [onClick]
+  );
 
   return (
     <Button
@@ -57,7 +64,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
       {...buttonProps}
       onClick={(event) => {
         event.stopPropagation();
-        void handleClick();
+        void handleClick(event);
       }}
     >
       {children}

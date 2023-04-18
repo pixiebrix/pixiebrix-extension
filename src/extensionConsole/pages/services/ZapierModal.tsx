@@ -20,10 +20,10 @@ import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import copy from "copy-text-to-clipboard";
 import useFetch from "@/hooks/useFetch";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 interface OwnProps {
   onClose: () => void;
@@ -32,8 +32,8 @@ interface OwnProps {
 const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
   const { data } = useFetch<{ api_key: string }>("/api/webhooks/key/");
 
-  const handleCopy = useCallback(() => {
-    copy(data?.api_key);
+  const handleCopy = useCallback(async () => {
+    await writeTextToClipboard(String(data?.api_key));
     notify.success("Copied API Key to clipboard");
     reportEvent("ZapierKeyCopy");
   }, [data?.api_key]);

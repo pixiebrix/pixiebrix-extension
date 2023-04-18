@@ -53,7 +53,7 @@ type InnerDefinition = InnerExtensionPoint | InnerBlock;
 
 export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
-  return `@internal/${hash}` as RegistryId;
+  return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
 
 async function ensureBlock(
@@ -70,9 +70,6 @@ async function ensureBlock(
   const registryId = makeInternalId(obj);
 
   if (await blockRegistry.exists(registryId)) {
-    console.debug(
-      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
-    );
     return blockRegistry.lookup(registryId);
   }
 
@@ -155,9 +152,6 @@ async function ensureExtensionPoint(
   const registryId = makeInternalId(obj);
 
   if (await extensionPointRegistry.exists(registryId)) {
-    console.debug(
-      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
-    );
     return extensionPointRegistry.lookup(registryId);
   }
 

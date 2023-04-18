@@ -34,7 +34,7 @@ import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -134,7 +134,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
   async getBlocks(
     extension: ResolvedExtension<QuickBarProviderConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.generator);
+    return selectAllBlocks(extension.config.generator);
   }
 
   public get kind(): "quickBarProvider" {
@@ -143,7 +143,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
   override uninstall(): void {
     // Remove generators and all existing actions in the Quick Bar
-    this.removeExtensions(this.extensions.map((x) => x.id));
+    this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
     quickBarRegistry.removeExtensionPointActions(this.id);
     this.extensions.splice(0, this.extensions.length);
   }
@@ -152,7 +152,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
    * Unregister quick bar action providers for the given extension IDs.
    * @param extensionIds the extensions IDs to unregister
    */
-  removeExtensions(extensionIds: UUID[]): void {
+  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeGenerator(this.generators.get(extensionId));
       this.generators.delete(extensionId);
@@ -187,7 +187,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
     if (!testMatchPatterns(this.documentUrlPatterns)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
-      this.removeExtensions(this.extensions.map((x) => x.id));
+      this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
       return;
     }
 

@@ -37,16 +37,6 @@ import { RunReason } from "@/types/runtimeTypes";
 
 const rootReader = new RootReader();
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 browser.runtime.getURL = jest
   .fn()
   .mockImplementation((path) => `chrome-extension://abc/${path}`);

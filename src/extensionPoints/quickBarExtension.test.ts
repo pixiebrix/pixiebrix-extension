@@ -42,16 +42,6 @@ import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();

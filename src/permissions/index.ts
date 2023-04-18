@@ -161,7 +161,7 @@ type PermissionOptions = {
 };
 
 /**
- * Returns browser permissions required to run the extension
+ * Returns browser permissions required to run the IExtension
  * - Extension
  * - Blocks
  * - Services (optional, default=true)
