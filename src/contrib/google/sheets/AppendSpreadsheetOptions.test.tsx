@@ -27,10 +27,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { dereference } from "@/validators/generic";
-import {
-  BASE_SHEET_SCHEMA,
-  SHEET_SERVICE_SCHEMA,
-} from "@/contrib/google/sheets/schemas";
+import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import { render } from "@/pageEditor/testHelpers";
 import {
@@ -39,8 +36,6 @@ import {
 } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
-import { syncFlagOn } from "@/store/syncFlags";
-import useFlags from "@/hooks/useFlags";
 import { selectSchemaFieldType } from "@/testUtils/formHelpers";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
