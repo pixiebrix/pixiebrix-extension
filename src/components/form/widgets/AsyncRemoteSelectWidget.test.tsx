@@ -29,14 +29,6 @@ import { type Option } from "@/components/form/widgets/SelectWidget";
 const id = "widget";
 const name = "widget";
 
-beforeEach(() => {
-  jest.useFakeTimers();
-});
-
-afterEach(() => {
-  jest.useRealTimers();
-});
-
 describe("AsyncRemoteSelectWidget", () => {
   test("does not fetch by default without defaultOptions", async () => {
     const onChangeMock = jest.fn();
