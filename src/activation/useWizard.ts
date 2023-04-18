@@ -53,24 +53,24 @@ const STEPS: WizardStep[] = [
 function useWizard(
   blueprint: RecipeDefinition
 ): [WizardStep[], WizardValues, Yup.AnyObjectSchema] {
-  if (blueprint == null) {
-    return [
-      [],
-      {
-        extensions: {},
-        services: [],
-        optionsArgs: {},
-      },
-      Yup.object(),
-    ];
-  }
-
   const installedExtensions = useSelector(selectExtensions);
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint?.options?.schema
   );
 
   return useMemo(() => {
+    if (blueprint == null) {
+      return [
+        [],
+        {
+          extensions: {},
+          services: [],
+          optionsArgs: {},
+        },
+        Yup.object(),
+      ];
+    }
+
     const extensionPoints = blueprint.extensionPoints ?? [];
 
     const installedBlueprintExtensions = installedExtensions?.filter(
@@ -142,13 +142,7 @@ function useWizard(
     });
 
     return [steps, initialValues, validationSchema];
-  }, [
-    blueprint.extensionPoints,
-    blueprint?.metadata.id,
-    blueprint.options?.schema,
-    installedExtensions,
-    optionsValidationSchema,
-  ]);
+  }, [blueprint, installedExtensions, optionsValidationSchema]);
 }
 
 export default useWizard;

@@ -79,7 +79,7 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
 type RecipeState = {
   isLoading: boolean;
   recipe: RecipeDefinition | null;
-  recipeName: string | null;
+  recipeNameComponent: React.ReactNode | null;
   includesQuickbar: boolean;
 };
 
@@ -142,19 +142,17 @@ function useRecipeState(recipeId: RegistryId): RecipeState {
     isLoadingListing ||
     !quickBarIsResolved;
 
-  // return useMemo<RecipeState>(() => ({
-  //   isLoading,
-  //   recipe,
-  //   recipeName,
-  //   includesQuickbar,
-  // }), [includesQuickbar, isLoading, recipe, recipeName]);
-
-  return {
-    isLoading,
-    recipe,
-    recipeName,
-    includesQuickbar,
-  };
+  return useMemo<RecipeState>(
+    () => ({
+      isLoading,
+      recipe,
+      recipeNameComponent: (
+        <div className={styles.recipeName}>{recipeName}</div>
+      ),
+      includesQuickbar,
+    }),
+    [includesQuickbar, isLoading, recipe, recipeName]
+  );
 }
 
 type ActivationState = {
@@ -278,19 +276,15 @@ function useActivationViewState(
     }
   }, [state.canAutoActivate, state.isInitialized]);
 
-  // return useMemo(() => ({
-  //   activate: async () => dispatchActivateRecipe(state, dispatch),
-  //   isLoading: !state.isInitialized || state.isActivating,
-  //   isActivated: state.isActivated,
-  //   activationError: state.activationError,
-  // }), [state]);
-
-  return {
-    activate: async () => dispatchActivateRecipe(state, dispatch),
-    isLoading: !state.isInitialized || state.isActivating,
-    isActivated: state.isActivated,
-    activationError: state.activationError,
-  };
+  return useMemo(
+    () => ({
+      activate: async () => dispatchActivateRecipe(state, dispatch),
+      isLoading: !state.isInitialized || state.isActivating,
+      isActivated: state.isActivated,
+      activationError: state.activationError,
+    }),
+    [state]
+  );
 }
 
 const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
@@ -315,23 +309,17 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   const {
     isLoading: isLoadingRecipe,
     recipe,
-    recipeName,
+    recipeNameComponent,
     includesQuickbar,
   } = useRecipeState(recipeId);
 
-  const recipeNameComponent = (
-    <div className={styles.recipeName}>{recipeName}</div>
-  );
-
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
   const activateFormValues = useRef<WizardValues>(initialValues);
-  // const activateRecipe = useCallback(
-  //   async (recipe: RecipeDefinition) => marketplaceActivateRecipe(activateFormValues.current, recipe),
-  //   [marketplaceActivateRecipe]
-  // );
-
-  const activateRecipe = async (recipe: RecipeDefinition) =>
-    marketplaceActivateRecipe(activateFormValues.current, recipe);
+  const activateRecipe = useCallback(
+    async (recipe: RecipeDefinition) =>
+      marketplaceActivateRecipe(activateFormValues.current, recipe),
+    [marketplaceActivateRecipe]
+  );
 
   const {
     activate,
