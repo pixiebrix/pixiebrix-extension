@@ -120,12 +120,9 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanC],
       installed: [installedOrphanH, installedOrphanG],
       recipes: [],
-      availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanC.uuid],
-      showAll: false,
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
-      expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([
@@ -140,93 +137,13 @@ describe("arrangeElements()", () => {
       elements: [dynamicBarE, dynamicFooB],
       installed: [installedFooA, installedBarF, installedBarD],
       recipes: [recipeFoo, recipeBar],
-      availableInstalledIds: [
-        installedFooA.id,
-        installedBarD.id,
-        installedBarF.id,
-      ],
-      availableDynamicIds: [dynamicBarE.uuid, dynamicFooB.uuid],
-      showAll: false,
       activeElementId: dynamicBarE.uuid,
       activeRecipeId: null,
-      expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toEqual([
       [recipeBar.metadata.id, [installedBarD, dynamicBarE, installedBarF]],
-      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
-    ]);
-  });
-
-  test("handle showAll flag properly", () => {
-    const elements = arrangeElements({
-      elements: [dynamicBarE],
-      installed: [installedFooA, installedOrphanH],
-      recipes: [recipeFoo, recipeBar],
-      availableInstalledIds: [installedFooA.id],
-      availableDynamicIds: [dynamicBarE.uuid],
-      showAll: true,
-      activeElementId: dynamicBarE.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: null,
-    });
-
-    expect(elements).toStrictEqual([
-      [recipeBar.metadata.id, [dynamicBarE]],
-      [recipeFoo.metadata.id, [installedFooA]],
-      installedOrphanH,
-    ]);
-  });
-
-  test("keep active element when not available", () => {
-    const elements = arrangeElements({
-      elements: [dynamicOrphanC],
-      installed: [],
-      recipes: [],
-      availableInstalledIds: [],
-      availableDynamicIds: [],
-      showAll: false,
-      activeElementId: dynamicOrphanC.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: null,
-    });
-
-    expect(elements).toStrictEqual([dynamicOrphanC]);
-  });
-
-  test("keep active recipe when elements not available", () => {
-    const elements = arrangeElements({
-      elements: [dynamicFooB, dynamicOrphanC],
-      installed: [installedFooA],
-      recipes: [recipeFoo],
-      availableInstalledIds: [],
-      availableDynamicIds: [ID_ORPHAN_C],
-      showAll: false,
-      activeElementId: null,
-      activeRecipeId: ID_FOO,
-      expandedRecipeId: null,
-    });
-
-    expect(elements).toStrictEqual([
-      dynamicOrphanC,
-      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
-    ]);
-  });
-
-  test("show element if its recipe is expanded", () => {
-    const elements = arrangeElements({
-      elements: [dynamicFooB],
-      installed: [installedFooA],
-      recipes: [recipeFoo],
-      availableInstalledIds: [installedFooA.id],
-      availableDynamicIds: [],
-      showAll: false,
-      activeElementId: dynamicOrphanC.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: recipeFoo.metadata.id,
-    });
-
-    expect(elements).toStrictEqual([
       [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
     ]);
   });
@@ -236,14 +153,37 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanH],
       installed: [installedOrphanH],
       recipes: [],
-      availableInstalledIds: [installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanH.uuid],
-      showAll: false,
       activeElementId: ID_ORPHAN_H,
       activeRecipeId: null,
-      expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([dynamicOrphanH]);
+  });
+
+  test("search query filters correctly", () => {
+    const elements = arrangeElements({
+      elements: [dynamicOrphanC, dynamicOrphanH],
+      installed: [installedOrphanH, installedOrphanG],
+      recipes: [],
+      activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
+      query: "c",
+    });
+
+    expect(elements).toStrictEqual([dynamicOrphanC]);
+  });
+
+  test("search query keeps active items", () => {
+    const elements = arrangeElements({
+      elements: [dynamicOrphanC, dynamicOrphanH],
+      installed: [installedOrphanH, installedOrphanG],
+      recipes: [],
+      activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
+      query: "g",
+    });
+
+    expect(elements).toStrictEqual([dynamicOrphanC, installedOrphanG]);
   });
 });
