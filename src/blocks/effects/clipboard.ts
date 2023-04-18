@@ -20,105 +20,13 @@ import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import pDefer from "p-defer";
-import notify, { hideNotification } from "@/utils/notify";
-
-type ContentType = "infer" | "text" | "image";
-
-function detectContentType(content: unknown): "text" | "image" {
-  if (typeof content === "string" && content.startsWith("data:image/")) {
-    return "image";
-  }
-
-  return "text";
-}
-
-function isDocumentFocusError(error: unknown): boolean {
-  // Chrome throws a DOMException with the message "Document is not focused" when it can't establish a user action
-  // for the clipboard write request
-  // https://stackoverflow.com/questions/56306153/domexception-on-calling-navigator-clipboard-readtext/70386674#70386674
-  return getErrorMessage(error)
-    .toLowerCase()
-    .includes("document is not focused");
-}
-
-// Parse instead of using fetch to avoid potential CSP issues with data: URIs
-// https://stackoverflow.com/a/12300351
-function dataURItoBlob(dataURI: string): Blob {
-  // Convert base64 to raw binary data held in a string doesn't handle URLEncoded DataURIs - see SO answer #6850276 for
-  // code that does this
-  const byteString = atob(dataURI.split(",")[1]);
-
-  // Separate out the mime component
-  const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
-
-  // Write the bytes of the string to an ArrayBuffer
-  const ab = new ArrayBuffer(byteString.length);
-
-  // Create a view into the buffer
-  const ia = new Uint8Array(ab);
-
-  // Set the bytes of the buffer to the correct values
-  for (let i = 0; i < byteString.length; i++) {
-    // eslint-disable-next-line unicorn/prefer-code-point,security/detect-object-injection -- is a number; copied SO
-    ia[i] = byteString.charCodeAt(i);
-  }
-
-  // Write the ArrayBuffer to a blob, and you're done
-  return new Blob([ab], { type: mimeString });
-}
-
-async function writeToClipboard(
-  promiseFn: () => Promise<void>,
-  { type }: { type: "text" | "image" }
-): Promise<void> {
-  try {
-    await promiseFn();
-  } catch (error) {
-    if (isDocumentFocusError(error)) {
-      const copyPromise = pDefer<void>();
-
-      const notificationId = notify.info({
-        message: `Click anywhere to copy ${type} to clipboard`,
-        duration: Number.POSITIVE_INFINITY,
-        dismissable: false,
-      });
-
-      const handler = async () => {
-        try {
-          hideNotification(notificationId);
-          await promiseFn();
-          copyPromise.resolve();
-        } catch (error) {
-          if (isDocumentFocusError(error)) {
-            copyPromise.reject(
-              new BusinessError(
-                "Your Browser was unable to determine the user action that initiated the clipboard write."
-              )
-            );
-            return;
-          }
-
-          copyPromise.reject(error);
-        }
-      };
-
-      document.body.addEventListener("click", handler);
-
-      try {
-        await copyPromise.promise;
-      } finally {
-        document.body.removeEventListener("click", handler);
-      }
-
-      // Remember to return to avoid falling through to the original error
-      return;
-    }
-
-    throw error;
-  }
-}
+import {
+  type ContentType,
+  dataURItoBlob,
+  detectContentType,
+  writeTextToClipboard,
+  writeToClipboard,
+} from "@/utils/clipboardUtils";
 
 export class CopyToClipboard extends Effect {
   constructor() {
@@ -189,24 +97,17 @@ export class CopyToClipboard extends Effect {
           );
         }
 
-        const data = [
+        await writeToClipboard([
           new ClipboardItem({
             [blob.type]: blob,
           }),
-        ];
-
-        await writeToClipboard(async () => navigator.clipboard.write(data), {
-          type: "image",
-        });
+        ]);
 
         break;
       }
 
       case "text": {
-        await writeToClipboard(
-          async () => navigator.clipboard.writeText(String(text)),
-          { type: "text" }
-        );
+        await writeTextToClipboard(String(text));
         break;
       }
 

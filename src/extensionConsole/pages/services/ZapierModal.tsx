@@ -23,6 +23,7 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import useFetch from "@/hooks/useFetch";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 interface OwnProps {
   onClose: () => void;
@@ -32,7 +33,7 @@ const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
   const { data } = useFetch<{ api_key: string }>("/api/webhooks/key/");
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(data?.api_key);
+    await writeTextToClipboard(String(data?.api_key));
     notify.success("Copied API Key to clipboard");
     reportEvent("ZapierKeyCopy");
   }, [data?.api_key]);

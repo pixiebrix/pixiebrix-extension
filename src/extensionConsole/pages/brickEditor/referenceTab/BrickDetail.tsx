@@ -34,6 +34,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -82,7 +83,7 @@ const BrickDetail: React.FunctionComponent<{
 
   const copyHandler = useUserAction(
     async () => {
-      await navigator.clipboard.writeText(makeArgumentYaml(schema));
+      await writeTextToClipboard(makeArgumentYaml(schema));
     },
     {
       successMessage: "Copied input argument YAML to clipboard",

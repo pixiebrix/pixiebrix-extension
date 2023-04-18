@@ -23,6 +23,7 @@ import styles from "./JsonTree.module.scss";
 import cx from "classnames";
 import { getPathFromArray } from "@/runtime/pathHelpers";
 import AsyncButton from "@/components/AsyncButton";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 export function useLabelRenderer() {
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
@@ -44,7 +45,7 @@ export function useLabelRenderer() {
           aria-label="Copy path"
           href="#"
           onClick={async (event) => {
-            await navigator.clipboard.writeText(
+            await writeTextToClipboard(
               getPathFromArray([key, ...rest].reverse())
             );
             event.preventDefault();
