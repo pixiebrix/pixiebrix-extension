@@ -35,13 +35,15 @@ import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import { useAsyncState } from "@/hooks/common";
 import { type AnyObjectSchema } from "yup";
+import { useSelector } from "react-redux";
+import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { isEmpty } from "lodash";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
   wizardSteps: WizardStep[];
   initialValues: WizardValues;
   validationSchema: AnyObjectSchema;
-  isReinstall: boolean;
   onClickCancel: () => void;
   header?: React.ReactNode;
   formValuesRef?: React.MutableRefObject<WizardValues>;
@@ -54,7 +56,6 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   wizardSteps,
   initialValues,
   validationSchema,
-  isReinstall,
   onClickCancel,
   header,
   formValuesRef,
@@ -64,6 +65,14 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
   const [needsPermissions, setNeedsPermissions] = useState(false);
+
+  let isReinstall = false;
+  const recipeExtensions = useSelector(
+    selectExtensionsForRecipe(recipe?.metadata?.id)
+  );
+  if (!isEmpty(recipeExtensions)) {
+    isReinstall = true;
+  }
 
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),

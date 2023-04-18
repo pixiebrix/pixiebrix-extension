@@ -31,7 +31,7 @@ import { useRecipe } from "@/recipes/recipesHooks";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateRecipePanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
@@ -39,7 +39,6 @@ import cx from "classnames";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
-import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveRecipe } from "@/registry/internal";
 import { useAsyncEffect } from "use-async-effect";
@@ -293,12 +292,6 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     void hideSidebar(topFrame);
   }
 
-  let isReinstall = false;
-  const recipeExtensions = useSelector(selectExtensionsForRecipe(recipeId));
-  if (!isEmpty(recipeExtensions)) {
-    isReinstall = true;
-  }
-
   const {
     isLoading: isLoadingRecipe,
     recipe,
@@ -388,7 +381,6 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
           wizardSteps={wizardSteps}
           initialValues={initialValues}
           validationSchema={validationSchema}
-          isReinstall={isReinstall}
           onClickCancel={closeSidebar}
           header={
             <>
