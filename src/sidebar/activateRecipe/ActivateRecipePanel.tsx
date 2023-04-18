@@ -84,8 +84,6 @@ type RecipeState = {
 };
 
 function useRecipeState(recipeId: RegistryId): RecipeState {
-  console.log("*** useRecipeState()");
-
   // Recipe
   const {
     data: recipe,
@@ -213,21 +211,16 @@ async function dispatchActivateRecipe(
   dispatch: Dispatch<AnyAction>
 ) {
   if (!state.isInitialized || state.isActivating || state.isActivated) {
-    console.log("*** dispatchActivateRecipe() - check failed, returning");
     return;
   }
-
-  console.log("*** dispatchActivateRecipe() - activating");
 
   dispatch(activateStart());
 
   const { success, error } = await state.activateRecipe();
 
   if (success) {
-    console.log("*** dispatchActivateRecipe() - success");
     dispatch(activateSuccess());
   } else {
-    console.log("*** dispatchActivateRecipe() - error");
     dispatch(activateError(error));
   }
 }
