@@ -24,7 +24,6 @@ import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
-import { syncFlagOn } from "@/store/syncFlags";
 import { type Schema } from "@/types/schemaTypes";
 import { type ExpressionType } from "@/types/runtimeTypes";
 
@@ -217,11 +216,7 @@ export function getToggleOptions({
       Widget: widgetsRegistry.SheetsFileWidget,
       interpretValue: () => "",
     });
-
-    if (syncFlagOn("gsheets-mod-inputs")) {
-      handleVarOption();
-    }
-
+    handleVarOption();
     handleOptionalValue();
     return options;
   }
