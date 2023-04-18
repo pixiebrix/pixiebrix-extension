@@ -30,7 +30,6 @@ type ArrangeElementsArgs = {
   recipes: RecipeDefinition[];
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
-  expandedRecipeId: RegistryId | null;
   query: string;
 };
 
@@ -42,28 +41,28 @@ function arrangeElements({
   recipes,
   activeElementId,
   activeRecipeId,
-  expandedRecipeId,
   query,
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
-  const filteredExtensions: IExtension[] = installed.filter(
-    (extension) =>
-      // Note: we can take out this elementIds filter if and when we persist the editor
-      // slice and remove installed extensions when they become dynamic elements
-      !elementIds.has(extension.id) &&
-      ([expandedRecipeId, activeRecipeId].includes(extension._recipe?.id) ||
-        query.length === 0 ||
-        (query.length > 0 &&
-          lowerCase(extension.label).includes(lowerCase(query))))
-  );
 
-  const filteredDynamicElements: FormState[] = elements.filter(
-    (formState) =>
-      activeElementId === formState.uuid ||
-      [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id) ||
+  const queryFilter = (item: IExtension | FormState) => {
+    const recipe = item._recipe ?? item.recipe;
+    const queryName = recipe?.name ?? item.label;
+
+    return (
+      recipe?.id === activeRecipeId ||
+      activeElementId === item.uuid ||
       query.length === 0 ||
-      (query.length > 0 &&
-        lowerCase(formState.label).includes(lowerCase(query)))
+      (query.length > 0 && lowerCase(queryName).includes(lowerCase(query)))
+    );
+  };
+
+  const filteredExtensions: IExtension[] = installed
+    .filter((extension) => !elementIds.has(extension.id))
+    .filter((extension) => queryFilter(extension));
+
+  const filteredDynamicElements: FormState[] = elements.filter((element) =>
+    queryFilter(element)
   );
 
   const grouped = groupBy(
