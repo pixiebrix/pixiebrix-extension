@@ -20,7 +20,6 @@ import styles from "./BrickDetail.module.scss";
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
-import copy from "copy-text-to-clipboard";
 import AceEditor from "@/vendors/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -35,6 +34,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -83,7 +83,7 @@ const BrickDetail: React.FunctionComponent<{
 
   const copyHandler = useUserAction(
     async () => {
-      copy(makeArgumentYaml(schema));
+      await writeTextToClipboard(makeArgumentYaml(schema));
     },
     {
       successMessage: "Copied input argument YAML to clipboard",
