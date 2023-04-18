@@ -129,6 +129,8 @@ async function interactiveWriteToClipboard(
 export async function writeTextToClipboard(text: string): Promise<void> {
   try {
     await interactiveWriteToClipboard(
+      // Fails in frame contexts if the frame CSP doesn't include clipboard-write. Unfortunately, that includes the
+      // Chrome DevTools. In this case, will fall back to legacy method
       async () => navigator.clipboard.writeText(text),
       {
         type: "text",
