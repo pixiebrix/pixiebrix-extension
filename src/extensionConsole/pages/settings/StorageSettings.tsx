@@ -54,7 +54,7 @@ type StorageEstimate = {
 
 const StorageSettings: React.FunctionComponent = () => {
   const [storageEstimate] = useAsyncState(
-    async () => navigator.storage.estimate() as StorageEstimate,
+    async () => navigator.storage.estimate() as Promise<StorageEstimate>,
     []
   );
 
