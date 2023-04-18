@@ -50,7 +50,7 @@ function arrangeElements({
     const queryName = recipe?.name ?? item.label;
 
     return (
-      recipe?.id === activeRecipeId ||
+      activeRecipeId === recipe?.id ||
       activeElementId === item.uuid ||
       query.length === 0 ||
       (query.length > 0 && lowerCase(queryName).includes(lowerCase(query)))
@@ -58,6 +58,8 @@ function arrangeElements({
   };
 
   const filteredExtensions: IExtension[] = installed
+    // Note: we can take out this elementIds filter if and when we persist the editor
+    // slice and remove installed extensions when they become dynamic elements
     .filter((extension) => !elementIds.has(extension.id))
     .filter((extension) => queryFilter(extension));
 
