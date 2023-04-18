@@ -15,7 +15,7 @@ exports[`AppendSpreadsheetOptions should render successfully with string spreads
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
         >
-          Spreadsheet
+          Google Sheet
         </label>
         <div
           class="col-xl-10 col-lg-9"
@@ -412,7 +412,7 @@ exports[`AppendSpreadsheetOptions should render successfully with string spreads
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
         >
-          Spreadsheet
+          Google Sheet
         </label>
         <div
           class="col-xl-10 col-lg-9"
@@ -809,7 +809,7 @@ exports[`AppendSpreadsheetOptions should render successfully with string spreads
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
         >
-          Spreadsheet
+          Google Sheet
         </label>
         <div
           class="col-xl-10 col-lg-9"
