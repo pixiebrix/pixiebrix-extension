@@ -145,6 +145,11 @@ function makeMatchEntry(
     });
 }
 
+export async function count(): Promise<number> {
+  const db = await getDB();
+  return db.count(ENTRY_OBJECT_STORE);
+}
+
 export async function clearLogs(): Promise<void> {
   const db = await getDB();
 

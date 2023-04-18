@@ -125,6 +125,14 @@ export async function clear(): Promise<void> {
 }
 
 /**
+ * Return the number of records in the registry.
+ */
+export async function count(): Promise<number> {
+  const db = await getBrickDB();
+  return db.count(BRICK_STORE);
+}
+
+/**
  * Put all the packages in the local database.
  * @param packages the packages to put in the database
  */

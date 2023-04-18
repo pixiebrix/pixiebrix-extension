@@ -27,6 +27,7 @@ import ExperimentalSettings from "@/extensionConsole/pages/settings/Experimental
 import useFlags from "@/hooks/useFlags";
 import { selectOrganization } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
+import StorageSettings from "@/extensionConsole/pages/settings/StorageSettings";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -74,6 +75,12 @@ const SettingsPage: React.FunctionComponent = () => {
       {permit("permissions") && (
         <Section>
           <PermissionsSettings />
+        </Section>
+      )}
+
+      {flagOn("settings-storage") && (
+        <Section>
+          <StorageSettings />
         </Section>
       )}
 
