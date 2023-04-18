@@ -15,7 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  type Dispatch,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
@@ -39,8 +47,14 @@ import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoi
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
-import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
+import useMarketplaceActivateRecipe, {
+  type ActivateResult,
+} from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type AnyAction } from "redux";
+import useWizard from "@/activation/useWizard";
 
 const { actions } = sidebarSlice;
 
@@ -62,23 +76,39 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
   );
 };
 
-const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
-  recipeId,
-}) => {
-  const dispatch = useDispatch();
-  const activateRecipe = useMarketplaceActivateRecipe();
-  const [activateError, setActivateError] = useState<string | null>(null);
+type RecipeState = {
+  isLoading: boolean;
+  recipe: RecipeDefinition | null;
+  recipeName: string | null;
+  includesQuickbar: boolean;
+};
 
+function useRecipeState(recipeId: RegistryId): RecipeState {
+  console.log("*** useRecipeState()");
+
+  // Recipe
   const {
     data: recipe,
-    isLoading,
+    isLoading: isLoadingRecipe,
     isUninitialized,
     error: recipeError,
   } = useRecipe(recipeId);
 
-  const isLoadingRecipe = isUninitialized || isLoading;
+  // Listing
+  const {
+    data: listings,
+    isLoading: isLoadingListing,
+    error: listingError,
+  } = useGetMarketplaceListingsQuery({ package__name: recipeId });
+  // eslint-disable-next-line security/detect-object-injection -- RegistryId
+  const listing = useMemo(() => listings?.[recipeId], [listings, recipeId]);
 
-  // Quick Bar affordances
+  // Name component
+  const recipeName =
+    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
+
+  // Quick Bar
+  const [quickBarIsResolved, setQuickbarIsResolved] = useState(false);
   const [includesQuickbar, setIncludesQuickbar] = useState(false);
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),
@@ -88,19 +118,192 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     setIncludesQuickbar(
       await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
     );
+    setQuickbarIsResolved(true);
   }, [resolvedRecipeConfigs]);
+
+  // Throw errors
+  useEffect(() => {
+    if (recipeError || listingError) {
+      throw recipeError ?? listingError;
+    }
+  }, [recipeError, listingError]);
+
+  // Ensure recipe is loaded
+  useEffect(() => {
+    if (!isUninitialized && !isLoadingRecipe && !recipeError && !recipe) {
+      throw new Error(`Recipe ${recipeId} not found`);
+    }
+  }, [isLoadingRecipe, isUninitialized, recipe, recipeError, recipeId]);
+
+  // Loading state
+  const isLoading =
+    isUninitialized ||
+    isLoadingRecipe ||
+    isLoadingListing ||
+    !quickBarIsResolved;
+
+  // return useMemo<RecipeState>(() => ({
+  //   isLoading,
+  //   recipe,
+  //   recipeName,
+  //   includesQuickbar,
+  // }), [includesQuickbar, isLoading, recipe, recipeName]);
+
+  return {
+    isLoading,
+    recipe,
+    recipeName,
+    includesQuickbar,
+  };
+}
+
+type ActivationState = {
+  isInitialized: boolean;
+  activateRecipe: () => Promise<ActivateResult>;
+  canAutoActivate: boolean;
+  isActivating: boolean;
+  isActivated: boolean;
+  activationError: string | null;
+};
+
+const initialState: ActivationState = {
+  isInitialized: false,
+  async activateRecipe() {
+    throw new Error("Activation state not initialized");
+  },
+  canAutoActivate: false,
+  isActivating: false,
+  isActivated: false,
+  activationError: null,
+};
+
+type Initialize = {
+  canAutoActivate: boolean;
+  activateRecipe: () => Promise<ActivateResult>;
+};
+
+const activationSlice = createSlice({
+  name: "activationSlice",
+  initialState,
+  reducers: {
+    initialize(state, action: PayloadAction<Initialize>) {
+      const { canAutoActivate, activateRecipe } = action.payload;
+      state.isInitialized = true;
+      state.canAutoActivate = canAutoActivate;
+      state.activateRecipe = activateRecipe;
+    },
+    activateStart(state) {
+      state.isActivating = true;
+      state.activationError = null;
+    },
+    activateSuccess(state) {
+      state.isActivating = false;
+      state.isActivated = true;
+    },
+    activateError(state, action: PayloadAction<string>) {
+      state.activationError = action.payload;
+      state.isActivating = false;
+    },
+  },
+});
+
+const { initialize, activateStart, activateSuccess, activateError } =
+  activationSlice.actions;
+
+async function dispatchActivateRecipe(
+  state: ActivationState,
+  dispatch: Dispatch<AnyAction>
+) {
+  if (!state.isInitialized || state.isActivating || state.isActivated) {
+    console.log("*** dispatchActivateRecipe() - check failed, returning");
+    return;
+  }
+
+  console.log("*** dispatchActivateRecipe() - activating");
+
+  dispatch(activateStart());
+
+  const { success, error } = await state.activateRecipe();
+
+  if (success) {
+    console.log("*** dispatchActivateRecipe() - success");
+    dispatch(activateSuccess());
+  } else {
+    console.log("*** dispatchActivateRecipe() - error");
+    dispatch(activateError(error));
+  }
+}
+
+type ActivationViewState = {
+  activate: () => Promise<void>;
+  isLoading: boolean;
+  isActivated: boolean;
+  activationError: string | null;
+};
+
+function useActivationViewState(
+  recipe: RecipeDefinition,
+  activateRecipe: (recipe: RecipeDefinition) => Promise<ActivateResult>
+): ActivationViewState {
+  const [state, dispatch] = useReducer(activationSlice.reducer, initialState);
+
+  // Set recipe loaded
+  useEffect(() => {
+    if (!recipe || state.isInitialized) {
+      return;
+    }
+
+    const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+    const recipeServiceIds = uniq(
+      recipe.extensionPoints.flatMap(({ services }) =>
+        services ? Object.values(services) : []
+      )
+    );
+    const needsServiceInputs = recipeServiceIds.some(
+      (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+    );
+
+    dispatch(
+      initialize({
+        // Can auto-activate if no configuration required
+        canAutoActivate: !hasRecipeOptions && !needsServiceInputs,
+        activateRecipe: async () => activateRecipe(recipe),
+      })
+    );
+  }, [activateRecipe, recipe, state]);
+
+  useAsyncEffect(async () => {
+    if (state.isInitialized && state.canAutoActivate) {
+      await dispatchActivateRecipe(state, dispatch);
+    }
+  }, [state.canAutoActivate, state.isInitialized]);
+
+  // return useMemo(() => ({
+  //   activate: async () => dispatchActivateRecipe(state, dispatch),
+  //   isLoading: !state.isInitialized || state.isActivating,
+  //   isActivated: state.isActivated,
+  //   activationError: state.activationError,
+  // }), [state]);
+
+  return {
+    activate: async () => dispatchActivateRecipe(state, dispatch),
+    isLoading: !state.isInitialized || state.isActivating,
+    isActivated: state.isActivated,
+    activationError: state.activationError,
+  };
+}
+
+const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
+  recipeId,
+}) => {
+  const dispatch = useDispatch();
+  const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
   const { shortcut } = useQuickbarShortcut();
 
-  const {
-    data: listings,
-    isLoading: isLoadingListing,
-    error: listingError,
-  } = useGetMarketplaceListingsQuery({ package__name: recipeId });
-  // eslint-disable-next-line security/detect-object-injection -- RegistryId
-  const listing = listings?.[recipeId];
-
-  if (recipeError || listingError) {
-    throw recipeError ?? listingError;
+  async function closeSidebar() {
+    dispatch(actions.hideActivateRecipe());
+    const topFrame = await getTopLevelFrame();
+    void hideSidebar(topFrame);
   }
 
   let isReinstall = false;
@@ -109,99 +312,41 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     isReinstall = true;
   }
 
-  const recipeName =
-    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
+  const {
+    isLoading: isLoadingRecipe,
+    recipe,
+    recipeName,
+    includesQuickbar,
+  } = useRecipeState(recipeId);
+
   const recipeNameComponent = (
     <div className={styles.recipeName}>{recipeName}</div>
   );
 
-  const hasRecipeOptions = !isEmpty(recipe?.options?.schema?.properties);
-  const recipeServiceIds = uniq(
-    recipe?.extensionPoints.flatMap(({ services }) =>
-      services ? Object.values(services) : []
-    ) ?? []
-  );
-  const needsServiceInputs = recipeServiceIds.some(
-    (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
-  );
+  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const activateFormValues = useRef<WizardValues>(initialValues);
+  // const activateRecipe = useCallback(
+  //   async (recipe: RecipeDefinition) => marketplaceActivateRecipe(activateFormValues.current, recipe),
+  //   [marketplaceActivateRecipe]
+  // );
 
-  const [isActivating, setIsActivating] = useState(false);
-  const [recipeActivated, setRecipeActivated] = useState(false);
-  const activateFormValues = useRef<WizardValues>();
+  const activateRecipe = async (recipe: RecipeDefinition) =>
+    marketplaceActivateRecipe(activateFormValues.current, recipe);
 
-  const activate = useCallback(async () => {
-    if (recipeActivated) {
-      return;
-    }
-
-    setIsActivating(true);
-    setActivateError(null);
-
-    const result = await activateRecipe(activateFormValues.current, recipe);
-    if (result.success) {
-      setRecipeActivated(true);
-    } else {
-      setRecipeActivated(false);
-      setActivateError(result.error);
-    }
-
-    setIsActivating(false);
-  }, [activateRecipe, recipe, recipeActivated]);
-
-  useEffect(() => {
-    if (
-      !recipeActivated &&
-      !isLoadingRecipe &&
-      !recipeError &&
-      !isActivating &&
-      // Need to wait for the listing to load also so that the submit button renders
-      !isLoadingListing &&
-      // If the recipe doesn't have options or services, we can activate immediately
-      !hasRecipeOptions &&
-      !needsServiceInputs &&
-      activateFormValues.current
-    ) {
-      void activate();
-    }
-  }, [
+  const {
     activate,
-    hasRecipeOptions,
-    isActivating,
-    isLoadingListing,
-    isLoadingRecipe,
-    needsServiceInputs,
-    recipeActivated,
-    recipeError,
-  ]);
+    isLoading: isLoadingActivation,
+    isActivated,
+    activationError,
+  } = useActivationViewState(recipe, activateRecipe);
 
-  useEffect(() => {
-    if (
-      !isLoadingRecipe &&
-      !isLoadingListing &&
-      !isActivating &&
-      !recipeActivated
-    ) {
-      console.log("where am i");
-    }
-  }, [isLoadingListing, isLoadingRecipe, isActivating, recipeActivated]);
-
-  if (isLoadingRecipe || isLoadingListing || isActivating) {
+  if (isLoadingRecipe || isLoadingActivation) {
     return <Loader />;
-  }
-
-  if (recipe == null) {
-    throw new Error(`Recipe ${recipeId} not found`);
-  }
-
-  async function closeSidebar() {
-    dispatch(actions.hideActivateRecipe());
-    const topFrame = await getTopLevelFrame();
-    void hideSidebar(topFrame);
   }
 
   return (
     <div className={styles.root}>
-      {recipeActivated ? (
+      {isActivated ? (
         <>
           <div className={cx("scrollable-area", styles.content)}>
             <h1>Well done!</h1>
@@ -259,6 +404,9 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
       ) : (
         <ActivateRecipeInputs
           recipe={recipe}
+          wizardSteps={wizardSteps}
+          initialValues={initialValues}
+          validationSchema={validationSchema}
           isReinstall={isReinstall}
           onClickCancel={closeSidebar}
           header={
@@ -275,7 +423,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
           onClickSubmit={() => {
             void activate();
           }}
-          activateError={activateError}
+          activationError={activationError}
         />
       )}
     </div>

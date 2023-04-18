@@ -82,7 +82,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
     }
 
     return [
-      ...basseFieldTypes,
+      ...baseFieldTypes,
       {
         label: "Google Sheet",
         value: stringifyUiType({

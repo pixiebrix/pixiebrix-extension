@@ -27,7 +27,7 @@ import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import ensureRecipePermissions from "@/recipes/ensureRecipePermissions";
 
-type ActivateResult = {
+export type ActivateResult = {
   success: boolean;
   error?: string;
 };

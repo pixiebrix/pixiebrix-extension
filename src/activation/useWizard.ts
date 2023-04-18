@@ -52,7 +52,19 @@ const STEPS: WizardStep[] = [
 
 function useWizard(
   blueprint: RecipeDefinition
-): [WizardStep[], WizardValues, Yup.ObjectSchema<any>] {
+): [WizardStep[], WizardValues, Yup.AnyObjectSchema] {
+  if (blueprint == null) {
+    return [
+      [],
+      {
+        extensions: {},
+        services: [],
+        optionsArgs: {},
+      },
+      Yup.object(),
+    ];
+  }
+
   const installedExtensions = useSelector(selectExtensions);
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint?.options?.schema
