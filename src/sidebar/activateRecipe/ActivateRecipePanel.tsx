@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useReducer, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Loader from "@/components/Loader";
-import { useRecipe } from "@/recipes/recipesHooks";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateRecipePanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
@@ -31,20 +29,20 @@ import cx from "classnames";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
-import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
-import { useAsyncState } from "@/hooks/common";
-import { resolveRecipe } from "@/registry/internal";
-import { useAsyncEffect } from "use-async-effect";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
+import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
+import { type WizardValues } from "@/activation/wizardTypes";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import useWizard from "@/activation/useWizard";
+import RequireRecipe, {
+  type RecipeState,
+} from "@/sidebar/activateRecipe/RequireRecipe";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { useAsyncEffect } from "use-async-effect";
 
 const { actions } = sidebarSlice;
-
-type ActivateRecipePanelProps = {
-  recipeId: RegistryId;
-};
 
 const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
   const shortcutKeys = shortcut?.split("") ?? [];
@@ -60,122 +58,127 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
   );
 };
 
-const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
-  recipeId,
-}) => {
-  const dispatch = useDispatch();
+type ActivationState = {
+  isInitialized: boolean;
+  isActivating: boolean;
+  isActivated: boolean;
+  activationError: string | null;
+};
 
-  const {
-    data: recipe,
-    isLoading,
-    isUninitialized,
-    error: recipeError,
-  } = useRecipe(recipeId);
+const initialState: ActivationState = {
+  isInitialized: false,
+  isActivating: false,
+  isActivated: false,
+  activationError: null,
+};
 
-  const isLoadingRecipe = isUninitialized || isLoading;
+const activationSlice = createSlice({
+  name: "activationSlice",
+  initialState,
+  reducers: {
+    initialize(state) {
+      state.isInitialized = true;
+    },
+    activateStart(state) {
+      state.isInitialized = true;
+      state.isActivating = true;
+      state.activationError = null;
+    },
+    activateSuccess(state) {
+      state.isActivating = false;
+      state.isActivated = true;
+    },
+    activateError(state, action: PayloadAction<string>) {
+      state.activationError = action.payload;
+      state.isActivating = false;
+    },
+  },
+});
 
-  // Quick Bar affordances
-  const [includesQuickbar, setIncludesQuickbar] = useState(false);
-  const [resolvedRecipeConfigs] = useAsyncState(
-    async () => resolveRecipe(recipe, recipe.extensionPoints),
-    [recipe]
-  );
-  useAsyncEffect(async () => {
-    setIncludesQuickbar(
-      await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
-    );
-  }, [resolvedRecipeConfigs]);
-  const { shortcut } = useQuickbarShortcut();
+const { initialize, activateStart, activateSuccess, activateError } =
+  activationSlice.actions;
 
-  const {
-    data: listings,
-    isLoading: isLoadingListing,
-    error: listingError,
-  } = useGetMarketplaceListingsQuery({ package__name: recipeId });
-  // eslint-disable-next-line security/detect-object-injection -- RegistryId
-  const listing = listings?.[recipeId];
-
-  if (recipeError || listingError) {
-    throw recipeError ?? listingError;
-  }
-
-  let isReinstall = false;
-  const recipeExtensions = useSelector(selectExtensionsForRecipe(recipeId));
-  if (!isEmpty(recipeExtensions)) {
-    isReinstall = true;
-  }
-
-  const recipeName =
-    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
-  const recipeNameComponent = (
-    <div className={styles.recipeName}>{recipeName}</div>
-  );
-
-  const hasRecipeOptions = !isEmpty(recipe?.options?.schema?.properties);
+function canAutoActivate(recipe: RecipeDefinition): boolean {
+  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
   const recipeServiceIds = uniq(
-    recipe?.extensionPoints.flatMap(({ services }) =>
+    recipe.extensionPoints.flatMap(({ services }) =>
       services ? Object.values(services) : []
-    ) ?? []
+    )
   );
   const needsServiceInputs = recipeServiceIds.some(
     (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
   );
 
-  const submitRef = useRef<HTMLButtonElement>();
-  const activateRecipe = () => {
-    submitRef.current?.click();
-  };
+  // Can auto-activate if no configuration required
+  return !hasRecipeOptions && !needsServiceInputs;
+}
 
-  const [recipeActivated, setRecipeActivated] = useState(false);
+const ActivateRecipePanelContent: React.FC<RecipeState> = ({
+  recipe,
+  recipeNameNode,
+  includesQuickBar,
+}) => {
+  const reduxDispatch = useDispatch();
+  const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
+  const { shortcut } = useQuickbarShortcut();
 
-  useEffect(() => {
-    if (
-      !recipeActivated &&
-      !isLoadingRecipe &&
-      !recipeError &&
-      // Need to wait for the listing to load also so that the submit button renders
-      !isLoadingListing &&
-      // If the recipe doesn't have options or services, we can activate immediately
-      !hasRecipeOptions &&
-      !needsServiceInputs
-    ) {
-      activateRecipe();
-    }
-  }, [
-    hasRecipeOptions,
-    isLoadingListing,
-    isLoadingRecipe,
-    needsServiceInputs,
-    recipeActivated,
-    recipeError,
-  ]);
-
-  if (isLoadingRecipe || isLoadingListing) {
-    return <Loader />;
-  }
-
-  if (recipe == null) {
-    throw new Error(`Recipe ${recipeId} not found`);
-  }
+  const [state, stateDispatch] = useReducer(
+    activationSlice.reducer,
+    initialState
+  );
 
   async function closeSidebar() {
-    dispatch(actions.hideActivateRecipe());
+    reduxDispatch(actions.hideActivateRecipe());
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
   }
 
+  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const formValuesRef = useRef<WizardValues>(initialValues);
+
+  async function activateRecipe() {
+    if (state.isActivating || state.isActivated) {
+      return;
+    }
+
+    stateDispatch(activateStart());
+
+    const { success, error } = await marketplaceActivateRecipe(
+      formValuesRef.current,
+      recipe
+    );
+
+    if (success) {
+      stateDispatch(activateSuccess());
+    } else {
+      stateDispatch(activateError(error));
+    }
+  }
+
+  useAsyncEffect(async () => {
+    if (canAutoActivate(recipe)) {
+      await activateRecipe();
+    } else {
+      stateDispatch(initialize());
+    }
+  }, [recipe]);
+
+  if (!state.isInitialized || state.isActivating) {
+    return <Loader />;
+  }
+
   return (
     <div className={styles.root}>
-      {recipeActivated ? (
+      {state.isActivated ? (
         <>
           <div className={cx("scrollable-area", styles.content)}>
             <h1>Well done!</h1>
             <img src={activationCompleteImage} alt="" width={300} />
             <div className={styles.textContainer}>
-              {recipeNameComponent}
+              {recipeNameNode}
               <div>is ready to use!</div>
               <br />
-              {includesQuickbar ? (
+              {includesQuickBar ? (
                 isEmpty(shortcut) ? (
                   <span>
                     Now just{" "}
@@ -224,11 +227,13 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
       ) : (
         <ActivateRecipeInputs
           recipe={recipe}
-          isReinstall={isReinstall}
+          wizardSteps={wizardSteps}
+          initialValues={initialValues}
+          validationSchema={validationSchema}
           onClickCancel={closeSidebar}
           header={
             <>
-              {recipeNameComponent}
+              {recipeNameNode}
               <p>
                 {
                   "We're almost there. This mod has a few settings to configure before using. You can always change these later."
@@ -236,14 +241,23 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               </p>
             </>
           }
-          submitButtonRef={submitRef}
-          onSubmitSuccess={() => {
-            setRecipeActivated(true);
+          formValuesRef={formValuesRef}
+          onClickSubmit={() => {
+            void activateRecipe();
           }}
+          activationError={state.activationError}
         />
       )}
     </div>
   );
 };
+
+const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
+  recipeId,
+}) => (
+  <RequireRecipe recipeId={recipeId}>
+    {(recipeState) => <ActivateRecipePanelContent {...recipeState} />}
+  </RequireRecipe>
+);
 
 export default ActivateRecipePanel;
