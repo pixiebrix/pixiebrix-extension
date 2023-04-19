@@ -53,12 +53,12 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type AnyAction } from "redux";
 import useWizard from "@/activation/useWizard";
+import RequireRecipe, {
+  RecipeState,
+} from "@/sidebar/activateRecipe/RequireRecipe";
+import { RecipesState } from "@/recipes/recipesTypes";
 
 const { actions } = sidebarSlice;
-
-type ActivateRecipePanelProps = {
-  recipeId: RegistryId;
-};
 
 const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
   const shortcutKeys = shortcut?.split("") ?? [];
@@ -73,73 +73,6 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
     </div>
   );
 };
-
-type RecipeState = {
-  isLoading: boolean;
-  recipe: RecipeDefinition | null;
-  recipeNameNode: React.ReactNode | null;
-  includesQuickbar: boolean;
-};
-
-function useRecipeState(recipeId: RegistryId): RecipeState {
-  // Recipe
-  const {
-    data: recipe,
-    isLoading: isLoadingRecipe,
-    isUninitialized,
-    error: recipeError,
-  } = useRecipe(recipeId);
-
-  // Listing
-  const {
-    data: listings,
-    isLoading: isLoadingListing,
-    error: listingError,
-  } = useGetMarketplaceListingsQuery({ package__name: recipeId });
-  // eslint-disable-next-line security/detect-object-injection -- RegistryId
-  const listing = useMemo(() => listings?.[recipeId], [listings, recipeId]);
-
-  // Name component
-  const recipeName =
-    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
-
-  // Quick Bar
-  const [includesQuickbar, isLoadingQuickbar] = useAsyncState(async () => {
-    const resolvedRecipeConfigs = await resolveRecipe(
-      recipe,
-      recipe.extensionPoints
-    );
-    return includesQuickBarExtensionPoint(resolvedRecipeConfigs);
-  }, [recipe]);
-
-  // Throw errors
-  if (recipeError) {
-    throw recipeError;
-  }
-
-  if (listingError) {
-    throw listingError;
-  }
-
-  // Ensure recipe is loaded
-  if (!isUninitialized && !isLoadingRecipe && !recipeError && !recipe) {
-    throw new Error(`Recipe ${recipeId} not found`);
-  }
-
-  // Loading state
-  const isLoading =
-    isUninitialized || isLoadingRecipe || isLoadingListing || isLoadingQuickbar;
-
-  return useMemo<RecipeState>(
-    () => ({
-      isLoading,
-      recipe,
-      recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
-      includesQuickbar,
-    }),
-    [includesQuickbar, isLoading, recipe, recipeName]
-  );
-}
 
 type ActivationState = {
   isInitialized: boolean;
@@ -268,8 +201,18 @@ function useActivationViewState(
   );
 }
 
-const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
+const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
   recipeId,
+}) => (
+  <RequireRecipe recipeId={recipeId}>
+    {(recipeState) => <ActivateRecipePanelContent {...recipeState} />}
+  </RequireRecipe>
+);
+
+const ActivateRecipePanelContent: React.FC<RecipeState> = ({
+  recipe,
+  recipeNameNode,
+  includesQuickBar,
 }) => {
   const dispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
@@ -281,18 +224,11 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     void hideSidebar(topFrame);
   }
 
-  const {
-    isLoading: isLoadingRecipe,
-    recipe,
-    recipeNameNode,
-    includesQuickbar,
-  } = useRecipeState(recipeId);
-
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
-  const activateFormValues = useRef<WizardValues>(initialValues);
+  const formValuesRef = useRef<WizardValues>(initialValues);
   const activateRecipe = useCallback(
     async (recipe: RecipeDefinition) =>
-      marketplaceActivateRecipe(activateFormValues.current, recipe),
+      marketplaceActivateRecipe(formValuesRef.current, recipe),
     [marketplaceActivateRecipe]
   );
 
@@ -303,7 +239,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
     activationError,
   } = useActivationViewState(recipe, activateRecipe);
 
-  if (isLoadingRecipe || isLoadingActivation) {
+  if (isLoadingActivation) {
     return <Loader />;
   }
 
@@ -318,7 +254,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               {recipeNameNode}
               <div>is ready to use!</div>
               <br />
-              {includesQuickbar ? (
+              {includesQuickBar ? (
                 isEmpty(shortcut) ? (
                   <span>
                     Now just{" "}
@@ -381,7 +317,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
               </p>
             </>
           }
-          formValuesRef={activateFormValues}
+          formValuesRef={formValuesRef}
           onClickSubmit={() => {
             void activate();
           }}
