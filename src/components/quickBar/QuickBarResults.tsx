@@ -50,11 +50,15 @@ const ResultItem = forwardRef(
         style={{
           padding: "12px 16px",
           background: active ? theme.a1 : "transparent",
-          borderLeft: `2px solid ${active ? theme.foreground : "transparent"}`,
+          borderLeft: `4px solid ${
+            active ? theme.activeIndicator : "transparent"
+          }`,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           cursor: "pointer",
+          height: 56,
+          boxSizing: "border-box",
         }}
       >
         <div
@@ -66,7 +70,9 @@ const ResultItem = forwardRef(
             fontWeight: 400,
           }}
         >
-          {action.icon && action.icon}
+          <div style={{ alignSelf: "flex-start" }}>
+            {action.icon && action.icon}
+          </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div>
               {ancestors.length > 0 &&

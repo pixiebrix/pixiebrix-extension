@@ -28,6 +28,7 @@ import {
 } from "kbar";
 import ReactShadowRoot from "react-shadow-root";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
+import styles from "./QuickBarApp.module.scss";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { MAX_Z_INDEX } from "@/common";
