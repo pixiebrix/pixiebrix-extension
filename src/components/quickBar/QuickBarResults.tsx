@@ -62,7 +62,8 @@ const ResultItem = forwardRef(
             display: "flex",
             gap: "8px",
             alignItems: "center",
-            fontSize: 14,
+            fontSize: 16,
+            fontWeight: 400,
           }}
         >
           {action.icon && action.icon}

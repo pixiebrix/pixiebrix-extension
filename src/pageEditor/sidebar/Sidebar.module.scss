@@ -110,3 +110,23 @@ $logoSize: 31px;
   overflow-y: auto;
   flex: 1;
 }
+
+.searchWrapper {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 8px;
+  .searchContainer {
+    position: relative;
+    button {
+      z-index: 3;
+      color: black;
+      text-decoration: none;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      bottom: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      color: #675c7c;
+      padding: 0;
+    }
+  }
+}
