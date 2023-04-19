@@ -159,7 +159,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     </div>
   );
 
-  const renderSubmit: RenderSubmit = ({ isSubmitting }) => (
+  const renderSubmit: RenderSubmit = () => (
     <>
       {activationError && (
         <Alert variant="danger" className="m-3">
@@ -170,7 +170,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
         <Button type="button" variant="outline-danger" onClick={onClickCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit">
           <FontAwesomeIcon icon={faMagic} /> Finish Activating
         </Button>
       </div>

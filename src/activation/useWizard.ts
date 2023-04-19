@@ -55,26 +55,14 @@ function useWizard(
 ): [WizardStep[], WizardValues, Yup.AnyObjectSchema] {
   const installedExtensions = useSelector(selectExtensions);
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
-    blueprint?.options?.schema
+    blueprint.options?.schema
   );
 
   return useMemo(() => {
-    if (blueprint == null) {
-      return [
-        [],
-        {
-          extensions: {},
-          services: [],
-          optionsArgs: {},
-        },
-        Yup.object(),
-      ];
-    }
-
     const extensionPoints = blueprint.extensionPoints ?? [];
 
     const installedBlueprintExtensions = installedExtensions?.filter(
-      (extension) => extension._recipe?.id === blueprint?.metadata.id
+      (extension) => extension._recipe?.id === blueprint.metadata.id
     );
 
     const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
