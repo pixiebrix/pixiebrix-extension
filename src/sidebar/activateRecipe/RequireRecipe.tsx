@@ -22,6 +22,9 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import Loader from "@/components/Loader";
 import styles from "./RequireRecipe.module.scss";
+import { useAsyncState } from "@/hooks/common";
+import { resolveRecipe } from "@/registry/internal";
+import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
@@ -31,10 +34,13 @@ export type RecipeState = {
 
 type RequireRecipeProps = {
   recipeId: RegistryId;
-  children: (recipeState: RecipeState) => React.ReactNode;
+  children: (props: RecipeState) => React.ReactElement;
 };
 
-const RequireRecipe: React.FC<RequireRecipeProps> = ({ recipeId }) => {
+const RequireRecipe: React.FC<RequireRecipeProps> = ({
+  recipeId,
+  children,
+}) => {
   // Recipe
   const {
     data: recipe,
