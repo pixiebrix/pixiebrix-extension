@@ -66,13 +66,10 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
   const [needsPermissions, setNeedsPermissions] = useState(false);
 
-  let isReinstall = false;
   const recipeExtensions = useSelector(
     selectExtensionsForRecipe(recipe?.metadata?.id)
   );
-  if (!isEmpty(recipeExtensions)) {
-    isReinstall = true;
-  }
+  const isReinstall = !isEmpty(recipeExtensions);
 
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),

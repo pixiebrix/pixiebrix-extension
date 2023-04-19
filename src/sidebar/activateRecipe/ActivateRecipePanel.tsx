@@ -22,7 +22,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
@@ -78,7 +77,7 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
 type RecipeState = {
   isLoading: boolean;
   recipe: RecipeDefinition | null;
-  recipeNameComponent: React.ReactNode | null;
+  recipeNameNode: React.ReactNode | null;
   includesQuickbar: boolean;
 };
 
@@ -105,47 +104,37 @@ function useRecipeState(recipeId: RegistryId): RecipeState {
     listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
 
   // Quick Bar
-  const [quickBarIsResolved, setQuickbarIsResolved] = useState(false);
-  const [includesQuickbar, setIncludesQuickbar] = useState(false);
-  const [resolvedRecipeConfigs] = useAsyncState(
-    async () => resolveRecipe(recipe, recipe.extensionPoints),
-    [recipe]
-  );
-  useAsyncEffect(async () => {
-    setIncludesQuickbar(
-      await includesQuickBarExtensionPoint(resolvedRecipeConfigs)
+  const [includesQuickbar, isLoadingQuickbar] = useAsyncState(async () => {
+    const resolvedRecipeConfigs = await resolveRecipe(
+      recipe,
+      recipe.extensionPoints
     );
-    setQuickbarIsResolved(true);
-  }, [resolvedRecipeConfigs]);
+    return includesQuickBarExtensionPoint(resolvedRecipeConfigs);
+  }, [recipe]);
 
   // Throw errors
-  useEffect(() => {
-    if (recipeError || listingError) {
-      throw recipeError ?? listingError;
-    }
-  }, [recipeError, listingError]);
+  if (recipeError) {
+    throw recipeError;
+  }
+
+  if (listingError) {
+    throw listingError;
+  }
 
   // Ensure recipe is loaded
-  useEffect(() => {
-    if (!isUninitialized && !isLoadingRecipe && !recipeError && !recipe) {
-      throw new Error(`Recipe ${recipeId} not found`);
-    }
-  }, [isLoadingRecipe, isUninitialized, recipe, recipeError, recipeId]);
+  if (!isUninitialized && !isLoadingRecipe && !recipeError && !recipe) {
+    throw new Error(`Recipe ${recipeId} not found`);
+  }
 
   // Loading state
   const isLoading =
-    isUninitialized ||
-    isLoadingRecipe ||
-    isLoadingListing ||
-    !quickBarIsResolved;
+    isUninitialized || isLoadingRecipe || isLoadingListing || isLoadingQuickbar;
 
   return useMemo<RecipeState>(
     () => ({
       isLoading,
       recipe,
-      recipeNameComponent: (
-        <div className={styles.recipeName}>{recipeName}</div>
-      ),
+      recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
       includesQuickbar,
     }),
     [includesQuickbar, isLoading, recipe, recipeName]
@@ -295,7 +284,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
   const {
     isLoading: isLoadingRecipe,
     recipe,
-    recipeNameComponent,
+    recipeNameNode,
     includesQuickbar,
   } = useRecipeState(recipeId);
 
@@ -326,7 +315,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
             <h1>Well done!</h1>
             <img src={activationCompleteImage} alt="" width={300} />
             <div className={styles.textContainer}>
-              {recipeNameComponent}
+              {recipeNameNode}
               <div>is ready to use!</div>
               <br />
               {includesQuickbar ? (
@@ -384,7 +373,7 @@ const ActivateRecipePanel: React.FC<ActivateRecipePanelProps> = ({
           onClickCancel={closeSidebar}
           header={
             <>
-              {recipeNameComponent}
+              {recipeNameNode}
               <p>
                 {
                   "We're almost there. This mod has a few settings to configure before using. You can always change these later."
