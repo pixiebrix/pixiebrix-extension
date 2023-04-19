@@ -23,6 +23,10 @@ import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
 import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { RecipeDefinition } from "@/types/recipeTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { UUID } from "@/types/stringTypes";
+import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
@@ -62,6 +66,31 @@ const getVisibilityLabel = (auth: SanitizedAuth): string => {
 
 function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
+}
+
+function useBuiltInServiceAuths(
+  recipe: RecipeDefinition
+): Record<RegistryId, UUID | null> {
+  const { data: serviceAuths, isLoading } = useGetServiceAuthsQuery();
+
+  if (isLoading) {
+    return {};
+  }
+
+  const builtInAuths = serviceAuths.filter(
+    (auth) => getSharingType(auth) === "built-in"
+  );
+  const requiredServiceIds = getRequiredServiceIds(recipe);
+
+  return Object.entries(
+    requiredServiceIds.map((serviceId) => {
+      const builtInAuth = builtInAuths.find(
+        (auth) => auth.service.config.metadata.id === serviceId
+      );
+
+      return [serviceId, builtInAuth?.id ?? null];
+    })
+  );
 }
 
 export function useAuthOptions(): [AuthOption[], () => void] {

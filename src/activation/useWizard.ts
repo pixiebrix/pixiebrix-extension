@@ -74,6 +74,8 @@ function useWizard(
       extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
     );
 
+    const builtInServices = [];
+
     const steps = STEPS.filter((step) => {
       switch (step.key) {
         case "services": {
@@ -101,6 +103,7 @@ function useWizard(
         id,
         // eslint-disable-next-line security/detect-object-injection -- is a registry id
         config: installedServices[id],
+        // config: installedServices[id] ?? builtInServices[id]
       })),
       optionsArgs: mapValues(
         blueprint.options?.schema?.properties ?? {},
