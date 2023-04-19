@@ -73,7 +73,7 @@ const ResultItem = forwardRef(
           <div style={{ alignSelf: "flex-start" }}>
             {action.icon && action.icon}
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div>
               {ancestors.length > 0 &&
                 ancestors.map((ancestor) => (
@@ -98,7 +98,16 @@ const ResultItem = forwardRef(
               <span>{action.name}</span>
             </div>
             {action.subtitle && (
-              <span style={{ fontSize: 12 }}>{action.subtitle}</span>
+              <span
+                style={{
+                  fontSize: 9,
+                  lineHeight: "120%",
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                }}
+              >
+                {action.subtitle}
+              </span>
             )}
           </div>
         </div>
