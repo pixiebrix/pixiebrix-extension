@@ -17,18 +17,15 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import useWizard from "@/activation/useWizard";
 import Form, {
-  type OnSubmit,
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
 import styles from "./ActivateRecipePanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
-import { type WizardValues } from "@/activation/wizardTypes";
+import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
@@ -37,30 +34,42 @@ import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import { useAsyncState } from "@/hooks/common";
+import { type AnyObjectSchema } from "yup";
+import { useSelector } from "react-redux";
+import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { isEmpty } from "lodash";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
-  isReinstall: boolean;
+  wizardSteps: WizardStep[];
+  initialValues: WizardValues;
+  validationSchema: AnyObjectSchema;
   onClickCancel: () => void;
   header?: React.ReactNode;
-  submitButtonRef?: React.RefObject<HTMLButtonElement>;
-  onSubmitSuccess?: () => void;
+  formValuesRef?: React.MutableRefObject<WizardValues>;
+  onClickSubmit?: () => void;
+  activationError?: string;
 };
 
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   recipe,
-  isReinstall,
+  wizardSteps,
+  initialValues,
+  validationSchema,
   onClickCancel,
   header,
-  submitButtonRef,
-  onSubmitSuccess,
+  formValuesRef,
+  onClickSubmit,
+  activationError,
 }) => {
-  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
-  const activateRecipe = useMarketplaceActivateRecipe();
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsPermissions, setNeedsPermissions] = useState(false);
+
+  const recipeExtensions = useSelector(
+    selectExtensionsForRecipe(recipe?.metadata?.id)
+  );
+  const isReinstall = !isEmpty(recipeExtensions);
 
   const [resolvedRecipeConfigs] = useAsyncState(
     async () => resolveRecipe(recipe, recipe.extensionPoints),
@@ -87,6 +96,9 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 
   function onChange(values: WizardValues) {
     void checkPermissions(values);
+    if (formValuesRef) {
+      formValuesRef.current = values;
+    }
   }
 
   // Check permissions on initial load
@@ -147,38 +159,29 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     </div>
   );
 
-  const renderSubmit: RenderSubmit = ({ isSubmitting }) => (
+  const renderSubmit: RenderSubmit = () => (
     <>
-      {submitError && (
+      {activationError && (
         <Alert variant="danger" className="m-3">
-          {submitError}
+          {activationError}
         </Alert>
       )}
       <div className={styles.footer}>
         <Button type="button" variant="outline-danger" onClick={onClickCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} ref={submitButtonRef}>
+        <Button type="submit">
           <FontAwesomeIcon icon={faMagic} /> Finish Activating
         </Button>
       </div>
     </>
   );
 
-  const onSubmit: OnSubmit<WizardValues> = async (values) => {
-    const { success, error } = await activateRecipe(values, recipe);
-    if (success) {
-      onSubmitSuccess?.();
-    } else {
-      setSubmitError(error);
-    }
-  };
-
   return (
     <Form
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={onClickSubmit}
       renderBody={renderBody}
       renderSubmit={renderSubmit}
       className={styles.form}

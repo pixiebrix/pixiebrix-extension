@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -48,9 +48,8 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useRecipe } from "@/recipes/recipesHooks";
-import useFlags from "@/hooks/useFlags";
 
-const baseFieldTypes = [
+const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
     (type) => !["File", "Image crop"].includes(type.label)
   ),
@@ -61,6 +60,13 @@ const baseFieldTypes = [
   {
     label: "Database automatically created at activation",
     value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+  },
+  {
+    label: "Google Sheet",
+    value: stringifyUiType({
+      propertyType: "string",
+      uiWidget: "googleSheet",
+    }),
   },
 ];
 
@@ -78,24 +84,6 @@ const RecipeOptionsDefinition: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipe, isFetching, error } = useRecipe(recipeId);
-
-  const { flagOn } = useFlags();
-  const fieldTypes = useMemo(() => {
-    if (!flagOn("gsheets-mod-inputs")) {
-      return baseFieldTypes;
-    }
-
-    return [
-      ...baseFieldTypes,
-      {
-        label: "Google Sheet",
-        value: stringifyUiType({
-          propertyType: "string",
-          uiWidget: "googleSheet",
-        }),
-      },
-    ];
-  }, [flagOn]);
 
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(
