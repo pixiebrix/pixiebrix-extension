@@ -82,7 +82,7 @@ jobs:
         #   they're all using the same server
         # Use --fail-fast so that we're not using GitHub build minutes if not necessary
         run: |
-          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all
+          ./rainforest run --fail-fast --description "pixiebrix-extension - ${{ github.ref_name }} ${{ github.job }}" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
           # The run group for tests to run during CI, now has start URL built-in
