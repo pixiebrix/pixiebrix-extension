@@ -68,7 +68,7 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useBuiltInAuthsByRequiredServiceId(
+export function useBuiltInAuthsByRequiredServiceIds(
   recipe: RecipeDefinition | null
 ): {
   builtInServiceAuths: Record<RegistryId, UUID | undefined>;
