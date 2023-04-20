@@ -285,4 +285,18 @@ describe("ActivateRecipePanel", () => {
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
+
+  test("it doesn't flicker while built-in auths are loading", async () => {
+    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const rendered = setupMocksAndRender(recipe);
+
+    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
 });
