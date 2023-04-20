@@ -72,6 +72,9 @@ jest.mock("@/services/api", () => ({
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
   useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
+  useGetServiceAuthsQuery: jest
+    .fn()
+    .mockReturnValue({ data: [], isLoading: false }),
   appApi: {
     useLazyGetMeQuery: jest.fn(() => [
       jest.fn(),
