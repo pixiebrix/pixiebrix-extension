@@ -50,25 +50,19 @@ export type PanelContext = MessageContext & {
 };
 
 const BodyContainer: React.FC<
-  BodyProps & {
-    isFetching: boolean;
-    onAction: (action: SubmitPanelAction) => void;
-  }
-> = ({ blockId, body, isFetching, onAction, meta }) => (
-  <>
-    {isFetching && <Loader />}
-
-    <div className="full-height" data-block-id={blockId}>
-      <ReactShadowRoot>
-        <RendererComponent
-          blockId={blockId}
-          body={body}
-          meta={meta}
-          onAction={onAction}
-        />
-      </ReactShadowRoot>
-    </div>
-  </>
+  // In the future, may want to support providing isFetching to show a loading indicator/badge over the previous content
+  BodyProps & { onAction: (action: SubmitPanelAction) => void }
+> = ({ blockId, body, onAction, meta }) => (
+  <div className="full-height" data-block-id={blockId}>
+    <ReactShadowRoot>
+      <RendererComponent
+        blockId={blockId}
+        body={body}
+        meta={meta}
+        onAction={onAction}
+      />
+    </ReactShadowRoot>
+  </div>
 );
 
 type State = {
@@ -236,13 +230,7 @@ const PanelBody: React.FunctionComponent<{
     );
   }
 
-  return (
-    <BodyContainer
-      {...state.component}
-      isFetching={state.isFetching}
-      onAction={onAction}
-    />
-  );
+  return <BodyContainer {...state.component} onAction={onAction} />;
 };
 
 export default PanelBody;
