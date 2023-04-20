@@ -23,9 +23,9 @@ import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
 import { type RawServiceConfiguration } from "@/types/serviceTypes";
-import { RecipeDefinition } from "@/types/recipeTypes";
-import { RegistryId } from "@/types/registryTypes";
-import { UUID } from "@/types/stringTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 function defaultLabel(label: string): string {
@@ -68,7 +68,7 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-function useBuiltInServiceAuths(
+export function useBuiltInServiceAuths(
   recipe: RecipeDefinition
 ): Record<RegistryId, UUID | null> {
   const { data: serviceAuths, isLoading } = useGetServiceAuthsQuery();
@@ -82,7 +82,7 @@ function useBuiltInServiceAuths(
   );
   const requiredServiceIds = getRequiredServiceIds(recipe);
 
-  return Object.entries(
+  return Object.fromEntries(
     requiredServiceIds.map((serviceId) => {
       const builtInAuth = builtInAuths.find(
         (auth) => auth.service.config.metadata.id === serviceId
