@@ -58,8 +58,7 @@ function useWizard(
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint.options?.schema
   );
-  const { builtInServiceAuths, personalOrSharedServiceAuths } =
-    useAuthsByRequiredServiceIds(blueprint);
+  const { builtInServiceAuths } = useAuthsByRequiredServiceIds(blueprint);
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
@@ -103,10 +102,7 @@ function useWizard(
       services: serviceIds.map((id) => ({
         id,
         // eslint-disable-next-line security/detect-object-injection -- is a registry id
-        config:
-          installedServices[id] ??
-          personalOrSharedServiceAuths[id] ??
-          builtInServiceAuths[id],
+        config: installedServices[id] ?? builtInServiceAuths[id],
       })),
       optionsArgs: mapValues(
         blueprint.options?.schema?.properties ?? {},

@@ -26,7 +26,7 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
-import { isEmpty } from "lodash";
+import { isEmpty, uniq } from "lodash";
 import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
@@ -39,6 +39,9 @@ import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { useAsyncEffect } from "use-async-effect";
+import { RecipeDefinition } from "@/types/recipeTypes";
+import { useAuthsByRequiredServiceIds } from "@/hooks/auth";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const { actions } = sidebarSlice;
 
@@ -96,15 +99,53 @@ const activationSlice = createSlice({
 const { initialize, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
 
+function useCanAutoActivate(recipe: RecipeDefinition): {
+  canAutoActivate: boolean;
+  isLoading: boolean;
+} {
+  const { builtInServiceAuths, personalOrSharedServiceAuths, isLoading } =
+    useAuthsByRequiredServiceIds(recipe);
+
+  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+  const recipeServiceIds = uniq(
+    recipe.extensionPoints.flatMap(({ services }) =>
+      services ? Object.values(services) : []
+    )
+  );
+
+  const needsServiceInputs = recipeServiceIds.some((serviceId) => {
+    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+      return false;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
+    if (personalOrSharedServiceAuths[serviceId]) {
+      return true;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
+    return !builtInServiceAuths[serviceId];
+  });
+
+  // Can auto-activate if no configuration required, or all services have only built-in configurations
+  return {
+    canAutoActivate: isLoading
+      ? false
+      : !hasRecipeOptions && !needsServiceInputs,
+    isLoading,
+  };
+}
+
 const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   recipe,
   recipeNameNode,
   includesQuickBar,
-  canAutoActivate,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
   const { shortcut } = useQuickbarShortcut();
+  const { canAutoActivate, isLoading: isAutoActivateLoading } =
+    useCanAutoActivate(recipe);
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -140,14 +181,14 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   useAsyncEffect(async () => {
-    if (canAutoActivate) {
+    if (canAutoActivate && !isAutoActivateLoading) {
       await activateRecipe();
     } else {
       stateDispatch(initialize());
     }
-  }, [recipe, canAutoActivate]);
+  }, [recipe, canAutoActivate, isAutoActivateLoading]);
 
-  if (!state.isInitialized || state.isActivating) {
+  if (!state.isInitialized || state.isActivating || isAutoActivateLoading) {
     return <Loader />;
   }
 

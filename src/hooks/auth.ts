@@ -88,12 +88,16 @@ export function useAuthsByRequiredServiceIds(recipe: RecipeDefinition | null): {
   isLoading: boolean;
 } {
   const { data: serviceAuths, isLoading } = useGetServiceAuthsQuery();
+  // See note in useAuthOptions for why we're using readRawConfigurations instead of the store
+  const [localAuths, isLocalLoading, _localError] = useAsyncState<
+    RawServiceConfiguration[]
+  >(readRawConfigurations);
 
   const builtInAuths = (serviceAuths ?? []).filter(
     (auth) => getSharingType(auth) === "built-in"
   );
 
-  const personalOrSharedAuths = (serviceAuths ?? []).filter(
+  const sharedAuths = (serviceAuths ?? []).filter(
     (auth) => getSharingType(auth) !== "built-in"
   );
 
@@ -103,15 +107,27 @@ export function useAuthsByRequiredServiceIds(recipe: RecipeDefinition | null): {
     builtInAuths,
     requiredServiceIds
   );
-  const personalOrSharedServiceAuths = mapAuthsToServiceIds(
-    personalOrSharedAuths,
+  const sharedServiceAuths = mapAuthsToServiceIds(
+    sharedAuths,
     requiredServiceIds
+  );
+  const localServiceAuths = Object.fromEntries(
+    requiredServiceIds.map((serviceId) => {
+      const localServiceAuth = (localAuths ?? []).find(
+        (auth) => auth.serviceId === serviceId
+      );
+
+      return [serviceId, localServiceAuth?.id];
+    })
   );
 
   return {
-    isLoading,
+    isLoading: isLoading || isLocalLoading,
     builtInServiceAuths,
-    personalOrSharedServiceAuths,
+    personalOrSharedServiceAuths: {
+      ...sharedServiceAuths,
+      ...localServiceAuths,
+    },
   };
 }
 
