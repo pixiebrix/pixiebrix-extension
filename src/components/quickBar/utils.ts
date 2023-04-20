@@ -23,7 +23,7 @@ export function useGetActionNameAndIcon({ name, icon }: ActionImpl) {
   return useMemo(() => {
     const { startingEmoji, rest } = splitStartingEmoji(name);
     return {
-      name: rest,
+      name: rest.trim(), // Trim whitespace if there is any from the emoji split
       icon: startingEmoji ?? icon,
     };
   }, [name, icon]);

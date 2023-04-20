@@ -55,7 +55,11 @@ const IconWidget: CustomFieldWidget = (props) => {
 
   return (
     <Suspense fallback={<div>Loading icons...</div>}>
-      <IconSelector value={meta.value} onChange={handleSelect} />
+      <IconSelector
+        value={meta.value}
+        onChange={handleSelect}
+        disabled={props.disabled}
+      />
     </Suspense>
   );
 };

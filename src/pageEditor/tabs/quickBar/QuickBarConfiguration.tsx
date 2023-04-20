@@ -25,93 +25,103 @@ import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldPro
 import { contextOptions } from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import { useField } from "formik";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.title"
-        label="Action Title"
-        description="Quick Bar action title"
-      />
+}> = ({ isLocked = false }) => {
+  const [{ value: actionTitle }] = useField("extension.title");
+  const emojiFirstCharacter =
+    splitStartingEmoji(actionTitle).startingEmoji !== undefined;
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.contexts"
-        as={MultiSelectWidget}
-        options={contextOptions}
-        description={
-          <span>
-            One or more contexts to include the quick bar item. For example, use
-            the <code>selection</code> context to show the action item when text
-            is selected.
-          </span>
-        }
-        {...makeLockableFieldProps("Contexts", isLocked)}
-      />
+  return (
+    <Card>
+      <FieldSection title="Configuration">
+        <ConnectedFieldTemplate
+          name="extension.title"
+          label="Action Title"
+          description="Quick Bar action title"
+        />
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-        description={
-          <span>
-            URL match patterns to show the menu item on. See{" "}
-            <a
-              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <code>match_patterns</code> Documentation
-            </a>{" "}
-            for examples.
-          </span>
-        }
-      />
-    </FieldSection>
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.contexts"
+          as={MultiSelectWidget}
+          options={contextOptions}
+          description={
+            <span>
+              One or more contexts to include the quick bar item. For example,
+              use the <code>selection</code> context to show the action item
+              when text is selected.
+            </span>
+          }
+          {...makeLockableFieldProps("Contexts", isLocked)}
+        />
 
-    <FieldSection title="Advanced">
-      <ConnectedFieldTemplate
-        name="extension.icon"
-        label="Icon"
-        as={IconWidget}
-        description="Icon to show in the menu"
-      />
+        <UrlMatchPatternField
+          name="extensionPoint.definition.documentUrlPatterns"
+          {...makeLockableFieldProps("Sites", isLocked)}
+          description={
+            <span>
+              URL match patterns to show the menu item on. See{" "}
+              <a
+                href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <code>match_patterns</code> Documentation
+              </a>{" "}
+              for examples.
+            </span>
+          }
+        />
+      </FieldSection>
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.targetMode"
-        as="select"
-        title="Target Mode"
-        blankValue="eventTarget"
-        description={
-          <p>
-            Use&nbsp;<code>eventTarget</code> to pass the focused element as the
-            action root. Use&nbsp;
-            <code>document</code> to pass the document as the action root.
-          </p>
-        }
-        {...makeLockableFieldProps("Target Mode", isLocked)}
-      >
-        <option value="eventTarget">eventTarget</option>
-        <option value="document">document</option>
-      </ConnectedFieldTemplate>
+      <FieldSection title="Advanced">
+        <ConnectedFieldTemplate
+          name="extension.icon"
+          label="Icon"
+          as={IconWidget}
+          description="Icon to show in the menu"
+          // Disable icon select if an emoji is the first character since we use the emoji in its place
+          disabled={emojiFirstCharacter}
+        />
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        description={
-          <span>
-            URL match patterns give PixieBrix access to a page without you first
-            clicking the context menu. Including URLs here helps PixieBrix run
-            you action quicker, and accurately detect which page element you
-            clicked to invoke the context menu.
-          </span>
-        }
-        {...makeLockableFieldProps("Automatic Permissions", isLocked)}
-      />
-    </FieldSection>
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.targetMode"
+          as="select"
+          title="Target Mode"
+          blankValue="eventTarget"
+          description={
+            <p>
+              Use&nbsp;<code>eventTarget</code> to pass the focused element as
+              the action root. Use&nbsp;
+              <code>document</code> to pass the document as the action root.
+            </p>
+          }
+          {...makeLockableFieldProps("Target Mode", isLocked)}
+        >
+          <option value="eventTarget">eventTarget</option>
+          <option value="document">document</option>
+        </ConnectedFieldTemplate>
 
-    <ExtraPermissionsSection />
-  </Card>
-);
+        <UrlMatchPatternField
+          name="extensionPoint.definition.isAvailable.matchPatterns"
+          description={
+            <span>
+              URL match patterns give PixieBrix access to a page without you
+              first clicking the context menu. Including URLs here helps
+              PixieBrix run you action quicker, and accurately detect which page
+              element you clicked to invoke the context menu.
+            </span>
+          }
+          {...makeLockableFieldProps("Automatic Permissions", isLocked)}
+        />
+      </FieldSection>
+
+      <ExtraPermissionsSection />
+    </Card>
+  );
+};
 
 export default QuickBarConfiguration;
