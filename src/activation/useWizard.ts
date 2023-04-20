@@ -35,7 +35,7 @@ import * as Yup from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { useDefaultAuthsByRequiredServiceIds } from "@/hooks/auth";
+import { useAuthsByRequiredServiceIds } from "@/hooks/auth";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -58,8 +58,8 @@ function useWizard(
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint.options?.schema
   );
-  const { builtInServiceAuths } =
-    useDefaultAuthsByRequiredServiceIds(blueprint);
+  const { builtInServiceAuths, personalOrSharedServiceAuths } =
+    useAuthsByRequiredServiceIds(blueprint);
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
@@ -103,7 +103,10 @@ function useWizard(
       services: serviceIds.map((id) => ({
         id,
         // eslint-disable-next-line security/detect-object-injection -- is a registry id
-        config: installedServices[id] ?? builtInServiceAuths[id],
+        config:
+          installedServices[id] ??
+          personalOrSharedServiceAuths[id] ??
+          builtInServiceAuths[id],
       })),
       optionsArgs: mapValues(
         blueprint.options?.schema?.properties ?? {},

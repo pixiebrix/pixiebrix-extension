@@ -68,10 +68,23 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useDefaultAuthsByRequiredServiceIds(
-  recipe: RecipeDefinition | null
-): {
+function mapAuthsToServiceIds(
+  auths: SanitizedAuth[],
+  serviceIds: RegistryId[]
+): Record<RegistryId, UUID | undefined> {
+  return Object.fromEntries(
+    serviceIds.map((serviceId) => {
+      const serviceAuth = auths.find(
+        (auth) => auth.service.config.metadata.id === serviceId
+      );
+      return [serviceId, serviceAuth?.id];
+    })
+  );
+}
+
+export function useAuthsByRequiredServiceIds(recipe: RecipeDefinition | null): {
   builtInServiceAuths: Record<RegistryId, UUID | undefined>;
+  personalOrSharedServiceAuths: Record<RegistryId, UUID | undefined>;
   isLoading: boolean;
 } {
   const { data: serviceAuths, isLoading } = useGetServiceAuthsQuery();
@@ -79,34 +92,26 @@ export function useDefaultAuthsByRequiredServiceIds(
   const builtInAuths = (serviceAuths ?? []).filter(
     (auth) => getSharingType(auth) === "built-in"
   );
+
   const personalOrSharedAuths = (serviceAuths ?? []).filter(
     (auth) => getSharingType(auth) !== "built-in"
   );
 
   const requiredServiceIds = recipe ? getRequiredServiceIds(recipe) : [];
 
-  const defaultServiceAuths = Object.fromEntries(
-    requiredServiceIds.map((serviceId) => {
-      const personalOrSharedAuth = personalOrSharedAuths.find(
-        (auth) => auth.service.config.metadata.id === serviceId
-      );
-
-      // Prefer arbitrary personal or shared auth over built-in auth
-      if (personalOrSharedAuth) {
-        return [serviceId, personalOrSharedAuth.id];
-      }
-
-      const builtInAuth = builtInAuths.find(
-        (auth) => auth.service.config.metadata.id === serviceId
-      );
-
-      return [serviceId, builtInAuth?.id];
-    })
+  const builtInServiceAuths = mapAuthsToServiceIds(
+    builtInAuths,
+    requiredServiceIds
+  );
+  const personalOrSharedServiceAuths = mapAuthsToServiceIds(
+    personalOrSharedAuths,
+    requiredServiceIds
   );
 
   return {
     isLoading,
-    builtInServiceAuths: defaultServiceAuths,
+    builtInServiceAuths,
+    personalOrSharedServiceAuths,
   };
 }
 

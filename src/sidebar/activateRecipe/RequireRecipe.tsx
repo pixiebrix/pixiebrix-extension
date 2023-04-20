@@ -25,7 +25,7 @@ import styles from "./RequireRecipe.module.scss";
 import { useAsyncState } from "@/hooks/common";
 import { resolveRecipe } from "@/registry/internal";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
-import { useDefaultAuthsByRequiredServiceIds } from "@/hooks/auth";
+import { useAuthsByRequiredServiceIds } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
@@ -45,8 +45,8 @@ function useCanAutoActivate(recipe: RecipeDefinition | null): {
   canAutoActivate: boolean;
   isLoading: boolean;
 } {
-  const { builtInServiceAuths, isLoading } =
-    useDefaultAuthsByRequiredServiceIds(recipe);
+  const { builtInServiceAuths, personalOrSharedServiceAuths, isLoading } =
+    useAuthsByRequiredServiceIds(recipe);
 
   if (!recipe) {
     return { canAutoActivate: false, isLoading };
@@ -65,10 +65,15 @@ function useCanAutoActivate(recipe: RecipeDefinition | null): {
     }
 
     // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
+    if (personalOrSharedServiceAuths[serviceId]) {
+      return true;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
     return !builtInServiceAuths[serviceId];
   });
 
-  // Can auto-activate if no configuration required, or all services have built-in configurations
+  // Can auto-activate if no configuration required, or all services have only built-in configurations
   return {
     canAutoActivate: !hasRecipeOptions && !needsServiceInputs,
     isLoading,
