@@ -48,7 +48,7 @@ function useCanAutoActivate(recipe: RecipeDefinition | null): {
   const { builtInServiceAuths, isLoading } =
     useBuiltInAuthsByRequiredServiceId(recipe);
 
-  if (isLoading || !recipe) {
+  if (!recipe) {
     return { canAutoActivate: false, isLoading };
   }
 
