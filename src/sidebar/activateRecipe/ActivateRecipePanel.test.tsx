@@ -19,12 +19,17 @@ import React from "react";
 import { useRecipe } from "@/recipes/recipesHooks";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
+  extensionPointConfigFactory,
+  getRecipeWithBuiltInServiceAuths,
   marketplaceListingFactory,
   recipeDefinitionFactory,
+  recipeFactory,
+  sanitizedAuthFactory,
+  sanitizedAuthServiceFactory,
   sidebarEntryFactory,
 } from "@/testUtils/factories";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -34,6 +39,9 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
+import { OutputKey } from "@/types/runtimeTypes";
+import { RegistryId } from "@/types/registryTypes";
+import * as api from "@/services/api";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -53,6 +61,14 @@ jest.mock("@/services/api", () => ({
   }),
   useCreateDatabaseMutation: jest.fn().mockReturnValue([jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn().mockReturnValue([jest.fn()]),
+  useGetServiceAuthsQuery: jest.fn().mockReturnValue({
+    data: [],
+    isLoading: false,
+  }),
+  useGetServicesQuery: jest.fn().mockReturnValue({
+    data: [],
+    isLoading: false,
+  }),
   appApi: {
     reducerPath: "appApi",
     endpoints: {
@@ -236,6 +252,34 @@ describe("ActivateRecipePanel", () => {
     });
 
     const rendered = setupMocksAndRender();
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders with service configuration if no built-in service configs available", async () => {
+    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const rendered = setupMocksAndRender(recipe);
+
+    (api.useGetServicesQuery as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it activates recipe with built-in services automatically and renders well-done page", async () => {
+    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+    const rendered = setupMocksAndRender(recipe);
+
+    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
+      data: builtInServiceAuths,
+      isLoading: false,
+    });
 
     await waitForEffect();
 
