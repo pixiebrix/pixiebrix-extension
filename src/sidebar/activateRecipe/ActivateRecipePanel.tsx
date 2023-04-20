@@ -26,8 +26,7 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
-import { isEmpty, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { isEmpty } from "lodash";
 import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
@@ -39,7 +38,6 @@ import useWizard from "@/activation/useWizard";
 import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
-import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useAsyncEffect } from "use-async-effect";
 
 const { actions } = sidebarSlice;
@@ -98,25 +96,11 @@ const activationSlice = createSlice({
 const { initialize, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
 
-function canAutoActivate(recipe: RecipeDefinition): boolean {
-  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
-  const recipeServiceIds = uniq(
-    recipe.extensionPoints.flatMap(({ services }) =>
-      services ? Object.values(services) : []
-    )
-  );
-  const needsServiceInputs = recipeServiceIds.some(
-    (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
-  );
-
-  // Can auto-activate if no configuration required
-  return !hasRecipeOptions && !needsServiceInputs;
-}
-
 const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   recipe,
   recipeNameNode,
   includesQuickBar,
+  canAutoActivate,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
@@ -156,12 +140,12 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   useAsyncEffect(async () => {
-    if (canAutoActivate(recipe)) {
+    if (canAutoActivate) {
       await activateRecipe();
     } else {
       stateDispatch(initialize());
     }
-  }, [recipe]);
+  }, [recipe, canAutoActivate]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;

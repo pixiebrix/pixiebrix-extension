@@ -25,17 +25,55 @@ import styles from "./RequireRecipe.module.scss";
 import { useAsyncState } from "@/hooks/common";
 import { resolveRecipe } from "@/registry/internal";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { useBuiltInAuthsByRequiredServiceId } from "@/hooks/auth";
+import { isEmpty, uniq } from "lodash";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
   recipeNameNode: React.ReactNode | null;
   includesQuickBar: boolean;
+  canAutoActivate: boolean;
 };
 
 type RequireRecipeProps = {
   recipeId: RegistryId;
   children: (props: RecipeState) => React.ReactElement;
 };
+
+function useCanAutoActivate(recipe: RecipeDefinition | null): {
+  canAutoActivate: boolean;
+  isLoading: boolean;
+} {
+  const { builtInServiceAuths, isLoading } =
+    useBuiltInAuthsByRequiredServiceId(recipe);
+
+  if (isLoading || !recipe) {
+    return { canAutoActivate: false, isLoading };
+  }
+
+  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+  const recipeServiceIds = uniq(
+    recipe.extensionPoints.flatMap(({ services }) =>
+      services ? Object.values(services) : []
+    )
+  );
+
+  const needsServiceInputs = recipeServiceIds.some((serviceId) => {
+    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+      return false;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
+    return !builtInServiceAuths[serviceId];
+  });
+
+  // Can auto-activate if no configuration required, or all services have built-in configurations
+  return {
+    canAutoActivate: !hasRecipeOptions && !needsServiceInputs,
+    isLoading,
+  };
+}
 
 const RequireRecipe: React.FC<RequireRecipeProps> = ({
   recipeId,
@@ -57,6 +95,10 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
   } = useGetMarketplaceListingsQuery({ package__name: recipeId });
   // eslint-disable-next-line security/detect-object-injection -- RegistryId
   const listing = useMemo(() => listings?.[recipeId], [listings, recipeId]);
+
+  // Can auto-activate
+  const { canAutoActivate, isLoading: isAutoActivateLoading } =
+    useCanAutoActivate(recipe);
 
   // Name component
   const recipeName =
@@ -87,7 +129,11 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
 
   // Loading state
   const isLoading =
-    isUninitialized || isLoadingRecipe || isLoadingListing || isLoadingQuickbar;
+    isUninitialized ||
+    isLoadingRecipe ||
+    isLoadingListing ||
+    isLoadingQuickbar ||
+    isAutoActivateLoading;
 
   if (isLoading) {
     return <Loader />;
@@ -97,6 +143,7 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     recipe,
     recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
     includesQuickBar: includesQuickbar,
+    canAutoActivate,
   };
 
   return children(recipeState);

@@ -68,29 +68,33 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useBuiltInServiceAuths(
-  recipe: RecipeDefinition
-): Record<RegistryId, UUID | null> {
+export function useBuiltInAuthsByRequiredServiceId(
+  recipe: RecipeDefinition | null
+): {
+  builtInServiceAuths: Record<RegistryId, UUID | undefined>;
+  isLoading: boolean;
+} {
   const { data: serviceAuths, isLoading } = useGetServiceAuthsQuery();
 
-  if (isLoading) {
-    return {};
-  }
-
-  const builtInAuths = serviceAuths.filter(
+  const builtInAuths = (serviceAuths ?? []).filter(
     (auth) => getSharingType(auth) === "built-in"
   );
-  const requiredServiceIds = getRequiredServiceIds(recipe);
+  const requiredServiceIds = recipe ? getRequiredServiceIds(recipe) : [];
 
-  return Object.fromEntries(
+  const builtInServiceAuths = Object.fromEntries(
     requiredServiceIds.map((serviceId) => {
       const builtInAuth = builtInAuths.find(
         (auth) => auth.service.config.metadata.id === serviceId
       );
 
-      return [serviceId, builtInAuth?.id ?? null];
+      return [serviceId, builtInAuth?.id];
     })
   );
+
+  return {
+    isLoading,
+    builtInServiceAuths,
+  };
 }
 
 export function useAuthOptions(): [AuthOption[], () => void] {
