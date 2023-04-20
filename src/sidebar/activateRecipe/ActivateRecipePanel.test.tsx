@@ -19,17 +19,13 @@ import React from "react";
 import { useRecipe } from "@/recipes/recipesHooks";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
-  extensionPointConfigFactory,
   getRecipeWithBuiltInServiceAuths,
   marketplaceListingFactory,
   recipeDefinitionFactory,
-  recipeFactory,
-  sanitizedAuthFactory,
-  sanitizedAuthServiceFactory,
   sidebarEntryFactory,
 } from "@/testUtils/factories";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -39,8 +35,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { OutputKey } from "@/types/runtimeTypes";
-import { RegistryId } from "@/types/registryTypes";
 import * as api from "@/services/api";
 
 jest.mock("@/recipes/recipesHooks", () => ({
