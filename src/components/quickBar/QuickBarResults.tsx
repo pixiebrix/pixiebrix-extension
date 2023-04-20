@@ -50,11 +50,15 @@ const ResultItem = forwardRef(
         style={{
           padding: "12px 16px",
           background: active ? theme.a1 : "transparent",
-          borderLeft: `2px solid ${active ? theme.foreground : "transparent"}`,
+          borderLeft: `4px solid ${
+            active ? theme.activeIndicator : "transparent"
+          }`,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           cursor: "pointer",
+          height: 56,
+          boxSizing: "border-box",
         }}
       >
         <div
@@ -66,8 +70,10 @@ const ResultItem = forwardRef(
             fontWeight: 400,
           }}
         >
-          {action.icon && action.icon}
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ alignSelf: "flex-start" }}>
+            {action.icon && action.icon}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div>
               {ancestors.length > 0 &&
                 ancestors.map((ancestor) => (
@@ -92,7 +98,16 @@ const ResultItem = forwardRef(
               <span>{action.name}</span>
             </div>
             {action.subtitle && (
-              <span style={{ fontSize: 12 }}>{action.subtitle}</span>
+              <span
+                style={{
+                  fontSize: 9,
+                  lineHeight: "120%",
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                }}
+              >
+                {action.subtitle}
+              </span>
             )}
           </div>
         </div>
