@@ -260,12 +260,13 @@ describe("ActivateRecipePanel", () => {
 
   test("it renders with service configuration if no built-in service configs available", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
-    const rendered = setupMocksAndRender(recipe);
 
     (api.useGetServicesQuery as jest.Mock).mockReturnValue({
       data: [],
       isLoading: false,
     });
+
+    const rendered = setupMocksAndRender(recipe);
 
     await waitForEffect();
 
@@ -274,12 +275,13 @@ describe("ActivateRecipePanel", () => {
 
   test("it activates recipe with built-in services automatically and renders well-done page", async () => {
     const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
-    const rendered = setupMocksAndRender(recipe);
 
     (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
       data: builtInServiceAuths,
       isLoading: false,
     });
+
+    const rendered = setupMocksAndRender(recipe);
 
     await waitForEffect();
 
@@ -288,15 +290,16 @@ describe("ActivateRecipePanel", () => {
 
   test("it doesn't flicker while built-in auths are loading", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
-    const rendered = setupMocksAndRender(recipe);
 
     (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
       data: undefined,
       isLoading: true,
     });
 
+    const rendered = setupMocksAndRender(recipe);
+
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(rendered.getByTestId("loader")).not.toBeNull();
   });
 });
