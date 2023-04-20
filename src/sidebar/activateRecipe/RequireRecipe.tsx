@@ -25,7 +25,7 @@ import styles from "./RequireRecipe.module.scss";
 import { useAsyncState } from "@/hooks/common";
 import { resolveRecipe } from "@/registry/internal";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
-import { useBuiltInAuthsByRequiredServiceIds } from "@/hooks/auth";
+import { useDefaultAuthsByRequiredServiceIds } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
@@ -46,7 +46,7 @@ function useCanAutoActivate(recipe: RecipeDefinition | null): {
   isLoading: boolean;
 } {
   const { builtInServiceAuths, isLoading } =
-    useBuiltInAuthsByRequiredServiceIds(recipe);
+    useDefaultAuthsByRequiredServiceIds(recipe);
 
   if (!recipe) {
     return { canAutoActivate: false, isLoading };

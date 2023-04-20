@@ -68,7 +68,7 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useBuiltInAuthsByRequiredServiceIds(
+export function useDefaultAuthsByRequiredServiceIds(
   recipe: RecipeDefinition | null
 ): {
   builtInServiceAuths: Record<RegistryId, UUID | undefined>;
@@ -79,10 +79,23 @@ export function useBuiltInAuthsByRequiredServiceIds(
   const builtInAuths = (serviceAuths ?? []).filter(
     (auth) => getSharingType(auth) === "built-in"
   );
+  const personalOrSharedAuths = (serviceAuths ?? []).filter(
+    (auth) => getSharingType(auth) !== "built-in"
+  );
+
   const requiredServiceIds = recipe ? getRequiredServiceIds(recipe) : [];
 
-  const builtInServiceAuths = Object.fromEntries(
+  const defaultServiceAuths = Object.fromEntries(
     requiredServiceIds.map((serviceId) => {
+      const personalOrSharedAuth = personalOrSharedAuths.find(
+        (auth) => auth.service.config.metadata.id === serviceId
+      );
+
+      // Prefer arbitrary personal or shared auth over built-in auth
+      if (personalOrSharedAuth) {
+        return [serviceId, personalOrSharedAuth.id];
+      }
+
       const builtInAuth = builtInAuths.find(
         (auth) => auth.service.config.metadata.id === serviceId
       );
@@ -93,7 +106,7 @@ export function useBuiltInAuthsByRequiredServiceIds(
 
   return {
     isLoading,
-    builtInServiceAuths,
+    builtInServiceAuths: defaultServiceAuths,
   };
 }
 
