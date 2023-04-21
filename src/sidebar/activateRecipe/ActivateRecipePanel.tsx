@@ -42,6 +42,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useDefaultAuthOptions } from "@/hooks/auth";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { type AuthOption } from "@/auth/authTypes";
 
 const { actions } = sidebarSlice;
 
@@ -99,12 +100,10 @@ const activationSlice = createSlice({
 const { initialize, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
 
-function useCanAutoActivate(recipe: RecipeDefinition): {
-  canAutoActivate: boolean;
-  isLoading: boolean;
-} {
-  const { defaultAuthOptions, isLoading } = useDefaultAuthOptions(recipe);
-
+function canAutoActivate(
+  recipe: RecipeDefinition,
+  defaultAuthOptions: Record<RegistryId, AuthOption>
+): boolean {
   const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
   const recipeServiceIds = uniq(
     recipe.extensionPoints.flatMap(({ services }) =>
@@ -126,12 +125,7 @@ function useCanAutoActivate(recipe: RecipeDefinition): {
   });
 
   // Can auto-activate if no configuration required, or all services have only built-in configurations
-  return {
-    canAutoActivate: isLoading
-      ? false
-      : !hasRecipeOptions && !needsServiceInputs,
-    isLoading,
-  };
+  return !hasRecipeOptions && !needsServiceInputs;
 }
 
 const ActivateRecipePanelContent: React.FC<RecipeState> = ({
@@ -142,8 +136,8 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
   const { shortcut } = useQuickbarShortcut();
-  const { canAutoActivate, isLoading: isAutoActivateLoading } =
-    useCanAutoActivate(recipe);
+  const { defaultAuthOptions, isLoading: isDefaultAuthOptionsLoading } =
+    useDefaultAuthOptions(recipe);
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -179,14 +173,26 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   useAsyncEffect(async () => {
-    if (canAutoActivate && !isAutoActivateLoading) {
+    if (
+      !isDefaultAuthOptionsLoading &&
+      canAutoActivate(recipe, defaultAuthOptions)
+    ) {
       await activateRecipe();
     } else {
       stateDispatch(initialize());
     }
-  }, [recipe, canAutoActivate, isAutoActivateLoading]);
+  }, [
+    recipe,
+    canAutoActivate,
+    isDefaultAuthOptionsLoading,
+    defaultAuthOptions,
+  ]);
 
-  if (!state.isInitialized || state.isActivating || isAutoActivateLoading) {
+  if (
+    !state.isInitialized ||
+    state.isActivating ||
+    isDefaultAuthOptionsLoading
+  ) {
     return <Loader />;
   }
 

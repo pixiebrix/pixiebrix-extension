@@ -51,12 +51,14 @@ SelectedOption.args = {
       local: true,
       value: uuidv4(),
       serviceId: validateRegistryId("@story/service"),
+      sharingType: "private",
     },
     {
       label: "Team Config",
       local: false,
       value: uuidv4(),
       serviceId: validateRegistryId("@story/service"),
+      sharingType: "shared",
     },
   ],
 };
