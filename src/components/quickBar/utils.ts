@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ActionImpl } from "kbar";
+import { type Action } from "kbar";
 import { useMemo } from "react";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 
-export function useGetActionNameAndIcon({ name, icon }: ActionImpl) {
+export function useGetActionNameAndIcon({ name, icon }: Action) {
   return useMemo(() => {
     const { startingEmoji, rest } = splitStartingEmoji(name);
     return {

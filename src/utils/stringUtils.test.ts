@@ -38,6 +38,12 @@ describe("string utilities", () => {
       rest: " 😊 some test string with multiple emojis at the start",
     });
     expect(
+      splitStartingEmoji("👋🏿 some test string with colors emoji at the start")
+    ).toStrictEqual({
+      startingEmoji: "👋🏿",
+      rest: " some test string with colors emoji at the start",
+    });
+    expect(
       splitStartingEmoji("some test string with an emoji at the end 😊")
     ).toStrictEqual({
       startingEmoji: undefined,

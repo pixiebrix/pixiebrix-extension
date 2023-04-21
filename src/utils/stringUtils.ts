@@ -17,11 +17,12 @@
 
 /**
  * If a string contains an emoji, returns an object that contains the separated emoji and the remaining string.
- * @param string
+ * @param value
  */
-export function splitStartingEmoji(string: string) {
-  const emojiRegex = /^(\p{Emoji})?(.*)/u;
-  const match = emojiRegex.exec(string);
+export function splitStartingEmoji(value: string) {
+  const emojiRegex =
+    /^((?:\p{Extended_Pictographic}\p{Emoji_Modifier_Base}?\p{Emoji_Modifier}?)+)?(.*)/u;
+  const match = emojiRegex.exec(value);
   return {
     startingEmoji: match[1],
     rest: match[2],
