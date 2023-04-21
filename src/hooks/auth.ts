@@ -129,7 +129,7 @@ export function useAuthOptions(): {
 /*
  * Get a list of required service ids for a recipe mapped to a default auth option.
  *
- * If there is no default auth option, the value will be null.
+ * If there are no options available for the service, the value will be null.
  * Prefer an arbitrary personal or shared auth option over built-in.
  *
  * Assumes that the recipe is not yet installed.
