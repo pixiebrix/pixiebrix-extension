@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthOption } from "@/auth/authTypes";
+import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
 import { useMemo, useCallback } from "react";
@@ -25,15 +25,12 @@ import { type SanitizedAuth } from "@/types/contract";
 import { type RawServiceConfiguration } from "@/types/serviceTypes";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
   return normalized === "" ? "Default" : normalized;
 }
-
-type AuthSharing = "private" | "shared" | "built-in";
 
 export function getSharingType(auth: SanitizedAuth): AuthSharing {
   if (auth.organization?.name) {
@@ -68,70 +65,7 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-function mapAuthsToServiceIds(
-  auths: SanitizedAuth[],
-  serviceIds: RegistryId[]
-): Record<RegistryId, UUID | undefined> {
-  return Object.fromEntries(
-    serviceIds.map((serviceId) => {
-      const serviceAuth = auths.find(
-        (auth) => auth.service.config.metadata.id === serviceId
-      );
-      return [serviceId, serviceAuth?.id];
-    })
-  );
-}
-
-export function useAuthsByRequiredServiceIds(recipe: RecipeDefinition | null): {
-  builtInServiceAuths: Record<RegistryId, UUID | undefined>;
-  personalOrSharedServiceAuths: Record<RegistryId, UUID | undefined>;
-  isLoading: boolean;
-} {
-  const { data: serviceAuths, isLoading } = useGetServiceAuthsQuery();
-  // See note in useAuthOptions for why we're using readRawConfigurations instead of the store
-  const [localAuths, isLocalLoading, _localError] = useAsyncState<
-    RawServiceConfiguration[]
-  >(readRawConfigurations);
-
-  const builtInAuths = (serviceAuths ?? []).filter(
-    (auth) => getSharingType(auth) === "built-in"
-  );
-
-  const sharedAuths = (serviceAuths ?? []).filter(
-    (auth) => getSharingType(auth) !== "built-in"
-  );
-
-  const requiredServiceIds = recipe ? getRequiredServiceIds(recipe) : [];
-
-  const builtInServiceAuths = mapAuthsToServiceIds(
-    builtInAuths,
-    requiredServiceIds
-  );
-  const sharedServiceAuths = mapAuthsToServiceIds(
-    sharedAuths,
-    requiredServiceIds
-  );
-  const localServiceAuths = Object.fromEntries(
-    requiredServiceIds.map((serviceId) => {
-      const localServiceAuth = (localAuths ?? []).find(
-        (auth) => auth.serviceId === serviceId
-      );
-
-      return [serviceId, localServiceAuth?.id];
-    })
-  );
-
-  return {
-    isLoading: isLoading || isLocalLoading,
-    builtInServiceAuths,
-    personalOrSharedServiceAuths: {
-      ...sharedServiceAuths,
-      ...localServiceAuths,
-    },
-  };
-}
-
-export function useAuthOptions(): [AuthOption[], () => void] {
+export function useAuthOptions(): [AuthOption[], () => void, boolean] {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
@@ -145,36 +79,32 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   } = useGetServiceAuthsQuery();
 
   const authOptions = useMemo(() => {
-    if (isLocalLoading || isRemoteLoading) {
-      // Return no options to avoid unwanted default behavior when the local options are loaded but the remote options
-      // are still pending
-      return [];
-    }
-
     const localOptions = sortBy(
-      (configuredServices ?? []).map((x) => ({
-        value: x.id,
-        label: `${defaultLabel(x.label)} — Private`,
+      (configuredServices ?? []).map((serviceConfiguration) => ({
+        value: serviceConfiguration.id,
+        label: `${defaultLabel(serviceConfiguration.label)} — Private`,
         local: true,
-        serviceId: x.serviceId,
+        serviceId: serviceConfiguration.serviceId,
+        sharingType: "private" as AuthSharing,
       })),
       (x) => x.label
     );
 
     const sharedOptions = sortBy(
-      (remoteAuths ?? []).map((x) => ({
-        value: x.id,
-        label: getRemoteLabel(x),
+      (remoteAuths ?? []).map((remoteAuth) => ({
+        value: remoteAuth.id,
+        label: getRemoteLabel(remoteAuth),
         local: false,
-        user: x.user,
-        serviceId: x.service.config.metadata.id,
+        user: remoteAuth.user,
+        serviceId: remoteAuth.service.config.metadata.id,
+        sharingType: getSharingType(remoteAuth),
       })),
       (x) => (x.user ? 0 : 1),
       (x) => x.label
     );
 
     return [...localOptions, ...sharedOptions];
-  }, [isLocalLoading, isRemoteLoading, remoteAuths, configuredServices]);
+  }, [remoteAuths, configuredServices]);
 
   const refresh = useCallback(() => {
     // Locally, eslint run in IntelliJ disagrees with the linter run in CI. There might be a package version mismatch
@@ -183,5 +113,52 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     void refreshLocal();
   }, [refreshRemote, refreshLocal]);
 
-  return [authOptions, refresh];
+  const isLoading = isLocalLoading || isRemoteLoading;
+
+  if (isLoading === undefined) {
+    console.warn("IS LOADING UNDEFINED", isLocalLoading, isRemoteLoading);
+  }
+
+  // TODO: make return type an object instead, since we're adding isLoading
+  return [isLoading ? [] : authOptions, refresh, isLoading];
+}
+
+export function useDefaultAuthOptions(recipe: RecipeDefinition): {
+  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
+  isLoading: boolean;
+} {
+  const [authOptions, , isLoading] = useAuthOptions();
+
+  const requiredServiceIds = getRequiredServiceIds(recipe);
+
+  const defaultAuthOptions = Object.fromEntries(
+    requiredServiceIds.map((serviceId) => {
+      const authOptionsForService = authOptions.filter(
+        (authOption) => authOption.serviceId === serviceId
+      );
+
+      // Prefer arbitrary personal or shared configuration
+      const personalOrSharedOption = authOptionsForService.find((authOption) =>
+        ["private", "shared"].includes(authOption.sharingType)
+      );
+      if (personalOrSharedOption) {
+        return [serviceId, personalOrSharedOption];
+      }
+
+      // Default to built-in option otherwise
+      const builtInOption = authOptionsForService.find(
+        (authOption) => authOption.sharingType === "built-in"
+      );
+      if (builtInOption) {
+        return [serviceId, builtInOption];
+      }
+
+      return [serviceId, null];
+    })
+  );
+
+  return {
+    defaultAuthOptions,
+    isLoading,
+  };
 }

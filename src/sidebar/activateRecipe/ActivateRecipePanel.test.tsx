@@ -58,6 +58,7 @@ jest.mock("@/services/api", () => ({
   useGetServiceAuthsQuery: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,
+    isFetching: false,
   }),
   useGetServicesQuery: jest.fn().mockReturnValue({
     data: [],
@@ -194,6 +195,12 @@ beforeEach(() => {
     shortcut: null,
     isConfigured: false,
   });
+
+  (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
+    data: [],
+    isLoading: false,
+    isFetching: false,
+  });
 });
 
 describe("ActivateRecipePanel", () => {
@@ -286,8 +293,9 @@ describe("ActivateRecipePanel", () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
     (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-      data: undefined,
+      data: [],
       isLoading: true,
+      isFetching: true,
     });
 
     const rendered = setupMocksAndRender(recipe);

@@ -39,8 +39,8 @@ import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { useAsyncEffect } from "use-async-effect";
-import { RecipeDefinition } from "@/types/recipeTypes";
-import { useAuthsByRequiredServiceIds } from "@/hooks/auth";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { useDefaultAuthOptions } from "@/hooks/auth";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const { actions } = sidebarSlice;
@@ -103,8 +103,7 @@ function useCanAutoActivate(recipe: RecipeDefinition): {
   canAutoActivate: boolean;
   isLoading: boolean;
 } {
-  const { builtInServiceAuths, personalOrSharedServiceAuths, isLoading } =
-    useAuthsByRequiredServiceIds(recipe);
+  const { defaultAuthOptions, isLoading } = useDefaultAuthOptions(recipe);
 
   const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
   const recipeServiceIds = uniq(
@@ -119,12 +118,11 @@ function useCanAutoActivate(recipe: RecipeDefinition): {
     }
 
     // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
-    if (personalOrSharedServiceAuths[serviceId]) {
-      return true;
-    }
+    const defaultOption = defaultAuthOptions[serviceId];
 
-    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
-    return !builtInServiceAuths[serviceId];
+    // All services need to have only built-in configuration options for auto-activation
+    // If there are personal or team configuration options, or no options at all, we need to manually configure
+    return defaultOption?.sharingType !== "built-in";
   });
 
   // Can auto-activate if no configuration required, or all services have only built-in configurations

@@ -35,7 +35,7 @@ import * as Yup from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { useAuthsByRequiredServiceIds } from "@/hooks/auth";
+import { useDefaultAuthOptions } from "@/hooks/auth";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -58,7 +58,7 @@ function useWizard(
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint.options?.schema
   );
-  const { builtInServiceAuths } = useAuthsByRequiredServiceIds(blueprint);
+  const { defaultAuthOptions } = useDefaultAuthOptions(blueprint);
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
@@ -101,8 +101,9 @@ function useWizard(
       ),
       services: serviceIds.map((id) => ({
         id,
+        // Prefer the installed config for reinstall cases, otherwise use the default
         // eslint-disable-next-line security/detect-object-injection -- is a registry id
-        config: installedServices[id] ?? builtInServiceAuths[id],
+        config: installedServices[id] ?? defaultAuthOptions[id]?.value,
       })),
       optionsArgs: mapValues(
         blueprint.options?.schema?.properties ?? {},
@@ -136,9 +137,9 @@ function useWizard(
     blueprint.extensionPoints,
     blueprint.metadata.id,
     blueprint.options?.schema,
-    builtInServiceAuths,
     installedExtensions,
     optionsValidationSchema,
+    defaultAuthOptions,
   ]);
 }
 
