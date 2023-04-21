@@ -126,6 +126,14 @@ export function useAuthOptions(): {
   };
 }
 
+/*
+ * Get a list of required service ids for a recipe mapped to a default auth option.
+ *
+ * If there is no default auth option, the value will be null.
+ * Prefer an arbitrary personal or shared auth option over built-in.
+ *
+ * Assumes that the recipe is not yet installed.
+ */
 export function useDefaultAuthOptions(recipe: RecipeDefinition): {
   defaultAuthOptions: Record<RegistryId, AuthOption | null>;
   isLoading: boolean;
