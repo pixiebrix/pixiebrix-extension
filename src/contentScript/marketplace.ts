@@ -75,6 +75,24 @@ async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
   }
 }
 
+const changeActivateButtonToActiveLabel = (button: HTMLAnchorElement) => {
+  button.className = "";
+  button.innerHTML = "Reactivate";
+
+  const parent = button.parentElement;
+
+  const activeLabelContainer = document.createElement("div");
+  activeLabelContainer.classList.add("d-flex", "flex-column");
+
+  const activeLabel = document.createElement("span");
+  activeLabel.classList.add("text-success");
+  activeLabel.innerHTML = '<i class="fas fa-check"></i> Active';
+
+  activeLabelContainer.append(activeLabel);
+  parent?.replaceChild(activeLabelContainer, button);
+  activeLabelContainer.append(button);
+};
+
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   const controller = new AbortController();
 
@@ -124,10 +142,7 @@ export async function loadPageEnhancements(): Promise<void> {
 
     // Check if recipe is already activated, and change button content to indicate active status
     if (installedRecipeIds.has(recipeId)) {
-      button.classList.remove("btn", "btn-primary");
-      button.classList.add("d-flex", "flex-column");
-      button.innerHTML =
-        '<span class="text-success"><i class="fas fa-check"></i> Active</span><span>Reactivate</span>';
+      changeActivateButtonToActiveLabel(button);
     }
 
     button.addEventListener("click", async (event) => {
