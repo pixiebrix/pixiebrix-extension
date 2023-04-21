@@ -65,7 +65,11 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useAuthOptions(): [AuthOption[], () => void, boolean] {
+export function useAuthOptions(): {
+  authOptions: AuthOption[];
+  refresh: () => void;
+  isLoading: boolean;
+} {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
@@ -115,19 +119,18 @@ export function useAuthOptions(): [AuthOption[], () => void, boolean] {
 
   const isLoading = isLocalLoading || isRemoteLoading;
 
-  if (isLoading === undefined) {
-    console.warn("IS LOADING UNDEFINED", isLocalLoading, isRemoteLoading);
-  }
-
-  // TODO: make return type an object instead, since we're adding isLoading
-  return [isLoading ? [] : authOptions, refresh, isLoading];
+  return {
+    authOptions: isLoading ? [] : authOptions,
+    refresh,
+    isLoading,
+  };
 }
 
 export function useDefaultAuthOptions(recipe: RecipeDefinition): {
   defaultAuthOptions: Record<RegistryId, AuthOption | null>;
   isLoading: boolean;
 } {
-  const [authOptions, , isLoading] = useAuthOptions();
+  const { authOptions, isLoading } = useAuthOptions();
 
   const requiredServiceIds = getRequiredServiceIds(recipe);
 

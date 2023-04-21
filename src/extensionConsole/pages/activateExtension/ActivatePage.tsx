@@ -38,7 +38,7 @@ const ActivatePage: React.FunctionComponent = () => {
     error,
   } = useFetch<CloudExtension>(`/api/extensions/${extensionId}/`);
 
-  const [authOptions, refreshAuthOptions] = useAuthOptions();
+  const { authOptions, refresh: refreshAuthOptions } = useAuthOptions();
 
   return (
     <Page
