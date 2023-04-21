@@ -122,7 +122,7 @@ export async function loadPageEnhancements(): Promise<void> {
       continue;
     }
 
-    // Check if recipe is already activated, and change button to teate
+    // Check if recipe is already activated, and change button content to indicate active status
     if (installedRecipeIds.has(recipeId)) {
       button.classList.remove("btn", "btn-primary");
       button.classList.add("d-flex", "flex-column");
