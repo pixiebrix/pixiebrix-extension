@@ -15,20 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import LockedExtensionPointLabel from "@/components/form/lockedLabel/LockedExtensionPointLabel";
-
-export function makeLockableFieldProps(
-  label: string,
-  isLocked: boolean,
-  message?: string
-) {
+/**
+ * If a string contains an emoji, returns an object that contains the separated emoji and the remaining string.
+ * @param value
+ */
+export function splitStartingEmoji(value: string) {
+  const emojiRegex =
+    /^((?:\p{Extended_Pictographic}\p{Emoji_Modifier_Base}?\p{Emoji_Modifier}?)+)?(.*)/u;
+  const match = emojiRegex.exec(value);
   return {
-    disabled: isLocked,
-    label: isLocked ? (
-      <LockedExtensionPointLabel label={label} message={message} />
-    ) : (
-      label
-    ),
+    startingEmoji: match[1],
+    rest: match[2],
   };
 }

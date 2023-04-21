@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { type ActionId, type ActionImpl, KBarResults, useMatches } from "kbar";
 import { theme, groupNameStyle } from "./quickBarTheme";
+import { useGetActionNameAndIcon } from "@/components/quickBar/utils";
 
 const ResultItem = forwardRef(
   (
@@ -32,7 +33,7 @@ const ResultItem = forwardRef(
     },
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const ancestors = React.useMemo(() => {
+    const ancestors = useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId
@@ -43,6 +44,8 @@ const ResultItem = forwardRef(
       // but rather just "Dark"
       return action.ancestors.slice(index + 1);
     }, [action.ancestors, currentRootActionId]);
+
+    const { name, icon } = useGetActionNameAndIcon(action);
 
     return (
       <div
@@ -70,9 +73,7 @@ const ResultItem = forwardRef(
             fontWeight: 400,
           }}
         >
-          <div style={{ alignSelf: "flex-start" }}>
-            {action.icon && action.icon}
-          </div>
+          <div style={{ alignSelf: "flex-start" }}>{icon ?? null}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div>
               {ancestors.length > 0 &&
@@ -95,7 +96,7 @@ const ResultItem = forwardRef(
                     </span>
                   </React.Fragment>
                 ))}
-              <span>{action.name}</span>
+              <span>{name}</span>
             </div>
             {action.subtitle && (
               <span

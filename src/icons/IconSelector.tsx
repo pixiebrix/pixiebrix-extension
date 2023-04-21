@@ -56,12 +56,14 @@ interface OwnProps {
   value: { id: string; library: IconLibrary };
   isClearable?: boolean;
   onChange: (option: IconOption | null) => void;
+  disabled?: boolean;
 }
 
 const IconSelector: React.FunctionComponent<OwnProps> = ({
   value,
   isClearable = true,
   onChange,
+  disabled = false,
 }) => {
   const selectedOption = useMemo(() => {
     if (value) {
@@ -75,6 +77,7 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Select
+      isDisabled={disabled}
       isClearable={isClearable}
       value={selectedOption}
       options={iconOptions}
