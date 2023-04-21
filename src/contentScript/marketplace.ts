@@ -99,7 +99,7 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
 
 let enhancementsLoaded = false;
 
-async function loadPageEnhancements(): Promise<void> {
+export async function loadPageEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }
@@ -122,9 +122,12 @@ async function loadPageEnhancements(): Promise<void> {
       continue;
     }
 
-    // Check if recipe is already activated, and change button to Reactivate
+    // Check if recipe is already activated, and change button to teate
     if (installedRecipeIds.has(recipeId)) {
-      button.innerHTML = '<i class="fas fa-sync-alt"></i> Reactivate';
+      button.classList.remove("btn", "btn-primary");
+      button.classList.add("d-flex", "flex-column");
+      button.innerHTML =
+        '<span class="text-success"><i class="fas fa-check"></i> Active</span><span>Reactivate</span>';
     }
 
     button.addEventListener("click", async (event) => {
@@ -145,6 +148,11 @@ async function loadPageEnhancements(): Promise<void> {
       await showSidebarActivationForRecipe(recipeId);
     });
   }
+}
+
+export async function reloadMarketplaceEnhancements() {
+  enhancementsLoaded = false;
+  await loadPageEnhancements();
 }
 
 export async function initMarketplaceEnhancements() {
