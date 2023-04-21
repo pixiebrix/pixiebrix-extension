@@ -173,7 +173,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   ...props
 }) => {
   const { schema } = props;
-  const [authOptions, refreshOptions] = useAuthOptions();
+  const { authOptions, refresh: refreshOptions } = useAuthOptions();
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, , helpers] =

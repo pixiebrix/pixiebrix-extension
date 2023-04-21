@@ -906,3 +906,43 @@ export function sidebarEntryFactory(
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- allow never, future-proof for new types
   throw new Error(`Unknown entry type: ${type}`);
 }
+
+export const getRecipeWithBuiltInServiceAuths = () => {
+  const extensionServices = {
+    service1: "@pixiebrix/service1",
+    service2: "@pixiebrix/service2",
+  } as Record<OutputKey, RegistryId>;
+
+  const extensionPointDefinition = extensionPointConfigFactory({
+    services: extensionServices,
+  });
+
+  const recipe = recipeFactory({
+    extensionPoints: [extensionPointDefinition],
+  });
+
+  const builtInServiceAuths = [
+    sanitizedAuthFactory({
+      service: sanitizedAuthServiceFactory({
+        config: {
+          metadata: {
+            id: validateRegistryId("@pixiebrix/service1"),
+            name: "Service 1",
+          },
+        },
+      }),
+    }),
+    sanitizedAuthFactory({
+      service: sanitizedAuthServiceFactory({
+        config: {
+          metadata: {
+            id: validateRegistryId("@pixiebrix/service2"),
+            name: "Service 2",
+          },
+        },
+      }),
+    }),
+  ];
+
+  return { recipe, builtInServiceAuths };
+};

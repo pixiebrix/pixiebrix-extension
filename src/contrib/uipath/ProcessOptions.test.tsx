@@ -47,7 +47,9 @@ jest.mock("@/services/useDependency", () =>
   })
 );
 jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn().mockReturnValue([[], jest.fn()]),
+  useAuthOptions: jest
+    .fn()
+    .mockReturnValue({ authOptions: [], refresh: jest.fn(), isLoading: false }),
 }));
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");

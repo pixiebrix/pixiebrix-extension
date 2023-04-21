@@ -24,6 +24,11 @@ import { propertiesToSchema } from "@/validators/generic";
 jest.mock("@/components/auth/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("connected-react-router");
+jest.mock("@/services/api", () => ({
+  useGetServiceAuthsQuery: jest.fn().mockReturnValue({
+    data: [],
+  }),
+}));
 
 describe("useWizard", () => {
   test("show personalized tab", () => {

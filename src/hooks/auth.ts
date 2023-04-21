@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthOption } from "@/auth/authTypes";
+import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
 import { useMemo, useCallback } from "react";
@@ -23,13 +23,14 @@ import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
 import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { getRequiredServiceIds } from "@/utils/recipeUtils";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
   return normalized === "" ? "Default" : normalized;
 }
-
-type AuthSharing = "private" | "shared" | "built-in";
 
 export function getSharingType(auth: SanitizedAuth): AuthSharing {
   if (auth.organization?.name) {
@@ -64,7 +65,11 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useAuthOptions(): [AuthOption[], () => void] {
+export function useAuthOptions(): {
+  authOptions: AuthOption[];
+  refresh: () => void;
+  isLoading: boolean;
+} {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
@@ -78,36 +83,32 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   } = useGetServiceAuthsQuery();
 
   const authOptions = useMemo(() => {
-    if (isLocalLoading || isRemoteLoading) {
-      // Return no options to avoid unwanted default behavior when the local options are loaded but the remote options
-      // are still pending
-      return [];
-    }
-
     const localOptions = sortBy(
-      (configuredServices ?? []).map((x) => ({
-        value: x.id,
-        label: `${defaultLabel(x.label)} — Private`,
+      (configuredServices ?? []).map((serviceConfiguration) => ({
+        value: serviceConfiguration.id,
+        label: `${defaultLabel(serviceConfiguration.label)} — Private`,
         local: true,
-        serviceId: x.serviceId,
+        serviceId: serviceConfiguration.serviceId,
+        sharingType: "private" as AuthSharing,
       })),
       (x) => x.label
     );
 
     const sharedOptions = sortBy(
-      (remoteAuths ?? []).map((x) => ({
-        value: x.id,
-        label: getRemoteLabel(x),
+      (remoteAuths ?? []).map((remoteAuth) => ({
+        value: remoteAuth.id,
+        label: getRemoteLabel(remoteAuth),
         local: false,
-        user: x.user,
-        serviceId: x.service.config.metadata.id,
+        user: remoteAuth.user,
+        serviceId: remoteAuth.service.config.metadata.id,
+        sharingType: getSharingType(remoteAuth),
       })),
       (x) => (x.user ? 0 : 1),
       (x) => x.label
     );
 
     return [...localOptions, ...sharedOptions];
-  }, [isLocalLoading, isRemoteLoading, remoteAuths, configuredServices]);
+  }, [remoteAuths, configuredServices]);
 
   const refresh = useCallback(() => {
     // Locally, eslint run in IntelliJ disagrees with the linter run in CI. There might be a package version mismatch
@@ -116,5 +117,59 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     void refreshLocal();
   }, [refreshRemote, refreshLocal]);
 
-  return [authOptions, refresh];
+  const isLoading = isLocalLoading || isRemoteLoading;
+
+  return {
+    authOptions: isLoading ? [] : authOptions,
+    refresh,
+    isLoading,
+  };
+}
+
+/*
+ * Get a list of required service ids for a recipe mapped to a default auth option.
+ *
+ * If there are no options available for the service, the value will be null.
+ * Prefer an arbitrary personal or shared auth option over built-in.
+ *
+ * Assumes that the recipe is not yet installed.
+ */
+export function useDefaultAuthOptions(recipe: RecipeDefinition): {
+  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
+  isLoading: boolean;
+} {
+  const { authOptions, isLoading } = useAuthOptions();
+
+  const requiredServiceIds = getRequiredServiceIds(recipe);
+
+  const defaultAuthOptions = Object.fromEntries(
+    requiredServiceIds.map((serviceId) => {
+      const authOptionsForService = authOptions.filter(
+        (authOption) => authOption.serviceId === serviceId
+      );
+
+      // Prefer arbitrary personal or shared configuration
+      const personalOrSharedOption = authOptionsForService.find((authOption) =>
+        ["private", "shared"].includes(authOption.sharingType)
+      );
+      if (personalOrSharedOption) {
+        return [serviceId, personalOrSharedOption];
+      }
+
+      // Default to built-in option otherwise
+      const builtInOption = authOptionsForService.find(
+        (authOption) => authOption.sharingType === "built-in"
+      );
+      if (builtInOption) {
+        return [serviceId, builtInOption];
+      }
+
+      return [serviceId, null];
+    })
+  );
+
+  return {
+    defaultAuthOptions,
+    isLoading,
+  };
 }
