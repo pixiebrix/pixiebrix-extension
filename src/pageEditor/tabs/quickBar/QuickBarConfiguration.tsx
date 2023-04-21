@@ -80,11 +80,13 @@ const QuickBarConfiguration: React.FC<{
       <FieldSection title="Advanced">
         <ConnectedFieldTemplate
           name="extension.icon"
-          label="Icon"
           as={IconWidget}
           description="Icon to show in the menu"
-          // Disable icon select if an emoji is the first character since we use the emoji in its place
-          disabled={emojiFirstCharacter}
+          {...makeLockableFieldProps(
+            "Icon",
+            emojiFirstCharacter,
+            "If the first character in the action title is an emoji we will use that in the place of an icon."
+          )}
         />
 
         <ConnectedFieldTemplate
