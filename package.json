@@ -128,7 +128,7 @@
     "react-transition-group": "^4.4.2",
     "react-virtualized": "^9.22.4",
     "react-virtualized-auto-sizer": "^1.0.14",
-    "react-window": "^1.8.8",
+    "react-window": "^1.8.9",
     "redux": "^4.1.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
