@@ -25,7 +25,7 @@ import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import {
   hideSidebar,
-  reloadMarketplaceEnhancements,
+  reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript,
 } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
@@ -46,6 +46,7 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useDefaultAuthOptions } from "@/hooks/auth";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { persistor } from "@/sidebar/store";
+import { type AuthOption } from "@/auth/authTypes";
 
 const { actions } = sidebarSlice;
 
@@ -131,10 +132,10 @@ function canAutoActivate(
   return !hasRecipeOptions && !needsServiceInputs;
 }
 
-async function refreshMarketplaceEnhancements() {
+async function reloadMarketplaceEnhancements() {
   const topFrame = await getTopLevelFrame();
   await persistor.flush();
-  void reloadMarketplaceEnhancements(topFrame);
+  void reloadMarketplaceEnhancementsInContentScript(topFrame);
 }
 
 const ActivateRecipePanelContent: React.FC<RecipeState> = ({
@@ -176,7 +177,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
 
     if (success) {
       stateDispatch(activateSuccess());
-      void refreshMarketplaceEnhancements();
+      void reloadMarketplaceEnhancements();
     } else {
       stateDispatch(activateError(error));
     }
