@@ -53,7 +53,7 @@ type StorageEstimate = {
     // https://github.com/whatwg/storage/issues/63#issuecomment-437990804
     indexedDB?: number;
     caches?: number;
-    serviceWorkerRegistrations: number;
+    serviceWorkerRegistrations?: number;
     other: number;
   };
 };
