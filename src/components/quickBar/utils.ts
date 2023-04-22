@@ -15,20 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import LockedExtensionPointLabel from "@/components/form/lockedLabel/LockedExtensionPointLabel";
+import { type Action } from "kbar";
+import { useMemo } from "react";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 
-export function makeLockableFieldProps(
-  label: string,
-  isLocked: boolean,
-  message?: string
-) {
-  return {
-    disabled: isLocked,
-    label: isLocked ? (
-      <LockedExtensionPointLabel label={label} message={message} />
-    ) : (
-      label
-    ),
-  };
+export function useGetActionNameAndIcon({ name, icon }: Action) {
+  return useMemo(() => {
+    const { startingEmoji, rest } = splitStartingEmoji(name);
+    return {
+      name: rest.trim(), // Trim whitespace if there is any from the emoji split
+      icon: startingEmoji ?? icon,
+    };
+  }, [name, icon]);
 }

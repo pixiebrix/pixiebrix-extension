@@ -47,7 +47,7 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
@@ -148,7 +148,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   async getBlocks(
     extension: ResolvedExtension<ContextMenuConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.action);
+    return selectAllBlocks(extension.config.action);
   }
 
   override uninstall({ global = false }: { global?: boolean }): void {

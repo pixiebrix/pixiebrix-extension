@@ -37,7 +37,7 @@ beforeAll(() => {
 });
 
 describe("RecipeOptionsDefinitions", () => {
-  it("shows google sheets field type option", async () => {
+  it("shows google sheets, and both database field type options", async () => {
     const recipe = recipeDefinitionFactory();
 
     render(<RecipeOptionsDefinition />, {
@@ -58,5 +58,9 @@ describe("RecipeOptionsDefinitions", () => {
     selectEvent.openMenu(inputTypeSelector);
     expect(screen.getByText("Checkbox")).toBeVisible();
     expect(screen.getByText("Google Sheet")).toBeVisible();
+    expect(screen.getByText("Database selector")).toBeVisible();
+    expect(
+      screen.getByText("Database automatically created at activation")
+    ).toBeVisible();
   });
 });

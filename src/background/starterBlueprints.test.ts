@@ -28,17 +28,17 @@ import { isLinked } from "@/auth/token";
 import {
   extensionFactory,
   extensionPointConfigFactory,
+  getRecipeWithBuiltInServiceAuths,
   organizationFactory,
   recipeFactory,
   sanitizedAuthFactory,
-  sanitizedAuthServiceFactory,
 } from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type IExtension,
   type PersistedExtension,
 } from "@/types/extensionTypes";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 
@@ -73,46 +73,6 @@ beforeEach(async () => {
 
   jest.clearAllMocks();
 });
-
-const getRecipeWithBuiltInServiceAuths = () => {
-  const extensionServices = {
-    service1: "@pixiebrix/service1",
-    service2: "@pixiebrix/service2",
-  } as Record<OutputKey, RegistryId>;
-
-  const extensionPointDefinition = extensionPointConfigFactory({
-    services: extensionServices,
-  });
-
-  const recipe = recipeFactory({
-    extensionPoints: [extensionPointDefinition],
-  });
-
-  const builtInServiceAuths = [
-    sanitizedAuthFactory({
-      service: sanitizedAuthServiceFactory({
-        config: {
-          metadata: {
-            id: validateRegistryId("@pixiebrix/service1"),
-            name: "Service 1",
-          },
-        },
-      }),
-    }),
-    sanitizedAuthFactory({
-      service: sanitizedAuthServiceFactory({
-        config: {
-          metadata: {
-            id: validateRegistryId("@pixiebrix/service2"),
-            name: "Service 2",
-          },
-        },
-      }),
-    }),
-  ];
-
-  return { recipe, builtInServiceAuths };
-};
 
 describe("installStarterBlueprints", () => {
   test("user has starter blueprints available to install", async () => {

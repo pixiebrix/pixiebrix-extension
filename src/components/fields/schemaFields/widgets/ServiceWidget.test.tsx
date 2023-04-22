@@ -84,13 +84,26 @@ describe("ServiceWidget", () => {
   it("should not default if there are multiple auth options", async () => {
     const serviceId = validateRegistryId("jest/api");
 
-    useAuthOptionsMock.mockReturnValue([
-      [
-        { serviceId, label: "Test 1", value: uuidv4(), local: true },
-        { serviceId, label: "Test 2", value: uuidv4(), local: true },
+    useAuthOptionsMock.mockReturnValue({
+      authOptions: [
+        {
+          serviceId,
+          label: "Test 1",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
+        {
+          serviceId,
+          label: "Test 2",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
       ],
-      noop,
-    ]);
+      refresh: noop,
+      isLoading: false,
+    });
 
     const schema = {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
@@ -108,10 +121,19 @@ describe("ServiceWidget", () => {
   it("should default to only configuration", async () => {
     const serviceId = validateRegistryId("jest/api");
 
-    useAuthOptionsMock.mockReturnValue([
-      [{ serviceId, label: "Test 1", value: uuidv4(), local: true }],
-      noop,
-    ]);
+    useAuthOptionsMock.mockReturnValue({
+      authOptions: [
+        {
+          serviceId,
+          label: "Test 1",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
+      ],
+      refresh: noop,
+      isLoading: false,
+    });
 
     const schema = {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,

@@ -19,6 +19,7 @@ import React from "react";
 import { useRecipe } from "@/recipes/recipesHooks";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
+  getRecipeWithBuiltInServiceAuths,
   marketplaceListingFactory,
   recipeDefinitionFactory,
   sidebarEntryFactory,
@@ -34,6 +35,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
+import * as api from "@/services/api";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -53,6 +55,15 @@ jest.mock("@/services/api", () => ({
   }),
   useCreateDatabaseMutation: jest.fn().mockReturnValue([jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn().mockReturnValue([jest.fn()]),
+  useGetServiceAuthsQuery: jest.fn().mockReturnValue({
+    data: [],
+    isLoading: false,
+    isFetching: false,
+  }),
+  useGetServicesQuery: jest.fn().mockReturnValue({
+    data: [],
+    isLoading: false,
+  }),
   appApi: {
     reducerPath: "appApi",
     endpoints: {
@@ -184,6 +195,12 @@ beforeEach(() => {
     shortcut: null,
     isConfigured: false,
   });
+
+  (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
+    data: [],
+    isLoading: false,
+    isFetching: false,
+  });
 });
 
 describe("ActivateRecipePanel", () => {
@@ -240,5 +257,51 @@ describe("ActivateRecipePanel", () => {
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders with service configuration if no built-in service configs available", async () => {
+    const { recipe } = getRecipeWithBuiltInServiceAuths();
+
+    (api.useGetServicesQuery as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
+
+    const rendered = setupMocksAndRender(recipe);
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it activates recipe with built-in services automatically and renders well-done page", async () => {
+    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+
+    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
+      data: builtInServiceAuths,
+      isLoading: false,
+    });
+
+    const rendered = setupMocksAndRender(recipe);
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it doesn't flicker while built-in auths are loading", async () => {
+    const { recipe } = getRecipeWithBuiltInServiceAuths();
+
+    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: true,
+      isFetching: true,
+    });
+
+    const rendered = setupMocksAndRender(recipe);
+
+    await waitForEffect();
+
+    expect(rendered.getByTestId("loader")).not.toBeNull();
   });
 });

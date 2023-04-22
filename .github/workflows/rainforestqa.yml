@@ -37,7 +37,7 @@ jobs:
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
       # https://stackoverflow.com/a/58142637
-      # GitHub doesn't support if-else, only if, so we need two separate steps
+      # GitHub doesn't support if-else, so we need separate steps
       - name: Determine if main branch
         run: |
           echo "BUILD_PATH=builds/pixiebrix-extension-main.zip" >> $GITHUB_ENV
@@ -82,7 +82,7 @@ jobs:
         #   they're all using the same server
         # Use --fail-fast so that we're not using GitHub build minutes if not necessary
         run: |
-          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all
+          ./rainforest run --fail-fast --description "pixiebrix-extension - ${{ github.ref_name }} ${{ github.job }}" --run-group $RUN_GROUP --release "${{ github.sha }}" --conflict cancel-all
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
           # The run group for tests to run during CI, now has start URL built-in

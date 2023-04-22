@@ -34,7 +34,7 @@ import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -134,7 +134,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
   async getBlocks(
     extension: ResolvedExtension<QuickBarProviderConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.generator);
+    return selectAllBlocks(extension.config.generator);
   }
 
   public get kind(): "quickBarProvider" {

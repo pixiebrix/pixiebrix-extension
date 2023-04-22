@@ -27,10 +27,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { dereference } from "@/validators/generic";
-import {
-  BASE_SHEET_SCHEMA,
-  SHEET_SERVICE_SCHEMA,
-} from "@/contrib/google/sheets/schemas";
+import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import { render } from "@/pageEditor/testHelpers";
 import {
@@ -39,8 +36,6 @@ import {
 } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
-import { syncFlagOn } from "@/store/syncFlags";
-import useFlags from "@/hooks/useFlags";
 import { selectSchemaFieldType } from "@/testUtils/formHelpers";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
@@ -73,33 +68,6 @@ const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
 const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
   typeof sheets.getHeaders
 >;
-
-jest.mock("@/store/syncFlags", () => ({
-  syncFlagOn: jest.fn(),
-}));
-
-const syncFlagOnMock = syncFlagOn as jest.MockedFunction<typeof syncFlagOn>;
-
-jest.mock("@/hooks/useFlags", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const useFlagsMock = useFlags as jest.MockedFunction<typeof useFlags>;
-
-function mockFlagOn(on = true) {
-  syncFlagOnMock.mockReturnValue(on);
-  useFlagsMock.mockReturnValue({
-    permit: jest.fn(),
-    restrict: jest.fn(),
-    flagOn: jest.fn(() => on),
-    flagOff: jest.fn(),
-  });
-}
-
-beforeEach(() => {
-  mockFlagOn(false);
-});
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -145,36 +113,7 @@ beforeAll(() => {
 
 describe("getToggleOptions", () => {
   // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
-  it("should include file picker and service toggle options when flag is off", async () => {
-    const baseSchema = await dereference(BASE_SHEET_SCHEMA);
-
-    const result = getToggleOptions({
-      fieldSchema: {
-        oneOf: [baseSchema, SHEET_SERVICE_SCHEMA],
-      },
-      customToggleModes: [],
-      isRequired: true,
-      allowExpressions: true,
-      isObjectProperty: false,
-      isArrayItem: false,
-    });
-
-    expect(result).toEqual([
-      // The Google File Picker
-      expect.objectContaining({
-        Widget: expect.toBeOneOf([SheetsFileWidget]),
-        value: "string",
-      }),
-      // Service Configuration Picker
-      expect.objectContaining({
-        value: "select",
-      }),
-    ]);
-  });
-
-  it("should include file picker and variable toggle options when flag is on", async () => {
-    mockFlagOn();
-
+  it("should include file picker and variable toggle options", async () => {
     const baseSchema = await dereference(BASE_SHEET_SCHEMA);
 
     const result = getToggleOptions({
@@ -189,7 +128,7 @@ describe("getToggleOptions", () => {
     expect(result).toEqual([
       // The Google File Picker
       expect.objectContaining({
-        Widget: expect.toBeOneOf([SheetsFileWidget]),
+        Widget: SheetsFileWidget,
         value: "string",
       }),
       // Variable
@@ -344,31 +283,6 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
   });
 
-  it("does not load tabs when spreadsheetId is null with empty nunjucks tabName", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: null,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
-        },
-        services: [],
-      },
-    });
-
-    await waitForEffect();
-
-    // Service field should show Select... placeholder
-    expect(screen.getByText("Select...")).toBeVisible();
-    expect(screen.getByLabelText("Tab Name")).toHaveTextContent("");
-
-    // Should not show any header names
-    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
-  });
-
   it("loads in tab names with spreadsheet service integration and empty nunjucks tabName", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
@@ -430,8 +344,6 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   it("loads in tab names with mod input spreadsheetId and empty nunjucks tabName", async () => {
-    mockFlagOn();
-
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -458,8 +370,6 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   it("loads in tab names with mod input spreadsheetId and null tabName", async () => {
-    mockFlagOn();
-
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -559,9 +469,7 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("valueB")).toBeVisible();
   });
 
-  it("does not clear initial values on first render with var spreadsheetId value and nunjucks tabName and flag on", async () => {
-    mockFlagOn();
-
+  it("does not clear initial values on first render with var spreadsheetId value and nunjucks tabName", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -589,9 +497,7 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("valueB")).toBeVisible();
   });
 
-  it("does not clear initial values on first render with var spreadsheetId value and selected tabName and flag on", async () => {
-    mockFlagOn();
-
+  it("does not clear initial values on first render with var spreadsheetId value and selected tabName", async () => {
     render(<AppendSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -620,8 +526,6 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   it("does not automatically toggle the field to select and choose the first item, if the input is focused by the user", async () => {
-    mockFlagOn();
-
     const { getFormState } = render(
       <AppendSpreadsheetOptions name="" configKey="config" />,
       {
@@ -664,8 +568,6 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   it("does not clear selected tabName and rowValues fieldValues until a different spreadsheetId is loaded", async () => {
-    mockFlagOn();
-
     const initialValues = {
       config: {
         spreadsheetId: makeVariableExpression("@options.sheetId"),

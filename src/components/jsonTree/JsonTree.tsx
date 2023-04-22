@@ -44,11 +44,11 @@ import { type Styling, type Theme } from "react-base16-styling";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import copy from "copy-text-to-clipboard";
 import notify from "@/utils/notify";
 import safeJsonStringify from "json-stringify-safe";
-import { Button } from "react-bootstrap";
 import styles from "./JsonTree.module.scss";
+import AsyncButton from "@/components/AsyncButton";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
@@ -153,20 +153,20 @@ const jsonTreeTheme: Theme = {
 const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
   data,
 }) => (
-  <Button
+  <AsyncButton
     variant="text"
     className={cx(styles.copyPath, "p-0")}
     aria-label="copy data"
     href="#"
-    onClick={(event) => {
-      copy(safeJsonStringify(data, null, 2));
+    onClick={async (event) => {
+      await writeTextToClipboard(safeJsonStringify(data, null, 2));
       event.preventDefault();
       event.stopPropagation();
       notify.info("Copied data to the clipboard");
     }}
   >
     <FontAwesomeIcon icon={faCode} aria-hidden />
-  </Button>
+  </AsyncButton>
 );
 
 /**

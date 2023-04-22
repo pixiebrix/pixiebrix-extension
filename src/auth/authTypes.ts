@@ -24,12 +24,14 @@ import { type Except } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
+export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
   label: string;
   /** The UUID of the auth credential **/
   value: UUID;
   serviceId: RegistryId;
   local: boolean;
+  sharingType: AuthSharing;
 }
 
 export type UserData = Partial<{

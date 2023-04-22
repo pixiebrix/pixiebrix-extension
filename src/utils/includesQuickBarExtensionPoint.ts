@@ -24,7 +24,7 @@ export default async function includesQuickBarExtensionPoint(
   extensionPointConfigs?: ResolvedExtensionDefinition[]
 ): Promise<boolean> {
   if (!extensionPointConfigs) {
-    return;
+    return false;
   }
 
   for (const { id } of extensionPointConfigs) {

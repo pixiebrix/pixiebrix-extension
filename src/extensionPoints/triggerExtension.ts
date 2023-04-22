@@ -41,7 +41,7 @@ import notify from "@/utils/notify";
 import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { sleep, waitAnimationFrame } from "@/utils";
@@ -277,7 +277,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   async getBlocks(
     extension: ResolvedExtension<TriggerConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.action);
+    return selectAllBlocks(extension.config.action);
   }
 
   override async defaultReader(): Promise<IReader> {

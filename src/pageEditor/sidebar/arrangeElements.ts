@@ -17,7 +17,10 @@
 
 import { groupBy, lowerCase, sortBy } from "lodash";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  type FormState,
+  isFormState,
+} from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/pageEditor/utils";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type UUID } from "@/types/stringTypes";
@@ -28,12 +31,9 @@ type ArrangeElementsArgs = {
   elements: FormState[];
   installed: IExtension[];
   recipes: RecipeDefinition[];
-  availableInstalledIds: UUID[];
-  availableDynamicIds: UUID[];
-  showAll: boolean;
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
-  expandedRecipeId: RegistryId | null;
+  query: string;
 };
 
 type Element = IExtension | FormState;
@@ -42,29 +42,32 @@ function arrangeElements({
   elements,
   installed,
   recipes,
-  availableInstalledIds,
-  availableDynamicIds,
-  showAll,
   activeElementId,
   activeRecipeId,
-  expandedRecipeId,
+  query,
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
-  const filteredExtensions: IExtension[] = installed.filter(
-    (extension) =>
-      // Note: we can take out this elementIds filter if and when we persist the editor
-      // slice and remove installed extensions when they become dynamic elements
-      !elementIds.has(extension.id) &&
-      (showAll ||
-        availableInstalledIds?.includes(extension.id) ||
-        [expandedRecipeId, activeRecipeId].includes(extension._recipe?.id))
-  );
-  const filteredDynamicElements: FormState[] = elements.filter(
-    (formState) =>
-      showAll ||
-      availableDynamicIds?.includes(formState.uuid) ||
-      activeElementId === formState.uuid ||
-      [expandedRecipeId, activeRecipeId].includes(formState.recipe?.id)
+
+  const queryFilter = (item: IExtension | FormState) => {
+    const recipe = isFormState(item) ? item.recipe : item._recipe;
+    const queryName = recipe?.name ?? item.label;
+
+    return (
+      activeRecipeId === recipe?.id ||
+      query.length === 0 ||
+      (isFormState(item) && activeElementId === item.uuid) ||
+      (query.length > 0 && lowerCase(queryName).includes(lowerCase(query)))
+    );
+  };
+
+  const filteredExtensions: IExtension[] = installed
+    // Note: we can take out this elementIds filter if and when we persist the editor
+    // slice and remove installed extensions when they become dynamic elements
+    .filter((extension) => !elementIds.has(extension.id))
+    .filter((extension) => queryFilter(extension));
+
+  const filteredDynamicElements: FormState[] = elements.filter((element) =>
+    queryFilter(element)
   );
 
   const grouped = groupBy(

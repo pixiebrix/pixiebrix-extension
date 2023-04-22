@@ -54,7 +54,7 @@ import apiVersionOptions, {
 } from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
-import { blockList } from "@/blocks/util";
+import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { $safeFind } from "@/helpers";
@@ -373,7 +373,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   async getBlocks(
     extension: ResolvedExtension<MenuItemExtensionConfig>
   ): Promise<IBlock[]> {
-    return blockList(extension.config.action);
+    return selectAllBlocks(extension.config.action);
   }
 
   private async reacquire(uuid: string): Promise<void> {

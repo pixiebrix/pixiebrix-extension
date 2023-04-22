@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { type ActionId, type ActionImpl, KBarResults, useMatches } from "kbar";
 import { theme, groupNameStyle } from "./quickBarTheme";
+import { useGetActionNameAndIcon } from "@/components/quickBar/utils";
 
 const ResultItem = forwardRef(
   (
@@ -32,7 +33,7 @@ const ResultItem = forwardRef(
     },
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const ancestors = React.useMemo(() => {
+    const ancestors = useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId
@@ -44,17 +45,23 @@ const ResultItem = forwardRef(
       return action.ancestors.slice(index + 1);
     }, [action.ancestors, currentRootActionId]);
 
+    const { name, icon } = useGetActionNameAndIcon(action);
+
     return (
       <div
         ref={ref}
         style={{
           padding: "12px 16px",
           background: active ? theme.a1 : "transparent",
-          borderLeft: `2px solid ${active ? theme.foreground : "transparent"}`,
+          borderLeft: `4px solid ${
+            active ? theme.activeIndicator : "transparent"
+          }`,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           cursor: "pointer",
+          height: 56,
+          boxSizing: "border-box",
         }}
       >
         <div
@@ -62,11 +69,12 @@ const ResultItem = forwardRef(
             display: "flex",
             gap: "8px",
             alignItems: "center",
-            fontSize: 14,
+            fontSize: 16,
+            fontWeight: 400,
           }}
         >
-          {action.icon && action.icon}
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ alignSelf: "flex-start" }}>{icon ?? null}</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div>
               {ancestors.length > 0 &&
                 ancestors.map((ancestor) => (
@@ -88,10 +96,19 @@ const ResultItem = forwardRef(
                     </span>
                   </React.Fragment>
                 ))}
-              <span>{action.name}</span>
+              <span>{name}</span>
             </div>
             {action.subtitle && (
-              <span style={{ fontSize: 12 }}>{action.subtitle}</span>
+              <span
+                style={{
+                  fontSize: 9,
+                  lineHeight: "120%",
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                }}
+              >
+                {action.subtitle}
+              </span>
             )}
           </div>
         </div>
