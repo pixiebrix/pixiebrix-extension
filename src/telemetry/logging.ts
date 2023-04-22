@@ -19,7 +19,7 @@ import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
 import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
-import { type DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
@@ -40,8 +40,9 @@ import { type MessengerMeta } from "webext-messenger";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
+import { deleteDatabase } from "@/utils/idbUtils";
 
-const STORAGE_KEY = "LOG";
+const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
 const DB_VERSION_NUMBER = 3;
 
@@ -99,8 +100,18 @@ const indexKeys: IndexKey[] = [
   "authId",
 ];
 
+/**
+ * Singleton database connection.
+ */
+let databaseRef: IDBPDatabase<LogDB> | null = null;
+
 async function getDB() {
-  return openDB<LogDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
+  if (databaseRef) {
+    return databaseRef;
+  }
+
+  console.debug("Opening new logging database connection");
+  databaseRef = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -125,7 +136,23 @@ async function getDB() {
         });
       }
     },
+    blocking() {
+      // Don't block closing/upgrading the database
+      console.debug("Closing log database due to upgrade/delete");
+      databaseRef?.close();
+      databaseRef = null;
+    },
+    terminated() {
+      console.debug("Brick database connection was unexpectedly terminated");
+      databaseRef = null;
+    },
   });
+
+  databaseRef.addEventListener("close", () => {
+    databaseRef = null;
+  });
+
+  return databaseRef;
 }
 
 export async function appendEntry(entry: LogEntry): Promise<void> {
@@ -145,6 +172,27 @@ function makeMatchEntry(
     });
 }
 
+/**
+ * Returns the number of log entries in the database.
+ */
+export async function count(): Promise<number> {
+  const db = await getDB();
+  return db.count(ENTRY_OBJECT_STORE);
+}
+
+/**
+ * Deletes and recreates the logging database.
+ */
+export async function recreateDB(): Promise<void> {
+  await deleteDatabase(DATABASE_NAME);
+
+  // Open the database to recreate it
+  await getDB();
+}
+
+/**
+ * Clears all log entries from the database.
+ */
 export async function clearLogs(): Promise<void> {
   const db = await getDB();
 

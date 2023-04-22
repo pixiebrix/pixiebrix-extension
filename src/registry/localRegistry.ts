@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DBSchema, openDB } from "idb/with-async-ittr";
-import { sortBy, groupBy, flatten } from "lodash";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
+import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
 import { memoizeUntilSettled } from "@/utils";
+import { deleteDatabase } from "@/utils/idbUtils";
 
-const STORAGE_KEY = "BRICK_REGISTRY";
+const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
@@ -56,7 +57,7 @@ export type Package = {
   timestamp: Date;
 };
 
-interface LogDB extends DBSchema {
+interface BrickDB extends DBSchema {
   [BRICK_STORE]: {
     value: Package;
     key: [string, number, number, number];
@@ -70,8 +71,18 @@ interface LogDB extends DBSchema {
   };
 }
 
+/**
+ * Singleton database connection.
+ */
+let databaseRef: IDBPDatabase<BrickDB> | null = null;
+
 async function getBrickDB() {
-  return openDB<LogDB>(STORAGE_KEY, VERSION, {
+  if (databaseRef) {
+    return databaseRef;
+  }
+
+  console.debug("Opening new brick database connection");
+  databaseRef = await openDB<BrickDB>(DATABASE_NAME, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -84,7 +95,23 @@ async function getBrickDB() {
       store.createIndex("timestamp", "timestamp", { unique: false });
       store.createIndex("kind", "kind", { unique: false });
     },
+    blocking() {
+      // Don't block closing/upgrading the database
+      console.debug("Closing brick database due to upgrade/delete");
+      databaseRef?.close();
+      databaseRef = null;
+    },
+    terminated() {
+      console.debug("Brick database connection was unexpectedly terminated");
+      databaseRef = null;
+    },
   });
+
+  databaseRef.addEventListener("close", () => {
+    databaseRef = null;
+  });
+
+  return databaseRef;
 }
 
 function latestVersion(versions: Package[]): Package | null {
@@ -117,11 +144,32 @@ export async function getByKinds(kinds: Kind[]): Promise<Package[]> {
 }
 
 /**
- * Clear the registry
+ * Clear the brick definition registry
  */
 export async function clear(): Promise<void> {
   const db = await getBrickDB();
   await db.clear(BRICK_STORE);
+}
+
+/**
+ * Deletes and recreates the brick definition database.
+ */
+export async function recreateDB(): Promise<void> {
+  await deleteDatabase(DATABASE_NAME);
+
+  // Open the database to recreate it
+  await getBrickDB();
+
+  // Re-populate the packages from the remote registry
+  await syncPackages();
+}
+
+/**
+ * Return the number of records in the registry.
+ */
+export async function count(): Promise<number> {
+  const db = await getBrickDB();
+  return db.count(BRICK_STORE);
 }
 
 /**

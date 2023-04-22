@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./AdvancedSettings.module.scss";
+import styles from "./SettingsCard.module.scss";
 
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Card, Form } from "react-bootstrap";

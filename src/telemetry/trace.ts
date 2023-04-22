@@ -16,7 +16,7 @@
  */
 
 import { type JsonObject } from "type-fest";
-import { type DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
 import { type BlockConfig } from "@/blocks/types";
 import objectHash from "object-hash";
@@ -24,8 +24,9 @@ import { type ErrorObject } from "serialize-error";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
+import { deleteDatabase } from "@/utils/idbUtils";
 
-const STORAGE_KEY = "TRACE";
+const DATABASE_NAME = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
 const DB_VERSION_NUMBER = 3;
 
@@ -168,8 +169,21 @@ interface TraceDB extends DBSchema {
   };
 }
 
+/**
+ * Singleton database connection.
+ */
+let databaseRef: IDBPDatabase<TraceDB> | null = null;
+
+/**
+ * Return the current DB instance, creating it if necessary.
+ */
 async function getDB() {
-  return openDB<TraceDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
+  if (databaseRef) {
+    return databaseRef;
+  }
+
+  console.debug("Opening new trace database connection");
+  databaseRef = await openDB<TraceDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -195,7 +209,23 @@ async function getDB() {
         });
       }
     },
+    blocking() {
+      // Don't block closing/upgrading the database
+      console.debug("Closing trace database due to upgrade/delete");
+      databaseRef?.close();
+      databaseRef = null;
+    },
+    terminated() {
+      console.debug("Trace database connection was unexpectedly terminated");
+      databaseRef = null;
+    },
   });
+
+  databaseRef.addEventListener("close", () => {
+    databaseRef = null;
+  });
+
+  return databaseRef;
 }
 
 export async function addTraceEntry(record: TraceEntryData): Promise<void> {
@@ -258,6 +288,23 @@ export async function clearTraces(): Promise<void> {
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   await tx.store.clear();
+}
+
+/**
+ * Returns the number of trace records in the database.
+ */
+export async function count(): Promise<number> {
+  const db = await getDB();
+  return db.count(ENTRY_OBJECT_STORE);
+}
+
+/**
+ * Deletes and recreates the trace database.
+ */
+export async function recreateDB(): Promise<void> {
+  // Delete the database and open the database to recreate it
+  await deleteDatabase(DATABASE_NAME);
+  await getDB();
 }
 
 export async function clearExtensionTraces(extensionId: UUID): Promise<void> {

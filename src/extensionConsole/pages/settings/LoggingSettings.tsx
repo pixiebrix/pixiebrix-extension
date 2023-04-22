@@ -23,16 +23,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import Loader from "@/components/Loader";
-import { clearLogs } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
+import { clearTraces } from "@/telemetry/trace";
+import { clearLogs } from "@/telemetry/logging";
 
 const LoggingSettings: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
 
   const clearAction = useUserAction(
     async () => {
-      await clearLogs();
+      await Promise.all([clearLogs(), clearTraces()]);
     },
     {
       successMessage: "Cleared local logs",
