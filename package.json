@@ -126,7 +126,7 @@
     "react-spinners": "^0.13.0",
     "react-table": "^7.7.0",
     "react-transition-group": "^4.4.2",
-    "react-virtualized": "^9.22.4",
+    "react-virtualized": "^9.22.5",
     "react-virtualized-auto-sizer": "^1.0.14",
     "react-window": "^1.8.8",
     "redux": "^4.1.0",
