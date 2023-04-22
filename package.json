@@ -45,7 +45,7 @@
     "@uipath/robot": "1.2.5",
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@xobotyi/scrollbar-width": "^1.9.5",
-    "ace-builds": "^1.17.0",
+    "ace-builds": "^1.18.0",
     "autocompleter": "^8.0.2",
     "axios": "^0.27.2",
     "bootstrap": "^4.6.0",
