@@ -45,8 +45,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useDefaultAuthOptions } from "@/hooks/auth";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { type AuthOption } from "@/auth/authTypes";
-import { sleep } from "@/utils";
+import { persistor } from "@/sidebar/store";
 
 const { actions } = sidebarSlice;
 
@@ -134,7 +133,7 @@ function canAutoActivate(
 
 async function refreshMarketplaceEnhancements() {
   const topFrame = await getTopLevelFrame();
-  await sleep(100);
+  await persistor.flush();
   void reloadMarketplaceEnhancements(topFrame);
 }
 
