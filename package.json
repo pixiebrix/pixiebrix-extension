@@ -135,7 +135,7 @@
     "redux-persist-webextension-storage": "^1.0.2",
     "redux-state-sync": "^3.1.4",
     "regenerator-runtime": "^0.13.9",
-    "reselect": "^4.1.7",
+    "reselect": "^4.1.8",
     "rollbar": "^2.26.1",
     "schema-to-yup": "1.12.10",
     "semver": "^7.5.0",
