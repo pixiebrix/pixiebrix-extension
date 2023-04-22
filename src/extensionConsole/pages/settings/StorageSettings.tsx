@@ -19,15 +19,27 @@ import React from "react";
 import { Card, Table } from "react-bootstrap";
 import { useAsyncState } from "@/hooks/common";
 import { round } from "lodash";
-import { count as registrySize } from "@/registry/localRegistry";
-import { clearLogs, count as logSize } from "@/telemetry/logging";
+import {
+  count as registrySize,
+  recreateDB as recreateBrickDB,
+} from "@/registry/localRegistry";
+import {
+  clearLogs,
+  recreateDB as recreateLogDB,
+  count as logSize,
+} from "@/telemetry/logging";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBroom } from "@fortawesome/free-solid-svg-icons";
+import { faBroom, faDatabase } from "@fortawesome/free-solid-svg-icons";
 import useUserAction from "@/hooks/useUserAction";
-import { clearTraces, count as traceSize } from "@/telemetry/trace";
+import {
+  clearTraces,
+  recreateDB as recreateTraceDB,
+  count as traceSize,
+} from "@/telemetry/trace";
 import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 import cx from "classnames";
+import styles from "@/extensionConsole/pages/settings/SettingsCard.module.scss";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/estimate
@@ -87,6 +99,22 @@ const StorageSettings: React.FunctionComponent = () => {
     [recalculate]
   );
 
+  const recoverStorageAction = useUserAction(
+    async () => {
+      await Promise.all([
+        recreateLogDB(),
+        recreateTraceDB(),
+        recreateBrickDB(),
+      ]);
+      await recalculate();
+    },
+    {
+      successMessage: "Recreated local databases",
+      errorMessage: "Error recreating local databases",
+    },
+    [recalculate]
+  );
+
   return (
     <Card>
       <Card.Header>Extension Storage Statistics</Card.Header>
@@ -137,9 +165,13 @@ const StorageSettings: React.FunctionComponent = () => {
           )}
         </AsyncStateGate>
       </Card.Body>
-      <Card.Footer>
+      <Card.Footer className={styles.cardFooter}>
         <AsyncButton variant="info" onClick={clearLogsAction}>
           <FontAwesomeIcon icon={faBroom} /> Cleanup Unnecessary Data
+        </AsyncButton>
+
+        <AsyncButton variant="warning" onClick={recoverStorageAction}>
+          <FontAwesomeIcon icon={faDatabase} /> Recover Databases
         </AsyncButton>
       </Card.Footer>
     </Card>
