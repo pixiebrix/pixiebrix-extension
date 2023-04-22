@@ -229,7 +229,7 @@
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^3.4.1",
     "dotenv": "^15.0.0",
-    "eslint": "^8.38.0",
+    "eslint": "^8.39.0",
     "eslint-config-pixiebrix": "^0.22.1",
     "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
