@@ -16,12 +16,18 @@
  */
 
 import React from "react";
-import { Card } from "react-bootstrap";
+import { Card, Table } from "react-bootstrap";
 import { useAsyncState } from "@/hooks/common";
-import Loader from "@/components/Loader";
 import { round } from "lodash";
 import { count as registrySize } from "@/registry/localRegistry";
-import { count as logSize } from "@/telemetry/logging";
+import { clearLogs, count as logSize } from "@/telemetry/logging";
+import AsyncButton from "@/components/AsyncButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBroom } from "@fortawesome/free-solid-svg-icons";
+import useUserAction from "@/hooks/useUserAction";
+import { clearTraces, count as traceSize } from "@/telemetry/trace";
+import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
+import cx from "classnames";
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/estimate
@@ -52,40 +58,90 @@ type StorageEstimate = {
   };
 };
 
+/**
+ * React component to display local storage usage (to help identify storage problems)
+ * @constructor
+ */
 const StorageSettings: React.FunctionComponent = () => {
-  const [storageEstimate] = useAsyncState(
-    async () => navigator.storage.estimate() as Promise<StorageEstimate>,
+  const state = useAsyncState(
+    async () => ({
+      storageEstimate: (await navigator.storage.estimate()) as StorageEstimate,
+      brickCount: await registrySize(),
+      logCount: await logSize(),
+      traceCount: await traceSize(),
+    }),
     []
   );
 
-  const [brickCount] = useAsyncState(async () => registrySize(), []);
-  const [logCount] = useAsyncState(async () => logSize(), []);
+  const recalculate = state[3];
+
+  const clearLogsAction = useUserAction(
+    async () => {
+      await Promise.all([clearLogs(), clearTraces()]);
+      await recalculate();
+    },
+    {
+      successMessage: "Cleaned up unnecessary local data",
+      errorMessage: "Error cleaning unnecessary local data",
+    },
+    [recalculate]
+  );
 
   return (
     <Card>
-      <Card.Header>Extension Storage</Card.Header>
-      <Card.Body>
-        {storageEstimate ? (
-          <div>
-            <p>
-              Usage: {round(storageEstimate.usage / 1e6, 1).toLocaleString()} /{" "}
-              {round(storageEstimate.quota / 1e6, 0).toLocaleString()} MB
-            </p>
-            {Object.entries(storageEstimate.usageDetails ?? {}).map(
-              ([key, value]) => (
-                <p key={key}>
-                  {key}: {round(value / 1e6, 1)}
-                </p>
-              )
-            )}
-          </div>
-        ) : (
-          <Loader />
-        )}
-
-        <div>Local Brick Definitions: {brickCount.toLocaleString()}</div>
-        <div>Local Log Items: {logCount.toLocaleString()}</div>
+      <Card.Header>Extension Storage Statistics</Card.Header>
+      <Card.Body
+        className={
+          // Make table flush with card body borders
+          cx({ "p-0": Boolean(state[0]) })
+        }
+      >
+        <AsyncStateGate
+          state={state}
+          renderError={(props) => <StandardError {...props} />}
+        >
+          {({
+            data: { storageEstimate, brickCount, logCount, traceCount },
+          }) => (
+            <Table>
+              <tbody>
+                <tr>
+                  <td>Usage (MB)</td>
+                  <td>
+                    {round(storageEstimate.usage / 1e6, 1).toLocaleString()} /{" "}
+                    {round(storageEstimate.quota / 1e6, 0).toLocaleString()}
+                  </td>
+                </tr>
+                {Object.entries(storageEstimate.usageDetails ?? {}).map(
+                  ([key, value]) => (
+                    <tr key={key}>
+                      <td>{key} (MB)</td>
+                      <td>{round(value / 1e6, 1)}</td>
+                    </tr>
+                  )
+                )}
+                <tr>
+                  <td># Brick Versions</td>
+                  <td>{brickCount.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td># Log Records</td>
+                  <td>{logCount.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td># Trace Records</td>
+                  <td>{traceCount.toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </Table>
+          )}
+        </AsyncStateGate>
       </Card.Body>
+      <Card.Footer>
+        <AsyncButton variant="info" onClick={clearLogsAction}>
+          <FontAwesomeIcon icon={faBroom} /> Cleanup Unnecessary Data
+        </AsyncButton>
+      </Card.Footer>
     </Card>
   );
 };

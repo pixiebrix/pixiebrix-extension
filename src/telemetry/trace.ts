@@ -260,6 +260,11 @@ export async function clearTraces(): Promise<void> {
   await tx.store.clear();
 }
 
+export async function count(): Promise<number> {
+  const db = await getDB();
+  return db.count(ENTRY_OBJECT_STORE);
+}
+
 export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   let cnt = 0;
 

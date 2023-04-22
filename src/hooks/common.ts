@@ -21,7 +21,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type StateFactory<T> = Promise<T> | (() => Promise<T>);
 
-export type AsyncState<T> = [
+export type AsyncState<T = unknown> = [
   /**
    * The value, or `undefined` if the state is loading or there was an error computing the state
    */
