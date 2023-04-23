@@ -53,6 +53,7 @@ import { logActions } from "@/components/logViewer/logSlice";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
+import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 
 // Register the built-in bricks
 registerEditors();
@@ -83,7 +84,7 @@ const Layout = () => {
       <Navbar logo={logo} />
       <Container fluid className="page-body-wrapper">
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
-        <ErrorBoundary>
+        <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
           <RequireAuth LoginPage={SetupPage}>
             <RefreshBricks />
             <Sidebar />
@@ -94,7 +95,7 @@ const Layout = () => {
               <DeploymentBanner />
               <InvitationBanner />
               <div className="content-wrapper">
-                <ErrorBoundary>
+                <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
                   <Switch>
                     <Route
                       exact

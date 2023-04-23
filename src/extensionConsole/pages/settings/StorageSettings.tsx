@@ -25,50 +25,27 @@ import {
 } from "@/registry/localRegistry";
 import {
   clearLogs,
-  recreateDB as recreateLogDB,
   count as logSize,
+  recreateDB as recreateLogDB,
 } from "@/telemetry/logging";
+import {
+  clear as clearEvents,
+  count as eventsSize,
+  recreateDB as recreateEventDB,
+} from "@/background/telemetry";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBroom, faDatabase } from "@fortawesome/free-solid-svg-icons";
 import useUserAction from "@/hooks/useUserAction";
 import {
   clearTraces,
-  recreateDB as recreateTraceDB,
   count as traceSize,
+  recreateDB as recreateTraceDB,
 } from "@/telemetry/trace";
 import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 import cx from "classnames";
 import styles from "@/extensionConsole/pages/settings/SettingsCard.module.scss";
-
-/**
- * https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/estimate
- */
-type StorageEstimate = {
-  /**
-   * A numeric value in bytes approximating the amount of storage space currently being used by the site or Web app,
-   * out of the available space as indicated by quota. Unit is byte.
-   */
-  usage: number;
-  /**
-   * A numeric value in bytes which provides a conservative approximation of the total storage the user's device or
-   * computer has available for the site origin or Web app. It's possible that there's more than this amount of space
-   * available though you can't rely on that being the case.
-   */
-  quota: number;
-
-  /**
-   * An object containing a breakdown of usage by storage system. All included properties will have a usage greater
-   * than 0 and any storage system with 0 usage will be excluded from the object.
-   */
-  usageDetails: {
-    // https://github.com/whatwg/storage/issues/63#issuecomment-437990804
-    indexedDB?: number;
-    caches?: number;
-    serviceWorkerRegistrations?: number;
-    other: number;
-  };
-};
+import { type StorageEstimate } from "@/types/browserTypes";
 
 /**
  * React component to display local storage usage (to help identify storage problems)
@@ -81,6 +58,7 @@ const StorageSettings: React.FunctionComponent = () => {
       brickCount: await registrySize(),
       logCount: await logSize(),
       traceCount: await traceSize(),
+      eventCount: await eventsSize(),
     }),
     []
   );
@@ -89,7 +67,7 @@ const StorageSettings: React.FunctionComponent = () => {
 
   const clearLogsAction = useUserAction(
     async () => {
-      await Promise.all([clearLogs(), clearTraces()]);
+      await Promise.all([clearLogs(), clearTraces(), clearEvents()]);
       await recalculate();
     },
     {
@@ -105,6 +83,7 @@ const StorageSettings: React.FunctionComponent = () => {
         recreateLogDB(),
         recreateTraceDB(),
         recreateBrickDB(),
+        recreateEventDB(),
       ]);
       await recalculate();
     },
@@ -129,7 +108,13 @@ const StorageSettings: React.FunctionComponent = () => {
           renderError={(props) => <StandardError {...props} />}
         >
           {({
-            data: { storageEstimate, brickCount, logCount, traceCount },
+            data: {
+              storageEstimate,
+              brickCount,
+              logCount,
+              traceCount,
+              eventCount,
+            },
           }) => (
             <Table>
               <tbody>
@@ -159,6 +144,10 @@ const StorageSettings: React.FunctionComponent = () => {
                 <tr>
                   <td># Trace Records</td>
                   <td>{traceCount.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td># Buffered Events</td>
+                  <td>{eventCount.toLocaleString()}</td>
                 </tr>
               </tbody>
             </Table>

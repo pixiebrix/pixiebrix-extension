@@ -143,7 +143,7 @@ async function getDB() {
       databaseRef = null;
     },
     terminated() {
-      console.debug("Brick database connection was unexpectedly terminated");
+      console.debug("Log database connection was unexpectedly terminated");
       databaseRef = null;
     },
   });

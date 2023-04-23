@@ -27,9 +27,11 @@ import {
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
-import { type DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { type UnknownObject } from "@/types/objectTypes";
+import { deleteDatabase } from "@/utils/idbUtils";
 
+const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 const TELEMETRY_DB_NAME = "telemetrydb";
@@ -50,15 +52,46 @@ interface TelemetryDB extends DBSchema {
   };
 }
 
+/**
+ * Singleton database connection.
+ */
+let databaseRef: IDBPDatabase<TelemetryDB> | null = null;
+
 async function openTelemetryDB() {
-  return openDB<TelemetryDB>(TELEMETRY_DB_NAME, TELEMETRY_DB_VERSION_NUMBER, {
-    upgrade(db) {
-      // This is a new DB, so no need to delete existing object store yet
-      db.createObjectStore(TELEMETRY_EVENT_OBJECT_STORE, {
-        autoIncrement: true,
-      });
-    },
+  if (databaseRef) {
+    return databaseRef;
+  }
+
+  databaseRef = await openDB<TelemetryDB>(
+    TELEMETRY_DB_NAME,
+    TELEMETRY_DB_VERSION_NUMBER,
+    {
+      upgrade(db) {
+        // This is a new DB, so no need to delete existing object store yet
+        db.createObjectStore(TELEMETRY_EVENT_OBJECT_STORE, {
+          autoIncrement: true,
+        });
+      },
+      blocking() {
+        // Don't block closing/upgrading the database
+        console.debug("Closing telemetry database due to upgrade/delete");
+        databaseRef?.close();
+        databaseRef = null;
+      },
+      terminated() {
+        console.debug(
+          "Telemetry database connection was unexpectedly terminated"
+        );
+        databaseRef = null;
+      },
+    }
+  );
+
+  databaseRef.addEventListener("close", () => {
+    databaseRef = null;
   });
+
+  return databaseRef;
 }
 
 async function addEvent(event: UserTelemetryEvent): Promise<void> {
@@ -74,7 +107,33 @@ export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   return allEvents;
 }
 
-const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
+/**
+ * Deletes and recreates the logging database.
+ */
+export async function recreateDB(): Promise<void> {
+  await deleteDatabase(TELEMETRY_DB_NAME);
+
+  // Open the database to recreate it
+  await openTelemetryDB();
+}
+
+/**
+ * Returns the number of telemetry entries in the database.
+ */
+export async function count(): Promise<number> {
+  const db = await openTelemetryDB();
+  return db.count(TELEMETRY_EVENT_OBJECT_STORE);
+}
+
+/**
+ * Clears all event entries from the database.
+ */
+export async function clear(): Promise<void> {
+  const db = await openTelemetryDB();
+
+  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+  await tx.store.clear();
+}
 
 /**
  * Return a random ID for this browser profile.

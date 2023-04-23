@@ -23,29 +23,104 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 
-interface Props {
+interface DisplayProps {
   /**
    * Where the error happened, a hint in a free form
    */
   errorContext?: string;
 }
 
-interface State {
-  hasError: boolean;
-  errorMessage: string;
-  stack: string;
+interface BoundaryProps extends DisplayProps {
+  /**
+   * Custom error display component
+   */
+  ErrorComponent?: React.FC<DisplayProps & ErrorState>;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+interface ErrorState {
+  /**
+   * True if there was an error. Will always be true in ErrorDisplayProps
+   */
+  hasError: boolean;
+  /**
+   * The error object
+   */
+  error: unknown;
+  /**
+   * The error message, if available.
+   * @see getErrorMessage
+   */
+  errorMessage: string | null;
+  /**
+   * The error stack trace, if available.
+   */
+  stack: string | null;
+}
+
+/**
+ * Props passed to the ErrorComponent in the ErrorBoundary
+ * @see ErrorBoundary
+ */
+export type ErrorDisplayProps = DisplayProps & ErrorState;
+
+/**
+ * Default error display for use with ErrorBoundary
+ * @constructor
+ * @see ErrorBoundary
+ */
+export const DefaultErrorComponent: React.FC<ErrorDisplayProps> = ({
+  errorContext,
+  errorMessage,
+  stack,
+}) => (
+  <div className="p-3">
+    <h1>Something went wrong.</h1>
+    {errorContext && <h2>{errorContext}</h2>}
+    {!isEmpty(errorMessage) && (
+      <div>
+        <p>{errorMessage}</p>
+      </div>
+    )}
+    <div>
+      <Button
+        onClick={() => {
+          location.reload();
+        }}
+      >
+        <FontAwesomeIcon icon={faRedo} /> Reload the Page
+      </Button>
+    </div>
+    {stack && (
+      <pre className="mt-2 small text-secondary">
+        {stack
+          // In the app
+          .replaceAll(location.origin + "/", "")
+          // In the content script
+          .replaceAll(
+            `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+            ""
+          )}
+      </pre>
+    )}
+  </div>
+);
+
+class ErrorBoundary extends Component<BoundaryProps, ErrorState> {
   constructor(props: UnknownObject) {
     super(props);
-    this.state = { hasError: false, errorMessage: undefined, stack: undefined };
+    this.state = {
+      hasError: false,
+      error: undefined,
+      errorMessage: undefined,
+      stack: undefined,
+    };
   }
 
   static getDerivedStateFromError(error: Error) {
     // Update state so the next render will show the fallback UI.
     return {
       hasError: true,
+      error,
       errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
@@ -53,38 +128,9 @@ class ErrorBoundary extends Component<Props, State> {
 
   override render(): React.ReactNode {
     if (this.state.hasError) {
-      return (
-        <div className="p-3">
-          <h1>Something went wrong.</h1>
-          {this.props.errorContext && <h2>{this.props.errorContext}</h2>}
-          {!isEmpty(this.state.errorMessage) && (
-            <div>
-              <p>{this.state.errorMessage}</p>
-            </div>
-          )}
-          <div>
-            <Button
-              onClick={() => {
-                location.reload();
-              }}
-            >
-              <FontAwesomeIcon icon={faRedo} /> Reload the Page
-            </Button>
-          </div>
-          {this.state.stack && (
-            <pre className="mt-2 small text-secondary">
-              {this.state.stack
-                // In the app
-                .replaceAll(location.origin + "/", "")
-                // In the content script
-                .replaceAll(
-                  `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
-                  ""
-                )}
-            </pre>
-          )}
-        </div>
-      );
+      const ErrorComponent = this.props.ErrorComponent ?? DefaultErrorComponent;
+
+      return <ErrorComponent {...this.props} {...this.state} />;
     }
 
     return this.props.children;
