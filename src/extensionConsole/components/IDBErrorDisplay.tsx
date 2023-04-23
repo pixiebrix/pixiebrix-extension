@@ -113,7 +113,13 @@ const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
       <h1>Something went wrong.</h1>
       <div>
         <p>Insufficient storage space available to PixieBrix.</p>
-        <AsyncStateGate state={state} renderLoader={() => <p></p>}>
+        <AsyncStateGate
+          state={state}
+          renderLoader={() => <p></p>}
+          renderError={() => (
+            <p className="text-small">Unable to retrieve usage and quota.</p>
+          )}
+        >
           {({ data: { storageEstimate } }) => (
             <p className="text-small">
               Using {round(storageEstimate.usage / 1e6, 1).toLocaleString()} MB
