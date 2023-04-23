@@ -26,10 +26,10 @@ import useUserAction from "@/hooks/useUserAction";
 import { clearLogs, recreateDB as recreateLogDB } from "@/telemetry/logging";
 import { clearTraces, recreateDB as recreateTraceDB } from "@/telemetry/trace";
 import { recreateDB as recreateBrickDB } from "@/registry/localRegistry";
-// eslint-disable-next-line import/no-restricted-paths -- safe import because IDB is shared resource
 import {
   recreateDB as recreateEventDB,
   clear as clearEvents,
+  // eslint-disable-next-line import/no-restricted-paths -- safe import because IDB is shared resource
 } from "@/background/telemetry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
@@ -40,8 +40,12 @@ import { type StorageEstimate } from "@/types/browserTypes";
 import { expectContext } from "@/utils/expectContext";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { round } from "lodash";
+import { reportEvent } from "@/telemetry/events";
 
-const ConnectionErrorDisplay: React.FC = () => {
+const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
+  errorMessage,
+  errorContext,
+}) => {
   const recoverAction = useUserAction(
     async () => {
       await Promise.all([
@@ -68,6 +72,8 @@ const ConnectionErrorDisplay: React.FC = () => {
         <AsyncButton
           onClick={async () => {
             await recoverAction();
+            // Must happen after the clear so the event doesn't get cleared from the event DB buffer
+            reportEvent("IDBRecoverConnection", { errorMessage, errorContext });
             // Put outside the action so user can see the success message before the page reloads.
             await sleep(250);
             location.reload();
@@ -80,7 +86,10 @@ const ConnectionErrorDisplay: React.FC = () => {
   );
 };
 
-const QuotaErrorDisplay: React.FC = () => {
+const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
+  errorMessage,
+  errorContext,
+}) => {
   const state = useAsyncState(
     async () => ({
       storageEstimate: (await navigator.storage.estimate()) as StorageEstimate,
@@ -119,6 +128,13 @@ const QuotaErrorDisplay: React.FC = () => {
         <AsyncButton
           onClick={async () => {
             await recoverAction();
+            // Must happen after the re-create so the event doesn't get cleared from the event DB buffer
+            reportEvent("IDBReclaimQuota", {
+              errorContext,
+              errorMessage,
+              usage: state[0]?.storageEstimate.usage,
+              quota: state[0]?.storageEstimate.quota,
+            });
             // Put outside the action so user can see the success message before the page reloads.
             await sleep(250);
             location.reload();
