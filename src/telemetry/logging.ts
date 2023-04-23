@@ -100,18 +100,12 @@ const indexKeys: IndexKey[] = [
   "authId",
 ];
 
-/**
- * Singleton database connection.
- */
-let databaseRef: IDBPDatabase<LogDB> | null = null;
-
 async function getDB() {
-  if (databaseRef) {
-    return databaseRef;
-  }
+  // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
+  // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
+  let database: IDBPDatabase<LogDB> | null = null;
 
-  console.debug("Opening new logging database connection");
-  databaseRef = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
+  database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -139,20 +133,20 @@ async function getDB() {
     blocking() {
       // Don't block closing/upgrading the database
       console.debug("Closing log database due to upgrade/delete");
-      databaseRef?.close();
-      databaseRef = null;
+      database?.close();
+      database = null;
     },
     terminated() {
       console.debug("Log database connection was unexpectedly terminated");
-      databaseRef = null;
+      database = null;
     },
   });
 
-  databaseRef.addEventListener("close", () => {
-    databaseRef = null;
+  database.addEventListener("close", () => {
+    database = null;
   });
 
-  return databaseRef;
+  return database;
 }
 
 export async function appendEntry(entry: LogEntry): Promise<void> {
@@ -195,9 +189,7 @@ export async function recreateDB(): Promise<void> {
  */
 export async function clearLogs(): Promise<void> {
   const db = await getDB();
-
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  await tx.store.clear();
+  await db.clear(ENTRY_OBJECT_STORE);
 }
 
 export async function clearLog(context: MessageContext = {}): Promise<void> {

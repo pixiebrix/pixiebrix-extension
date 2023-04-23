@@ -71,8 +71,8 @@ const StorageSettings: React.FunctionComponent = () => {
       await recalculate();
     },
     {
-      successMessage: "Cleaned up unnecessary local data",
-      errorMessage: "Error cleaning unnecessary local data",
+      successMessage: "Reclaimed local space",
+      errorMessage: "Error reclaiming local space",
     },
     [recalculate]
   );
@@ -156,7 +156,7 @@ const StorageSettings: React.FunctionComponent = () => {
       </Card.Body>
       <Card.Footer className={styles.cardFooter}>
         <AsyncButton variant="info" onClick={clearLogsAction}>
-          <FontAwesomeIcon icon={faBroom} /> Cleanup Unnecessary Data
+          <FontAwesomeIcon icon={faBroom} /> Reclaim Local Space
         </AsyncButton>
 
         <AsyncButton variant="warning" onClick={recoverStorageAction}>

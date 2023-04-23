@@ -169,21 +169,12 @@ interface TraceDB extends DBSchema {
   };
 }
 
-/**
- * Singleton database connection.
- */
-let databaseRef: IDBPDatabase<TraceDB> | null = null;
-
-/**
- * Return the current DB instance, creating it if necessary.
- */
 async function getDB() {
-  if (databaseRef) {
-    return databaseRef;
-  }
+  // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
+  // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
+  let database: IDBPDatabase<TraceDB> | null = null;
 
-  console.debug("Opening new trace database connection");
-  databaseRef = await openDB<TraceDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
+  database = await openDB<TraceDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -212,20 +203,20 @@ async function getDB() {
     blocking() {
       // Don't block closing/upgrading the database
       console.debug("Closing trace database due to upgrade/delete");
-      databaseRef?.close();
-      databaseRef = null;
+      database?.close();
+      database = null;
     },
     terminated() {
       console.debug("Trace database connection was unexpectedly terminated");
-      databaseRef = null;
+      database = null;
     },
   });
 
-  databaseRef.addEventListener("close", () => {
-    databaseRef = null;
+  database.addEventListener("close", () => {
+    database = null;
   });
 
-  return databaseRef;
+  return database;
 }
 
 export async function addTraceEntry(record: TraceEntryData): Promise<void> {
@@ -283,11 +274,12 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
   }
 }
 
+/**
+ * Clear all trace records.
+ */
 export async function clearTraces(): Promise<void> {
   const db = await getDB();
-
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  await tx.store.clear();
+  await db.clear(ENTRY_OBJECT_STORE);
 }
 
 /**

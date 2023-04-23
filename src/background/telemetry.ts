@@ -52,17 +52,12 @@ interface TelemetryDB extends DBSchema {
   };
 }
 
-/**
- * Singleton database connection.
- */
-let databaseRef: IDBPDatabase<TelemetryDB> | null = null;
-
 async function openTelemetryDB() {
-  if (databaseRef) {
-    return databaseRef;
-  }
+  // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
+  // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
+  let database: IDBPDatabase<TelemetryDB> | null = null;
 
-  databaseRef = await openDB<TelemetryDB>(
+  database = await openDB<TelemetryDB>(
     TELEMETRY_DB_NAME,
     TELEMETRY_DB_VERSION_NUMBER,
     {
@@ -73,25 +68,25 @@ async function openTelemetryDB() {
         });
       },
       blocking() {
-        // Don't block closing/upgrading the database
+        // Don't block upgrading/deleting the database
         console.debug("Closing telemetry database due to upgrade/delete");
-        databaseRef?.close();
-        databaseRef = null;
+        database?.close();
+        database = null;
       },
       terminated() {
         console.debug(
           "Telemetry database connection was unexpectedly terminated"
         );
-        databaseRef = null;
+        database = null;
       },
     }
   );
 
-  databaseRef.addEventListener("close", () => {
-    databaseRef = null;
+  database.addEventListener("close", () => {
+    database = null;
   });
 
-  return databaseRef;
+  return database;
 }
 
 async function addEvent(event: UserTelemetryEvent): Promise<void> {
@@ -130,9 +125,7 @@ export async function count(): Promise<number> {
  */
 export async function clear(): Promise<void> {
   const db = await openTelemetryDB();
-
-  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
-  await tx.store.clear();
+  await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
 }
 
 /**
