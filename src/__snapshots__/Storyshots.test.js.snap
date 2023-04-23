@@ -3724,6 +3724,141 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 </div>
 `;
 
+exports[`Storyshots ExtensionConsole/IDBErrorDisplay Connection Error 1`] = `
+<div
+  className="p-3"
+>
+  <h1>
+    Something went wrong.
+  </h1>
+  <div>
+    <p>
+      Error connecting to local database.
+    </p>
+  </div>
+  <div>
+    <button
+      className="btn btn-primary"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-redo fa-w-16 "
+        data-icon="redo"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+          fill="currentColor"
+          style={{}}
+        />
+      </svg>
+       Retry
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Storyshots ExtensionConsole/IDBErrorDisplay Normal Error 1`] = `
+<div
+  className="p-3"
+>
+  <h1>
+    Something went wrong.
+  </h1>
+  <div>
+    <p>
+      This is a normal error
+    </p>
+  </div>
+  <div>
+    <button
+      className="btn btn-primary"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-redo fa-w-16 "
+        data-icon="redo"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+          fill="currentColor"
+          style={{}}
+        />
+      </svg>
+       Reload the Page
+    </button>
+  </div>
+  <pre
+    className="mt-2 small text-secondary"
+  >
+    ContextError: Encountered full disk while opening backing store for indexedDB.open.
+at k (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:35318)
+ at $ (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:36577)
+ at async L.runExtension (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/contentScriptCore.bundle.js:1:220194)
+  </pre>
+</div>
+`;
+
+exports[`Storyshots ExtensionConsole/IDBErrorDisplay Quota Error 1`] = `
+<div
+  className="p-3"
+>
+  <h1>
+    Something went wrong.
+  </h1>
+  <div>
+    <p>
+      Insufficient storage space available to PixieBrix.
+    </p>
+    <p />
+  </div>
+  <div>
+    <button
+      className="btn btn-primary"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-redo fa-w-16 "
+        data-icon="redo"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+          fill="currentColor"
+          style={{}}
+        />
+      </svg>
+       Reclaim Space
+    </button>
+  </div>
+</div>
+`;
+
 exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
 <form
   action="#"
