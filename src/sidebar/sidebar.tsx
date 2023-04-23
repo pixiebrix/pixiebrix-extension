@@ -31,7 +31,6 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
 import initGoogle from "@/contrib/google/initGoogle";
-import { initPerformanceMonitoring } from "@/telemetry/performance";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
@@ -39,7 +38,6 @@ function init(): void {
 
 registerMessenger();
 void initGoogle();
-void initPerformanceMonitoring();
 registerContribBlocks();
 registerBuiltinBlocks();
 initToaster();
