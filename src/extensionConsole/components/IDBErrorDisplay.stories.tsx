@@ -52,12 +52,15 @@ const quotaError = new Error(
   "Encountered full disk while opening backing store for indexedDB.open."
 );
 const connectionError = new Error("Error Opening IndexedDB");
+// Hard-code a stack because the stack includes the file path on local/CI builds, so Storyshots will fail
+const stack =
+  "ContextError: Encountered full disk while opening backing store for indexedDB.open.\nat k (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:35318)\n at $ (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:36577)\n at async L.runExtension (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/contentScriptCore.bundle.js:1:220194)";
 
 export const NormalError = Template.bind({});
 NormalError.args = {
   error: normalError,
   errorMessage: getErrorMessage(normalError),
-  stack: normalError.stack,
+  stack,
   hasError: true,
 };
 
@@ -65,7 +68,7 @@ export const QuotaError = Template.bind({});
 QuotaError.args = {
   error: quotaError,
   errorMessage: getErrorMessage(quotaError),
-  stack: quotaError.stack,
+  stack,
   hasError: true,
 };
 
@@ -73,6 +76,6 @@ export const ConnectionError = Template.bind({});
 ConnectionError.args = {
   error: connectionError,
   errorMessage: getErrorMessage(connectionError),
-  stack: connectionError.stack,
+  stack,
   hasError: true,
 };

@@ -3808,40 +3808,10 @@ exports[`Storyshots ExtensionConsole/IDBErrorDisplay Normal Error 1`] = `
   <pre
     className="mt-2 small text-secondary"
   >
-    Error: This is a normal error
-    at Object.&lt;anonymous&gt; (/Users/tschiller/projects/pixiebrix-extension/src/extensionConsole/components/IDBErrorDisplay.stories.tsx:52:21)
-    at Runtime._execModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1429:24)
-    at Runtime._loadModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1013:12)
-    at Runtime.requireModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:873:12)
-    at Runtime.requireModuleOrMock (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1039:21)
-    at requireContext (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/babel-plugin-require-context-hook/register.js:29:12)
-    at /Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:79:29
-    at Array.forEach (&lt;anonymous&gt;)
-    at /Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:77:18
-    at Array.forEach (&lt;anonymous&gt;)
-    at executeLoadable (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:76:10)
-    at executeLoadableForChanges (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:127:20)
-    at Object.getProjectAnnotations [as nextFn] (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/start.js:161:84)
-    at /Users/tschiller/projects/pixiebrix-extension/node_modules/synchronous-promise/index.js:217:29
-    at Array.forEach (&lt;anonymous&gt;)
-    at SynchronousPromise._runResolutions (/Users/tschiller/projects/pixiebrix-extension/node_modules/synchronous-promise/index.js:214:19)
-    at SynchronousPromise.then (/Users/tschiller/projects/pixiebrix-extension/node_modules/synchronous-promise/index.js:67:10)
-    at PreviewWeb.getProjectAnnotationsOrRenderError (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/preview-web/dist/cjs/Preview.js:159:63)
-    at PreviewWeb.initialize (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/preview-web/dist/cjs/Preview.js:138:19)
-    at Object.configure (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/start.js:187:17)
-    at Object.configure (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/react/dist/cjs/client/preview/index.js:35:24)
-    at Object.configure [as default] (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/frameworks/configure.js:83:19)
-    at Object.load (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/frameworks/react/loader.js:13:24)
-    at Object.loadFramework [as default] (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/frameworks/frameworkLoader.js:26:19)
-    at testStorySnapshots (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/api/index.js:28:94)
-    at Object.&lt;anonymous&gt; (/Users/tschiller/projects/pixiebrix-extension/src/Storyshots.test.js:29:15)
-    at Runtime._execModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1429:24)
-    at Runtime._loadModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1013:12)
-    at Runtime.requireModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:873:12)
-    at jestAdapter (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:77:13)
-    at runTestInternal (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runner/build/runTest.js:367:16)
-    at runTest (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runner/build/runTest.js:444:34)
-    at Object.worker (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runner/build/testWorker.js:106:12)
+    ContextError: Encountered full disk while opening backing store for indexedDB.open.
+at k (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:35318)
+ at $ (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:36577)
+ at async L.runExtension (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/contentScriptCore.bundle.js:1:220194)
   </pre>
 </div>
 `;
