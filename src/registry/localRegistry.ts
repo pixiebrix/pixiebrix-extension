@@ -71,18 +71,12 @@ interface BrickDB extends DBSchema {
   };
 }
 
-/**
- * Singleton database connection.
- */
-let databaseRef: IDBPDatabase<BrickDB> | null = null;
-
 async function getBrickDB() {
-  if (databaseRef) {
-    return databaseRef;
-  }
+  // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
+  // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
+  let database: IDBPDatabase<BrickDB> | null = null;
 
-  console.debug("Opening new brick database connection");
-  databaseRef = await openDB<BrickDB>(DATABASE_NAME, VERSION, {
+  database = await openDB<BrickDB>(DATABASE_NAME, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -98,20 +92,20 @@ async function getBrickDB() {
     blocking() {
       // Don't block closing/upgrading the database
       console.debug("Closing brick database due to upgrade/delete");
-      databaseRef?.close();
-      databaseRef = null;
+      database?.close();
+      database = null;
     },
     terminated() {
       console.debug("Brick database connection was unexpectedly terminated");
-      databaseRef = null;
+      database = null;
     },
   });
 
-  databaseRef.addEventListener("close", () => {
-    databaseRef = null;
+  database.addEventListener("close", () => {
+    database = null;
   });
 
-  return databaseRef;
+  return database;
 }
 
 function latestVersion(versions: Package[]): Package | null {
