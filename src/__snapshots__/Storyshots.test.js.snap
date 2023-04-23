@@ -3724,6 +3724,171 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 </div>
 `;
 
+exports[`Storyshots ExtensionConsole/IDBErrorDisplay Connection Error 1`] = `
+<div
+  className="p-3"
+>
+  <h1>
+    Something went wrong.
+  </h1>
+  <div>
+    <p>
+      Error connecting to local database.
+    </p>
+  </div>
+  <div>
+    <button
+      className="btn btn-primary"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-redo fa-w-16 "
+        data-icon="redo"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+          fill="currentColor"
+          style={{}}
+        />
+      </svg>
+       Retry
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Storyshots ExtensionConsole/IDBErrorDisplay Normal Error 1`] = `
+<div
+  className="p-3"
+>
+  <h1>
+    Something went wrong.
+  </h1>
+  <div>
+    <p>
+      This is a normal error
+    </p>
+  </div>
+  <div>
+    <button
+      className="btn btn-primary"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-redo fa-w-16 "
+        data-icon="redo"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+          fill="currentColor"
+          style={{}}
+        />
+      </svg>
+       Reload the Page
+    </button>
+  </div>
+  <pre
+    className="mt-2 small text-secondary"
+  >
+    Error: This is a normal error
+    at Object.&lt;anonymous&gt; (/Users/tschiller/projects/pixiebrix-extension/src/extensionConsole/components/IDBErrorDisplay.stories.tsx:52:21)
+    at Runtime._execModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1429:24)
+    at Runtime._loadModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1013:12)
+    at Runtime.requireModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:873:12)
+    at Runtime.requireModuleOrMock (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1039:21)
+    at requireContext (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/babel-plugin-require-context-hook/register.js:29:12)
+    at /Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:79:29
+    at Array.forEach (&lt;anonymous&gt;)
+    at /Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:77:18
+    at Array.forEach (&lt;anonymous&gt;)
+    at executeLoadable (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:76:10)
+    at executeLoadableForChanges (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/executeLoadable.js:127:20)
+    at Object.getProjectAnnotations [as nextFn] (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/start.js:161:84)
+    at /Users/tschiller/projects/pixiebrix-extension/node_modules/synchronous-promise/index.js:217:29
+    at Array.forEach (&lt;anonymous&gt;)
+    at SynchronousPromise._runResolutions (/Users/tschiller/projects/pixiebrix-extension/node_modules/synchronous-promise/index.js:214:19)
+    at SynchronousPromise.then (/Users/tschiller/projects/pixiebrix-extension/node_modules/synchronous-promise/index.js:67:10)
+    at PreviewWeb.getProjectAnnotationsOrRenderError (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/preview-web/dist/cjs/Preview.js:159:63)
+    at PreviewWeb.initialize (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/preview-web/dist/cjs/Preview.js:138:19)
+    at Object.configure (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/core-client/dist/cjs/preview/start.js:187:17)
+    at Object.configure (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/react/dist/cjs/client/preview/index.js:35:24)
+    at Object.configure [as default] (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/frameworks/configure.js:83:19)
+    at Object.load (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/frameworks/react/loader.js:13:24)
+    at Object.loadFramework [as default] (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/frameworks/frameworkLoader.js:26:19)
+    at testStorySnapshots (/Users/tschiller/projects/pixiebrix-extension/node_modules/@storybook/addon-storyshots/dist/ts3.9/api/index.js:28:94)
+    at Object.&lt;anonymous&gt; (/Users/tschiller/projects/pixiebrix-extension/src/Storyshots.test.js:29:15)
+    at Runtime._execModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1429:24)
+    at Runtime._loadModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:1013:12)
+    at Runtime.requireModule (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runtime/build/index.js:873:12)
+    at jestAdapter (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:77:13)
+    at runTestInternal (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runner/build/runTest.js:367:16)
+    at runTest (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runner/build/runTest.js:444:34)
+    at Object.worker (/Users/tschiller/projects/pixiebrix-extension/node_modules/jest-runner/build/testWorker.js:106:12)
+  </pre>
+</div>
+`;
+
+exports[`Storyshots ExtensionConsole/IDBErrorDisplay Quota Error 1`] = `
+<div
+  className="p-3"
+>
+  <h1>
+    Something went wrong.
+  </h1>
+  <div>
+    <p>
+      Insufficient storage space available to PixieBrix.
+    </p>
+    <p />
+  </div>
+  <div>
+    <button
+      className="btn btn-primary"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-redo fa-w-16 "
+        data-icon="redo"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+          fill="currentColor"
+          style={{}}
+        />
+      </svg>
+       Reclaim Space
+    </button>
+  </div>
+</div>
+`;
+
 exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
 <form
   action="#"

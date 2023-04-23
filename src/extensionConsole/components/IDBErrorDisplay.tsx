@@ -116,9 +116,8 @@ const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
         <AsyncStateGate state={state} renderLoader={() => <p></p>}>
           {({ data: { storageEstimate } }) => (
             <p className="text-small">
-              Using
-              {round(storageEstimate.usage / 1e6, 1).toLocaleString()} MB of
-              {round(storageEstimate.quota / 1e6, 0).toLocaleString()} MB
+              Using {round(storageEstimate.usage / 1e6, 1).toLocaleString()} MB
+              of {round(storageEstimate.quota / 1e6, 0).toLocaleString()} MB
               available
             </p>
           )}
