@@ -62,6 +62,12 @@ jest.mock("@/background/messenger/external/_implementation", () => ({
   getActivatingBlueprint: jest.fn(),
 }));
 
+jest.mock("@/sidebar/store", () => ({
+  persistor: {
+    flush: jest.fn(),
+  },
+}));
+
 const getActivatingBlueprintMock =
   getActivatingBlueprint as jest.MockedFunction<typeof getActivatingBlueprint>;
 
@@ -175,7 +181,7 @@ describe("marketplace enhancements", () => {
     await initMarketplaceEnhancements();
 
     const activateButtons = document.querySelectorAll("a");
-    expect(activateButtons[0].textContent).toBe(" Reactivate");
+    expect(activateButtons[0].textContent).toBe("Reactivate");
     expect(activateButtons[1].textContent).toBe(" Activate");
   });
 
