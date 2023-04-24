@@ -83,18 +83,11 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   button.className = "";
   button.innerHTML = "Reactivate";
 
-  const parent = button.parentElement;
-
-  const activeLabelContainer = document.createElement("div");
-  activeLabelContainer.classList.add("d-flex", "flex-column");
-
-  const activeLabel = document.createElement("span");
-  activeLabel.classList.add("text-success");
-  activeLabel.innerHTML = '<i class="fas fa-check"></i> Active';
-
-  activeLabelContainer.append(activeLabel);
-  parent?.replaceChild(activeLabelContainer, button);
-  activeLabelContainer.append(button);
+  const activeLabel = $(
+    '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>'
+  );
+  $(button).replaceWith(activeLabel);
+  activeLabel.append(button);
 }
 
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
