@@ -75,7 +75,7 @@ async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
   }
 }
 
-const changeActivateButtonToActiveLabel = (button: HTMLAnchorElement) => {
+function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   if (button.innerHTML.includes("Reactivate")) {
     return;
   }
@@ -95,7 +95,7 @@ const changeActivateButtonToActiveLabel = (button: HTMLAnchorElement) => {
   activeLabelContainer.append(activeLabel);
   parent?.replaceChild(activeLabelContainer, button);
   activeLabelContainer.append(button);
-};
+}
 
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   const controller = new AbortController();
@@ -121,7 +121,7 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
 
 let enhancementsLoaded = false;
 
-export async function loadPageEnhancements(): Promise<void> {
+async function loadPageEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }

@@ -134,6 +134,8 @@ function canAutoActivate(
 
 async function reloadMarketplaceEnhancements() {
   const topFrame = await getTopLevelFrame();
+  // Make sure the content script has the most recent state of the store before reloading.
+  // Prevents race condition where the content script reloads before the store is persisted.
   await persistor.flush();
   void reloadMarketplaceEnhancementsInContentScript(topFrame);
 }
