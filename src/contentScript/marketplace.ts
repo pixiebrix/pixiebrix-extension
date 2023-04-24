@@ -87,6 +87,9 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
     '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>'
   );
   $(button).replaceWith(activeLabel);
+
+  // Keeping the original button element in the dom so that the event listeners can be added in
+  // the loadPageEnhancements function
   activeLabel.append(button);
 }
 
