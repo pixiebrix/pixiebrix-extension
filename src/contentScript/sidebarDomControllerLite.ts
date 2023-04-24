@@ -95,7 +95,7 @@ export function insertSidebarFrame(): boolean {
     borderLeft: "1px solid lightgray",
 
     // Note that it can't use our CSS variables because this element lives on the host
-    background: "#efe8fb",
+    background: "#f9f8fa",
   });
 
   const wrapper = shadowWrap(iframe);
