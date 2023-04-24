@@ -126,23 +126,13 @@ export function useAuthOptions(): {
   };
 }
 
-/*
- * Get a list of required service ids for a recipe mapped to a default auth option.
- *
- * If there are no options available for the service, the value will be null.
- * Prefer an arbitrary personal or shared auth option over built-in.
- *
- * Assumes that the recipe is not yet installed.
- */
-export function useDefaultAuthOptions(recipe: RecipeDefinition): {
-  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
-  isLoading: boolean;
-} {
-  const { authOptions, isLoading } = useAuthOptions();
-
+export function getDefaultAuthOptionsForRecipe(
+  recipe: RecipeDefinition,
+  authOptions: AuthOption[]
+): Record<RegistryId, AuthOption | null> {
   const requiredServiceIds = getRequiredServiceIds(recipe);
 
-  const defaultAuthOptions = Object.fromEntries(
+  return Object.fromEntries(
     requiredServiceIds.map((serviceId) => {
       const authOptionsForService = authOptions.filter(
         (authOption) => authOption.serviceId === serviceId
@@ -167,6 +157,25 @@ export function useDefaultAuthOptions(recipe: RecipeDefinition): {
       return [serviceId, null];
     })
   );
+}
+
+/*
+ * Get a list of required service ids for a recipe mapped to a default auth option.
+ *
+ * If there are no options available for the service, the value will be null.
+ * Prefer an arbitrary personal or shared auth option over built-in.
+ *
+ * Assumes that the recipe is not yet installed.
+ */
+export function useDefaultAuthOptions(recipe: RecipeDefinition): {
+  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
+  isLoading: boolean;
+} {
+  const { authOptions, isLoading } = useAuthOptions();
+
+  const defaultAuthOptions = isLoading
+    ? {}
+    : getDefaultAuthOptionsForRecipe(recipe, authOptions);
 
   return {
     defaultAuthOptions,

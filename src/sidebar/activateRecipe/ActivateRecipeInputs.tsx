@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import Form, {
   type RenderBody,
@@ -29,11 +29,7 @@ import { Button, Col } from "react-bootstrap";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
-import { collectPermissions } from "@/permissions";
-import { resolveRecipe } from "@/registry/internal";
-import { containsPermissions } from "@/background/messenger/api";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
-import { useAsyncState } from "@/hooks/common";
 import { type AnyObjectSchema } from "yup";
 import { useSelector } from "react-redux";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
@@ -43,8 +39,10 @@ type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
   wizardSteps: WizardStep[];
   initialValues: WizardValues;
+  onChange: (values: WizardValues) => void;
   validationSchema: AnyObjectSchema;
   onClickCancel: () => void;
+  needsPermissions?: boolean;
   header?: React.ReactNode;
   formValuesRef?: React.MutableRefObject<WizardValues>;
   onClickSubmit?: () => void;
@@ -55,58 +53,21 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   recipe,
   wizardSteps,
   initialValues,
+  onChange,
   validationSchema,
   onClickCancel,
+  needsPermissions,
   header,
-  formValuesRef,
   onClickSubmit,
   activationError,
 }) => {
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
-  const [needsPermissions, setNeedsPermissions] = useState(false);
 
   const recipeExtensions = useSelector(
     selectExtensionsForRecipe(recipe?.metadata?.id)
   );
   const isReinstall = !isEmpty(recipeExtensions);
-
-  const [resolvedRecipeConfigs] = useAsyncState(
-    async () => resolveRecipe(recipe, recipe.extensionPoints),
-    [recipe]
-  );
-
-  const checkPermissions = useCallback(
-    async (values: WizardValues) => {
-      if (!resolvedRecipeConfigs) {
-        return;
-      }
-
-      const serviceAuths = values.services.filter(({ config }) =>
-        Boolean(config)
-      );
-      const collectedPermissions = await collectPermissions(
-        resolvedRecipeConfigs,
-        serviceAuths
-      );
-      setNeedsPermissions(!(await containsPermissions(collectedPermissions)));
-    },
-    [resolvedRecipeConfigs]
-  );
-
-  function onChange(values: WizardValues) {
-    void checkPermissions(values);
-    if (formValuesRef) {
-      formValuesRef.current = values;
-    }
-  }
-
-  // Check permissions on initial load
-  useEffect(() => {
-    if (resolvedRecipeConfigs) {
-      void checkPermissions(initialValues);
-    }
-  }, [checkPermissions, initialValues, resolvedRecipeConfigs]);
 
   const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>
