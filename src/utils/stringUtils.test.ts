@@ -31,11 +31,19 @@ describe("string utilities", () => {
     });
     expect(
       splitStartingEmoji(
-        "😊 😊 some test string with multiple emojis at the start"
+        "😊 😊 some test string with multiple emojis at the start separated by space"
       )
     ).toStrictEqual({
       startingEmoji: "😊",
-      rest: " 😊 some test string with multiple emojis at the start",
+      rest: " 😊 some test string with multiple emojis at the start separated by space",
+    });
+    expect(
+      splitStartingEmoji(
+        "😊😊 some test string with multiple emojis at the start"
+      )
+    ).toStrictEqual({
+      startingEmoji: "😊",
+      rest: "😊 some test string with multiple emojis at the start",
     });
     expect(
       splitStartingEmoji("👋🏿 some test string with colors emoji at the start")
