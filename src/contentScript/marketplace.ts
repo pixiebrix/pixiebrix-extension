@@ -75,6 +75,24 @@ async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
   }
 }
 
+function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
+  if (button.innerHTML.includes("Reactivate")) {
+    return;
+  }
+
+  button.className = "";
+  button.innerHTML = "Reactivate";
+
+  const activeLabel = $(
+    '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>'
+  );
+  $(button).replaceWith(activeLabel);
+
+  // Keeping the original button element in the dom so that the event listeners can be added in
+  // the loadPageEnhancements function
+  activeLabel.append(button);
+}
+
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   const controller = new AbortController();
 
@@ -122,9 +140,9 @@ async function loadPageEnhancements(): Promise<void> {
       continue;
     }
 
-    // Check if recipe is already activated, and change button to Reactivate
+    // Check if recipe is already activated, and change button content to indicate active status
     if (installedRecipeIds.has(recipeId)) {
-      button.innerHTML = '<i class="fas fa-sync-alt"></i> Reactivate';
+      changeActivateButtonToActiveLabel(button);
     }
 
     button.addEventListener("click", async (event) => {
@@ -145,6 +163,11 @@ async function loadPageEnhancements(): Promise<void> {
       await showSidebarActivationForRecipe(recipeId);
     });
   }
+}
+
+export async function reloadMarketplaceEnhancements() {
+  enhancementsLoaded = false;
+  await loadPageEnhancements();
 }
 
 export async function initMarketplaceEnhancements() {

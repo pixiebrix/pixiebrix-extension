@@ -42,6 +42,13 @@ jest.mock("@/services/api", () => ({
     },
   },
 }));
+
+jest.mock("@/sidebar/store", () => ({
+  persistor: {
+    flush: jest.fn(),
+  },
+}));
+
 jest.mock("@/auth/token", () => {
   const originalModule = jest.requireActual("@/auth/token");
   return {

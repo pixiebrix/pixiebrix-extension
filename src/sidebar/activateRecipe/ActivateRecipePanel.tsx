@@ -23,7 +23,10 @@ import styles from "./ActivateRecipePanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { hideSidebar } from "@/contentScript/messenger/api";
+import {
+  hideSidebar,
+  reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript,
+} from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
 import { isEmpty, uniq } from "lodash";
@@ -42,6 +45,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useDefaultAuthOptions } from "@/hooks/auth";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { persistor } from "@/sidebar/store";
 import { type AuthOption } from "@/auth/authTypes";
 
 const { actions } = sidebarSlice;
@@ -128,6 +132,14 @@ function canAutoActivate(
   return !hasRecipeOptions && !needsServiceInputs;
 }
 
+async function reloadMarketplaceEnhancements() {
+  const topFrame = await getTopLevelFrame();
+  // Make sure the content script has the most recent state of the store before reloading.
+  // Prevents race condition where the content script reloads before the store is persisted.
+  await persistor.flush();
+  void reloadMarketplaceEnhancementsInContentScript(topFrame);
+}
+
 const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   recipe,
   recipeNameNode,
@@ -167,6 +179,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
 
     if (success) {
       stateDispatch(activateSuccess());
+      void reloadMarketplaceEnhancements();
     } else {
       stateDispatch(activateError(error));
     }

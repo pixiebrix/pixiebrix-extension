@@ -85,6 +85,12 @@ jest.mock("@/store/optionsStore", () => ({
   },
 }));
 
+jest.mock("@/sidebar/store", () => ({
+  persistor: {
+    flush: jest.fn(),
+  },
+}));
+
 jest.mock("@/permissions/index", () => ({
   collectPermissions: jest.fn().mockReturnValue({
     permissions: [],
