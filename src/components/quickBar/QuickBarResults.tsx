@@ -73,7 +73,9 @@ const ResultItem = forwardRef(
             fontWeight: 400,
           }}
         >
-          <div style={{ alignSelf: "flex-start" }}>{icon ?? null}</div>
+          <div style={{ alignSelf: "flex-start", fontSize: 14, width: 16 }}>
+            {icon ?? null}
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div>
               {ancestors.length > 0 &&

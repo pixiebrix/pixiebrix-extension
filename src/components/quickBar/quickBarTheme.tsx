@@ -46,7 +46,6 @@ export const animatorStyle: React.CSSProperties = {
   color: theme.foreground,
   borderRadius: "8px",
   overflow: "hidden",
-  boxShadow: theme.shadow,
 };
 
 export const groupNameStyle = {
