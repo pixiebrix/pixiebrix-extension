@@ -151,7 +151,9 @@ const actionSchema: Schema = {
   ],
 };
 
-export async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
+async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
+  // XXX: should introduce abortable promises listening for navigation vs. checking functions that compares
+  // navigation IDs. For example, see lifecycle.ts:_navigationListeners
   const startNavigationId = getNavigationId();
   const isNavigationCancelled = () => getNavigationId() !== startNavigationId;
   return rejectOnCancelled(promise, isNavigationCancelled);
@@ -163,8 +165,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
    * @protected
    */
   protected readonly menus: Map<string, HTMLElement>;
-
-  private readonly instanceId: string;
 
   /**
    * Set of menu container UUID that have been removed from the DOM. Track so we we know which ones we've already
@@ -211,7 +211,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   protected constructor(metadata: Metadata, logger: Logger) {
     super(metadata, logger);
-    this.instanceId = uuidv4();
     this.menus = new Map<string, HTMLElement>();
     this.removed = new Set<string>();
     this.cancelPending = new Set();
@@ -379,7 +378,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private async reacquire(uuid: string): Promise<void> {
     if (this.uninstalled) {
       console.warn(
-        `${this.instanceId}: cannot reacquire because extension ${this.id} is destroyed`
+        `${this.instanceNonce}: cannot reacquire because extension ${this.id} is destroyed`
       );
       return;
     }
@@ -388,11 +387,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     this.removed.add(uuid);
     if (alreadyRemoved) {
       console.warn(
-        `${this.instanceId}: menu ${uuid} removed from DOM multiple times for ${this.id}`
+        `${this.instanceNonce}: menu ${uuid} removed from DOM multiple times for ${this.id}`
       );
     } else {
       console.debug(
-        `${this.instanceId}: menu ${uuid} removed from DOM for ${this.id}`
+        `${this.instanceNonce}: menu ${uuid} removed from DOM for ${this.id}`
       );
       this.menus.delete(uuid);
       // Re-install the menus (will wait for the menu selector to re-appear)
@@ -408,7 +407,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private async installMenus(): Promise<boolean> {
     if (this.uninstalled) {
       console.error("Menu item extension point is uninstalled", {
-        extensionId: this.instanceId,
+        extensionPointNonce: this.instanceNonce,
       });
       throw new Error(
         "Cannot install menu item because starter brick was uninstalled"
@@ -418,7 +417,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const selector = this.getContainerSelector();
 
     console.debug(
-      `${this.instanceId}: awaiting menu container for ${this.id}`,
+      `${this.instanceNonce}: awaiting menu container for ${this.id}`,
       {
         selector,
       }
@@ -484,7 +483,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
 
     console.debug(
-      `${this.instanceId}: running menuItem extension ${extension.id}`
+      `${this.instanceNonce}: running menuItem extension ${extension.id}`
     );
 
     // Safe because menu is an HTMLElement, not a string
@@ -651,10 +650,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     if ($existingItem.length > 0) {
       // We don't need to unbind any click handlers because we're replacing the element completely.
-      console.debug(`Replacing existing menu item for ${extension.id}`);
+      console.debug(
+        `Replacing existing menu item for ${extension.id} (${extension.label})`
+      );
       $existingItem.replaceWith($menuItem);
     } else {
-      console.debug(`Adding new menu item ${extension.id}`);
+      console.debug(
+        `Adding new menu item ${extension.id} (${extension.label})`
+      );
       this.addMenuItem($menu, $menuItem);
     }
 
