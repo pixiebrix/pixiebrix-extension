@@ -71,9 +71,19 @@ const ResultItem = forwardRef(
             alignItems: "center",
             fontSize: 16,
             fontWeight: 400,
+            lineHeight: "16px",
           }}
         >
-          <div style={{ alignSelf: "flex-start" }}>{icon ?? null}</div>
+          <div
+            style={{
+              alignSelf: "flex-start",
+              width: 18,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            {icon ?? null}
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <div>
               {ancestors.length > 0 &&
