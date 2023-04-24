@@ -17,6 +17,7 @@
 
 import React from "react";
 import { useRecipe } from "@/recipes/recipesHooks";
+import * as api from "@/services/api";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
   getRecipeWithBuiltInServiceAuths,
@@ -32,10 +33,9 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import * as api from "@/services/api";
+import { getIncludesQuickBarAndNeedsPermissionForRecipe } from "@/sidebar/activateRecipe/RequireRecipe";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -91,16 +91,36 @@ jest.mock("@/sidebar/store", () => ({
   },
 }));
 
-jest.mock("@/permissions/index", () => ({
-  collectPermissions: jest.fn().mockReturnValue({
-    permissions: [],
-    origins: [],
-  }),
-}));
+jest.mock("@/sidebar/activateRecipe/RequireRecipe", () => {
+  const actual = jest.requireActual("@/sidebar/activateRecipe/RequireRecipe");
+  return {
+    __esModule: true,
+    ...actual,
+    getIncludesQuickBarAndNeedsPermissionForRecipe: jest.fn(),
+  };
+});
 
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn().mockReturnValue(false),
-}));
+const getIncludesQuickBarAndNeedsPermissionForRecipeMock =
+  getIncludesQuickBarAndNeedsPermissionForRecipe as jest.MockedFunction<
+    typeof getIncludesQuickBarAndNeedsPermissionForRecipe
+  >;
+
+type SetterInput = {
+  needsPermissions: boolean;
+  includesQuickBar: boolean;
+};
+
+function setNeedsPermissionsAndIncludesQuickBar({
+  needsPermissions,
+  includesQuickBar,
+}: SetterInput) {
+  getIncludesQuickBarAndNeedsPermissionForRecipeMock.mockResolvedValue({
+    includesQuickBar,
+    async needsPermissions() {
+      return needsPermissions;
+    },
+  });
+}
 
 jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
   __esModule: true,
@@ -120,16 +140,6 @@ jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
 
-jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const includesQuickBarMock =
-  includesQuickBarExtensionPoint as jest.MockedFunction<
-    typeof includesQuickBarExtensionPoint
-  >;
-
 jest.mock("@/hooks/useQuickbarShortcut", () => ({
   __esModule: true,
   default: jest.fn(),
@@ -138,6 +148,19 @@ jest.mock("@/hooks/useQuickbarShortcut", () => ({
 const useQuickbarShortcutMock = useQuickbarShortcut as jest.MockedFunction<
   typeof useQuickbarShortcut
 >;
+
+jest.mock("@/hooks/auth", () => {
+  const actual = jest.requireActual("@/hooks/auth");
+  return {
+    __esModule: true,
+    ...actual,
+    useAuthOptions: jest.fn().mockReturnValue({
+      authOptions: [],
+      refresh: jest.fn(),
+      isLoading: false,
+    }),
+  };
+});
 
 function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
   return {
@@ -196,7 +219,10 @@ function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
 }
 
 beforeEach(() => {
-  includesQuickBarMock.mockResolvedValue(false);
+  setNeedsPermissionsAndIncludesQuickBar({
+    needsPermissions: false,
+    includesQuickBar: false,
+  });
   useQuickbarShortcutMock.mockReturnValue({
     shortcut: null,
     isConfigured: false,
@@ -211,6 +237,11 @@ beforeEach(() => {
 
 describe("ActivateRecipePanel", () => {
   test("it renders with options, permissions info", async () => {
+    setNeedsPermissionsAndIncludesQuickBar({
+      needsPermissions: true,
+      includesQuickBar: false,
+    });
+
     const rendered = setupMocksAndRender({
       options: {
         schema: propertiesToSchema({
@@ -242,7 +273,10 @@ describe("ActivateRecipePanel", () => {
   });
 
   test("it renders well-done page for quick bar mod shortcut not configured", async () => {
-    includesQuickBarMock.mockResolvedValue(true);
+    setNeedsPermissionsAndIncludesQuickBar({
+      needsPermissions: false,
+      includesQuickBar: true,
+    });
 
     const rendered = setupMocksAndRender();
 
@@ -252,7 +286,11 @@ describe("ActivateRecipePanel", () => {
   });
 
   test("it renders well-done page for quick bar mod shortcut is configured", async () => {
-    includesQuickBarMock.mockResolvedValue(true);
+    setNeedsPermissionsAndIncludesQuickBar({
+      needsPermissions: false,
+      includesQuickBar: true,
+    });
+
     useQuickbarShortcutMock.mockReturnValue({
       shortcut: "⌘M",
       isConfigured: true,

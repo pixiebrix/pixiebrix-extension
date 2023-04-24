@@ -45,6 +45,35 @@ type RequireRecipeProps = {
   children: (props: RecipeState) => React.ReactElement;
 };
 
+// Exported for testing
+export async function getIncludesQuickBarAndNeedsPermissionForRecipe(
+  recipe: RecipeDefinition
+): Promise<{
+  includesQuickBar: boolean;
+  needsPermissions: (formValues: WizardValues) => Promise<boolean>;
+}> {
+  const resolvedRecipeConfigs = await resolveRecipe(
+    recipe,
+    recipe.extensionPoints
+  );
+  const includesQuickBar = await includesQuickBarExtensionPoint(
+    resolvedRecipeConfigs
+  );
+  const needsPermissions = async (formValues: WizardValues) => {
+    const serviceAuths = formValues.services.filter(({ config }) =>
+      Boolean(config)
+    );
+    const collectedPermissions = await collectPermissions(
+      resolvedRecipeConfigs,
+      serviceAuths
+    );
+    const hasPermissions = await containsPermissions(collectedPermissions);
+    return !hasPermissions;
+  };
+
+  return { includesQuickBar, needsPermissions };
+}
+
 const RequireRecipe: React.FC<RequireRecipeProps> = ({
   recipeId,
   children,
@@ -71,29 +100,17 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
 
   // Quick Bar & Permissions
-  const [quickbarAndPermissions, isLoadingQuickbarAndPermissions] =
-    useAsyncState(async () => {
-      const resolvedRecipeConfigs = await resolveRecipe(
-        recipe,
-        recipe.extensionPoints
-      );
-      const includesQuickbar = await includesQuickBarExtensionPoint(
-        resolvedRecipeConfigs
-      );
-      const needsPermissions = async (formValues: WizardValues) => {
-        const serviceAuths = formValues.services.filter(({ config }) =>
-          Boolean(config)
-        );
-        const collectedPermissions = await collectPermissions(
-          resolvedRecipeConfigs,
-          serviceAuths
-        );
-        const hasPermissions = await containsPermissions(collectedPermissions);
-        return !hasPermissions;
-      };
+  const [
+    quickBarAndPermissions,
+    isLoadingQuickBarAndPermissions,
+    quickBarAndPermissionsError,
+  ] = useAsyncState(async () => {
+    if (!recipe) {
+      return null;
+    }
 
-      return { includesQuickbar, needsPermissions };
-    }, [recipe]);
+    return getIncludesQuickBarAndNeedsPermissionForRecipe(recipe);
+  }, [recipe]);
 
   // Auth Options
   const { authOptions, isLoading: isLoadingAuthOptions } = useAuthOptions();
@@ -105,6 +122,10 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
 
   if (listingError) {
     throw listingError;
+  }
+
+  if (quickBarAndPermissionsError) {
+    throw quickBarAndPermissionsError;
   }
 
   // Ensure recipe is loaded
@@ -123,7 +144,7 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     isUninitialized ||
     isLoadingRecipe ||
     isLoadingListing ||
-    isLoadingQuickbarAndPermissions;
+    isLoadingQuickBarAndPermissions;
 
   if (isLoading) {
     return <Loader />;
@@ -159,8 +180,8 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
   const recipeState: RecipeState = {
     recipe,
     recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
-    includesQuickBar: quickbarAndPermissions?.includesQuickbar,
-    needsPermissions: quickbarAndPermissions?.needsPermissions,
+    includesQuickBar: quickBarAndPermissions?.includesQuickBar,
+    needsPermissions: quickBarAndPermissions?.needsPermissions,
     canAutoActivate,
   };
 
