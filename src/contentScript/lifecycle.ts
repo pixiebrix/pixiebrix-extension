@@ -23,7 +23,7 @@ import { pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
-import { compact, groupBy, intersection, once } from "lodash";
+import { compact, groupBy, intersection, once, uniq } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
@@ -72,9 +72,9 @@ const _activeExtensionPoints = new Set<IExtensionPoint>();
 const _frameHref = new Map<number, string>();
 
 /**
- * Navigation sequence number for Single Page Applications (SPAs).
+ * Abort controllers for navigation events for Single Page Applications (SPAs).
  */
-let _navSequence = 1;
+const _navigationListeners = new Set<() => void>();
 
 /**
  * Reload extension definitions on next navigation
@@ -83,7 +83,7 @@ let _reloadOnNextNavigate = false;
 
 const WAIT_LOADED_INTERVAL_MS = 25;
 
-const injectPageScript = once(async (): Promise<void> => {
+const injectPageScriptOnce = once(async (): Promise<void> => {
   console.debug("Injecting page script");
   const script = await injectScriptTag(browser.runtime.getURL("pageScript.js"));
   script.remove();
@@ -91,29 +91,45 @@ const injectPageScript = once(async (): Promise<void> => {
 });
 
 /**
- *
- * @param extensionPoint
- * @param reason
- * @param extensionIds
- * @param isCancelled
+ * Run an extension point and specified IExtensions.
+ * @param extensionPoint the extension point to install/run
+ * @param reason the reason code for the run
+ * @param extensionIds the IExtensions to run on the extension point, or undefined to run all IExtensions
+ * @param abortSignal abort signal to cancel the install/run
  */
 async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
   {
     reason,
     extensionIds,
-    isCancelled,
-  }: { reason: RunReason; extensionIds?: UUID[]; isCancelled: () => boolean }
+    abortSignal,
+  }: { reason: RunReason; extensionIds?: UUID[]; abortSignal: AbortSignal }
 ): Promise<void> {
+  // Could potentially call _activeExtensionPoints.delete here, but assume the extension point is still available
+  // until we know for sure that it's not
+
   let installed = false;
+
+  // Details to make it easier to debug extension point lifecycle
+  const details = {
+    extensionPointId: extensionPoint.id,
+    kind: extensionPoint.kind,
+    name: extensionPoint.name,
+    permissions: extensionPoint.permissions,
+    extensionIds,
+    reason,
+  };
 
   try {
     installed = await extensionPoint.install();
   } catch (error) {
     if (error instanceof PromiseCancelled) {
       console.debug(
-        `Skipping ${extensionPoint.id} because user navigated away from the page`
+        `Skipping ${extensionPoint.kind} ${extensionPoint.id} because user navigated away from the page`,
+        details
       );
+
+      _activeExtensionPoints.delete(extensionPoint);
       return;
     }
 
@@ -122,25 +138,42 @@ async function runExtensionPoint(
 
   if (!installed) {
     console.debug(
-      `Skipping ${extensionPoint.id} because it was not installed on the page`
+      `Skipping ${extensionPoint.kind} ${extensionPoint.id} because it was not installed on the page`,
+      details
     );
+
+    _activeExtensionPoints.delete(extensionPoint);
     return;
   }
 
-  if (isCancelled()) {
+  if (abortSignal.aborted) {
     console.debug(
-      `Skipping ${extensionPoint.id} because user navigated away from the page`
+      `Skipping ${extensionPoint.kind} ${extensionPoint.id} because user navigated away from the page`,
+      details
     );
+
+    _activeExtensionPoints.delete(extensionPoint);
     return;
   }
 
-  console.debug(`Installed extension point: ${extensionPoint.id}`);
+  console.debug(
+    `Installed extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
+    details
+  );
 
   await extensionPoint.run({ reason, extensionIds });
   _activeExtensionPoints.add(extensionPoint);
+
+  console.debug(
+    `Ran extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
+    details
+  );
 }
 
-function checkInvariants(): void {
+/**
+ * Warn if any lifecycle state assumptions are violated.
+ */
+function checkLifecycleInvariants(): void {
   const installedIds = [..._persistedExtensions.keys()];
   const editorIds = [..._editorExtensions.keys()];
 
@@ -252,13 +285,24 @@ export function clearEditorExtension(
   }
 }
 
-function getNavSequence(): number {
-  return _navSequence;
+/**
+ * Return an AbortSignal that's aborted when the user navigates.
+ */
+function createNavigationAbortSignal(): AbortSignal {
+  const controller = new AbortController();
+  _navigationListeners.add(controller.abort.bind(controller));
+  return controller.signal;
 }
 
-function makeCancelOnNavigate(): () => boolean {
-  const currentNavSequence = _navSequence;
-  return () => getNavSequence() > currentNavSequence;
+/**
+ * Notifies all navigation listeners that the user has navigated in a way that changed the URL.
+ */
+function notifyNavigationListeners(): void {
+  for (const listener of _navigationListeners) {
+    listener();
+  }
+
+  _navigationListeners.clear();
 }
 
 /**
@@ -290,10 +334,10 @@ export async function runEditorExtension(
     // The Page Editor is the only caller for runDynamic
     reason: RunReason.PAGE_EDITOR,
     extensionIds: [extensionId],
-    isCancelled: makeCancelOnNavigate(),
+    abortSignal: createNavigationAbortSignal(),
   });
 
-  checkInvariants();
+  checkLifecycleInvariants();
 }
 
 /**
@@ -351,7 +395,7 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
     )
   );
 
-  checkInvariants();
+  checkLifecycleInvariants();
 
   return added;
 }
@@ -363,16 +407,24 @@ async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
   if (_initialLoad || _reloadOnNextNavigate) {
     _initialLoad = false;
     _reloadOnNextNavigate = false;
+    // XXX: could also include _editorExtensions to handle case where user activates a mod while the page editor
+    // is open. However, that would require handling corner case where the user reactivating a mod that has dirty
+    // changes. It's not worth the complexity of handling the corner case.
     return loadPersistedExtensions();
   }
 
-  return getActiveExtensionPoints();
+  // NOTE: don't want _activeExtensionPoints, because we also want extension points that weren't active for the
+  // previous page/navigation.
+  return uniq([
+    ..._persistedExtensions.values(),
+    ..._editorExtensions.values(),
+  ]);
 }
 
 /**
  * Wait for the page to be ready according to the site-specific navigation rules.
  */
-async function waitLoaded(cancel: () => boolean): Promise<void> {
+async function waitDocumentLoad(abortSignal: AbortSignal): Promise<void> {
   const url = document.location.href;
   const rules = NAVIGATION_RULES.filter((rule) =>
     testMatchPatterns(rule.matchPatterns, url)
@@ -383,7 +435,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
       .filter(Boolean) // Exclude empty selectors, if any
       .join(",");
     const poll = () => {
-      if (cancel() || $safeFind(jointSelector).length === 0) {
+      if (abortSignal.aborted || $safeFind(jointSelector).length === 0) {
         return true;
       }
 
@@ -436,28 +488,25 @@ export async function handleNavigate({
   _frameHref.set(thisTarget.frameId, href);
 
   console.debug("Handling navigation to %s", href, thisTarget);
-
-  await injectPageScript();
-
   updateNavigationId();
+  notifyNavigationListeners();
 
   const extensionPoints = await loadPersistedExtensionsOnce();
 
   if (extensionPoints.length > 0) {
-    _navSequence++;
+    const abortSignal = createNavigationAbortSignal();
 
-    const cancel = makeCancelOnNavigate();
+    // Extension Points may need the pageScript to be injected to run
+    await Promise.all([injectPageScriptOnce(), waitDocumentLoad(abortSignal)]);
 
-    await waitLoaded(cancel);
-
-    // Safe to use Promise.all since the inner method can't throw
+    // Safe to use Promise.all because the inner method can't throw
     await Promise.all(
       extensionPoints.map(async (extensionPoint) => {
         // Don't await each extension point since the extension point may never appear. For example, an
         // extension point that runs on the contact information modal on LinkedIn
         const runPromise = runExtensionPoint(extensionPoint, {
           reason: runReason,
-          isCancelled: cancel,
+          abortSignal,
         }).catch((error) => {
           console.error("Error installing/running: %s", extensionPoint.id, {
             error,
