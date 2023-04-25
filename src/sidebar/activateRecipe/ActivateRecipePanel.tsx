@@ -82,6 +82,8 @@ const activationSlice = createSlice({
   reducers: {
     setNeedsPermissions(state, action: PayloadAction<boolean>) {
       state.needsPermissions = action.payload;
+    },
+    initialize(state) {
       state.isInitialized = true;
     },
     activateStart(state) {
@@ -100,8 +102,13 @@ const activationSlice = createSlice({
   },
 });
 
-const { setNeedsPermissions, activateStart, activateSuccess, activateError } =
-  activationSlice.actions;
+const {
+  setNeedsPermissions,
+  initialize,
+  activateStart,
+  activateSuccess,
+  activateError,
+} = activationSlice.actions;
 
 async function reloadMarketplaceEnhancements() {
   const topFrame = await getTopLevelFrame();
@@ -174,10 +181,12 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   useAsyncEffect(async () => {
-    if (state.isInitialized && !state.needsPermissions && canAutoActivate) {
+    if (!state.needsPermissions && canAutoActivate) {
       await activateRecipe();
+    } else {
+      stateDispatch(initialize());
     }
-  }, [canAutoActivate, state.isInitialized, state.needsPermissions]);
+  }, [canAutoActivate, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;
