@@ -99,7 +99,7 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
         success: true,
       };
     },
-    [dispatch]
+    [dispatch, extensions]
   );
 }
 

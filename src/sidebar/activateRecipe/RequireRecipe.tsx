@@ -25,11 +25,19 @@ import styles from "./RequireRecipe.module.scss";
 import { useAsyncState } from "@/hooks/common";
 import { resolveRecipe } from "@/registry/internal";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { type WizardValues } from "@/activation/wizardTypes";
+import { collectPermissions } from "@/permissions";
+import { containsPermissions } from "@/background/messenger/api";
+import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
+import { isEmpty, uniq } from "lodash";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
   recipeNameNode: React.ReactNode | null;
   includesQuickBar: boolean;
+  needsPermissions: (formValues: WizardValues) => Promise<boolean>;
+  canAutoActivate: boolean;
 };
 
 type RequireRecipeProps = {
@@ -62,14 +70,40 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
   const recipeName =
     listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
 
-  // Quick Bar
-  const [includesQuickbar, isLoadingQuickbar] = useAsyncState(async () => {
+  // Quick Bar & Permissions
+  const [
+    quickBarAndPermissions,
+    isLoadingQuickBarAndPermissions,
+    quickBarAndPermissionsError,
+  ] = useAsyncState(async () => {
+    if (!recipe) {
+      return null;
+    }
+
     const resolvedRecipeConfigs = await resolveRecipe(
       recipe,
       recipe.extensionPoints
     );
-    return includesQuickBarExtensionPoint(resolvedRecipeConfigs);
+    const includesQuickBar = await includesQuickBarExtensionPoint(
+      resolvedRecipeConfigs
+    );
+    const needsPermissions = async (formValues: WizardValues) => {
+      const serviceAuths = formValues.services.filter(({ config }) =>
+        Boolean(config)
+      );
+      const collectedPermissions = await collectPermissions(
+        resolvedRecipeConfigs,
+        serviceAuths
+      );
+      const hasPermissions = await containsPermissions(collectedPermissions);
+      return !hasPermissions;
+    };
+
+    return { includesQuickBar, needsPermissions };
   }, [recipe]);
+
+  // Auth Options
+  const { authOptions, isLoading: isLoadingAuthOptions } = useAuthOptions();
 
   // Throw errors
   if (recipeError) {
@@ -80,23 +114,66 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     throw listingError;
   }
 
+  if (quickBarAndPermissionsError) {
+    throw quickBarAndPermissionsError;
+  }
+
   // Ensure recipe is loaded
-  if (!isUninitialized && !isLoadingRecipe && !recipeError && !recipe) {
+  if (
+    !isUninitialized &&
+    !isLoadingRecipe &&
+    !isLoadingAuthOptions &&
+    !recipeError &&
+    !recipe
+  ) {
     throw new Error(`Recipe ${recipeId} not found`);
   }
 
   // Loading state
   const isLoading =
-    isUninitialized || isLoadingRecipe || isLoadingListing || isLoadingQuickbar;
+    isUninitialized ||
+    isLoadingRecipe ||
+    isLoadingListing ||
+    isLoadingQuickBarAndPermissions ||
+    isLoadingAuthOptions;
 
   if (isLoading) {
     return <Loader />;
   }
 
+  // Calculate canAutoActivate
+  const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
+    recipe,
+    authOptions
+  );
+  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+  const recipeServiceIds = uniq(
+    recipe.extensionPoints.flatMap(({ services }) =>
+      services ? Object.values(services) : []
+    )
+  );
+
+  const needsServiceInputs = recipeServiceIds.some((serviceId) => {
+    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+      return false;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
+    const defaultOption = defaultAuthOptions[serviceId];
+
+    // Needs user configuration if there are any non-built-in options available
+    return defaultOption?.sharingType !== "built-in";
+  });
+
+  // Can auto-activate if no configuration required
+  const canAutoActivate = !hasRecipeOptions && !needsServiceInputs;
+
   const recipeState: RecipeState = {
     recipe,
     recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
-    includesQuickBar: includesQuickbar,
+    includesQuickBar: quickBarAndPermissions?.includesQuickBar,
+    needsPermissions: quickBarAndPermissions?.needsPermissions,
+    canAutoActivate,
   };
 
   return children(recipeState);

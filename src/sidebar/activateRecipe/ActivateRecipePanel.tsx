@@ -29,7 +29,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
-import { isEmpty, uniq } from "lodash";
+import { isEmpty } from "lodash";
 import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
@@ -42,11 +42,7 @@ import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { useAsyncEffect } from "use-async-effect";
-import { type RecipeDefinition } from "@/types/recipeTypes";
-import { useDefaultAuthOptions } from "@/hooks/auth";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { persistor } from "@/sidebar/store";
-import { type AuthOption } from "@/auth/authTypes";
 
 const { actions } = sidebarSlice;
 
@@ -66,6 +62,7 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
 
 type ActivationState = {
   isInitialized: boolean;
+  needsPermissions: boolean;
   isActivating: boolean;
   isActivated: boolean;
   activationError: string | null;
@@ -73,6 +70,7 @@ type ActivationState = {
 
 const initialState: ActivationState = {
   isInitialized: false,
+  needsPermissions: false,
   isActivating: false,
   isActivated: false,
   activationError: null,
@@ -82,7 +80,8 @@ const activationSlice = createSlice({
   name: "activationSlice",
   initialState,
   reducers: {
-    initialize(state) {
+    setNeedsPermissions(state, action: PayloadAction<boolean>) {
+      state.needsPermissions = action.payload;
       state.isInitialized = true;
     },
     activateStart(state) {
@@ -101,36 +100,8 @@ const activationSlice = createSlice({
   },
 });
 
-const { initialize, activateStart, activateSuccess, activateError } =
+const { setNeedsPermissions, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
-
-function canAutoActivate(
-  recipe: RecipeDefinition,
-  defaultAuthOptions: Record<RegistryId, AuthOption>
-): boolean {
-  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
-  const recipeServiceIds = uniq(
-    recipe.extensionPoints.flatMap(({ services }) =>
-      services ? Object.values(services) : []
-    )
-  );
-
-  const needsServiceInputs = recipeServiceIds.some((serviceId) => {
-    if (serviceId === PIXIEBRIX_SERVICE_ID) {
-      return false;
-    }
-
-    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
-    const defaultOption = defaultAuthOptions[serviceId];
-
-    // All services need to have only built-in configuration options for auto-activation
-    // If there are personal or team configuration options, or no options at all, we need to manually configure
-    return defaultOption?.sharingType !== "built-in";
-  });
-
-  // Can auto-activate if no configuration required, or all services have only built-in configurations
-  return !hasRecipeOptions && !needsServiceInputs;
-}
 
 async function reloadMarketplaceEnhancements() {
   const topFrame = await getTopLevelFrame();
@@ -144,12 +115,12 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   recipe,
   recipeNameNode,
   includesQuickBar,
+  needsPermissions,
+  canAutoActivate,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
   const { shortcut } = useQuickbarShortcut();
-  const { defaultAuthOptions, isLoading: isDefaultAuthOptionsLoading } =
-    useDefaultAuthOptions(recipe);
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -164,6 +135,22 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
 
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
   const formValuesRef = useRef<WizardValues>(initialValues);
+
+  async function checkPermissions() {
+    stateDispatch(
+      setNeedsPermissions(await needsPermissions(formValuesRef.current))
+    );
+  }
+
+  // Check permissions on mount
+  useAsyncEffect(async () => {
+    void checkPermissions();
+  }, []);
+
+  const onChange = (values: WizardValues) => {
+    formValuesRef.current = values;
+    void checkPermissions();
+  };
 
   async function activateRecipe() {
     if (state.isActivating || state.isActivated) {
@@ -186,26 +173,12 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   useAsyncEffect(async () => {
-    if (
-      !isDefaultAuthOptionsLoading &&
-      canAutoActivate(recipe, defaultAuthOptions)
-    ) {
+    if (state.isInitialized && !state.needsPermissions && canAutoActivate) {
       await activateRecipe();
-    } else {
-      stateDispatch(initialize());
     }
-  }, [
-    recipe,
-    canAutoActivate,
-    isDefaultAuthOptionsLoading,
-    defaultAuthOptions,
-  ]);
+  }, [canAutoActivate, state.isInitialized, state.needsPermissions]);
 
-  if (
-    !state.isInitialized ||
-    state.isActivating ||
-    isDefaultAuthOptionsLoading
-  ) {
+  if (!state.isInitialized || state.isActivating) {
     return <Loader />;
   }
 
@@ -271,8 +244,10 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
           recipe={recipe}
           wizardSteps={wizardSteps}
           initialValues={initialValues}
+          onChange={onChange}
           validationSchema={validationSchema}
           onClickCancel={closeSidebar}
+          needsPermissions={state.needsPermissions}
           header={
             <>
               {recipeNameNode}
