@@ -45,35 +45,6 @@ type RequireRecipeProps = {
   children: (props: RecipeState) => React.ReactElement;
 };
 
-// Exported for testing
-export async function getIncludesQuickBarAndNeedsPermissionForRecipe(
-  recipe: RecipeDefinition
-): Promise<{
-  includesQuickBar: boolean;
-  needsPermissions: (formValues: WizardValues) => Promise<boolean>;
-}> {
-  const resolvedRecipeConfigs = await resolveRecipe(
-    recipe,
-    recipe.extensionPoints
-  );
-  const includesQuickBar = await includesQuickBarExtensionPoint(
-    resolvedRecipeConfigs
-  );
-  const needsPermissions = async (formValues: WizardValues) => {
-    const serviceAuths = formValues.services.filter(({ config }) =>
-      Boolean(config)
-    );
-    const collectedPermissions = await collectPermissions(
-      resolvedRecipeConfigs,
-      serviceAuths
-    );
-    const hasPermissions = await containsPermissions(collectedPermissions);
-    return !hasPermissions;
-  };
-
-  return { includesQuickBar, needsPermissions };
-}
-
 const RequireRecipe: React.FC<RequireRecipeProps> = ({
   recipeId,
   children,
@@ -109,7 +80,26 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
       return null;
     }
 
-    return getIncludesQuickBarAndNeedsPermissionForRecipe(recipe);
+    const resolvedRecipeConfigs = await resolveRecipe(
+      recipe,
+      recipe.extensionPoints
+    );
+    const includesQuickBar = await includesQuickBarExtensionPoint(
+      resolvedRecipeConfigs
+    );
+    const needsPermissions = async (formValues: WizardValues) => {
+      const serviceAuths = formValues.services.filter(({ config }) =>
+        Boolean(config)
+      );
+      const collectedPermissions = await collectPermissions(
+        resolvedRecipeConfigs,
+        serviceAuths
+      );
+      const hasPermissions = await containsPermissions(collectedPermissions);
+      return !hasPermissions;
+    };
+
+    return { includesQuickBar, needsPermissions };
   }, [recipe]);
 
   // Auth Options
@@ -144,7 +134,8 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     isUninitialized ||
     isLoadingRecipe ||
     isLoadingListing ||
-    isLoadingQuickBarAndPermissions;
+    isLoadingQuickBarAndPermissions ||
+    isLoadingAuthOptions;
 
   if (isLoading) {
     return <Loader />;
