@@ -31,11 +31,32 @@ describe("string utilities", () => {
     });
     expect(
       splitStartingEmoji(
-        "😊 😊 some test string with multiple emojis at the start"
+        "😊 😊 some test string with multiple emojis at the start separated by space"
       )
     ).toStrictEqual({
       startingEmoji: "😊",
-      rest: " 😊 some test string with multiple emojis at the start",
+      rest: " 😊 some test string with multiple emojis at the start separated by space",
+    });
+    expect(
+      splitStartingEmoji(
+        "🏜️ using apples troublesome emoji with .trim()"
+      ).rest.trim()
+    ).toStrictEqual("using apples troublesome emoji with .trim()");
+
+    expect(
+      splitStartingEmoji("🏜️ using apples troublesome emoji with .trim()")
+    ).toStrictEqual({
+      startingEmoji: "🏜️",
+      rest: " using apples troublesome emoji with .trim()",
+    });
+
+    expect(
+      splitStartingEmoji(
+        "😊😊 some test string with multiple emojis at the start"
+      )
+    ).toStrictEqual({
+      startingEmoji: "😊",
+      rest: "😊 some test string with multiple emojis at the start",
     });
     expect(
       splitStartingEmoji("👋🏿 some test string with colors emoji at the start")
