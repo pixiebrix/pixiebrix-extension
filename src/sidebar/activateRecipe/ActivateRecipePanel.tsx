@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useReducer, useRef } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import Loader from "@/components/Loader";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
@@ -143,8 +143,9 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   // Check permissions on mount
-  useAsyncEffect(async () => {
+  useEffect(() => {
     void checkPermissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);
 
   const onChange = (values: WizardValues) => {
