@@ -69,7 +69,7 @@ $variable-theme-colors: (
   --theme-dark-l: 30%;
   --theme-dark: hsl(213, 19%, 30%);
 
-  --theme-bg-light: #efe8fb;
+  --theme-bg-light: $neutral-surface-color;
 
   --logo-height: 28px;
 }
