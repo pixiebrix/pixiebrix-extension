@@ -5,7 +5,7 @@ set -e
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: ./upload-extension.sh <BUILD_PATH>"
-  echo "example: ./upload-extension.sh pixiebrix-extension-cws"
+  echo "example: ./upload-extension.sh builds/pixiebrix-extension-cws.zip"
 fi
 
 # Ensure ENVs are set https://stackoverflow.com/a/307735/288906

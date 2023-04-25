@@ -168,6 +168,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
       stateDispatch(activateSuccess());
       void reloadMarketplaceEnhancements();
     } else {
+      console.log("this hits");
       stateDispatch(activateError(error));
     }
   }
@@ -179,7 +180,17 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }, [canAutoActivate, state.isInitialized, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
-    return <Loader />;
+    return (
+      <>
+        state.isInitialized: {state.isInitialized.toString()}
+        <br />
+        state.isActivating: {state.isActivating.toString()}
+        <br />
+        state.activationError: {state.activationError}
+        <br />
+        <Loader />
+      </>
+    );
   }
 
   return (

@@ -20,6 +20,7 @@ import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { collectPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { requestPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 
 export default async function ensureRecipePermissions(
   recipe: RecipeDefinition,
@@ -27,5 +28,11 @@ export default async function ensureRecipePermissions(
 ): Promise<boolean> {
   const resolved = await resolveRecipe(recipe, recipe.extensionPoints);
   const collectedPermissions = await collectPermissions(resolved, services);
+  const hasPermissions = await containsPermissions(collectedPermissions);
+
+  if (hasPermissions) {
+    return true;
+  }
+
   return requestPermissions(collectedPermissions);
 }
