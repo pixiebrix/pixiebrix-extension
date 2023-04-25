@@ -95,6 +95,11 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
         resolvedRecipeConfigs,
         serviceAuths
       );
+
+      if (isEmpty(collectedPermissions)) {
+        return false;
+      }
+
       const hasPermissions = await containsPermissions(collectedPermissions);
       return !hasPermissions;
     };

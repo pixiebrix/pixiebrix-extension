@@ -21,6 +21,7 @@ import { collectPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
+import { isEmpty } from "lodash";
 
 export default async function ensureRecipePermissions(
   recipe: RecipeDefinition,
@@ -28,6 +29,10 @@ export default async function ensureRecipePermissions(
 ): Promise<boolean> {
   const resolved = await resolveRecipe(recipe, recipe.extensionPoints);
   const collectedPermissions = await collectPermissions(resolved, services);
+  if (isEmpty(collectedPermissions)) {
+    return true;
+  }
+
   const hasPermissions = await containsPermissions(collectedPermissions);
 
   if (hasPermissions) {
