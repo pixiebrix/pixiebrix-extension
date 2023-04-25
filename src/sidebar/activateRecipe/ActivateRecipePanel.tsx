@@ -186,7 +186,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     } else {
       stateDispatch(initialize());
     }
-  }, [canAutoActivate, state.isInitialized, state.needsPermissions]);
+  }, [canAutoActivate, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;
