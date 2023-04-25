@@ -39,6 +39,19 @@ describe("string utilities", () => {
     });
     expect(
       splitStartingEmoji(
+        "🏜️ using apples troublesome emoji with .trim()"
+      ).rest.trim()
+    ).toStrictEqual("using apples troublesome emoji with .trim()");
+
+    expect(
+      splitStartingEmoji("🏜️ using apples troublesome emoji with .trim()")
+    ).toStrictEqual({
+      startingEmoji: "🏜️",
+      rest: " using apples troublesome emoji with .trim()",
+    });
+
+    expect(
+      splitStartingEmoji(
         "😊😊 some test string with multiple emojis at the start"
       )
     ).toStrictEqual({
