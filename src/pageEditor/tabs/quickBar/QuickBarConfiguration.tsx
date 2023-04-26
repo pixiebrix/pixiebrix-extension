@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
@@ -36,7 +35,7 @@ const QuickBarConfiguration: React.FC<{
     splitStartingEmoji(actionTitle).startingEmoji !== undefined;
 
   return (
-    <Card>
+    <>
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name="extension.title"
@@ -122,7 +121,7 @@ const QuickBarConfiguration: React.FC<{
       </FieldSection>
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 

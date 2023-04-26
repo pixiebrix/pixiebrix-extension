@@ -17,17 +17,15 @@
 
 .cardHeader {
   width: 100%;
-  // Avoid double-border from the card border
-  &:not(:first-child) {
-    border-top: 1px solid rgba(0, 0, 0, 0.125);
-  }
-
-  padding-top: 0.5em !important;
-  padding-bottom: 0.5em !important;
+  border-bottom: none;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .cardBody {
-  padding: 0.5em 0.75em;
+  padding: 1em 0.75em;
 }
 
 .accordionIndicator {
