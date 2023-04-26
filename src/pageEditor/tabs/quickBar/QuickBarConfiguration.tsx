@@ -77,7 +77,7 @@ const QuickBarConfiguration: React.FC<{
         />
       </FieldSection>
 
-      <FieldSection title="Advanced">
+      <FieldSection title="Advanced" variant="accordion">
         <ConnectedFieldTemplate
           name="extension.icon"
           as={IconWidget}

@@ -20,7 +20,7 @@ import React from "react";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 
 const ExtraPermissionsSection: React.FunctionComponent = () => (
-  <FieldSection title="Advanced: Extra Permissions">
+  <FieldSection title="Advanced: Extra Permissions" variant="accordion">
     <UrlMatchPatternField
       label="Sites/APIs"
       name="permissions.origins"
