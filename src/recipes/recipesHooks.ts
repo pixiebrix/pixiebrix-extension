@@ -25,6 +25,13 @@ import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
 /**
  * Lookup a recipe from the registry by ID, or null if it doesn't exist
+ *
+ * Note: This hook will return a new result object every time any piece of
+ *  the state changes. So, if you destructure the "data" field at a call-site,
+ *  and then you use the resulting recipe as a dependency for another hook,
+ *  you should assume that the recipe will change reference and fire your hook
+ *  any time any of the various fetching/loading flags change in the state of
+ *  this hook.
  */
 export function useRecipe(
   id: RegistryId
