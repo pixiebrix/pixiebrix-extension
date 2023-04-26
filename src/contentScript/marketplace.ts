@@ -76,7 +76,10 @@ async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
 }
 
 function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
-  if (button.innerHTML.includes("Reactivate")) {
+  // Check if the button is already changed to an active label or if it isn't a special activate button that
+  // should be swapped to an active label
+  const isActivateButton = Object.hasOwn(button.dataset, "activateButton");
+  if (button.innerHTML.includes("Reactivate") || !isActivateButton) {
     return;
   }
 
