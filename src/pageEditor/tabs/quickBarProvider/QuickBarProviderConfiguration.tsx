@@ -17,7 +17,6 @@
 
 import React, { type ChangeEvent } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
@@ -41,7 +40,7 @@ const QuickBarProviderConfiguration: React.FC<{
   >("extension.rootAction");
 
   return (
-    <Card>
+    <>
       <FieldSection title="Configuration">
         <UrlMatchPatternField
           name="extensionPoint.definition.documentUrlPatterns"
@@ -107,7 +106,7 @@ const QuickBarProviderConfiguration: React.FC<{
         )}
       </FieldSection>
 
-      <FieldSection title="Advanced">
+      <FieldSection title="Advanced" variant="accordion">
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
           description={
@@ -123,7 +122,7 @@ const QuickBarProviderConfiguration: React.FC<{
       </FieldSection>
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 

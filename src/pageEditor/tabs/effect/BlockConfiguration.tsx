@@ -19,7 +19,6 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
 import useBlockOptions from "@/hooks/useBlockOptions";
-import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
@@ -163,7 +162,7 @@ const BlockConfiguration: React.FunctionComponent<{
     <>
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
-      <Card>
+      <>
         <FieldSection title={<ConfigurationTitle />}>
           <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
             {blockErrors?.id && (
@@ -181,7 +180,11 @@ const BlockConfiguration: React.FunctionComponent<{
           </SchemaFieldContext.Provider>
         </FieldSection>
 
-        <FieldSection title="Advanced Options" bodyRef={advancedOptionsRef}>
+        <FieldSection
+          title="Advanced Options"
+          bodyRef={advancedOptionsRef}
+          variant="accordion"
+        >
           {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
 
           {showRootMode && (
@@ -214,7 +217,7 @@ const BlockConfiguration: React.FunctionComponent<{
             <small className="text-muted font-italic">No options to show</small>
           )}
         </FieldSection>
-      </Card>
+      </>
     </>
   );
 };

@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { Card } from "react-bootstrap";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
@@ -28,7 +27,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 const TourConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
-  <Card>
+  <>
     <FieldSection title="Configuration">
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
@@ -62,7 +61,7 @@ const TourConfiguration: React.FC<{
     <MatchRulesSection isLocked={isLocked} />
 
     <ExtraPermissionsSection />
-  </Card>
+  </>
 );
 
 export default TourConfiguration;

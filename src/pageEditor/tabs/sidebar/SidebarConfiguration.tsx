@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
@@ -70,7 +69,7 @@ const SidebarConfiguration: React.FC<{
   };
 
   return (
-    <Card>
+    <>
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name="extension.heading"
@@ -114,7 +113,7 @@ const SidebarConfiguration: React.FC<{
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 

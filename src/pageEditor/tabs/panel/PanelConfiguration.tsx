@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import TemplateWidget, {
@@ -37,7 +36,7 @@ const panelSnippets: Snippet[] = [
 const PanelConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
-  <Card>
+  <>
     <FieldSection title="Configuration">
       <ConnectedFieldTemplate
         name="extension.heading"
@@ -58,7 +57,7 @@ const PanelConfiguration: React.FC<{
       />
     </FieldSection>
 
-    <FieldSection title="Advanced">
+    <FieldSection title="Advanced" variant="accordion">
       <ConnectedFieldTemplate
         name="extension.collapsible"
         as={SwitchButtonWidget}
@@ -85,7 +84,7 @@ const PanelConfiguration: React.FC<{
     <MatchRulesSection isLocked={isLocked} />
 
     <ExtraPermissionsSection />
-  </Card>
+  </>
 );
 
 export default PanelConfiguration;

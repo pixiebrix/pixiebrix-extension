@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import TemplateWidget, {
   type Snippet,
 } from "@/pageEditor/fields/TemplateWidget";
@@ -51,7 +50,7 @@ const MenuItemConfiguration: React.FC<{
   const [{ value: onSuccess }] = useField("extension.onSuccess");
 
   return (
-    <Card>
+    <>
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name="extension.caption"
@@ -71,7 +70,7 @@ const MenuItemConfiguration: React.FC<{
         />
       </FieldSection>
 
-      <FieldSection title="Advanced: Item Options">
+      <FieldSection title="Advanced: Item Options" variant="accordion">
         <ConnectedFieldTemplate
           name="extension.icon"
           label="Icon"
@@ -137,7 +136,7 @@ const MenuItemConfiguration: React.FC<{
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 

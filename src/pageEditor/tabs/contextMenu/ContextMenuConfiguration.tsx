@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import TemplateWidget, {
@@ -47,7 +46,7 @@ export const contextOptions = [
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
-  <Card>
+  <>
     <FieldSection title="Configuration">
       <ConnectedFieldTemplate
         name="extension.title"
@@ -97,7 +96,7 @@ const ContextMenuConfiguration: React.FC<{
       />
     </FieldSection>
 
-    <FieldSection title="Advanced">
+    <FieldSection title="Advanced" variant="accordion">
       <ConnectedFieldTemplate
         name="extensionPoint.definition.targetMode"
         as="select"
@@ -132,7 +131,7 @@ const ContextMenuConfiguration: React.FC<{
     </FieldSection>
 
     <ExtraPermissionsSection />
-  </Card>
+  </>
 );
 
 export default ContextMenuConfiguration;

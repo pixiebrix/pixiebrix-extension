@@ -24,7 +24,7 @@ import React from "react";
 const MatchRulesSection: React.FunctionComponent<{
   isLocked: boolean;
 }> = ({ isLocked }) => (
-  <FieldSection title="Advanced: Match Rules">
+  <FieldSection title="Advanced: Match Rules" variant="accordion">
     <UrlPatternField
       name="extensionPoint.definition.isAvailable.urlPatterns"
       {...makeLockableFieldProps("URL Patterns", isLocked)}

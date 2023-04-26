@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
@@ -101,7 +100,7 @@ const TriggerConfiguration: React.FC<{
   };
 
   return (
-    <Card>
+    <>
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name={fieldName("trigger")}
@@ -234,7 +233,7 @@ const TriggerConfiguration: React.FC<{
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 
