@@ -76,10 +76,10 @@ const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
 
 const activateButtonsHtml = `
 <div>
-    <a class="btn btn-primary" href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
+    <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
       recipeId1
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
-    <a class="btn btn-primary" href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
+    <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
       recipeId2
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
 </div>
