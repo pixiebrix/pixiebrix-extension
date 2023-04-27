@@ -16,12 +16,21 @@
  */
 
 import { type AsyncState } from "@/types/sliceTypes";
+import { identity } from "lodash";
 
-export function mergeAsyncState(...args: AsyncState[]): AsyncState {
-  const isFetching = args.some((x) => x.isFetching);
+export function mergeAsyncState<Result, ArgState>(
+  states: Array<AsyncState<ArgState>>,
+  {
+    merge,
+  }: {
+    merge?: (states: ArgState[]) => Result;
+  } = {}
+): AsyncState<Result> {
+  const mergeFunction = merge ?? identity;
+  const isFetching = states.some((x) => x.isFetching);
 
   // In error state if any of the sub-states are error
-  if (args.some((x) => x.isError)) {
+  if (states.some((x) => x.isError)) {
     return {
       data: undefined,
       currentData: undefined,
@@ -30,16 +39,18 @@ export function mergeAsyncState(...args: AsyncState[]): AsyncState {
       isFetching,
       isError: true,
       isSuccess: false,
-      // Return the first error. Could consider merging errors.
-      error: args.find((x) => x.isError)?.error,
+      // Return the first error. Could consider merging errors into a composite error
+      error: states.find((x) => x.isError)?.error,
     };
   }
 
   // In success state only if all information is available
-  if (args.every((x) => x.isSuccess)) {
+  if (states.every((x) => x.isSuccess)) {
     return {
-      data: args.map((x) => x.data),
-      currentData: isFetching ? undefined : args.map((x) => x.currentData),
+      data: mergeFunction(states.map((x) => x.data)),
+      currentData: isFetching
+        ? undefined
+        : mergeFunction(states.map((x) => x.currentData)),
       isUninitialized: false,
       isLoading: false,
       isFetching,
@@ -55,8 +66,8 @@ export function mergeAsyncState(...args: AsyncState[]): AsyncState {
     data: undefined,
     currentData: undefined,
     isFetching,
-    isUninitialized: args.every((x) => x.isUninitialized),
-    isLoading: args.some((x) => x.isLoading),
+    isUninitialized: states.every((x) => x.isUninitialized),
+    isLoading: states.some((x) => x.isLoading),
     isError: false,
     isSuccess: false,
     error: undefined,
