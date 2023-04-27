@@ -164,6 +164,76 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
 </DocumentFragment>
 `;
 
+exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcut is configured on Windows 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="scrollable-area content"
+    >
+      <h1>
+        Well done!
+      </h1>
+      <img
+        alt=""
+        src="test-file-stub"
+        width="300"
+      />
+      <div
+        class="textContainer"
+      >
+        <div
+          class="recipeName"
+        >
+          My Test Listing
+        </div>
+        <div>
+          is ready to use!
+        </div>
+        <br />
+        <div>
+          Launch it using your Quick Bar shortcut
+        </div>
+        <div
+          class="shortcutContainer"
+        >
+          <span
+            class="shortcutKey"
+          >
+            Ctrl
+          </span>
+          <span>
+              +  
+          </span>
+          <span
+            class="shortcutKey"
+          >
+            M
+          </span>
+        </div>
+        <a
+          class="btn btn-link"
+          href="chrome://extensions/shortcuts"
+        >
+          Change the Quick Bar shortcut.
+        </a>
+      </div>
+    </div>
+    <div
+      class="footer"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Ok
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcut not configured 1`] = `
 <DocumentFragment>
   <div
