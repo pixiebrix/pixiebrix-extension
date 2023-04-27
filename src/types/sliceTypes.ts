@@ -62,6 +62,13 @@ export type AsyncState<TData = unknown> = {
   error: unknown;
 };
 
+export type FetchableAsyncState<Data> = AsyncState<Data> & {
+  /**
+   * A function to force refetch the query
+   */
+  refetch: () => void;
+};
+
 /**
  * An type for characterizing hook output that's similar to RTK Query's state.
  */

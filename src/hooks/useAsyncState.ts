@@ -16,11 +16,13 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type AsyncState } from "@/types/sliceTypes";
-import { useReducer, useRef } from "react";
+import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
+import { useCallback, useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
+import { useIsMounted } from "@/hooks/common";
+import { once } from "lodash";
 
-type StateFactory<T> = Promise<T> | (() => Promise<T>);
+type ValueFactory<T> = Promise<T> | (() => Promise<T>);
 
 const initialAsyncState: AsyncState = {
   data: undefined,
@@ -33,26 +35,42 @@ const initialAsyncState: AsyncState = {
   error: undefined,
 };
 
+const warnNullValueOnce = once(() => {
+  // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
+  // instead. But this is sufficient for now, and keeps the reducer state clean.
+  console.warn(
+    "useAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values."
+  );
+});
+
 const slice = createSlice({
   name: "asyncSlice",
   initialState: initialAsyncState,
   reducers: {
+    // Initial loading state
     init(state) {
       state.isUninitialized = false;
       state.isFetching = true;
       state.isLoading = true;
     },
+    // Start fetching state
     start(state) {
-      // NOTE: do not set `state.data = undefined` because that would immediately reset the initialState passed into
-      // useAsyncState below
       state.isFetching = true;
       state.currentData = undefined;
     },
     success(state, action: PayloadAction<{ data: unknown }>) {
+      const { data } = action.payload;
+
+      if (data == null) {
+        // Warn on null values because they're ambiguous downstream on if the state is loading vs. the produced value
+        // is null. It's error-prone.
+        warnNullValueOnce();
+      }
+
       state.isLoading = false;
       state.isFetching = false;
-      state.data = action.payload.data;
-      state.currentData = action.payload.data;
+      state.data = data;
+      state.currentData = data;
       state.isError = false;
       state.isSuccess = true;
       state.error = undefined;
@@ -68,15 +86,42 @@ const slice = createSlice({
   },
 });
 
+/**
+ * Hook to asynchronously compute a value and return a standard asynchronous state.
+ * @param promiseOrGenerator a promise to await, of function that returns a promise to await
+ * @param dependencies zero or more dependencies to trigger a re-fetch
+ * @param initialValue the initial value of the state. If provided, the state will be initialized to this value and will
+ *  skip the isLoading on the initial value generation.
+ */
 function useAsyncState<T = unknown>(
-  promiseOrGenerator: StateFactory<T>,
-  dependencies: unknown[]
-): AsyncState<T> {
+  promiseOrGenerator: ValueFactory<T>,
+  dependencies: unknown[],
+  {
+    initialValue,
+  }: {
+    initialValue?: T;
+  } = {}
+): FetchableAsyncState<T> {
+  // Callback to check if the component is still mounted, to avoid updating state on unmounted React components
+  const checkIsMounted = useIsMounted();
+  // Ref to track if this is the initial mount
   const initialMountRef = useRef(true);
-  const [state, dispatch] = useReducer(slice.reducer, initialAsyncState);
+  const [state, dispatch] = useReducer(
+    slice.reducer,
+    initialValue === undefined
+      ? {
+          ...initialAsyncState,
+          isUninitialized: false,
+          data: initialValue,
+          currentData: initialValue,
+          isSuccess: true,
+        }
+      : initialAsyncState
+  );
 
-  useAsyncEffect(async (isMounted) => {
-    if (initialMountRef.current) {
+  // Effect to automatically refetch when stated dependencies change
+  useAsyncEffect(async () => {
+    if (initialMountRef.current && initialValue === undefined) {
       dispatch(slice.actions.init());
     } else {
       dispatch(slice.actions.start());
@@ -88,16 +133,31 @@ function useAsyncState<T = unknown>(
       const promiseResult = await (typeof promiseOrGenerator === "function"
         ? promiseOrGenerator()
         : promiseOrGenerator);
-      if (!isMounted()) return;
+      if (!checkIsMounted()) return;
       dispatch(slice.actions.success({ data: promiseResult }));
     } catch (error) {
-      if (isMounted()) {
+      if (checkIsMounted()) {
         dispatch(slice.actions.failure({ error }));
       }
     }
   }, dependencies);
 
-  return state as AsyncState<T>;
+  const refetch = useCallback(async () => {
+    dispatch(slice.actions.start());
+    try {
+      const promiseResult = await (typeof promiseOrGenerator === "function"
+        ? promiseOrGenerator()
+        : promiseOrGenerator);
+      if (!checkIsMounted()) return;
+      dispatch(slice.actions.success({ data: promiseResult }));
+    } catch (error) {
+      if (checkIsMounted()) {
+        dispatch(slice.actions.failure({ error }));
+      }
+    }
+  }, [promiseOrGenerator, checkIsMounted]);
+
+  return { ...state, refetch } as FetchableAsyncState<T>;
 }
 
 export default useAsyncState;

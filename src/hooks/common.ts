@@ -117,11 +117,13 @@ export function useAsyncState<T>(
 
 export function useIsMounted(): () => boolean {
   const isMountedRef = useRef(true);
+
   useEffect(
     () => () => {
       isMountedRef.current = false;
     },
     []
   );
+
   return () => isMountedRef.current;
 }
