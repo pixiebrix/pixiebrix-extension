@@ -39,7 +39,7 @@
 .activeIndicator {
   display: inline-block;
   transition: transform 0.25s ease;
-  margin: 0 0.5em;
+  margin: 0 0.75em 0 0.5em;
 
   &.active {
     transform: rotate(90deg);
