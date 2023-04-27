@@ -16,11 +16,10 @@
  */
 
 import { mergeAsyncState } from "@/utils/asyncStateUtils";
-import { AsyncState } from "@/types/sliceTypes";
-import { concat } from "lodash";
+import { type AsyncState } from "@/types/sliceTypes";
 
 describe("asyncStateUtils", () => {
-  it("should combine success states", () => {
+  it("should combine success states with default zip", () => {
     const state1: AsyncState = {
       data: "data1",
       currentData: "data1",
