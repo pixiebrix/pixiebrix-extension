@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
 $background: rgb(252, 252, 252);
 $border: rgba(0, 0, 0, 0.3);
@@ -43,7 +44,7 @@ $border: rgba(0, 0, 0, 0.3);
     align-items: center;
     cursor: move;
     padding: 12px;
-    background: #ddd;
+    background: $popover-header;
     svg {
       width: 24px;
       margin-right: 8px;
