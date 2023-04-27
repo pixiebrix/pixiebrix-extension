@@ -237,7 +237,7 @@ export function selectActiveElementUIState({
   return editor.elementUIStates[editor.activeElementId];
 }
 
-const selectActiveNodeUIState = createSelector(
+export const selectActiveNodeUIState = createSelector(
   selectActiveElementUIState,
   (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
 );

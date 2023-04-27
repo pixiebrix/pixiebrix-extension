@@ -48,6 +48,7 @@ import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
   selectActiveElementUIState,
+  selectActiveNodeUIState,
   selectNotDeletedElements,
   selectNotDeletedExtensions,
 } from "./editorSelectors";
@@ -846,6 +847,16 @@ export const editorSlice = createSlice({
         element.optionsArgs = action.payload;
         state.dirty[element.uuid] = true;
       }
+    },
+    setExpandedFieldSections(
+      state,
+      { payload }: PayloadAction<{ id: string; open: boolean }>
+    ) {
+      const { expandedFieldSections } = selectActiveNodeUIState({
+        editor: state,
+      });
+      const { id, open } = payload;
+      expandedFieldSections[id] = open;
     },
   },
   extraReducers(builder) {
