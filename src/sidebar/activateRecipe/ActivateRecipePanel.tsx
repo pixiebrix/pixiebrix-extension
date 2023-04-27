@@ -159,10 +159,16 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     void checkPermissions();
   };
 
+  useEffect(() => {
+    formValuesRef.current = initialValues;
+  }, [initialValues]);
+
   const activateRecipe = useCallback(async () => {
     if (state.isActivating || state.isActivated) {
       return;
     }
+
+    console.log("*** activateRecipe", formValuesRef.current);
 
     stateDispatch(activateStart());
 
@@ -185,14 +191,30 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   ]);
 
   useEffect(() => {
-    if (!state.needsPermissions && canAutoActivate) {
+    console.log("*** initialValues", initialValues);
+    const missingServiceConfigurations = initialValues.services.some(
+      ({ id, config }) => {
+        return !config;
+      }
+    );
+
+    console.log(
+      "*** missingServiceConfigurations",
+      missingServiceConfigurations
+    );
+
+    if (
+      !state.needsPermissions &&
+      canAutoActivate &&
+      !missingServiceConfigurations
+    ) {
       // State is checked inside this function call to prevent duplicate calls,
       // so we can simply dispatch asynchronously with "void" here.
       void activateRecipe();
     } else {
       stateDispatch(initialize());
     }
-  }, [activateRecipe, canAutoActivate, state.needsPermissions]);
+  }, [initialValues, activateRecipe, canAutoActivate, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;

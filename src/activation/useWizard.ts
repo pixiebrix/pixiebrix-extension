@@ -60,6 +60,8 @@ function useWizard(
   );
   const { defaultAuthOptions } = useDefaultAuthOptions(blueprint);
 
+  console.log("*** defaultAuthOptions", defaultAuthOptions);
+
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
 
@@ -114,6 +116,8 @@ function useWizard(
         }
       ),
     };
+
+    console.log("*** initialValues in useWizard", initialValues);
 
     const validationSchema = Yup.object().shape({
       extensions: Yup.object().shape(
