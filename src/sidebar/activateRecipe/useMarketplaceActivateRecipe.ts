@@ -53,14 +53,15 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
       const serviceAuths = formValues.services.filter(({ config }) =>
         Boolean(config)
       );
-      if (!(await ensureRecipePermissions(recipe, serviceAuths))) {
-        return {
-          success: false,
-          error: "You must accept browser permissions to activate.",
-        };
-      }
 
       try {
+        if (!(await ensureRecipePermissions(recipe, serviceAuths))) {
+          return {
+            success: false,
+            error: "You must accept browser permissions to activate.",
+          };
+        }
+
         const recipeExtensions = extensions.filter(
           (extension) => extension._recipe?.id === recipe.metadata.id
         );

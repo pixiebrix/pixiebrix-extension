@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useReducer, useRef } from "react";
+import React, { useCallback, useEffect, useReducer, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import Loader from "@/components/Loader";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
@@ -41,7 +41,6 @@ import useWizard from "@/activation/useWizard";
 import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
-import { useAsyncEffect } from "use-async-effect";
 import { persistor } from "@/sidebar/store";
 
 const { actions } = sidebarSlice;
@@ -82,6 +81,8 @@ const activationSlice = createSlice({
   reducers: {
     setNeedsPermissions(state, action: PayloadAction<boolean>) {
       state.needsPermissions = action.payload;
+    },
+    initialize(state) {
       state.isInitialized = true;
     },
     activateStart(state) {
@@ -100,8 +101,13 @@ const activationSlice = createSlice({
   },
 });
 
-const { setNeedsPermissions, activateStart, activateSuccess, activateError } =
-  activationSlice.actions;
+const {
+  setNeedsPermissions,
+  initialize,
+  activateStart,
+  activateSuccess,
+  activateError,
+} = activationSlice.actions;
 
 async function reloadMarketplaceEnhancements() {
   const topFrame = await getTopLevelFrame();
@@ -143,8 +149,9 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   }
 
   // Check permissions on mount
-  useAsyncEffect(async () => {
+  useEffect(() => {
     void checkPermissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);
 
   const onChange = (values: WizardValues) => {
@@ -152,7 +159,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     void checkPermissions();
   };
 
-  async function activateRecipe() {
+  const activateRecipe = useCallback(async () => {
     if (state.isActivating || state.isActivated) {
       return;
     }
@@ -170,13 +177,22 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     } else {
       stateDispatch(activateError(error));
     }
-  }
+  }, [
+    marketplaceActivateRecipe,
+    recipe,
+    state.isActivated,
+    state.isActivating,
+  ]);
 
-  useAsyncEffect(async () => {
-    if (state.isInitialized && !state.needsPermissions && canAutoActivate) {
-      await activateRecipe();
+  useEffect(() => {
+    if (!state.needsPermissions && canAutoActivate) {
+      // State is checked inside this function call to prevent duplicate calls,
+      // so we can simply dispatch asynchronously with "void" here.
+      void activateRecipe();
+    } else {
+      stateDispatch(initialize());
     }
-  }, [canAutoActivate, state.isInitialized, state.needsPermissions]);
+  }, [activateRecipe, canAutoActivate, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;

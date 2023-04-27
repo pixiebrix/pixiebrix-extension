@@ -71,36 +71,46 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
 
   // Quick Bar & Permissions
-  const [
-    quickBarAndPermissions,
-    isLoadingQuickBarAndPermissions,
-    quickBarAndPermissionsError,
-  ] = useAsyncState(async () => {
-    if (!recipe) {
-      return null;
-    }
+  const [quickBarAndPermissions, , quickBarAndPermissionsError] =
+    useAsyncState(async () => {
+      if (!recipe) {
+        return null;
+      }
 
-    const resolvedRecipeConfigs = await resolveRecipe(
-      recipe,
-      recipe.extensionPoints
-    );
-    const includesQuickBar = await includesQuickBarExtensionPoint(
-      resolvedRecipeConfigs
-    );
-    const needsPermissions = async (formValues: WizardValues) => {
-      const serviceAuths = formValues.services.filter(({ config }) =>
-        Boolean(config)
+      const resolvedRecipeConfigs = await resolveRecipe(
+        recipe,
+        recipe.extensionPoints
       );
-      const collectedPermissions = await collectPermissions(
-        resolvedRecipeConfigs,
-        serviceAuths
+      const includesQuickBar = await includesQuickBarExtensionPoint(
+        resolvedRecipeConfigs
       );
-      const hasPermissions = await containsPermissions(collectedPermissions);
-      return !hasPermissions;
-    };
+      const needsPermissions = async (formValues: WizardValues) => {
+        const serviceAuths = formValues.services.filter(({ config }) =>
+          Boolean(config)
+        );
+        const collectedPermissions = await collectPermissions(
+          resolvedRecipeConfigs,
+          serviceAuths
+        );
 
-    return { includesQuickBar, needsPermissions };
-  }, [recipe]);
+        if (isEmpty(collectedPermissions)) {
+          return false;
+        }
+
+        const hasPermissions = await containsPermissions(collectedPermissions);
+        return !hasPermissions;
+      };
+
+      return { includesQuickBar, needsPermissions };
+    }, [recipe]);
+
+  // The "fetching" flag on useAsyncState toggles back and forth when the recipe dependency updates
+  // from null to the loaded recipe. This causes the loader to flash from this component, which
+  // causes the children tree to completely un-mount and then mount again, which is not ideal
+  // for the children. Instead, we're just waiting until the state receives a value, and then
+  // we never set the loading indicator again for this piece of the state, even if the async state
+  // happens to fetch again for some reason.
+  const isLoadingQuickBarAndPermissions = quickBarAndPermissions == null;
 
   // Auth Options
   const { authOptions, isLoading: isLoadingAuthOptions } = useAuthOptions();

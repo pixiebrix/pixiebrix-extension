@@ -493,12 +493,12 @@ export async function handleNavigate({
 
   const extensionPoints = await loadPersistedExtensionsOnce();
 
+  const abortSignal = createNavigationAbortSignal();
+
+  // Page script is needed for inserting elements into the page
+  await Promise.all([injectPageScriptOnce(), waitDocumentLoad(abortSignal)]);
+
   if (extensionPoints.length > 0) {
-    const abortSignal = createNavigationAbortSignal();
-
-    // Extension Points may need the pageScript to be injected to run
-    await Promise.all([injectPageScriptOnce(), waitDocumentLoad(abortSignal)]);
-
     // Safe to use Promise.all because the inner method can't throw
     await Promise.all(
       extensionPoints.map(async (extensionPoint) => {
