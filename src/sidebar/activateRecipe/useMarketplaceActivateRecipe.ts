@@ -54,9 +54,6 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
         Boolean(config)
       );
 
-      console.log("*** formValues", formValues);
-      console.log("*** serviceAuths", serviceAuths);
-
       try {
         if (!(await ensureRecipePermissions(recipe, serviceAuths))) {
           return {

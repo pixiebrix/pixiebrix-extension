@@ -115,8 +115,6 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
   // Auth Options
   const { authOptions, isLoading: isLoadingAuthOptions } = useAuthOptions();
 
-  console.log("*** authOptions", authOptions);
-
   // Throw errors
   if (recipeError) {
     throw recipeError;

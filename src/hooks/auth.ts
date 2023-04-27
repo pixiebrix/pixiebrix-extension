@@ -173,7 +173,6 @@ export function useDefaultAuthOptions(recipe: RecipeDefinition): {
 } {
   const { authOptions, isLoading } = useAuthOptions();
 
-  console.log("*** authOptions in useDefaultAuthOptions", authOptions);
   const defaultAuthOptions = isLoading
     ? {}
     : getDefaultAuthOptionsForRecipe(recipe, authOptions);

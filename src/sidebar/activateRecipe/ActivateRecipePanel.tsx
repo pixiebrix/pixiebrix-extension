@@ -168,8 +168,6 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
       return;
     }
 
-    console.log("*** activateRecipe", formValuesRef.current);
-
     stateDispatch(activateStart());
 
     const { success, error } = await marketplaceActivateRecipe(
@@ -191,16 +189,8 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   ]);
 
   useEffect(() => {
-    console.log("*** initialValues", initialValues);
     const missingServiceConfigurations = initialValues.services.some(
-      ({ id, config }) => {
-        return !config;
-      }
-    );
-
-    console.log(
-      "*** missingServiceConfigurations",
-      missingServiceConfigurations
+      ({ config }) => !config
     );
 
     if (
