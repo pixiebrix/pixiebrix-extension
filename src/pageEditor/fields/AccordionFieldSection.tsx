@@ -31,7 +31,7 @@ const AccordionFieldSection: React.FC<{
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
 }> = ({ title, children, bodyRef }) => {
   const dispatch = useDispatch();
-  const { expandedFieldSections } = useSelector(selectActiveNodeUIState);
+  const { expandedFieldSections = {} } = useSelector(selectActiveNodeUIState);
   const open = expandedFieldSections[title] ?? false;
 
   return (

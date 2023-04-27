@@ -51,7 +51,6 @@ export function ensureNodeUIState(
   state: WritableDraft<ElementUIState>,
   nodeId: UUID
 ) {
-  console.log("test");
   if (!state.nodeUIStates[nodeId]) {
     state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
   }

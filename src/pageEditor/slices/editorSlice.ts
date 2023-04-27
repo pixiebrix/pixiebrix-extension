@@ -852,11 +852,15 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ id: string; open: boolean }>
     ) {
-      const { expandedFieldSections } = selectActiveNodeUIState({
+      const uiState = selectActiveNodeUIState({
         editor: state,
       });
+      if (uiState.expandedFieldSections === undefined) {
+        uiState.expandedFieldSections = {};
+      }
+
       const { id, open } = payload;
-      expandedFieldSections[id] = open;
+      uiState.expandedFieldSections[id] = open;
     },
   },
   extraReducers(builder) {
