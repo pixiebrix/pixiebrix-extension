@@ -39,7 +39,7 @@ export function mergeAsyncState(...args: AsyncState[]): AsyncState {
   if (args.every((x) => x.isSuccess)) {
     return {
       data: args.map((x) => x.data),
-      currentData: args.map((x) => x.currentData),
+      currentData: isFetching ? undefined : args.map((x) => x.currentData),
       isUninitialized: false,
       isLoading: false,
       isFetching,
