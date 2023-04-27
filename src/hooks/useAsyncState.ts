@@ -109,14 +109,14 @@ function useAsyncState<T = unknown>(
   const [state, dispatch] = useReducer(
     slice.reducer,
     initialValue === undefined
-      ? {
+      ? initialAsyncState
+      : {
           ...initialAsyncState,
           isUninitialized: false,
           data: initialValue,
           currentData: initialValue,
           isSuccess: true,
         }
-      : initialAsyncState
   );
 
   // Effect to automatically refetch when stated dependencies change
