@@ -23,14 +23,17 @@ import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { type Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { type AsyncState } from "@/types/sliceTypes";
 
-const UrlPermissionsList: React.FunctionComponent<{
-  enabled: boolean;
-  isPending: boolean;
-  error: unknown;
-  permissions: Permissions.Permissions;
-}> = ({ error, enabled, isPending, permissions }) => {
+const UrlPermissionsList: React.FunctionComponent<
+  AsyncState<{
+    enabled: boolean;
+    permissions: Permissions.Permissions;
+  }>
+> = ({ error, isFetching, data }) => {
   useReportError(error);
+
+  const permissions = data?.permissions;
 
   const permissionsList = useMemo(() => {
     if (permissions == null) {
@@ -45,7 +48,7 @@ const UrlPermissionsList: React.FunctionComponent<{
   }, [permissions]);
 
   const helpText = useMemo(() => {
-    if (isPending) {
+    if (isFetching) {
       return <Loader />;
     }
 
@@ -62,6 +65,8 @@ const UrlPermissionsList: React.FunctionComponent<{
       return <p>No special permissions required</p>;
     }
 
+    const { enabled } = data;
+
     if (enabled) {
       return (
         <p>
@@ -77,7 +82,7 @@ const UrlPermissionsList: React.FunctionComponent<{
         granted yet
       </p>
     );
-  }, [permissionsList, enabled, error, isPending]);
+  }, [permissionsList, data, error, isFetching]);
 
   return (
     <>

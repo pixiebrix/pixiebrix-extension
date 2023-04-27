@@ -18,8 +18,12 @@
 import { type ServiceDependency } from "@/types/serviceTypes";
 import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
-import { useAsyncState } from "@/hooks/common";
-import { collectPermissions, ensureAllPermissions } from "@/permissions";
+import useAsyncState from "@/hooks/useAsyncState";
+import {
+  collectPermissions,
+  emptyPermissions,
+  ensureAllPermissions,
+} from "@/permissions";
 import { resolveDefinitions } from "@/registry/internal";
 import {
   containsPermissions,
@@ -29,49 +33,63 @@ import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { type CloudExtension } from "@/types/contract";
 import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
+import { type AsyncState } from "@/types/sliceTypes";
+import { type Permissions } from "webextension-polyfill";
+
+type AsyncPermissionsState = AsyncState<{
+  enabled: boolean;
+  permissions: Permissions.Permissions;
+}> & {
+  request: () => Promise<boolean>;
+  activate: () => void;
+};
 
 function useEnsurePermissions(
   extension: CloudExtension,
   services: ServiceDependency[]
-) {
+): AsyncPermissionsState {
   const { submitForm } = useFormikContext();
 
-  const [permissionState, isPending, error] = useAsyncState(async () => {
-    await locator.refreshLocal();
-    const resolved = await resolveDefinitions({ ...extension, services });
+  const state = useAsyncState(
+    async () => {
+      await locator.refreshLocal();
+      const resolved = await resolveDefinitions({ ...extension, services });
 
-    const configured = services.filter((x) => x.config);
+      const configured = services.filter((x) => x.config);
 
-    const permissions = await collectPermissions(
-      [resolved].map(
-        (extension) =>
-          ({
-            id: extension.extensionPointId,
-            config: extension.config,
-            services: Object.fromEntries(
-              services.map((service) => [service.outputKey, service.id])
-            ),
-          } as ResolvedExtensionDefinition)
-      ),
-      configured.map(({ id, config }) => ({ id, config }))
-    );
-    const enabled = await containsPermissions(permissions);
-    return {
-      enabled,
-      permissions,
-    };
-  }, [extension, services]);
-
-  const { enabled, permissions } = permissionState ?? {
-    enabled: false,
-    permissions: null,
-  };
+      const permissions = await collectPermissions(
+        [resolved].map(
+          (extension) =>
+            ({
+              id: extension.extensionPointId,
+              config: extension.config,
+              services: Object.fromEntries(
+                services.map((service) => [service.outputKey, service.id])
+              ),
+            } as ResolvedExtensionDefinition)
+        ),
+        configured.map(({ id, config }) => ({ id, config }))
+      );
+      const enabled = await containsPermissions(permissions);
+      return {
+        enabled,
+        permissions,
+      };
+    },
+    [extension, services],
+    {
+      initialValue: {
+        enabled: false,
+        permissions: emptyPermissions,
+      },
+    }
+  );
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(permissions);
+      accepted = await ensureAllPermissions(state.data?.permissions);
     } catch (error) {
       notify.error({
         message: "Error granting permissions",
@@ -87,7 +105,7 @@ function useEnsurePermissions(
     }
 
     return true;
-  }, [permissions]);
+  }, [state.data?.permissions]);
 
   const activate = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
@@ -105,12 +123,9 @@ function useEnsurePermissions(
   }, [request, submitForm, extension]);
 
   return {
-    enabled,
-    request,
-    permissions,
+    ...state,
     activate,
-    isPending,
-    error,
+    request,
   };
 }
 

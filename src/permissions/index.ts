@@ -40,6 +40,12 @@ const MANDATORY_PERMISSIONS = new Set([
 ]);
 
 /**
+ * Empty permissions object, indicating that no additional permissions are required.
+ */
+export const emptyPermissions: Required<Permissions.Permissions> =
+  Object.freeze({ origins: [], permissions: [] });
+
+/**
  * Request any permissions the user has not already granted
  * @returns {Promise<boolean>} true iff the the all the permissions already existed, or if the user accepted
  * the new permissions.
@@ -59,7 +65,7 @@ function normalizeOptionalPermissions(
   permissions: Permissions.Permissions
 ): Required<Permissions.Permissions> {
   if (permissions == null) {
-    return { origins: [], permissions: [] };
+    return emptyPermissions;
   }
 
   return {

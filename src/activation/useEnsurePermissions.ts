@@ -16,36 +16,37 @@
  */
 
 import notify from "@/utils/notify";
-import { useAsyncState } from "@/hooks/common";
-import { collectPermissions, ensureAllPermissions } from "@/permissions";
+import useAsyncState from "@/hooks/useAsyncState";
+import {
+  collectPermissions,
+  emptyPermissions,
+  ensureAllPermissions,
+} from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { type Permissions } from "webextension-polyfill";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
+import { type AsyncState } from "@/types/sliceTypes";
 
-type PermissionsState = {
+type PermissionsData = {
   /**
    * True if PixieBrix already has all the required permissions.
    */
   enabled: boolean;
-  /**
-   * Callback to request calculated permissions.
-   */
-  request: () => Promise<boolean>;
+
   /**
    * Permissions computed for the blueprint and selected service configurations.
    */
   permissions: Permissions.Permissions;
+};
+
+type AsyncPermissionsState = AsyncState<PermissionsData> & {
   /**
-   * True if required permissions are being calculated.
+   * Callback to request calculated permissions. Returns the true if the user accepted the permissions.
    */
-  isPending: boolean;
-  /**
-   * The error, if any, that occurred while calculating permissions.
-   */
-  error: unknown;
+  request: () => Promise<boolean>;
 };
 
 /**
@@ -56,31 +57,35 @@ type PermissionsState = {
 function useEnsurePermissions(
   blueprint: RecipeDefinition,
   serviceAuths: ServiceAuthPair[]
-): PermissionsState {
-  const [permissionState, isPending, error] = useAsyncState(async () => {
-    // Refresh services because the user may have created a team integration since the last refresh.
-    await services.refresh();
-    const permissions = await collectPermissions(
-      await resolveRecipe(blueprint, blueprint.extensionPoints),
-      serviceAuths
-    );
-    const enabled = await containsPermissions(permissions);
-    return {
-      enabled,
-      permissions,
-    };
-  }, [serviceAuths]);
-
-  const { enabled, permissions } = permissionState ?? {
-    enabled: false,
-    permissions: null,
-  };
+): AsyncPermissionsState {
+  const state = useAsyncState(
+    async () => {
+      // Refresh services because the user may have created a team integration since the last refresh.
+      await services.refresh();
+      const permissions = await collectPermissions(
+        await resolveRecipe(blueprint, blueprint.extensionPoints),
+        serviceAuths
+      );
+      const enabled = await containsPermissions(permissions);
+      return {
+        enabled,
+        permissions,
+      };
+    },
+    [serviceAuths],
+    {
+      initialValue: {
+        enabled: false,
+        permissions: emptyPermissions,
+      },
+    }
+  );
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(permissions);
+      accepted = await ensureAllPermissions(state.data.permissions);
     } catch (error) {
       notify.error({
         message: "Error granting permissions",
@@ -96,14 +101,11 @@ function useEnsurePermissions(
     }
 
     return true;
-  }, [permissions]);
+  }, [state.data.permissions]);
 
   return {
-    enabled,
     request,
-    permissions,
-    isPending,
-    error,
+    ...state,
   };
 }
 
