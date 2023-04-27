@@ -6,72 +6,95 @@ exports[`ExtraPermissionsSection render empty section 1`] = `
     action="#"
   >
     <div
-      class="cardHeader card-header"
-    >
-      Advanced: Extra Permissions
-    </div>
-    <div
-      class="cardBody card-body"
+      class="root accordion"
     >
       <div
-        class="formGroup form-group row"
+        class="header"
       >
-        <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
-          for="permissions.origins"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+          data-icon="chevron-right"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 320 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          Sites/APIs
-        </label>
+          <path
+            d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+            fill="currentColor"
+          />
+        </svg>
+        Advanced: Extra Permissions
+      </div>
+      <div
+        class="collapse"
+      >
         <div
-          class="col-xl-10 col-lg-9"
+          class="body"
         >
           <div
-            class="small"
+            class="formGroup form-group row"
           >
-            <span>
-              Shortcuts:
-            </span>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
+            <label
+              class="label form-label col-form-label col-xl-2 col-lg-3"
+              for="permissions.origins"
             >
-              Site
-            </button>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
+              Sites/APIs
+            </label>
+            <div
+              class="col-xl-10 col-lg-9"
             >
-              Domain
-            </button>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
-            >
-              HTTPS
-            </button>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
-            >
-              All URLs
-            </button>
-          </div>
-          <ul
-            class="list-group mb-2"
-          />
-          <button
-            class="btn btn-primary"
-            type="button"
-          >
-            Add Allowed Origin
-          </button>
-          <small
-            class="text-muted form-text"
-          >
-            <div>
-              URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
+              <div
+                class="small"
+              >
+                <span>
+                  Shortcuts:
+                </span>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  Site
+                </button>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  Domain
+                </button>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  HTTPS
+                </button>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  All URLs
+                </button>
+              </div>
+              <ul
+                class="list-group mb-2"
+              />
+              <button
+                class="addButton btn btn-link"
+                type="button"
+              >
+                Add Allowed Origin
+              </button>
+              <small
+                class="text-muted form-text"
+              >
+                <div>
+                  URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
+                </div>
+              </small>
             </div>
-          </small>
+          </div>
         </div>
       </div>
     </div>
@@ -90,121 +113,144 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
     action="#"
   >
     <div
-      class="cardHeader card-header"
-    >
-      Advanced: Extra Permissions
-    </div>
-    <div
-      class="cardBody card-body"
+      class="root accordion"
     >
       <div
-        class="formGroup form-group row"
+        class="header"
       >
-        <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
-          for="permissions.origins"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+          data-icon="chevron-right"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 320 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          Sites/APIs
-        </label>
+          <path
+            d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+            fill="currentColor"
+          />
+        </svg>
+        Advanced: Extra Permissions
+      </div>
+      <div
+        class="collapse"
+      >
         <div
-          class="col-xl-10 col-lg-9"
+          class="body"
         >
           <div
-            class="small"
+            class="formGroup form-group row"
           >
-            <span>
-              Shortcuts:
-            </span>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
+            <label
+              class="label form-label col-form-label col-xl-2 col-lg-3"
+              for="permissions.origins"
             >
-              Site
-            </button>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
-            >
-              Domain
-            </button>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
-            >
-              HTTPS
-            </button>
-            <button
-              class="root ml-2 btn btn-link"
-              type="button"
-            >
-              All URLs
-            </button>
-          </div>
-          <ul
-            class="list-group mb-2"
-          >
-            <li
-              class="list-group-item py-1"
+              Sites/APIs
+            </label>
+            <div
+              class="col-xl-10 col-lg-9"
             >
               <div
-                class="formGroup mb-0 form-group row"
+                class="small"
               >
-                <div
-                  class="col-xl-12 col-lg-12"
+                <span>
+                  Shortcuts:
+                </span>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  Site
+                </button>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  Domain
+                </button>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  HTTPS
+                </button>
+                <button
+                  class="root ml-2 btn btn-link"
+                  type="button"
+                >
+                  All URLs
+                </button>
+              </div>
+              <ul
+                class="list-group mb-2"
+              >
+                <li
+                  class="list-group-item py-1"
                 >
                   <div
-                    class="root"
+                    class="formGroup mb-0 form-group row"
                   >
                     <div
-                      class="field"
+                      class="col-xl-12 col-lg-12"
                     >
-                      <textarea
-                        class="form-control"
-                        id="permissions.origins.0"
-                        name="permissions.origins.0"
-                        rows="1"
+                      <div
+                        class="root"
                       >
-                        http://web.archive.org/web/20150905193945/http://www.hamsterdance.com/
-                      </textarea>
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Text"
-                      data-testid="toggle-permissions.origins.0"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
+                        <div
+                          class="field"
                         >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
+                          <textarea
+                            class="form-control"
+                            id="permissions.origins.0"
+                            name="permissions.origins.0"
+                            rows="1"
+                          >
+                            http://web.archive.org/web/20150905193945/http://www.hamsterdance.com/
+                          </textarea>
+                        </div>
+                        <div
+                          class="dropdown dropdown"
+                          data-test-selected="Text"
+                          data-testid="toggle-permissions.origins.0"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            class="dropdown-toggle btn btn-link"
+                            type="button"
+                          >
+                            <span
+                              class="symbol"
+                            >
+                              <test-file-stub
+                                classname="root"
+                              />
+                            </span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                </li>
+              </ul>
+              <button
+                class="addButton btn btn-link"
+                type="button"
+              >
+                Add Allowed Origin
+              </button>
+              <small
+                class="text-muted form-text"
+              >
+                <div>
+                  URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
                 </div>
-              </div>
-            </li>
-          </ul>
-          <button
-            class="btn btn-primary"
-            type="button"
-          >
-            Add Allowed Origin
-          </button>
-          <small
-            class="text-muted form-text"
-          >
-            <div>
-              URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
+              </small>
             </div>
-          </small>
+          </div>
         </div>
       </div>
     </div>

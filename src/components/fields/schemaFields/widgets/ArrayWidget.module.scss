@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,23 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Card } from "react-bootstrap";
-import styles from "./FieldSection.module.scss";
-
-/**
- * A Page Editor edit tab field section.
- */
-const FieldSection: React.FC<{
-  title: React.ReactNode;
-  bodyRef?: React.MutableRefObject<HTMLDivElement>;
-}> = ({ title, bodyRef, children }) => (
-  <>
-    <Card.Header className={styles.cardHeader}>{title}</Card.Header>
-    <Card.Body className={styles.cardBody} ref={bodyRef}>
-      {children}
-    </Card.Body>
-  </>
-);
-
-export default FieldSection;
+.addButton {
+  padding: 0;
+}

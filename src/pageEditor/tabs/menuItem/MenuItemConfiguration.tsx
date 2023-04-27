@@ -17,11 +17,9 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import TemplateWidget, {
   type Snippet,
 } from "@/pageEditor/fields/TemplateWidget";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
@@ -33,6 +31,7 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -51,27 +50,25 @@ const MenuItemConfiguration: React.FC<{
   const [{ value: onSuccess }] = useField("extension.onSuccess");
 
   return (
-    <Card>
-      <FieldSection title="Configuration">
-        <ConnectedFieldTemplate
-          name="extension.caption"
-          label="Button text"
-          description="This is the text that appears on the button"
-        />
+    <>
+      <ConnectedFieldTemplate
+        name="extension.caption"
+        label="Button text"
+        description="This is the text that appears on the button"
+      />
 
-        <ConnectedFieldTemplate
-          name="extensionPoint.definition.containerSelector"
-          as={LocationWidget}
-          {...makeLockableFieldProps("Location", isLocked)}
-        />
+      <ConnectedFieldTemplate
+        name="extensionPoint.definition.containerSelector"
+        as={LocationWidget}
+        {...makeLockableFieldProps("Location", isLocked)}
+      />
 
-        <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
-          {...makeLockableFieldProps("Sites", isLocked)}
-        />
-      </FieldSection>
+      <UrlMatchPatternField
+        name="extensionPoint.definition.isAvailable.matchPatterns"
+        {...makeLockableFieldProps("Sites", isLocked)}
+      />
 
-      <FieldSection title="Advanced: Item Options">
+      <AccordionFieldSection title="Advanced: Item Options">
         <ConnectedFieldTemplate
           name="extension.icon"
           label="Icon"
@@ -132,12 +129,12 @@ const MenuItemConfiguration: React.FC<{
             blankValue={true}
           />
         )}
-      </FieldSection>
+      </AccordionFieldSection>
 
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 
