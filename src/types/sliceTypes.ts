@@ -16,6 +16,53 @@
  */
 
 /**
+ * Common interface for AsyncState from RTK Query and other async sources.
+ */
+export type AsyncState<TData = unknown> = {
+  /**
+   * The latest returned result regardless of hook arg, if present.
+   */
+  data: TData | undefined;
+
+  /**
+   * The latest returned result for the current hook arg, if present.
+   */
+  currentData: TData | undefined;
+
+  /**
+   * When true, indicates that the query has not started yet.
+   */
+  isUninitialized: boolean;
+
+  /**
+   * When true, indicates that the query is currently fetching, but might have data from an earlier request. This will
+   * be true for both the first request fired off, as well as subsequent requests.
+   */
+  isFetching: boolean;
+
+  /**
+   * When true, indicates that the query is currently loading for the first time, and has no data yet.
+   * This will be true for the first request fired off, but not for subsequent requests.
+   */
+  isLoading: boolean;
+
+  /**
+   * When true, indicates that the query has data from a successful request.
+   */
+  isSuccess: boolean;
+
+  /**
+   * When true, indicates that the query is in an error state.
+   */
+  isError: boolean;
+
+  /**
+   * The error result if present.
+   */
+  error: unknown;
+};
+
+/**
  * An type for characterizing hook output that's similar to RTK Query's state.
  */
 export type UseCachedQueryResult<TData> = {
