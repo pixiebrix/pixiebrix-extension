@@ -26,7 +26,7 @@ import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldPro
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 
 const panelSnippets: Snippet[] = [
   { label: "heading", value: "{{{heading}}}" },
@@ -55,7 +55,7 @@ const PanelConfiguration: React.FC<{
       {...makeLockableFieldProps("Sites", isLocked)}
     />
 
-    <AccordionFieldSection title="Advanced">
+    <CollapsibleFieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extension.collapsible"
         as={SwitchButtonWidget}
@@ -77,7 +77,7 @@ const PanelConfiguration: React.FC<{
         snippets={panelSnippets}
         {...makeLockableFieldProps("Template", isLocked)}
       />
-    </AccordionFieldSection>
+    </CollapsibleFieldSection>
 
     <MatchRulesSection isLocked={isLocked} />
 

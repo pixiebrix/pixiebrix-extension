@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Collapse } from "react-bootstrap";
-import styles from "@/pageEditor/fields/AccordionFieldSection.module.scss";
+import styles from "@/pageEditor/fields/CollapsibleFieldSection.module.scss";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeUIState } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
-const AccordionFieldSection: React.FC<{
+const CollapsibleFieldSection: React.FC<{
   title: string;
   expanded?: boolean;
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
@@ -61,4 +61,4 @@ const AccordionFieldSection: React.FC<{
   );
 };
 
-export default AccordionFieldSection;
+export default CollapsibleFieldSection;

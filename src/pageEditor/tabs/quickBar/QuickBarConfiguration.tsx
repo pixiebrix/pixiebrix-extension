@@ -25,7 +25,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import { splitStartingEmoji } from "@/utils/stringUtils";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
@@ -74,7 +74,7 @@ const QuickBarConfiguration: React.FC<{
         }
       />
 
-      <AccordionFieldSection title="Advanced">
+      <CollapsibleFieldSection title="Advanced">
         <ConnectedFieldTemplate
           name="extension.icon"
           as={IconWidget}
@@ -116,7 +116,7 @@ const QuickBarConfiguration: React.FC<{
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
         />
-      </AccordionFieldSection>
+      </CollapsibleFieldSection>
 
       <ExtraPermissionsSection />
     </>

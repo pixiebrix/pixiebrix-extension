@@ -24,7 +24,7 @@ import TemplateWidget, {
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -94,7 +94,7 @@ const ContextMenuConfiguration: React.FC<{
       }
     />
 
-    <AccordionFieldSection title="Advanced">
+    <CollapsibleFieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extensionPoint.definition.targetMode"
         as="select"
@@ -126,7 +126,7 @@ const ContextMenuConfiguration: React.FC<{
         }
         {...makeLockableFieldProps("Automatic Permissions", isLocked)}
       />
-    </AccordionFieldSection>
+    </CollapsibleFieldSection>
 
     <ExtraPermissionsSection />
   </>
