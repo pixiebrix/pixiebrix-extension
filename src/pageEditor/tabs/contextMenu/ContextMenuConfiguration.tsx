@@ -17,8 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import TemplateWidget, {
   type Snippet,
@@ -26,6 +24,7 @@ import TemplateWidget, {
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -47,57 +46,55 @@ export const contextOptions = [
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.title"
-        label="Title"
-        as={TemplateWidget}
-        rows={1}
-        snippets={menuSnippets}
-        description={
-          <span>
-            The context menu item caption. Use the <code>%s</code> placeholder
-            to have the browser dynamically insert the current selection in the
-            menu caption
-          </span>
-        }
-      />
+  <>
+    <ConnectedFieldTemplate
+      name="extension.title"
+      label="Title"
+      as={TemplateWidget}
+      rows={1}
+      snippets={menuSnippets}
+      description={
+        <span>
+          The context menu item caption. Use the <code>%s</code> placeholder to
+          have the browser dynamically insert the current selection in the menu
+          caption
+        </span>
+      }
+    />
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.contexts"
-        as={MultiSelectWidget}
-        options={contextOptions}
-        description={
-          <span>
-            Limit when the Context Menu item is shown. For example, selecting
-            only the <code>link</code> option will show the item only when
-            right-clicking on a link.
-          </span>
-        }
-        {...makeLockableFieldProps("Menu context", isLocked)}
-      />
+    <ConnectedFieldTemplate
+      name="extensionPoint.definition.contexts"
+      as={MultiSelectWidget}
+      options={contextOptions}
+      description={
+        <span>
+          Limit when the Context Menu item is shown. For example, selecting only
+          the <code>link</code> option will show the item only when
+          right-clicking on a link.
+        </span>
+      }
+      {...makeLockableFieldProps("Menu context", isLocked)}
+    />
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-        description={
-          <span>
-            URL match patterns to show the menu item on. See{" "}
-            <a
-              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <code>match_patterns</code> Documentation
-            </a>{" "}
-            for examples.
-          </span>
-        }
-      />
-    </FieldSection>
+    <UrlMatchPatternField
+      name="extensionPoint.definition.documentUrlPatterns"
+      {...makeLockableFieldProps("Sites", isLocked)}
+      description={
+        <span>
+          URL match patterns to show the menu item on. See{" "}
+          <a
+            href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <code>match_patterns</code> Documentation
+          </a>{" "}
+          for examples.
+        </span>
+      }
+    />
 
-    <FieldSection title="Advanced">
+    <AccordionFieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extensionPoint.definition.targetMode"
         as="select"
@@ -129,10 +126,10 @@ const ContextMenuConfiguration: React.FC<{
         }
         {...makeLockableFieldProps("Automatic Permissions", isLocked)}
       />
-    </FieldSection>
+    </AccordionFieldSection>
 
     <ExtraPermissionsSection />
-  </Card>
+  </>
 );
 
 export default ContextMenuConfiguration;

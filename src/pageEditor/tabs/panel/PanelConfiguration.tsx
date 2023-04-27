@@ -17,9 +17,7 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import TemplateWidget, {
   type Snippet,
 } from "@/pageEditor/fields/TemplateWidget";
@@ -28,6 +26,7 @@ import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldPro
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
 
 const panelSnippets: Snippet[] = [
   { label: "heading", value: "{{{heading}}}" },
@@ -37,28 +36,26 @@ const panelSnippets: Snippet[] = [
 const PanelConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.heading"
-        label="Heading"
-        description="Panel heading"
-      />
+  <>
+    <ConnectedFieldTemplate
+      name="extension.heading"
+      label="Heading"
+      description="Panel heading"
+    />
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.containerSelector"
-        as={LocationWidget}
-        description="Location on the page"
-        {...makeLockableFieldProps("Location", isLocked)}
-      />
+    <ConnectedFieldTemplate
+      name="extensionPoint.definition.containerSelector"
+      as={LocationWidget}
+      description="Location on the page"
+      {...makeLockableFieldProps("Location", isLocked)}
+    />
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-      />
-    </FieldSection>
+    <UrlMatchPatternField
+      name="extensionPoint.definition.isAvailable.matchPatterns"
+      {...makeLockableFieldProps("Sites", isLocked)}
+    />
 
-    <FieldSection title="Advanced">
+    <AccordionFieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extension.collapsible"
         as={SwitchButtonWidget}
@@ -80,12 +77,12 @@ const PanelConfiguration: React.FC<{
         snippets={panelSnippets}
         {...makeLockableFieldProps("Template", isLocked)}
       />
-    </FieldSection>
+    </AccordionFieldSection>
 
     <MatchRulesSection isLocked={isLocked} />
 
     <ExtraPermissionsSection />
-  </Card>
+  </>
 );
 
 export default PanelConfiguration;
