@@ -67,7 +67,6 @@ const MenuItemConfiguration: React.FC<{
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
-
       <CollapsibleFieldSection title="Advanced: Item Options">
         <ConnectedFieldTemplate
           name="extension.icon"
@@ -130,7 +129,6 @@ const MenuItemConfiguration: React.FC<{
           />
         )}
       </CollapsibleFieldSection>
-
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />

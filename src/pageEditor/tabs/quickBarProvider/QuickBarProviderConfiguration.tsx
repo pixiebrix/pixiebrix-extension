@@ -101,7 +101,6 @@ const QuickBarProviderConfiguration: React.FC<{
           />
         </>
       )}
-
       <CollapsibleFieldSection title="Advanced">
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"

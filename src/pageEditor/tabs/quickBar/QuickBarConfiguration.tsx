@@ -73,7 +73,6 @@ const QuickBarConfiguration: React.FC<{
           </span>
         }
       />
-
       <CollapsibleFieldSection title="Advanced">
         <ConnectedFieldTemplate
           name="extension.icon"
@@ -85,7 +84,6 @@ const QuickBarConfiguration: React.FC<{
             "If the first character in the action title is an emoji we will use that in the place of an icon."
           )}
         />
-
         <ConnectedFieldTemplate
           name="extensionPoint.definition.targetMode"
           as="select"
@@ -103,7 +101,6 @@ const QuickBarConfiguration: React.FC<{
           <option value="eventTarget">eventTarget</option>
           <option value="document">document</option>
         </ConnectedFieldTemplate>
-
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
           description={
@@ -115,7 +112,7 @@ const QuickBarConfiguration: React.FC<{
             </span>
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
-        />
+        />{" "}
       </CollapsibleFieldSection>
 
       <ExtraPermissionsSection />

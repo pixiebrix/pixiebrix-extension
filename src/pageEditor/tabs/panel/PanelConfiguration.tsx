@@ -54,7 +54,6 @@ const PanelConfiguration: React.FC<{
       name="extensionPoint.definition.isAvailable.matchPatterns"
       {...makeLockableFieldProps("Sites", isLocked)}
     />
-
     <CollapsibleFieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extension.collapsible"

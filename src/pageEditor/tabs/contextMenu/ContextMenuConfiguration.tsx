@@ -93,7 +93,6 @@ const ContextMenuConfiguration: React.FC<{
         </span>
       }
     />
-
     <CollapsibleFieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extensionPoint.definition.targetMode"

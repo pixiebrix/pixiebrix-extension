@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
 .root {
   // Negative margin to align the fields inside the accordion with the ones outside
@@ -25,7 +26,7 @@
   padding: 8px;
   border-radius: 4px;
   font-weight: 500;
-  background: #f8f9fa;
+  background: $field-section-header;
   display: flex;
   align-items: center;
   cursor: pointer;
