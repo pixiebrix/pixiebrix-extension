@@ -35,11 +35,10 @@ import AdvancedLinks, {
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import ConfigurationTitle from "./ConfigurationTitle";
 import { inputProperties } from "@/helpers";
+import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
 
 const rootModeOptions = [
   { label: "Document", value: "document" },
@@ -163,27 +162,24 @@ const BlockConfiguration: React.FunctionComponent<{
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <>
-        <FieldSection title={<ConfigurationTitle />}>
-          <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-            {blockErrors?.id && (
-              <div className="invalid-feedback d-block mb-4">
-                Unknown block {blockId}
-              </div>
-            )}
-            {BlockOptions ? (
-              <BlockOptions name={name} configKey="config" />
-            ) : error ? (
-              <div className="invalid-feedback d-block mb-4">{error}</div>
-            ) : (
-              <Loader />
-            )}
-          </SchemaFieldContext.Provider>
-        </FieldSection>
+        <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
+          {blockErrors?.id && (
+            <div className="invalid-feedback d-block mb-4">
+              Unknown block {blockId}
+            </div>
+          )}
+          {BlockOptions ? (
+            <BlockOptions name={name} configKey="config" />
+          ) : error ? (
+            <div className="invalid-feedback d-block mb-4">{error}</div>
+          ) : (
+            <Loader />
+          )}
+        </SchemaFieldContext.Provider>
 
-        <FieldSection
+        <AccordionFieldSection
           title="Advanced Options"
           bodyRef={advancedOptionsRef}
-          variant="accordion"
         >
           {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
 
@@ -216,7 +212,7 @@ const BlockConfiguration: React.FunctionComponent<{
           {noAdvancedOptions && (
             <small className="text-muted font-italic">No options to show</small>
           )}
-        </FieldSection>
+        </AccordionFieldSection>
       </>
     </>
   );

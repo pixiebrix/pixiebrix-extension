@@ -18,7 +18,6 @@
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { partial } from "lodash";
@@ -70,45 +69,41 @@ const SidebarConfiguration: React.FC<{
 
   return (
     <>
-      <FieldSection title="Configuration">
+      <ConnectedFieldTemplate
+        name="extension.heading"
+        label="Tab title"
+        description="The text that will appear in the tab along the top of the Sidebar Panel"
+      />
+
+      <UrlMatchPatternField
+        name="extensionPoint.definition.isAvailable.matchPatterns"
+        {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <ConnectedFieldTemplate
+        name={fieldName("trigger")}
+        as="select"
+        description="Event to refresh the panel"
+        onChange={onTriggerChange}
+        {...makeLockableFieldProps("Trigger", isLocked)}
+      >
+        <option value="load">Page Load / Navigation</option>
+        <option value="selectionchange">Selection Change</option>
+        <option value="statechange">State Change</option>
+        <option value="custom">Custom Event</option>
+        <option value="manual">Manual</option>
+      </ConnectedFieldTemplate>
+
+      {trigger === "custom" && (
         <ConnectedFieldTemplate
-          name="extension.heading"
-          label="Tab title"
-          description="The text that will appear in the tab along the top of the Sidebar Panel"
+          title="Custom Event"
+          name={fieldName("customEvent", "eventName")}
+          description="The custom event name"
+          {...makeLockableFieldProps("Custom Event", isLocked)}
         />
+      )}
 
-        <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
-          {...makeLockableFieldProps("Sites", isLocked)}
-        />
-      </FieldSection>
-
-      <FieldSection title="Panel Refresh">
-        <ConnectedFieldTemplate
-          name={fieldName("trigger")}
-          as="select"
-          description="Event to refresh the panel"
-          onChange={onTriggerChange}
-          {...makeLockableFieldProps("Trigger", isLocked)}
-        >
-          <option value="load">Page Load / Navigation</option>
-          <option value="selectionchange">Selection Change</option>
-          <option value="statechange">State Change</option>
-          <option value="custom">Custom Event</option>
-          <option value="manual">Manual</option>
-        </ConnectedFieldTemplate>
-
-        {trigger === "custom" && (
-          <ConnectedFieldTemplate
-            title="Custom Event"
-            name={fieldName("customEvent", "eventName")}
-            description="The custom event name"
-            {...makeLockableFieldProps("Custom Event", isLocked)}
-          />
-        )}
-
-        <DebounceFieldSet isLocked={isLocked} />
-      </FieldSection>
+      <DebounceFieldSet isLocked={isLocked} />
 
       <MatchRulesSection isLocked={isLocked} />
 

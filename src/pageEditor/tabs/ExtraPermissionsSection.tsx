@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import React from "react";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
 
 const ExtraPermissionsSection: React.FunctionComponent = () => (
-  <FieldSection title="Advanced: Extra Permissions" variant="accordion">
+  <AccordionFieldSection title="Advanced: Extra Permissions">
     <UrlMatchPatternField
       label="Sites/APIs"
       name="permissions.origins"
@@ -34,7 +34,7 @@ const ExtraPermissionsSection: React.FunctionComponent = () => (
         </div>
       }
     />
-  </FieldSection>
+  </AccordionFieldSection>
 );
 
 export default ExtraPermissionsSection;

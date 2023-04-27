@@ -18,7 +18,6 @@
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -101,134 +100,132 @@ const TriggerConfiguration: React.FC<{
 
   return (
     <>
-      <FieldSection title="Configuration">
+      <ConnectedFieldTemplate
+        name={fieldName("trigger")}
+        as="select"
+        description="Select a browser event to trigger or launch this mod"
+        onChange={onTriggerChange}
+        {...makeLockableFieldProps("Trigger event", isLocked)}
+      >
+        <option value="load">Page Load</option>
+        <option value="interval">Interval</option>
+        <option value="initialize">Initialize</option>
+        <option value="appear">Appear</option>
+        <option value="click">Click</option>
+        <option value="dblclick">Double Click</option>
+        <option value="blur">Blur</option>
+        <option value="mouseover">Mouseover</option>
+        <option value="hover">Hover</option>
+        <option value="selectionchange">Selection Change</option>
+        <option value="keydown">Keydown</option>
+        <option value="keyup">Keyup</option>
+        <option value="keypress">Keypress</option>
+        <option value="change">Change</option>
+        <option value="statechange">State Change</option>
+        <option value="custom">Custom Event</option>
+      </ConnectedFieldTemplate>
+
+      {trigger === "custom" && (
         <ConnectedFieldTemplate
-          name={fieldName("trigger")}
-          as="select"
-          description="Select a browser event to trigger or launch this mod"
-          onChange={onTriggerChange}
-          {...makeLockableFieldProps("Trigger event", isLocked)}
-        >
-          <option value="load">Page Load</option>
-          <option value="interval">Interval</option>
-          <option value="initialize">Initialize</option>
-          <option value="appear">Appear</option>
-          <option value="click">Click</option>
-          <option value="dblclick">Double Click</option>
-          <option value="blur">Blur</option>
-          <option value="mouseover">Mouseover</option>
-          <option value="hover">Hover</option>
-          <option value="selectionchange">Selection Change</option>
-          <option value="keydown">Keydown</option>
-          <option value="keyup">Keyup</option>
-          <option value="keypress">Keypress</option>
-          <option value="change">Change</option>
-          <option value="statechange">State Change</option>
-          <option value="custom">Custom Event</option>
-        </ConnectedFieldTemplate>
+          title="Custom Event"
+          name={fieldName("customEvent", "eventName")}
+          description="The custom event name"
+          {...makeLockableFieldProps("Custom Event", isLocked)}
+        />
+      )}
 
-        {trigger === "custom" && (
+      {trigger === "interval" && (
+        <>
           <ConnectedFieldTemplate
-            title="Custom Event"
-            name={fieldName("customEvent", "eventName")}
-            description="The custom event name"
-            {...makeLockableFieldProps("Custom Event", isLocked)}
+            name={fieldName("intervalMillis")}
+            title="Interval (ms)"
+            type="number"
+            description="Interval to run the trigger in milliseconds"
+            {...makeLockableFieldProps("Interval", isLocked)}
           />
-        )}
-
-        {trigger === "interval" && (
-          <>
-            <ConnectedFieldTemplate
-              name={fieldName("intervalMillis")}
-              title="Interval (ms)"
-              type="number"
-              description="Interval to run the trigger in milliseconds"
-              {...makeLockableFieldProps("Interval", isLocked)}
-            />
-            <ConnectedFieldTemplate
-              name={fieldName("background")}
-              title="Run in Background"
-              as={BooleanWidget}
-              description="Run the interval in inactive tabs"
-              {...makeLockableFieldProps("Run in Background", isLocked)}
-            />
-          </>
-        )}
-
-        {supportsSelector(trigger) && (
-          <>
-            <ConnectedFieldTemplate
-              name={fieldName("rootSelector")}
-              as={LocationWidget}
-              selectMode="element"
-              description="Use your cursor to select an element on the page to watch"
-              {...makeLockableFieldProps("Element selector", isLocked)}
-            />
-
-            <ConnectedFieldTemplate
-              name={fieldName("attachMode")}
-              as="select"
-              title="Attach Mode"
-              description={
-                <p>
-                  Use&nbsp;<code>once</code> to attach the trigger once one or
-                  more elements are available. Use&nbsp;
-                  <code>watch</code> to also add the trigger as new matching
-                  elements are added to the page.
-                </p>
-              }
-              {...makeLockableFieldProps("Attach Mode", isLocked)}
-            >
-              <option value="once">once</option>
-              <option value="watch">watch</option>
-            </ConnectedFieldTemplate>
-          </>
-        )}
-
-        {supportsTargetMode(trigger) && (
           <ConnectedFieldTemplate
-            name={fieldName("targetMode")}
+            name={fieldName("background")}
+            title="Run in Background"
+            as={BooleanWidget}
+            description="Run the interval in inactive tabs"
+            {...makeLockableFieldProps("Run in Background", isLocked)}
+          />
+        </>
+      )}
+
+      {supportsSelector(trigger) && (
+        <>
+          <ConnectedFieldTemplate
+            name={fieldName("rootSelector")}
+            as={LocationWidget}
+            selectMode="element"
+            description="Use your cursor to select an element on the page to watch"
+            {...makeLockableFieldProps("Element selector", isLocked)}
+          />
+
+          <ConnectedFieldTemplate
+            name={fieldName("attachMode")}
             as="select"
-            title="Target Mode"
+            title="Attach Mode"
             description={
               <p>
-                Use <code>eventTarget</code> to use the event target as the root
-                element for brick execution. Use&nbsp;
-                <code>root</code> to use the closest ancestor element matching
-                the trigger&apos;s selector.
+                Use&nbsp;<code>once</code> to attach the trigger once one or
+                more elements are available. Use&nbsp;
+                <code>watch</code> to also add the trigger as new matching
+                elements are added to the page.
               </p>
             }
-            {...makeLockableFieldProps("Target Mode", isLocked)}
+            {...makeLockableFieldProps("Attach Mode", isLocked)}
           >
-            <option value="eventTarget">eventTarget</option>
-            <option value="root">root</option>
+            <option value="once">once</option>
+            <option value="watch">watch</option>
           </ConnectedFieldTemplate>
-        )}
+        </>
+      )}
 
-        <DebounceFieldSet isLocked={isLocked} />
-
-        <UrlMatchPatternField
-          name={fieldName("isAvailable", "matchPatterns")}
-          {...makeLockableFieldProps("Sites", isLocked)}
-        />
-
+      {supportsTargetMode(trigger) && (
         <ConnectedFieldTemplate
-          name={fieldName("reportMode")}
+          name={fieldName("targetMode")}
           as="select"
-          title="Report Mode"
+          title="Target Mode"
           description={
             <p>
-              Events/errors to report telemetry. Select &ldquo;Report All&rdquo;
-              to report all runs and errors. Select &ldquo;Report First&rdquo;
-              to only report the first run and first error.
+              Use <code>eventTarget</code> to use the event target as the root
+              element for brick execution. Use&nbsp;
+              <code>root</code> to use the closest ancestor element matching the
+              trigger&apos;s selector.
             </p>
           }
-          {...makeLockableFieldProps("Report Mode", isLocked)}
+          {...makeLockableFieldProps("Target Mode", isLocked)}
         >
-          <option value="all">Report All</option>
-          <option value="once">Report First</option>
+          <option value="eventTarget">eventTarget</option>
+          <option value="root">root</option>
         </ConnectedFieldTemplate>
-      </FieldSection>
+      )}
+
+      <DebounceFieldSet isLocked={isLocked} />
+
+      <UrlMatchPatternField
+        name={fieldName("isAvailable", "matchPatterns")}
+        {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <ConnectedFieldTemplate
+        name={fieldName("reportMode")}
+        as="select"
+        title="Report Mode"
+        description={
+          <p>
+            Events/errors to report telemetry. Select &ldquo;Report All&rdquo;
+            to report all runs and errors. Select &ldquo;Report First&rdquo; to
+            only report the first run and first error.
+          </p>
+        }
+        {...makeLockableFieldProps("Report Mode", isLocked)}
+      >
+        <option value="all">Report All</option>
+        <option value="once">Report First</option>
+      </ConnectedFieldTemplate>
 
       <MatchRulesSection isLocked={isLocked} />
 

@@ -15,23 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.cardHeader {
-  width: 100%;
-  border-bottom: none;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  border-radius: 4px;
-  font-weight: 500;
+.root {
+  // Negative margin to align the fields inside the accordion with the ones outside
+  margin: 0 -0.75em;
 }
 
-.cardBody {
+.header {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 1em;
+}
+
+.body {
   padding: 1em 0.75em;
 }
 
-.accordionIndicator {
+.activeIndicator {
   display: inline-block;
   transition: transform 0.25s ease;
-  margin-right: 10px;
+  margin: 0 0.5em;
 
   &.active {
     transform: rotate(90deg);

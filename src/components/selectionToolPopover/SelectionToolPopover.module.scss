@@ -42,11 +42,16 @@ $border: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     cursor: move;
-
+    padding: 12px;
+    background: #ddd;
     svg {
       width: 24px;
       margin-right: 8px;
     }
+  }
+
+  .popover-wrapper-body {
+    padding: 12px;
   }
 
   // We're overriding bootstrap components style here to prevent style breaks in react-shadow-dom

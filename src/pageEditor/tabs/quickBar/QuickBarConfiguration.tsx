@@ -17,7 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
@@ -26,6 +25,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import { splitStartingEmoji } from "@/utils/stringUtils";
+import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
@@ -36,47 +36,45 @@ const QuickBarConfiguration: React.FC<{
 
   return (
     <>
-      <FieldSection title="Configuration">
-        <ConnectedFieldTemplate
-          name="extension.title"
-          label="Action Title"
-          description="Quick Bar action title"
-        />
+      <ConnectedFieldTemplate
+        name="extension.title"
+        label="Action Title"
+        description="Quick Bar action title"
+      />
 
-        <ConnectedFieldTemplate
-          name="extensionPoint.definition.contexts"
-          as={MultiSelectWidget}
-          options={contextOptions}
-          description={
-            <span>
-              One or more contexts to include the quick bar item. For example,
-              use the <code>selection</code> context to show the action item
-              when text is selected.
-            </span>
-          }
-          {...makeLockableFieldProps("Contexts", isLocked)}
-        />
+      <ConnectedFieldTemplate
+        name="extensionPoint.definition.contexts"
+        as={MultiSelectWidget}
+        options={contextOptions}
+        description={
+          <span>
+            One or more contexts to include the quick bar item. For example, use
+            the <code>selection</code> context to show the action item when text
+            is selected.
+          </span>
+        }
+        {...makeLockableFieldProps("Contexts", isLocked)}
+      />
 
-        <UrlMatchPatternField
-          name="extensionPoint.definition.documentUrlPatterns"
-          {...makeLockableFieldProps("Sites", isLocked)}
-          description={
-            <span>
-              URL match patterns to show the menu item on. See{" "}
-              <a
-                href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <code>match_patterns</code> Documentation
-              </a>{" "}
-              for examples.
-            </span>
-          }
-        />
-      </FieldSection>
+      <UrlMatchPatternField
+        name="extensionPoint.definition.documentUrlPatterns"
+        {...makeLockableFieldProps("Sites", isLocked)}
+        description={
+          <span>
+            URL match patterns to show the menu item on. See{" "}
+            <a
+              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <code>match_patterns</code> Documentation
+            </a>{" "}
+            for examples.
+          </span>
+        }
+      />
 
-      <FieldSection title="Advanced" variant="accordion">
+      <AccordionFieldSection title="Advanced">
         <ConnectedFieldTemplate
           name="extension.icon"
           as={IconWidget}
@@ -118,7 +116,7 @@ const QuickBarConfiguration: React.FC<{
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
         />
-      </FieldSection>
+      </AccordionFieldSection>
 
       <ExtraPermissionsSection />
     </>

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Col, Tab } from "react-bootstrap";
+import { Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -103,26 +103,24 @@ const EditTab: React.FC<{
           </div>
         </div>
         <div className={styles.configPanel}>
-          <Col>
-            <ErrorBoundary
-              key={
-                // Pass in the activeNodeId as the render key for error boundary so
-                // that switching the node can potentially avoid the bad state without
-                // having to reload the whole page editor frame
-                activeNodeId
-              }
-            >
-              {isApiAtLeastV2 ? (
-                activeNodeId === FOUNDATION_NODE_ID ? (
-                  <FoundationNodeConfigPanel />
-                ) : (
-                  <EditorNodeConfigPanel />
-                )
+          <ErrorBoundary
+            key={
+              // Pass in the activeNodeId as the render key for error boundary so
+              // that switching the node can potentially avoid the bad state without
+              // having to reload the whole page editor frame
+              activeNodeId
+            }
+          >
+            {isApiAtLeastV2 ? (
+              activeNodeId === FOUNDATION_NODE_ID ? (
+                <FoundationNodeConfigPanel />
               ) : (
-                <UnsupportedApiV1 />
-              )}
-            </ErrorBoundary>
-          </Col>
+                <EditorNodeConfigPanel />
+              )
+            ) : (
+              <UnsupportedApiV1 />
+            )}
+          </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
           {activeNodeId === FOUNDATION_NODE_ID ? (
