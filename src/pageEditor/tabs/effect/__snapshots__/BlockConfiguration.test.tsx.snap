@@ -54,9 +54,9 @@ exports[`renders 1`] = `
       </div>
     </div>
     <div
-      class="root accordion"
+      class="root"
     >
-      <div
+      <button
         class="header"
       >
         <svg
@@ -75,19 +75,15 @@ exports[`renders 1`] = `
           />
         </svg>
         Advanced Options
-      </div>
+      </button>
       <div
-        class="collapse"
+        class="body collapse"
       >
-        <div
-          class="body"
+        <small
+          class="text-muted font-italic"
         >
-          <small
-            class="text-muted font-italic"
-          >
-            No options to show
-          </small>
-        </div>
+          No options to show
+        </small>
       </div>
     </div>
     <button
