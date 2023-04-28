@@ -195,7 +195,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     );
 
     if (
-      state.needsPermissions !== null &&
+      state.needsPermissions != null &&
       !state.needsPermissions &&
       canAutoActivate &&
       !missingServiceConfigurations
