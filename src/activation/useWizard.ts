@@ -35,7 +35,8 @@ import * as Yup from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { useDefaultAuthOptions } from "@/hooks/auth";
+import { type RegistryId } from "@/types/registryTypes";
+import { type AuthOption } from "@/auth/authTypes";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -52,13 +53,13 @@ const STEPS: WizardStep[] = [
 ];
 
 function useWizard(
-  blueprint: RecipeDefinition
+  blueprint: RecipeDefinition,
+  defaultAuthOptions?: Record<RegistryId, AuthOption>
 ): [WizardStep[], WizardValues, Yup.AnyObjectSchema] {
   const installedExtensions = useSelector(selectExtensions);
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint.options?.schema
   );
-  const { defaultAuthOptions } = useDefaultAuthOptions(blueprint);
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
