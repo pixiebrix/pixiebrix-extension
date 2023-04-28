@@ -857,7 +857,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 Advanced
               </button>
               <div
-                class="body collapse"
+                class="body collapse show"
               >
                 <div
                   class="formGroup form-group row"
@@ -1024,7 +1024,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 Advanced: Match Rules
               </button>
               <div
-                class="body collapse"
+                class="body collapse show"
               >
                 <div
                   class="formGroup form-group row"
@@ -1158,7 +1158,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 Advanced: Extra Permissions
               </button>
               <div
-                class="body collapse"
+                class="body collapse show"
               >
                 <div
                   class="formGroup form-group row"
@@ -2047,7 +2047,7 @@ exports[`renders the first selected node 1`] = `
                 Advanced Options
               </button>
               <div
-                class="body collapse"
+                class="body collapse show"
               >
                 <small
                   class="text-muted font-italic"

@@ -77,7 +77,7 @@ exports[`renders 1`] = `
         Advanced Options
       </button>
       <div
-        class="body collapse"
+        class="body collapse show"
       >
         <small
           class="text-muted font-italic"

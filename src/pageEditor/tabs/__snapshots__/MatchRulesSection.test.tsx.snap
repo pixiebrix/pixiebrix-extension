@@ -29,7 +29,7 @@ exports[`MatchRulesSection render empty section 1`] = `
         Advanced: Match Rules
       </button>
       <div
-        class="body collapse"
+        class="body collapse show"
       >
         <div
           class="formGroup form-group row"
@@ -143,7 +143,7 @@ exports[`MatchRulesSection render populated section 1`] = `
         Advanced: Match Rules
       </button>
       <div
-        class="body collapse"
+        class="body collapse show"
       >
         <div
           class="formGroup form-group row"
