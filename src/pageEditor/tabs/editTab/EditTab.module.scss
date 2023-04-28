@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
 .paneContent {
   display: flex;
@@ -26,7 +27,7 @@
   flex-grow: 0;
   flex-shrink: 0;
   width: 220px;
-  border-right: 1px solid lightgrey;
+  border-right: 1px solid $panel-divider;
   display: flex;
   flex-direction: column;
 }
@@ -37,7 +38,7 @@
   align-items: stretch;
   gap: 0.25rem;
   padding: 0.25rem;
-  border-bottom: 1px solid lightgrey;
+  border-bottom: 1px solid $panel-divider;
 }
 
 .nodeHeaderTitle {
@@ -49,7 +50,7 @@
 }
 
 .disabledTitle {
-  color: lightgrey;
+  color: $panel-divider;
 }
 
 .nodeLayout {
@@ -64,13 +65,13 @@
   &:focus,
   &:hover {
     color: var(--blue);
-    background: lightgrey;
+    background: $panel-divider;
   }
   &:disabled {
     &:hover {
       background: none;
     }
-    color: lightgrey;
+    color: $panel-divider;
   }
 }
 
@@ -81,13 +82,13 @@
   &:focus,
   &:hover {
     color: var(--red);
-    background: lightgrey;
+    background: $panel-divider;
   }
   &:disabled {
     &:hover {
       background: none;
     }
-    color: lightgrey;
+    color: $panel-divider;
   }
 }
 
@@ -99,13 +100,34 @@
 }
 
 .dataPanel {
-  flex-grow: 1;
-  flex-basis: 0;
   padding: 10px;
-  overflow: auto;
-  max-width: 360px;
+  width: 100%;
+  width: 360px;
+}
+
+.dataPanelWrapper {
+  overflow-x: hidden;
+}
+
+.collapseWrapper {
+  border-left: 1px solid $panel-divider;
 }
 
 .tabPane {
   height: 100%;
+}
+
+.toggle {
+  border: none;
+  border-radius: 0;
+  transition: transform 0.25s ease;
+  background-color: #fff0;
+
+  &.active {
+    transform: rotate(180deg);
+  }
+
+  svg {
+    margin: 5px;
+  }
 }
