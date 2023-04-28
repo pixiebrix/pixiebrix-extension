@@ -99,7 +99,6 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
         }
 
         const hasPermissions = await containsPermissions(collectedPermissions);
-
         return !hasPermissions;
       };
 
