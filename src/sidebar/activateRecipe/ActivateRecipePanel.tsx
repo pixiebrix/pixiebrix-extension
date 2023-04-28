@@ -123,6 +123,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   includesQuickBar,
   needsPermissions,
   canAutoActivate,
+  defaultAuthOptions,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
@@ -139,7 +140,10 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     void hideSidebar(topFrame);
   }
 
-  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const [wizardSteps, initialValues, validationSchema] = useWizard(
+    recipe,
+    defaultAuthOptions
+  );
   const formValuesRef = useRef<WizardValues>(initialValues);
 
   async function checkPermissions() {
@@ -158,10 +162,6 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     formValuesRef.current = values;
     void checkPermissions();
   };
-
-  useEffect(() => {
-    formValuesRef.current = initialValues;
-  }, [initialValues]);
 
   const activateRecipe = useCallback(async () => {
     if (state.isActivating || state.isActivated) {
