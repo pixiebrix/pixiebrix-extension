@@ -31,7 +31,7 @@ import { containsPermissions } from "@/background/messenger/api";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { UUID } from "@/types/stringTypes";
+import { type AuthOption } from "@/auth/authTypes";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
@@ -39,7 +39,7 @@ export type RecipeState = {
   includesQuickBar: boolean;
   needsPermissions: (formValues: WizardValues) => Promise<boolean>;
   canAutoActivate: boolean;
-  defaultAuthOptions: Record<RegistryId, UUID>;
+  defaultAuthOptions: Record<RegistryId, AuthOption>;
 };
 
 type RequireRecipeProps = {
