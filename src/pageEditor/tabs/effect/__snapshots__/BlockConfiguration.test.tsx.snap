@@ -61,7 +61,7 @@ exports[`renders 1`] = `
       >
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
           data-icon="chevron-right"
           data-prefix="fas"
           focusable="false"

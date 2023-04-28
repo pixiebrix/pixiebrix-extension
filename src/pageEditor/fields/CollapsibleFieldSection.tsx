@@ -21,44 +21,29 @@ import styles from "@/pageEditor/fields/CollapsibleFieldSection.module.scss";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { selectActiveNodeUIState } from "@/pageEditor/slices/editorSelectors";
-import { actions } from "@/pageEditor/slices/editorSlice";
 
 const CollapsibleFieldSection: React.FC<{
   title: string;
+  toggleExpanded: () => void;
   expanded?: boolean;
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
-}> = ({ title, children, bodyRef }) => {
-  const dispatch = useDispatch();
-  const { expandedFieldSections = {} } = useSelector(selectActiveNodeUIState);
-  const open = expandedFieldSections[title] ?? false;
-
-  return (
-    <div className={styles.root}>
-      <button
-        className={styles.header}
-        onClick={() => {
-          dispatch(
-            actions.setExpandedFieldSections({ id: title, open: !open })
-          );
-        }}
-      >
-        <FontAwesomeIcon
-          icon={faChevronRight}
-          className={cx(styles.activeIndicator, {
-            [styles.active]: open,
-          })}
-        />
-        {title}
-      </button>
-      <Collapse in={open}>
-        <div className={styles.body} ref={bodyRef}>
-          {children}
-        </div>
-      </Collapse>
-    </div>
-  );
-};
+}> = ({ title, toggleExpanded, expanded, children, bodyRef }) => (
+  <div className={styles.root}>
+    <button className={styles.header} onClick={toggleExpanded}>
+      <FontAwesomeIcon
+        icon={faChevronRight}
+        className={cx(styles.activeIndicator, {
+          [styles.active]: open,
+        })}
+      />
+      {title}
+    </button>
+    <Collapse in={expanded}>
+      <div className={styles.body} ref={bodyRef}>
+        {children}
+      </div>
+    </Collapse>
+  </div>
+);
 
 export default CollapsibleFieldSection;

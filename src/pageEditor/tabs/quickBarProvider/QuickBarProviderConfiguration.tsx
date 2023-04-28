@@ -28,7 +28,7 @@ import { type QuickBarProviderFormState } from "@/pageEditor/extensionPoints/for
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const QuickBarProviderConfiguration: React.FC<{
   isLocked: boolean;
@@ -101,7 +101,7 @@ const QuickBarProviderConfiguration: React.FC<{
           />
         </>
       )}
-      <CollapsibleFieldSection title="Advanced">
+      <ConnectedCollapsibleFieldSection title="Advanced">
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
           description={
@@ -114,7 +114,7 @@ const QuickBarProviderConfiguration: React.FC<{
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
         />
-      </CollapsibleFieldSection>
+      </ConnectedCollapsibleFieldSection>
 
       <ExtraPermissionsSection />
     </>

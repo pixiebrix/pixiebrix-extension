@@ -17,10 +17,10 @@
 
 import React from "react";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const ExtraPermissionsSection: React.FunctionComponent = () => (
-  <CollapsibleFieldSection title="Advanced: Extra Permissions">
+  <ConnectedCollapsibleFieldSection title="Advanced: Extra Permissions">
     <UrlMatchPatternField
       label="Sites/APIs"
       name="permissions.origins"
@@ -34,7 +34,7 @@ const ExtraPermissionsSection: React.FunctionComponent = () => (
         </div>
       }
     />
-  </CollapsibleFieldSection>
+  </ConnectedCollapsibleFieldSection>
 );
 
 export default ExtraPermissionsSection;

@@ -46,6 +46,7 @@ describe("ExtraPermissionsSection", () => {
           ],
           permissions: [],
         }),
+        setupRedux(dispatch) {},
       }).asFragment()
     ).toMatchSnapshot();
   });

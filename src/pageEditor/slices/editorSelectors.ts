@@ -239,7 +239,7 @@ export function selectActiveElementUIState({
 
 export const selectActiveNodeUIState = createSelector(
   selectActiveElementUIState,
-  (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
+  (elementUIState) => elementUIState?.nodeUIStates[elementUIState.activeNodeId]
 );
 
 export const selectActiveNodeId = createSelector(
