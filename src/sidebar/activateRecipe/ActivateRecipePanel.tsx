@@ -62,7 +62,7 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
 
 type ActivationState = {
   isInitialized: boolean;
-  needsPermissions: boolean;
+  needsPermissions: boolean | null;
   isActivating: boolean;
   isActivated: boolean;
   activationError: string | null;
@@ -70,7 +70,7 @@ type ActivationState = {
 
 const initialState: ActivationState = {
   isInitialized: false,
-  needsPermissions: false,
+  needsPermissions: null,
   isActivating: false,
   isActivated: false,
   activationError: null,
@@ -195,6 +195,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     );
 
     if (
+      state.needsPermissions != null &&
       !state.needsPermissions &&
       canAutoActivate &&
       !missingServiceConfigurations

@@ -90,6 +90,7 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
         const serviceAuths = formValues.services.filter(({ config }) =>
           Boolean(config)
         );
+
         const collectedPermissions = await collectPermissions(
           resolvedRecipeConfigs,
           serviceAuths
