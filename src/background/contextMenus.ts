@@ -71,8 +71,6 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
-  reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-
   console.time("ensureContentScript");
 
   // Using the context menu gives temporary access to the page
