@@ -46,13 +46,14 @@ import { persistor } from "@/sidebar/store";
 const { actions } = sidebarSlice;
 
 const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
-  const shortcutKeys = shortcut?.split("") ?? [];
+  const separator = shortcut?.includes("+") ? "+" : "";
+  const shortcutKeys = shortcut?.split(separator) ?? [];
   return (
     <div className={styles.shortcutContainer}>
       {shortcutKeys.map((key, index) => (
         <React.Fragment key={key}>
           {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
-          <span className={styles.shortcutKey}>{key}</span>
+          <span className={styles.shortcutKey}>{key.trim()}</span>
         </React.Fragment>
       ))}
     </div>
@@ -61,7 +62,7 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
 
 type ActivationState = {
   isInitialized: boolean;
-  needsPermissions: boolean;
+  needsPermissions: boolean | null;
   isActivating: boolean;
   isActivated: boolean;
   activationError: string | null;
@@ -69,7 +70,7 @@ type ActivationState = {
 
 const initialState: ActivationState = {
   isInitialized: false,
-  needsPermissions: false,
+  needsPermissions: null,
   isActivating: false,
   isActivated: false,
   activationError: null,
@@ -123,6 +124,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   includesQuickBar,
   needsPermissions,
   canAutoActivate,
+  defaultAuthOptions,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
@@ -139,7 +141,10 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     void hideSidebar(topFrame);
   }
 
-  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const [wizardSteps, initialValues, validationSchema] = useWizard(
+    recipe,
+    defaultAuthOptions
+  );
   const formValuesRef = useRef<WizardValues>(initialValues);
 
   async function checkPermissions() {
@@ -185,14 +190,23 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   ]);
 
   useEffect(() => {
-    if (!state.needsPermissions && canAutoActivate) {
+    const missingServiceConfigurations = initialValues.services.some(
+      ({ config }) => !config
+    );
+
+    if (
+      state.needsPermissions != null &&
+      !state.needsPermissions &&
+      canAutoActivate &&
+      !missingServiceConfigurations
+    ) {
       // State is checked inside this function call to prevent duplicate calls,
       // so we can simply dispatch asynchronously with "void" here.
       void activateRecipe();
     } else {
       stateDispatch(initialize());
     }
-  }, [activateRecipe, canAutoActivate, state.needsPermissions]);
+  }, [initialValues, activateRecipe, canAutoActivate, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;
