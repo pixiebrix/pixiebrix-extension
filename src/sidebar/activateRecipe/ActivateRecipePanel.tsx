@@ -46,13 +46,14 @@ import { persistor } from "@/sidebar/store";
 const { actions } = sidebarSlice;
 
 const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
-  const shortcutKeys = shortcut?.split("") ?? [];
+  const separator = shortcut?.includes("+") ? "+" : "";
+  const shortcutKeys = shortcut?.split(separator) ?? [];
   return (
     <div className={styles.shortcutContainer}>
       {shortcutKeys.map((key, index) => (
         <React.Fragment key={key}>
           {index > 0 && <span>&nbsp;&nbsp;+&nbsp;&nbsp;</span>}
-          <span className={styles.shortcutKey}>{key}</span>
+          <span className={styles.shortcutKey}>{key.trim()}</span>
         </React.Fragment>
       ))}
     </div>
