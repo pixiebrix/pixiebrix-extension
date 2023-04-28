@@ -6,10 +6,11 @@ import React from "react";
 
 const ConnectedCollapsibleFieldSection = ({
   title,
-  children,
+  ...rest
 }: {
   children: React.ReactNode;
   title: string;
+  bodyRef?: React.MutableRefObject<HTMLDivElement>;
 }) => {
   const dispatch = useDispatch();
   const UIState = useSelector(selectActiveNodeUIState);
@@ -28,9 +29,8 @@ const ConnectedCollapsibleFieldSection = ({
         );
       }}
       expanded={isExpanded}
-    >
-      {children}
-    </CollapsibleFieldSection>
+      {...rest}
+    />
   );
 };
 
