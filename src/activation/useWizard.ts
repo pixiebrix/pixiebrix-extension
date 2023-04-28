@@ -61,7 +61,6 @@ function useWizard(
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
     blueprint.options?.schema
   );
-  console.log("*** defaultAuthOptions", defaultAuthOptions);
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
