@@ -14,17 +14,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
-.cardHeader {
-  width: 100%;
-  // Avoid double-border from the card border
-  &:not(:first-child) {
-    border-top: 1px solid rgba(0, 0, 0, 0.125);
-  }
-  padding-top: 0.5em !important;
-  padding-bottom: 0.5em !important;
+.root {
+  // Negative margin to align the fields inside the accordion with the ones outside
+  margin: 0 -0.75em;
 }
 
-.cardBody {
-  padding: 0.5em 0.75em;
+.header {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  background: $field-section-header;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 1em;
+}
+
+.body {
+  padding: 1em 0.75em;
+}
+
+.activeIndicator {
+  display: inline-block;
+  transition: transform 0.25s ease;
+  margin: 0 0.75em 0 0.5em;
+
+  &.active {
+    transform: rotate(90deg);
+  }
 }

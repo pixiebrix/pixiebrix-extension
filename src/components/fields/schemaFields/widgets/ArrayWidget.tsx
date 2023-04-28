@@ -29,6 +29,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
+import styles from "./ArrayWidget.module.scss";
 
 type ArrayWidgetProps = SchemaFieldProps & {
   addButtonCaption?: string;
@@ -104,6 +105,8 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
             ))}
           </ul>
           <Button
+            variant="link"
+            className={styles.addButton}
             onClick={() => {
               push(getDefaultArrayItem(schemaItems));
             }}

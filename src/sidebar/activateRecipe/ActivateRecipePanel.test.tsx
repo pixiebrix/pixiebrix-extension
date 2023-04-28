@@ -263,11 +263,26 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured", async () => {
+  test("it renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
       shortcut: "⌘M",
+      isConfigured: true,
+    });
+
+    const rendered = setupMocksAndRender();
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
+    includesQuickBarMock.mockResolvedValue(true);
+
+    useQuickbarShortcutMock.mockReturnValue({
+      shortcut: "Ctrl+M",
       isConfigured: true,
     });
 

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors";
 
 /*
 * Used for dynamic theming of components with css variables,
@@ -69,7 +70,7 @@ $variable-theme-colors: (
   --theme-dark-l: 30%;
   --theme-dark: hsl(213, 19%, 30%);
 
-  --theme-bg-light: $neutral-surface-color;
+  --theme-bg-light: #{$neutral-surface-color};
 
   --logo-height: 28px;
 }

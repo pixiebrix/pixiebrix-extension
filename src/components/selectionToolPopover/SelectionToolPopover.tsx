@@ -21,7 +21,6 @@ import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import Draggable from "react-draggable";
 
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -70,64 +69,59 @@ const SelectionToolPopover: React.FC<{
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>
           <div className="popover-wrapper">
-            <FieldSection
-              title={
-                <div className="popover-wrapper-header">
-                  <FontAwesomeIcon icon={faGripHorizontal} size="1x" />
-                  {`Selection Tool: ${matchingCount} ${pluralize(
-                    matchingCount,
-                    "matching element",
-                    "matching elements"
-                  )}`}
-                </div>
-              }
-            >
-              <div className="d-flex align-items-center">
-                <SwitchButtonWidget
-                  name="allowMulti"
-                  value={multiEnabled}
-                  onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                    setMultiEnabled(target.value);
-                    if (!target.value) {
-                      setSimilarEnabled(false);
-                    }
+            <div className="popover-wrapper-header">
+              <FontAwesomeIcon icon={faGripHorizontal} size="1x" />
+              {`Selection Tool: ${matchingCount} ${pluralize(
+                matchingCount,
+                "matching element",
+                "matching elements"
+              )}`}
+            </div>
+            <div className="d-flex align-items-center popover-wrapper-body">
+              <SwitchButtonWidget
+                name="allowMulti"
+                value={multiEnabled}
+                onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+                  setMultiEnabled(target.value);
+                  if (!target.value) {
+                    setSimilarEnabled(false);
+                  }
 
-                    onChangeMultiSelection(target.value);
-                  }}
-                />
-                <FormLabel className="align-middle mx-3 mb-0">
-                  Select Multiple
-                </FormLabel>
+                  onChangeMultiSelection(target.value);
+                }}
+              />
+              <FormLabel className="align-middle mx-3 mb-0">
+                Select Multiple
+              </FormLabel>
 
-                {multiEnabled && (
-                  <>
-                    <SwitchButtonWidget
-                      name="allowSimilar"
-                      value={similarEnabled}
-                      onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-                        setSimilarEnabled(target.value);
-                        onChangeSimilarSelection(target.value);
-                      }}
-                    />
-                    <FormLabel className="align-middle mx-3 mb-0">
-                      Select Similar
-                    </FormLabel>
-                  </>
-                )}
+              {multiEnabled && (
+                <>
+                  <SwitchButtonWidget
+                    name="allowSimilar"
+                    value={similarEnabled}
+                    onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+                      setSimilarEnabled(target.value);
+                      onChangeSimilarSelection(target.value);
+                    }}
+                  />
+                  <FormLabel className="align-middle mx-3 mb-0">
+                    Select Similar
+                  </FormLabel>
+                </>
+              )}
 
-                <Button size="sm" variant="info" onClick={onCancel}>
-                  Cancel
-                </Button>
-                <Button
-                  className="info ml-1"
-                  size="sm"
-                  variant="primary"
-                  onClick={onDone}
-                >
-                  Done
-                </Button>
-              </div>
-            </FieldSection>
+              <Button size="sm" variant="info" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button
+                className="info ml-1"
+                size="sm"
+                variant="primary"
+                onClick={onDone}
+              >
+                Done
+              </Button>
+            </div>
           </div>
         </Draggable>
       </Stylesheets>

@@ -594,267 +594,273 @@ exports[`renders an extension with sub pipeline 1`] = `
             class="configPanel"
           >
             <div
-              class="col"
+              class="formGroup form-group row"
             >
-              <div
-                class="formGroup form-group row"
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="label"
               >
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="label"
-                >
-                  Name
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <input
-                    class="form-control"
-                    id="label"
-                    name="label"
-                    value="Element 2"
-                  />
-                </div>
+                Name
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
+              >
+                <input
+                  class="form-control"
+                  id="label"
+                  name="label"
+                  value="Element 2"
+                />
               </div>
+            </div>
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="extension.heading"
+              >
+                Heading
+              </label>
               <div
-                class="card"
+                class="col-xl-10 col-lg-9"
+              >
+                <input
+                  class="form-control"
+                  id="extension.heading"
+                  name="extension.heading"
+                  value=""
+                />
+                <small
+                  class="text-muted form-text"
+                >
+                  <span>
+                    Panel heading
+                  </span>
+                </small>
+              </div>
+            </div>
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="extensionPoint.definition.containerSelector"
+              >
+                <span>
+                  Location 
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-lock fa-w-14 "
+                    data-icon="lock"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
               >
                 <div
-                  class="cardHeader card-header"
+                  class="root"
                 >
-                  Configuration
-                </div>
-                <div
-                  class="cardBody card-body"
-                >
-                  <div
-                    class="formGroup form-group row"
+                  <button
+                    aria-label="Select element"
+                    class="btn btn-info"
+                    disabled=""
+                    type="button"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extension.heading"
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-mouse-pointer fa-w-10 "
+                      data-icon="mouse-pointer"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 320 512"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Heading
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <input
-                        class="form-control"
-                        id="extension.heading"
-                        name="extension.heading"
-                        value=""
+                      <path
+                        d="M302.189 329.126H196.105l55.831 135.993c3.889 9.428-.555 19.999-9.444 23.999l-49.165 21.427c-9.165 4-19.443-.571-23.332-9.714l-53.053-129.136-86.664 89.138C18.729 472.71 0 463.554 0 447.977V18.299C0 1.899 19.921-6.096 30.277 5.443l284.412 292.542c11.472 11.179 3.007 31.141-12.5 31.141z"
+                        fill="currentColor"
                       />
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Panel heading
-                        </span>
-                      </small>
-                    </div>
-                  </div>
+                    </svg>
+                  </button>
                   <div
-                    class="formGroup form-group row"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-owns="react-autowhatever-1"
+                    role="combobox"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.containerSelector"
-                    >
-                      <span>
-                        Location 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-                    </label>
+                    <input
+                      aria-autocomplete="list"
+                      aria-controls="react-autowhatever-1"
+                      autocomplete="off"
+                      class="form-control input notClearable"
+                      disabled=""
+                      placeholder="Select an element"
+                      type="search"
+                      value=""
+                    />
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="dropdown"
+                      id="react-autowhatever-1"
+                      role="listbox"
+                    />
+                  </div>
+                </div>
+                <small
+                  class="text-muted form-text"
+                >
+                  <span>
+                    Location on the page
+                  </span>
+                </small>
+              </div>
+            </div>
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="extensionPoint.definition.isAvailable.matchPatterns"
+              >
+                <span>
+                  Sites 
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-lock fa-w-14 "
+                    data-icon="lock"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
+              >
+                <ul
+                  class="list-group mb-2"
+                >
+                  <li
+                    class="list-group-item py-1"
+                  >
+                    <div
+                      class="formGroup mb-0 form-group row"
                     >
                       <div
-                        class="root"
+                        class="col-xl-12 col-lg-12"
                       >
-                        <button
-                          aria-label="Select element"
-                          class="btn btn-info"
-                          disabled=""
-                          type="button"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="svg-inline--fa fa-mouse-pointer fa-w-10 "
-                            data-icon="mouse-pointer"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            viewBox="0 0 320 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M302.189 329.126H196.105l55.831 135.993c3.889 9.428-.555 19.999-9.444 23.999l-49.165 21.427c-9.165 4-19.443-.571-23.332-9.714l-53.053-129.136-86.664 89.138C18.729 472.71 0 463.554 0 447.977V18.299C0 1.899 19.921-6.096 30.277 5.443l284.412 292.542c11.472 11.179 3.007 31.141-12.5 31.141z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </button>
                         <div
-                          aria-expanded="false"
-                          aria-haspopup="listbox"
-                          aria-owns="react-autowhatever-1"
-                          role="combobox"
+                          class="root"
                         >
-                          <input
-                            aria-autocomplete="list"
-                            aria-controls="react-autowhatever-1"
-                            autocomplete="off"
-                            class="form-control input notClearable"
-                            disabled=""
-                            placeholder="Select an element"
-                            type="search"
-                            value=""
-                          />
                           <div
-                            class="dropdown"
-                            id="react-autowhatever-1"
-                            role="listbox"
-                          />
+                            class="field"
+                          >
+                            <textarea
+                              class="form-control"
+                              id="extensionPoint.definition.isAvailable.matchPatterns.0"
+                              name="extensionPoint.definition.isAvailable.matchPatterns.0"
+                              rows="1"
+                            >
+                              https://www.mySite2.com/*
+                            </textarea>
+                          </div>
+                          <div
+                            class="dropdown dropdown"
+                            data-test-selected="Text"
+                            data-testid="toggle-extensionPoint.definition.isAvailable.matchPatterns.0"
+                          >
+                            <button
+                              aria-expanded="false"
+                              aria-haspopup="true"
+                              class="dropdown-toggle btn btn-link"
+                              type="button"
+                            >
+                              <span
+                                class="symbol"
+                              >
+                                <test-file-stub
+                                  classname="root"
+                                />
+                              </span>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Location on the page
-                        </span>
-                      </small>
                     </div>
-                  </div>
-                  <div
-                    class="formGroup form-group row"
-                  >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.isAvailable.matchPatterns"
-                    >
-                      <span>
-                        Sites 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <ul
-                        class="list-group mb-2"
-                      >
-                        <li
-                          class="list-group-item py-1"
-                        >
-                          <div
-                            class="formGroup mb-0 form-group row"
-                          >
-                            <div
-                              class="col-xl-12 col-lg-12"
-                            >
-                              <div
-                                class="root"
-                              >
-                                <div
-                                  class="field"
-                                >
-                                  <textarea
-                                    class="form-control"
-                                    id="extensionPoint.definition.isAvailable.matchPatterns.0"
-                                    name="extensionPoint.definition.isAvailable.matchPatterns.0"
-                                    rows="1"
-                                  >
-                                    https://www.mySite2.com/*
-                                  </textarea>
-                                </div>
-                                <div
-                                  class="dropdown dropdown"
-                                  data-test-selected="Text"
-                                  data-testid="toggle-extensionPoint.definition.isAvailable.matchPatterns.0"
-                                >
-                                  <button
-                                    aria-expanded="false"
-                                    aria-haspopup="true"
-                                    class="dropdown-toggle btn btn-link"
-                                    type="button"
-                                  >
-                                    <span
-                                      class="symbol"
-                                    >
-                                      <test-file-stub
-                                        classname="root"
-                                      />
-                                    </span>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                      <button
-                        class="btn btn-primary"
-                        type="button"
-                      >
-                        Add Site
-                      </button>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          URL match patterns permitting this starter brick to run on a site. If PixieBrix does not already have access to a site, your browser will prompt you to grant access. See 
-                          <a
-                            href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            <code>
-                              match_patterns
-                            </code>
-                             Documentation
-                          </a>
-                           for examples.
-                        </span>
-                      </small>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="cardHeader card-header"
+                  </li>
+                </ul>
+                <button
+                  class="addButton btn btn-link"
+                  type="button"
                 >
-                  Advanced
-                </div>
+                  Add Site
+                </button>
+                <small
+                  class="text-muted form-text"
+                >
+                  <span>
+                    URL match patterns permitting this starter brick to run on a site. If PixieBrix does not already have access to a site, your browser will prompt you to grant access. See 
+                    <a
+                      href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <code>
+                        match_patterns
+                      </code>
+                       Documentation
+                    </a>
+                     for examples.
+                  </span>
+                </small>
+              </div>
+            </div>
+            <div
+              class="root accordion"
+            >
+              <div
+                class="header"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  data-icon="chevron-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 320 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Advanced
+              </div>
+              <div
+                class="collapse"
+              >
                 <div
-                  class="cardBody card-body"
+                  class="body"
                 >
                   <div
                     class="formGroup form-group row"
@@ -996,13 +1002,36 @@ exports[`renders an extension with sub pipeline 1`] = `
                     </div>
                   </div>
                 </div>
-                <div
-                  class="cardHeader card-header"
+              </div>
+            </div>
+            <div
+              class="root accordion"
+            >
+              <div
+                class="header"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  data-icon="chevron-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 320 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  Advanced: Match Rules
-                </div>
+                  <path
+                    d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Advanced: Match Rules
+              </div>
+              <div
+                class="collapse"
+              >
                 <div
-                  class="cardBody card-body"
+                  class="body"
                 >
                   <div
                     class="formGroup form-group row"
@@ -1037,7 +1066,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                         class="list-group mb-2"
                       />
                       <button
-                        class="btn btn-primary"
+                        class="addButton btn btn-link"
                         type="button"
                       >
                         Add URL Pattern
@@ -1092,7 +1121,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                         class="list-group mb-2"
                       />
                       <button
-                        class="btn btn-primary"
+                        class="addButton btn btn-link"
                         type="button"
                       >
                         Add Selector
@@ -1111,13 +1140,36 @@ exports[`renders an extension with sub pipeline 1`] = `
                     </div>
                   </div>
                 </div>
-                <div
-                  class="cardHeader card-header"
+              </div>
+            </div>
+            <div
+              class="root accordion"
+            >
+              <div
+                class="header"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  data-icon="chevron-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 320 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  Advanced: Extra Permissions
-                </div>
+                  <path
+                    d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Advanced: Extra Permissions
+              </div>
+              <div
+                class="collapse"
+              >
                 <div
-                  class="cardBody card-body"
+                  class="body"
                 >
                   <div
                     class="formGroup form-group row"
@@ -1166,7 +1218,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                         class="list-group mb-2"
                       />
                       <button
-                        class="btn btn-primary"
+                        class="addButton btn btn-link"
                         type="button"
                       >
                         Add Allowed Origin
@@ -1846,169 +1898,171 @@ exports[`renders the first selected node 1`] = `
             class="configPanel"
           >
             <div
-              class="col"
+              class="topRow row"
             >
               <div
-                class="topRow row"
+                class="col-xl"
               >
                 <div
-                  class="col-xl"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-lg-auto"
+                    for="extension.blockPipeline.0.label"
                   >
-                    <label
-                      class="label form-label col-form-label col-lg-auto"
-                      for="extension.blockPipeline.0.label"
-                    >
-                      Step Name
-                    </label>
-                    <div
-                      class="col-lg"
-                    >
-                      <input
-                        class="form-control"
-                        id="extension.blockPipeline.0.label"
-                        name="extension.blockPipeline.0.label"
-                        placeholder="Echo Block"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="col-xl"
-                >
+                    Step Name
+                  </label>
                   <div
-                    class="formGroup form-group row"
+                    class="col-lg"
                   >
-                    <label
-                      class="label form-label col-form-label col-lg-auto"
-                      for="extension.blockPipeline.0.outputKey"
-                    >
-                      <span
-                        class="span"
-                      >
-                        <span
-                          class="label"
-                        >
-                          Output
-                        </span>
-                         
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-info-circle fa-w-16 "
-                          data-icon="info-circle"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 512 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-                    </label>
-                    <div
-                      class="col-lg"
-                    >
-                      <div
-                        class="input-group"
-                      >
-                        <div
-                          class="input-group-prepend"
-                        >
-                          <span
-                            class="input-group-text"
-                          >
-                            @
-                          </span>
-                        </div>
-                        <input
-                          class="form-control"
-                          id="extension.blockPipeline.0.outputKey"
-                          name="extension.blockPipeline.0.outputKey"
-                          value="echoOutput"
-                        />
-                      </div>
-                    </div>
+                    <input
+                      class="form-control"
+                      id="extension.blockPipeline.0.label"
+                      name="extension.blockPipeline.0.label"
+                      placeholder="Echo Block"
+                      value=""
+                    />
                   </div>
                 </div>
               </div>
               <div
-                class="card"
+                class="col-xl"
               >
                 <div
-                  class="cardHeader card-header"
+                  class="formGroup form-group row"
                 >
-                  <span
-                    class="title"
+                  <label
+                    class="label form-label col-form-label col-lg-auto"
+                    for="extension.blockPipeline.0.outputKey"
                   >
-                    Input
-                  </span>
-                </div>
-                <div
-                  class="cardBody card-body"
-                >
-                  <div
-                    class="formGroup form-group row"
-                  >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extension.blockPipeline.0.config.message"
+                    <span
+                      class="span"
                     >
-                      message
-                    </label>
+                      <span
+                        class="label"
+                      >
+                        Output
+                      </span>
+                       
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-info-circle fa-w-16 "
+                        data-icon="info-circle"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-lg"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="input-group"
                     >
                       <div
-                        class="root"
+                        class="input-group-prepend"
                       >
-                        <div
-                          class="field"
+                        <span
+                          class="input-group-text"
                         >
-                          <textarea
-                            class="form-control"
-                            id="extension.blockPipeline.0.config.message"
-                            name="extension.blockPipeline.0.config.message"
-                            rows="1"
-                          />
-                        </div>
-                        <div
-                          class="dropdown dropdown"
-                          data-test-selected="Text"
-                          data-testid="toggle-extension.blockPipeline.0.config.message"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            class="dropdown-toggle btn btn-link"
-                            type="button"
-                          >
-                            <span
-                              class="symbol"
-                            >
-                              <test-file-stub
-                                classname="root"
-                              />
-                            </span>
-                          </button>
-                        </div>
+                          @
+                        </span>
                       </div>
+                      <input
+                        class="form-control"
+                        id="extension.blockPipeline.0.outputKey"
+                        name="extension.blockPipeline.0.outputKey"
+                        value="echoOutput"
+                      />
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div
+              class="formGroup form-group row"
+            >
+              <label
+                class="label form-label col-form-label col-xl-2 col-lg-3"
+                for="extension.blockPipeline.0.config.message"
+              >
+                message
+              </label>
+              <div
+                class="col-xl-10 col-lg-9"
+              >
                 <div
-                  class="cardHeader card-header"
+                  class="root"
                 >
-                  Advanced Options
+                  <div
+                    class="field"
+                  >
+                    <textarea
+                      class="form-control"
+                      id="extension.blockPipeline.0.config.message"
+                      name="extension.blockPipeline.0.config.message"
+                      rows="1"
+                    />
+                  </div>
+                  <div
+                    class="dropdown dropdown"
+                    data-test-selected="Text"
+                    data-testid="toggle-extension.blockPipeline.0.config.message"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="dropdown-toggle btn btn-link"
+                      type="button"
+                    >
+                      <span
+                        class="symbol"
+                      >
+                        <test-file-stub
+                          classname="root"
+                        />
+                      </span>
+                    </button>
+                  </div>
                 </div>
+              </div>
+            </div>
+            <div
+              class="root accordion"
+            >
+              <div
+                class="header"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  data-icon="chevron-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 320 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Advanced Options
+              </div>
+              <div
+                class="collapse"
+              >
                 <div
-                  class="cardBody card-body"
+                  class="body"
                 >
                   <small
                     class="text-muted font-italic"

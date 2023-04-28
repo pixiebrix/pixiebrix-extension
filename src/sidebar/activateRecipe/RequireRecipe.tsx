@@ -31,6 +31,7 @@ import { containsPermissions } from "@/background/messenger/api";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { type AuthOption } from "@/auth/authTypes";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
@@ -38,6 +39,7 @@ export type RecipeState = {
   includesQuickBar: boolean;
   needsPermissions: (formValues: WizardValues) => Promise<boolean>;
   canAutoActivate: boolean;
+  defaultAuthOptions: Record<RegistryId, AuthOption>;
 };
 
 type RequireRecipeProps = {
@@ -88,6 +90,7 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
         const serviceAuths = formValues.services.filter(({ config }) =>
           Boolean(config)
         );
+
         const collectedPermissions = await collectPermissions(
           resolvedRecipeConfigs,
           serviceAuths
@@ -184,6 +187,7 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     includesQuickBar: quickBarAndPermissions?.includesQuickBar,
     needsPermissions: quickBarAndPermissions?.needsPermissions,
     canAutoActivate,
+    defaultAuthOptions,
   };
 
   return children(recipeState);
