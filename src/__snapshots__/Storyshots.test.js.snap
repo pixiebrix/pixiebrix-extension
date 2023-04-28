@@ -3809,9 +3809,9 @@ exports[`Storyshots ExtensionConsole/IDBErrorDisplay Normal Error 1`] = `
     className="mt-2 small text-secondary"
   >
     ContextError: Encountered full disk while opening backing store for indexedDB.open.
-at k (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:35318)
- at $ (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/85282.bundle.js:2:36577)
- at async L.runExtension (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/contentScriptCore.bundle.js:1:220194)
+at k (chrome-extension://my-chrome-extension-id/bundles/85282.bundle.js:2:35318)
+ at $ (chrome-extension://my-chrome-extension-id/bundles/85282.bundle.js:2:36577)
+ at async L.runExtension (chrome-extension://my-chrome-extension-id/bundles/contentScriptCore.bundle.js:1:220194)
   </pre>
 </div>
 `;
