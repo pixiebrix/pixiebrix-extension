@@ -124,6 +124,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   includesQuickBar,
   needsPermissions,
   canAutoActivate,
+  defaultAuthOptions,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
@@ -140,7 +141,10 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     void hideSidebar(topFrame);
   }
 
-  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const [wizardSteps, initialValues, validationSchema] = useWizard(
+    recipe,
+    defaultAuthOptions
+  );
   const formValuesRef = useRef<WizardValues>(initialValues);
 
   async function checkPermissions() {
@@ -186,14 +190,22 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   ]);
 
   useEffect(() => {
-    if (!state.needsPermissions && canAutoActivate) {
+    const missingServiceConfigurations = initialValues.services.some(
+      ({ config }) => !config
+    );
+
+    if (
+      !state.needsPermissions &&
+      canAutoActivate &&
+      !missingServiceConfigurations
+    ) {
       // State is checked inside this function call to prevent duplicate calls,
       // so we can simply dispatch asynchronously with "void" here.
       void activateRecipe();
     } else {
       stateDispatch(initialize());
     }
-  }, [activateRecipe, canAutoActivate, state.needsPermissions]);
+  }, [initialValues, activateRecipe, canAutoActivate, state.needsPermissions]);
 
   if (!state.isInitialized || state.isActivating) {
     return <Loader />;
