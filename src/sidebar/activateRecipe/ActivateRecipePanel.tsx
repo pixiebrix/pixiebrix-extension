@@ -61,7 +61,7 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
 
 type ActivationState = {
   isInitialized: boolean;
-  needsPermissions: boolean;
+  needsPermissions: boolean | null;
   isActivating: boolean;
   isActivated: boolean;
   activationError: string | null;
@@ -69,7 +69,7 @@ type ActivationState = {
 
 const initialState: ActivationState = {
   isInitialized: false,
-  needsPermissions: false,
+  needsPermissions: null,
   isActivating: false,
   isActivated: false,
   activationError: null,
@@ -185,7 +185,11 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   ]);
 
   useEffect(() => {
-    if (!state.needsPermissions && canAutoActivate) {
+    if (
+      state.needsPermissions !== null &&
+      !state.needsPermissions &&
+      canAutoActivate
+    ) {
       // State is checked inside this function call to prevent duplicate calls,
       // so we can simply dispatch asynchronously with "void" here.
       void activateRecipe();
