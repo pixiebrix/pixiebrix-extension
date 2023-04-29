@@ -86,8 +86,6 @@ function requiresUserConfiguration(
 const RequireRecipe: React.FC<Props> = ({ recipeId, children }) => {
   const recipeDefinitionState = useRequiredRecipe(recipeId);
 
-  // TODO: useAuthOptions returns empty remote auths while loading. That's probably not OK, we need the local and remote
-  //  auths to determine if we can auto-activate. Otherwise, the canAutoActivate will flicker from false to true.
   const authOptionsState = useAuthOptions();
 
   const state = useDeriveAsyncState(
