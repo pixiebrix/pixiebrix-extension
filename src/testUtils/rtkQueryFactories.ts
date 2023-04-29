@@ -79,14 +79,6 @@ export function queryErrorFactory(
   { isFetching }: { isFetching?: boolean } = {}
 ): UseQueryHookResult<QueryDefinition<any, any, any, any>> {
   // Define as function instead of `define` to enforce valid state.
-  const fetchState = isFetching
-    ? {
-        isFetching: true,
-      }
-    : {
-        isFetching: false,
-      };
-
   return {
     data: undefined,
     currentData: undefined,
@@ -94,9 +86,9 @@ export function queryErrorFactory(
     isSuccess: false,
     isError: true,
     error,
+    isFetching,
     isUninitialized: false,
     refetch: jest.fn(),
     status: QueryStatus.rejected,
-    ...fetchState,
   } as any;
 }
