@@ -21,7 +21,8 @@ import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useMemo } from "react";
 import { recipesActions } from "./recipesSlice";
 import { type RegistryId } from "@/types/registryTypes";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
+import { type AsyncState, type UseCachedQueryResult } from "@/types/sliceTypes";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 
 /**
  * Lookup a recipe from the registry by ID, or null if it doesn't exist
@@ -43,6 +44,22 @@ export function useRecipe(
   );
 
   return { data: recipe, ...rest };
+}
+
+// TODO: should wait for the recipe to load if in useAllRecipes if it's not immediately available
+export function useRequiredRecipe(
+  id: RegistryId
+): AsyncState<RecipeDefinition> {
+  const state = useAllRecipes();
+
+  return useDeriveAsyncState(state, async (allRecipes: RecipeDefinition[]) => {
+    const recipe = allRecipes?.find((x) => x.metadata.id === id);
+    if (!recipe) {
+      throw new Error(`Recipe ${id} not found`);
+    }
+
+    return recipe;
+  });
 }
 
 /**

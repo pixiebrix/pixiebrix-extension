@@ -15,18 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AsyncState } from "@/types/sliceTypes";
-import { identity } from "lodash";
+import {
+  type AsyncState,
+  type AsyncStateArray,
+  type AsyncValueArray,
+} from "@/types/sliceTypes";
 
-export function mergeAsyncState<Result, ArgState>(
-  states: Array<AsyncState<ArgState>>,
-  {
-    merge,
-  }: {
-    merge?: (states: ArgState[]) => Result;
-  } = {}
+export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
+  ...args: [
+    ...AsyncStateArray,
+    (...args: AsyncValueArray<AsyncStates>) => Result
+  ]
 ): AsyncState<Result> {
-  const mergeFunction = merge ?? identity;
+  // @ts-expect-error -- getting last element
+  const mergeFunction: (...args: AsyncValueArray<AsyncStates>) => Result =
+    args.at(-1);
+
+  // @ts-expect-error -- getting args except last element
+  const states: AsyncStateArray = args.slice(0, -1);
+
   const isFetching = states.some((x) => x.isFetching);
 
   // In error state if any of the sub-states are error
@@ -47,10 +54,10 @@ export function mergeAsyncState<Result, ArgState>(
   // In success state only if all information is available
   if (states.every((x) => x.isSuccess)) {
     return {
-      data: mergeFunction(states.map((x) => x.data)),
+      data: mergeFunction(...(states.map((x) => x.data) as any)),
       currentData: isFetching
         ? undefined
-        : mergeFunction(states.map((x) => x.currentData)),
+        : mergeFunction(...(states.map((x) => x.currentData) as any)),
       isUninitialized: false,
       isLoading: false,
       isFetching,
@@ -72,4 +79,26 @@ export function mergeAsyncState<Result, ArgState>(
     isSuccess: false,
     error: undefined,
   };
+}
+
+/**
+ * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic values
+ * @param state
+ * @param initialValue
+ */
+export function defaultInitialValue<Value, State extends AsyncState<Value>>(
+  state: State,
+  initialValue: Value
+): State {
+  if (state.isUninitialized || state.isLoading) {
+    return {
+      ...state,
+      isUninitialized: false,
+      isLoading: false,
+      isSuccess: true,
+      data: initialValue,
+    };
+  }
+
+  return state;
 }
