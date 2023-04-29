@@ -72,7 +72,7 @@ export type FetchableAsyncState<Data = unknown> = AsyncState<Data> & {
 /**
  * An type for characterizing hook output that's similar to RTK Query's state.
  */
-export type UseCachedQueryResult<TData> = AsyncState<TData> & {
+export type UseCachedQueryResult<TData> = FetchableAsyncState<TData> & {
   /**
    * When true, indicates that the query is currently fetching data from Registry cache
    */

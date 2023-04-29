@@ -21,7 +21,11 @@ import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useMemo } from "react";
 import { recipesActions } from "./recipesSlice";
 import { type RegistryId } from "@/types/registryTypes";
-import { type AsyncState, type UseCachedQueryResult } from "@/types/sliceTypes";
+import {
+  type AsyncState,
+  type FetchableAsyncState,
+  type UseCachedQueryResult,
+} from "@/types/sliceTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 
 /**
@@ -36,14 +40,24 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
  */
 export function useRecipe(
   id: RegistryId
-): UseCachedQueryResult<RecipeDefinition | null> {
-  const { data: allRecipes, ...rest } = useAllRecipes();
+): FetchableAsyncState<RecipeDefinition | null> {
+  const {
+    data: recipes,
+    currentData: currentRecipes,
+    ...rest
+  } = useAllRecipes();
+
   const recipe = useMemo(
-    () => allRecipes?.find((x) => x.metadata.id === id),
-    [id, allRecipes]
+    () => recipes?.find((x) => x.metadata.id === id),
+    [id, recipes]
   );
 
-  return { data: recipe, ...rest };
+  const currentRecipe = useMemo(
+    () => currentRecipes?.find((x) => x.metadata.id === id),
+    [id, currentRecipes]
+  );
+
+  return { data: recipe, currentData: currentRecipe, ...rest };
 }
 
 // TODO: should wait for the recipe to load if in useAllRecipes if it's not immediately available

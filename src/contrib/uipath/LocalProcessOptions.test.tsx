@@ -33,6 +33,7 @@ import {
 } from "@/types/serviceTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
+import { liftValue } from "@/utils/asyncStateUtils";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
@@ -135,11 +136,7 @@ describe("UiPath LocalProcess Options", () => {
   test("Can render consent code and service selector", async () => {
     (
       auth.useAuthOptions as jest.MockedFunction<typeof auth.useAuthOptions>
-    ).mockReturnValue({
-      authOptions: [],
-      refresh: jest.fn(),
-      isLoading: false,
-    });
+    ).mockReturnValue(liftValue([]));
     (
       contentScriptApi.getProcesses as jest.MockedFunction<
         typeof contentScriptApi.getProcesses
@@ -184,8 +181,8 @@ describe("UiPath LocalProcess Options", () => {
     });
     (
       auth.useAuthOptions as jest.MockedFunction<typeof auth.useAuthOptions>
-    ).mockReturnValue({
-      authOptions: [
+    ).mockReturnValue(
+      liftValue([
         {
           label: "Test Auth",
           value: config,
@@ -193,10 +190,8 @@ describe("UiPath LocalProcess Options", () => {
           local: true,
           sharingType: "private",
         },
-      ],
-      refresh: jest.fn(),
-      isLoading: false,
-    });
+      ])
+    );
     (
       contentScriptApi.getProcesses as jest.MockedFunction<
         typeof contentScriptApi.getProcesses

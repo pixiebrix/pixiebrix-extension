@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useRecipe, useRequiredRecipe } from "@/recipes/recipesHooks";
 import * as api from "@/services/api";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
@@ -25,7 +25,6 @@ import {
   recipeDefinitionFactory,
   sidebarEntryFactory,
 } from "@/testUtils/factories";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { uuidv4 } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
@@ -37,12 +36,15 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { containsPermissions } from "@/background/messenger/api";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { liftCacheableValue } from "@/utils/asyncStateUtils";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useRequiredRecipe: jest.fn(),
 }));
 
-const useRecipeMock = useRecipe as jest.MockedFunction<typeof useRecipe>;
+const useRequiredRecipeMock = useRequiredRecipe as jest.MockedFunction<
+  typeof useRequiredRecipe
+>;
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(),
@@ -148,26 +150,13 @@ const useQuickbarShortcutMock = useQuickbarShortcut as jest.MockedFunction<
   typeof useQuickbarShortcut
 >;
 
-function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
-  return {
-    data,
-    isFetchingFromCache: false,
-    isCacheUninitialized: false,
-    isFetching: false,
-    isLoading: false,
-    isUninitialized: false,
-    error: null,
-    refetch: jest.fn(),
-  };
-}
-
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
 function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
   const recipe = recipeDefinitionFactory(recipeOverride);
-  useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
+  useRequiredRecipeMock.mockReturnValue(liftCacheableValue(recipe));
   const listing = marketplaceListingFactory({
     package: {
       id: uuidv4(),

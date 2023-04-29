@@ -149,10 +149,19 @@ describe("reducers", () => {
       state,
       recipesActions.setRecipes(recipes)
     );
-    expect(nextState.recipes).toEqual(recipes);
-    expect(nextState.isFetching).toBeFalse();
-    expect(nextState.isLoading).toBeFalse();
-    expect(nextState.isUninitialized).toBeFalse();
-    expect(nextState.error).toBeUndefined();
+
+    expect(nextState).toEqual({
+      data: recipes,
+      isFetching: false,
+      isLoading: false,
+      isUninitialized: false,
+      isError: false,
+      isSuccess: false,
+      error: undefined,
+      // XXX: fix these to match the common state shape
+      isFetchingFromCache: false,
+      isCacheUninitialized: true,
+      currentData: undefined,
+    });
   });
 });

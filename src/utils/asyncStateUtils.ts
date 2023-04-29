@@ -19,7 +19,10 @@ import {
   type AsyncState,
   type AsyncStateArray,
   type AsyncValueArray,
+  type FetchableAsyncState,
+  UseCachedQueryResult,
 } from "@/types/sliceTypes";
+import { noop } from "lodash";
 
 export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
@@ -101,4 +104,44 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
   }
 
   return state;
+}
+
+/**
+ * Lift a known value to a FetchableAsyncState.
+ * @param value the value
+ */
+export function liftValue<Value>(value: Value): FetchableAsyncState<Value> {
+  return {
+    data: value,
+    currentData: value,
+    isUninitialized: false,
+    isLoading: false,
+    isFetching: false,
+    isError: false,
+    isSuccess: true,
+    error: undefined,
+    refetch: noop,
+  };
+}
+
+/**
+ * Lift a known value to a FetchableAsyncState.
+ * @param value the value
+ */
+export function liftCacheableValue<Value>(
+  value: Value
+): UseCachedQueryResult<Value> {
+  return {
+    data: value,
+    currentData: value,
+    isUninitialized: false,
+    isLoading: false,
+    isFetching: false,
+    isError: false,
+    isSuccess: true,
+    error: undefined,
+    isCacheUninitialized: false,
+    isFetchingFromCache: false,
+    refetch: noop,
+  };
 }

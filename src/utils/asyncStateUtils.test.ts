@@ -42,7 +42,7 @@ describe("asyncStateUtils", () => {
       error: undefined,
     };
 
-    expect(mergeAsyncState([state1, state2])).toEqual({
+    expect(mergeAsyncState(state1, state2, (...args) => args)).toEqual({
       data: ["data1", "data2"],
       currentData: ["data1", "data2"],
       isUninitialized: false,
@@ -78,9 +78,7 @@ describe("asyncStateUtils", () => {
     };
 
     expect(
-      mergeAsyncState([state1, state2], {
-        merge: (xs: string[]) => xs.join(""),
-      })
+      mergeAsyncState(state1, state2, (...xs: string[]) => xs.join(""))
     ).toEqual({
       data: "data1data2",
       currentData: "data1data2",

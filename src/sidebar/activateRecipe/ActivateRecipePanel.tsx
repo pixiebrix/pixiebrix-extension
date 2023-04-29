@@ -42,6 +42,9 @@ import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { persistor } from "@/sidebar/store";
+import { collectPermissions } from "@/permissions";
+import { containsPermissions } from "@/background/messenger/api";
+import { resolveRecipe } from "@/registry/internal";
 
 const { actions } = sidebarSlice;
 
@@ -122,7 +125,6 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   recipe,
   recipeNameNode,
   includesQuickBar,
-  needsPermissions,
   canAutoActivate,
   defaultAuthOptions,
 }) => {
@@ -145,11 +147,38 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     recipe,
     defaultAuthOptions
   );
+
   const formValuesRef = useRef<WizardValues>(initialValues);
+
+  const checkNeedsPermissions = useCallback(
+    async (formValues: WizardValues) => {
+      const serviceAuths = formValues.services.filter(({ config }) =>
+        Boolean(config)
+      );
+
+      const resolvedRecipeConfigs = await resolveRecipe(
+        recipe,
+        recipe.extensionPoints
+      );
+
+      const collectedPermissions = await collectPermissions(
+        resolvedRecipeConfigs,
+        serviceAuths
+      );
+
+      if (isEmpty(collectedPermissions)) {
+        return false;
+      }
+
+      const hasPermissions = await containsPermissions(collectedPermissions);
+      return !hasPermissions;
+    },
+    []
+  );
 
   async function checkPermissions() {
     stateDispatch(
-      setNeedsPermissions(await needsPermissions(formValuesRef.current))
+      setNeedsPermissions(await checkNeedsPermissions(formValuesRef.current))
     );
   }
 

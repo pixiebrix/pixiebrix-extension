@@ -23,7 +23,8 @@ import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
 
 export const initialState: RecipesState = Object.freeze({
-  recipes: [],
+  data: undefined,
+  currentData: undefined,
 
   isFetchingFromCache: false,
   isCacheUninitialized: true,
@@ -32,6 +33,8 @@ export const initialState: RecipesState = Object.freeze({
   isFetching: false,
   isUninitialized: true,
 
+  isError: false,
+  isSuccess: false,
   error: undefined,
 });
 
@@ -82,7 +85,7 @@ export const recipesSlice = createSlice({
       state.isFetchingFromCache = true;
     },
     setRecipesFromCache(state, action) {
-      state.recipes = action.payload;
+      state.data = action.payload;
       state.isFetchingFromCache = false;
       state.isCacheUninitialized = false;
     },
@@ -93,7 +96,7 @@ export const recipesSlice = createSlice({
       }
     },
     setRecipes(state, action) {
-      state.recipes = action.payload;
+      state.data = action.payload;
       state.isFetching = false;
       state.isLoading = false;
       state.isUninitialized = false;
