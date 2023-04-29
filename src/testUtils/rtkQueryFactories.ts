@@ -92,3 +92,22 @@ export function queryErrorFactory(
     status: QueryStatus.rejected,
   } as any;
 }
+
+/**
+ * Factory to create an RTK Query uninitialized state.
+ */
+export function queryUninitializedFactory(): UseQueryHookResult<
+  QueryDefinition<any, any, any, any>
+> {
+  return {
+    data: undefined,
+    currentData: undefined,
+    isLoading: true,
+    isSuccess: false,
+    isError: false,
+    isUninitialized: true,
+    refetch: jest.fn(),
+    isFetching: true,
+    status: QueryStatus.uninitialized,
+  } as any;
+}

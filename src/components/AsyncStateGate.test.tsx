@@ -22,9 +22,21 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import {
   queryErrorFactory,
   queryLoadingFactory,
+  queryUninitializedFactory,
 } from "@/testUtils/rtkQueryFactories";
 
 describe("AsyncStateGate", () => {
+  it("renders loader on uninitialized", () => {
+    const state = queryUninitializedFactory();
+    const wrapper = render(
+      <AsyncStateGate state={state}>
+        {({ data }) => <div>{data}</div>}
+      </AsyncStateGate>
+    );
+
+    expect(wrapper.getByTestId("loader")).toBeVisible();
+  });
+
   it("renders data", () => {
     const state = valueToAsyncState("foo");
     const wrapper = render(
@@ -36,17 +48,6 @@ describe("AsyncStateGate", () => {
     expect(wrapper.getByText("foo")).toBeVisible();
   });
 
-  it("throws on error by default", () => {
-    const state = queryErrorFactory(new Error("test error"));
-    expect(() =>
-      render(
-        <AsyncStateGate state={state}>
-          {() => <div>Hello world!</div>}
-        </AsyncStateGate>
-      )
-    ).toThrow("test error");
-  });
-
   it("renders loader", () => {
     const state = queryLoadingFactory();
     const wrapper = render(
@@ -56,6 +57,17 @@ describe("AsyncStateGate", () => {
     );
 
     expect(wrapper.getByTestId("loader")).toBeVisible();
+  });
+
+  it("throws on error by default", () => {
+    const state = queryErrorFactory(new Error("test error"));
+    expect(() =>
+      render(
+        <AsyncStateGate state={state}>
+          {() => <div>Hello world!</div>}
+        </AsyncStateGate>
+      )
+    ).toThrow("test error");
   });
 
   it("renders error component", () => {
