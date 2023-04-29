@@ -31,13 +31,18 @@ import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { defaultInitialValue } from "@/utils/asyncStateUtils";
+import { AuthOption } from "@/auth/authTypes";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
+const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
+
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const { data: authOptions, refetch: refreshAuthOptions } = useAuthOptions();
+  const { data: authOptions, refetch: refreshAuthOptions } =
+    defaultInitialValue(useAuthOptions(), emptyAuthOptions);
 
   const [field, { error }] = useField<ServiceAuthPair[]>("services");
 

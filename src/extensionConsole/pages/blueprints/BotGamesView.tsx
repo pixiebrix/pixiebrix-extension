@@ -48,7 +48,7 @@ export const useInstallBotGamesBlueprint = () => {
 
   const installBotGamesBlueprint = async () => {
     const permissions = await collectPermissions(
-      await resolveRecipe(botGamesRecipe, botGamesRecipe.extensionPoints),
+      await resolveRecipe(botGamesRecipe),
       // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
       []
     );

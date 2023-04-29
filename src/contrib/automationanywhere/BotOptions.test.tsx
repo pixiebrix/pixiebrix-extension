@@ -30,6 +30,8 @@ import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IService } from "@/types/serviceTypes";
+import { useAuthOptions } from "@/hooks/auth";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
@@ -48,11 +50,7 @@ jest.mock("@/services/useDependency", () =>
   })
 );
 jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn().mockReturnValue({
-    authOptions: [],
-    refresh: jest.fn(),
-    isLoading: false,
-  }),
+  useAuthOptions: jest.fn(),
 }));
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
@@ -88,6 +86,9 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
+  (
+    useAuthOptions as jest.MockedFunction<typeof useAuthOptions>
+  ).mockReturnValue(valueToAsyncState([]));
 });
 
 describe("BotOptions", () => {

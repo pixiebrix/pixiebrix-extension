@@ -90,7 +90,8 @@ const promiseSlice = createSlice({
 });
 
 /**
- * Returns a new AsyncState that is derived from the given AsyncStates.
+ * Returns a new AsyncState that is asynchronously derived from the given AsyncStates.
+ * @see useMergeAsyncState
  */
 function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
@@ -142,11 +143,39 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
     }
   }, datums);
 
-  const allStates = [...states, promiseState];
-  const isFetching = allStates.some((x) => x.isFetching);
-  const isLoading = allStates.some((x) => x.isLoading);
+  const isLoading =
+    // Any dependencies are loading
+    states.some((x) => x.isLoading) ||
+    // Some dependencies have kicked off, but others have not
+    (states.some((x) => x.isUninitialized) &&
+      states.some((x) => !x.isUninitialized)) ||
+    // Dependencies have completed, but derived promise has not started
+    (states.every((x) => x.isSuccess) && promiseState.isUninitialized) ||
+    // Derived promise is loading
+    promiseState.isLoading;
 
-  // In error state if any of the sub-states are error
+  const isFetching =
+    // `isLoading` implies isFetching
+    isLoading || states.some((x) => x.isFetching) || promiseState.isFetching;
+
+  // The overall state is uninitialized only if none of the substates have stated calculating
+  const isUninitialized = states.every((x) => x.isUninitialized);
+
+  // In error state if the final promise is an error
+  if (promiseState.isError) {
+    return {
+      data: undefined,
+      currentData: undefined,
+      isUninitialized,
+      isLoading,
+      isFetching,
+      isError: true,
+      isSuccess: false,
+      error: promiseState.error,
+    };
+  }
+
+  // In error state if any of the dependencies are errors
   if (states.some((x) => x.isError)) {
     return {
       data: undefined,
@@ -178,10 +207,9 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   return {
     data: undefined,
     currentData: undefined,
-    isFetching,
-    // If any of the state are initializing, then the overall derived state is initializing
-    isUninitialized: states.every((x) => x.isUninitialized),
     isLoading,
+    isFetching,
+    isUninitialized,
     isError: false,
     isSuccess: false,
     error: undefined,

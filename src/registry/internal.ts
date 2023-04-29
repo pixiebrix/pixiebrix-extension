@@ -24,7 +24,6 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
 import { resolveObj } from "@/utils";
 import {
-  type ExtensionDefinition,
   type RecipeDefinition,
   type ResolvedExtensionDefinition,
 } from "@/types/recipeTypes";
@@ -231,11 +230,12 @@ export async function resolveDefinitions<
  * TODO: resolve other definitions within the extensions
  */
 export async function resolveRecipe(
-  recipe: RecipeDefinition,
-  selected: ExtensionDefinition[]
+  recipe: RecipeDefinition
 ): Promise<ResolvedExtensionDefinition[]> {
+  const extensionDefinitions = recipe.extensionPoints;
+
   if (isEmpty(recipe.definitions)) {
-    return selected as ResolvedExtensionDefinition[];
+    return extensionDefinitions as ResolvedExtensionDefinition[];
   }
 
   const ensured = await resolveObj(
@@ -244,7 +244,7 @@ export async function resolveRecipe(
     )
   );
   const definitions = new Map(Object.entries(ensured));
-  return selected.map(
+  return extensionDefinitions.map(
     (definition) =>
       (definitions.has(definition.id)
         ? { ...definition, id: definitions.get(definition.id).id }

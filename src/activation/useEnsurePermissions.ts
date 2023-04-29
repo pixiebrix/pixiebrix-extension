@@ -63,7 +63,7 @@ function useEnsurePermissions(
       // Refresh services because the user may have created a team integration since the last refresh.
       await services.refresh();
       const permissions = await collectPermissions(
-        await resolveRecipe(blueprint, blueprint.extensionPoints),
+        await resolveRecipe(blueprint),
         serviceAuths
       );
       const enabled = await containsPermissions(permissions);

@@ -16,8 +16,6 @@
  */
 
 import {
-  type AsyncState,
-  type AsyncStateArray,
   type AsyncValueArray,
   type FetchableAsyncState,
   type FetchableAsyncStateArray,
@@ -37,37 +35,10 @@ const warnMergeChange = once(() => {
  * React hook to merge multiple AsyncState objects into a single AsyncState.
  *
  * Memoizes the merged value, so downstream components can use reference equality on the produced value.
- */
-function useMergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
-  ...args: [
-    ...AsyncStateArray,
-    (...args: AsyncValueArray<AsyncStates>) => Result
-  ]
-): AsyncState<Result> {
-  // @ts-expect-error -- getting last element
-  const merge: (...args: AsyncValueArray<AsyncStates>) => Result = args.at(-1);
-
-  // @ts-expect-error -- getting args except last element
-  const states: AsyncStateArray = args.slice(0, -1);
-
-  const mergeRef = useRef(merge);
-
-  if (mergeRef.current !== merge) {
-    warnMergeChange();
-  }
-
-  // Memoize to avoid re-rendering downstream components
-  const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
-
-  return mergeAsyncState(...states, memoizedMerge);
-}
-
-/**
- * React hook to merge multiple AsyncState objects into a single AsyncState.
  *
- * Memoizes the merged value, so downstream components can use reference equality on the produced value.
+ * @see useDerivedAsyncState
  */
-export function useFetchableMergeAsyncState<
+export function useMergeAsyncState<
   AsyncStates extends FetchableAsyncStateArray,
   Result
 >(
@@ -80,30 +51,29 @@ export function useFetchableMergeAsyncState<
   const merge: (...args: AsyncValueArray<AsyncStates>) => Result = args.at(-1);
 
   // @ts-expect-error -- getting args except last element
-  const states: FetchableAsyncStateArray = args.slice(0, -1);
+  const dependencies: FetchableAsyncStateArray = args.slice(0, -1);
 
   const mergeRef = useRef(merge);
+  // Memoize to avoid re-rendering downstream components
+  const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
 
   if (mergeRef.current !== merge) {
     warnMergeChange();
   }
 
-  // Memoize to avoid re-rendering downstream components
-  const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
-
-  const refetches = states.map((x) => x.refetch);
+  const refetchCallbacks = dependencies.map((x) => x.refetch);
   const refetch = useCallback(
     () => {
-      for (const refetch of refetches) {
+      for (const refetch of refetchCallbacks) {
         refetch();
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- depends on individual refetches
-    refetches
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- depends on individual refetchCallbacks
+    refetchCallbacks
   );
 
   return {
-    ...mergeAsyncState(...states, memoizedMerge),
+    ...mergeAsyncState(...dependencies, memoizedMerge),
     refetch,
   };
 }

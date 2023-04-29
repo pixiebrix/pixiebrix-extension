@@ -27,7 +27,7 @@ import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
-import { liftCacheableValue } from "@/utils/asyncStateUtils";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRecipe: jest.fn(),
@@ -35,8 +35,10 @@ jest.mock("@/recipes/recipesHooks", () => ({
 }));
 
 function mockRecipe(recipe: RecipeDefinition) {
-  (useAllRecipes as jest.Mock).mockReturnValue(liftCacheableValue([recipe]));
-  (useRecipe as jest.Mock).mockReturnValue(liftCacheableValue(recipe));
+  (useAllRecipes as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState([recipe])
+  );
+  (useRecipe as jest.Mock).mockReturnValue(valueToAsyncCacheState(recipe));
 }
 
 beforeEach(() => {

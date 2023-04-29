@@ -16,7 +16,7 @@
  */
 
 /**
- * Common interface for AsyncState from RTK Query and other async sources.
+ * Common shape for AsyncState from RTK Query, useAsyncState, and other async sources.
  */
 export type AsyncState<TData = unknown> = {
   /**
@@ -62,6 +62,9 @@ export type AsyncState<TData = unknown> = {
   error?: unknown;
 };
 
+/**
+ * AsyncState that can be re-fetched/re-calculated.
+ */
 export type FetchableAsyncState<Data = unknown> = AsyncState<Data> & {
   /**
    * A function to force refetch the query
@@ -72,14 +75,15 @@ export type FetchableAsyncState<Data = unknown> = AsyncState<Data> & {
 /**
  * An type for characterizing hook output that's similar to RTK Query's state.
  */
+// FIXME: determine if this type needs to exist/where it should live
 export type UseCachedQueryResult<TData> = FetchableAsyncState<TData> & {
   /**
-   * When true, indicates that the query is currently fetching data from Registry cache
+   * When true, indicates that the query is currently fetching data from the local cache
    */
   isFetchingFromCache: boolean;
 
   /**
-   * When true, indicates that the registry cache has not been loaded yet
+   * When true, indicates that local cache has not been initialized yet
    */
   isCacheUninitialized: boolean;
 };

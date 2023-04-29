@@ -23,13 +23,49 @@ import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 import { isEmpty } from "lodash";
 
+/**
+ * Returns true if the recipe has the necessary permissions to run.
+ * @param recipe the recipe definition
+ * @param selectedAuths selected integration configurations
+ * @see ensureRecipePermissions
+ */
+export async function checkRecipePermissions(
+  recipe: RecipeDefinition,
+  selectedAuths: ServiceAuthPair[]
+): Promise<boolean> {
+  const extensionDefinitions = await resolveRecipe(recipe);
+  const collectedPermissions = await collectPermissions(
+    extensionDefinitions,
+    selectedAuths
+  );
+
+  if (isEmpty(collectedPermissions)) {
+    // Small performance enhancement to avoid hitting background worker
+    return true;
+  }
+
+  return containsPermissions(collectedPermissions);
+}
+
+/**
+ * Ensures that the recipe has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
+ * be called from a user gesture.
+ * @param recipe the recipe definition
+ * @param selectedAuths selected integration configurations
+ * @see checkRecipePermissions
+ */
 export default async function ensureRecipePermissions(
   recipe: RecipeDefinition,
-  services: ServiceAuthPair[]
+  selectedAuths: ServiceAuthPair[]
 ): Promise<boolean> {
-  const resolved = await resolveRecipe(recipe, recipe.extensionPoints);
-  const collectedPermissions = await collectPermissions(resolved, services);
+  const resolved = await resolveRecipe(recipe);
+  const collectedPermissions = await collectPermissions(
+    resolved,
+    selectedAuths
+  );
+
   if (isEmpty(collectedPermissions)) {
+    // Small performance enhancement to avoid hitting background worker
     return true;
   }
 

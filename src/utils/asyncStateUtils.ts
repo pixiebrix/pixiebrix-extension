@@ -20,7 +20,7 @@ import {
   type AsyncStateArray,
   type AsyncValueArray,
   type FetchableAsyncState,
-  UseCachedQueryResult,
+  type UseCachedQueryResult,
 } from "@/types/sliceTypes";
 import { noop } from "lodash";
 
@@ -37,7 +37,15 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // @ts-expect-error -- getting args except last element
   const states: AsyncStateArray = args.slice(0, -1);
 
-  const isFetching = states.some((x) => x.isFetching);
+  const isLoading =
+    // Something is explicitly loading
+    states.some((x) => x.isLoading) ||
+    // Some have finished, and some haven't started
+    (states.some((x) => x.isUninitialized) &&
+      states.some((x) => !x.isUninitialized));
+
+  // `isLoading` implies isFetching
+  const isFetching = isLoading || states.some((x) => x.isFetching);
 
   // In error state if any of the sub-states are error
   if (states.some((x) => x.isError)) {
@@ -56,18 +64,31 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
 
   // In success state only if all information is available
   if (states.every((x) => x.isSuccess)) {
-    return {
-      data: mergeFunction(...(states.map((x) => x.data) as any)),
-      currentData: isFetching
-        ? undefined
-        : mergeFunction(...(states.map((x) => x.currentData) as any)),
-      isUninitialized: false,
-      isLoading: false,
-      isFetching,
-      isError: false,
-      isSuccess: true,
-      error: undefined,
-    };
+    try {
+      const data = mergeFunction(...(states.map((x) => x.data) as any));
+
+      return {
+        data,
+        currentData: isFetching ? undefined : data,
+        isUninitialized: false,
+        isLoading: false,
+        isFetching,
+        isError: false,
+        isSuccess: true,
+        error: undefined,
+      };
+    } catch (error) {
+      return {
+        data: undefined,
+        currentData: undefined,
+        isUninitialized: false,
+        isLoading: false,
+        isFetching,
+        isError: true,
+        isSuccess: false,
+        error,
+      };
+    }
   }
 
   // In intermediate state
@@ -77,7 +98,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
     currentData: undefined,
     isFetching,
     isUninitialized: states.every((x) => x.isUninitialized),
-    isLoading: states.some((x) => x.isLoading),
+    isLoading,
     isError: false,
     isSuccess: false,
     error: undefined,
@@ -85,9 +106,9 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
 }
 
 /**
- * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic values
- * @param state
- * @param initialValue
+ * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic defaults
+ * @param state the async state
+ * @param initialValue the value to use if the state is uninitialized or loading
  */
 export function defaultInitialValue<Value, State extends AsyncState<Value>>(
   state: State,
@@ -110,7 +131,9 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
  * Lift a known value to a FetchableAsyncState.
  * @param value the value
  */
-export function liftValue<Value>(value: Value): FetchableAsyncState<Value> {
+export function valueToAsyncState<Value>(
+  value: Value
+): FetchableAsyncState<Value> {
   return {
     data: value,
     currentData: value,
@@ -125,10 +148,11 @@ export function liftValue<Value>(value: Value): FetchableAsyncState<Value> {
 }
 
 /**
- * Lift a known value to a FetchableAsyncState.
+ * Lift a known value to a UseCachedQueryResult.
  * @param value the value
+ * @see UseCachedQueryResult
  */
-export function liftCacheableValue<Value>(
+export function valueToAsyncCacheState<Value>(
   value: Value
 ): UseCachedQueryResult<Value> {
   return {

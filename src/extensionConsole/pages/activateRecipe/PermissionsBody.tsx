@@ -73,10 +73,7 @@ const PermissionsBody: React.FunctionComponent<{
 
   const [hasQuickBar] = useAsyncState(
     async () => {
-      const extensions = await resolveRecipe(
-        blueprint,
-        blueprint.extensionPoints
-      );
+      const extensions = await resolveRecipe(blueprint);
       const extensionPoints = await allSettledValues(
         extensions.map(async (config) =>
           extensionPointRegistry.lookup(config.id)

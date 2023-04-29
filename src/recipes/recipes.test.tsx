@@ -26,6 +26,7 @@ import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/localRegistry";
 import pDefer from "p-defer";
 import { recipeDefinitionFactory } from "@/testUtils/factories";
+import { defaultInitialValue } from "@/utils/asyncStateUtils";
 
 jest.mock("@/services/apiClient");
 const getApiClientMock = getApiClient as jest.Mock;
@@ -108,7 +109,7 @@ test("load recipes and save one", async () => {
       data: allRecipes,
       isFetchingFromCache: isFetchingRecipesFromCache,
       isFetching: isFetchingAllRecipes,
-    } = useAllRecipes();
+    } = defaultInitialValue(useAllRecipes(), []);
 
     const isFetching = isFetchingRecipesFromCache || isFetchingAllRecipes;
 

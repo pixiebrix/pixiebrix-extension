@@ -29,7 +29,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { Formik } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { liftValue } from "@/utils/asyncStateUtils";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -85,7 +85,7 @@ describe("ServiceWidget", () => {
     const serviceId = validateRegistryId("jest/api");
 
     useAuthOptionsMock.mockReturnValue(
-      liftValue([
+      valueToAsyncState([
         {
           serviceId,
           label: "Test 1",
@@ -120,7 +120,7 @@ describe("ServiceWidget", () => {
     const serviceId = validateRegistryId("jest/api");
 
     useAuthOptionsMock.mockReturnValue(
-      liftValue([
+      valueToAsyncState([
         {
           serviceId,
           label: "Test 1",

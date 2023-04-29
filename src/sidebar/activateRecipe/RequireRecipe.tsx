@@ -18,87 +18,40 @@
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredRecipe } from "@/recipes/recipesHooks";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import Loader from "@/components/Loader";
 import styles from "./RequireRecipe.module.scss";
-import { resolveRecipe } from "@/registry/internal";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
-import { type MarketplaceListing } from "@/types/contract";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
-  recipeNameNode: React.ReactNode | null;
+  recipeNameNode: React.ReactNode;
   includesQuickBar: boolean;
-  canAutoActivate: boolean;
+  requiresConfiguration: boolean;
   defaultAuthOptions: Record<RegistryId, AuthOption>;
 };
 
-type RequireRecipeProps = {
+type Props = {
   recipeId: RegistryId;
   children: (props: RecipeState) => React.ReactElement;
 };
 
-const RequireRecipe: React.FC<RequireRecipeProps> = ({
-  recipeId,
-  children,
-}) => {
-  const recipeDefinitionState = useRequiredRecipe(recipeId);
-  const listingsState = useGetMarketplaceListingsQuery({
-    package__name: recipeId,
-  });
-  // FIXME: useAuthOptions returns empty remote auths initially. Is that OK?
-  const authOptionsState = useAuthOptions();
-
-  const derivedState = useDeriveAsyncState(
-    recipeDefinitionState,
-    listingsState,
-    authOptionsState,
-    async (
-      recipe: RecipeDefinition,
-      listings: Record<RegistryId, MarketplaceListing>,
-      authOptions: AuthOption[]
-    ) => {
-      const resolvedRecipeConfigs = await resolveRecipe(
-        recipe,
-        recipe.extensionPoints
-      );
-
-      return {
-        recipe,
-        listings,
-        authOptions,
-        includesQuickBar: await includesQuickBarExtensionPoint(
-          resolvedRecipeConfigs
-        ),
-      };
-    }
-  );
-
-  // Throw errors
-  if (derivedState.isError) {
-    throw derivedState.error ?? new Error("Error retrieving mod");
-  }
-
-  if (derivedState.isLoading) {
-    return <Loader />;
-  }
-
-  const { recipe, listings, authOptions, includesQuickBar } = derivedState.data;
-
-  // eslint-disable-next-line security/detect-object-injection -- RegistryId
-  const listing = listings[recipeId];
-
-  // Name component
-  const recipeName =
-    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
-
-  // Calculate canAutoActivate
+/**
+ * Return true if the recipe requires a user to configure options/integration configurations.
+ * NOTE: does not perform a permissions check.
+ * @param recipe the recipe definition
+ * @param authOptions the integration configurations available to the user
+ * @see checkRecipePermissions
+ */
+function requiresUserConfiguration(
+  recipe: RecipeDefinition,
+  authOptions: AuthOption[]
+): boolean {
   const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
     recipe,
     authOptions
@@ -124,16 +77,50 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     return defaultOption?.sharingType !== "built-in";
   });
 
-  // Can auto-activate if no configuration required
-  const canAutoActivate = !hasRecipeOptions && !needsServiceInputs;
+  return hasRecipeOptions || needsServiceInputs;
+}
 
-  return children({
-    recipe,
-    recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
-    includesQuickBar,
-    canAutoActivate,
-    defaultAuthOptions,
-  });
+/**
+ * Helper component to render children that depend on a recipe and its metadata.
+ */
+const RequireRecipe: React.FC<Props> = ({ recipeId, children }) => {
+  const recipeDefinitionState = useRequiredRecipe(recipeId);
+
+  // TODO: useAuthOptions returns empty remote auths while loading. That's probably not OK, we need the local and remote
+  //  auths to determine if we can auto-activate. Otherwise, the canAutoActivate will flicker from false to true.
+  const authOptionsState = useAuthOptions();
+
+  const state = useDeriveAsyncState(
+    recipeDefinitionState,
+    authOptionsState,
+    async (recipe: RecipeDefinition, authOptions: AuthOption[]) => {
+      const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
+        recipe,
+        authOptions
+      );
+
+      return {
+        recipe,
+        defaultAuthOptions,
+        requiresConfiguration: requiresUserConfiguration(recipe, authOptions),
+        includesQuickBar: await includesQuickBarExtensionPoint(recipe),
+        recipeNameNode: (
+          <div className={styles.recipeName}>{recipe.metadata.name}</div>
+        ),
+      };
+    }
+  );
+
+  // Throw error to hit error boundary
+  if (state.isError) {
+    throw state.error ?? new Error("Error retrieving mod");
+  }
+
+  if (state.isLoading) {
+    return <Loader />;
+  }
+
+  return children(state.data);
 };
 
 export default RequireRecipe;

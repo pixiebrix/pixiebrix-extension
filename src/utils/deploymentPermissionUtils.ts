@@ -58,7 +58,7 @@ export async function deploymentPermissions(
   locate: Locate
 ): Promise<Permissions.Permissions> {
   const blueprint = deployment.package.config;
-  const resolved = await resolveRecipe(blueprint, blueprint.extensionPoints);
+  const resolved = await resolveRecipe(blueprint);
   const localAuths = await findLocalDeploymentServiceConfigurations(
     deployment,
     locate

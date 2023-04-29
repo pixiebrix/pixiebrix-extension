@@ -18,7 +18,7 @@
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllRecipes } from "@/recipes/recipesSelectors";
-import { useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { recipesActions } from "./recipesSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import {
@@ -41,33 +41,34 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 export function useRecipe(
   id: RegistryId
 ): FetchableAsyncState<RecipeDefinition | null> {
-  const {
-    data: recipes,
-    currentData: currentRecipes,
-    ...rest
-  } = useAllRecipes();
+  const state = useAllRecipes();
 
-  const recipe = useMemo(
-    () => recipes?.find((x) => x.metadata.id === id),
-    [id, recipes]
+  // TODO: add a useMemoCompare to avoid changing recipe content didn't change on remote fetch
+  // TODO: automatically perform a remote fetch if the recipe is not found locally
+
+  const recipeState = useDeriveAsyncState(
+    state,
+    async (recipes: RecipeDefinition[]) =>
+      recipes?.find((x) => x.metadata.id === id)
   );
 
-  const currentRecipe = useMemo(
-    () => currentRecipes?.find((x) => x.metadata.id === id),
-    [id, currentRecipes]
-  );
-
-  return { data: recipe, currentData: currentRecipe, ...rest };
+  return { ...recipeState, refetch: state.refetch };
 }
 
-// TODO: should wait for the recipe to load if in useAllRecipes if it's not immediately available
+/**
+ * Lookup a recipe from the registry by ID, or return an error state if it doesn't exist
+ * @param id the registry id of the recipe
+ */
 export function useRequiredRecipe(
   id: RegistryId
 ): AsyncState<RecipeDefinition> {
   const state = useAllRecipes();
 
-  return useDeriveAsyncState(state, async (allRecipes: RecipeDefinition[]) => {
-    const recipe = allRecipes?.find((x) => x.metadata.id === id);
+  // TODO: add a useMemoCompare to avoid changing recipe content didn't change on remote fetch.
+  // TODO: automatically perform a remote fetch if the recipe is not found locally
+
+  return useDeriveAsyncState(state, async (recipes: RecipeDefinition[]) => {
+    const recipe = recipes?.find((x) => x.metadata.id === id);
     if (!recipe) {
       throw new Error(`Recipe ${id} not found`);
     }
@@ -77,20 +78,27 @@ export function useRequiredRecipe(
 }
 
 /**
- * Pulls all recipes from the registry, and triggers refresh if they're not available locally.
+ * Pulls all recipes from the local registry, and triggers remote refresh if they're not available locally.
  */
 export function useAllRecipes(): UseCachedQueryResult<RecipeDefinition[]> {
   const dispatch = useDispatch();
-  const refetch = () => dispatch(recipesActions.refreshRecipes());
+  const refetch = useCallback(
+    () => dispatch(recipesActions.refreshRecipes()),
+    [dispatch]
+  );
   const state = useSelector(selectAllRecipes);
 
-  if (state.isCacheUninitialized && !state.isFetchingFromCache) {
-    dispatch(recipesActions.loadRecipesFromCache());
-  }
+  useEffect(() => {
+    if (state.isCacheUninitialized && !state.isFetchingFromCache) {
+      dispatch(recipesActions.loadRecipesFromCache());
+    }
+  }, [dispatch, state.isCacheUninitialized, state.isFetchingFromCache]);
 
-  if (state.isUninitialized && !state.isFetching) {
-    dispatch(recipesActions.refreshRecipes());
-  }
+  useEffect(() => {
+    if (state.isUninitialized && !state.isFetching) {
+      dispatch(recipesActions.refreshRecipes());
+    }
+  }, [dispatch, state.isUninitialized, state.isFetching]);
 
   return { ...state, refetch };
 }

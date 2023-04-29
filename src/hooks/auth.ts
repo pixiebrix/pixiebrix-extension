@@ -25,9 +25,8 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import { useFetchableMergeAsyncState } from "@/hooks/useMergeAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
@@ -67,8 +66,40 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-const emptyRemoteAuths: readonly SanitizedAuth[] = Object.freeze([]);
+function mapConfigurationsToOptions(
+  localServices: RawServiceConfiguration[],
+  remoteServices: SanitizedAuth[]
+) {
+  const localOptions = sortBy(
+    localServices.map((serviceConfiguration) => ({
+      value: serviceConfiguration.id,
+      label: `${defaultLabel(serviceConfiguration.label)} — Private`,
+      local: true,
+      serviceId: serviceConfiguration.serviceId,
+      sharingType: "private" as AuthSharing,
+    })),
+    (x) => x.label
+  );
 
+  const sharedOptions = sortBy(
+    remoteServices.map((remoteAuth) => ({
+      value: remoteAuth.id,
+      label: getRemoteLabel(remoteAuth),
+      local: false,
+      user: remoteAuth.user,
+      serviceId: remoteAuth.service.config.metadata.id,
+      sharingType: getSharingType(remoteAuth),
+    })),
+    (x) => (x.user ? 0 : 1),
+    (x) => x.label
+  );
+
+  return [...localOptions, ...sharedOptions];
+}
+
+/**
+ * Return available integration configuration options suitable for display in a react-select dropdown.
+ */
 export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
@@ -78,45 +109,12 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
     []
   );
 
-  // TODO: should this have an initial value?
-  const remoteServiceState = defaultInitialValue(
-    useGetServiceAuthsQuery(),
-    emptyRemoteAuths
-  );
+  const remoteServiceState = useGetServiceAuthsQuery();
 
-  return useFetchableMergeAsyncState(
+  return useMergeAsyncState(
     localServicesState,
     remoteServiceState,
-    (
-      localServices: RawServiceConfiguration[],
-      remoteServices: SanitizedAuth[]
-    ) => {
-      const localOptions = sortBy(
-        localServices.map((serviceConfiguration) => ({
-          value: serviceConfiguration.id,
-          label: `${defaultLabel(serviceConfiguration.label)} — Private`,
-          local: true,
-          serviceId: serviceConfiguration.serviceId,
-          sharingType: "private" as AuthSharing,
-        })),
-        (x) => x.label
-      );
-
-      const sharedOptions = sortBy(
-        remoteServices.map((remoteAuth) => ({
-          value: remoteAuth.id,
-          label: getRemoteLabel(remoteAuth),
-          local: false,
-          user: remoteAuth.user,
-          serviceId: remoteAuth.service.config.metadata.id,
-          sharingType: getSharingType(remoteAuth),
-        })),
-        (x) => (x.user ? 0 : 1),
-        (x) => x.label
-      );
-
-      return [...localOptions, ...sharedOptions];
-    }
+    mapConfigurationsToOptions
   );
 }
 
@@ -151,28 +149,4 @@ export function getDefaultAuthOptionsForRecipe(
       return [serviceId, null];
     })
   );
-}
-
-/*
- * Get a list of required service ids for a recipe mapped to a default auth option.
- *
- * If there are no options available for the service, the value will be null.
- * Prefer an arbitrary personal or shared auth option over built-in.
- *
- * Assumes that the recipe is not yet installed.
- */
-export function useDefaultAuthOptions(recipe: RecipeDefinition): {
-  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
-  isLoading: boolean;
-} {
-  const { data: authOptions, isLoading } = useAuthOptions();
-
-  const defaultAuthOptions = isLoading
-    ? {}
-    : getDefaultAuthOptionsForRecipe(recipe, authOptions);
-
-  return {
-    defaultAuthOptions,
-    isLoading,
-  };
 }
