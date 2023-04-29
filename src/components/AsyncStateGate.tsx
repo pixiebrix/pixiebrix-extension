@@ -16,32 +16,30 @@
  */
 
 import React, { type PropsWithoutRef } from "react";
-import { type AsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import AsyncButton from "@/components/AsyncButton";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
+import { Button } from "react-bootstrap";
 
 /**
  *  A standard error display for use with AsyncStateGate
- * @param error
- * @param recalculate
  * @constructor
  */
 export const StandardError = ({
   error,
-  recalculate,
+  refetch,
 }: {
   error: unknown;
-  recalculate: () => Promise<void>;
+  refetch: () => void;
 }) => (
   <div>
     <div className="text-danger">
       Error fetching data: {getErrorMessage(error)}
     </div>
     <div>
-      <AsyncButton variant="info" onClick={recalculate}>
+      <Button variant="info" onClick={refetch}>
         Try again
-      </AsyncButton>
+      </Button>
     </div>
   </div>
 );
@@ -54,9 +52,9 @@ const AsyncStateGate = <Data,>(
   props: PropsWithoutRef<{
     /**
      * AsyncState from useAsyncState
-     * @see useAsyncState
+     * @see FetchableAsyncState
      */
-    state: AsyncState<Data>;
+    state: FetchableAsyncState<Data>;
     /**
      * Children to render once the state is loaded
      * @param args
@@ -72,20 +70,28 @@ const AsyncStateGate = <Data,>(
      */
     renderError?: (args: {
       error: unknown;
-      recalculate: () => Promise<void>;
+      refetch: () => void;
     }) => React.ReactElement;
   }>
 ): React.ReactElement => {
   const { children, state, renderError, renderLoader } = props;
-  const [data, isLoading, error, recalculate] = state;
+  const {
+    data,
+    isLoading,
+    isUninitialized,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = state;
 
-  if (isLoading) {
+  if (isUninitialized || isLoading || (isError && isFetching)) {
     return renderLoader ? renderLoader() : <Loader />;
   }
 
-  if (error) {
+  if (isError) {
     if (renderError) {
-      return renderError({ error, recalculate });
+      return renderError({ error, refetch });
     }
 
     throw error;

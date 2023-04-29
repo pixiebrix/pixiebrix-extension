@@ -17,7 +17,6 @@
 
 import React from "react";
 import { Card, Table } from "react-bootstrap";
-import { useAsyncState } from "@/hooks/common";
 import { round } from "lodash";
 import {
   count as registrySize,
@@ -46,6 +45,7 @@ import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 import cx from "classnames";
 import styles from "@/extensionConsole/pages/settings/SettingsCard.module.scss";
 import { type StorageEstimate } from "@/types/browserTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * React component to display local storage usage (to help identify storage problems)
@@ -63,12 +63,12 @@ const StorageSettings: React.FunctionComponent = () => {
     []
   );
 
-  const recalculate = state[3];
+  const recalculate = state.refetch;
 
   const clearLogsAction = useUserAction(
     async () => {
       await Promise.all([clearLogs(), clearTraces(), clearEvents()]);
-      await recalculate();
+      recalculate();
     },
     {
       successMessage: "Reclaimed local space",
@@ -85,7 +85,8 @@ const StorageSettings: React.FunctionComponent = () => {
         recreateBrickDB(),
         recreateEventDB(),
       ]);
-      await recalculate();
+
+      recalculate();
     },
     {
       successMessage: "Recreated local databases",
@@ -100,7 +101,7 @@ const StorageSettings: React.FunctionComponent = () => {
       <Card.Body
         className={
           // Make table flush with card body borders
-          cx({ "p-0": Boolean(state[0]) })
+          cx({ "p-0": state.isSuccess })
         }
       >
         <AsyncStateGate

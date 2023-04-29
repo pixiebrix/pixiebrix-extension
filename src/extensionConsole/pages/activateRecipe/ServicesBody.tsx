@@ -32,7 +32,7 @@ import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAl
 import { AnnotationType } from "@/types/annotationTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
-import { AuthOption } from "@/auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -41,12 +41,12 @@ interface OwnProps {
 const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
 
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const { data: authOptions, refetch: refreshAuthOptions } =
-    defaultInitialValue(useAuthOptions(), emptyAuthOptions);
-
+  const authOptionsState = useAuthOptions();
   const [field, { error }] = useField<ServiceAuthPair[]>("services");
-
   const { data: serviceConfigs } = useGetServicesQuery();
+
+  const { data: authOptions, refetch: refreshAuthOptions } =
+    defaultInitialValue(authOptionsState, emptyAuthOptions);
 
   const requiredServiceIds = useMemo(
     () => getRequiredServiceIds(blueprint),
