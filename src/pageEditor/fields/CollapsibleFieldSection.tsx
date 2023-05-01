@@ -33,7 +33,7 @@ const CollapsibleFieldSection: React.FC<{
       <FontAwesomeIcon
         icon={faChevronRight}
         className={cx(styles.activeIndicator, {
-          [styles.active]: open,
+          [styles.active]: expanded,
         })}
       />
       {title}
