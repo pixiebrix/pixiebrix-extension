@@ -54,14 +54,14 @@ exports[`renders 1`] = `
       </div>
     </div>
     <div
-      class="root accordion"
+      class="root"
     >
-      <div
+      <button
         class="header"
       >
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
           data-icon="chevron-right"
           data-prefix="fas"
           focusable="false"
@@ -75,19 +75,15 @@ exports[`renders 1`] = `
           />
         </svg>
         Advanced Options
-      </div>
+      </button>
       <div
-        class="collapse"
+        class="body collapse show"
       >
-        <div
-          class="body"
+        <small
+          class="text-muted font-italic"
         >
-          <small
-            class="text-muted font-italic"
-          >
-            No options to show
-          </small>
-        </div>
+          No options to show
+        </small>
       </div>
     </div>
     <button

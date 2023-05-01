@@ -834,14 +834,14 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -855,164 +855,160 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
                 <div
-                  class="body"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extension.collapsible"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extension.collapsible"
-                    >
-                      Collapsible
-                    </label>
+                    Collapsible
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="root"
                     >
                       <div
-                        class="root"
+                        class="switch btn off btn-light"
                       >
                         <div
-                          class="switch btn off btn-light"
+                          class="switch-group"
                         >
-                          <div
-                            class="switch-group"
+                          <span
+                            class="switch-on btn btn-primary"
                           >
-                            <span
-                              class="switch-on btn btn-primary"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-off btn btn-light"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-handle btn btn-light"
-                            />
-                          </div>
+                             
+                          </span>
+                          <span
+                            class="switch-off btn btn-light"
+                          >
+                             
+                          </span>
+                          <span
+                            class="switch-handle btn btn-light"
+                          />
                         </div>
                       </div>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Render the panel as a collapsible drawer
-                        </span>
-                      </small>
                     </div>
-                  </div>
-                  <div
-                    class="formGroup form-group row"
-                  >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extension.shadowDOM"
-                    >
-                      Shadow DOM
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <div
-                        class="root"
-                      >
-                        <div
-                          class="switch btn off btn-light"
-                        >
-                          <div
-                            class="switch-group"
-                          >
-                            <span
-                              class="switch-on btn btn-primary"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-off btn btn-light"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-handle btn btn-light"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Isolate the panel style with a Shadow DOM
-                        </span>
-                      </small>
-                    </div>
-                  </div>
-                  <div
-                    class="formGroup form-group row"
-                  >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.template"
+                    <small
+                      class="text-muted form-text"
                     >
                       <span>
-                        Template 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
+                        Render the panel as a collapsible drawer
                       </span>
-                    </label>
+                    </small>
+                  </div>
+                </div>
+                <div
+                  class="formGroup form-group row"
+                >
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extension.shadowDOM"
+                  >
+                    Shadow DOM
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="root"
                     >
-                      <div>
-                        <textarea
-                          class="form-control"
-                          disabled=""
-                          id="extensionPoint.definition.template"
-                          name="extensionPoint.definition.template"
-                          rows="4"
-                        />
-                      </div>
-                      <small
-                        class="text-muted form-text"
+                      <div
+                        class="switch btn off btn-light"
                       >
-                        <span>
-                          A template for the item, with a placeholder for the heading and body
-                        </span>
-                      </small>
+                        <div
+                          class="switch-group"
+                        >
+                          <span
+                            class="switch-on btn btn-primary"
+                          >
+                             
+                          </span>
+                          <span
+                            class="switch-off btn btn-light"
+                          >
+                             
+                          </span>
+                          <span
+                            class="switch-handle btn btn-light"
+                          />
+                        </div>
+                      </div>
                     </div>
+                    <small
+                      class="text-muted form-text"
+                    >
+                      <span>
+                        Isolate the panel style with a Shadow DOM
+                      </span>
+                    </small>
+                  </div>
+                </div>
+                <div
+                  class="formGroup form-group row"
+                >
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extensionPoint.definition.template"
+                  >
+                    <span>
+                      Template 
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-lock fa-w-14 "
+                        data-icon="lock"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
+                    <div>
+                      <textarea
+                        class="form-control"
+                        disabled=""
+                        id="extensionPoint.definition.template"
+                        name="extensionPoint.definition.template"
+                        rows="4"
+                      />
+                    </div>
+                    <small
+                      class="text-muted form-text"
+                    >
+                      <span>
+                        A template for the item, with a placeholder for the heading and body
+                      </span>
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -1026,131 +1022,127 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Match Rules
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
                 <div
-                  class="body"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extensionPoint.definition.isAvailable.urlPatterns"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.isAvailable.urlPatterns"
+                    <span>
+                      URL Patterns 
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-lock fa-w-14 "
+                        data-icon="lock"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
+                    <ul
+                      class="list-group mb-2"
+                    />
+                    <button
+                      class="addButton btn btn-link"
+                      type="button"
+                    >
+                      Add URL Pattern
+                    </button>
+                    <small
+                      class="text-muted form-text"
                     >
                       <span>
-                        URL Patterns 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
+                        URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See 
+                        <a
+                          href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
+                          rel="noreferrer"
+                          target="_blank"
                         >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
+                          URL Pattern API Documentation
+                        </a>
+                         for examples.
                       </span>
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <ul
-                        class="list-group mb-2"
-                      />
-                      <button
-                        class="addButton btn btn-link"
-                        type="button"
-                      >
-                        Add URL Pattern
-                      </button>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See 
-                          <a
-                            href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            URL Pattern API Documentation
-                          </a>
-                           for examples.
-                        </span>
-                      </small>
-                    </div>
+                    </small>
                   </div>
-                  <div
-                    class="formGroup form-group row"
+                </div>
+                <div
+                  class="formGroup form-group row"
+                >
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extensionPoint.definition.isAvailable.selectors"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.isAvailable.selectors"
+                    <span>
+                      Selectors 
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-lock fa-w-14 "
+                        data-icon="lock"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
+                    <ul
+                      class="list-group mb-2"
+                    />
+                    <button
+                      class="addButton btn btn-link"
+                      type="button"
+                    >
+                      Add Selector
+                    </button>
+                    <small
+                      class="text-muted form-text"
                     >
                       <span>
-                        Selectors 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
+                        Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
+                        <i>
+                          on page load
+                        </i>
+                         for this starter brick to run.
                       </span>
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <ul
-                        class="list-group mb-2"
-                      />
-                      <button
-                        class="addButton btn btn-link"
-                        type="button"
-                      >
-                        Add Selector
-                      </button>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
-                          <i>
-                            on page load
-                          </i>
-                           for this starter brick to run.
-                        </span>
-                      </small>
-                    </div>
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -1164,284 +1156,307 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Extra Permissions
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
                 <div
-                  class="body"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="permissions.origins"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="permissions.origins"
-                    >
-                      Sites/APIs
-                    </label>
+                    Sites/APIs
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="small"
                     >
-                      <div
-                        class="small"
-                      >
-                        <span>
-                          Shortcuts:
-                        </span>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          Site
-                        </button>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          Domain
-                        </button>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          HTTPS
-                        </button>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          All URLs
-                        </button>
-                      </div>
-                      <ul
-                        class="list-group mb-2"
-                      />
+                      <span>
+                        Shortcuts:
+                      </span>
                       <button
-                        class="addButton btn btn-link"
+                        class="root ml-2 btn btn-link"
                         type="button"
                       >
-                        Add Allowed Origin
+                        Site
                       </button>
-                      <small
-                        class="text-muted form-text"
+                      <button
+                        class="root ml-2 btn btn-link"
+                        type="button"
                       >
-                        <div>
-                          URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
-                        </div>
-                      </small>
+                        Domain
+                      </button>
+                      <button
+                        class="root ml-2 btn btn-link"
+                        type="button"
+                      >
+                        HTTPS
+                      </button>
+                      <button
+                        class="root ml-2 btn btn-link"
+                        type="button"
+                      >
+                        All URLs
+                      </button>
                     </div>
+                    <ul
+                      class="list-group mb-2"
+                    />
+                    <button
+                      class="addButton btn btn-link"
+                      type="button"
+                    >
+                      Add Allowed Origin
+                    </button>
+                    <small
+                      class="text-muted form-text"
+                    >
+                      <div>
+                        URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
+                      </div>
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div
-            class="dataPanel"
+            class="collapseWrapper"
           >
+            <button
+              class="toggle active"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-angle-double-left fa-w-14 "
+                data-icon="angle-double-left"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M223.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L319.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L393.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34zm-192 34l136 136c9.4 9.4 24.6 9.4 33.9 0l22.6-22.6c9.4-9.4 9.4-24.6 0-33.9L127.9 256l96.4-96.4c9.4-9.4 9.4-24.6 0-33.9L201.7 103c-9.4-9.4-24.6-9.4-33.9 0l-136 136c-9.5 9.4-9.5 24.6-.1 34z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
             <div
-              class="nav nav-tabs"
-              role="tablist"
+              class="dataPanelWrapper collapse show width"
             >
               <div
-                class="tabNav nav-item"
-              >
-                <a
-                  aria-selected="false"
-                  class="nav-link"
-                  data-rb-event-key="context"
-                  href="#"
-                  role="tab"
-                >
-                  Context
-                </a>
-              </div>
-              <div
-                class="tabNav nav-item"
-              >
-                <a
-                  aria-selected="false"
-                  class="nav-link"
-                  data-rb-event-key="rendered"
-                  href="#"
-                  role="tab"
-                >
-                  Rendered
-                </a>
-              </div>
-              <div
-                class="tabNav nav-item"
-              >
-                <a
-                  aria-selected="false"
-                  class="nav-link"
-                  data-rb-event-key="output"
-                  href="#"
-                  role="tab"
-                >
-                  Output
-                </a>
-              </div>
-              <div
-                class="tabNav nav-item"
-              >
-                <a
-                  aria-selected="true"
-                  class="nav-link active"
-                  data-rb-event-key="preview"
-                  href="#"
-                  role="tab"
-                >
-                  Preview
-                </a>
-              </div>
-              <div
-                class="tabNav nav-item"
-              >
-                <a
-                  aria-selected="false"
-                  class="nav-link"
-                  data-rb-event-key="pageState"
-                  href="#"
-                  role="tab"
-                >
-                  Page State
-                </a>
-              </div>
-            </div>
-            <div
-              class="tab-content"
-            >
-              <div
-                aria-hidden="true"
-                class="fade tabPane tab-pane"
-                role="tabpanel"
+                class="dataPanel"
               >
                 <div
-                  class="text-muted"
+                  class="nav nav-tabs"
+                  role="tablist"
                 >
-                  This is the first step in the execution flow, so it does not receive inputs from any other brick.
-                </div>
-              </div>
-              <div
-                aria-hidden="true"
-                class="fade tabPane tab-pane"
-                role="tabpanel"
-              >
-                <div
-                  class="text-muted"
-                >
-                  This is the first step in the execution flow, so it does not receive inputs from any other brick.
-                </div>
-              </div>
-              <div
-                aria-hidden="false"
-                class="fade tabPane tab-pane active show"
-                role="tabpanel"
-              >
-                <div>
                   <div
-                    class="root"
+                    class="tabNav nav-item"
+                  >
+                    <a
+                      aria-selected="false"
+                      class="nav-link"
+                      data-rb-event-key="context"
+                      href="#"
+                      role="tab"
+                    >
+                      Context
+                    </a>
+                  </div>
+                  <div
+                    class="tabNav nav-item"
+                  >
+                    <a
+                      aria-selected="false"
+                      class="nav-link"
+                      data-rb-event-key="rendered"
+                      href="#"
+                      role="tab"
+                    >
+                      Rendered
+                    </a>
+                  </div>
+                  <div
+                    class="tabNav nav-item"
+                  >
+                    <a
+                      aria-selected="false"
+                      class="nav-link"
+                      data-rb-event-key="output"
+                      href="#"
+                      role="tab"
+                    >
+                      Output
+                    </a>
+                  </div>
+                  <div
+                    class="tabNav nav-item"
+                  >
+                    <a
+                      aria-selected="true"
+                      class="nav-link active"
+                      data-rb-event-key="preview"
+                      href="#"
+                      role="tab"
+                    >
+                      Preview
+                    </a>
+                  </div>
+                  <div
+                    class="tabNav nav-item"
+                  >
+                    <a
+                      aria-selected="false"
+                      class="nav-link"
+                      data-rb-event-key="pageState"
+                      href="#"
+                      role="tab"
+                    >
+                      Page State
+                    </a>
+                  </div>
+                </div>
+                <div
+                  class="tab-content"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="fade tabPane tab-pane"
+                    role="tabpanel"
                   >
                     <div
-                      class="formGroup form-group row"
+                      class="text-muted"
                     >
-                      <label
-                        class="label form-label col-form-label col-lg-auto"
-                        for="traceSearch"
-                      >
-                        Search
-                      </label>
-                      <div
-                        class="col-lg"
-                      >
-                        <input
-                          class="form-control"
-                          id="traceSearch"
-                          name="traceSearch"
-                          placeholder="Search for a property or value"
-                          value=""
-                        />
-                      </div>
+                      This is the first step in the execution flow, so it does not receive inputs from any other brick.
                     </div>
-                    <span>
-                      Output Preview 
-                      <a
-                        aria-label="copy data"
-                        class="copyPath p-0 btn btn-text"
-                        href="#"
-                        role="button"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-code fa-w-20 "
-                          data-icon="code"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 640 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </a>
-                    </span>
-                    <ul
-                      style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+                  </div>
+                  <div
+                    aria-hidden="true"
+                    class="fade tabPane tab-pane"
+                    role="tabpanel"
+                  >
+                    <div
+                      class="text-muted"
                     >
-                      <li
-                        style="padding: 0px; margin: 0px;"
+                      This is the first step in the execution flow, so it does not receive inputs from any other brick.
+                    </div>
+                  </div>
+                  <div
+                    aria-hidden="false"
+                    class="fade tabPane tab-pane active show"
+                    role="tabpanel"
+                  >
+                    <div>
+                      <div
+                        class="root"
                       >
+                        <div
+                          class="formGroup form-group row"
+                        >
+                          <label
+                            class="label form-label col-form-label col-lg-auto"
+                            for="traceSearch"
+                          >
+                            Search
+                          </label>
+                          <div
+                            class="col-lg"
+                          >
+                            <input
+                              class="form-control"
+                              id="traceSearch"
+                              name="traceSearch"
+                              placeholder="Search for a property or value"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <span>
+                          Output Preview 
+                          <a
+                            aria-label="copy data"
+                            class="copyPath p-0 btn btn-text"
+                            href="#"
+                            role="button"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="svg-inline--fa fa-code fa-w-20 "
+                              data-icon="code"
+                              data-prefix="fas"
+                              focusable="false"
+                              role="img"
+                              viewBox="0 0 640 512"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </a>
+                        </span>
                         <ul
-                          style="padding: 0px; margin: 0px; list-style: none;"
+                          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
                         >
                           <li
-                            style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                            style="padding: 0px; margin: 0px;"
                           >
-                            <label
-                              style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                            <ul
+                              style="padding: 0px; margin: 0px; list-style: none;"
                             >
-                              <div>
-                                <span>
-                                  @input
-                                </span>
-                                : 
-                                <a
-                                  aria-label="Copy path"
-                                  class="copyPath p-0 btn btn-text"
-                                  href="#"
-                                  role="button"
+                              <li
+                                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+                              >
+                                <label
+                                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
                                 >
-                                  <svg
-                                    aria-hidden="true"
-                                    class="svg-inline--fa fa-copy fa-w-14 "
-                                    data-icon="copy"
-                                    data-prefix="fas"
-                                    focusable="false"
-                                    role="img"
-                                    viewBox="0 0 448 512"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                                      fill="currentColor"
-                                    />
-                                  </svg>
-                                </a>
-                              </div>
-                            </label>
-                            <span
-                              style="color: rgb(241, 89, 80);"
-                            >
-                              undefined
-                            </span>
+                                  <div>
+                                    <span>
+                                      @input
+                                    </span>
+                                    : 
+                                    <a
+                                      aria-label="Copy path"
+                                      class="copyPath p-0 btn btn-text"
+                                      href="#"
+                                      role="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="svg-inline--fa fa-copy fa-w-14 "
+                                        data-icon="copy"
+                                        data-prefix="fas"
+                                        focusable="false"
+                                        role="img"
+                                        viewBox="0 0 448 512"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                                          fill="currentColor"
+                                        />
+                                      </svg>
+                                    </a>
+                                  </div>
+                                </label>
+                                <span
+                                  style="color: rgb(241, 89, 80);"
+                                >
+                                  undefined
+                                </span>
+                              </li>
+                            </ul>
                           </li>
                         </ul>
-                      </li>
-                    </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2036,14 +2051,14 @@ exports[`renders the first selected node 1`] = `
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -2057,97 +2072,120 @@ exports[`renders the first selected node 1`] = `
                   />
                 </svg>
                 Advanced Options
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
-                <div
-                  class="body"
+                <small
+                  class="text-muted font-italic"
                 >
-                  <small
-                    class="text-muted font-italic"
-                  >
-                    No options to show
-                  </small>
-                </div>
+                  No options to show
+                </small>
               </div>
             </div>
           </div>
           <div
-            class="dataPanel"
+            class="collapseWrapper"
           >
+            <button
+              class="toggle active"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-angle-double-left fa-w-14 "
+                data-icon="angle-double-left"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M223.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L319.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L393.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34zm-192 34l136 136c9.4 9.4 24.6 9.4 33.9 0l22.6-22.6c9.4-9.4 9.4-24.6 0-33.9L127.9 256l96.4-96.4c9.4-9.4 9.4-24.6 0-33.9L201.7 103c-9.4-9.4-24.6-9.4-33.9 0l-136 136c-9.5 9.4-9.5 24.6-.1 34z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
             <div
-              class="tabContainer"
+              class="dataPanelWrapper collapse show width"
             >
               <div
-                class="nav nav-tabs"
-                role="tablist"
+                class="dataPanel"
               >
                 <div
-                  class="tabNav nav-item"
-                >
-                  <a
-                    aria-selected="false"
-                    class="nav-link"
-                    data-rb-event-key="context"
-                    href="#"
-                    role="tab"
-                  >
-                    Context
-                  </a>
-                </div>
-                <div
-                  class="tabNav nav-item"
-                >
-                  <a
-                    aria-selected="false"
-                    class="nav-link"
-                    data-rb-event-key="rendered"
-                    href="#"
-                    role="tab"
-                  >
-                    Rendered
-                  </a>
-                </div>
-                <div
-                  class="tabNav nav-item"
-                >
-                  <a
-                    aria-selected="true"
-                    class="nav-link active"
-                    data-rb-event-key="output"
-                    href="#"
-                    role="tab"
-                  >
-                    Output
-                  </a>
-                </div>
-                <div
-                  class="tabNav nav-item"
-                >
-                  <a
-                    aria-selected="false"
-                    class="nav-link"
-                    data-rb-event-key="preview"
-                    href="#"
-                    role="tab"
-                  >
-                    Preview
-                  </a>
-                </div>
-              </div>
-              <div
-                class="tabContent tab-content"
-              >
-                <div
-                  aria-hidden="false"
-                  class="fade tabPane tab-pane active show"
-                  role="tabpanel"
+                  class="tabContainer"
                 >
                   <div
-                    class="text-muted"
+                    class="nav nav-tabs"
+                    role="tablist"
                   >
-                    No trace available. Run the mod to generate data
+                    <div
+                      class="tabNav nav-item"
+                    >
+                      <a
+                        aria-selected="false"
+                        class="nav-link"
+                        data-rb-event-key="context"
+                        href="#"
+                        role="tab"
+                      >
+                        Context
+                      </a>
+                    </div>
+                    <div
+                      class="tabNav nav-item"
+                    >
+                      <a
+                        aria-selected="false"
+                        class="nav-link"
+                        data-rb-event-key="rendered"
+                        href="#"
+                        role="tab"
+                      >
+                        Rendered
+                      </a>
+                    </div>
+                    <div
+                      class="tabNav nav-item"
+                    >
+                      <a
+                        aria-selected="true"
+                        class="nav-link active"
+                        data-rb-event-key="output"
+                        href="#"
+                        role="tab"
+                      >
+                        Output
+                      </a>
+                    </div>
+                    <div
+                      class="tabNav nav-item"
+                    >
+                      <a
+                        aria-selected="false"
+                        class="nav-link"
+                        data-rb-event-key="preview"
+                        href="#"
+                        role="tab"
+                      >
+                        Preview
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    class="tabContent tab-content"
+                  >
+                    <div
+                      aria-hidden="false"
+                      class="fade tabPane tab-pane active show"
+                      role="tabpanel"
+                    >
+                      <div
+                        class="text-muted"
+                      >
+                        No trace available. Run the mod to generate data
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
