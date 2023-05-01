@@ -834,14 +834,14 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -855,164 +855,160 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
                 <div
-                  class="body"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extension.collapsible"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extension.collapsible"
-                    >
-                      Collapsible
-                    </label>
+                    Collapsible
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="root"
                     >
                       <div
-                        class="root"
+                        class="switch btn off btn-light"
                       >
                         <div
-                          class="switch btn off btn-light"
+                          class="switch-group"
                         >
-                          <div
-                            class="switch-group"
+                          <span
+                            class="switch-on btn btn-primary"
                           >
-                            <span
-                              class="switch-on btn btn-primary"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-off btn btn-light"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-handle btn btn-light"
-                            />
-                          </div>
+                             
+                          </span>
+                          <span
+                            class="switch-off btn btn-light"
+                          >
+                             
+                          </span>
+                          <span
+                            class="switch-handle btn btn-light"
+                          />
                         </div>
                       </div>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Render the panel as a collapsible drawer
-                        </span>
-                      </small>
                     </div>
-                  </div>
-                  <div
-                    class="formGroup form-group row"
-                  >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extension.shadowDOM"
-                    >
-                      Shadow DOM
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <div
-                        class="root"
-                      >
-                        <div
-                          class="switch btn off btn-light"
-                        >
-                          <div
-                            class="switch-group"
-                          >
-                            <span
-                              class="switch-on btn btn-primary"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-off btn btn-light"
-                            >
-                               
-                            </span>
-                            <span
-                              class="switch-handle btn btn-light"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Isolate the panel style with a Shadow DOM
-                        </span>
-                      </small>
-                    </div>
-                  </div>
-                  <div
-                    class="formGroup form-group row"
-                  >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.template"
+                    <small
+                      class="text-muted form-text"
                     >
                       <span>
-                        Template 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
+                        Render the panel as a collapsible drawer
                       </span>
-                    </label>
+                    </small>
+                  </div>
+                </div>
+                <div
+                  class="formGroup form-group row"
+                >
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extension.shadowDOM"
+                  >
+                    Shadow DOM
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="root"
                     >
-                      <div>
-                        <textarea
-                          class="form-control"
-                          disabled=""
-                          id="extensionPoint.definition.template"
-                          name="extensionPoint.definition.template"
-                          rows="4"
-                        />
-                      </div>
-                      <small
-                        class="text-muted form-text"
+                      <div
+                        class="switch btn off btn-light"
                       >
-                        <span>
-                          A template for the item, with a placeholder for the heading and body
-                        </span>
-                      </small>
+                        <div
+                          class="switch-group"
+                        >
+                          <span
+                            class="switch-on btn btn-primary"
+                          >
+                             
+                          </span>
+                          <span
+                            class="switch-off btn btn-light"
+                          >
+                             
+                          </span>
+                          <span
+                            class="switch-handle btn btn-light"
+                          />
+                        </div>
+                      </div>
                     </div>
+                    <small
+                      class="text-muted form-text"
+                    >
+                      <span>
+                        Isolate the panel style with a Shadow DOM
+                      </span>
+                    </small>
+                  </div>
+                </div>
+                <div
+                  class="formGroup form-group row"
+                >
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extensionPoint.definition.template"
+                  >
+                    <span>
+                      Template 
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-lock fa-w-14 "
+                        data-icon="lock"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
+                    <div>
+                      <textarea
+                        class="form-control"
+                        disabled=""
+                        id="extensionPoint.definition.template"
+                        name="extensionPoint.definition.template"
+                        rows="4"
+                      />
+                    </div>
+                    <small
+                      class="text-muted form-text"
+                    >
+                      <span>
+                        A template for the item, with a placeholder for the heading and body
+                      </span>
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -1026,131 +1022,127 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Match Rules
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
                 <div
-                  class="body"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extensionPoint.definition.isAvailable.urlPatterns"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.isAvailable.urlPatterns"
+                    <span>
+                      URL Patterns 
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-lock fa-w-14 "
+                        data-icon="lock"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
+                    <ul
+                      class="list-group mb-2"
+                    />
+                    <button
+                      class="addButton btn btn-link"
+                      type="button"
+                    >
+                      Add URL Pattern
+                    </button>
+                    <small
+                      class="text-muted form-text"
                     >
                       <span>
-                        URL Patterns 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
+                        URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See 
+                        <a
+                          href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
+                          rel="noreferrer"
+                          target="_blank"
                         >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
+                          URL Pattern API Documentation
+                        </a>
+                         for examples.
                       </span>
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <ul
-                        class="list-group mb-2"
-                      />
-                      <button
-                        class="addButton btn btn-link"
-                        type="button"
-                      >
-                        Add URL Pattern
-                      </button>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          URL pattern rules restricting when this starter brick runs. If provided, at least one of the rules must match for this starter brick to run. See 
-                          <a
-                            href="https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API"
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            URL Pattern API Documentation
-                          </a>
-                           for examples.
-                        </span>
-                      </small>
-                    </div>
+                    </small>
                   </div>
-                  <div
-                    class="formGroup form-group row"
+                </div>
+                <div
+                  class="formGroup form-group row"
+                >
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="extensionPoint.definition.isAvailable.selectors"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="extensionPoint.definition.isAvailable.selectors"
+                    <span>
+                      Selectors 
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-lock fa-w-14 "
+                        data-icon="lock"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
+                    <ul
+                      class="list-group mb-2"
+                    />
+                    <button
+                      class="addButton btn btn-link"
+                      type="button"
+                    >
+                      Add Selector
+                    </button>
+                    <small
+                      class="text-muted form-text"
                     >
                       <span>
-                        Selectors 
-                        <svg
-                          aria-hidden="true"
-                          class="svg-inline--fa fa-lock fa-w-14 "
-                          data-icon="lock"
-                          data-prefix="fas"
-                          focusable="false"
-                          role="img"
-                          viewBox="0 0 448 512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"
-                            fill="currentColor"
-                          />
-                        </svg>
+                        Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
+                        <i>
+                          on page load
+                        </i>
+                         for this starter brick to run.
                       </span>
-                    </label>
-                    <div
-                      class="col-xl-10 col-lg-9"
-                    >
-                      <ul
-                        class="list-group mb-2"
-                      />
-                      <button
-                        class="addButton btn btn-link"
-                        type="button"
-                      >
-                        Add Selector
-                      </button>
-                      <small
-                        class="text-muted form-text"
-                      >
-                        <span>
-                          Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
-                          <i>
-                            on page load
-                          </i>
-                           for this starter brick to run.
-                        </span>
-                      </small>
-                    </div>
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -1164,73 +1156,69 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Extra Permissions
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
                 <div
-                  class="body"
+                  class="formGroup form-group row"
                 >
-                  <div
-                    class="formGroup form-group row"
+                  <label
+                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    for="permissions.origins"
                   >
-                    <label
-                      class="label form-label col-form-label col-xl-2 col-lg-3"
-                      for="permissions.origins"
-                    >
-                      Sites/APIs
-                    </label>
+                    Sites/APIs
+                  </label>
+                  <div
+                    class="col-xl-10 col-lg-9"
+                  >
                     <div
-                      class="col-xl-10 col-lg-9"
+                      class="small"
                     >
-                      <div
-                        class="small"
-                      >
-                        <span>
-                          Shortcuts:
-                        </span>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          Site
-                        </button>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          Domain
-                        </button>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          HTTPS
-                        </button>
-                        <button
-                          class="root ml-2 btn btn-link"
-                          type="button"
-                        >
-                          All URLs
-                        </button>
-                      </div>
-                      <ul
-                        class="list-group mb-2"
-                      />
+                      <span>
+                        Shortcuts:
+                      </span>
                       <button
-                        class="addButton btn btn-link"
+                        class="root ml-2 btn btn-link"
                         type="button"
                       >
-                        Add Allowed Origin
+                        Site
                       </button>
-                      <small
-                        class="text-muted form-text"
+                      <button
+                        class="root ml-2 btn btn-link"
+                        type="button"
                       >
-                        <div>
-                          URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
-                        </div>
-                      </small>
+                        Domain
+                      </button>
+                      <button
+                        class="root ml-2 btn btn-link"
+                        type="button"
+                      >
+                        HTTPS
+                      </button>
+                      <button
+                        class="root ml-2 btn btn-link"
+                        type="button"
+                      >
+                        All URLs
+                      </button>
                     </div>
+                    <ul
+                      class="list-group mb-2"
+                    />
+                    <button
+                      class="addButton btn btn-link"
+                      type="button"
+                    >
+                      Add Allowed Origin
+                    </button>
+                    <small
+                      class="text-muted form-text"
+                    >
+                      <div>
+                        URL match patterns permitting the starter brick to run on a site or call an API. Provide URL match patterns here if the starter brick either 1) calls an API without using an Integration, or 2) performs actions on a target tab not included in the site match patterns
+                      </div>
+                    </small>
                   </div>
                 </div>
               </div>
@@ -2063,14 +2051,14 @@ exports[`renders the first selected node 1`] = `
               </div>
             </div>
             <div
-              class="root accordion"
+              class="root"
             >
-              <div
+              <button
                 class="header"
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -2084,19 +2072,15 @@ exports[`renders the first selected node 1`] = `
                   />
                 </svg>
                 Advanced Options
-              </div>
+              </button>
               <div
-                class="collapse"
+                class="body collapse show"
               >
-                <div
-                  class="body"
+                <small
+                  class="text-muted font-italic"
                 >
-                  <small
-                    class="text-muted font-italic"
-                  >
-                    No options to show
-                  </small>
-                </div>
+                  No options to show
+                </small>
               </div>
             </div>
           </div>

@@ -25,7 +25,7 @@ import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import { splitStartingEmoji } from "@/utils/stringUtils";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
@@ -73,8 +73,7 @@ const QuickBarConfiguration: React.FC<{
           </span>
         }
       />
-
-      <AccordionFieldSection title="Advanced">
+      <ConnectedCollapsibleFieldSection title="Advanced">
         <ConnectedFieldTemplate
           name="extension.icon"
           as={IconWidget}
@@ -85,7 +84,6 @@ const QuickBarConfiguration: React.FC<{
             "If the first character in the action title is an emoji we will use that in the place of an icon."
           )}
         />
-
         <ConnectedFieldTemplate
           name="extensionPoint.definition.targetMode"
           as="select"
@@ -103,7 +101,6 @@ const QuickBarConfiguration: React.FC<{
           <option value="eventTarget">eventTarget</option>
           <option value="document">document</option>
         </ConnectedFieldTemplate>
-
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
           description={
@@ -116,7 +113,7 @@ const QuickBarConfiguration: React.FC<{
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
         />
-      </AccordionFieldSection>
+      </ConnectedCollapsibleFieldSection>
 
       <ExtraPermissionsSection />
     </>
