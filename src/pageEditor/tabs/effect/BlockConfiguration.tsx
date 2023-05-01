@@ -38,7 +38,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { inputProperties } from "@/helpers";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const rootModeOptions = [
   { label: "Document", value: "document" },
@@ -177,7 +177,7 @@ const BlockConfiguration: React.FunctionComponent<{
           )}
         </SchemaFieldContext.Provider>
 
-        <AccordionFieldSection
+        <ConnectedCollapsibleFieldSection
           title="Advanced Options"
           bodyRef={advancedOptionsRef}
         >
@@ -212,7 +212,7 @@ const BlockConfiguration: React.FunctionComponent<{
           {noAdvancedOptions && (
             <small className="text-muted font-italic">No options to show</small>
           )}
-        </AccordionFieldSection>
+        </ConnectedCollapsibleFieldSection>
       </>
     </>
   );

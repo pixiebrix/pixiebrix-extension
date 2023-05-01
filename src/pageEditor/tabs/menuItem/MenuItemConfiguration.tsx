@@ -31,7 +31,7 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -67,8 +67,7 @@ const MenuItemConfiguration: React.FC<{
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
-
-      <AccordionFieldSection title="Advanced: Item Options">
+      <ConnectedCollapsibleFieldSection title="Advanced: Item Options">
         <ConnectedFieldTemplate
           name="extension.icon"
           label="Icon"
@@ -129,8 +128,7 @@ const MenuItemConfiguration: React.FC<{
             blankValue={true}
           />
         )}
-      </AccordionFieldSection>
-
+      </ConnectedCollapsibleFieldSection>
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />
