@@ -111,6 +111,8 @@
 
 .collapseWrapper {
   border-left: 1px solid $panel-divider;
+  display: flex;
+  align-items: flex-start;
 }
 
 .tabPane {
