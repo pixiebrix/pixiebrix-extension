@@ -24,6 +24,7 @@ import {
 import { isEmpty, merge } from "lodash";
 import { type JsonObject } from "type-fest";
 import { type UnknownRecord } from "type-fest/source/internal";
+import { excludeServices } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 
 /**
  * Convert every node in the existence tree which IS_ARRAY to an array
@@ -31,7 +32,9 @@ import { type UnknownRecord } from "type-fest/source/internal";
  */
 function convertArrayNodesToArrays(node: ExistenceNode): void {
   for (const [key, childNode] of Object.entries(node)) {
+    // eslint-disable-next-line security/detect-object-injection -- symbol
     if (childNode[IS_ARRAY]) {
+      // eslint-disable-next-line security/detect-object-injection -- key from Object.entries
       (node as UnknownRecord)[key] = [childNode];
     }
 
@@ -40,7 +43,7 @@ function convertArrayNodesToArrays(node: ExistenceNode): void {
 }
 
 /**
- *
+ * Get the menu options for the variable popup.
  * @param knownVars The map of known variables
  * @param contextValues Object containing the actual values of the context variables (e.g. the traces)
  */
@@ -62,7 +65,7 @@ function getMenuOptions(
 
   // Skip setting context values if there are none
   if (isEmpty(contextValues)) {
-    return varMapEntries;
+    return excludeServices(varMapEntries);
   }
 
   const visitedOutputs = new Set<string>();
@@ -75,16 +78,16 @@ function getMenuOptions(
     const [, existenceTree] = varMapEntries[index];
 
     for (const [outputKey] of Object.entries(existenceTree)) {
-      // eslint-disable-next-line security/detect-object-injection -- access via object key
+      // eslint-disable-next-line security/detect-object-injection -- access via Object.entries
       if (contextValues[outputKey] != null && !visitedOutputs.has(outputKey)) {
-        // eslint-disable-next-line security/detect-object-injection -- access via object key
+        // eslint-disable-next-line security/detect-object-injection -- access via Object.entries
         merge(existenceTree[outputKey], contextValues[outputKey]);
         visitedOutputs.add(outputKey);
       }
     }
   }
 
-  return varMapEntries;
+  return excludeServices(varMapEntries);
 }
 
 export default getMenuOptions;

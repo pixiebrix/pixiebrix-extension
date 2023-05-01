@@ -28,13 +28,30 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useAsyncEffect } from "use-async-effect";
-import { computePosition, size, flip, offset } from "@floating-ui/dom";
+import { computePosition, flip, offset, size } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";
 import { selectActiveNodeTrace } from "@/pageEditor/slices/runtimeSelectors";
+import {
+  filterOptionsByVariable,
+  filterVarMapByVariable,
+} from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 
 type VarMenuProps = {
+  /**
+   * The underlying var or text input element.
+   */
   inputElementRef: React.MutableRefObject<HTMLElement>;
+  /**
+   * The likely variable the user is interacting with.
+   */
+  likelyVariable: string | null;
+  /**
+   * Callback to close the menu.
+   */
   onClose: () => void;
+  /**
+   * Callback to select a menu item
+   */
   onVarSelect: (selectedPath: string[]) => void;
 };
 
@@ -42,8 +59,16 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   inputElementRef,
   onClose,
   onVarSelect,
+  likelyVariable,
 }) => {
   const rootElementRef = useRef<HTMLDivElement>(null);
+  const activeElement = useSelector(selectActiveElement);
+  const pipelineMap = useSelector(selectPipelineMap) ?? {};
+  const { allBlocks } = useAllBlocks();
+
+  const knownVars = useSelector(selectKnownVarsForActiveNode);
+  const trace = useSelector(selectActiveNodeTrace);
+
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       const parent = rootElementRef.current?.parentElement;
@@ -57,13 +82,6 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       document.removeEventListener("click", handleClick);
     };
   }, [onClose]);
-
-  const activeElement = useSelector(selectActiveElement);
-  const pipelineMap = useSelector(selectPipelineMap) ?? {};
-  const { allBlocks } = useAllBlocks();
-
-  const knownVars = useSelector(selectKnownVarsForActiveNode);
-  const trace = useSelector(selectActiveNodeTrace);
 
   useAsyncEffect(async () => {
     if (
@@ -112,12 +130,18 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     ? ADAPTERS.get(activeElement.type).label
     : "";
 
-  const options = getMenuOptions(knownVars, trace?.templateContext);
+  const allOptions = getMenuOptions(knownVars, trace?.templateContext);
+  const filteredOptions = filterOptionsByVariable(allOptions, likelyVariable);
   const blocksInfo = Object.values(pipelineMap);
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
-      {options.map(([source, vars]) => (
+      {filteredOptions.length === 0 && (
+        <div className={styles.sourceItem}>
+          No variables found for <span>{likelyVariable}</span>
+        </div>
+      )}
+      {filteredOptions.map(([source, vars]) => (
         <div className={styles.sourceItem} key={source}>
           <SourceLabel
             source={source}
@@ -125,7 +149,11 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             blocksInfo={blocksInfo}
             allBlocks={allBlocks}
           />
-          <VariablesTree vars={vars} onVarSelect={onVarSelect} />
+          <VariablesTree
+            vars={filterVarMapByVariable(vars, likelyVariable)}
+            onVarSelect={onVarSelect}
+            likelyVariable={likelyVariable}
+          />
         </div>
       ))}
     </div>

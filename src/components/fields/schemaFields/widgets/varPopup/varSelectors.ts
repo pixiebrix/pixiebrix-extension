@@ -31,6 +31,7 @@ export const selectKnownVarsForActiveNode = createSelector(
       return null;
     }
 
+    // eslint-disable-next-line security/detect-object-injection -- is a UUID
     return knownVars[activeElementId]?.get(activeNodeInfo.path);
   }
 );

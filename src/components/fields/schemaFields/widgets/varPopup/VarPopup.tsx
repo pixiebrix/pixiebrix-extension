@@ -15,30 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import {
-  getLikelyVariableAtPosition,
-  replaceLikelyVariable,
-} from "./likelyVariableUtils";
+import { replaceLikelyVariable } from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
-import { useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
 import fitTextarea from "fit-textarea";
-import { type UnknownObject } from "@/types/objectTypes";
 import { getPathFromArray } from "@/runtime/pathHelpers";
+import useAttachPopup from "@/components/fields/schemaFields/widgets/varPopup/useAttachPopup";
 
 type VarPopupProps = {
+  /**
+   * The input mode of the field. VarPopup is supported for `var` and `string` input modes
+   */
   inputMode: FieldInputMode;
+  /**
+   * Reference to the underlying input element/textarea.
+   */
   inputElementRef: React.MutableRefObject<HTMLElement>;
+  /**
+   * The current field value.
+   */
   value: string;
+  /**
+   * Callback to set the field value.
+   */
   setValue: (value: string) => void;
 };
-
-// A bit of hack to determine if we're in a context where autosuggest is supported. Used to prevent autosuggest from
-// breaking service configuration.
-const selectAnalysisSliceExists = (state: UnknownObject) =>
-  Boolean(state.analysis);
 
 const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   inputMode,
@@ -46,107 +48,68 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   value,
   setValue,
 }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const analysisSliceExists = useSelector(selectAnalysisSliceExists);
-  const { varAutosuggest } = useSelector(selectSettings);
-  const autosuggestEnabled = varAutosuggest && analysisSliceExists;
+  const { hideMenu, isMenuShowing, likelyVariable } = useAttachPopup({
+    inputMode,
+    inputElementRef,
+    value,
+  });
 
-  useEffect(() => {
-    if (
-      !inputElementRef.current ||
-      (inputMode !== "var" && inputMode !== "string") ||
-      !autosuggestEnabled
-    ) {
-      return;
-    }
-
-    const onClick = () => {
-      if (inputMode === "var") {
-        if (!showMenu) {
-          setShowMenu(true);
-        }
-
-        return;
-      }
-
-      if (inputMode === "string") {
-        // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
-        const cursorPosition =
-          (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-
-        if (getLikelyVariableAtPosition(value, cursorPosition).name) {
-          if (!showMenu) {
-            setShowMenu(true);
-          }
-        } else if (showMenu) {
-          setShowMenu(false);
-        }
-      }
-    };
-
-    const onKeyPress = (event: KeyboardEvent) => {
-      const { key } = event;
-      if (key === "@" && !showMenu) {
-        setShowMenu(true);
-      } else if ((key === "Escape" || key === "}") && showMenu) {
-        setShowMenu(false);
-      }
-    };
-
-    const inputElement = inputElementRef.current;
-    inputElement.addEventListener("click", onClick);
-    inputElement.addEventListener("keypress", onKeyPress);
-
-    return () => {
-      inputElement?.removeEventListener("click", onClick);
-      inputElement?.removeEventListener("keypress", onKeyPress);
-    };
-  }, [autosuggestEnabled, inputMode, showMenu, value]);
-
-  if ((inputMode !== "var" && inputMode !== "string") || !autosuggestEnabled) {
+  if (!isMenuShowing) {
     return null;
   }
 
-  const onClose = () => {
-    setShowMenu(false);
-  };
-
   const onVarSelect = (selectedPath: string[]) => {
     const fullVariableName = getPathFromArray(selectedPath);
-    if (inputMode === "var") {
-      setValue(fullVariableName);
-    } else if (inputMode === "string") {
-      const textElement = inputElementRef.current as HTMLTextAreaElement;
-      if (textElement == null) {
-        return;
+
+    switch (inputMode) {
+      case "var": {
+        setValue(fullVariableName);
+        break;
       }
 
-      const cursorPosition = textElement.selectionStart;
-      const newValue = replaceLikelyVariable(
-        value,
-        cursorPosition,
-        fullVariableName
-      );
-      setValue(newValue);
-      setTimeout(() => {
+      case "string": {
+        const textElement = inputElementRef.current as HTMLTextAreaElement;
         if (textElement == null) {
           return;
         }
 
-        fitTextarea(textElement);
-      }, 100);
+        const cursorPosition = textElement.selectionStart;
+
+        // Set the value
+        const newValue = replaceLikelyVariable(
+          value,
+          cursorPosition,
+          fullVariableName
+        );
+        setValue(newValue);
+
+        // Resize the textarea to fit the new value
+        setTimeout(() => {
+          if (textElement == null) {
+            return;
+          }
+
+          fitTextarea(textElement);
+        }, 100);
+        break;
+      }
+
+      default: {
+        throw new Error(`Unexpected input mode: ${inputMode}`);
+      }
     }
 
-    onClose();
+    hideMenu();
   };
 
-  return showMenu ? (
+  return (
     <VarMenu
       inputElementRef={inputElementRef}
       onVarSelect={onVarSelect}
-      onClose={onClose}
+      onClose={hideMenu}
+      likelyVariable={likelyVariable}
     />
-  ) : null;
+  );
 };
 
 export default VarPopup;

@@ -17,9 +17,13 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
   blocksInfo,
   allBlocks,
 }) => {
+  const [kind] = source.split(":");
   let label: string;
-  if (source.includes(":")) {
-    const [kind] = source.split(":");
+  if (
+    [KnownSources.INPUT, KnownSources.OPTIONS, KnownSources.SERVICE].includes(
+      kind as KnownSources
+    )
+  ) {
     switch (kind) {
       case KnownSources.INPUT: {
         label = extensionPointLabel;
@@ -32,12 +36,12 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       }
 
       case KnownSources.SERVICE: {
-        label = "Services";
+        label = "Integrations";
         break;
       }
 
       default: {
-        label = source;
+        throw new Error(`Unexpected kind: ${kind}`);
       }
     }
   } else {

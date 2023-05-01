@@ -35,5 +35,6 @@ testItRenders({
       },
     } as any,
     onVarSelect: noop,
+    likelyVariable: null,
   },
 });

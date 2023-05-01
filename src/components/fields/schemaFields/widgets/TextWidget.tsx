@@ -30,7 +30,7 @@ import { useField } from "formik";
 import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { trim } from "lodash";
+import { trim, trimEnd } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
@@ -56,25 +56,50 @@ function schemaSupportsTemplates(schema: Schema): boolean {
     (option) => option.value === "string" && option.label === "Text"
   );
 }
-/**
-  Regex Breakdown
-    -^: Assert the start of the string.
-    -@: Check for a @ character at the beginning of the string.
-    -(?!\d): Ensure the first character of the identifier is not a digit.
-    -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
-    -((\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
-    -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
-    -$: Assert the end of the string.
-*/
 
+// Regex Breakdown
+//   -^: Assert the start of the string.
+//   -@: Check for a @ character at the beginning of the string.
+//   -(?!\d): Ensure the first character of the identifier is not a digit.
+//   -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
+//   -((\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
+//   -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
+//   -$: Assert the end of the string.
 const objectPathRegex =
-  // Disable eslint for this line. It's risky regex for long strings but works ok for our use
-  // eslint-disable-next-line security/detect-unsafe-regex
+  // eslint-disable-next-line security/detect-unsafe-regex -- risky for long strings, but ok for var names
   /^@(?!\d)([\w$]+)((\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
 
-// Accepts a string and returns whether it containts a valid nunjuck variable
+// Regex to help detect if the user is typing a bracket expression on the end of a variable
+// eslint-disable-next-line security/detect-unsafe-regex -- risky for long strings, but ok for var names
+const unfinishedBracketExpressionRegex = /^(?<base>@.*)\[("[^"]*"?|\d*)?$/;
+
+/**
+ * Return true if the value is a valid variable expression
+ */
 export function isVarValue(value: string): boolean {
   return objectPathRegex.test(value);
+}
+
+/**
+ * Returns true if the value is a valid variable expression or var-like expression while the use is typing
+ */
+export function isVarLike(value: string): boolean {
+  if (
+    isVarValue(value) ||
+    // User-just started typing a variable
+    value === "@" ||
+    // User is accessing a sub property.
+    // Technically, this should only trim at most one period
+    isVarValue(trimEnd(value, ".")) ||
+    // User is accessing an array index, or property with whitespace.
+    // Technically, this should only trim at most one bracket
+    isVarValue(trimEnd(value, "["))
+  ) {
+    return true;
+  }
+
+  const match = unfinishedBracketExpressionRegex.exec(value);
+  return match != null && isVarValue(match.groups.base);
 }
 
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
@@ -133,7 +158,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
         current.selectionEnd = current.textLength;
       }, 150);
     }
-  }, [focusInput]);
+  }, [textAreaRef, focusInput]);
 
   const supportsTemplates = useMemo(
     () => schemaSupportsTemplates(schema),
@@ -153,22 +178,27 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
         target,
       }) => {
-        const changeValue = target.value;
+        const nextValue = target.value;
         // Automatically switch to var if user types "@" in the input
-        if (templateEngine !== "var" && isVarValue(changeValue)) {
-          setValue(makeVariableExpression(changeValue));
+        if (
+          templateEngine !== "var" &&
+          (isVarValue(nextValue) || nextValue === "@")
+        ) {
+          setValue(makeVariableExpression(nextValue));
         } else if (
+          // Automatically switch from var to text if the user starts typing text
           templateEngine === "var" &&
           supportsTemplates &&
-          !isVarValue(changeValue)
+          !isVarLike(nextValue)
         ) {
-          const trimmed = trim(changeValue);
+          // If the user is typing whitespace, automatically wrap in mustache braces
+          const trimmed = trim(nextValue);
           const templateValue = isVarValue(trimmed)
-            ? changeValue.replace(trimmed, `{{${trimmed}}}`)
-            : changeValue;
+            ? nextValue.replace(trimmed, `{{${trimmed}}}`)
+            : nextValue;
           setValue(makeTemplateExpression("nunjucks", templateValue));
         } else {
-          setValue(makeTemplateExpression(templateEngine, changeValue));
+          setValue(makeTemplateExpression(templateEngine, nextValue));
         }
       };
 

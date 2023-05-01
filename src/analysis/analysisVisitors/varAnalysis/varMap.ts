@@ -16,6 +16,7 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
+import { type UnknownObject } from "@/types/objectTypes";
 
 type SetExistenceArgs = {
   /**
@@ -39,6 +40,9 @@ type SetExistenceArgs = {
    */
   allowAnyChild?: boolean;
 
+  /**
+   * True if the variable is an array
+   */
   isArray?: boolean;
 };
 
@@ -89,8 +93,11 @@ export enum VarExistence {
 
 // This symbols are used to define the own properties of the existence tree node
 export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+
 export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
+
 export const IS_ARRAY = Symbol("IS_ARRAY");
+
 export type ExistenceNode = {
   /**
    * Existence of the current node
@@ -98,7 +105,7 @@ export type ExistenceNode = {
   [SELF_EXISTENCE]?: VarExistence;
 
   /**
-   * Whether the current node allows any child (i.e. doesn't have  a strict schema)
+   * Whether the current node allows any child (i.e. doesn't have a strict schema)
    */
   [ALLOW_ANY_CHILD]?: boolean;
 
@@ -210,9 +217,17 @@ class VarMap {
       if (typeof value === "object") {
         this.setExistenceFromValues({
           source,
-          values: value as Record<string, unknown>,
+          values: value as UnknownObject,
           parentPath: parentPath === "" ? key : `${parentPath}.${key}`,
         });
+
+        if (Array.isArray(value)) {
+          setWith(
+            this.map,
+            [source, ...toPath(parentPath), key, IS_ARRAY],
+            true
+          );
+        }
       } else {
         setWith(
           this.map,
@@ -234,6 +249,7 @@ class VarMap {
     allowAnyChild,
   }: SetVariableExistenceArgs): void {
     // While any block can provide no more than one output key, we are safe to create a new object for the 'source'
+    // eslint-disable-next-line security/detect-object-injection -- from Object.entries
     this.map[source] = {
       [variableName]: createNode(existence, { allowAnyChild }),
     };
@@ -249,6 +265,7 @@ class VarMap {
     }
 
     for (const [source, existenceMap] of Object.entries(varMap.map)) {
+      // eslint-disable-next-line security/detect-object-injection -- from Object.entries
       this.map[source] = existenceMap;
     }
   }
@@ -273,8 +290,10 @@ class VarMap {
 
         // Handle the array case (allow only numeric keys)
         const isNumberPart = numberRegex.test(part);
+        // eslint-disable-next-line security/detect-object-injection -- Symbol
         if (isNumberPart && bag[IS_ARRAY]) {
           // Dealing with array of primitives or array of unknown objects
+          // eslint-disable-next-line security/detect-object-injection -- Symbol
           if (pathPartsCopy.length === 0 || bag[ALLOW_ANY_CHILD]) {
             return true;
           }
@@ -288,11 +307,13 @@ class VarMap {
         }
 
         // Check if any child is allowed and the current bag is not an array
+        // eslint-disable-next-line security/detect-object-injection -- Symbols
         if (bag[ALLOW_ANY_CHILD] && !bag[IS_ARRAY]) {
           return true;
         }
       }
 
+      // eslint-disable-next-line security/detect-object-injection -- Symbols
       if (bag?.[SELF_EXISTENCE] != null) {
         return true;
       }
