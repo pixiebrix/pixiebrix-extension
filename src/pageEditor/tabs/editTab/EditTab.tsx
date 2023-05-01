@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Tab } from "react-bootstrap";
+import React, { useState } from "react";
+import { Collapse, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -33,12 +33,17 @@ import {
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
 import TooltipIconButton from "@/components/TooltipIconButton";
-import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleLeft,
+  faCopy,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -64,6 +69,8 @@ const EditTab: React.FC<{
   function removeBlock(nodeIdToRemove: UUID) {
     dispatch(actions.removeNode(nodeIdToRemove));
   }
+
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -122,12 +129,31 @@ const EditTab: React.FC<{
             )}
           </ErrorBoundary>
         </div>
-        <div className={styles.dataPanel}>
-          {activeNodeId === FOUNDATION_NODE_ID ? (
-            <FoundationDataPanel />
-          ) : (
-            <DataPanel key={activeNodeId} />
-          )}
+        <div className={styles.collapseWrapper}>
+          <button
+            className={cx(styles.toggle, { [styles.active]: isExpanded })}
+            onClick={() => {
+              setIsExpanded(!isExpanded);
+            }}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+          </button>
+          <Collapse
+            dimension="width"
+            in={isExpanded}
+            unmountOnExit={true}
+            mountOnEnter={true}
+          >
+            <div className={styles.dataPanelWrapper}>
+              <div className={styles.dataPanel}>
+                {activeNodeId === FOUNDATION_NODE_ID ? (
+                  <FoundationDataPanel />
+                ) : (
+                  <DataPanel key={activeNodeId} />
+                )}
+              </div>
+            </div>
+          </Collapse>
         </div>
       </div>
     </Tab.Pane>
