@@ -21,8 +21,9 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useEffect } from "react";
 import { push } from "connected-react-router";
 import { validateRegistryId } from "@/types/helpers";
+import { type RegistryId } from "@/types/registryTypes";
 
-function maybeDecodeBlueprintId(encoded: string): string | null {
+function maybeDecodeBlueprintId(encoded: string): RegistryId | null {
   try {
     return validateRegistryId(decodeURIComponent(encoded));
   } catch {
@@ -34,11 +35,14 @@ function maybeDecodeBlueprintId(encoded: string): string | null {
  * Hook to parse information from an Extension Console activation URL, and redirect to the re-activation page as
  * necessary.
  */
-function useActivateUrl() {
+function useActivateUrl(): {
+  blueprintId: RegistryId | null;
+  isReinstall: boolean;
+} {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  // Could this be moved to useParams? Or is it on the main URL instead of the hash?
+  // `useParams` below can't get the search params: https://reactrouter.com/en/main/hooks/use-params
   const isReinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
 

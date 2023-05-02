@@ -34,12 +34,14 @@ import useActivateUrl from "@/extensionConsole/pages/activateRecipe/useActivateU
 const ActivateBlueprintPage: React.FunctionComponent = () => {
   const { blueprintId, isReinstall } = useActivateUrl();
 
-  // Fetch the latest version of the blueprint, to ensure activate/re-activation is for the latest version
+  // Don't use RTK Query here. Always want the latest version of the blueprint. Otherwise, if the user had their
+  // Extension Console open for a while, they may get the older version when they go to re-activate.
+  // NOTE: the endpoint will return a 404 if an invalid registry was passed via URL
   const {
     data: remoteBlueprint,
     isLoading: fetchingBlueprint,
     error: fetchError,
-  } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
+  } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}/`);
 
   // Reshape to recipe definition
   const recipeDefinition: RecipeDefinition | null = useMemo(() => {
