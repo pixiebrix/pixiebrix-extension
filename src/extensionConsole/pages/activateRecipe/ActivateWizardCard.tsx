@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ActivateWizard.module.scss";
+import styles from "./ActivateWizardCard.module.scss";
 
 import React from "react";
 import { type RecipeDefinition } from "@/types/recipeTypes";

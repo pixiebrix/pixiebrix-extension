@@ -27,12 +27,14 @@ import AsyncStateGate from "@/components/AsyncStateGate";
  * @param children
  */
 const RequireBrickRegistry: React.FC = ({ children }) => {
-  const state = useAsyncState(async () =>
-    Promise.all([
-      blockRegistry.all(),
-      serviceRegistry.all(),
-      extensionPointRegistry.all(),
-    ])
+  const state = useAsyncState(
+    async () =>
+      Promise.all([
+        blockRegistry.all(),
+        serviceRegistry.all(),
+        extensionPointRegistry.all(),
+      ]),
+    []
   );
 
   return <AsyncStateGate state={state}>{() => <>{children}</>}</AsyncStateGate>;
