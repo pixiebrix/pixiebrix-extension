@@ -67,7 +67,7 @@ import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
+import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import {
@@ -342,7 +342,7 @@ const CreateRecipeModalBody: React.FC = () => {
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
   const { data: activeRecipe, isFetching: isRecipeFetching } =
-    useRecipe(activeRecipeId);
+    useOptionalRecipe(activeRecipeId);
 
   const formSchema = useFormSchema();
 

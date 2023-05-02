@@ -37,10 +37,13 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
  * NOTE: uses useAllRecipes which first checks the local cache. So value may change from null to a recipe definition
  * after the remote fetch completes.
  *
+ * If you want to return an error state if the recipe doesn't exist, use useRequiredRecipe instead.
+ *
  * @param id the registry id of the recipe
+ * @see useRequiredRecipe
  * @see useAllRecipes
  */
-export function useRecipe(
+export function useOptionalRecipe(
   id: RegistryId
 ): FetchableAsyncState<RecipeDefinition | null> {
   const state = useAllRecipes();
@@ -70,6 +73,7 @@ export function useRecipe(
  * until the remote fetch completes before returning an error state.
  *
  * @param id the registry id of the recipe
+ * @see useOptionalRecipe
  * @see useAllRecipes
  */
 export function useRequiredRecipe(

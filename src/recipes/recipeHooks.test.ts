@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import { useRecipe, useRequiredRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe, useRequiredRecipe } from "@/recipes/recipesHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";
@@ -66,7 +66,7 @@ describe("useRecipe", () => {
     );
 
     const wrapper = renderHook(() =>
-      useRecipe(validateRegistryId("nonexistent-recipe"))
+      useOptionalRecipe(validateRegistryId("nonexistent-recipe"))
     );
 
     await wrapper.waitForEffect();

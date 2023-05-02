@@ -23,7 +23,7 @@ import { recipeFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
+import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
@@ -38,7 +38,9 @@ function mockRecipe(recipe: RecipeDefinition) {
   (useAllRecipes as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([recipe])
   );
-  (useRecipe as jest.Mock).mockReturnValue(valueToAsyncCacheState(recipe));
+  (useOptionalRecipe as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState(recipe)
+  );
 }
 
 beforeEach(() => {
