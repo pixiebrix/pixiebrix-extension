@@ -21,6 +21,7 @@ import { useCallback, useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { useIsMounted } from "@/hooks/common";
 import { once } from "lodash";
+import { uuidv4 } from "@/types/helpers";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);
 
@@ -110,6 +111,8 @@ function useAsyncState<T = unknown>(
   const checkIsMounted = useIsMounted();
   // Ref to track if this is the initial mount
   const initialMountRef = useRef(true);
+  // Ref to ensure promise results come back in order
+  const promiseNonceRef = useRef(null);
   const [state, dispatch] = useReducer(
     slice.reducer,
     initialValue === undefined
@@ -131,35 +134,39 @@ function useAsyncState<T = unknown>(
       dispatch(slice.actions.startFetchNewInputs());
     }
 
+    const nonce = uuidv4();
     initialMountRef.current = false;
+    promiseNonceRef.current = nonce;
 
     try {
       const promiseResult = await (typeof promiseOrGenerator === "function"
         ? promiseOrGenerator()
         : promiseOrGenerator);
 
-      if (checkIsMounted()) {
+      if (checkIsMounted() && promiseNonceRef.current === nonce) {
         dispatch(slice.actions.success({ data: promiseResult }));
       }
     } catch (error) {
-      if (checkIsMounted()) {
+      if (checkIsMounted() && promiseNonceRef.current === nonce) {
         dispatch(slice.actions.failure({ error }));
       }
     }
   }, dependencies);
 
   const refetch = useCallback(async () => {
+    const nonce = uuidv4();
+    promiseNonceRef.current = nonce;
     dispatch(slice.actions.startRefetch());
     try {
       const promiseResult = await (typeof promiseOrGenerator === "function"
         ? promiseOrGenerator()
         : promiseOrGenerator);
 
-      if (checkIsMounted()) {
+      if (checkIsMounted() && promiseNonceRef.current === nonce) {
         dispatch(slice.actions.success({ data: promiseResult }));
       }
     } catch (error) {
-      if (checkIsMounted()) {
+      if (checkIsMounted() && promiseNonceRef.current === nonce) {
         dispatch(slice.actions.failure({ error }));
       }
     }
