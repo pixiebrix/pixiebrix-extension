@@ -18,33 +18,30 @@
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
-import { useLocation, useParams } from "react-router";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
-import ActivateWizard from "@/extensionConsole/pages/activateRecipe/ActivateWizard";
+import ActivateWizardCard from "@/extensionConsole/pages/activateRecipe/ActivateWizardCard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useFetch from "@/hooks/useFetch";
 import { type BlueprintResponse } from "@/types/contract";
 import { pick } from "lodash";
+import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegistry";
+import useActivateUrl from "@/extensionConsole/pages/activateRecipe/useActivateUrl";
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {
-  const location = useLocation();
+  const { blueprintId, isReinstall } = useActivateUrl();
 
-  const { blueprintId } = useParams<{
-    blueprintId: string;
-  }>();
-
-  const reinstall =
-    new URLSearchParams(location.search).get("reinstall") === "1";
-
+  // Don't use RTK Query here. Always want the latest version of the blueprint. Otherwise, if the user had their
+  // Extension Console open for a while, they may get the older version when they go to re-activate.
+  // NOTE: the endpoint will return a 404 if an invalid registry was passed via URL
   const {
     data: remoteBlueprint,
     isLoading: fetchingBlueprint,
     error: fetchError,
-  } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
+  } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}/`);
 
   // Reshape to recipe definition
   const recipeDefinition: RecipeDefinition | null = useMemo(() => {
@@ -60,7 +57,19 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
 
   const body = useMemo(() => {
     if (remoteBlueprint?.config?.extensionPoints) {
-      return <ActivateWizard blueprint={recipeDefinition} />;
+      // Require that bricks have been fetched at least once before showing. Handles new installs where the bricks
+      // haven't been completely fetched yet.
+      // XXX: we might also want to enforce a full re-sync of the brick registry to ensure the latest brick
+      // definitions are available for determining permissions. That's likely not required though, as brick permissions
+      // do not change frequently.
+      return (
+        <RequireBrickRegistry>
+          <ActivateWizardCard
+            blueprint={recipeDefinition}
+            isReinstall={isReinstall}
+          />
+        </RequireBrickRegistry>
+      );
     }
 
     if (remoteBlueprint) {
@@ -84,9 +93,9 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     }
 
     return <Loader />;
-  }, [recipeDefinition, remoteBlueprint, blueprintId]);
+  }, [recipeDefinition, remoteBlueprint, blueprintId, isReinstall]);
 
-  const action = reinstall ? "Reactivate" : "Activate";
+  const action = isReinstall ? "Reactivate" : "Activate";
 
   return (
     <Page
