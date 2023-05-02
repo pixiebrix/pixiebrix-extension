@@ -54,7 +54,7 @@ const STEPS: WizardStep[] = [
 
 function useWizard(
   blueprint: RecipeDefinition,
-  defaultAuthOptions?: Record<RegistryId, AuthOption>
+  defaultAuthOptions: Record<RegistryId, AuthOption> = {}
 ): [WizardStep[], WizardValues, Yup.AnyObjectSchema] {
   const installedExtensions = useSelector(selectExtensions);
   const [optionsValidationSchema] = useAsyncRecipeOptionsValidationSchema(
