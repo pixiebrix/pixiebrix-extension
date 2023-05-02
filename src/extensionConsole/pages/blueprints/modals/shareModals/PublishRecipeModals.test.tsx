@@ -33,7 +33,7 @@ let blueprint: RecipeDefinition;
 let auth: AuthState;
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn().mockImplementation(() => ({
+  useOptionalRecipe: jest.fn().mockImplementation(() => ({
     data: blueprint,
     isFetching: false,
   })),

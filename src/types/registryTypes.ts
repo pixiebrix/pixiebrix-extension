@@ -55,7 +55,7 @@ export interface Metadata {
   readonly id: RegistryId;
 
   /**
-   * Human-readably name
+   * Human-readable name
    */
   readonly name: string;
 

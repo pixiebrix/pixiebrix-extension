@@ -45,7 +45,7 @@ import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import ActivationLink from "./ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";
@@ -80,7 +80,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     data: recipe,
     isFetching: isFetchingRecipe,
     refetch: refetchRecipes,
-  } = useRecipe(blueprintId);
+  } = useOptionalRecipe(blueprintId);
 
   const closeModal = () => {
     dispatch(blueprintModalsSlice.actions.closeModal());

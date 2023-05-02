@@ -113,6 +113,7 @@ import {
   type ExtensionDefinition,
   type RecipeDefinition,
 } from "@/types/recipeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * UUID sequence generator that's predictable across runs.
@@ -787,6 +788,21 @@ export const marketplaceTagFactory = define<MarketplaceTag>({
   subtype: "generic",
   fa_icon: "fab abacus",
 });
+
+export function recipeToMarketplacePackage(
+  recipe: RecipeDefinition
+): MarketplaceListing["package"] {
+  return {
+    id: recipe.metadata.id,
+    name: recipe.metadata.name,
+    description: recipe.metadata.description,
+    version: recipe.metadata.version,
+    config: recipe as unknown as UnknownObject,
+    kind: "recipe",
+    author: {},
+    organization: {},
+  };
+}
 
 export const marketplaceListingFactory = define<MarketplaceListing>({
   id: uuidSequence,

@@ -85,10 +85,7 @@ function useExtensionConsoleInstall(
       const configuredAuths = values.services.filter(({ config }) => config);
 
       const enabled = await containsPermissions(
-        await collectPermissions(
-          await resolveRecipe(recipe, recipe.extensionPoints),
-          configuredAuths
-        )
+        await collectPermissions(await resolveRecipe(recipe), configuredAuths)
       );
 
       if (missingServiceIds.length > 0) {

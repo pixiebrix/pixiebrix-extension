@@ -18,33 +18,16 @@
 import { render } from "@testing-library/react";
 import React from "react";
 import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
-import { type AsyncState } from "@/hooks/common";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import {
+  queryErrorFactory,
+  queryLoadingFactory,
+  queryUninitializedFactory,
+} from "@/testUtils/rtkQueryFactories";
 
 describe("AsyncStateGate", () => {
-  it("renders data", () => {
-    const state: AsyncState = ["foo", false, null, jest.fn()];
-    const wrapper = render(
-      <AsyncStateGate state={state}>
-        {({ data }) => <div>{data}</div>}
-      </AsyncStateGate>
-    );
-
-    expect(wrapper.getByText("foo")).toBeVisible();
-  });
-
-  it("throws on error by default", () => {
-    const state: AsyncState = [null, false, new Error("test error"), jest.fn()];
-    expect(() =>
-      render(
-        <AsyncStateGate state={state}>
-          {() => <div>Hello world!</div>}
-        </AsyncStateGate>
-      )
-    ).toThrow("test error");
-  });
-
-  it("renders loader", () => {
-    const state: AsyncState = [null, true, null, jest.fn()];
+  it("renders loader on uninitialized", () => {
+    const state = queryUninitializedFactory();
     const wrapper = render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
@@ -54,8 +37,41 @@ describe("AsyncStateGate", () => {
     expect(wrapper.getByTestId("loader")).toBeVisible();
   });
 
+  it("renders data", () => {
+    const state = valueToAsyncState("foo");
+    const wrapper = render(
+      <AsyncStateGate state={state}>
+        {({ data }) => <div>{data}</div>}
+      </AsyncStateGate>
+    );
+
+    expect(wrapper.getByText("foo")).toBeVisible();
+  });
+
+  it("renders loader", () => {
+    const state = queryLoadingFactory();
+    const wrapper = render(
+      <AsyncStateGate state={state}>
+        {({ data }) => <div>{data}</div>}
+      </AsyncStateGate>
+    );
+
+    expect(wrapper.getByTestId("loader")).toBeVisible();
+  });
+
+  it("throws on error by default", () => {
+    const state = queryErrorFactory(new Error("test error"));
+    expect(() =>
+      render(
+        <AsyncStateGate state={state}>
+          {() => <div>Hello world!</div>}
+        </AsyncStateGate>
+      )
+    ).toThrow("test error");
+  });
+
   it("renders error component", () => {
-    const state: AsyncState = [null, false, new Error("test error"), jest.fn()];
+    const state = queryErrorFactory(new Error("test error"));
     const wrapper = render(
       <AsyncStateGate
         state={state}

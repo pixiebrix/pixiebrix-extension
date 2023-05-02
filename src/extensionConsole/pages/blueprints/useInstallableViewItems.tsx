@@ -51,9 +51,10 @@ function useInstallableViewItems(installables: Installable[]): {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
   const organizations = useSelector(selectOrganizations);
+
+  // Don't merge async states. Allow hook to render without listings
   const listingsQuery = useGetMarketplaceListingsQuery();
-  const { data: recipes, isFetchingFromCache: areRecipesLoading } =
-    useAllRecipes();
+  const { data: recipes, isLoading: isRecipesLoading } = useAllRecipes();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -162,7 +163,8 @@ function useInstallableViewItems(installables: Installable[]): {
 
   return {
     installableViewItems,
-    isLoading: areRecipesLoading || listingsQuery.isLoading,
+    // FIXME: should this be blocking on loading the listing? It will delay Extension Console load time
+    isLoading: isRecipesLoading || listingsQuery.isLoading,
   };
 }
 

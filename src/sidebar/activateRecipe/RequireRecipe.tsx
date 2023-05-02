@@ -15,151 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useRecipe } from "@/recipes/recipesHooks";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useRequiredRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import Loader from "@/components/Loader";
 import styles from "./RequireRecipe.module.scss";
-import { useAsyncState } from "@/hooks/common";
-import { resolveRecipe } from "@/registry/internal";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
-import { type WizardValues } from "@/activation/wizardTypes";
-import { collectPermissions } from "@/permissions";
-import { containsPermissions } from "@/background/messenger/api";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
-  recipeNameNode: React.ReactNode | null;
+  recipeNameNode: React.ReactNode;
   includesQuickBar: boolean;
-  needsPermissions: (formValues: WizardValues) => Promise<boolean>;
-  canAutoActivate: boolean;
+  requiresConfiguration: boolean;
   defaultAuthOptions: Record<RegistryId, AuthOption>;
 };
 
-type RequireRecipeProps = {
+type Props = {
   recipeId: RegistryId;
   children: (props: RecipeState) => React.ReactElement;
 };
 
-const RequireRecipe: React.FC<RequireRecipeProps> = ({
-  recipeId,
-  children,
-}) => {
-  // Recipe
-  const {
-    data: recipe,
-    isLoading: isLoadingRecipe,
-    isUninitialized,
-    error: recipeError,
-  } = useRecipe(recipeId);
-
-  // Listing
-  const {
-    data: listings,
-    isLoading: isLoadingListing,
-    error: listingError,
-  } = useGetMarketplaceListingsQuery({ package__name: recipeId });
-  // eslint-disable-next-line security/detect-object-injection -- RegistryId
-  const listing = useMemo(() => listings?.[recipeId], [listings, recipeId]);
-
-  // Name component
-  const recipeName =
-    listing?.package?.verbose_name ?? listing?.package?.name ?? "Unnamed mod";
-
-  // Quick Bar & Permissions
-  const [quickBarAndPermissions, , quickBarAndPermissionsError] =
-    useAsyncState(async () => {
-      if (!recipe) {
-        return null;
-      }
-
-      const resolvedRecipeConfigs = await resolveRecipe(
-        recipe,
-        recipe.extensionPoints
-      );
-      const includesQuickBar = await includesQuickBarExtensionPoint(
-        resolvedRecipeConfigs
-      );
-      const needsPermissions = async (formValues: WizardValues) => {
-        const serviceAuths = formValues.services.filter(({ config }) =>
-          Boolean(config)
-        );
-
-        const collectedPermissions = await collectPermissions(
-          resolvedRecipeConfigs,
-          serviceAuths
-        );
-
-        if (isEmpty(collectedPermissions)) {
-          return false;
-        }
-
-        const hasPermissions = await containsPermissions(collectedPermissions);
-        return !hasPermissions;
-      };
-
-      return { includesQuickBar, needsPermissions };
-    }, [recipe]);
-
-  // The "fetching" flag on useAsyncState toggles back and forth when the recipe dependency updates
-  // from null to the loaded recipe. This causes the loader to flash from this component, which
-  // causes the children tree to completely un-mount and then mount again, which is not ideal
-  // for the children. Instead, we're just waiting until the state receives a value, and then
-  // we never set the loading indicator again for this piece of the state, even if the async state
-  // happens to fetch again for some reason.
-  const isLoadingQuickBarAndPermissions = quickBarAndPermissions == null;
-
-  // Auth Options
-  const { authOptions, isLoading: isLoadingAuthOptions } = useAuthOptions();
-
-  // Throw errors
-  if (recipeError) {
-    throw recipeError;
-  }
-
-  if (listingError) {
-    throw listingError;
-  }
-
-  if (quickBarAndPermissionsError) {
-    throw quickBarAndPermissionsError;
-  }
-
-  // Ensure recipe is loaded
-  if (
-    !isUninitialized &&
-    !isLoadingRecipe &&
-    !isLoadingAuthOptions &&
-    !recipeError &&
-    !recipe
-  ) {
-    throw new Error(`Recipe ${recipeId} not found`);
-  }
-
-  // Loading state
-  const isLoading =
-    isUninitialized ||
-    isLoadingRecipe ||
-    isLoadingListing ||
-    isLoadingQuickBarAndPermissions ||
-    isLoadingAuthOptions;
-
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  // Calculate canAutoActivate
+/**
+ * Return true if the recipe requires a user to configure options/integration configurations.
+ * NOTE: does not perform a permissions check.
+ * @param recipe the recipe definition
+ * @param authOptions the integration configurations available to the user
+ * @see checkRecipePermissions
+ */
+function requiresUserConfiguration(
+  recipe: RecipeDefinition,
+  authOptions: AuthOption[]
+): boolean {
   const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
     recipe,
     authOptions
   );
+
   const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+
   const recipeServiceIds = uniq(
     recipe.extensionPoints.flatMap(({ services }) =>
       services ? Object.values(services) : []
@@ -178,19 +77,48 @@ const RequireRecipe: React.FC<RequireRecipeProps> = ({
     return defaultOption?.sharingType !== "built-in";
   });
 
-  // Can auto-activate if no configuration required
-  const canAutoActivate = !hasRecipeOptions && !needsServiceInputs;
+  return hasRecipeOptions || needsServiceInputs;
+}
 
-  const recipeState: RecipeState = {
-    recipe,
-    recipeNameNode: <div className={styles.recipeName}>{recipeName}</div>,
-    includesQuickBar: quickBarAndPermissions?.includesQuickBar,
-    needsPermissions: quickBarAndPermissions?.needsPermissions,
-    canAutoActivate,
-    defaultAuthOptions,
-  };
+/**
+ * Helper component to render children that depend on a recipe and its metadata.
+ */
+const RequireRecipe: React.FC<Props> = ({ recipeId, children }) => {
+  const recipeDefinitionState = useRequiredRecipe(recipeId);
 
-  return children(recipeState);
+  const authOptionsState = useAuthOptions();
+
+  const state = useDeriveAsyncState(
+    recipeDefinitionState,
+    authOptionsState,
+    async (recipe: RecipeDefinition, authOptions: AuthOption[]) => {
+      const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
+        recipe,
+        authOptions
+      );
+
+      return {
+        recipe,
+        defaultAuthOptions,
+        requiresConfiguration: requiresUserConfiguration(recipe, authOptions),
+        includesQuickBar: await includesQuickBarExtensionPoint(recipe),
+        recipeNameNode: (
+          <div className={styles.recipeName}>{recipe.metadata.name}</div>
+        ),
+      };
+    }
+  );
+
+  // Throw error to hit error boundary
+  if (state.isError) {
+    throw state.error ?? new Error("Error retrieving mod");
+  }
+
+  if (state.isLoading) {
+    return <Loader />;
+  }
+
+  return children(state.data);
 };
 
 export default RequireRecipe;

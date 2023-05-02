@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type FormEntry } from "@/sidebar/types";
-import { useAsyncState } from "@/hooks/common";
+import useAsyncState from "@/hooks/useAsyncState";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
@@ -32,7 +32,11 @@ type FormBodyProps = {
  * @constructor
  */
 const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
-  const [sourceURL, isLoading, error] = useAsyncState(
+  const {
+    data: sourceURL,
+    isLoading,
+    error,
+  } = useAsyncState(
     async () => createFrameSource(form.nonce, "panel"),
     [form.nonce]
   );

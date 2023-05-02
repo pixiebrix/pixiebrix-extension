@@ -22,7 +22,7 @@ exports[`ActivateRecipePanel it activates basic recipe automatically and renders
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -69,7 +69,7 @@ exports[`ActivateRecipePanel it activates recipe with built-in services automati
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -116,7 +116,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -186,7 +186,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -256,7 +256,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -303,7 +303,7 @@ exports[`ActivateRecipePanel it renders with options, permissions info 1`] = `
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <p>
           We're almost there. This mod has a few settings to configure before using. You can always change these later.
@@ -628,7 +628,7 @@ exports[`ActivateRecipePanel it renders with service configuration if no built-i
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <p>
           We're almost there. This mod has a few settings to configure before using. You can always change these later.

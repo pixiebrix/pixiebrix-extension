@@ -23,7 +23,7 @@ import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
 import { appApi } from "@/services/api";
 import Loader from "@/components/Loader";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
 import { isRecipePendingPublish } from "@/extensionConsole/pages/blueprints/utils/installableUtils";
@@ -34,7 +34,8 @@ const ModalContentSwitch: React.FunctionComponent = () => {
   const { blueprintId, cancelingPublish } = showPublishContext;
   const { data: listings, isLoading: areListingsLoading } =
     appApi.endpoints.getMarketplaceListings.useQueryState();
-  const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(blueprintId);
+  const { data: recipe, isFetching: isFetchingRecipe } =
+    useOptionalRecipe(blueprintId);
 
   if (isFetchingRecipe || areListingsLoading) {
     return (

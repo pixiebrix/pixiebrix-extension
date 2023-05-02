@@ -23,38 +23,24 @@ import { recipeFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
+import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { type Except } from "type-fest";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useOptionalRecipe: jest.fn(),
   useAllRecipes: jest.fn(),
 }));
 
-const mockFlags: Except<UseCachedQueryResult<RecipeDefinition[]>, "data"> = {
-  isFetchingFromCache: false,
-  isCacheUninitialized: false,
-  isFetching: false,
-  isLoading: false,
-  isUninitialized: false,
-  error: undefined,
-  refetch: jest.fn(),
-};
-
 function mockRecipe(recipe: RecipeDefinition) {
-  (useAllRecipes as jest.Mock).mockReturnValue({
-    data: [recipe],
-    ...mockFlags,
-  });
-
-  (useRecipe as jest.Mock).mockReturnValue({
-    data: recipe,
-    ...mockFlags,
-  });
+  (useAllRecipes as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState([recipe])
+  );
+  (useOptionalRecipe as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState(recipe)
+  );
 }
 
 beforeEach(() => {

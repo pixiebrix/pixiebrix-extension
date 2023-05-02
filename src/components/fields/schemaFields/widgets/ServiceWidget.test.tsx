@@ -28,8 +28,8 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 // eslint-disable-next-line no-restricted-imports -- test
 import { Formik } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
-import { noop } from "lodash";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -84,8 +84,8 @@ describe("ServiceWidget", () => {
   it("should not default if there are multiple auth options", async () => {
     const serviceId = validateRegistryId("jest/api");
 
-    useAuthOptionsMock.mockReturnValue({
-      authOptions: [
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([
         {
           serviceId,
           label: "Test 1",
@@ -100,10 +100,8 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ],
-      refresh: noop,
-      isLoading: false,
-    });
+      ])
+    );
 
     const schema = {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
@@ -121,8 +119,8 @@ describe("ServiceWidget", () => {
   it("should default to only configuration", async () => {
     const serviceId = validateRegistryId("jest/api");
 
-    useAuthOptionsMock.mockReturnValue({
-      authOptions: [
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([
         {
           serviceId,
           label: "Test 1",
@@ -130,10 +128,8 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ],
-      refresh: noop,
-      isLoading: false,
-    });
+      ])
+    );
 
     const schema = {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,

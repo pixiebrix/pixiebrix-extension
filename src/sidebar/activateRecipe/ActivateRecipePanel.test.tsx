@@ -16,17 +16,16 @@
  */
 
 import React from "react";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useRequiredRecipe } from "@/recipes/recipesHooks";
 import * as api from "@/services/api";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import {
   getRecipeWithBuiltInServiceAuths,
   marketplaceListingFactory,
   recipeDefinitionFactory,
+  recipeToMarketplacePackage,
   sidebarEntryFactory,
 } from "@/testUtils/factories";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
-import { uuidv4 } from "@/types/helpers";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -37,12 +36,20 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { containsPermissions } from "@/background/messenger/api";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { validateRegistryId } from "@/types/helpers";
+import {
+  queryLoadingFactory,
+  querySuccessFactory,
+} from "@/testUtils/rtkQueryFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useRequiredRecipe: jest.fn(),
 }));
 
-const useRecipeMock = useRecipe as jest.MockedFunction<typeof useRecipe>;
+const useRequiredRecipeMock = useRequiredRecipe as jest.MockedFunction<
+  typeof useRequiredRecipe
+>;
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(),
@@ -128,10 +135,7 @@ jest.mock("@/registry/internal", () => ({
 
 jest.mock("@/hooks/useQuickbarShortcut", () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue({
-    shortcut: null,
-    isConfigured: false,
-  }),
+  default: jest.fn(),
 }));
 
 jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
@@ -139,59 +143,32 @@ jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
 
-jest.mock("@/hooks/useQuickbarShortcut", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
 const useQuickbarShortcutMock = useQuickbarShortcut as jest.MockedFunction<
   typeof useQuickbarShortcut
 >;
-
-function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
-  return {
-    data,
-    isFetchingFromCache: false,
-    isCacheUninitialized: false,
-    isFetching: false,
-    isLoading: false,
-    isUninitialized: false,
-    error: null,
-    refetch: jest.fn(),
-  };
-}
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
 function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
-  const recipe = recipeDefinitionFactory(recipeOverride);
-  useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
+  const recipe = recipeDefinitionFactory({
+    ...recipeOverride,
+    metadata: {
+      id: validateRegistryId("test-recipe"),
+      name: "Test Mod",
+    },
+  });
+  useRequiredRecipeMock.mockReturnValue(valueToAsyncCacheState(recipe));
   const listing = marketplaceListingFactory({
-    package: {
-      id: uuidv4(),
-      name: recipe.metadata.id,
-      kind: "recipe",
-      description: "This is a test listing",
-      verbose_name: "My Test Listing",
-      config: {},
-      author: {
-        scope: "@testAuthor",
-      },
-      organization: {
-        scope: "@testOrg",
-      },
-    },
+    // Consistent user-visible name for snapshots
+    package: recipeToMarketplacePackage(recipe),
   });
-  useGetMarketplaceListingsQueryMock.mockReturnValue({
-    data: {
+  useGetMarketplaceListingsQueryMock.mockReturnValue(
+    querySuccessFactory({
       [listing.package.name]: listing,
-    },
-    isLoading: false,
-    error: null,
-    refetch: jest.fn(),
-  });
+    })
+  );
   const entry = sidebarEntryFactory("activateRecipe", {
     recipeId: recipe.metadata.id,
     heading: "Activate Mod",
@@ -212,11 +189,9 @@ beforeEach(() => {
     isConfigured: false,
   });
 
-  (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-    data: [],
-    isLoading: false,
-    isFetching: false,
-  });
+  (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue(
+    querySuccessFactory([])
+  );
 });
 
 describe("ActivateRecipePanel", () => {
@@ -241,6 +216,8 @@ describe("ActivateRecipePanel", () => {
     });
 
     await waitForEffect();
+
+    rendered.debug();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -296,10 +273,9 @@ describe("ActivateRecipePanel", () => {
   test("it renders with service configuration if no built-in service configs available", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServicesQuery as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: false,
-    });
+    (api.useGetServicesQuery as jest.Mock).mockReturnValue(
+      querySuccessFactory([])
+    );
 
     const rendered = setupMocksAndRender(recipe);
 
@@ -311,10 +287,9 @@ describe("ActivateRecipePanel", () => {
   test("it activates recipe with built-in services automatically and renders well-done page", async () => {
     const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-      data: builtInServiceAuths,
-      isLoading: false,
-    });
+    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue(
+      querySuccessFactory(builtInServiceAuths)
+    );
 
     const rendered = setupMocksAndRender(recipe);
 
@@ -326,11 +301,9 @@ describe("ActivateRecipePanel", () => {
   test("it doesn't flicker while built-in auths are loading", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: true,
-      isFetching: true,
-    });
+    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue(
+      queryLoadingFactory()
+    );
 
     const rendered = setupMocksAndRender(recipe);
 

@@ -46,7 +46,7 @@ const ActivateButton: React.FunctionComponent<{
   const { submitForm } = useFormikContext();
   const location = useLocation();
   const serviceAuths = useSelectedAuths();
-  const { request, isPending: isPermissionsPending } = useEnsurePermissions(
+  const { request, isFetching: isPermissionsPending } = useEnsurePermissions(
     blueprint,
     serviceAuths
   );

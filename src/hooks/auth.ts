@@ -16,9 +16,7 @@
  */
 
 import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
-import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
-import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
@@ -26,6 +24,9 @@ import { type RawServiceConfiguration } from "@/types/serviceTypes";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import useAsyncState from "@/hooks/useAsyncState";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
@@ -65,65 +66,56 @@ function getRemoteLabel(auth: SanitizedAuth): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
-export function useAuthOptions(): {
-  authOptions: AuthOption[];
-  refresh: () => void;
-  isLoading: boolean;
-} {
+function mapConfigurationsToOptions(
+  localServices: RawServiceConfiguration[],
+  remoteServices: SanitizedAuth[]
+) {
+  const localOptions = sortBy(
+    localServices.map((serviceConfiguration) => ({
+      value: serviceConfiguration.id,
+      label: `${defaultLabel(serviceConfiguration.label)} — Private`,
+      local: true,
+      serviceId: serviceConfiguration.serviceId,
+      sharingType: "private" as AuthSharing,
+    })),
+    (x) => x.label
+  );
+
+  const sharedOptions = sortBy(
+    remoteServices.map((remoteAuth) => ({
+      value: remoteAuth.id,
+      label: getRemoteLabel(remoteAuth),
+      local: false,
+      user: remoteAuth.user,
+      serviceId: remoteAuth.service.config.metadata.id,
+      sharingType: getSharingType(remoteAuth),
+    })),
+    (x) => (x.user ? 0 : 1),
+    (x) => x.label
+  );
+
+  return [...localOptions, ...sharedOptions];
+}
+
+/**
+ * Return available integration configuration options suitable for display in a react-select dropdown.
+ */
+export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
-  const [configuredServices, isLocalLoading, _localError, refreshLocal] =
-    useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
+  const localServicesState = useAsyncState<RawServiceConfiguration[]>(
+    readRawConfigurations,
+    []
+  );
 
-  const {
-    data: remoteAuths,
-    isFetching: isRemoteLoading,
-    refetch: refreshRemote,
-  } = useGetServiceAuthsQuery();
+  const remoteServiceState = useGetServiceAuthsQuery();
 
-  const authOptions = useMemo(() => {
-    const localOptions = sortBy(
-      (configuredServices ?? []).map((serviceConfiguration) => ({
-        value: serviceConfiguration.id,
-        label: `${defaultLabel(serviceConfiguration.label)} — Private`,
-        local: true,
-        serviceId: serviceConfiguration.serviceId,
-        sharingType: "private" as AuthSharing,
-      })),
-      (x) => x.label
-    );
-
-    const sharedOptions = sortBy(
-      (remoteAuths ?? []).map((remoteAuth) => ({
-        value: remoteAuth.id,
-        label: getRemoteLabel(remoteAuth),
-        local: false,
-        user: remoteAuth.user,
-        serviceId: remoteAuth.service.config.metadata.id,
-        sharingType: getSharingType(remoteAuth),
-      })),
-      (x) => (x.user ? 0 : 1),
-      (x) => x.label
-    );
-
-    return [...localOptions, ...sharedOptions];
-  }, [remoteAuths, configuredServices]);
-
-  const refresh = useCallback(() => {
-    // Locally, eslint run in IntelliJ disagrees with the linter run in CI. There might be a package version mismatch
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises -- reported as promise on next line
-    refreshRemote();
-    void refreshLocal();
-  }, [refreshRemote, refreshLocal]);
-
-  const isLoading = isLocalLoading || isRemoteLoading;
-
-  return {
-    authOptions: isLoading ? [] : authOptions,
-    refresh,
-    isLoading,
-  };
+  return useMergeAsyncState(
+    localServicesState,
+    remoteServiceState,
+    mapConfigurationsToOptions
+  );
 }
 
 export function getDefaultAuthOptionsForRecipe(
@@ -157,28 +149,4 @@ export function getDefaultAuthOptionsForRecipe(
       return [serviceId, null];
     })
   );
-}
-
-/*
- * Get a list of required service ids for a recipe mapped to a default auth option.
- *
- * If there are no options available for the service, the value will be null.
- * Prefer an arbitrary personal or shared auth option over built-in.
- *
- * Assumes that the recipe is not yet installed.
- */
-export function useDefaultAuthOptions(recipe: RecipeDefinition): {
-  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
-  isLoading: boolean;
-} {
-  const { authOptions, isLoading } = useAuthOptions();
-
-  const defaultAuthOptions = isLoading
-    ? {}
-    : getDefaultAuthOptionsForRecipe(recipe, authOptions);
-
-  return {
-    defaultAuthOptions,
-    isLoading,
-  };
 }

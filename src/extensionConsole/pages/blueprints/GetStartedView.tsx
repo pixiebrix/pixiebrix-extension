@@ -25,7 +25,7 @@ import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import InstallableIcon from "@/extensionConsole/pages/blueprints/InstallableIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
@@ -56,7 +56,7 @@ const GetStartedView: React.VoidFunctionComponent<{
     "first_time_public_blueprint_install"
   )?.metadata?.blueprintId as RegistryId;
 
-  const { data: recipe, isFetching: isFetchingRecipe } = useRecipe(
+  const { data: recipe, isFetching: isFetchingRecipe } = useOptionalRecipe(
     onboardingBlueprintId
   );
 

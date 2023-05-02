@@ -16,19 +16,13 @@
  */
 
 import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
+import { type Except } from "type-fest";
 
-export type RecipesState = {
-  recipes: RecipeDefinition[];
-
-  isFetchingFromCache: boolean;
-  isCacheUninitialized: boolean;
-
-  isLoading: boolean;
-  isFetching: boolean;
-  isUninitialized: boolean;
-
-  error: unknown;
-};
+export type RecipesState = Except<
+  UseCachedQueryResult<RecipeDefinition[]>,
+  "refetch"
+>;
 
 export type RecipesRootState = {
   recipes: RecipesState;
