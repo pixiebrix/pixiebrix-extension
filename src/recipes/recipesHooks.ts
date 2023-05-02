@@ -64,7 +64,7 @@ export function useRequiredRecipe(
 ): AsyncState<RecipeDefinition> {
   const state = useAllRecipes();
 
-  // TODO: add a useMemoCompare to avoid changing recipe content didn't change on remote fetch.
+  // TODO: add a useMemoCompare to avoid changing recipe reference if content didn't change on remote fetch.
   // TODO: automatically perform a remote fetch if the recipe is not found locally
 
   return useDeriveAsyncState(state, async (recipes: RecipeDefinition[]) => {

@@ -26,6 +26,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useIsMounted } from "@/hooks/common";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
+import { checkAsyncStateInvariants } from "@/utils/asyncStateUtils";
 
 const initialAsyncState: AsyncState = {
   data: undefined,
@@ -50,14 +51,14 @@ const promiseSlice = createSlice({
   name: "promiseSlice",
   initialState: initialAsyncState,
   reducers: {
-    // Initial loading state
-    init(state) {
+    initialize(state) {
+      // Initial promise loading state
       state.isUninitialized = false;
       state.isFetching = true;
       state.isLoading = true;
     },
-    // Start fetching state
-    start(state) {
+    startFetchNewInputs(state) {
+      // Start fetching due to new inputs
       state.isFetching = true;
       state.currentData = undefined;
     },
@@ -91,6 +92,11 @@ const promiseSlice = createSlice({
 
 /**
  * Returns a new AsyncState that is asynchronously derived from the given AsyncStates.
+ *
+ * The hook does not support a "refetch" method, as it's not currently possible to detect when the dependencies are
+ * done re-fetching if their `data` field hasn't changed. If needed in the future, could try implementing by adding
+ * fulfillment timestamps or a nonce on AsyncState.
+ *
  * @see useMergeAsyncState
  */
 function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
@@ -116,6 +122,11 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
 
   // @ts-expect-error -- getting args except last element
   const states: FetchableAsyncStateArray = args.slice(0, -1);
+
+  for (const state of states) {
+    checkAsyncStateInvariants(state);
+  }
+
   const datums = states.map((x) => x.data);
 
   // Effect to automatically refetch when stated dependencies change
@@ -125,17 +136,18 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
     }
 
     if (initialMountRef.current) {
-      dispatch(promiseSlice.actions.init());
+      dispatch(promiseSlice.actions.initialize());
     } else {
-      dispatch(promiseSlice.actions.start());
+      dispatch(promiseSlice.actions.startFetchNewInputs());
     }
 
     initialMountRef.current = false;
 
     try {
       const promiseResult = await merge(...(datums as any));
-      if (!checkIsMounted()) return;
-      dispatch(promiseSlice.actions.success({ data: promiseResult }));
+      if (checkIsMounted()) {
+        dispatch(promiseSlice.actions.success({ data: promiseResult }));
+      }
     } catch (error) {
       if (checkIsMounted()) {
         dispatch(promiseSlice.actions.failure({ error }));
@@ -166,8 +178,8 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
     return {
       data: undefined,
       currentData: undefined,
-      isUninitialized,
-      isLoading,
+      isUninitialized: false,
+      isLoading: false,
       isFetching,
       isError: true,
       isSuccess: false,
@@ -175,7 +187,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
     };
   }
 
-  // In error state if any of the dependencies are errors
+  // Or, in error state if any of the dependencies are errors
   if (states.some((x) => x.isError)) {
     return {
       data: undefined,
@@ -185,7 +197,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
       isFetching,
       isError: true,
       isSuccess: false,
-      // Return the first error. Could consider merging errors into a composite error
+      // Return an arbitrary error. Could consider merging errors into a composite error
       error: states.find((x) => x.isError)?.error,
     };
   }
@@ -193,6 +205,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   if (promiseState.isSuccess) {
     return {
       data: promiseState.data as Result,
+      // `useDeriveAsyncState` doesn't support refetch, so currentData is always the same as data when not fetching
       currentData: isFetching ? undefined : (promiseState.data as Result),
       isUninitialized: false,
       isLoading: false,
@@ -201,6 +214,11 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
       isSuccess: true,
       error: undefined,
     };
+  }
+
+  if (!(isLoading || isUninitialized || isFetching)) {
+    console.error("Invalid async state", { states, promiseState });
+    throw new Error("Invalid async state");
   }
 
   // Hasn't resolved any errors or successes yet

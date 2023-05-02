@@ -87,4 +87,105 @@ describe("useAsyncState", () => {
       refetch: expect.toBeFunction(),
     });
   });
+
+  it("should handle refetch for different arguments", async () => {
+    let deferred = pDefer<number>();
+    let factory = async () => deferred.promise;
+
+    const wrapper = renderHook(
+      ({ factory, dependency }) => useAsyncState(factory, [dependency]),
+      {
+        initialProps: {
+          dependency: 42,
+          factory,
+        },
+      }
+    );
+
+    await act(async () => {
+      deferred.resolve(42);
+    });
+
+    expect(wrapper.result.current).toEqual(
+      expect.objectContaining({
+        data: 42,
+        currentData: 42,
+      })
+    );
+
+    deferred = pDefer<number>();
+    factory = async () => deferred.promise;
+
+    await act(async () => {
+      wrapper.rerender({ factory, dependency: 43 });
+    });
+
+    expect(wrapper.result.current).toEqual(
+      expect.objectContaining({
+        data: 42,
+        currentData: undefined,
+        isFetching: true,
+      })
+    );
+
+    await act(async () => {
+      deferred.resolve(43);
+    });
+
+    expect(wrapper.result.current).toEqual(
+      expect.objectContaining({
+        data: 43,
+        currentData: 43,
+        isFetching: false,
+      })
+    );
+  });
+
+  it("should handle refetch for same arguments", async () => {
+    const originalFactory = async () => 42;
+    const wrapper = renderHook((props) => useAsyncState(props, []), {
+      initialProps: originalFactory,
+    });
+
+    await act(async () => {});
+
+    expect(wrapper.result.current).toEqual(
+      expect.objectContaining({
+        data: 42,
+        currentData: 42,
+      })
+    );
+
+    const deferred = pDefer<number>();
+    const deferredFactory = async () => deferred.promise;
+
+    await act(async () => {
+      wrapper.rerender(deferredFactory);
+    });
+
+    // Separate react to allow the factor to swap out
+    await act(async () => {
+      wrapper.result.current.refetch();
+    });
+
+    expect(wrapper.result.current).toEqual(
+      expect.objectContaining({
+        data: 42,
+        currentData: 42,
+        isFetching: true,
+      })
+    );
+
+    await act(async () => {
+      deferred.resolve(43);
+    });
+
+    expect(wrapper.result.current).toEqual(
+      expect.objectContaining({
+        data: 43,
+        currentData: 43,
+        isFetching: false,
+      })
+    );
+  });
 });

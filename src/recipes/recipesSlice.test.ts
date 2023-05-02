@@ -91,7 +91,7 @@ describe("refreshRecipes", () => {
       undefined
     );
 
-    expect(dispatch).toHaveBeenCalledWith(recipesActions.startLoading());
+    expect(dispatch).toHaveBeenCalledWith(recipesActions.startFetching());
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
     expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
@@ -130,7 +130,7 @@ describe("reducers", () => {
 
       const nextState = recipesSlice.reducer(
         state,
-        recipesActions.startLoading()
+        recipesActions.startFetching()
       );
       expect(nextState.isFetching).toBeTrue();
       expect(nextState.isLoading).toBe(shouldSetLoading);

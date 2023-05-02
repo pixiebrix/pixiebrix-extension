@@ -17,6 +17,8 @@
 
 /**
  * Common shape for AsyncState from RTK Query, useAsyncState, and other async sources.
+ *
+ * See explanation here: https://redux-toolkit.js.org/rtk-query/usage/queries#query-loading-state
  */
 export type AsyncState<TData = unknown> = {
   /**

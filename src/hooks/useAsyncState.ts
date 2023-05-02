@@ -47,16 +47,20 @@ const slice = createSlice({
   name: "asyncSlice",
   initialState: initialAsyncState,
   reducers: {
-    // Initial loading state
-    init(state) {
+    // Initialize loading state
+    initialize(state) {
       state.isUninitialized = false;
       state.isFetching = true;
       state.isLoading = true;
     },
-    // Start fetching state
-    start(state) {
+    startFetchNewInputs(state) {
+      // Start fetching for new inputs. Clears currentData because the inputs changed
       state.isFetching = true;
       state.currentData = undefined;
+    },
+    startRefetch(state) {
+      // Start fetching for the same inputs. Keeps currentData because the inputs didn't change
+      state.isFetching = true;
     },
     success(state, action: PayloadAction<{ data: unknown }>) {
       const { data } = action.payload;
@@ -122,9 +126,9 @@ function useAsyncState<T = unknown>(
   // Effect to automatically refetch when stated dependencies change
   useAsyncEffect(async () => {
     if (initialMountRef.current && initialValue === undefined) {
-      dispatch(slice.actions.init());
+      dispatch(slice.actions.initialize());
     } else {
-      dispatch(slice.actions.start());
+      dispatch(slice.actions.startFetchNewInputs());
     }
 
     initialMountRef.current = false;
@@ -133,8 +137,10 @@ function useAsyncState<T = unknown>(
       const promiseResult = await (typeof promiseOrGenerator === "function"
         ? promiseOrGenerator()
         : promiseOrGenerator);
-      if (!checkIsMounted()) return;
-      dispatch(slice.actions.success({ data: promiseResult }));
+
+      if (checkIsMounted()) {
+        dispatch(slice.actions.success({ data: promiseResult }));
+      }
     } catch (error) {
       if (checkIsMounted()) {
         dispatch(slice.actions.failure({ error }));
@@ -143,13 +149,15 @@ function useAsyncState<T = unknown>(
   }, dependencies);
 
   const refetch = useCallback(async () => {
-    dispatch(slice.actions.start());
+    dispatch(slice.actions.startRefetch());
     try {
       const promiseResult = await (typeof promiseOrGenerator === "function"
         ? promiseOrGenerator()
         : promiseOrGenerator);
-      if (!checkIsMounted()) return;
-      dispatch(slice.actions.success({ data: promiseResult }));
+
+      if (checkIsMounted()) {
+        dispatch(slice.actions.success({ data: promiseResult }));
+      }
     } catch (error) {
       if (checkIsMounted()) {
         dispatch(slice.actions.failure({ error }));

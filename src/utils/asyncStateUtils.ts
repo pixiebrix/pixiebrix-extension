@@ -37,10 +37,14 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // @ts-expect-error -- getting args except last element
   const states: AsyncStateArray = args.slice(0, -1);
 
+  for (const state of states) {
+    checkAsyncStateInvariants(state);
+  }
+
   const isLoading =
     // Something is explicitly loading
     states.some((x) => x.isLoading) ||
-    // Some have finished, and some haven't started
+    // Some have started/finished loading, and some haven't started
     (states.some((x) => x.isUninitialized) &&
       states.some((x) => !x.isUninitialized));
 
@@ -66,10 +70,13 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   if (states.every((x) => x.isSuccess)) {
     try {
       const data = mergeFunction(...(states.map((x) => x.data) as any));
+      const currentData = isFetching
+        ? undefined
+        : mergeFunction(...(states.map((x) => x.currentData) as any));
 
       return {
         data,
-        currentData: isFetching ? undefined : data,
+        currentData: isFetching ? undefined : currentData,
         isUninitialized: false,
         isLoading: false,
         isFetching,
@@ -156,16 +163,39 @@ export function valueToAsyncCacheState<Value>(
   value: Value
 ): UseCachedQueryResult<Value> {
   return {
-    data: value,
-    currentData: value,
-    isUninitialized: false,
-    isLoading: false,
-    isFetching: false,
-    isError: false,
-    isSuccess: true,
-    error: undefined,
+    ...valueToAsyncState(value),
     isCacheUninitialized: false,
     isFetchingFromCache: false,
     refetch: noop,
   };
+}
+
+/**
+ * Throw an error if state has invalid status flag combinations.
+ */
+export function checkAsyncStateInvariants(state: AsyncState): void {
+  if (
+    !(
+      state.isUninitialized ||
+      state.isLoading ||
+      state.isFetching ||
+      state.isSuccess ||
+      state.isError
+    )
+  ) {
+    throw new Error(
+      "Expected one of: isUninitialized, isLoading, isFetching, isSuccess, isError"
+    );
+  }
+
+  if (
+    state.isUninitialized &&
+    (state.isLoading || state.isFetching || state.isSuccess || state.isError)
+  ) {
+    throw new Error("Expected only isUninitialized");
+  }
+
+  if (state.isLoading && (state.isSuccess || state.isError)) {
+    throw new Error("Expected only isLoading");
+  }
 }

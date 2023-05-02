@@ -15,29 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
 import { type RecipesRootState, type RecipesState } from "./recipesTypes";
 import recipeRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 
 export const initialState: RecipesState = Object.freeze({
+  // Standard async state
   data: undefined,
   currentData: undefined,
-
-  isFetchingFromCache: false,
-  isCacheUninitialized: true,
-
   isLoading: false,
   isFetching: false,
   isUninitialized: true,
-
   isError: false,
   isSuccess: false,
   error: undefined,
+
+  // Additional cache async state
+  isFetchingFromCache: false,
+  isCacheUninitialized: true,
 });
 
+/**
+ * Load recipes from cache. DOES NOT set isLoading/isFetching state.
+ */
 const loadRecipesFromCache = createAsyncThunk<
   void,
   void,
@@ -49,9 +57,12 @@ const loadRecipesFromCache = createAsyncThunk<
 
   dispatch(recipesSlice.actions.startLoadingFromCache());
 
-  const recipes = await recipeRegistry.all();
-
-  dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
+  try {
+    const recipes = await recipeRegistry.all();
+    dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
+  } catch (error) {
+    dispatch(recipesSlice.actions.setCacheError(error));
+  }
 });
 
 export const refreshRecipes = createAsyncThunk<
@@ -63,7 +74,7 @@ export const refreshRecipes = createAsyncThunk<
     throw new Error("Aborted due to query being already in progress");
   }
 
-  dispatch(recipesSlice.actions.startLoading());
+  dispatch(recipesSlice.actions.startFetching());
 
   try {
     await syncRemotePackages();
@@ -84,26 +95,44 @@ export const recipesSlice = createSlice({
     startLoadingFromCache(state) {
       state.isFetchingFromCache = true;
     },
-    setRecipesFromCache(state, action) {
+    setRecipesFromCache(state, action: PayloadAction<RecipeDefinition[]>) {
+      state.isSuccess = true;
       state.data = action.payload;
+      state.currentData = action.payload;
+      state.isUninitialized = false;
+      state.isError = false;
+      state.isLoading = false;
+
       state.isFetchingFromCache = false;
       state.isCacheUninitialized = false;
     },
-    startLoading(state) {
+    setCacheError(state, action: PayloadAction<unknown>) {
+      // If there's an error loading from cache, don't update state, as will make the remote fetch
+      state.isCacheUninitialized = true;
+      state.isFetchingFromCache = false;
+    },
+    startFetching(state) {
+      state.isUninitialized = false;
       state.isFetching = true;
       if (state.isUninitialized) {
         state.isLoading = true;
       }
     },
-    setRecipes(state, action) {
+    setRecipes(state, action: PayloadAction<RecipeDefinition[]>) {
+      state.isSuccess = true;
       state.data = action.payload;
+      state.currentData = action.payload;
+      state.error = undefined;
+      state.isError = false;
       state.isFetching = false;
       state.isLoading = false;
-      state.isUninitialized = false;
-      state.error = undefined;
     },
     setError(state, action) {
+      state.isError = true;
       state.error = action.payload;
+      state.data = undefined;
+      state.currentData = undefined;
+      state.isSuccess = false;
       state.isFetching = false;
       state.isLoading = false;
     },
