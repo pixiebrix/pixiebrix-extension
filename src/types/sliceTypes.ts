@@ -22,12 +22,14 @@
  */
 export type AsyncState<TData = unknown> = {
   /**
-   * The latest returned result regardless of hook arg, if present.
+   * The latest returned result regardless of input arg, if present.
    */
   data?: TData | undefined;
 
   /**
-   * The latest returned result for the current hook arg, if present.
+   * The latest returned result for the current input arg, if present.
+   *
+   * NOTE: currentData can be set even if isFetching is true, if refetch was called without changing any input args.
    */
   currentData?: TData | undefined;
 
@@ -78,7 +80,7 @@ export type FetchableAsyncState<Data = unknown> = AsyncState<Data> & {
 };
 
 /**
- * An type for characterizing hook output that's similar to RTK Query's state.
+ * A type for characterizing hook output that's similar to RTK Query's state.
  */
 export type UseCachedQueryResult<TData> = FetchableAsyncState<TData> & {
   /**

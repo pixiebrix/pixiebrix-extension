@@ -25,7 +25,11 @@ import {
 import { noop } from "lodash";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { serializeError } from "serialize-error";
+import { type Draft } from "immer";
 
+/**
+ * Merge multiple async states into a single async state using a synchronous merge function.
+ */
 export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
     ...AsyncStateArray,
@@ -72,6 +76,13 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   if (states.every((x) => x.isSuccess)) {
     try {
       const data = mergeFunction(...(states.map((x) => x.data) as any));
+
+      // We might consider checking that currentData is not undefined for any of the states instead of using isFetching.
+      // That would enable the merged state to include currentData even if the individual states are still fetching.
+      // Doing this currently, though has two corner cases:
+      // - There's nothing preventing async state producing `undefined` on isSuccess
+      // - It might be possible to have an inconsistent view of currentData, as some dependencies will finish fetching
+      //  before others. (Although the same issue technically applies to `data` above...)
       const currentData = isFetching
         ? undefined
         : mergeFunction(...(states.map((x) => x.currentData) as any));
@@ -187,7 +198,6 @@ export function valueToAsyncCacheState<Value>(
     isLoadingFromRemote: false,
     isCacheUninitialized: false,
     isRemoteUninitialized: false,
-    refetch: noop,
   };
 }
 
@@ -225,10 +235,10 @@ export function setValueOnState<T>(
   state: WritableDraft<AsyncState<T>>,
   value: T
 ): WritableDraft<AsyncState<T>> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- couldn't figure out how to type the draft constraint
-  state.data = value as any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- couldn't figure out how to type the draft constraint
-  state.currentData = value as any;
+  // eslint-disable-next-line @typescript-eslint/ban-types -- match types from immer
+  state.data = value as T extends object ? Draft<T> : T;
+  // eslint-disable-next-line @typescript-eslint/ban-types -- match types from immer
+  state.currentData = value as T extends object ? Draft<T> : T;
   state.isUninitialized = false;
   state.isLoading = false;
   state.isFetching = false;
