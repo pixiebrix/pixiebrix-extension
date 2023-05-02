@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivateWizard activate blueprint permissions 1`] = `
+exports[`ActivateWizardCard activate blueprint permissions 1`] = `
 <DocumentFragment>
   <form
     class=""
@@ -127,7 +127,7 @@ exports[`ActivateWizard activate blueprint permissions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateWizard activate blueprint with missing required blueprint options 1`] = `
+exports[`ActivateWizardCard activate blueprint with missing required blueprint options 1`] = `
 <DocumentFragment>
   <form
     class=""
@@ -385,7 +385,7 @@ exports[`ActivateWizard activate blueprint with missing required blueprint optio
 </DocumentFragment>
 `;
 
-exports[`ActivateWizard renders 1`] = `
+exports[`ActivateWizardCard renders 1`] = `
 <DocumentFragment>
   <form
     class=""

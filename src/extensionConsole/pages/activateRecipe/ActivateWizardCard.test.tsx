@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import ActivateWizard from "@/extensionConsole/pages/activateRecipe/ActivateWizard";
+import ActivateWizardCard from "@/extensionConsole/pages/activateRecipe/ActivateWizardCard";
 import {
   extensionPointConfigFactory,
   recipeDefinitionFactory,
@@ -96,11 +96,14 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("ActivateWizard", () => {
+describe("ActivateWizardCard", () => {
   test("renders", async () => {
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizard blueprint={recipeDefinitionFactory()} />
+        <ActivateWizardCard
+          blueprint={recipeDefinitionFactory()}
+          isReinstall={false}
+        />
       </MemoryRouter>
     );
     await waitForEffect();
@@ -110,7 +113,8 @@ describe("ActivateWizard", () => {
   test("activate blueprint with missing required blueprint options", async () => {
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizard
+        <ActivateWizardCard
+          isReinstall={false}
           blueprint={recipeDefinitionFactory({
             metadata: recipeMetadataFactory({
               id: "test/blueprint-with-required-options" as RegistryId,
@@ -160,7 +164,7 @@ describe("ActivateWizard", () => {
 
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizard blueprint={blueprint} />
+        <ActivateWizardCard blueprint={blueprint} isReinstall={false} />
       </MemoryRouter>
     );
     await waitForEffect();
@@ -196,7 +200,7 @@ describe("ActivateWizard", () => {
 
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizard blueprint={blueprint} />
+        <ActivateWizardCard blueprint={blueprint} isReinstall={false} />
       </MemoryRouter>
     );
     await waitForEffect();

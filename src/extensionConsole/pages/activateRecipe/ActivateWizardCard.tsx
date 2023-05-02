@@ -17,7 +17,7 @@
 
 import styles from "./ActivateWizard.module.scss";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Col, Form, Row } from "react-bootstrap";
@@ -26,10 +26,6 @@ import { truncate } from "lodash";
 import { Formik } from "formik";
 import { useTitle } from "@/hooks/title";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
-import { useLocation } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { push } from "connected-react-router";
 import useWizard from "@/activation/useWizard";
 import ActivateButton from "@/extensionConsole/pages/activateRecipe/ActivateButton";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
@@ -41,6 +37,7 @@ import { persistor } from "@/store/optionsStore";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
+  isReinstall: boolean;
 }
 
 const ActivateHeader: React.FunctionComponent<{
@@ -79,34 +76,16 @@ const ActivateHeader: React.FunctionComponent<{
   );
 };
 
-const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const reinstall =
-    new URLSearchParams(location.search).get("reinstall") === "1";
+const ActivateWizardCard: React.FunctionComponent<OwnProps> = ({
+  blueprint,
+  isReinstall,
+}) => {
   const [blueprintSteps, initialValues, validationSchema] =
     useWizard(blueprint);
+
   const install = useExtensionConsoleInstall(blueprint);
 
-  const installedExtensions = useSelector(selectExtensions);
-
-  // Redirect to reinstall page if the user already has the blueprint installed
-  useEffect(() => {
-    if (
-      !reinstall &&
-      installedExtensions.some((x) => x._recipe?.id === blueprint.metadata.id)
-    ) {
-      dispatch(
-        push(
-          `/marketplace/activate/${encodeURIComponent(
-            blueprint.metadata.id
-          )}?reinstall=1`
-        )
-      );
-    }
-  }, [dispatch, reinstall, installedExtensions, blueprint.metadata.id]);
-
-  const action = reinstall ? "Reactivate" : "Activate";
+  const action = isReinstall ? "Reactivate" : "Activate";
   useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
   const reduxPersistenceContext: ReduxPersistenceContextType = {
@@ -133,7 +112,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                     <div>
                       <h4>{label}</h4>
                     </div>
-                    <Component blueprint={blueprint} reinstall={reinstall} />
+                    <Component blueprint={blueprint} reinstall={isReinstall} />
                   </div>
                 ))}
               </Card.Body>
@@ -145,4 +124,4 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   );
 };
 
-export default ActivateWizard;
+export default ActivateWizardCard;
