@@ -60,7 +60,7 @@ jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
-  useRecipe: jest
+  useOptionalRecipe: jest
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));

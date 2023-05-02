@@ -30,7 +30,7 @@ import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useOptionalRecipe: jest.fn(),
   useAllRecipes: jest.fn(),
 }));
 
