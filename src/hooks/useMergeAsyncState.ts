@@ -47,7 +47,6 @@ export function useMergeAsyncState<
   const dependencies: FetchableAsyncStateArray = args.slice(0, -1);
 
   // Memoize to avoid re-rendering downstream components
-  // @ts-expect-error -- type of memoizeOne covered by test coverage
   const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
 
   const refetchCallbacks = dependencies.map((x) => x.refetch);
