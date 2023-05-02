@@ -29,6 +29,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { type RecipeDefinition } from "@/types/recipeTypes";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 export default {
   title: "Blueprints/GetStartedView",
@@ -74,11 +75,7 @@ const Template: ComponentStory<typeof GetStartedView> = (args) => (
           },
         ],
       },
-      recipes: {
-        recipes: [testRecipe],
-        isUninitialized: false,
-        isCacheUninitialized: false,
-      },
+      recipes: valueToAsyncCacheState([testRecipe]),
     })}
   >
     <GetStartedView {...args} />

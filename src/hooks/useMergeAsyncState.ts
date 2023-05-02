@@ -20,16 +20,9 @@ import {
   type FetchableAsyncState,
   type FetchableAsyncStateArray,
 } from "@/types/sliceTypes";
-import { once } from "lodash";
 import memoizeOne from "memoize-one";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { mergeAsyncState } from "@/utils/asyncStateUtils";
-
-const warnMergeChange = once(() => {
-  console.warn(
-    "useMergeAsyncState: merge function changed. This is not supported. Use a constant/memoized function."
-  );
-});
 
 /**
  * React hook to merge multiple AsyncState objects into a single AsyncState.
@@ -53,13 +46,9 @@ export function useMergeAsyncState<
   // @ts-expect-error -- getting args except last element
   const dependencies: FetchableAsyncStateArray = args.slice(0, -1);
 
-  const mergeRef = useRef(merge);
   // Memoize to avoid re-rendering downstream components
+  // @ts-expect-error -- type of memoizeOne covered by test coverage
   const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
-
-  if (mergeRef.current !== merge) {
-    warnMergeChange();
-  }
 
   const refetchCallbacks = dependencies.map((x) => x.refetch);
   const refetch = useCallback(

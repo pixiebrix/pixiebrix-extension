@@ -27,6 +27,8 @@ import { useIsMounted } from "@/hooks/common";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { checkAsyncStateInvariants } from "@/utils/asyncStateUtils";
+import { type UUID } from "@/types/stringTypes";
+import { uuidv4 } from "@/types/helpers";
 
 const initialAsyncState: AsyncState = {
   data: undefined,
@@ -107,6 +109,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
 ): AsyncState<Result> {
   // Ref to track if this is the initial mount
   const initialMountRef = useRef(true);
+  const promiseNonce = useRef<UUID>(null);
 
   // Callback to check if the component is still mounted, to avoid updating state on unmounted React components
   const checkIsMounted = useIsMounted();
@@ -141,15 +144,21 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
       dispatch(promiseSlice.actions.startFetchNewInputs());
     }
 
+    // Track if this is the initial mount, for isLoading vs. isFetching
     initialMountRef.current = false;
 
+    // Track promise `nonce` to ignore stale promises
+    const nonce = uuidv4();
+    promiseNonce.current = nonce;
+
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- tests ensure internal types match
       const promiseResult = await merge(...(datums as any));
-      if (checkIsMounted()) {
+      if (checkIsMounted() && promiseNonce.current === nonce) {
         dispatch(promiseSlice.actions.success({ data: promiseResult }));
       }
     } catch (error) {
-      if (checkIsMounted()) {
+      if (checkIsMounted() && promiseNonce.current === nonce) {
         dispatch(promiseSlice.actions.failure({ error }));
       }
     }

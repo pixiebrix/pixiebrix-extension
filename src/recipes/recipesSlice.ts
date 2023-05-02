@@ -26,10 +26,12 @@ import recipeRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
 import { type RecipeDefinition } from "@/types/recipeTypes";
+import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
 export const initialState: RecipesState = Object.freeze({
   // Standard async state
   data: undefined,
+  // Current data will always match data because the slice doesn't consider any input arguments
   currentData: undefined,
   isLoading: false,
   isFetching: false,
@@ -39,102 +41,95 @@ export const initialState: RecipesState = Object.freeze({
   error: undefined,
 
   // Additional cache async state
-  isFetchingFromCache: false,
   isCacheUninitialized: true,
+  isLoadingFromCache: false,
+
+  isRemoteUninitialized: true,
+  isFetchingFromRemote: false,
+  isLoadingFromRemote: false,
 });
 
 /**
- * Load recipes from cache. DOES NOT set isLoading/isFetching state.
+ * Load recipes from the local database.
  */
 const loadRecipesFromCache = createAsyncThunk<
   void,
   void,
   { state: RecipesRootState }
 >("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
-  if (getState().recipes.isFetchingFromCache) {
-    throw new Error("Aborted due to query being already in progress");
+  if (!getState().recipes.isCacheUninitialized) {
+    throw new Error("Already loaded recipes from cache");
   }
 
-  dispatch(recipesSlice.actions.startLoadingFromCache());
-
   try {
+    dispatch(recipesSlice.actions.startFetchingFromCache());
     const recipes = await recipeRegistry.all();
     dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
-  } catch (error) {
-    dispatch(recipesSlice.actions.setCacheError(error));
+  } catch {
+    dispatch(recipesSlice.actions.setCacheError());
   }
 });
 
-export const refreshRecipes = createAsyncThunk<
+export const syncRemoteRecipes = createAsyncThunk<
   void,
   void,
   { state: RecipesRootState }
 >("recipes/refresh", async (arg, { dispatch, getState }) => {
-  if (getState().recipes.isFetching) {
-    throw new Error("Aborted due to query being already in progress");
+  if (getState().recipes.isFetchingFromRemote) {
+    throw new Error("Already fetching recipes from server");
   }
-
-  dispatch(recipesSlice.actions.startFetching());
 
   try {
+    dispatch(recipesSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
+    const recipes = await recipeRegistry.all();
+    dispatch(recipesSlice.actions.setRecipes(recipes));
   } catch (error) {
+    // Serialize because stored in Redux
     const serializedError = serializeError(error, { useToJSON: false });
     dispatch(recipesSlice.actions.setError(serializedError));
-    return;
   }
-
-  const recipes = await recipeRegistry.all();
-  dispatch(recipesSlice.actions.setRecipes(recipes));
 });
 
 export const recipesSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
-    startLoadingFromCache(state) {
-      state.isFetchingFromCache = true;
+    startFetchingFromCache(state) {
+      state.isUninitialized = false;
+      state.isLoading = true;
+      state.isFetching = true;
+      state.isCacheUninitialized = false;
+      state.isLoadingFromCache = true;
     },
     setRecipesFromCache(state, action: PayloadAction<RecipeDefinition[]>) {
-      state.isSuccess = true;
-      state.data = action.payload;
-      state.currentData = action.payload;
-      state.isUninitialized = false;
-      state.isError = false;
-      state.isLoading = false;
-
-      state.isFetchingFromCache = false;
-      state.isCacheUninitialized = false;
+      // NOTE: there will be a flash of `isFetching: false` before the remote fetch starts
+      setValueOnState(state, action.payload);
+      state.isLoadingFromCache = false;
     },
-    setCacheError(state, action: PayloadAction<unknown>) {
-      // If there's an error loading from cache, don't update state, as will make the remote fetch
-      state.isCacheUninitialized = true;
-      state.isFetchingFromCache = false;
+    setCacheError(state) {
+      // Don't flash on error on cache failure. The useAllRecipes hook will immediately trigger a remote fetch
+      state.isLoadingFromCache = false;
     },
-    startFetching(state) {
-      state.isUninitialized = false;
-      state.isFetching = true;
-      if (state.isUninitialized) {
-        state.isLoading = true;
+    startFetchingFromRemote(state) {
+      if (state.isRemoteUninitialized) {
+        state.isLoadingFromRemote = true;
       }
+
+      // Don't reset currentData, because the recipes slice doesn't take any inputs arguments
+      state.isRemoteUninitialized = false;
+      state.isFetching = true;
+      state.isFetchingFromRemote = true;
     },
     setRecipes(state, action: PayloadAction<RecipeDefinition[]>) {
-      state.isSuccess = true;
-      state.data = action.payload;
-      state.currentData = action.payload;
-      state.error = undefined;
-      state.isError = false;
-      state.isFetching = false;
-      state.isLoading = false;
+      setValueOnState(state, action.payload);
+      state.isFetchingFromRemote = false;
+      state.isLoadingFromRemote = false;
     },
     setError(state, action) {
-      state.isError = true;
-      state.error = action.payload;
-      state.data = undefined;
-      state.currentData = undefined;
-      state.isSuccess = false;
-      state.isFetching = false;
-      state.isLoading = false;
+      setErrorOnState(state, action.payload);
+      state.isFetchingFromRemote = false;
+      state.isLoadingFromRemote = false;
     },
   },
   extraReducers(builder) {
@@ -145,5 +140,5 @@ export const recipesSlice = createSlice({
 export const recipesActions = {
   ...recipesSlice.actions,
   loadRecipesFromCache,
-  refreshRecipes,
+  syncRemoteRecipes,
 };

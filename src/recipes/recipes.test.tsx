@@ -105,13 +105,10 @@ test("load recipes and save one", async () => {
     // - load the recipes from server
     // - parse the raw recipes and save them to the registry (local storage)
     // - return all the recipes from the registry to the caller
-    const {
-      data: allRecipes,
-      isFetchingFromCache: isFetchingRecipesFromCache,
-      isFetching: isFetchingAllRecipes,
-    } = defaultInitialValue(useAllRecipes(), []);
-
-    const isFetching = isFetchingRecipesFromCache || isFetchingAllRecipes;
+    const { data: allRecipes, isFetching } = defaultInitialValue(
+      useAllRecipes(),
+      []
+    );
 
     const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
@@ -157,7 +154,7 @@ test("load recipes and save one", async () => {
   // 2 calls:
   // - one to load the recipes from the server on mount
   // - one to re-load the recipes after update
-  expect(apiClient.get as jest.Mock).toHaveBeenCalledTimes(3);
+  expect(apiClient.get as jest.Mock).toHaveBeenCalledTimes(2);
   expect(apiClient.get as jest.Mock).toHaveBeenCalledWith(
     "/api/registry/bricks/"
   );

@@ -23,6 +23,8 @@ import {
   type UseCachedQueryResult,
 } from "@/types/sliceTypes";
 import { noop } from "lodash";
+import { type WritableDraft } from "immer/dist/types/types-external";
+import { serializeError } from "serialize-error";
 
 export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
@@ -135,6 +137,22 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
 }
 
 /**
+ * Convert an async state to an initial loading state.
+ */
+export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
+  return {
+    currentData: undefined,
+    data: undefined,
+    isUninitialized: false,
+    isLoading: true,
+    isFetching: true,
+    isError: false,
+    isSuccess: false,
+    error: undefined,
+  };
+}
+
+/**
  * Lift a known value to a FetchableAsyncState.
  * @param value the value
  */
@@ -164,8 +182,11 @@ export function valueToAsyncCacheState<Value>(
 ): UseCachedQueryResult<Value> {
   return {
     ...valueToAsyncState(value),
+    isLoadingFromCache: false,
+    isFetchingFromRemote: false,
+    isLoadingFromRemote: false,
     isCacheUninitialized: false,
-    isFetchingFromCache: false,
+    isRemoteUninitialized: false,
     refetch: noop,
   };
 }
@@ -198,4 +219,38 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
   if (state.isLoading && (state.isSuccess || state.isError)) {
     throw new Error("Expected only isLoading");
   }
+}
+
+export function setValueOnState<T>(
+  state: WritableDraft<AsyncState<T>>,
+  value: T
+): WritableDraft<AsyncState<T>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- couldn't figure out how to type the draft constraint
+  state.data = value as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- couldn't figure out how to type the draft constraint
+  state.currentData = value as any;
+  state.isUninitialized = false;
+  state.isLoading = false;
+  state.isFetching = false;
+  state.isError = false;
+  state.isSuccess = true;
+  state.error = undefined;
+
+  return state;
+}
+
+export function setErrorOnState<T>(
+  state: WritableDraft<AsyncState<T>>,
+  error: unknown
+): WritableDraft<AsyncState<T>> {
+  state.data = undefined;
+  state.currentData = undefined;
+  state.isUninitialized = false;
+  state.isLoading = false;
+  state.isFetching = false;
+  state.isError = false;
+  state.isSuccess = true;
+  state.error = serializeError(error, { useToJSON: false });
+
+  return state;
 }

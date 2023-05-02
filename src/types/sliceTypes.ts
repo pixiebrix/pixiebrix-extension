@@ -33,6 +33,9 @@ export type AsyncState<TData = unknown> = {
 
   /**
    * When true, indicates that the query has not started yet.
+   *
+   * For example, because the query has been skipped due to conditional fetching.
+   * See: https://redux-toolkit.js.org/rtk-query/usage/conditional-fetching#overview
    */
   isUninitialized: boolean;
 
@@ -77,17 +80,31 @@ export type FetchableAsyncState<Data = unknown> = AsyncState<Data> & {
 /**
  * An type for characterizing hook output that's similar to RTK Query's state.
  */
-// FIXME: determine if this type needs to exist/where it should live
 export type UseCachedQueryResult<TData> = FetchableAsyncState<TData> & {
   /**
-   * When true, indicates that the query is currently fetching data from the local cache
-   */
-  isFetchingFromCache: boolean;
-
-  /**
-   * When true, indicates that local cache has not been initialized yet
+   * When true, the query to fetch data from the local data source has not started yet
    */
   isCacheUninitialized: boolean;
+
+  /**
+   * When true, indicates that the query is currently fetching data from the local database/cache.
+   */
+  isLoadingFromCache: boolean;
+
+  /**
+   * When true, the query to fetch data from the remote data source for the first time is in progress.
+   */
+  isLoadingFromRemote: boolean;
+
+  /**
+   * When true, indicates the query is fetching data from the remote data source.
+   */
+  isFetchingFromRemote: boolean;
+
+  /**
+   * When true, the query to fetch data from the remote data source has not started yet.
+   */
+  isRemoteUninitialized: boolean;
 };
 
 export type AsyncStateArray = readonly AsyncState[];

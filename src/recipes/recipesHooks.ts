@@ -26,79 +26,125 @@ import {
   type FetchableAsyncState,
   type UseCachedQueryResult,
 } from "@/types/sliceTypes";
-import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import useMemoCompare from "@/hooks/useMemoCompare";
+import deepEquals from "fast-deep-equal";
+import { loadingAsyncStateFactory } from "@/utils/asyncStateUtils";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 
 /**
- * Lookup a recipe from the registry by ID, or null if it doesn't exist
+ * Lookup a recipe from the registry by ID, or null if it doesn't exist.
  *
- * Note: This hook will return a new result object every time any piece of
- *  the state changes. So, if you destructure the "data" field at a call-site,
- *  and then you use the resulting recipe as a dependency for another hook,
- *  you should assume that the recipe will change reference and fire your hook
- *  any time any of the various fetching/loading flags change in the state of
- *  this hook.
+ * NOTE: uses useAllRecipes which first checks the local cache. So value may change from null to a recipe definition
+ * after the remote fetch completes.
+ *
+ * @param id the registry id of the recipe
+ * @see useAllRecipes
  */
 export function useRecipe(
   id: RegistryId
 ): FetchableAsyncState<RecipeDefinition | null> {
   const state = useAllRecipes();
 
-  // TODO: add a useMemoCompare to avoid changing recipe content didn't change on remote fetch
-  // TODO: automatically perform a remote fetch if the recipe is not found locally
-
-  const recipeState = useDeriveAsyncState(
-    state,
-    async (recipes: RecipeDefinition[]) =>
-      recipes?.find((x) => x.metadata.id === id)
+  const findRecipe = useCallback(
+    (recipes: RecipeDefinition[]) => recipes.find((x) => x.metadata.id === id),
+    [id]
   );
 
-  return { ...recipeState, refetch: state.refetch };
+  const recipeState = useMergeAsyncState(state, findRecipe);
+
+  // Avoid reference change when useAllRecipes switches from cache to remote fetch
+  const data = useMemoCompare(recipeState.data, deepEquals);
+  const currentData = useMemoCompare(recipeState.data, deepEquals);
+
+  return {
+    ...recipeState,
+    data,
+    currentData,
+  };
 }
 
 /**
- * Lookup a recipe from the registry by ID, or return an error state if it doesn't exist
+ * Lookup a recipe from the registry by ID, or return an error state if it doesn't exist.
+ *
+ * Only returns an error state if the remote fetch fails. If the recipe is not found in the local cache, it will wait
+ * until the remote fetch completes before returning an error state.
+ *
  * @param id the registry id of the recipe
+ * @see useAllRecipes
  */
 export function useRequiredRecipe(
   id: RegistryId
 ): AsyncState<RecipeDefinition> {
   const state = useAllRecipes();
 
-  // TODO: add a useMemoCompare to avoid changing recipe reference if content didn't change on remote fetch.
-  // TODO: automatically perform a remote fetch if the recipe is not found locally
+  const findRecipe = useCallback(
+    (recipes: RecipeDefinition[]) => {
+      const recipe = recipes.find((x) => x.metadata.id === id);
+      if (!recipe) {
+        throw new Error(`Recipe ${id} not found`);
+      }
 
-  return useDeriveAsyncState(state, async (recipes: RecipeDefinition[]) => {
-    const recipe = recipes?.find((x) => x.metadata.id === id);
-    if (!recipe) {
-      throw new Error(`Recipe ${id} not found`);
-    }
+      return recipe;
+    },
+    [id]
+  );
 
-    return recipe;
-  });
+  const recipeState = useMergeAsyncState(state, findRecipe);
+
+  // Avoid reference change when useAllRecipes switches from cache to remote fetch
+  const data = useMemoCompare(recipeState.data, deepEquals);
+  const currentData = useMemoCompare(recipeState.currentData, deepEquals);
+
+  // Don't error until the lookup fails against the remote data
+  if (
+    recipeState.isError &&
+    (state.isRemoteUninitialized || state.isLoadingFromRemote)
+  ) {
+    return loadingAsyncStateFactory();
+  }
+
+  return {
+    ...recipeState,
+    data,
+    currentData,
+  };
 }
 
 /**
- * Pulls all recipes from the local registry, and triggers remote refresh if they're not available locally.
+ * Returns all recipes from the local registry, and triggers a remote refresh.
+ *
+ * Safe to include multiple times in the React tree, because it's connected to the Redux store.
  */
 export function useAllRecipes(): UseCachedQueryResult<RecipeDefinition[]> {
   const dispatch = useDispatch();
   const refetch = useCallback(
-    () => dispatch(recipesActions.refreshRecipes()),
+    () => dispatch(recipesActions.syncRemoteRecipes()),
     [dispatch]
   );
   const state = useSelector(selectAllRecipes);
 
+  // First load from local database
   useEffect(() => {
-    if (state.isCacheUninitialized && !state.isFetchingFromCache) {
+    if (state.isCacheUninitialized) {
       dispatch(recipesActions.loadRecipesFromCache());
     }
-  }, [dispatch, state.isCacheUninitialized, state.isFetchingFromCache]);
+  }, [dispatch, state.isCacheUninitialized]);
 
+  // Load from remote data source once the local data has been loaded
   useEffect(() => {
-    if (state.isUninitialized && !state.isFetching) {
-      dispatch(recipesActions.refreshRecipes());
+    if (
+      state.isRemoteUninitialized &&
+      !state.isLoadingFromCache &&
+      !state.isCacheUninitialized
+    ) {
+      dispatch(recipesActions.syncRemoteRecipes());
     }
-  }, [dispatch, state.isUninitialized, state.isFetching]);
+  }, [
+    dispatch,
+    state.isLoadingFromCache,
+    state.isCacheUninitialized,
+    state.isRemoteUninitialized,
+  ]);
 
   return { ...state, refetch };
 }

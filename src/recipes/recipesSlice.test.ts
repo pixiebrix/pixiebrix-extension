@@ -62,14 +62,14 @@ describe("refreshRecipes", () => {
   test("doesn't refresh if already loading", async () => {
     const dispatch = jest.fn();
 
-    const thunkFunction = recipesActions.refreshRecipes();
+    const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
       () => ({
         recipes: {
           ...initialState,
-          isFetching: true,
-          isUninitialized: false,
+          isFetchingFromRemote: true,
+          isRemoteUninitialized: false,
         },
       }),
       undefined
@@ -84,14 +84,16 @@ describe("refreshRecipes", () => {
     const cachedRecipes = [recipeFactory()];
     (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
-    const thunkFunction = recipesActions.refreshRecipes();
+    const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
       () => ({ recipes: {} } as RecipesRootState),
       undefined
     );
 
-    expect(dispatch).toHaveBeenCalledWith(recipesActions.startFetching());
+    expect(dispatch).toHaveBeenCalledWith(
+      recipesActions.startFetchingFromRemote()
+    );
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
     expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
@@ -105,7 +107,7 @@ describe("refreshRecipes", () => {
     const error = new Error("test");
     syncRemotePackagesMock.mockRejectedValueOnce(error);
 
-    const thunkFunction = recipesActions.refreshRecipes();
+    const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
       () => ({ recipes: {} } as RecipesRootState),
@@ -120,22 +122,15 @@ describe("refreshRecipes", () => {
 });
 
 describe("reducers", () => {
-  test.each([true, false])(
-    "sets loading state when isUninitialized=%s",
-    (isUninitialized) => {
-      const state = { ...initialState, isUninitialized };
-
-      // On the first call it should set isLoading to true
-      const shouldSetLoading = isUninitialized;
-
-      const nextState = recipesSlice.reducer(
-        state,
-        recipesActions.startFetching()
-      );
-      expect(nextState.isFetching).toBeTrue();
-      expect(nextState.isLoading).toBe(shouldSetLoading);
-    }
-  );
+  test("startFetchingFromRemote does not set isLoading", () => {
+    const state = { ...initialState };
+    const nextState = recipesSlice.reducer(
+      state,
+      recipesActions.startFetchingFromRemote()
+    );
+    expect(nextState.isFetching).toBeTrue();
+    expect(nextState.isLoading).toBeFalse();
+  });
 
   test("sets recipes", () => {
     const recipes = [recipeFactory()];
@@ -143,6 +138,10 @@ describe("reducers", () => {
       ...initialState,
       isFetching: true,
       isLoading: true,
+      isError: true,
+      isSuccess: false,
+      isCacheUninitialized: false,
+      isRemoteUninitialized: false,
       error: new Error("test"),
     };
     const nextState = recipesSlice.reducer(
@@ -152,16 +151,19 @@ describe("reducers", () => {
 
     expect(nextState).toEqual({
       data: recipes,
+      currentData: recipes,
       isFetching: false,
       isLoading: false,
       isUninitialized: false,
       isError: false,
-      isSuccess: false,
+      isSuccess: true,
       error: undefined,
-      // XXX: fix these to match the common state shape
-      isFetchingFromCache: false,
-      isCacheUninitialized: true,
-      currentData: undefined,
+      // Cache-specific aysnc state
+      isLoadingFromCache: false,
+      isFetchingFromRemote: false,
+      isLoadingFromRemote: false,
+      isCacheUninitialized: false,
+      isRemoteUninitialized: false,
     });
   });
 });
