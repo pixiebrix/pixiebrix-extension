@@ -22,7 +22,6 @@ import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
-import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
@@ -70,8 +69,6 @@ async function dispatchMenu(
   if (typeof info.menuItemId !== "string") {
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
-
-  reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
 
   console.time("ensureContentScript");
 
