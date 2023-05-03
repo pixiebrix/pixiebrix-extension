@@ -862,6 +862,26 @@ export const editorSlice = createSlice({
       const { id, isExpanded } = payload;
       uiState.expandedFieldSections[id] = isExpanded;
     },
+    setExpandedDataSection(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      const uiState = selectActiveNodeUIState({
+        editor: state,
+      });
+
+      uiState.expandedDataPanel = payload.isExpanded;
+    },
+    setExpandedModList(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      const uiState = selectActiveNodeUIState({
+        editor: state,
+      });
+
+      uiState.expandedModList = payload.isExpanded;
+    },
   },
   extraReducers(builder) {
     builder

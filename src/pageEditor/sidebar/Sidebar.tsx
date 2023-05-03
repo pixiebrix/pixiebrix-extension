@@ -17,11 +17,14 @@
 
 import styles from "./Sidebar.module.scss";
 
-import React, { useState } from "react";
+import React from "react";
 import { CSSTransition } from "react-transition-group";
 import { type CSSTransitionProps } from "react-transition-group/CSSTransition";
 import SidebarCollapsed from "./SidebarCollapsed";
 import SidebarExpanded from "./SidebarExpanded";
+import { useDispatch, useSelector } from "react-redux";
+import { selectActiveNodeUIState } from "@/pageEditor/slices/editorSelectors";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const transitionProps: CSSTransitionProps = {
   classNames: {
@@ -36,20 +39,32 @@ const transitionProps: CSSTransitionProps = {
 };
 
 const Sidebar: React.VFC = () => {
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const dispatch = useDispatch();
+
+  const UIState = useSelector(selectActiveNodeUIState);
+  const expanded = UIState?.expandedModList ?? true;
+
   return (
     <>
-      <CSSTransition {...transitionProps} in={collapsed}>
+      <CSSTransition {...transitionProps} in={!expanded}>
         <SidebarCollapsed
           expandSidebar={() => {
-            setCollapsed(false);
+            dispatch(
+              actions.setExpandedModList({
+                isExpanded: true,
+              })
+            );
           }}
         />
       </CSSTransition>
-      <CSSTransition {...transitionProps} in={!collapsed}>
+      <CSSTransition {...transitionProps} in={expanded}>
         <SidebarExpanded
           collapseSidebar={() => {
-            setCollapsed(true);
+            dispatch(
+              actions.setExpandedModList({
+                isExpanded: false,
+              })
+            );
           }}
         />
       </CSSTransition>
