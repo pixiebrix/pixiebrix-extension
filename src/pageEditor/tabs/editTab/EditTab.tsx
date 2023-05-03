@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
-  selectActiveNodeUIState,
+  selectDataPanelExpanded,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -59,8 +59,7 @@ const EditTab: React.FC<{
 
   const pipelineMap = useSelector(selectPipelineMap);
 
-  const UIState = useSelector(selectActiveNodeUIState);
-  const dataPanelIsExpanded = UIState?.expandedDataPanel ?? true;
+  const isDataPanelExpanded = useSelector(selectDataPanelExpanded);
 
   function copyBlock(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID
@@ -134,12 +133,12 @@ const EditTab: React.FC<{
         <div className={styles.collapseWrapper}>
           <button
             className={cx(styles.toggle, {
-              [styles.active]: dataPanelIsExpanded,
+              [styles.active]: isDataPanelExpanded,
             })}
             onClick={() => {
               dispatch(
-                actions.setExpandedDataSection({
-                  isExpanded: !dataPanelIsExpanded,
+                actions.setDataSectionExpanded({
+                  isExpanded: !isDataPanelExpanded,
                 })
               );
             }}
@@ -148,7 +147,7 @@ const EditTab: React.FC<{
           </button>
           <Collapse
             dimension="width"
-            in={dataPanelIsExpanded}
+            in={isDataPanelExpanded}
             unmountOnExit={true}
             mountOnEnter={true}
           >

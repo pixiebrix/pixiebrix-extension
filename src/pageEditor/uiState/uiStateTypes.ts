@@ -94,16 +94,6 @@ export type NodeUIState = {
    * Which fields are expanded or collapsed
    */
   expandedFieldSections: Record<string, boolean>;
-
-  /**
-   * Is data panel expanded or collapsed
-   */
-  expandedDataPanel: boolean;
-
-  /**
-   * Is mod list expanded or collapsed
-   */
-  expandedModList: boolean;
 };
 
 export type ElementUIState = {

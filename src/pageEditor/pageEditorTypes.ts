@@ -208,6 +208,16 @@ export interface EditorState {
    * How many dynamic elements are not available on the current tab?
    */
   unavailableDynamicCount: number;
+
+  /**
+   * Is data panel expanded or collapsed
+   */
+  expandedDataPanel: boolean;
+
+  /**
+   * Is mod list expanded or collapsed
+   */
+  isModListExpanded: boolean;
 }
 
 export type EditorRootState = {

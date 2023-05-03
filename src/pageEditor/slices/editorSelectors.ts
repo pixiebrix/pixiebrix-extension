@@ -223,6 +223,12 @@ export const selectSelectionSeq = ({ editor }: EditorRootState) =>
 export const selectNewRecipeIds = ({ editor }: EditorRootState) =>
   editor.newRecipeIds;
 
+export const selectModuleListExpanded = ({ editor }: EditorRootState) =>
+  editor.isModListExpanded;
+
+export const selectDataPanelExpanded = ({ editor }: EditorRootState) =>
+  editor.expandedDataPanel;
+
 export const selectKeepLocalCopyOnCreateRecipe = ({
   editor,
 }: EditorRootState) => editor.keepLocalCopyOnCreateRecipe;

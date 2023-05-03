@@ -121,6 +121,8 @@ export const initialState: EditorState = {
   availableDynamicIds: [],
   unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
+  isModListExpanded: true,
+  expandedDataPanel: true,
 };
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
@@ -862,25 +864,17 @@ export const editorSlice = createSlice({
       const { id, isExpanded } = payload;
       uiState.expandedFieldSections[id] = isExpanded;
     },
-    setExpandedDataSection(
+    setDataSectionExpanded(
       state,
       { payload }: PayloadAction<{ isExpanded: boolean }>
     ) {
-      const uiState = selectActiveNodeUIState({
-        editor: state,
-      });
-
-      uiState.expandedDataPanel = payload.isExpanded;
+      state.expandedDataPanel = payload.isExpanded;
     },
-    setExpandedModList(
+    setModListExpanded(
       state,
       { payload }: PayloadAction<{ isExpanded: boolean }>
     ) {
-      const uiState = selectActiveNodeUIState({
-        editor: state,
-      });
-
-      uiState.expandedModList = payload.isExpanded;
+      state.isModListExpanded = payload.isExpanded;
     },
   },
   extraReducers(builder) {

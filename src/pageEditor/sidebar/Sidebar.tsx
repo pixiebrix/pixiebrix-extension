@@ -23,7 +23,7 @@ import { type CSSTransitionProps } from "react-transition-group/CSSTransition";
 import SidebarCollapsed from "./SidebarCollapsed";
 import SidebarExpanded from "./SidebarExpanded";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveNodeUIState } from "@/pageEditor/slices/editorSelectors";
+import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
 const transitionProps: CSSTransitionProps = {
@@ -41,8 +41,7 @@ const transitionProps: CSSTransitionProps = {
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const UIState = useSelector(selectActiveNodeUIState);
-  const expanded = UIState?.expandedModList ?? true;
+  const expanded = useSelector(selectModuleListExpanded);
 
   return (
     <>
@@ -50,7 +49,7 @@ const Sidebar: React.VFC = () => {
         <SidebarCollapsed
           expandSidebar={() => {
             dispatch(
-              actions.setExpandedModList({
+              actions.setModListExpanded({
                 isExpanded: true,
               })
             );
@@ -61,7 +60,7 @@ const Sidebar: React.VFC = () => {
         <SidebarExpanded
           collapseSidebar={() => {
             dispatch(
-              actions.setExpandedModList({
+              actions.setModListExpanded({
                 isExpanded: false,
               })
             );
