@@ -133,6 +133,7 @@
     "redux": "^4.1.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
+    "redux-persist-transform-filter": "^0.0.22",
     "redux-persist-webextension-storage": "^1.0.2",
     "redux-state-sync": "^3.1.4",
     "regenerator-runtime": "^0.13.9",

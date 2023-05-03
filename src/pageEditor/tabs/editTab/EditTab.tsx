@@ -59,7 +59,7 @@ const EditTab: React.FC<{
 
   const pipelineMap = useSelector(selectPipelineMap);
   const UIState = useSelector(selectActiveNodeUIState);
-  const dataPanelIsExpanded = UIState?._expandedDataPanel ?? true;
+  const dataPanelIsExpanded = UIState?.expandedDataPanel ?? true;
 
   function copyBlock(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID

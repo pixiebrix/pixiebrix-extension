@@ -83,8 +83,6 @@ import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/eleme
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { type StorageInterface } from "@/store/StorageInterface";
-import { localStorage } from "redux-persist-webextension-storage";
 import {
   keyToFieldValue,
   selectServiceVariables,
@@ -94,8 +92,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsDefinition } from "@/types/recipeTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { createTransform } from "redux-persist";
-import { removeNamespaced } from "@/utils/removeNamespaced";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -857,12 +853,12 @@ export const editorSlice = createSlice({
       const uiState = selectActiveNodeUIState({
         editor: state,
       });
-      if (uiState._expandedFieldSections === undefined) {
-        uiState._expandedFieldSections = {};
+      if (uiState.expandedFieldSections === undefined) {
+        uiState.expandedFieldSections = {};
       }
 
       const { id, isExpanded } = payload;
-      uiState._expandedFieldSections[id] = isExpanded;
+      uiState.expandedFieldSections[id] = isExpanded;
     },
     setExpandedDataSection(
       state,
@@ -872,7 +868,7 @@ export const editorSlice = createSlice({
         editor: state,
       });
 
-      uiState._expandedDataPanel = payload.isExpanded;
+      uiState.expandedDataPanel = payload.isExpanded;
     },
   },
   extraReducers(builder) {
@@ -944,23 +940,4 @@ export const actions = {
   checkAvailableInstalledExtensions,
   checkAvailableDynamicElements,
   checkActiveElementAvailability,
-};
-
-/**
- * This filter removes any key that starts with _ so that we don't preserve them between sessions.
- * Docs on transforms: https://github.com/rt2zz/redux-persist#transforms
- */
-const filterUnderscore = createTransform<EditorState, EditorState>(
-  (stateToPersist) => removeNamespaced(stateToPersist, "_", 4),
-  (stateToRehydrate) => removeNamespaced(stateToRehydrate, "_", 4),
-  { whitelist: ["elementUIStates"] }
-);
-
-export const persistEditorConfig = {
-  key: "editor",
-  // Change the type of localStorage to our overridden version so that it can be exported
-  // See: @/store/StorageInterface.ts
-  storage: localStorage as StorageInterface,
-  version: 1,
-  transforms: [filterUnderscore],
 };
