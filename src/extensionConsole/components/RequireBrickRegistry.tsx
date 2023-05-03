@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useAsyncState } from "@/hooks/common";
+import useAsyncState from "@/hooks/useAsyncState";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
