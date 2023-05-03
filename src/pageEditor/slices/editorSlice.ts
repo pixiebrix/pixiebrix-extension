@@ -864,6 +864,16 @@ export const editorSlice = createSlice({
       const { id, isExpanded } = payload;
       uiState._expandedFieldSections[id] = isExpanded;
     },
+    setExpandedDataSection(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      const uiState = selectActiveNodeUIState({
+        editor: state,
+      });
+
+      uiState._expandedDataPanel = payload.isExpanded;
+    },
   },
   extraReducers(builder) {
     builder
@@ -936,12 +946,7 @@ export const actions = {
   checkActiveElementAvailability,
 };
 
-const filterUnderscore = createTransform<
-  Partial<EditorState>,
-  Partial<EditorState>,
-  EditorState,
-  EditorState
->(
+const filterUnderscore = createTransform<EditorState, EditorState>(
   (inboundState) => removeNamespaced(inboundState, "_", 4),
   (outbound) => removeNamespaced(outbound, "_", 4),
   { whitelist: ["elementUIStates"] }

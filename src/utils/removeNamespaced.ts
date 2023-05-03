@@ -42,7 +42,7 @@ export function removeNamespaced<T>(
   objToFilter: T,
   namespace: string,
   depth: number
-): Partial<T> {
+): T {
   if (typeof objToFilter !== "object" || depth === 0) {
     return objToFilter;
   }
