@@ -36,7 +36,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { isEmpty } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
-import { serviceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 const { updateServiceConfig } = servicesSlice.actions;
@@ -123,7 +123,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         }
 
         // Ensure PixieBrix can call the Control Room and OAuth2 endpoints
-        const requiredPermissions = await serviceOriginPermissions({
+        const requiredPermissions = await collectServiceOriginPermissions({
           id: CONTROL_ROOM_OAUTH_SERVICE_ID,
           config: configurationId,
         });

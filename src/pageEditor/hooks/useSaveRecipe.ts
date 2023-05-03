@@ -42,7 +42,7 @@ import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { ensurePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -110,7 +110,7 @@ function useSaveRecipe(): RecipeSaver {
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
     // long to confirm?
     // Check permissions as early as possible
-    void ensurePermissionsFromUserGesture(dirtyRecipeElements);
+    void ensureElementPermissionsFromUserGesture(dirtyRecipeElements);
 
     const cleanRecipeExtensions = installedExtensions.filter(
       (extension) =>

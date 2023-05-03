@@ -33,7 +33,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { ensurePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type UUID } from "@/types/stringTypes";
 
 const { saveExtension } = extensionsSlice.actions;
@@ -128,7 +128,7 @@ function useUpsertFormElement(): SaveCallback {
     ): Promise<string | null> => {
       if (options.checkPermissions) {
         // Good to prompt the creator for permissions if any is missing, but they're not actually required to save
-        void ensurePermissionsFromUserGesture(element);
+        void ensureElementPermissionsFromUserGesture(element);
       }
 
       const adapter = ADAPTERS.get(element.type);

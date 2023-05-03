@@ -25,7 +25,7 @@ import { type ServiceAuthPair } from "@/types/serviceTypes";
 /**
  * Return origin permissions required to use a service with the given configuration.
  */
-export async function serviceOriginPermissions(
+export async function collectServiceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
   expectContext("extension");

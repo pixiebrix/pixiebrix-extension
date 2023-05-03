@@ -148,7 +148,8 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
 }
 
 /**
- * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic defaults
+ * Helper function that transforms AsyncState to provide a default value. Used to provide optimistic defaults for
+ * loading and error states.
  * @param state the async state
  * @param fallbackValue the value to use if the state is uninitialized or loading
  */

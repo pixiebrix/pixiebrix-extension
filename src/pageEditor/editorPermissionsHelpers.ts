@@ -20,8 +20,8 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import {
-  ensurePermissionsFromUserGesture as requestPermissions,
-  mergePermissions,
+  ensurePermissionsFromUserGesture,
+  mergePermissionsStatuses,
 } from "@/permissions/permissionsUtils";
 import notify from "@/utils/notify";
 import { type Permissions } from "webextension-polyfill";
@@ -51,36 +51,37 @@ export async function calculatePermissionsForElement(
   return { hasPermissions, permissions };
 }
 
-async function ensurePermissions(elements: FormState[]): Promise<boolean> {
-  const elementPermissions = await Promise.all(
-    elements.map(async (element) => calculatePermissionsForElement(element))
-  );
-
-  const permissions = mergePermissions(
-    elementPermissions.map((x) => x.permissions)
-  );
-
-  const hasPermissions = await requestPermissions(permissions);
-
-  if (!hasPermissions) {
-    notify.warning(
-      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
-    );
-  }
-
-  return hasPermissions;
-}
-
 /**
  * Prompt the user to grant permissions if needed, and return whether PixieBrix has the required permissions.
  * @param elementOrElements the Page Editor element form state(s)
  */
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-export function ensurePermissionsFromUserGesture(
+export async function ensureElementPermissionsFromUserGesture(
   elementOrElements: FormState | FormState[]
 ): Promise<boolean> {
-  // eslint-disable-next-line promise/prefer-await-to-then -- return a promise and let the calling party do decide whether to await it or not
-  return ensurePermissions(castArray(elementOrElements)).catch((error) => {
+  try {
+    const elementPermissions = await Promise.all(
+      castArray(elementOrElements).map(async (element) =>
+        calculatePermissionsForElement(element)
+      )
+    );
+
+    const { hasPermissions: alreadyHasPermissions, permissions } =
+      mergePermissionsStatuses(elementPermissions);
+
+    if (alreadyHasPermissions) {
+      return true;
+    }
+
+    const hasPermissions = await ensurePermissionsFromUserGesture(permissions);
+
+    if (!hasPermissions) {
+      notify.warning(
+        "You declined the permissions. This mod won't work on other tabs until you grant the permissions"
+      );
+    }
+
+    return hasPermissions;
+  } catch (error) {
     console.error("Error checking/enabling permissions", { error });
     notify.warning({
       message: "Error verifying permissions",
@@ -89,5 +90,5 @@ export function ensurePermissionsFromUserGesture(
     });
 
     return false;
-  });
+  }
 }

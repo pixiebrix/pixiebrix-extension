@@ -19,10 +19,12 @@ import { type IExtension } from "@/types/extensionTypes";
 import { type Permissions } from "webextension-polyfill";
 import { resolveDefinitions } from "@/registry/internal";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { compact } from "lodash";
+import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { serviceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { containsPermissions } from "@/background/messenger/api";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 type PermissionOptions = {
   /**
@@ -50,6 +52,7 @@ type PermissionOptions = {
  *
  * @see IExtension.permissions
  * @see IExtensionPoint.permissions
+ * @see checkExtensionPermissions
  */
 export async function collectExtensionPermissions(
   extension: IExtension,
@@ -69,7 +72,7 @@ export async function collectExtensionPermissions(
       (resolved.services ?? [])
         .filter((x) => x.config)
         .map(async (x) =>
-          serviceOriginPermissions({ id: x.id, config: x.config })
+          collectServiceOriginPermissions({ id: x.id, config: x.config })
         )
     );
   }
@@ -85,4 +88,25 @@ export async function collectExtensionPermissions(
       ...blockPermissions,
     ])
   );
+}
+
+/**
+ * Check the status of permissions for one or more IExtensions.
+ * @param extensionOrExtensions
+ */
+export async function checkExtensionPermissions(
+  extensionOrExtensions: IExtension | IExtension[]
+): Promise<PermissionsStatus> {
+  const permissions = mergePermissions(
+    await Promise.all(
+      castArray(extensionOrExtensions).map(async (x) =>
+        collectExtensionPermissions(x)
+      )
+    )
+  );
+
+  return {
+    permissions,
+    hasPermissions: await containsPermissions(permissions),
+  };
 }

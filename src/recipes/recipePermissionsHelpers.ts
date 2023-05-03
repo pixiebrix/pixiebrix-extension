@@ -30,7 +30,7 @@ import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { type IExtension } from "@/types/extensionTypes";
-import { serviceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
@@ -39,7 +39,7 @@ async function collectExtensionDefinitionPermissions(
   serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
-    serviceOriginPermissions(serviceAuth)
+    collectServiceOriginPermissions(serviceAuth)
   );
 
   const extensionPointPromises = extensionPoints.map(
