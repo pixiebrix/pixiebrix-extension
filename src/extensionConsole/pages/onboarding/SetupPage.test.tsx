@@ -92,11 +92,11 @@ jest.mock("@/store/optionsStore", () => ({
   },
 }));
 
-jest.mock("@/utils/permissions", () => ({
-  requestPermissions: jest.fn().mockResolvedValue(true),
+jest.mock("@/permissions/permissionsUtils", () => ({
+  ensureAllPermissionsFromUserGesture: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock("@/permissions", () => ({
+jest.mock("@/permissions/servicePermissionsHelpers", () => ({
   serviceOriginPermissions: jest.fn().mockResolvedValue({ origins: [] }),
 }));
 

@@ -27,7 +27,7 @@ import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -122,7 +122,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
                   path: "permissions.origins",
                   value: permissionsValue,
                   async extraCallback() {
-                    await ensureAllPermissionsFromUserGesture({
+                    await ensurePermissionsFromUserGesture({
                       origins: [permissionsValue],
                     });
                   },

@@ -25,7 +25,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import {
   emptyPermissionsFactory,
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
 import { calculatePermissionsForElement } from "@/pageEditor/editorPermissionsHelpers";
 import { fallbackValue } from "@/utils/asyncStateUtils";
@@ -57,7 +57,7 @@ const PermissionsToolbar: React.FunctionComponent<{
   } = fallbackValue(state, fallbackState);
 
   const requestPermissions = async () => {
-    if (await ensureAllPermissionsFromUserGesture(permissions)) {
+    if (await ensurePermissionsFromUserGesture(permissions)) {
       notify.success("Granted additional permissions");
       refetch();
     } else {

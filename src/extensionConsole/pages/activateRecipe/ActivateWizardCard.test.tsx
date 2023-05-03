@@ -30,18 +30,22 @@ import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 registerDefaultWidgets();
 
-jest.mock("@/permissions", () => ({
-  ensureAllPermissions: jest.fn(() => true),
-  collectPermissions: jest.fn(),
-}));
+jest.mock("@/permissions/permissionsUtils", () => {
+  const originalModule = jest.requireActual("@/permissions/permissionsUtils");
+  return {
+    __esModule: true,
+    ...originalModule,
+    ensurePermissionsFromUserGesture: jest.fn(),
+  };
+});
 
-const ensureAllPermissionsMock =
-  ensureAllPermissionsFromUserGesture as jest.MockedFunction<
-    typeof ensureAllPermissionsFromUserGesture
+const ensurePermissionsMock =
+  ensurePermissionsFromUserGesture as jest.MockedFunction<
+    typeof ensurePermissionsFromUserGesture
   >;
 
 jest.mock("@/store/optionsStore", () => ({
@@ -185,7 +189,7 @@ describe("ActivateWizardCard", () => {
   });
 
   test("user reject permissions", async () => {
-    ensureAllPermissionsMock.mockResolvedValue(false);
+    ensurePermissionsMock.mockResolvedValue(false);
 
     const blueprint = recipeDefinitionFactory({
       metadata: recipeMetadataFactory({

@@ -37,7 +37,7 @@ import { isEmpty } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
 import { serviceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -130,7 +130,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         console.debug("Required permissions", requiredPermissions);
 
-        await ensureAllPermissionsFromUserGesture(requiredPermissions);
+        await ensurePermissionsFromUserGesture(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
 

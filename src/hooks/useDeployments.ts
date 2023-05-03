@@ -19,7 +19,7 @@ import { type Deployment } from "@/types/contract";
 import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import {
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
 } from "@/permissions/permissionsUtils";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,7 +41,7 @@ import {
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settingsSlice";
-import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionHelpers";
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 
 const { actions } = extensionsSlice;
 
@@ -193,7 +193,7 @@ function useDeployments(): DeploymentState {
       return;
     }
 
-    // FIXME: if refreshing registries takes more than 5-10 seconds, the ensureAllPermissionsFromUserGesture call
+    // FIXME: if refreshing registries takes more than 5-10 seconds, the ensurePermissionsFromUserGesture call
     //  will fail because the user gesture timer will have expired
     try {
       notify.info("Fetching latest brick definitions");
@@ -228,7 +228,7 @@ function useDeployments(): DeploymentState {
 
     let accepted = false;
     try {
-      accepted = await ensureAllPermissionsFromUserGesture(permissions);
+      accepted = await ensurePermissionsFromUserGesture(permissions);
     } catch (error) {
       notify.error({
         message: "Error granting permissions",

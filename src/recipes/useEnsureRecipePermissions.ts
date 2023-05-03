@@ -24,7 +24,7 @@ import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import {
   emptyPermissionsFactory,
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
@@ -65,7 +65,7 @@ function useEnsureRecipePermissions(
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissionsFromUserGesture(permissions);
+      accepted = await ensurePermissionsFromUserGesture(permissions);
     } catch (error) {
       notify.error({
         message: "Error granting permissions",

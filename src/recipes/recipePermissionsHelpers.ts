@@ -22,7 +22,7 @@ import {
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { resolveRecipe } from "@/registry/internal";
 import {
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture,
   mergePermissions,
 } from "@/permissions/permissionsUtils";
 import { containsPermissions } from "@/background/messenger/api";
@@ -31,7 +31,7 @@ import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { type IExtension } from "@/types/extensionTypes";
 import { serviceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
-import { extensionPermissions } from "@/permissions/extensionPermissionsHelpers";
+import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 async function collectExtensionDefinitionPermissions(
@@ -52,7 +52,7 @@ async function collectExtensionDefinitionPermissions(
         //  provide the structure required by getBlocks. Really, the argument of extensionPermissions should be changed
         //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
         //  the type of getBlocks on the ExtensionPoint interface
-        inner = await extensionPermissions(
+        inner = await collectExtensionPermissions(
           { config } as unknown as IExtension,
           {
             extensionPoint,
@@ -136,5 +136,5 @@ export async function ensureRecipePermissionsFromUserGesture(
     return true;
   }
 
-  return ensureAllPermissionsFromUserGesture(collectedPermissions);
+  return ensurePermissionsFromUserGesture(collectedPermissions);
 }

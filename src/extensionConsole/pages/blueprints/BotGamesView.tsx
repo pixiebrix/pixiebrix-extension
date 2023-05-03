@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -56,7 +56,7 @@ export const useInstallBotGamesBlueprint = () => {
 
     if (!hasPermissions) {
       try {
-        accepted = await ensureAllPermissionsFromUserGesture(permissions);
+        accepted = await ensurePermissionsFromUserGesture(permissions);
       } catch (error) {
         notify.error({
           message: "Error granting permissions",

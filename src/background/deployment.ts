@@ -59,7 +59,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionHelpers";
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;

@@ -66,10 +66,10 @@ jest.mock("@/background/activeTab", () => ({
 
 jest.mock("webext-messenger");
 
-jest.mock("@/utils/deploymentPermissionUtils", () => ({
-  deploymentPermissions: jest
+jest.mock("@/permissions/deploymentPermissionsHelpers", () => ({
+  checkDeploymentPermissions: jest
     .fn()
-    .mockResolvedValue({ permissions: [], origins: [] }),
+    .mockResolvedValue({ hasPermission: true, permissions: { origins: [] } }),
 }));
 
 jest.mock("@/telemetry/events", () => ({

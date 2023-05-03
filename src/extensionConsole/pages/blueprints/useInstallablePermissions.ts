@@ -20,16 +20,16 @@ import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import {
   mergePermissions,
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
 import { containsPermissions } from "@/background/messenger/api";
-import { extensionPermissions } from "@/permissions/extensionPermissionsHelpers";
+import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 
 /**
  * WARNING: This hook swallows errors (to simplify the behavior for the blueprints page.
  * Outside of the `BlueprintsPage` you probably want to use useAsyncState with `containsPermissions`
  * @see containsPermissions
- * @see extensionPermissions
+ * @see collectExtensionPermissions
  */
 function useInstallablePermissions(extensions: IExtension[]): {
   hasPermissions: boolean;
@@ -44,7 +44,7 @@ function useInstallablePermissions(extensions: IExtension[]): {
       try {
         const permissions = mergePermissions(
           await Promise.all(
-            extensions.map(async (x) => extensionPermissions(x))
+            extensions.map(async (x) => collectExtensionPermissions(x))
           )
         );
         const hasPermissions = await containsPermissions(permissions);
@@ -61,9 +61,11 @@ function useInstallablePermissions(extensions: IExtension[]): {
 
   const requestPermissions = useCallback(async () => {
     const permissions = mergePermissions(
-      await Promise.all(extensions.map(async (x) => extensionPermissions(x)))
+      await Promise.all(
+        extensions.map(async (x) => collectExtensionPermissions(x))
+      )
     );
-    const accepted = await ensureAllPermissionsFromUserGesture(permissions);
+    const accepted = await ensurePermissionsFromUserGesture(permissions);
     setHasPermissions(accepted);
     if (accepted) {
       // TODO: in the future, listen for a permissions event in this hook so the status can update without redirecting the page

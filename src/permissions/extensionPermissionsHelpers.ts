@@ -51,7 +51,7 @@ type PermissionOptions = {
  * @see IExtension.permissions
  * @see IExtensionPoint.permissions
  */
-export async function extensionPermissions(
+export async function collectExtensionPermissions(
   extension: IExtension,
   options: PermissionOptions = {}
 ): Promise<Permissions.Permissions> {

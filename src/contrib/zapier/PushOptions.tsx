@@ -37,7 +37,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { joinName } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -108,9 +108,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   const { hooks, error } = useHooks();
 
   const onRequestPermissions = useCallback(async () => {
-    const result = await ensureAllPermissionsFromUserGesture(
-      ZAPIER_PERMISSIONS
-    );
+    const result = await ensurePermissionsFromUserGesture(ZAPIER_PERMISSIONS);
     setGrantedPermissions(result);
   }, [setGrantedPermissions]);
 

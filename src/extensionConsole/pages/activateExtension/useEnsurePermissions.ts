@@ -28,7 +28,7 @@ import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
 import { type AsyncState } from "@/types/sliceTypes";
 import {
   emptyPermissionsFactory,
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -82,7 +82,7 @@ function useEnsurePermissions(
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissionsFromUserGesture(
+      accepted = await ensurePermissionsFromUserGesture(
         state.data?.permissions
       );
     } catch (error) {

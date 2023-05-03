@@ -41,6 +41,13 @@ const MANDATORY_PERMISSIONS = new Set([
 ]);
 
 /**
+ * Returns an empty-set of permissions.
+ */
+export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
+  return { origins: [], permissions: [] };
+}
+
+/**
  * Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request a permission
  * that's in the permissions, but not the optional_permissions
  */
@@ -102,22 +109,24 @@ export function mergePermissionsStatuses(
  * @returns {Promise<boolean>} true iff the all the permissions already existed, or if the user accepted
  * the new permissions.
  */
-export async function ensureAllPermissionsFromUserGesture(
+export async function ensurePermissionsFromUserGesture(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
-  // `normalize` to ensure the request will succeed on Firefox. See normalize
+  // `normalize` to ensure the request will succeed on Firefox. See normalizeOptionalPermissions
   return requestPermissionsFromUserGesture(
     normalizeOptionalPermissions(permissions)
   );
 }
 
-// TODO: Make requestPermissionsFromUserGesture work in contentScripts, or any context that doesn't have the extension API
-/** An alternative API to permissions.request() that works in Firefox’s Dev Tools
- * @see ensureAllPermissionsFromUserGesture
+/**
+ * An alternative API to permissions.request() that works in Firefox’s Dev Tools.
+ * @see ensurePermissionsFromUserGesture
  */
 async function requestPermissionsFromUserGesture(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
+  // TODO: Make requestPermissionsFromUserGesture work in contentScripts, or any context that doesn't have the extension API
+
   // We're going to alter this object so we should clone it
   permissions = cloneDeep(permissions);
 
@@ -158,13 +167,6 @@ async function requestPermissionsFromUserGesture(
  */
 export function isScriptableUrl(url?: string): boolean {
   return url?.startsWith("https") && _isScriptableUrl(url);
-}
-
-/**
- * Returns an empty-set of permissions.
- */
-export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
-  return { origins: [], permissions: [] };
 }
 
 /**

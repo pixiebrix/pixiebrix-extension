@@ -28,7 +28,7 @@ import {
 import { containsPermissions, services } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import { type RegistryId } from "@/types/registryTypes";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 type Listener = () => void;
 
@@ -123,7 +123,7 @@ function useDependency(
     const permissions = { origins: serviceResult?.origins ?? [] };
     console.debug("requesting origins", { permissions });
     try {
-      const accepted = await ensureAllPermissionsFromUserGesture(permissions);
+      const accepted = await ensurePermissionsFromUserGesture(permissions);
       setGrantedPermissions(accepted);
       if (accepted && dependency != null) {
         const key = listenerKey(dependency);

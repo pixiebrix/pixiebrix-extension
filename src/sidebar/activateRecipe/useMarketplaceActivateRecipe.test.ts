@@ -32,16 +32,16 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
 
 jest.mock("@/recipes/recipePermissionsHelpers", () => ({
   __esModule: true,
-  default: jest.fn(),
+  ensureRecipePermissionsFromUserGesture: jest.fn(),
 }));
 
 const ensurePermissionsMock =
-  ensureAllPermissionsFromUserGesture as jest.MockedFunction<
-    typeof ensureAllPermissionsFromUserGesture
+  ensureRecipePermissionsFromUserGesture as jest.MockedFunction<
+    typeof ensureRecipePermissionsFromUserGesture
   >;
 
 const uninstallRecipeMock = uninstallRecipe as jest.MockedFunction<

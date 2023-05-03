@@ -18,9 +18,9 @@
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { extensionPermissions } from "@/permissions/extensionPermissionsHelpers";
+import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import {
-  ensureAllPermissionsFromUserGesture,
+  ensurePermissionsFromUserGesture as requestPermissions,
   mergePermissions,
 } from "@/permissions/permissionsUtils";
 import notify from "@/utils/notify";
@@ -42,7 +42,7 @@ export async function calculatePermissionsForElement(
 
   // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
   // registry at this point when called from useCreate
-  const permissions = await extensionPermissions(extension, {
+  const permissions = await collectExtensionPermissions(extension, {
     extensionPoint,
   });
 
@@ -60,7 +60,7 @@ async function ensurePermissions(elements: FormState[]): Promise<boolean> {
     elementPermissions.map((x) => x.permissions)
   );
 
-  const hasPermissions = await ensureAllPermissionsFromUserGesture(permissions);
+  const hasPermissions = await requestPermissions(permissions);
 
   if (!hasPermissions) {
     notify.warning(

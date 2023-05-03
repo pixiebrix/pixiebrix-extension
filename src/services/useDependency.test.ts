@@ -22,14 +22,14 @@ import { act } from "@testing-library/react-hooks";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
 import { type Service } from "@/types/serviceTypes";
-import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 // Not currently test:
 // - Listening for permissions changes
 // - requestPermissions callback
 
-jest.mock("@/utils/permissions", () => ({
-  requestPermissions: jest.fn().mockResolvedValue(true),
+jest.mock("@/permissions/permissionsUtils", () => ({
+  ensurePermissionsFromUserGesture: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock("@/background/messenger/api", () => ({
@@ -59,8 +59,8 @@ const serviceRegistryMock = serviceRegistry as jest.Mocked<
 >;
 
 const requestPermissionsMock =
-  ensureAllPermissionsFromUserGesture as jest.MockedFunction<
-    typeof ensureAllPermissionsFromUserGesture
+  ensurePermissionsFromUserGesture as jest.MockedFunction<
+    typeof ensurePermissionsFromUserGesture
   >;
 
 describe("useDependency", () => {
