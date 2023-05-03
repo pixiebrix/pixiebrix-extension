@@ -946,9 +946,13 @@ export const actions = {
   checkActiveElementAvailability,
 };
 
+/**
+ * This filter removes any key that starts with _ so that we don't preserve them between sessions.
+ * Docs on transforms: https://github.com/rt2zz/redux-persist#transforms
+ */
 const filterUnderscore = createTransform<EditorState, EditorState>(
-  (inboundState) => removeNamespaced(inboundState, "_", 4),
-  (outbound) => removeNamespaced(outbound, "_", 4),
+  (stateToPersist) => removeNamespaced(stateToPersist, "_", 4),
+  (stateToRehydrate) => removeNamespaced(stateToRehydrate, "_", 4),
   { whitelist: ["elementUIStates"] }
 );
 

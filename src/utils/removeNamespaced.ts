@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function mapObjectValues(obj: any, mapFn: (value: unknown) => unknown) {
+function mapObjectValues(obj: any, mapFn: (value: unknown) => unknown) {
   if (typeof obj !== "object") {
     return obj;
   }
@@ -25,19 +25,22 @@ export function mapObjectValues(obj: any, mapFn: (value: unknown) => unknown) {
   );
 }
 
-export function filterObjectValuesByNamespace(obj: unknown, namespace: string) {
+function filterObjectValuesByNamespace(obj: unknown, namespace: string) {
   if (typeof obj !== "object") {
     return obj;
   }
 
   return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => {
-      console.log(key, !key.startsWith(namespace));
-      return !key.startsWith(namespace);
-    })
+    Object.entries(obj).filter(([key]) => !key.startsWith(namespace))
   );
 }
 
+/**
+ * Removes namespaced values from an object up to a chosen depth
+ * @param objToFilter
+ * @param namespace - string that keys should start with if you want them removed
+ * @param depth - how many nested objects should be scanned. Potential performance hit for large objects
+ */
 export function removeNamespaced<T>(
   objToFilter: T,
   namespace: string,
