@@ -90,7 +90,7 @@ export type NodeUIState = {
     activeTabKey: DataPanelTabKey | null;
   };
 
-  expandedFieldSections: Record<string, boolean>;
+  _expandedFieldSections: Record<string, boolean>;
 };
 
 export type ElementUIState = {

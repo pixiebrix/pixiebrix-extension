@@ -15,7 +15,7 @@ const ConnectedCollapsibleFieldSection = ({
   const dispatch = useDispatch();
   const UIState = useSelector(selectActiveNodeUIState);
   // Allow to fail gracefully using nullish coalescing operator
-  const isExpanded = UIState?.expandedFieldSections?.[title] ?? true;
+  const isExpanded = UIState?._expandedFieldSections?.[title] ?? false;
 
   return (
     <CollapsibleFieldSection

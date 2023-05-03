@@ -94,6 +94,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsDefinition } from "@/types/recipeTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
+import { createTransform } from "redux-persist";
+import { removeNamespaced } from "@/utils/removeNamespaced";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -855,12 +857,12 @@ export const editorSlice = createSlice({
       const uiState = selectActiveNodeUIState({
         editor: state,
       });
-      if (uiState.expandedFieldSections === undefined) {
-        uiState.expandedFieldSections = {};
+      if (uiState._expandedFieldSections === undefined) {
+        uiState._expandedFieldSections = {};
       }
 
       const { id, isExpanded } = payload;
-      uiState.expandedFieldSections[id] = isExpanded;
+      uiState._expandedFieldSections[id] = isExpanded;
     },
   },
   extraReducers(builder) {
@@ -934,10 +936,22 @@ export const actions = {
   checkActiveElementAvailability,
 };
 
+const filterUnderscore = createTransform<
+  Partial<EditorState>,
+  Partial<EditorState>,
+  EditorState,
+  EditorState
+>(
+  (inboundState) => removeNamespaced(inboundState, "_", 4),
+  (outbound) => removeNamespaced(outbound, "_", 4),
+  { whitelist: ["elementUIStates"] }
+);
+
 export const persistEditorConfig = {
   key: "editor",
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
   version: 1,
+  transforms: [filterUnderscore],
 };
