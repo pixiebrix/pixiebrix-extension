@@ -19,27 +19,21 @@ import { type ServiceDependency } from "@/types/serviceTypes";
 import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
 import useAsyncState from "@/hooks/useAsyncState";
-import {
-  collectPermissions,
-  emptyPermissions,
-  ensureAllPermissions,
-} from "@/permissions";
 import { resolveDefinitions } from "@/registry/internal";
-import {
-  containsPermissions,
-  services as locator,
-} from "@/background/messenger/api";
+import { services as locator } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { type CloudExtension } from "@/types/contract";
 import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
 import { type AsyncState } from "@/types/sliceTypes";
-import { type Permissions } from "webextension-polyfill";
+import {
+  emptyPermissionsFactory,
+  ensureAllPermissionsFromUserGesture,
+} from "@/permissions/permissionsUtils";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
-type AsyncPermissionsState = AsyncState<{
-  enabled: boolean;
-  permissions: Permissions.Permissions;
-}> & {
+type AsyncPermissionsState = AsyncState<PermissionsStatus> & {
   request: () => Promise<boolean>;
   activate: () => void;
 };
@@ -57,30 +51,29 @@ function useEnsurePermissions(
 
       const configured = services.filter((x) => x.config);
 
-      const permissions = await collectPermissions(
-        [resolved].map(
-          (extension) =>
-            ({
-              id: extension.extensionPointId,
-              config: extension.config,
-              services: Object.fromEntries(
-                services.map((service) => [service.outputKey, service.id])
-              ),
-            } as ResolvedExtensionDefinition)
-        ),
+      const recipeLike = {
+        definitions: {},
+        extensionPoints: [
+          {
+            id: resolved.extensionPointId,
+            config: resolved.config,
+            services: Object.fromEntries(
+              services.map((service) => [service.outputKey, service.id])
+            ),
+          } as ResolvedExtensionDefinition,
+        ],
+      };
+
+      return checkRecipePermissions(
+        recipeLike,
         configured.map(({ id, config }) => ({ id, config }))
       );
-      const enabled = await containsPermissions(permissions);
-      return {
-        enabled,
-        permissions,
-      };
     },
     [extension, services],
     {
       initialValue: {
-        enabled: false,
-        permissions: emptyPermissions,
+        hasPermissions: false,
+        permissions: emptyPermissionsFactory(),
       },
     }
   );
@@ -89,7 +82,9 @@ function useEnsurePermissions(
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(state.data?.permissions);
+      accepted = await ensureAllPermissionsFromUserGesture(
+        state.data?.permissions
+      );
     } catch (error) {
       notify.error({
         message: "Error granting permissions",

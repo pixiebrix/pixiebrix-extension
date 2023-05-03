@@ -56,7 +56,7 @@ import {
   isInnerExtensionPoint,
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
-import { makeEmptyPermissions } from "@/utils/permissions";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -185,7 +185,7 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
-    permissions: makeEmptyPermissions(),
+    permissions: emptyPermissionsFactory(),
     optionsArgs: {},
     extension: {
       blockPipeline: [],

@@ -47,7 +47,6 @@ import {
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import settingsSlice from "@/store/settingsSlice";
 import { locator } from "@/background/locator";
-import { deploymentPermissions } from "@/utils/deploymentPermissionUtils";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
@@ -60,6 +59,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionHelpers";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -528,9 +528,7 @@ export async function updateDeployments(): Promise<void> {
   const deploymentRequirements = await Promise.all(
     updatedDeployments.map(async (deployment) => ({
       deployment,
-      hasPermissions: await browser.permissions.contains(
-        await deploymentPermissions(deployment, locateAllForService)
-      ),
+      ...(await checkDeploymentPermissions(deployment, locateAllForService)),
     }))
   );
 

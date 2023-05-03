@@ -22,7 +22,7 @@ import { act } from "@testing-library/react-hooks";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
 import { type Service } from "@/types/serviceTypes";
-import { requestPermissions } from "@/utils/permissions";
+import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 // Not currently test:
 // - Listening for permissions changes
@@ -58,9 +58,10 @@ const serviceRegistryMock = serviceRegistry as jest.Mocked<
   typeof serviceRegistry
 >;
 
-const requestPermissionsMock = requestPermissions as jest.MockedFunction<
-  typeof requestPermissions
->;
+const requestPermissionsMock =
+  ensureAllPermissionsFromUserGesture as jest.MockedFunction<
+    typeof ensureAllPermissionsFromUserGesture
+  >;
 
 describe("useDependency", () => {
   it.each([null, []])("handles %s", async () => {

@@ -17,34 +17,23 @@
 
 import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";
-import {
-  collectPermissions,
-  emptyPermissions,
-  ensureAllPermissions,
-} from "@/permissions";
-import { resolveRecipe } from "@/registry/internal";
-import { containsPermissions, services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/api";
 import { useCallback } from "react";
-import { type Permissions } from "webextension-polyfill";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import {
+  emptyPermissionsFactory,
+  ensureAllPermissionsFromUserGesture,
+} from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { type Permissions } from "webextension-polyfill";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
-type PermissionsData = {
+type EnsurePermissionsState = AsyncState<PermissionsStatus> & {
   /**
-   * True if PixieBrix already has all the required permissions.
-   */
-  enabled: boolean;
-
-  /**
-   * Permissions computed for the blueprint and selected service configurations.
-   */
-  permissions: Permissions.Permissions;
-};
-
-type AsyncPermissionsState = AsyncState<PermissionsData> & {
-  /**
-   * Callback to request calculated permissions. Returns the true if the user accepted the permissions.
+   * Callback to request permissions from the user.
    */
   request: () => Promise<boolean>;
 };
@@ -54,38 +43,29 @@ type AsyncPermissionsState = AsyncState<PermissionsData> & {
  * @param blueprint the blueprint definition
  * @param serviceAuths the integration configurations selected for blueprint activation
  */
-function useEnsurePermissions(
+function useEnsureRecipePermissions(
   blueprint: RecipeDefinition,
   serviceAuths: ServiceAuthPair[]
-): AsyncPermissionsState {
-  const state = useAsyncState(
-    async () => {
+): EnsurePermissionsState {
+  const state = fallbackValue(
+    useAsyncState(async () => {
       // Refresh services because the user may have created a team integration since the last refresh.
       await services.refresh();
-      const permissions = await collectPermissions(
-        await resolveRecipe(blueprint),
-        serviceAuths
-      );
-      const enabled = await containsPermissions(permissions);
-      return {
-        enabled,
-        permissions,
-      };
-    },
-    [serviceAuths],
+      return checkRecipePermissions(blueprint, serviceAuths);
+    }, [serviceAuths]),
     {
-      initialValue: {
-        enabled: false,
-        permissions: emptyPermissions,
-      },
+      hasPermissions: false,
+      permissions: emptyPermissionsFactory() as Permissions.Permissions,
     }
   );
+
+  const { permissions } = state.data;
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(state.data.permissions);
+      accepted = await ensureAllPermissionsFromUserGesture(permissions);
     } catch (error) {
       notify.error({
         message: "Error granting permissions",
@@ -101,12 +81,12 @@ function useEnsurePermissions(
     }
 
     return true;
-  }, [state.data.permissions]);
+  }, [permissions]);
 
   return {
-    request,
     ...state,
+    request,
   };
 }
 
-export default useEnsurePermissions;
+export default useEnsureRecipePermissions;

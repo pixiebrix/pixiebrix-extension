@@ -41,13 +41,8 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type Permissions } from "webextension-polyfill";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { extensionPermissions } from "@/permissions";
-import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { reactivateEveryTab } from "@/background/messenger/api";
+import { ensurePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -55,31 +50,6 @@ type RecipeSaver = {
   save: (recipeId: RegistryId) => Promise<void>;
   isSaving: boolean;
 };
-
-async function getPermissions(
-  element: FormState
-): Promise<Permissions.Permissions> {
-  const { extension, extensionPointConfig } = ADAPTERS.get(
-    element.type
-  ).asDynamicElement(element);
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
-  return extensionPermissions(extension, { extensionPoint });
-}
-
-async function ensurePermissions(elements: FormState[]) {
-  const permissionsGroups = await Promise.all(
-    elements.map(async (element) => getPermissions(element))
-  );
-  const permissions = mergePermissions(permissionsGroups);
-
-  const hasPermissions = await requestPermissions(permissions);
-
-  if (!hasPermissions) {
-    notify.warning(
-      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
-    );
-  }
-}
 
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
@@ -140,15 +110,7 @@ function useSaveRecipe(): RecipeSaver {
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
     // long to confirm?
     // Check permissions as early as possible
-    // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
-    void ensurePermissions(dirtyRecipeElements).catch((error) => {
-      console.error("Error checking/enabling permissions", { error });
-      notify.warning({
-        message: "Error verifying permissions",
-        error,
-        reportError: true,
-      });
-    });
+    void ensurePermissionsFromUserGesture(dirtyRecipeElements);
 
     const cleanRecipeExtensions = installedExtensions.filter(
       (extension) =>

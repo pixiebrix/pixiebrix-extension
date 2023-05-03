@@ -27,21 +27,22 @@ import useMarketplaceActivateRecipe from "./useMarketplaceActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type MenuDefinition } from "@/extensionPoints/contextMenu";
-import ensureRecipePermissions from "@/recipes/ensureRecipePermissions";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
+import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
-jest.mock("@/recipes/ensureRecipePermissions", () => ({
+jest.mock("@/recipes/recipePermissionsHelpers", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-const ensurePermissionsMock = ensureRecipePermissions as jest.MockedFunction<
-  typeof ensureRecipePermissions
->;
+const ensurePermissionsMock =
+  ensureAllPermissionsFromUserGesture as jest.MockedFunction<
+    typeof ensureAllPermissionsFromUserGesture
+  >;
 
 const uninstallRecipeMock = uninstallRecipe as jest.MockedFunction<
   typeof uninstallRecipe

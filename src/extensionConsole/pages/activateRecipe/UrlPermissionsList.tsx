@@ -17,19 +17,16 @@
 
 import React, { useMemo } from "react";
 import { isEmpty, uniq } from "lodash";
-import { selectOptionalPermissions } from "@/utils/permissions";
+import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
 import Loader from "@/components/Loader";
 import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
-import { type Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState } from "@/types/sliceTypes";
+import { PermissionsStatus } from "@/permissions/permissionsTypes";
 
 const UrlPermissionsList: React.FunctionComponent<
-  AsyncState<{
-    enabled: boolean;
-    permissions: Permissions.Permissions;
-  }>
+  AsyncState<PermissionsStatus>
 > = ({ error, isFetching, data }) => {
   useReportError(error);
 
@@ -65,9 +62,9 @@ const UrlPermissionsList: React.FunctionComponent<
       return <p>No special permissions required</p>;
     }
 
-    const { enabled } = data;
+    const { hasPermissions } = data;
 
-    if (enabled) {
+    if (hasPermissions) {
       return (
         <p>
           PixieBrix already has the permissions required for the bricks

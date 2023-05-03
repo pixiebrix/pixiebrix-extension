@@ -148,6 +148,29 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
 }
 
 /**
+ * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic defaults
+ * @param state the async state
+ * @param fallbackValue the value to use if the state is uninitialized or loading
+ */
+export function fallbackValue<Value, State extends AsyncState<Value>>(
+  state: State,
+  fallbackValue: Value
+): State {
+  if (state.isUninitialized || state.isLoading || state.isError) {
+    return {
+      ...state,
+      isUninitialized: false,
+      isLoading: false,
+      isSuccess: true,
+      data: fallbackValue,
+      currentData: fallbackValue,
+    };
+  }
+
+  return state;
+}
+
+/**
  * Convert an async state to an initial loading state.
  */
 export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {

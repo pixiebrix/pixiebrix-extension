@@ -18,7 +18,6 @@
 import React from "react";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { useLocation } from "react-router";
-import useEnsurePermissions from "@/activation/useEnsurePermissions";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,6 +26,7 @@ import { useSelectedAuths } from "@/extensionConsole/pages/activateRecipe/Permis
 import { useFormikContext } from "formik";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import useEnsureRecipePermissions from "@/recipes/useEnsureRecipePermissions";
 
 function selectActivateEventData(blueprint: RecipeDefinition) {
   return {
@@ -46,10 +46,8 @@ const ActivateButton: React.FunctionComponent<{
   const { submitForm } = useFormikContext();
   const location = useLocation();
   const serviceAuths = useSelectedAuths();
-  const { request, isFetching: isPermissionsPending } = useEnsurePermissions(
-    blueprint,
-    serviceAuths
-  );
+  const { request, isFetching: isPermissionsPending } =
+    useEnsureRecipePermissions(blueprint, serviceAuths);
 
   const isReactivate =
     new URLSearchParams(location.search).get("reinstall") === "1";

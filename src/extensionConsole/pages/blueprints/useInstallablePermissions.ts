@@ -18,9 +18,12 @@
 import { type IExtension } from "@/types/extensionTypes";
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { ensureAllPermissions, extensionPermissions } from "@/permissions";
-import { mergePermissions } from "@/utils/permissions";
+import {
+  mergePermissions,
+  ensureAllPermissionsFromUserGesture,
+} from "@/permissions/permissionsUtils";
 import { containsPermissions } from "@/background/messenger/api";
+import { extensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 
 /**
  * WARNING: This hook swallows errors (to simplify the behavior for the blueprints page.
@@ -60,7 +63,7 @@ function useInstallablePermissions(extensions: IExtension[]): {
     const permissions = mergePermissions(
       await Promise.all(extensions.map(async (x) => extensionPermissions(x)))
     );
-    const accepted = await ensureAllPermissions(permissions);
+    const accepted = await ensureAllPermissionsFromUserGesture(permissions);
     setHasPermissions(accepted);
     if (accepted) {
       // TODO: in the future, listen for a permissions event in this hook so the status can update without redirecting the page

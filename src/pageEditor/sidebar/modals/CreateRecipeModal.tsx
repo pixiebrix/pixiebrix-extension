@@ -77,7 +77,7 @@ import {
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IExtension } from "@/types/extensionTypes";
-import { checkPermissions } from "@/pageEditor/permissionsHelpers";
+import { ensurePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -110,7 +110,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
     // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     (element: FormState, metadata: RecipeMetadataFormState) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-      checkPermissions(element).then(async (hasPermissions) => {
+      ensurePermissionsFromUserGesture(element).then(async (hasPermissions) => {
         if (!hasPermissions) {
           return;
         }

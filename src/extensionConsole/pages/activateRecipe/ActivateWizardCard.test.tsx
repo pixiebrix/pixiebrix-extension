@@ -30,7 +30,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
-import { ensureAllPermissions } from "@/permissions";
+import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 registerDefaultWidgets();
 
@@ -39,9 +39,10 @@ jest.mock("@/permissions", () => ({
   collectPermissions: jest.fn(),
 }));
 
-const ensureAllPermissionsMock = ensureAllPermissions as jest.MockedFunction<
-  typeof ensureAllPermissions
->;
+const ensureAllPermissionsMock =
+  ensureAllPermissionsFromUserGesture as jest.MockedFunction<
+    typeof ensureAllPermissionsFromUserGesture
+  >;
 
 jest.mock("@/store/optionsStore", () => ({
   persistor: {

@@ -18,11 +18,22 @@
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { extensionPermissions } from "@/permissions";
-import { requestPermissions } from "@/utils/permissions";
+import { extensionPermissions } from "@/permissions/extensionPermissionsHelpers";
+import {
+  ensureAllPermissionsFromUserGesture,
+  mergePermissions,
+} from "@/permissions/permissionsUtils";
 import notify from "@/utils/notify";
+import { type Permissions } from "webextension-polyfill";
+import { castArray } from "lodash";
+import { containsPermissions } from "@/background/messenger/api";
 
-async function ensurePermissions(element: FormState) {
+export async function calculatePermissionsForElement(
+  element: FormState
+): Promise<{
+  hasPermissions: boolean;
+  permissions: Permissions.Permissions;
+}> {
   const adapter = ADAPTERS.get(element.type);
 
   const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
@@ -35,13 +46,21 @@ async function ensurePermissions(element: FormState) {
     extensionPoint,
   });
 
-  console.debug("Ensuring permissions", {
-    permissions,
-    extensionPointConfig,
-    extension,
-  });
+  const hasPermissions = await containsPermissions(permissions);
 
-  const hasPermissions = await requestPermissions(permissions);
+  return { hasPermissions, permissions };
+}
+
+async function ensurePermissions(elements: FormState[]): Promise<boolean> {
+  const elementPermissions = await Promise.all(
+    elements.map(async (element) => calculatePermissionsForElement(element))
+  );
+
+  const permissions = mergePermissions(
+    elementPermissions.map((x) => x.permissions)
+  );
+
+  const hasPermissions = await ensureAllPermissionsFromUserGesture(permissions);
 
   if (!hasPermissions) {
     notify.warning(
@@ -53,13 +72,15 @@ async function ensurePermissions(element: FormState) {
 }
 
 /**
- * Prompt the user to grant permissions if needed, and return whether or not PixieBrix has the required permissions.
- * @param element the Page Editor element form state
+ * Prompt the user to grant permissions if needed, and return whether PixieBrix has the required permissions.
+ * @param elementOrElements the Page Editor element form state(s)
  */
 // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-export function checkPermissions(element: FormState): Promise<boolean> {
+export function ensurePermissionsFromUserGesture(
+  elementOrElements: FormState | FormState[]
+): Promise<boolean> {
   // eslint-disable-next-line promise/prefer-await-to-then -- return a promise and let the calling party do decide whether to await it or not
-  return ensurePermissions(element).catch((error) => {
+  return ensurePermissions(castArray(elementOrElements)).catch((error) => {
     console.error("Error checking/enabling permissions", { error });
     notify.warning({
       message: "Error verifying permissions",

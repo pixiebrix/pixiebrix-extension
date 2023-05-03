@@ -29,12 +29,12 @@ import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { canAccessTab } from "@/utils/permissions";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
 
 type TabId = number;
 
-// TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+// TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
 
 // We shouldn't need to store this value, but Chrome loses it often

@@ -107,7 +107,7 @@ jest.mock("@/components/asyncIcon", () => ({
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));
-jest.mock("@/permissions", () => {
+jest.mock("@/permissions/extensionPermissionsHelpers", () => {
   const permissions = {};
   return {
     extensionPermissions: jest.fn().mockResolvedValue(permissions),

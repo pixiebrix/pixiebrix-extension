@@ -15,29 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { ensureAllPermissions, extensionPermissions } from "@/permissions";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { type Permissions } from "webextension-polyfill";
 import { useDebounce } from "use-debounce";
 import notify from "@/utils/notify";
-import { containsPermissions } from "@/background/messenger/api";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { useAsyncState } from "@/hooks/common";
-import { makeEmptyPermissions } from "@/utils/permissions";
+import useAsyncState from "@/hooks/useAsyncState";
+import {
+  emptyPermissionsFactory,
+  ensureAllPermissionsFromUserGesture,
+} from "@/permissions/permissionsUtils";
+import { calculatePermissionsForElement } from "@/pageEditor/editorPermissionsHelpers";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { type Permissions } from "webextension-polyfill";
 
-type PermissionsState = {
-  hasPermissions: boolean;
-  permissions: Permissions.Permissions;
-};
-
-const defaultState = {
+const fallbackState = {
   hasPermissions: true,
-  permissions: makeEmptyPermissions(),
+  permissions: emptyPermissionsFactory() as Permissions.Permissions,
 };
 
 const PERMISSION_UPDATE_MILLIS = 200;
@@ -51,49 +47,30 @@ const PermissionsToolbar: React.FunctionComponent<{
     trailing: true,
   });
 
-  const [
-    // We use defaultState as
-    // 1. initial state before the permissions are fetched
-    // 2. state in case of error; if the async callback fails, we fallback to this default permissions
-    { hasPermissions, permissions } = defaultState,
-    isLoadingPermissions,
-    ,
-    reloadPermissions,
-  ] = useAsyncState<PermissionsState>(async () => {
-    const adapter = ADAPTERS.get(debouncedElement.type);
-    const { extension, extensionPointConfig } =
-      adapter.asDynamicElement(debouncedElement);
-    const extensionPoint = extensionPointFactory(extensionPointConfig);
+  const state = useAsyncState(
+    async () => calculatePermissionsForElement(debouncedElement),
+    [debouncedElement]
+  );
+  const {
+    refetch,
+    data: { permissions, hasPermissions },
+  } = fallbackValue(state, fallbackState);
 
-    const permissions = await extensionPermissions(extension, {
-      extensionPoint,
-    });
-
-    console.debug("Checking for extension permissions", {
-      extension,
-      permissions,
-    });
-
-    const hasPermissions = await containsPermissions(permissions);
-
-    return { hasPermissions, permissions };
-  }, [debouncedElement]);
-
-  const request = useCallback(async () => {
-    if (await ensureAllPermissions(permissions)) {
+  const requestPermissions = async () => {
+    if (await ensureAllPermissionsFromUserGesture(permissions)) {
       notify.success("Granted additional permissions");
-      await reloadPermissions();
+      refetch();
     } else {
       notify.info("You declined the additional required permissions");
     }
-  }, [permissions, reloadPermissions]);
+  };
 
   return (
     <ButtonGroup>
       {!hasPermissions && (
         <Button
-          disabled={disabled || isLoadingPermissions}
-          onClick={request}
+          disabled={disabled || state.isFetching}
+          onClick={requestPermissions}
           size="sm"
           variant="primary"
         >

@@ -33,11 +33,11 @@ import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { serviceOriginPermissions } from "@/permissions";
-import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
+import { serviceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { ensureAllPermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -130,7 +130,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         console.debug("Required permissions", requiredPermissions);
 
-        await requestPermissions(requiredPermissions);
+        await ensureAllPermissionsFromUserGesture(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
 
