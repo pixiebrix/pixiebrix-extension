@@ -61,7 +61,7 @@ exports[`renders 1`] = `
       >
         <svg
           aria-hidden="true"
-          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
+          class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
           data-icon="chevron-right"
           data-prefix="fas"
           focusable="false"
@@ -77,7 +77,7 @@ exports[`renders 1`] = `
         Advanced Options
       </button>
       <div
-        class="body collapse show"
+        class="body collapse"
       >
         <small
           class="text-muted font-italic"
