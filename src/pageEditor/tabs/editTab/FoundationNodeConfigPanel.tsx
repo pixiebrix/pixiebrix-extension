@@ -23,10 +23,38 @@ import useFlags from "@/hooks/useFlags";
 import { isInnerExtensionPoint } from "@/registry/internal";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { UnconfiguredQuickBarAlert } from "@/pageEditor/extensionPoints/quickBar";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { useSelector } from "react-redux";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
+import { Alert } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+
+const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
+  const { isConfigured } = useQuickbarShortcut();
+
+  if (!isConfigured) {
+    return (
+      <Alert variant="warning">
+        <FontAwesomeIcon icon={faExclamationTriangle} />
+        &nbsp;You have not{" "}
+        <a
+          href={SHORTCUTS_URL}
+          onClick={(event) => {
+            event.preventDefault();
+            void openShortcutsTab();
+          }}
+        >
+          configured a Quick Bar shortcut
+        </a>
+      </Alert>
+    );
+  }
+
+  return null;
+};
 
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
