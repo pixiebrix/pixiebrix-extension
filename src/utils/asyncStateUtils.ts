@@ -172,7 +172,23 @@ export function fallbackValue<Value, State extends AsyncState<Value>>(
 }
 
 /**
- * Convert an async state to an initial loading state.
+ * A loading state.
+ */
+export function uninitializedAsyncStateFactory<Value>(): AsyncState<Value> {
+  return {
+    currentData: undefined,
+    data: undefined,
+    isUninitialized: false,
+    isLoading: true,
+    isFetching: true,
+    isError: false,
+    isSuccess: false,
+    error: undefined,
+  };
+}
+
+/**
+ * A loading state.
  */
 export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
   return {
@@ -204,6 +220,23 @@ export function valueToAsyncState<Value>(
     isSuccess: true,
     error: undefined,
     refetch: noop,
+  };
+}
+
+/**
+ * Lift a known value to a FetchableAsyncState.
+ * @param error the error
+ */
+export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
+  return {
+    data: undefined,
+    currentData: undefined,
+    isUninitialized: false,
+    isLoading: false,
+    isFetching: false,
+    isError: true,
+    isSuccess: false,
+    error,
   };
 }
 

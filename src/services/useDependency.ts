@@ -16,7 +16,7 @@
  */
 
 import { useAsyncState } from "@/hooks/common";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useFormikContext } from "formik";
 import { castArray, compact, head } from "lodash";
 import serviceRegistry from "@/services/registry";
@@ -26,11 +26,9 @@ import {
   type ServiceDependency,
 } from "@/types/serviceTypes";
 import { containsPermissions, services } from "@/background/messenger/api";
-import notify from "@/utils/notify";
 import { type RegistryId } from "@/types/registryTypes";
-import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
-
-type Listener = () => void;
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 
 export type Dependency = {
   config: SanitizedServiceConfiguration;
@@ -38,12 +36,6 @@ export type Dependency = {
   hasPermissions: boolean;
   requestPermissions: () => void;
 };
-
-const permissionsListeners = new Map<string, Listener[]>();
-
-function listenerKey(dependency: ServiceDependency) {
-  return `${dependency.id}:${dependency.config}`;
-}
 
 export function pickDependency(
   services: ServiceDependency[],
@@ -59,16 +51,19 @@ export function pickDependency(
   return head(configuredServices);
 }
 
-export async function lookupDependency(dependency: ServiceDependency) {
+async function lookupDependency(dependency: ServiceDependency) {
   const localConfig = await services.locate(dependency.id, dependency.config);
-
   const service = await serviceRegistry.lookup(dependency.id);
-
   const origins = service.getOrigins(localConfig.config);
+  const permissions = { origins };
 
-  const hasPermissions = await containsPermissions({ origins });
-
-  return { localConfig, service, origins, hasPermissions };
+  return {
+    localConfig,
+    service,
+    origins,
+    permissions,
+    hasPermissions: await containsPermissions(permissions),
+  };
 }
 
 /**
@@ -79,7 +74,9 @@ function useDependency(
   serviceId: RegistryId | RegistryId[] | null
 ): Dependency | null {
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-  const [grantedPermissions, setGrantedPermissions] = useState(false);
+
+  // Listen for permissions changes
+  const permissionsState = useExtensionPermissions();
 
   const serviceIds = useMemo(() => compact(castArray(serviceId)), [serviceId]);
   const dependency: ServiceDependency = useMemo(
@@ -93,54 +90,11 @@ function useDependency(
     }
 
     throw new Error("No integration dependency selected");
-  }, [dependency?.config]);
+  }, [dependency?.config, permissionsState?.data]);
 
-  // Listen for permissions changes granted from hook instances, so the useDependency can be used in multiple
-  // places in the React tree
-  useEffect(() => {
-    if (dependency && !serviceResult?.hasPermissions) {
-      const key = listenerKey(dependency);
-      const onPermissionGranted = () => {
-        setGrantedPermissions(true);
-      };
-
-      permissionsListeners.set(key, [
-        ...(permissionsListeners.get(key) ?? []),
-        onPermissionGranted,
-      ]);
-      return () => {
-        permissionsListeners.set(
-          key,
-          (permissionsListeners.get(key) ?? []).filter(
-            (x) => x !== onPermissionGranted
-          )
-        );
-      };
-    }
-  }, [dependency, setGrantedPermissions, serviceResult]);
-
-  const requestPermissionCallback = useCallback(async () => {
-    const permissions = { origins: serviceResult?.origins ?? [] };
-    console.debug("requesting origins", { permissions });
-    try {
-      const accepted = await ensurePermissionsFromUserGesture(permissions);
-      setGrantedPermissions(accepted);
-      if (accepted && dependency != null) {
-        const key = listenerKey(dependency);
-        for (const listener of permissionsListeners.get(key)) {
-          listener();
-        }
-      } else if (!accepted) {
-        notify.warning("You must accept the permissions request");
-      }
-    } catch (error) {
-      setGrantedPermissions(false);
-      notify.error({
-        message: "Error granting permissions",
-        error,
-      });
-    }
-  }, [setGrantedPermissions, serviceResult?.origins, dependency]);
+  const requestPermissionCallback = useRequestPermissionsCallback(
+    serviceResult?.permissions
+  );
 
   // Wrap in use memo so callers don't have to do their own guards
   return useMemo(() => {
@@ -151,11 +105,10 @@ function useDependency(
     return {
       config: serviceResult?.localConfig,
       service: serviceResult?.service,
-      hasPermissions: serviceResult?.hasPermissions || grantedPermissions,
+      hasPermissions: serviceResult?.hasPermissions,
       requestPermissions: requestPermissionCallback,
     };
   }, [
-    grantedPermissions,
     requestPermissionCallback,
     serviceId,
     serviceResult?.hasPermissions,

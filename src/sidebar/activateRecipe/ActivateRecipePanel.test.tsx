@@ -109,13 +109,6 @@ const includesQuickBarMock =
     typeof includesQuickBarExtensionPoint
   >;
 
-jest.mock("@/permissions/index", () => ({
-  collectPermissions: jest.fn().mockReturnValue({
-    permissions: [],
-    origins: [],
-  }),
-}));
-
 jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn(),
 }));

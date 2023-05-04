@@ -27,6 +27,7 @@ import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
 import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -71,7 +72,11 @@ export const registry = {
   fetch: jest.fn().mockResolvedValue(true),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   getByKinds: jest.fn().mockResolvedValue([]),
-  find: jest.fn().mockRejectedValue(new Error("Find not implemented in mock")),
+  find: jest.fn().mockImplementation(async (id: RegistryId) => {
+    throw new Error(
+      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`
+    );
+  }),
   clear: getMethod("REGISTRY_CLEAR", bg),
 };
 

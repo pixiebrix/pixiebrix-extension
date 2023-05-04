@@ -25,7 +25,8 @@ import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 export type ActivateResult = {
   success: boolean;
@@ -56,7 +57,9 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
 
       try {
         if (
-          !(await ensureRecipePermissionsFromUserGesture(recipe, serviceAuths))
+          !(await ensurePermissionsFromUserGesture(
+            await checkRecipePermissions(recipe, serviceAuths)
+          ))
         ) {
           return {
             success: false,

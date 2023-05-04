@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -37,7 +37,8 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { joinName } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -95,11 +96,15 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = joinName(name, configKey);
 
-  const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
+  const permissionsState = useExtensionPermissions();
+
   const [hasPermissions] = useAsyncState(
     async () => containsPermissions(ZAPIER_PERMISSIONS),
-    []
+    [permissionsState]
   );
+
+  const onRequestPermissions =
+    useRequestPermissionsCallback(ZAPIER_PERMISSIONS);
 
   const [{ value: pushKey }] = useField<string | Expression>(
     `${basePath}.pushKey`
@@ -107,17 +112,12 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const { hooks, error } = useHooks();
 
-  const onRequestPermissions = useCallback(async () => {
-    const result = await ensurePermissionsFromUserGesture(ZAPIER_PERMISSIONS);
-    setGrantedPermissions(result);
-  }, [setGrantedPermissions]);
-
   const hook = useMemo(
     () => hooks?.find((x) => x.display_name === pushKey),
     [hooks, pushKey]
   );
 
-  if (!(grantedPermissions || hasPermissions)) {
+  if (!hasPermissions) {
     return (
       <div className="my-2">
         <p>

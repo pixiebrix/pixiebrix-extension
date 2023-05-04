@@ -26,7 +26,7 @@ import { useSelectedAuths } from "@/extensionConsole/pages/activateRecipe/Permis
 import { useFormikContext } from "formik";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import useEnsureRecipePermissions from "@/recipes/useEnsureRecipePermissions";
+import useRecipePermissions from "./useRecipePermissions";
 
 function selectActivateEventData(blueprint: RecipeDefinition) {
   return {
@@ -46,8 +46,10 @@ const ActivateButton: React.FunctionComponent<{
   const { submitForm } = useFormikContext();
   const location = useLocation();
   const serviceAuths = useSelectedAuths();
-  const { request, isFetching: isPermissionsPending } =
-    useEnsureRecipePermissions(blueprint, serviceAuths);
+  const { request, isFetching: isPermissionsPending } = useRecipePermissions(
+    blueprint,
+    serviceAuths
+  );
 
   const isReactivate =
     new URLSearchParams(location.search).get("reinstall") === "1";

@@ -29,3 +29,18 @@ export type PermissionsStatus = {
    */
   permissions: Permissions.Permissions;
 };
+
+/**
+ * Return true if the value is a PermissionsStatus record
+ * @param value the value to check
+ */
+export function isPermissionsStatus(
+  value: unknown
+): value is PermissionsStatus {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "hasPermissions" in value &&
+    "permissions" in value
+  );
+}

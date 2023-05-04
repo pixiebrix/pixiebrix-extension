@@ -28,9 +28,12 @@ import {
   canAccessTab as _canAccessTab,
   type Target,
 } from "webext-tools";
-import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import {
+  isPermissionsStatus,
+  type PermissionsStatus,
+} from "@/permissions/permissionsTypes";
 
-// Copied from the permissions section of manifest.json
+// Copied from the `permissions` section of manifest.json for required permissions
 const MANDATORY_PERMISSIONS = new Set([
   "activeTab",
   "storage",
@@ -68,7 +71,7 @@ function normalizeOptionalPermissions(
   };
 }
 
-/** Filters out any permissions that are not part of `optional_permissions` */
+/** Filters to only include permissions that are part of `optional_permissions` */
 export function selectOptionalPermissions(
   permissions: string[]
 ): Manifest.OptionalPermission[] {
@@ -110,8 +113,19 @@ export function mergePermissionsStatuses(
  * the new permissions.
  */
 export async function ensurePermissionsFromUserGesture(
-  permissions: Permissions.Permissions
+  permissionsOrStatus: Permissions.Permissions | PermissionsStatus
 ): Promise<boolean> {
+  if (
+    isPermissionsStatus(permissionsOrStatus) &&
+    permissionsOrStatus.hasPermissions
+  ) {
+    return true;
+  }
+
+  const permissions = isPermissionsStatus(permissionsOrStatus)
+    ? permissionsOrStatus.permissions
+    : permissionsOrStatus;
+
   // `normalize` to ensure the request will succeed on Firefox. See normalizeOptionalPermissions
   return requestPermissionsFromUserGesture(
     normalizeOptionalPermissions(permissions)
@@ -137,10 +151,12 @@ async function requestPermissionsFromUserGesture(
     remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
   }
 
+  // Make request on Chromium. Doesn't show a popup if the permissions already exist.
   if (browser.permissions) {
     return browser.permissions.request(permissions);
   }
 
+  // On Firefox, first check if the permissions already exist to avoid showing the popup.
   if (await containsPermissions(permissions)) {
     return true;
   }

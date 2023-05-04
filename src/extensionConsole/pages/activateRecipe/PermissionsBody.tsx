@@ -26,7 +26,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { useFormikContext } from "formik";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
-import useEnsureRecipePermissions from "@/recipes/useEnsureRecipePermissions";
+import useRecipePermissions from "./useRecipePermissions";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useAsyncState from "@/hooks/useAsyncState";
 
@@ -65,7 +65,7 @@ const PermissionsBody: React.FunctionComponent<{
 }> = ({ blueprint }) => {
   const selectedAuths = useSelectedAuths();
 
-  const permissionsState = useEnsureRecipePermissions(blueprint, selectedAuths);
+  const permissionsState = useRecipePermissions(blueprint, selectedAuths);
 
   const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 

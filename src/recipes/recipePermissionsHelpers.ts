@@ -118,23 +118,8 @@ export async function ensureRecipePermissionsFromUserGesture(
   recipe: RecipeDefinition,
   selectedAuths: ServiceAuthPair[]
 ): Promise<boolean> {
-  const resolved = await resolveRecipe(recipe);
-  const collectedPermissions = await collectExtensionDefinitionPermissions(
-    resolved,
-    selectedAuths
+  // Single method to make mocking in tests easier
+  return ensurePermissionsFromUserGesture(
+    await checkRecipePermissions(recipe, selectedAuths)
   );
-
-  if (isEmpty(collectedPermissions)) {
-    // Small performance enhancement to avoid hitting background worker
-    return true;
-  }
-
-  const hasPermissions = await containsPermissions(collectedPermissions);
-
-  // Skip request if we already know we have permissions
-  if (hasPermissions) {
-    return true;
-  }
-
-  return ensurePermissionsFromUserGesture(collectedPermissions);
 }

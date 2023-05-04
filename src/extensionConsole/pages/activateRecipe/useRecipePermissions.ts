@@ -15,23 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";
-import { services } from "@/background/messenger/api";
-import { useCallback } from "react";
+import { services as serviceLocator } from "@/background/messenger/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
-import {
-  emptyPermissionsFactory,
-  ensurePermissionsFromUserGesture,
-} from "@/permissions/permissionsUtils";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";
-import { fallbackValue } from "@/utils/asyncStateUtils";
-import { type Permissions } from "webextension-polyfill";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 
-type EnsurePermissionsState = AsyncState<PermissionsStatus> & {
+type RecipePermissionsState = AsyncState<PermissionsStatus> & {
   /**
    * Callback to request permissions from the user.
    */
@@ -42,51 +37,37 @@ type EnsurePermissionsState = AsyncState<PermissionsStatus> & {
  * Hook providing convenience methods for ensuring permissions for a recipe prior to activation.
  * @param blueprint the blueprint definition
  * @param serviceAuths the integration configurations selected for blueprint activation
+ * @see useCloudExtensionPermissions
  */
-function useEnsureRecipePermissions(
+function useRecipePermissions(
   blueprint: RecipeDefinition,
   serviceAuths: ServiceAuthPair[]
-): EnsurePermissionsState {
-  const state = fallbackValue(
-    useAsyncState(async () => {
+): RecipePermissionsState {
+  const { data: browserPermissions } = useExtensionPermissions();
+
+  const permissionsState = useAsyncState(
+    async () => {
       // Refresh services because the user may have created a team integration since the last refresh.
-      await services.refresh();
+      await serviceLocator.refresh();
       return checkRecipePermissions(blueprint, serviceAuths);
-    }, [serviceAuths]),
+    },
+    [serviceAuths, browserPermissions],
     {
-      hasPermissions: false,
-      permissions: emptyPermissionsFactory() as Permissions.Permissions,
+      initialValue: {
+        hasPermissions: true,
+        permissions: emptyPermissionsFactory(),
+      } as PermissionsStatus,
     }
   );
 
-  const { permissions } = state.data;
-
-  const request = useCallback(async () => {
-    let accepted = false;
-
-    try {
-      accepted = await ensurePermissionsFromUserGesture(permissions);
-    } catch (error) {
-      notify.error({
-        message: "Error granting permissions",
-        error,
-      });
-      return false;
-    }
-
-    if (!accepted) {
-      // Event is tracked in `activate` callback
-      notify.warning("You declined the permissions");
-      return false;
-    }
-
-    return true;
-  }, [permissions]);
+  const request = useRequestPermissionsCallback(
+    permissionsState.data?.permissions
+  );
 
   return {
-    ...state,
+    ...permissionsState,
     request,
   };
 }
 
-export default useEnsureRecipePermissions;
+export default useRecipePermissions;

@@ -92,7 +92,7 @@ export async function collectExtensionPermissions(
 
 /**
  * Check the status of permissions for one or more IExtensions.
- * @param extensionOrExtensions
+ * @param extensionOrExtensions the extension or extensions to check
  */
 export async function checkExtensionPermissions(
   extensionOrExtensions: IExtension | IExtension[]

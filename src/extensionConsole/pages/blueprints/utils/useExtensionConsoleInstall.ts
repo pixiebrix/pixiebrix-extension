@@ -97,8 +97,7 @@ function useExtensionConsoleInstall(
 
       if (!hasPermissions) {
         notify.error({
-          message:
-            "You must accept browser permissions for the selected bricks",
+          message: "You must accept browser permissions for the mod",
           reportError: false,
         });
         setSubmitting(false);

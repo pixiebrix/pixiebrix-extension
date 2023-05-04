@@ -27,8 +27,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
-import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -46,24 +45,20 @@ export const useInstallBotGamesBlueprint = () => {
   );
 
   const installBotGamesBlueprint = async () => {
-    // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
-    const { hasPermissions, permissions } = await checkRecipePermissions(
-      botGamesRecipe,
-      []
-    );
-
     let accepted = true;
 
-    if (!hasPermissions) {
-      try {
-        accepted = await ensurePermissionsFromUserGesture(permissions);
-      } catch (error) {
-        notify.error({
-          message: "Error granting permissions",
-          error,
-        });
-        return;
-      }
+    // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
+    try {
+      accepted = await ensureRecipePermissionsFromUserGesture(
+        botGamesRecipe,
+        []
+      );
+    } catch (error) {
+      notify.error({
+        message: "Error granting permissions",
+        error,
+      });
+      return;
     }
 
     if (!accepted) {

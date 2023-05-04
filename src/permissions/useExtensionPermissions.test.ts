@@ -19,6 +19,12 @@ import { renderHook, act } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
 import { getChromeEventMocks } from "@/testUtils/testHelpers";
+import {
+  uninitializedAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
+
+jest.unmock("@/permissions/useExtensionPermissions");
 
 browser.permissions.getAll = jest.fn();
 browser.permissions.onAdded = getChromeEventMocks();
@@ -49,7 +55,7 @@ describe("useExtensionPermissions", () => {
   test("reads manifest", async () => {
     mockOrigins();
     const { result } = renderHook(useExtensionPermissions);
-    expect(result.current).toMatchInlineSnapshot("[]");
+    expect(result.current).toEqual(uninitializedAsyncStateFactory());
     await act(async () => {});
     expect(result.current).toMatchInlineSnapshot(`
       [

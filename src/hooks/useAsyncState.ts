@@ -93,10 +93,15 @@ const slice = createSlice({
 
 /**
  * Hook to asynchronously compute a value and return a standard asynchronous state.
+ *
+ * If you are calculating a value without arguments, you may want to use useAsyncExternalStore instead because it will
+ * share state across all instances of the component.
+ *
  * @param promiseOrGenerator a promise to await, of function that returns a promise to await
  * @param dependencies zero or more dependencies to trigger a re-fetch
  * @param initialValue the initial value of the state. If provided, the state will be initialized to this value and will
  *  skip the isLoading on the initial value generation.
+ * @see useAsyncExternalStore
  */
 function useAsyncState<T = unknown>(
   promiseOrGenerator: ValueFactory<T>,

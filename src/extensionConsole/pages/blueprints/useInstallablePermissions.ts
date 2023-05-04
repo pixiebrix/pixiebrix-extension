@@ -16,17 +16,15 @@
  */
 
 import { type IExtension } from "@/types/extensionTypes";
-import { useCallback } from "react";
-import {
-  emptyPermissionsFactory,
-  ensurePermissionsFromUserGesture,
-} from "@/permissions/permissionsUtils";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { checkExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 
-// By default, assume the extensions have permissions so that the UI can optimistically render the state
+// By default, assume the extensions have permissions.
 const fallback: PermissionsStatus = {
   hasPermissions: true,
   permissions: emptyPermissionsFactory(),
@@ -41,27 +39,19 @@ function useInstallablePermissions(extensions: IExtension[]): {
   hasPermissions: boolean;
   requestPermissions: () => Promise<boolean>;
 } {
+  const { data: browserPermissions } = useExtensionPermissions();
+
   const {
     data: { hasPermissions, permissions },
   } = fallbackValue(
     useAsyncState(
       async () => checkExtensionPermissions(extensions),
-      [extensions]
+      [extensions, browserPermissions]
     ),
     fallback
   );
 
-  const requestPermissions = useCallback(async () => {
-    const accepted = await ensurePermissionsFromUserGesture(permissions);
-
-    if (accepted) {
-      // TODO: in the future, listen for a permissions event in this hook so the status can update without redirecting the page
-      // Reload the extension console page so all the Grant Permissions buttons are in sync.
-      location.reload();
-    }
-
-    return accepted;
-  }, [permissions]);
+  const requestPermissions = useRequestPermissionsCallback(permissions);
 
   return {
     hasPermissions,
