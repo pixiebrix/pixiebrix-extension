@@ -159,7 +159,7 @@ export function fallbackValue<Value, State extends AsyncState<Value>>(
   state: State,
   fallbackValue: Value
 ): State {
-  if (state.isUninitialized || state.isLoading || state.isError) {
+  if (!state.isSuccess) {
     return {
       // Spread state to get any other inherited properties, e.g., refetch
       ...state,
