@@ -73,7 +73,7 @@ function normalizeOptionalPermissions(
 
 /** Filters to only include permissions that are part of `optional_permissions` */
 export function selectOptionalPermissions(
-  permissions: string[]
+  permissions: string[] = []
 ): Manifest.OptionalPermission[] {
   const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>

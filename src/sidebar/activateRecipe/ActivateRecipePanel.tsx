@@ -205,11 +205,12 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
       Boolean(config)
     );
 
-    stateDispatch(
-      setNeedsPermissions(
-        !(await checkRecipePermissions(recipe, selectedAuths))
-      )
+    const { hasPermissions } = await checkRecipePermissions(
+      recipe,
+      selectedAuths
     );
+
+    stateDispatch(setNeedsPermissions(!hasPermissions));
   }
 
   const onChange = (values: WizardValues) => {

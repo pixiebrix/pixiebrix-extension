@@ -17,6 +17,7 @@
 
 import { type Permissions } from "webextension-polyfill";
 import { remove } from "lodash";
+import * as backgroundApi from "@/background/messenger/api";
 
 // Permissions from the manifest.json
 const initialPermissions: Permissions.AnyPermissions = {
@@ -31,26 +32,23 @@ const initialPermissions: Permissions.AnyPermissions = {
   ],
 };
 
-let permissions: Permissions.AnyPermissions = initialPermissions;
+let extensionPermissions: Permissions.AnyPermissions = initialPermissions;
 const addListeners = new Set<() => void>();
 const removeListeners = new Set<() => void>();
 
 // API missing from mock https://github.com/clarkbw/jest-webextension-mock/issues/148
 browser.permissions = {
-  getAll: jest.fn().mockResolvedValue(permissions),
-  contains: jest
-    .fn()
-    .mockImplementation(async (permissions: Permissions.AnyPermissions) => {
-      return (
-        (permissions.permissions ?? []).every((permission) =>
-          permissions.permissions.includes(permission)
-        ) &&
-        // XXX: only handles exact matches
-        (permissions.origins ?? []).every((origin) =>
-          permissions.origins.includes(origin)
-        )
-      );
-    }),
+  getAll: jest.fn().mockImplementation(async () => extensionPermissions),
+  contains: jest.fn().mockImplementation(
+    async (permissions: Permissions.AnyPermissions) =>
+      (permissions.permissions ?? []).every((permission) =>
+        extensionPermissions.permissions.includes(permission)
+      ) &&
+      // XXX: only handles exact matches
+      (permissions.origins ?? []).every((origin) =>
+        extensionPermissions.origins.includes(origin)
+      )
+  ),
   onAdded: {
     addListener: jest.fn().mockImplementation((listener) => {
       addListeners.add(listener);
@@ -78,11 +76,11 @@ browser.permissions = {
   remove: jest
     .fn()
     .mockImplementation(async (toRemove: Permissions.AnyPermissions) => {
-      remove(permissions.permissions, (permission) =>
+      remove(extensionPermissions.permissions, (permission) =>
         toRemove.permissions.includes(permission)
       );
       // XXX: only handles exact matches
-      remove(permissions.origins, (permission) =>
+      remove(extensionPermissions.origins, (permission) =>
         toRemove.origins.includes(permission)
       );
 
@@ -104,6 +102,84 @@ browser.permissions = {
     }),
 };
 
-export function resetMock() {
-  permissions = initialPermissions;
+export function resetMock(): void {
+  setPermissions(initialPermissions);
 }
+
+export function setPermissions(
+  newPermissions: Permissions.AnyPermissions
+): void {
+  extensionPermissions = newPermissions;
+}
+
+// Mock these until we can get a fake/mock registry working for tests
+jest
+  .mocked(backgroundApi.containsPermissions)
+  .mockImplementation(browser.permissions.contains);
+
+jest.mock("@/recipes/recipePermissionsHelpers", () => {
+  const originalModule = jest.requireActual(
+    "@/recipes/recipePermissionsHelpers"
+  );
+  return {
+    ...originalModule,
+    checkRecipePermissions: jest.fn().mockImplementation(async () => ({
+      hasPermissions: true,
+      permissions: { origins: [] },
+    })),
+  };
+});
+
+jest.mock("@/permissions/extensionPermissionsHelpers", () => {
+  const originalModule = jest.requireActual(
+    "@/permissions/extensionPermissionsHelpers"
+  );
+  return {
+    ...originalModule,
+    collectExtensionPermissions: jest.fn().mockImplementation(async () => ({
+      origins: [],
+    })),
+    checkExtensionPermissions: jest.fn().mockImplementation(async () => ({
+      hasPermissions: true,
+      permissions: { origins: [] },
+    })),
+  };
+});
+
+jest.mock("@/permissions/cloudExtensionPermissionsHelpers", () => {
+  const originalModule = jest.requireActual(
+    "@/permissions/cloudExtensionPermissionsHelpers"
+  );
+  return {
+    ...originalModule,
+    checkCloudExtensionPermissions: jest.fn().mockImplementation(async () => ({
+      hasPermissions: true,
+      permissions: { origins: [] },
+    })),
+  };
+});
+
+jest.mock("@/permissions/deploymentPermissionsHelpers", () => {
+  const originalModule = jest.requireActual(
+    "@/permissions/deploymentPermissionsHelpers"
+  );
+  return {
+    ...originalModule,
+    checkDeploymentPermissions: jest.fn().mockImplementation(async () => ({
+      hasPermissions: true,
+      permissions: { origins: [] },
+    })),
+  };
+});
+
+jest.mock("@/permissions/servicePermissionsHelpers", () => {
+  const originalModule = jest.requireActual(
+    "@/permissions/deploymentPermissionsHelpers"
+  );
+  return {
+    ...originalModule,
+    collectServiceOriginPermissions: jest.fn().mockImplementation(async () => ({
+      origins: [],
+    })),
+  };
+});

@@ -18,19 +18,13 @@
 import { renderHook, act } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
-import { getChromeEventMocks } from "@/testUtils/testHelpers";
 import {
   uninitializedAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import { setPermissions } from "@/testUtils/permissionsMock";
+import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 
-jest.unmock("@/permissions/useExtensionPermissions");
-
-browser.permissions.getAll = jest.fn();
-browser.permissions.onAdded = getChromeEventMocks();
-browser.permissions.onRemoved = getChromeEventMocks();
-
-const getAllMock = jest.mocked(browser.permissions.getAll);
 const selectAdditionalMock = jest.mocked(selectAdditionalPermissionsSync);
 
 jest.mock("webext-additional-permissions", () => ({
@@ -41,87 +35,92 @@ jest.mock("webext-additional-permissions", () => ({
 const manifestPermission = "https://p.com/*";
 
 function mockOrigins(...additional: string[]): void {
-  getAllMock.mockResolvedValueOnce({
+  setPermissions({
     permissions: [],
     origins: [manifestPermission, ...additional],
   });
-  selectAdditionalMock.mockReturnValueOnce({
+  selectAdditionalMock.mockReturnValue({
     permissions: [],
     origins: additional,
   });
 }
 
 describe("useExtensionPermissions", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line new-cap -- test helper method
+    INTERNAL_reset();
+  });
+
   test("reads manifest", async () => {
     mockOrigins();
     const { result } = renderHook(useExtensionPermissions);
     expect(result.current).toEqual(uninitializedAsyncStateFactory());
     await act(async () => {});
-    expect(result.current).toMatchInlineSnapshot(`
-      [
+    expect(result.current).toEqual(
+      valueToAsyncState([
         {
-          "isAdditional": false,
-          "isOrigin": true,
-          "isUnique": true,
-          "name": "https://p.com/*",
+          isAdditional: false,
+          isOrigin: true,
+          isUnique: true,
+          name: "https://p.com/*",
         },
-      ]
-    `);
+      ])
+    );
   });
 
   test("includes additional permissions", async () => {
     mockOrigins("https://added.example.com/*", "https://more.example.com/*");
     const { result } = renderHook(useExtensionPermissions);
     await act(async () => {});
-    expect(result.current).toMatchInlineSnapshot(`
-      [
+    expect(result.current).toEqual(
+      valueToAsyncState([
         {
-          "isAdditional": true,
-          "isOrigin": true,
-          "isUnique": true,
-          "name": "https://added.example.com/*",
+          isAdditional: true,
+          isOrigin: true,
+          isUnique: true,
+          name: "https://added.example.com/*",
         },
         {
-          "isAdditional": true,
-          "isOrigin": true,
-          "isUnique": true,
-          "name": "https://more.example.com/*",
+          isAdditional: true,
+          isOrigin: true,
+          isUnique: true,
+          name: "https://more.example.com/*",
         },
         {
-          "isAdditional": false,
-          "isOrigin": true,
-          "isUnique": true,
-          "name": "https://p.com/*",
+          isAdditional: false,
+          isOrigin: true,
+          isUnique: true,
+          name: "https://p.com/*",
         },
-      ]
-    `);
+      ])
+    );
   });
 
   test("detects overlapping permissions", async () => {
     mockOrigins("https://added.example.com/*", "https://*.example.com/*");
     const { result } = renderHook(useExtensionPermissions);
     await act(async () => {});
-    expect(result.current).toMatchInlineSnapshot(`
-      [
+    expect(result.current).toEqual(
+      valueToAsyncState([
         {
-          "isAdditional": true,
-          "isOrigin": true,
-          "isUnique": true,
-          "name": "https://*.example.com/*",
+          isAdditional: true,
+          isOrigin: true,
+          isUnique: true,
+          name: "https://*.example.com/*",
         },
         {
-          "isAdditional": true,
-          "isOrigin": true,
-          "isUnique": false,
-          "name": "https://added.example.com/*",
+          isAdditional: true,
+          isOrigin: true,
+          isUnique: false,
+          name: "https://added.example.com/*",
         },
         {
-          "isAdditional": false,
-          "isOrigin": true,
-          "isUnique": true,
-          "name": "https://p.com/*",
+          isAdditional: false,
+          isOrigin: true,
+          isUnique: true,
+          name: "https://p.com/*",
         },
-      ]
-    `);
+      ])
+    );
   });
 });

@@ -44,8 +44,8 @@ import { registry } from "@/background/messenger/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { type PersistedExtension } from "@/types/extensionTypes";
 import { type Timestamp } from "@/types/stringTypes";
-
-browser.permissions.contains = jest.fn().mockResolvedValue(true);
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -65,12 +65,6 @@ jest.mock("@/background/activeTab", () => ({
 }));
 
 jest.mock("webext-messenger");
-
-jest.mock("@/permissions/deploymentPermissionsHelpers", () => ({
-  checkDeploymentPermissions: jest
-    .fn()
-    .mockResolvedValue({ hasPermission: true, permissions: { origins: [] } }),
-}));
 
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
@@ -111,7 +105,6 @@ const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
 const browserManagedStorageMock = browser.storage.managed.get as jest.Mock;
-const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as unknown as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;
@@ -144,7 +137,6 @@ beforeEach(async () => {
   });
 
   getManifestMock.mockClear();
-  containsPermissionsMock.mockClear();
   refreshRegistriesMock.mockClear();
   openOptionsPageMock.mockClear();
   isUpdateAvailableMock.mockClear();
@@ -216,7 +208,6 @@ describe("updateDeployments", () => {
 
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     const deployment = deploymentFactory();
 
@@ -236,7 +227,6 @@ describe("updateDeployments", () => {
 
   test("ignore other user extensions", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     const extensionPoint = extensionPointDefinitionFactory();
     const brick = {
@@ -285,7 +275,6 @@ describe("updateDeployments", () => {
 
   test("uninstall existing recipe extension with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     const deployment = deploymentFactory();
 
@@ -323,7 +312,6 @@ describe("updateDeployments", () => {
 
   test("uninstall existing recipe extension with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(true);
 
     const deployment = deploymentFactory();
 
@@ -379,7 +367,10 @@ describe("updateDeployments", () => {
 
   test("opens options page if deployment does not have necessary permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
-    containsPermissionsMock.mockResolvedValue(false);
+    jest.mocked(checkDeploymentPermissions).mockResolvedValueOnce({
+      hasPermissions: false,
+      permissions: emptyPermissionsFactory(),
+    });
 
     const deployment = deploymentFactory();
 

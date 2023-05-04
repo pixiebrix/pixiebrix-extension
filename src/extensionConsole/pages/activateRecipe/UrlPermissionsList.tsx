@@ -18,37 +18,42 @@
 import React, { useMemo } from "react";
 import { isEmpty, uniq } from "lodash";
 import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
-import Loader from "@/components/Loader";
 import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState } from "@/types/sliceTypes";
-import { PermissionsStatus } from "@/permissions/permissionsTypes";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { defaultInitialValue } from "@/utils/asyncStateUtils";
+
+const noRequiredPermissions = {
+  hasPermissions: true,
+  permissionsList: [] as string[],
+};
 
 const UrlPermissionsList: React.FunctionComponent<
   AsyncState<PermissionsStatus>
-> = ({ error, isFetching, data }) => {
-  useReportError(error);
+> = (state) => {
+  useReportError(state.error);
 
-  const permissions = data?.permissions;
+  const { data, error } = defaultInitialValue(
+    useDeriveAsyncState(
+      state,
+      async ({ permissions, hasPermissions }: PermissionsStatus) => ({
+        hasPermissions,
+        // `selectOptionalPermissions` never returns any origins because we request *://*
+        permissionsList: uniq([
+          ...selectOptionalPermissions(permissions.permissions),
+          ...permissions.origins,
+        ]),
+      })
+    ),
+    noRequiredPermissions
+  );
 
-  const permissionsList = useMemo(() => {
-    if (permissions == null) {
-      return [];
-    }
-
-    // `selectOptionalPermissions` never returns any origins because we request *://*
-    return uniq([
-      ...selectOptionalPermissions(permissions.permissions),
-      ...permissions.origins,
-    ]);
-  }, [permissions]);
+  const permissionsList = data?.permissionsList;
 
   const helpText = useMemo(() => {
-    if (isFetching) {
-      return <Loader />;
-    }
-
     if (error) {
       return (
         <p className="text-danger">
@@ -79,7 +84,7 @@ const UrlPermissionsList: React.FunctionComponent<
         granted yet
       </p>
     );
-  }, [permissionsList, data, error, isFetching]);
+  }, [permissionsList, data, error]);
 
   return (
     <>

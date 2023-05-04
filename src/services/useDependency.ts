@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAsyncState } from "@/hooks/common";
-import { useMemo } from "react";
 import { useFormikContext } from "formik";
-import { castArray, compact, head } from "lodash";
+import { castArray, compact, head, omit } from "lodash";
 import serviceRegistry from "@/services/registry";
 import {
   type SanitizedServiceConfiguration,
@@ -29,10 +27,16 @@ import { containsPermissions, services } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { fallbackValue, valueToAsyncState } from "@/utils/asyncStateUtils";
+import useMemoCompare from "@/hooks/useMemoCompare";
+import deepEquals from "fast-deep-equal";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { type Permissions } from "webextension-polyfill";
 
 export type Dependency = {
-  config: SanitizedServiceConfiguration;
-  service: Service;
+  config: SanitizedServiceConfiguration | undefined;
+  service: Service | undefined;
   hasPermissions: boolean;
   requestPermissions: () => void;
 };
@@ -58,7 +62,7 @@ async function lookupDependency(dependency: ServiceDependency) {
   const permissions = { origins };
 
   return {
-    localConfig,
+    config: localConfig,
     service,
     origins,
     permissions,
@@ -66,55 +70,53 @@ async function lookupDependency(dependency: ServiceDependency) {
   };
 }
 
+const lookupFallback = {
+  config: undefined as SanitizedServiceConfiguration,
+  service: undefined as Service,
+  hasPermissions: false,
+  permissions: emptyPermissionsFactory() as Permissions.Permissions,
+};
+
 /**
  * Hook connected to the Formik state to return currently configuration for a given service
  * @param serviceId valid integration ids for providing the service
  */
-function useDependency(
-  serviceId: RegistryId | RegistryId[] | null
-): Dependency | null {
-  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-
+function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
   // Listen for permissions changes
   const permissionsState = useExtensionPermissions();
+  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
 
-  const serviceIds = useMemo(() => compact(castArray(serviceId)), [serviceId]);
-  const dependency: ServiceDependency = useMemo(
-    () => pickDependency(values.services, serviceIds),
-    [serviceIds, values.services]
+  const selected = pickDependency(
+    values.services,
+    compact(castArray(serviceId))
   );
 
-  const [serviceResult] = useAsyncState(async () => {
-    if (dependency?.config) {
-      return lookupDependency(dependency);
-    }
+  const { data } = fallbackValue(
+    useDeriveAsyncState(
+      permissionsState,
+      valueToAsyncState(selected),
+      async (_permissions, dependency: ServiceDependency) => {
+        if (dependency?.config) {
+          return lookupDependency(dependency);
+        }
 
-    throw new Error("No integration dependency selected");
-  }, [dependency?.config, permissionsState?.data]);
-
-  const requestPermissionCallback = useRequestPermissionsCallback(
-    serviceResult?.permissions
+        // No integration dependency selected, use the fallback
+        throw new Error("No dependency selected");
+      }
+    ),
+    lookupFallback
   );
+
+  const requestPermissions = useRequestPermissionsCallback(data.permissions);
 
   // Wrap in use memo so callers don't have to do their own guards
-  return useMemo(() => {
-    if (serviceId == null) {
-      return null;
-    }
-
-    return {
-      config: serviceResult?.localConfig,
-      service: serviceResult?.service,
-      hasPermissions: serviceResult?.hasPermissions,
-      requestPermissions: requestPermissionCallback,
-    };
-  }, [
-    requestPermissionCallback,
-    serviceId,
-    serviceResult?.hasPermissions,
-    serviceResult?.localConfig,
-    serviceResult?.service,
-  ]);
+  return useMemoCompare(
+    {
+      ...omit(data, "permissions", "origins"),
+      requestPermissions,
+    },
+    deepEquals
+  );
 }
 
 export default useDependency;

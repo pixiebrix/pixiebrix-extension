@@ -17,13 +17,15 @@
 
 import { type AsyncState } from "@/types/sliceTypes";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
-import { memoizeUntilSettled } from "@/utils";
 import {
   errorToAsyncState,
   loadingAsyncStateFactory,
   uninitializedAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import { type UUID } from "@/types/stringTypes";
+import { uuidv4 } from "@/types/helpers";
+import deepEquals from "fast-deep-equal";
 
 type Subscribe = (callback: () => void) => () => void;
 const stateControllerMap = new Map<Subscribe, StateController>();
@@ -31,6 +33,7 @@ const stateControllerMap = new Map<Subscribe, StateController>();
 class StateController<T = unknown> {
   private readonly stateListeners = new Set<() => void>();
   private state: AsyncState<T> = uninitializedAsyncStateFactory();
+  private nonce: UUID;
 
   // Methods to pass to useSyncExternalStore
   readonly boundSubscribe: Subscribe;
@@ -40,14 +43,10 @@ class StateController<T = unknown> {
     readonly externalSubscribe: Subscribe,
     readonly factory: () => Promise<T>
   ) {
-    console.debug("StateController:initialize");
     this.boundSubscribe = this.internalSubscribe.bind(this);
     this.boundGetSnapshot = this.getSnapshot.bind(this);
-
-    // Subscribe to the external source and load the initial state
-    const memoizedUpdate = memoizeUntilSettled(this.updateSnapshot.bind(this));
-    externalSubscribe(memoizedUpdate);
-    void memoizedUpdate();
+    externalSubscribe(this.updateSnapshot.bind(this));
+    void this.updateSnapshot();
   }
 
   internalSubscribe(callback: () => void): () => void {
@@ -75,13 +74,31 @@ class StateController<T = unknown> {
           currentData: undefined,
         };
 
+    const nonce = uuidv4();
+    this.nonce = nonce;
+
     // Inform subscribers of loading/fetching state
     this.notifyAll();
 
     try {
       const data = await this.factory();
-      this.state = valueToAsyncState(data);
+
+      if (nonce !== this.nonce) {
+        // Stale response
+        return;
+      }
+
+      // Preserve reference equality if possible
+      const nextData = deepEquals(data, this.state.currentData)
+        ? this.state.currentData
+        : data;
+      this.state = valueToAsyncState(nextData);
     } catch (error) {
+      if (nonce !== this.nonce) {
+        // Stale response
+        return;
+      }
+
       this.state = errorToAsyncState(error);
     }
 
@@ -94,7 +111,16 @@ class StateController<T = unknown> {
 }
 
 /**
- * A version of useSyncExternalStore that returns a standard AsyncState.
+ * Test helper method to reset the state of all useAsyncExternalStore hooks.
+ */
+export function INTERNAL_reset(): void {
+  stateControllerMap.clear();
+}
+
+/**
+ * A version of useSyncExternalStore that accepts an async snapshot function and returns an AsyncState.
+ * @param subscribe see docs for useSyncExternalStore
+ * @param factory an async function that returns the current snapshot of the external store
  * @see useSyncExternalStore
  * @see useAsyncState
  */

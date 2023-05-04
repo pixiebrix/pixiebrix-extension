@@ -32,25 +32,17 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
-import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
-jest.mock("@/recipes/recipePermissionsHelpers", () => ({
-  __esModule: true,
-  ensureRecipePermissionsFromUserGesture: jest.fn(),
-}));
+jest.mocked(checkRecipePermissions).mockResolvedValue({
+  hasPermissions: false,
+  // The exact permissions don't matter because hasPermissions is false
+  permissions: emptyPermissionsFactory(),
+});
 
-const ensurePermissionsMock =
-  ensureRecipePermissionsFromUserGesture as jest.MockedFunction<
-    typeof ensureRecipePermissionsFromUserGesture
-  >;
-
-const uninstallRecipeMock = uninstallRecipe as jest.MockedFunction<
-  typeof uninstallRecipe
->;
-
-const reactivateEveryTabMock = reactivateEveryTab as jest.MockedFunction<
-  typeof reactivateEveryTab
->;
+const uninstallRecipeMock = jest.mocked(uninstallRecipe);
+const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 function setupInputs(): {
   formValues: WizardValues;
@@ -101,8 +93,7 @@ function setupInputs(): {
 describe("useActivateRecipe", () => {
   it("returns error if permissions are not granted", async () => {
     const { formValues, recipe } = setupInputs();
-
-    ensurePermissionsMock.mockResolvedValue(false);
+    jest.mocked(browser.permissions.request).mockResolvedValueOnce(false);
 
     const {
       result: { current: activateRecipe },
@@ -127,8 +118,7 @@ describe("useActivateRecipe", () => {
 
   it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, recipe } = setupInputs();
-
-    ensurePermissionsMock.mockResolvedValue(true);
+    jest.mocked(browser.permissions.request).mockResolvedValueOnce(true);
 
     const {
       result: { current: activateRecipe },
