@@ -20,7 +20,6 @@ import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
 import {
   loadingAsyncStateFactory,
-  uninitializedAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 import { setPermissions } from "@/testUtils/permissionsMock";
