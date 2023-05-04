@@ -115,6 +115,7 @@ function selectExtension(
   const { extension } = state;
   const config: ContextMenuConfig = {
     title: extension.title,
+    onSuccess: extension.onSuccess,
     action: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
