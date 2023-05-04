@@ -19,6 +19,7 @@ import { renderHook, act } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
 import {
+  loadingAsyncStateFactory,
   uninitializedAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
@@ -54,7 +55,7 @@ describe("useExtensionPermissions", () => {
   test("reads manifest", async () => {
     mockOrigins();
     const { result } = renderHook(useExtensionPermissions);
-    expect(result.current).toEqual(uninitializedAsyncStateFactory());
+    expect(result.current).toEqual(loadingAsyncStateFactory());
     await act(async () => {});
     expect(result.current).toEqual(
       valueToAsyncState([

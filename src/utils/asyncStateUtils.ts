@@ -176,11 +176,11 @@ export function fallbackValue<Value, State extends AsyncState<Value>>(
  */
 export function uninitializedAsyncStateFactory<Value>(): AsyncState<Value> {
   return {
+    isUninitialized: true,
     currentData: undefined,
     data: undefined,
-    isUninitialized: false,
-    isLoading: true,
-    isFetching: true,
+    isLoading: false,
+    isFetching: false,
     isError: false,
     isSuccess: false,
     error: undefined,
@@ -229,14 +229,14 @@ export function valueToAsyncState<Value>(
  */
 export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
   return {
+    isError: true,
+    error,
     data: undefined,
     currentData: undefined,
     isUninitialized: false,
     isLoading: false,
     isFetching: false,
-    isError: true,
     isSuccess: false,
-    error,
   };
 }
 
