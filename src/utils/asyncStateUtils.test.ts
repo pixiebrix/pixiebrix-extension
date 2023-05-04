@@ -18,6 +18,7 @@
 import {
   checkAsyncStateInvariants,
   errorToAsyncState,
+  fallbackValue,
   loadingAsyncStateFactory,
   mergeAsyncState,
   uninitializedAsyncStateFactory,
@@ -114,6 +115,25 @@ describe("asyncStateUtils", () => {
     expect(() => {
       checkAsyncStateInvariants(errorToAsyncState(new Error("error")));
     }).not.toThrow();
+  });
+
+  it("generates valid fallback for error state", () => {
+    const state = fallbackValue(
+      errorToAsyncState<number>(new Error("error")),
+      42
+    );
+    expect(() => {
+      checkAsyncStateInvariants(state);
+    }).not.toThrow();
+    expect(state.data).toEqual(42);
+  });
+
+  it("generates valid fallback for loading state", () => {
+    const state = fallbackValue(loadingAsyncStateFactory<number>(), 42);
+    expect(() => {
+      checkAsyncStateInvariants(state);
+    }).not.toThrow();
+    expect(state.data).toEqual(42);
   });
 
   it("generates valid loading state", () => {

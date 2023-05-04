@@ -129,6 +129,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
  * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic defaults
  * @param state the async state
  * @param initialValue the value to use if the state is uninitialized or loading
+ * @see fallbackValue
  */
 export function defaultInitialValue<Value, State extends AsyncState<Value>>(
   state: State,
@@ -148,10 +149,11 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
 }
 
 /**
- * Helper function that transforms AsyncState to provide a default value. Used to provide optimistic defaults for
+ * Helper function that transforms AsyncState to provide a fallback value. Used to provide optimistic defaults for
  * loading and error states.
  * @param state the async state
  * @param fallbackValue the value to use if the state is uninitialized or loading
+ * @see defaultInitialValue
  */
 export function fallbackValue<Value, State extends AsyncState<Value>>(
   state: State,
@@ -159,12 +161,11 @@ export function fallbackValue<Value, State extends AsyncState<Value>>(
 ): State {
   if (state.isUninitialized || state.isLoading || state.isError) {
     return {
+      // Spread state to get any other inherited properties, e.g., refetch
       ...state,
-      isUninitialized: false,
-      isLoading: false,
-      isSuccess: true,
-      data: fallbackValue,
-      currentData: fallbackValue,
+      ...valueToAsyncState(fallbackValue),
+      isFetching: state.isFetching,
+      currentData: state.isFetching ? undefined : fallbackValue,
     };
   }
 
