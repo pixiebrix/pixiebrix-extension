@@ -51,6 +51,7 @@ jest.mock("@/recipes/recipesHooks", () => ({
 }));
 
 const useRequiredRecipeMock = jest.mocked(useRequiredRecipe);
+const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(),
@@ -164,6 +165,11 @@ beforeEach(() => {
     isConfigured: false,
   });
 
+  checkRecipePermissionsMock.mockResolvedValue({
+    hasPermissions: true,
+    permissions: {},
+  });
+
   jest
     .mocked(api.useGetServiceAuthsQuery)
     .mockReturnValue(querySuccessFactory([]));
@@ -171,7 +177,7 @@ beforeEach(() => {
 
 describe("ActivateRecipePanel", () => {
   test("it renders with options, permissions info", async () => {
-    jest.mocked(checkRecipePermissions).mockResolvedValueOnce({
+    jest.mocked(checkRecipePermissions).mockResolvedValue({
       hasPermissions: false,
       permissions: { origins: ["https://newurl.com"] },
     });
