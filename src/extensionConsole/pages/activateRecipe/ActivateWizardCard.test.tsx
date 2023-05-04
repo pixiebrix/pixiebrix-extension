@@ -30,7 +30,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 registerDefaultWidgets();
 
