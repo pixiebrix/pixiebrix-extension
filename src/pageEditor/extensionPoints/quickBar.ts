@@ -22,93 +22,97 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  cleanIsAvailable,
   extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import {
-  type PanelDefinition,
-  type SidebarConfig,
-  SidebarExtensionPoint,
-} from "@/extensionPoints/sidebarExtension";
-import { getDomain } from "@/permissions/patterns";
-import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
+  type ElementConfig,
+  type SingleLayerReaderConfig,
+} from "@/pageEditor/extensionPoints/elementConfig";
+import {
+  type QuickBarConfig,
+  type QuickBarDefinition,
+  QuickBarExtensionPoint,
+} from "@/extensionPoints/quickBarExtension";
+import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import { type SidebarFormState } from "./formStateTypes";
+import { type QuickBarFormState } from "./formStateTypes";
 
-function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
+function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
 
-  const heading = `${getDomain(url)} side panel`;
+  const isAvailable = makeIsAvailable(url);
+
+  const title = "Quick Bar item";
 
   return {
-    type: "actionPanel",
-    label: heading,
+    type: "quickBar",
+    // To simplify the interface, this is kept in sync with the caption
+    label: title,
     ...base,
     extensionPoint: {
       metadata,
-
       definition: {
-        type: "actionPanel",
-        isAvailable: makeIsAvailable(url),
-        reader: getImplicitReader("actionPanel"),
-
-        trigger: "load",
-
-        debounce: {
-          waitMillis: 250,
-          leading: false,
-          trailing: true,
-        },
-
-        customEvent: null,
+        type: "quickBar",
+        reader: getImplicitReader("quickBar"),
+        documentUrlPatterns: isAvailable.matchPatterns,
+        contexts: ["all"],
+        targetMode: "eventTarget",
+        defaultOptions: {},
+        isAvailable,
       },
     },
     extension: {
-      heading,
+      title,
       blockPipeline: [],
     },
   };
 }
 
 function selectExtensionPointConfig(
-  formState: SidebarFormState
-): ExtensionPointConfig {
+  formState: QuickBarFormState
+): ExtensionPointConfig<QuickBarDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, reader, trigger, debounce, customEvent },
+    definition: {
+      isAvailable,
+      documentUrlPatterns,
+      reader,
+      targetMode,
+      contexts = ["all"],
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "actionPanel",
+      type: "quickBar",
+      documentUrlPatterns,
+      contexts,
+      targetMode,
       reader,
-      isAvailable,
-      trigger,
-      debounce,
-      customEvent,
+      isAvailable: cleanIsAvailable(isAvailable),
     },
   });
 }
 
 function selectExtension(
-  state: SidebarFormState,
+  state: QuickBarFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<SidebarConfig> {
+): IExtension<QuickBarConfig> {
   const { extension } = state;
-  const config: SidebarConfig = {
-    heading: extension.heading,
-    body: options.includeInstanceIds
+  const config: QuickBarConfig = {
+    title: extension.title,
+    icon: extension.icon,
+    action: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
   };
@@ -118,35 +122,23 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: SidebarFormState): DynamicDefinition {
-  return {
-    type: "actionPanel",
-    extension: selectExtension(element, { includeInstanceIds: true }),
-    extensionPointConfig: selectExtensionPointConfig(element),
-  };
-}
-
 async function fromExtension(
-  config: IExtension<SidebarConfig>
-): Promise<SidebarFormState> {
+  config: IExtension<QuickBarConfig>
+): Promise<QuickBarFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    PanelDefinition,
-    SidebarConfig,
-    "actionPanel"
-  >(config, "actionPanel");
+    QuickBarDefinition,
+    QuickBarConfig,
+    "quickBar"
+  >(config, "quickBar");
+
+  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
+    extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "body"
+    "action"
   );
-
-  const {
-    trigger = "load",
-    debounce,
-    customEvent,
-    reader,
-  } = extensionPoint.definition;
 
   return {
     ...base,
@@ -156,43 +148,40 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        ...extensionPoint.definition,
-        trigger,
-        debounce,
-        customEvent,
-        reader: readerTypeHack(reader),
+        type: "quickBar",
+        documentUrlPatterns,
+        defaultOptions,
+        targetMode,
+        contexts,
+        // See comment on SingleLayerReaderConfig
+        reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };
 }
 
-const config: ElementConfig<never, SidebarFormState> = {
-  displayOrder: 3,
-  elementType: "actionPanel",
-  label: "Sidebar Panel",
-  baseClass: SidebarExtensionPoint,
+function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
+  return {
+    type: "quickBar",
+    extension: selectExtension(element, { includeInstanceIds: true }),
+    extensionPointConfig: selectExtensionPointConfig(element),
+  };
+}
+
+const config: ElementConfig<undefined, QuickBarFormState> = {
+  displayOrder: 1,
+  elementType: "quickBar",
+  label: "Quick Bar Action",
+  baseClass: QuickBarExtensionPoint,
+  EditorNode: QuickBarConfiguration,
   selectNativeElement: undefined,
-  icon: faColumns,
+  icon: faThLarge,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  EditorNode: SidebarConfiguration,
-  InsertModeHelpText: () => (
-    <div>
-      <p>
-        A sidebar panel can be configured to appear in the PixieBrix sidebar on
-        pages you choose.
-      </p>
-
-      <p>
-        Search for an existing sidebar panel in the marketplace, or start from
-        scratch to have full control over when the panel appears.
-      </p>
-    </div>
-  ),
 };
 
 export default config;

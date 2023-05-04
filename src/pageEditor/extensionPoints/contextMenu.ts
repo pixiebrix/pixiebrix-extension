@@ -42,7 +42,6 @@ import {
   type ElementConfig,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
@@ -185,19 +184,6 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  InsertModeHelpText: () => (
-    <div>
-      <p>
-        A context menu (also called a right-click menu) can be configured to
-        appear when you right click on a page, text selection, or other content.
-      </p>
-
-      <p>
-        Search for an existing context menu in the marketplace, or start from
-        scratch to have full control over how your context menu appears.
-      </p>
-    </div>
-  ),
 };
 
 export default config;

@@ -223,9 +223,4 @@ export interface ElementConfig<
    * @see extensionWithInnerDefinitions
    */
   readonly selectExtension: (element: TState) => IExtension;
-
-  /**
-   * Help text to show in the generic insertion-mode pane
-   */
-  readonly InsertModeHelpText?: React.VoidFunctionComponent;
 }
