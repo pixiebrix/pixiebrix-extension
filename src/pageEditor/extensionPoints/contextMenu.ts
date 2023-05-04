@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -76,6 +75,7 @@ function fromNativeElement(
     },
     extension: {
       title,
+      onSuccess: true,
       blockPipeline: [],
     },
   };
