@@ -16,36 +16,42 @@
  */
 
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router";
 import { Col, Row } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import useFetch from "@/hooks/useFetch";
-import { type CloudExtension } from "@/types/contract";
 import Page from "@/layout/Page";
 import ActivateForm from "@/extensionConsole/pages/activateExtension/ActivateForm";
 import { useAuthOptions } from "@/hooks/auth";
+import { useGetCloudExtensionQuery } from "@/services/api";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * Page for activating an extension that's stored in the cloud.
  */
-const ActivatePage: React.FunctionComponent = () => {
-  const { extensionId } = useParams<{ extensionId: string }>();
+const ActivateExtensionPage: React.FunctionComponent = () => {
+  const { extensionId } = useParams<{ extensionId: UUID }>();
 
+  // Force-refetch the latest data for this extension before activation
   const {
     data: extension,
-    isLoading,
+    isFetching,
     error,
-  } = useFetch<CloudExtension>(`/api/extensions/${extensionId}/`);
+  } = useGetCloudExtensionQuery(
+    { extensionId },
+    { refetchOnMountOrArgChange: true }
+  );
 
   const { data: authOptions, refetch: refreshAuthOptions } = useAuthOptions();
+
+  useEffect(() => {}, []);
 
   return (
     <Page
       title="Activate Mod"
       icon={faCloudDownloadAlt}
       error={error}
-      isPending={isLoading || authOptions == null}
+      isPending={isFetching || authOptions == null}
     >
       <Row>
         <Col xs={12} xl={10}>
@@ -64,4 +70,4 @@ const ActivatePage: React.FunctionComponent = () => {
   );
 };
 
-export default ActivatePage;
+export default ActivateExtensionPage;

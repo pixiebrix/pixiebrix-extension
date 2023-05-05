@@ -32,19 +32,28 @@ export type ActivateResult = {
   error?: string;
 };
 
-type ActivateRecipeFormCallback = (
-  formValues: WizardValues,
-  recipe: RecipeDefinition
-) => Promise<ActivateResult>;
+type ActivateRecipeFormCallback =
+  /**
+   * Callback for activating a recipe.
+   *
+   * @param {WizardValues} formValues - The form values for recipe configuration options
+   * @param {RecipeDefinition} recipe - The recipe definition to install
+   * @returns {Promise<ActivateResult>} a promise that resolves to an ActivateResult
+   */
+  (
+    formValues: WizardValues,
+    recipe: RecipeDefinition
+  ) => Promise<ActivateResult>;
 
 /**
- * React hook to install a recipe, suitable for using as a Formik `onSubmit` handler.
+ * React hook to install a recipe.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
  *
- * @see useExtensionConsoleInstall
+ * @returns {ActivateRecipeFormCallback} - A callback that can be used to activate a recipe
+ * @see useWizard
  */
-function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
+function useActivateRecipe(): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 
@@ -104,4 +113,4 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
   );
 }
 
-export default useMarketplaceActivateRecipe;
+export default useActivateRecipe;

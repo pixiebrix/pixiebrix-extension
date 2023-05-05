@@ -34,7 +34,7 @@ import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs"
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
-import useMarketplaceActivateRecipe from "@/sidebar/activateRecipe/useMarketplaceActivateRecipe";
+import useActivateRecipe from "@/activation/useActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useWizard from "@/activation/useWizard";
@@ -180,7 +180,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   defaultAuthOptions,
 }) => {
   const reduxDispatch = useDispatch();
-  const marketplaceActivateRecipe = useMarketplaceActivateRecipe();
+  const marketplaceActivateRecipe = useActivateRecipe();
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,

@@ -193,9 +193,9 @@ export type CloudExtension<Config extends UnknownObject = JsonObject> = Except<
 };
 
 /**
- * `/api/recipes/${blueprintId}`
+ * `/api/recipes/${recipeId}`
  */
-export type BlueprintResponse = {
+export type RecipeResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedRecipeDefinition;
   sharing: RecipeDefinition["sharing"];

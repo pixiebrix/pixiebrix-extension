@@ -23,7 +23,7 @@ import {
 } from "@/testUtils/factories";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
-import useMarketplaceActivateRecipe from "./useMarketplaceActivateRecipe";
+import useActivateRecipe from "./useActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type MenuDefinition } from "@/extensionPoints/contextMenu";
@@ -106,7 +106,7 @@ describe("useActivateRecipe", () => {
     const {
       result: { current: activateRecipe },
       getReduxStore,
-    } = renderHook(() => useMarketplaceActivateRecipe(), {
+    } = renderHook(() => useActivateRecipe(), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },
@@ -133,7 +133,7 @@ describe("useActivateRecipe", () => {
       result: { current: activateRecipe },
       getReduxStore,
       act,
-    } = renderHook(() => useMarketplaceActivateRecipe(), {
+    } = renderHook(() => useActivateRecipe(), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },

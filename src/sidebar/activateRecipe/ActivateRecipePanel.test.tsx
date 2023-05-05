@@ -138,7 +138,7 @@ jest.mock("@/hooks/useQuickbarShortcut", () => ({
   default: jest.fn(),
 }));
 
-jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
+jest.mock("@/activation/useActivateRecipe", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));

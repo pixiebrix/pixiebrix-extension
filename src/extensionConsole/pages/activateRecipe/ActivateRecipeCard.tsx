@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ActivateWizardCard.module.scss";
+import styles from "./ActivateRecipeCard.module.scss";
 
 import React from "react";
-import { type RecipeDefinition } from "@/types/recipeTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Col, Form, Row } from "react-bootstrap";
 import { truncate } from "lodash";
@@ -28,65 +27,33 @@ import { useTitle } from "@/hooks/title";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
 import useWizard from "@/activation/useWizard";
 import ActivateButton from "@/extensionConsole/pages/activateRecipe/ActivateButton";
-import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
 import { persistor } from "@/store/optionsStore";
+import { useSelector } from "react-redux";
+import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
+import { useRecipeIdParam } from "@/extensionConsole/pages/pageHelpers";
+import { useGetRecipeQuery } from "@/services/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCubes } from "@fortawesome/free-solid-svg-icons";
 
-interface OwnProps {
-  blueprint: RecipeDefinition;
-  isReinstall: boolean;
-}
-
-const ActivateHeader: React.FunctionComponent<{
-  blueprint: RecipeDefinition;
-}> = ({ blueprint }) => {
-  const { installableViewItems } = useInstallableViewItems([blueprint]);
-
-  const installableViewItem = installableViewItems[0];
-
-  return (
-    <Card.Header className={styles.wizardHeader}>
-      <Row>
-        <Col>
-          <div className={styles.wizardHeaderLayout}>
-            <div className={styles.wizardMainInfo}>
-              <span className={styles.blueprintIcon}>
-                {installableViewItem.icon}
-              </span>
-              <span>
-                <Card.Title>{installableViewItem.name}</Card.Title>
-                <code className={styles.packageId}>
-                  {installableViewItem.sharing.packageId}
-                </code>
-              </span>
-            </div>
-            <div className={styles.wizardDescription}>
-              {installableViewItem.description}
-            </div>
-          </div>
-          <div className={styles.activateButtonContainer}>
-            <ActivateButton blueprint={blueprint} />
-          </div>
-        </Col>
-      </Row>
-    </Card.Header>
+const ActivateRecipeCard: React.FC = () => {
+  const recipeId = useRecipeIdParam();
+  const isReinstall = useSelector(
+    selectRecipeHasAnyExtensionsInstalled(recipeId)
   );
-};
+  const actionText = isReinstall ? "Reactivate" : "Activate";
+  // Page parent component is gating this content component on isFetching, so
+  // recipe will always be resolved here
+  const { data: recipe } = useGetRecipeQuery({ recipeId }, { skip: !recipeId });
 
-const ActivateWizardCard: React.FunctionComponent<OwnProps> = ({
-  blueprint,
-  isReinstall,
-}) => {
-  const [blueprintSteps, initialValues, validationSchema] =
-    useWizard(blueprint);
+  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
 
-  const install = useExtensionConsoleInstall(blueprint);
+  const install = useExtensionConsoleInstall(recipe);
 
-  const action = isReinstall ? "Reactivate" : "Activate";
-  useTitle(`${action} ${truncate(blueprint.metadata.name, { length: 15 })}`);
+  useTitle(`${actionText} ${truncate(recipe.metadata.name, { length: 15 })}`);
 
   const reduxPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
@@ -105,14 +72,38 @@ const ActivateWizardCard: React.FunctionComponent<OwnProps> = ({
           <Form id="activate-wizard" onSubmit={handleSubmit}>
             <BlockFormSubmissionViaEnterIfFirstChild />
             <Card>
-              <ActivateHeader blueprint={blueprint} />
+              <Card.Header className={styles.wizardHeader}>
+                <Row>
+                  <Col>
+                    <div className={styles.wizardHeaderLayout}>
+                      <div className={styles.wizardMainInfo}>
+                        <span className={styles.blueprintIcon}>
+                          <FontAwesomeIcon icon={faCubes} size="2x" />
+                        </span>
+                        <span>
+                          <Card.Title>{recipe.metadata.name}</Card.Title>
+                          <code className={styles.packageId}>
+                            {recipe.metadata.id}
+                          </code>
+                        </span>
+                      </div>
+                      <div className={styles.wizardDescription}>
+                        {recipe.metadata.description}
+                      </div>
+                    </div>
+                    <div className={styles.activateButtonContainer}>
+                      <ActivateButton blueprint={recipe} />
+                    </div>
+                  </Col>
+                </Row>
+              </Card.Header>
               <Card.Body className={styles.wizardBody}>
-                {blueprintSteps.map(({ Component, label, key }) => (
+                {wizardSteps.map(({ Component, label, key }) => (
                   <div key={key} className={styles.wizardBodyRow}>
                     <div>
                       <h4>{label}</h4>
                     </div>
-                    <Component blueprint={blueprint} reinstall={isReinstall} />
+                    <Component blueprint={recipe} reinstall={isReinstall} />
                   </div>
                 ))}
               </Card.Body>
@@ -124,4 +115,4 @@ const ActivateWizardCard: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-export default ActivateWizardCard;
+export default ActivateRecipeCard;

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/extensionConsole/pages/activateRecipe/ActivateWizardCard.module.scss";
+import styles from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard.module.scss";
 
 import React, { useCallback, useMemo } from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { type CloudExtension } from "@/types/contract";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, Formik, type FormikProps } from "formik";
+import { Form, Formik, type FormikProps, useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
@@ -31,36 +31,30 @@ import PermissionsRow from "@/extensionConsole/pages/activateExtension/Permissio
 import extensionsSlice from "@/store/extensionsSlice";
 import { type UUID } from "@/types/stringTypes";
 import { Card, Col, Row } from "react-bootstrap";
-import ActivateButton from "@/extensionConsole/pages/activateExtension/ActivateButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faMagic } from "@fortawesome/free-solid-svg-icons";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import AsyncButton from "@/components/AsyncButton";
 
 const { actions } = extensionsSlice;
 
-const ActivateHeader: React.FunctionComponent<{
-  extension: CloudExtension;
-}> = ({ extension }) => (
-  <Card.Header className={styles.wizardHeader}>
-    <Row>
-      <Col>
-        <div className={styles.wizardHeaderLayout}>
-          <div className={styles.wizardMainInfo}>
-            <span className={styles.blueprintIcon}>
-              <FontAwesomeIcon icon={faCube} />
-            </span>
-            <Card.Title>{extension.label}</Card.Title>
-          </div>
-          <div className={styles.wizardDescription}>
-            Created in the Page Editor
-          </div>
-        </div>
-        <div className={styles.activateButtonContainer}>
-          <ActivateButton />
-        </div>
-      </Col>
-    </Row>
-  </Card.Header>
-);
+const ActivateButton: React.FunctionComponent = () => {
+  const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
+
+  const anyUnconfigured = values.services.some(
+    ({ id, config }) => id !== PIXIEBRIX_SERVICE_ID && config == null
+  );
+
+  return (
+    <AsyncButton
+      variant="primary"
+      onClick={submitForm}
+      disabled={anyUnconfigured || isSubmitting}
+    >
+      <FontAwesomeIcon icon={faMagic} /> Activate
+    </AsyncButton>
+  );
+};
 
 const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;
@@ -103,7 +97,26 @@ const ActivateForm: React.FunctionComponent<{
       {() => (
         <Form id="activate-wizard" noValidate>
           <Card>
-            <ActivateHeader extension={extension} />
+            <Card.Header className={styles.wizardHeader}>
+              <Row>
+                <Col>
+                  <div className={styles.wizardHeaderLayout}>
+                    <div className={styles.wizardMainInfo}>
+                      <span className={styles.blueprintIcon}>
+                        <FontAwesomeIcon icon={faCube} />
+                      </span>
+                      <Card.Title>{extension.label}</Card.Title>
+                    </div>
+                    <div className={styles.wizardDescription}>
+                      Created in the Page Editor
+                    </div>
+                  </div>
+                  <div className={styles.activateButtonContainer}>
+                    <ActivateButton />
+                  </div>
+                </Col>
+              </Row>
+            </Card.Header>
             <Card.Body>
               <ServicesRow
                 authOptions={authOptions}
