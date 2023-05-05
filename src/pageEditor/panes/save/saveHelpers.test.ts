@@ -61,7 +61,7 @@ import {
   type UnsavedRecipeDefinition,
 } from "@/types/recipeTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
-import { EditablePackage } from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/telemetry/events");
