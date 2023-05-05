@@ -36,7 +36,7 @@ import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { fetch } from "@/hooks/fetch";
-import { type Brick } from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
 import { type ReferenceEntry } from "./brickEditorTypes";
@@ -74,7 +74,7 @@ interface OwnProps {
 
 function useOpenEditorTab() {
   return useCallback(async (id: string) => {
-    const available = await fetch<Brick[]>("/api/bricks/");
+    const available = await fetch<EditablePackage[]>("/api/bricks/");
     const brick = available.find((x) => x.name === id);
     if (brick) {
       console.debug("Open editor for brick: %s", id, { brick });

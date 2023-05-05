@@ -55,15 +55,13 @@ import {
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  type EditablePackage,
-  type InnerDefinitionRef,
-} from "@/types/registryTypes";
+import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
   type OptionsDefinition,
   type UnsavedRecipeDefinition,
 } from "@/types/recipeTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { EditablePackage } from "@/types/contract";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/telemetry/events");

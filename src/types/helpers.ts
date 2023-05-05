@@ -56,7 +56,7 @@ export function validateUUID(uuid: unknown): UUID {
 }
 
 export function isRegistryId(id: string): id is RegistryId {
-  return PACKAGE_REGEX.test(id);
+  return id != null && PACKAGE_REGEX.test(id);
 }
 
 export function validateRegistryId(id: string): RegistryId {

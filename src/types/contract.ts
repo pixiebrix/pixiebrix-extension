@@ -167,8 +167,18 @@ export type Deployment = Except<
   };
 };
 
-export type Brick = components["schemas"]["PackageMeta"] & {
+/**
+ * An editable package in the registry.
+ */
+export type EditablePackage = components["schemas"]["PackageMeta"] & {
+  id: UUID;
+
+  name: RegistryId;
+
   kind: Kind;
+
+  // Nominal typing to help distinguish from registry Metadata
+  _editableBrickBrand: never;
 };
 
 export type RegistryPackage = Pick<

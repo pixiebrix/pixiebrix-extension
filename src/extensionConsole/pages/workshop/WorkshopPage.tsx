@@ -27,13 +27,13 @@ import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
-import { type Brick } from "@/types/contract";
-import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
-import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
+import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { useGetEditablePackagesQuery } from "@/services/api";
+import { type EditablePackage } from "@/types/contract";
 
 const { actions } = workshopSlice;
 
@@ -45,12 +45,10 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-function useEnrichBricks(bricks: Brick[]): EnrichedBrick[] {
+function useEnrichBricks(bricks: EditablePackage[]): EnrichedPackage[] {
   const recent = useSelector(selectRecent);
 
   return useMemo(() => {
-    console.debug("Recent bricks", { recent });
-
     return orderBy(
       (bricks ?? []).map((brick) => {
         const match = PACKAGE_NAME_REGEX.exec(brick.name);
@@ -68,7 +66,7 @@ function useEnrichBricks(bricks: Brick[]): EnrichedBrick[] {
   }, [recent, bricks]);
 }
 
-function useSearchOptions(bricks: EnrichedBrick[]) {
+function useSearchOptions(bricks: EnrichedPackage[]) {
   const scopeOptions = useMemo(
     () =>
       sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
@@ -108,23 +106,27 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 }) => {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
+
   const {
     data: remoteBricks,
     isLoading,
     error,
-  } = useFetch<Brick[]>("/api/bricks/");
+  } = useGetEditablePackagesQuery();
+
   const {
     scopes = [],
     collections = [],
     kinds = [],
   } = useSelector(selectFilters);
+
   const bricks = useEnrichBricks(remoteBricks);
+
   const { scopeOptions, kindOptions, collectionOptions } =
     useSearchOptions(bricks);
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
-  const fuse: Fuse<EnrichedBrick> = useMemo(
+  const fuse: Fuse<EnrichedPackage> = useMemo(
     () =>
       new Fuse(bricks, {
         keys: ["verbose_name", "name"],

@@ -25,23 +25,26 @@ import ActivateWizardCard from "@/extensionConsole/pages/activateRecipe/Activate
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useFetch from "@/hooks/useFetch";
-import { type BlueprintResponse } from "@/types/contract";
 import { pick } from "lodash";
 import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegistry";
 import useActivateUrl from "@/extensionConsole/pages/activateRecipe/useActivateUrl";
+import { useGetRecipeQuery } from "@/services/api";
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {
   const { blueprintId, isReinstall } = useActivateUrl();
 
-  // Don't use RTK Query here. Always want the latest version of the blueprint. Otherwise, if the user had their
-  // Extension Console open for a while, they may get the older version when they go to re-activate.
-  // NOTE: the endpoint will return a 404 if an invalid registry was passed via URL
   const {
     data: remoteBlueprint,
     isLoading: fetchingBlueprint,
     error: fetchError,
-  } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}/`);
+  } = useGetRecipeQuery(
+    { id: blueprintId },
+    {
+      // Always want the latest version of the blueprint. Otherwise, if the user had their Extension Console open for a
+      // while, they may get the older version when they go to re-activate.
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   // Reshape to recipe definition
   const recipeDefinition: RecipeDefinition | null = useMemo(() => {
