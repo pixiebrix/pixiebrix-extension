@@ -31,16 +31,20 @@ import {
   type ExtensionPointConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray, cloneDeep, compact, isEmpty, uniq } from "lodash";
+import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
   ensureContextMenu,
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
-import { isErrorObject } from "@/errors/errorHelpers";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import notify from "@/utils/notify";
+import notify, {
+  DEFAULT_ACTION_RESULTS,
+  type MessageConfig,
+  showNotification,
+} from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
@@ -56,7 +60,7 @@ import {
   contextMenuReaderShim,
 } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
@@ -68,8 +72,21 @@ export type ContextMenuTargetMode =
   "legacy" | "document" | "eventTarget";
 
 export type ContextMenuConfig = {
+  /**
+   * The title of the context menu item.
+   */
   title: string;
+
+  /**
+   * Action to perform on click.
+   */
   action: BlockConfig | BlockPipeline;
+
+  /**
+   * (Experimental) message to show on success when running the extension
+   * @since 1.7.27
+   */
+  onSuccess?: MessageConfig | boolean;
 };
 
 /**
@@ -284,7 +301,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   private async registerExtension(
     extension: ResolvedExtension<ContextMenuConfig>
   ): Promise<void> {
-    const { action: actionConfig } = extension.config;
+    const { action: actionConfig, onSuccess = {} } = extension.config;
 
     await this.ensureMenu(extension);
 
@@ -330,15 +347,24 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
-      } catch (error) {
-        if (isErrorObject(error)) {
-          reportError(error);
-          extensionLogger.error(error);
-        } else {
-          extensionLogger.warn(error as any);
-        }
 
-        throw error;
+        if (onSuccess) {
+          if (typeof onSuccess === "boolean" && onSuccess) {
+            showNotification(DEFAULT_ACTION_RESULTS.success);
+          } else {
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.success,
+              ...pick(onSuccess, "message", "type"),
+            });
+          }
+        }
+      } catch (error) {
+        if (hasSpecificErrorCause(error, CancelError)) {
+          showNotification(DEFAULT_ACTION_RESULTS.cancel);
+        } else {
+          extensionLogger.error(error);
+          showNotification(DEFAULT_ACTION_RESULTS.error);
+        }
       }
     });
   }

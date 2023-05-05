@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -42,7 +41,6 @@ import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
@@ -209,19 +207,6 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  InsertModeHelpText: () => (
-    <div>
-      <p>
-        A trigger panel can be configured to run an action on page load, when an
-        first element appears, or on user interactions (e.g., click, hover,
-        etc.)
-      </p>
-      <p>
-        Search for an existing trigger in the marketplace, or start from scratch
-        to have full control over when the trigger runs.
-      </p>
-    </div>
-  ),
 };
 
 export default config;

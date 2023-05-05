@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -31,43 +30,39 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
+import { omitEditorMetadata } from "./pipelineMapping";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import {
-  type ContextMenuConfig,
-  ContextMenuExtensionPoint,
-  type MenuDefinition,
-} from "@/extensionPoints/contextMenu";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
-import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
+import {
+  type QuickBarConfig,
+  type QuickBarDefinition,
+  QuickBarExtensionPoint,
+} from "@/extensionPoints/quickBarExtension";
+import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import { type ContextMenuFormState } from "./formStateTypes";
-import { omitEditorMetadata } from "./pipelineMapping";
+import { type QuickBarFormState } from "./formStateTypes";
 
-function fromNativeElement(
-  url: string,
-  metadata: Metadata
-): ContextMenuFormState {
+function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
 
   const isAvailable = makeIsAvailable(url);
 
-  const title = "Context menu item";
+  const title = "Quick Bar item";
 
   return {
-    type: "contextMenu",
+    type: "quickBar",
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
     extensionPoint: {
       metadata,
       definition: {
-        type: "contextMenu",
-        reader: getImplicitReader("contextMenu"),
+        type: "quickBar",
+        reader: getImplicitReader("quickBar"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         targetMode: "eventTarget",
@@ -83,8 +78,8 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: ContextMenuFormState
-): ExtensionPointConfig<MenuDefinition> {
+  formState: QuickBarFormState
+): ExtensionPointConfig<QuickBarDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -98,7 +93,7 @@ function selectExtensionPointConfig(
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "contextMenu",
+      type: "quickBar",
       documentUrlPatterns,
       contexts,
       targetMode,
@@ -109,12 +104,13 @@ function selectExtensionPointConfig(
 }
 
 function selectExtension(
-  state: ContextMenuFormState,
+  state: QuickBarFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<ContextMenuConfig> {
+): IExtension<QuickBarConfig> {
   const { extension } = state;
-  const config: ContextMenuConfig = {
+  const config: QuickBarConfig = {
     title: extension.title,
+    icon: extension.icon,
     action: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
@@ -126,13 +122,14 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: IExtension<ContextMenuConfig>
-): Promise<ContextMenuFormState> {
+  config: IExtension<QuickBarConfig>
+): Promise<QuickBarFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    MenuDefinition,
-    ContextMenuConfig,
-    "contextMenu"
-  >(config, "contextMenu");
+    QuickBarDefinition,
+    QuickBarConfig,
+    "quickBar"
+  >(config, "quickBar");
+
   const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
     extensionPoint.definition;
 
@@ -150,7 +147,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        type: "contextMenu",
+        type: "quickBar",
         documentUrlPatterns,
         defaultOptions,
         targetMode,
@@ -163,40 +160,27 @@ async function fromExtension(
   };
 }
 
-function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
+function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   return {
-    type: "contextMenu",
+    type: "quickBar",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
-const config: ElementConfig<undefined, ContextMenuFormState> = {
+const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
-  elementType: "contextMenu",
-  label: "Context Menu",
-  baseClass: ContextMenuExtensionPoint,
-  EditorNode: ContextMenuConfiguration,
+  elementType: "quickBar",
+  label: "Quick Bar Action",
+  baseClass: QuickBarExtensionPoint,
+  EditorNode: QuickBarConfiguration,
   selectNativeElement: undefined,
-  icon: faBars,
+  icon: faThLarge,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  InsertModeHelpText: () => (
-    <div>
-      <p>
-        A context menu (also called a right-click menu) can be configured to
-        appear when you right click on a page, text selection, or other content.
-      </p>
-
-      <p>
-        Search for an existing context menu in the marketplace, or start from
-        scratch to have full control over how your context menu appears.
-      </p>
-    </div>
-  ),
 };
 
 export default config;
