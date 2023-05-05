@@ -31,7 +31,7 @@ import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
-import { defaultInitialValue } from "@/utils/asyncStateUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
 
 interface OwnProps {
@@ -41,12 +41,12 @@ interface OwnProps {
 const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
 
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const authOptionsState = useAuthOptions();
+  const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
+    useAuthOptions(),
+    emptyAuthOptions
+  );
   const [field, { error }] = useField<ServiceAuthPair[]>("services");
   const { data: serviceConfigs } = useGetServicesQuery();
-
-  const { data: authOptions, refetch: refreshAuthOptions } =
-    defaultInitialValue(authOptionsState, emptyAuthOptions);
 
   const requiredServiceIds = useMemo(
     () => getRequiredServiceIds(blueprint),

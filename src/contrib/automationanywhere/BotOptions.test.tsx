@@ -86,9 +86,7 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
-  (
-    useAuthOptions as jest.MockedFunction<typeof useAuthOptions>
-  ).mockReturnValue(valueToAsyncState([]));
+  jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
 });
 
 describe("BotOptions", () => {
