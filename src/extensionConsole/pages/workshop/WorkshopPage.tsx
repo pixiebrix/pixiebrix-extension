@@ -29,7 +29,7 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
-import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
+import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { useGetEditablePackagesQuery } from "@/services/api";
@@ -45,7 +45,7 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-function useEnrichBricks(bricks: EditablePackage[]): EnrichedPackage[] {
+function useEnrichBricks(bricks: EditablePackage[]): EnrichedBrick[] {
   const recent = useSelector(selectRecent);
 
   return useMemo(() => {
@@ -66,7 +66,7 @@ function useEnrichBricks(bricks: EditablePackage[]): EnrichedPackage[] {
   }, [recent, bricks]);
 }
 
-function useSearchOptions(bricks: EnrichedPackage[]) {
+function useSearchOptions(bricks: EnrichedBrick[]) {
   const scopeOptions = useMemo(
     () =>
       sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
@@ -126,7 +126,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
-  const fuse: Fuse<EnrichedPackage> = useMemo(
+  const fuse: Fuse<EnrichedBrick> = useMemo(
     () =>
       new Fuse(bricks, {
         keys: ["verbose_name", "name"],

@@ -17,7 +17,7 @@
 
 import { type EditablePackage } from "@/types/contract";
 
-export type EnrichedPackage = EditablePackage & {
+export type EnrichedBrick = EditablePackage & {
   scope: string;
   collection: string;
   timestamp: number | null;

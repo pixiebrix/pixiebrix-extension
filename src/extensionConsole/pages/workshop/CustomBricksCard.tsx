@@ -32,12 +32,12 @@ import styles from "./CustomBricksCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type EnrichedPackage, type NavigateProps } from "./workshopTypes";
+import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
 import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
 
-type TableColumn = Column<EnrichedPackage>;
+type TableColumn = Column<EnrichedBrick>;
 function inferIcon(kind: Kind, verboseName: string): IconProp {
   switch (kind.toLocaleLowerCase()) {
     case "service": {
@@ -88,7 +88,7 @@ function inferIcon(kind: Kind, verboseName: string): IconProp {
   }
 }
 
-const KindIcon: React.FunctionComponent<{ brick: EnrichedPackage }> = ({
+const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
   brick: { kind, verbose_name },
 }) => <FontAwesomeIcon icon={inferIcon(kind, verbose_name)} fixedWidth />;
 
@@ -129,7 +129,7 @@ const columnFactory = (): TableColumn[] => [
 
 const CustomBricksCard: React.FunctionComponent<
   NavigateProps & {
-    bricks: EnrichedPackage[];
+    bricks: EnrichedBrick[];
     maxRows?: number;
     isFetching: boolean;
     error: unknown;
@@ -142,7 +142,7 @@ const CustomBricksCard: React.FunctionComponent<
         <PaginatedTable
           columns={columns}
           data={bricks}
-          rowProps={(brick: EnrichedPackage) => ({
+          rowProps={(brick: EnrichedBrick) => ({
             onClick() {
               navigate(`/workshop/bricks/${brick.id}`);
             },
