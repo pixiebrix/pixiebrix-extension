@@ -167,10 +167,10 @@ export async function count(): Promise<number> {
 }
 
 /**
- * Put all the packages in the local database.
+ * Replace all packages in the local database.
  * @param packages the packages to put in the database
  */
-async function putAll(packages: Package[]): Promise<void> {
+async function replaceAll(packages: Package[]): Promise<void> {
   const db = await getBrickDB();
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
@@ -219,7 +219,7 @@ export const syncPackages = memoizeUntilSettled(async () => {
     timestamp,
   }));
 
-  await putAll(packages);
+  await replaceAll(packages);
 });
 
 /**
