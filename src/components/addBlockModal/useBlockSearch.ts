@@ -68,6 +68,8 @@ function useBlockSearch(
     );
     const fuse = new Fuse<BlockOption>(blockOptions, {
       keys: ["label", "blockResult.description", "value"],
+      threshold: 0.2,
+      ignoreLocation: true,
     });
 
     return { blockOptions, fuse };
