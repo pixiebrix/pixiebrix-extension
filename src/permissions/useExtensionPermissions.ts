@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
 import {
   dropOverlappingPermissions,
   selectAdditionalPermissionsSync,
 } from "webext-additional-permissions";
-import { useAsyncState } from "./common";
+import { type AsyncState } from "@/types/sliceTypes";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
 type DetailedPermissions = Array<{
   name: string;
@@ -33,6 +33,7 @@ async function getDetailedPermissions() {
   const all = await browser.permissions.getAll();
   const unique = dropOverlappingPermissions(all);
   const additional = selectAdditionalPermissionsSync(all);
+
   return [
     ...all.permissions.sort().map((permission) => ({
       name: permission,
@@ -49,22 +50,17 @@ async function getDetailedPermissions() {
   ];
 }
 
-/** Returns a sorted array of all the permission with details, auto-updating */
-export default function useExtensionPermissions(): DetailedPermissions {
-  const [permissions, _loading, _error, recalculate] = useAsyncState(
-    getDetailedPermissions,
-    [],
-    []
-  );
+function subscribe(callback: () => void) {
+  browser.permissions.onAdded.addListener(callback);
+  browser.permissions.onRemoved.addListener(callback);
 
-  useEffect(() => {
-    browser.permissions.onAdded.addListener(recalculate);
-    browser.permissions.onRemoved.addListener(recalculate);
-    return () => {
-      browser.permissions.onAdded.removeListener(recalculate);
-      browser.permissions.onRemoved.removeListener(recalculate);
-    };
-  }, [recalculate]);
+  return () => {
+    browser.permissions.onAdded.removeListener(callback);
+    browser.permissions.onRemoved.removeListener(callback);
+  };
+}
 
-  return permissions;
+/** Returns a sorted array of all the permission with details. Subscribes to browser permissions updates. */
+export default function useExtensionPermissions(): AsyncState<DetailedPermissions> {
+  return useAsyncExternalStore(subscribe, getDetailedPermissions);
 }

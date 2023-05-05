@@ -31,7 +31,7 @@ import {
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { canAccessTab } from "@/utils/permissions";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
 import { BusinessError } from "@/errors/businessErrors";
 

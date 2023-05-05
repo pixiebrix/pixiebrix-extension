@@ -226,11 +226,10 @@ export async function resolveDefinitions<
 
 /**
  * Resolve inline extension point definitions.
- *
  * TODO: resolve other definitions within the extensions
  */
 export async function resolveRecipe(
-  recipe: RecipeDefinition
+  recipe: Pick<RecipeDefinition, "extensionPoints" | "definitions">
 ): Promise<ResolvedExtensionDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
 

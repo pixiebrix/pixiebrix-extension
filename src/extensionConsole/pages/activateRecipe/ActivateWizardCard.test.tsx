@@ -30,18 +30,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
-import { ensureAllPermissions } from "@/permissions";
 
 registerDefaultWidgets();
-
-jest.mock("@/permissions", () => ({
-  ensureAllPermissions: jest.fn(() => true),
-  collectPermissions: jest.fn(),
-}));
-
-const ensureAllPermissionsMock = ensureAllPermissions as jest.MockedFunction<
-  typeof ensureAllPermissions
->;
 
 jest.mock("@/store/optionsStore", () => ({
   persistor: {
@@ -184,7 +174,7 @@ describe("ActivateWizardCard", () => {
   });
 
   test("user reject permissions", async () => {
-    ensureAllPermissionsMock.mockResolvedValue(false);
+    jest.mocked(browser.permissions.request).mockResolvedValueOnce(false);
 
     const blueprint = recipeDefinitionFactory({
       metadata: recipeMetadataFactory({

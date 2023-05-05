@@ -15,7 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { mergeAsyncState } from "@/utils/asyncStateUtils";
+import {
+  checkAsyncStateInvariants,
+  errorToAsyncState,
+  fallbackValue,
+  loadingAsyncStateFactory,
+  mergeAsyncState,
+  uninitializedAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 import { type AsyncState } from "@/types/sliceTypes";
 
 describe("asyncStateUtils", () => {
@@ -89,5 +97,48 @@ describe("asyncStateUtils", () => {
       isSuccess: true,
       error: undefined,
     });
+  });
+
+  it("generates valid uninitialized state", () => {
+    expect(() => {
+      checkAsyncStateInvariants(uninitializedAsyncStateFactory());
+    }).not.toThrow();
+  });
+
+  it("generates valid loaded state", () => {
+    expect(() => {
+      checkAsyncStateInvariants(valueToAsyncState(42));
+    }).not.toThrow();
+  });
+
+  it("generates valid error state", () => {
+    expect(() => {
+      checkAsyncStateInvariants(errorToAsyncState(new Error("error")));
+    }).not.toThrow();
+  });
+
+  it("generates valid fallback for error state", () => {
+    const state = fallbackValue(
+      errorToAsyncState<number>(new Error("error")),
+      42
+    );
+    expect(() => {
+      checkAsyncStateInvariants(state);
+    }).not.toThrow();
+    expect(state.data).toEqual(42);
+  });
+
+  it("generates valid fallback for loading state", () => {
+    const state = fallbackValue(loadingAsyncStateFactory<number>(), 42);
+    expect(() => {
+      checkAsyncStateInvariants(state);
+    }).not.toThrow();
+    expect(state.data).toEqual(42);
+  });
+
+  it("generates valid loading state", () => {
+    expect(() => {
+      checkAsyncStateInvariants(loadingAsyncStateFactory());
+    }).not.toThrow();
   });
 });

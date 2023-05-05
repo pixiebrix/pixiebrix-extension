@@ -25,7 +25,8 @@ import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import ensureRecipePermissions from "@/recipes/ensureRecipePermissions";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 export type ActivateResult = {
   success: boolean;
@@ -55,7 +56,11 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
       );
 
       try {
-        if (!(await ensureRecipePermissions(recipe, serviceAuths))) {
+        if (
+          !(await ensurePermissionsFromUserGesture(
+            await checkRecipePermissions(recipe, serviceAuths)
+          ))
+        ) {
           return {
             success: false,
             error: "You must accept browser permissions to activate.",
