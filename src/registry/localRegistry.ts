@@ -175,7 +175,7 @@ async function replaceAll(packages: Package[]): Promise<void> {
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
   await tx.store.clear();
-  await Promise.all(packages.map(async (obj) => tx.store.put(obj)));
+  await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
 
   await tx.done;
 }
