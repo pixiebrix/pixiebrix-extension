@@ -48,6 +48,7 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
@@ -164,6 +165,8 @@ function clearServiceSelection(
   return produceExcludeUnusedDependencies(nextState);
 }
 
+const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
+
 /**
  * A schema-driven Service Selector that automatically maintains the services form state (and output keys)
  * @see ServiceDependency
@@ -173,7 +176,10 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   ...props
 }) => {
   const { schema } = props;
-  const { data: authOptions, refetch: refreshOptions } = useAuthOptions();
+  const { data: authOptions, refetch: refreshOptions } = fallbackValue(
+    useAuthOptions(),
+    NO_AUTH_OPTIONS
+  );
   const { values: root, setValues: setRootValues } =
     useFormikContext<ServiceSlice>();
   const [{ value, ...field }, , helpers] =

@@ -33,11 +33,11 @@ import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { serviceOriginPermissions } from "@/permissions";
-import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
+import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -123,14 +123,14 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         }
 
         // Ensure PixieBrix can call the Control Room and OAuth2 endpoints
-        const requiredPermissions = await serviceOriginPermissions({
+        const requiredPermissions = await collectServiceOriginPermissions({
           id: CONTROL_ROOM_OAUTH_SERVICE_ID,
           config: configurationId,
         });
 
         console.debug("Required permissions", requiredPermissions);
 
-        await requestPermissions(requiredPermissions);
+        await ensurePermissionsFromUserGesture(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
 

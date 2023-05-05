@@ -29,21 +29,22 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { Formik } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import {
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
 }));
+
+const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
   ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
   // Mock so we don't have to have full Page Editor state in tests
   produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
 }));
-
-const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
-  typeof useAuthOptions
->;
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -81,6 +82,27 @@ const renderServiceWidget = (
   );
 
 describe("ServiceWidget", () => {
+  it("show no options while loading", async () => {
+    const serviceId = validateRegistryId("jest/api");
+
+    useAuthOptionsMock.mockReturnValue({
+      ...loadingAsyncStateFactory(),
+      refetch: jest.fn(),
+    });
+
+    const schema = {
+      $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
+    };
+
+    const wrapper = renderServiceWidget(schema, {
+      services: [],
+    });
+
+    await waitForEffect();
+
+    expect(wrapper.queryByText("Select...")).toBeVisible();
+  });
+
   it("should not default if there are multiple auth options", async () => {
     const serviceId = validateRegistryId("jest/api");
 

@@ -23,17 +23,14 @@ import crypto from "node:crypto";
 // Mock `window.location` with Jest spies and extend expect
 // https://github.com/evelynhathaway/jest-location-mock
 import "jest-location-mock";
+// eslint-disable-next-line import/no-unassigned-import -- mocking permissions API
+import "./permissionsMock";
 
 global.$ = $;
 global.jQuery = $;
 
 // Disable onMessage handler, or else it will respond to `sendMessage` calls locally
 global.browser.runtime.onMessage.addListener = jest.fn();
-
-// @ts-expect-error API missing from mock https://github.com/clarkbw/jest-webextension-mock/issues/148
-browser.permissions = {
-  contains: jest.fn(),
-};
 
 browser.runtime.getManifest = jest.fn().mockReturnValue({
   version: "1.5.2",

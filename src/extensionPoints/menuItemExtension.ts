@@ -615,10 +615,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
             ...apiVersionOptions(extension.apiVersion),
           });
 
-          extensionLogger.info("Successfully ran menu action");
-
           if (onSuccess) {
-            if (typeof onSuccess === "boolean") {
+            if (typeof onSuccess === "boolean" && onSuccess) {
               showNotification(DEFAULT_ACTION_RESULTS.success);
             } else {
               showNotification({

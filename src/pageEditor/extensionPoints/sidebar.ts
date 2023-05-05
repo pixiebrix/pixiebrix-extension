@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -42,7 +41,6 @@ import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
 
@@ -180,19 +178,6 @@ const config: ElementConfig<never, SidebarFormState> = {
   selectExtension,
   fromExtension,
   EditorNode: SidebarConfiguration,
-  InsertModeHelpText: () => (
-    <div>
-      <p>
-        A sidebar panel can be configured to appear in the PixieBrix sidebar on
-        pages you choose.
-      </p>
-
-      <p>
-        Search for an existing sidebar panel in the marketplace, or start from
-        scratch to have full control over when the panel appears.
-      </p>
-    </div>
-  ),
 };
 
 export default config;

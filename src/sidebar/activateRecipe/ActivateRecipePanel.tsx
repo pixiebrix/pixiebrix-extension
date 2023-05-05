@@ -42,7 +42,7 @@ import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { persistor } from "@/sidebar/store";
-import { checkRecipePermissions } from "@/recipes/ensureRecipePermissions";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 const { actions } = sidebarSlice;
 
@@ -205,11 +205,12 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
       Boolean(config)
     );
 
-    stateDispatch(
-      setNeedsPermissions(
-        !(await checkRecipePermissions(recipe, selectedAuths))
-      )
+    const { hasPermissions } = await checkRecipePermissions(
+      recipe,
+      selectedAuths
     );
+
+    stateDispatch(setNeedsPermissions(!hasPermissions));
   }
 
   const onChange = (values: WizardValues) => {

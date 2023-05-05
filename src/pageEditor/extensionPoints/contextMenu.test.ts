@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.buttonRow {
-  padding-left: 6rem;
-  padding-right: 6rem;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
+import config from "@/pageEditor/extensionPoints/contextMenu";
+import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
 
-.searchButton {
-  margin-top: 0.5rem;
-}
-
-.cancelRow {
-  justify-content: center;
-}
+describe("contextMenu", () => {
+  it("smoke test", () => {
+    const formState = config.fromNativeElement(
+      "https://example.com",
+      internalExtensionPointMetaFactory(),
+      null
+    );
+    expect(config.selectExtension(formState)).toEqual(
+      expect.objectContaining({
+        config: {
+          action: [],
+          onSuccess: true,
+          title: "Context menu item",
+        },
+      })
+    );
+  });
+});

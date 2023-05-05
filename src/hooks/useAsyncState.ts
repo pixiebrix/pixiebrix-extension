@@ -16,37 +16,30 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { useCallback, useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { useIsMounted } from "@/hooks/common";
 import { once } from "lodash";
 import { uuidv4 } from "@/types/helpers";
+import {
+  uninitializedAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);
 
-const initialAsyncState: AsyncState = {
-  data: undefined,
-  currentData: undefined,
-  isUninitialized: true,
-  isLoading: false,
-  isFetching: false,
-  isError: false,
-  isSuccess: false,
-  error: undefined,
-};
-
-const warnNullValueOnce = once(() => {
+const warnUndefinedValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
   // instead. But this is sufficient for now, and keeps the reducer state clean.
   console.warn(
-    "useAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values."
+    "useAsyncState:promiseOrGenerator produced an undefined value. Avoid returning undefined for async state values."
   );
 });
 
 const slice = createSlice({
   name: "asyncSlice",
-  initialState: initialAsyncState,
+  initialState: uninitializedAsyncStateFactory(),
   reducers: {
     // Initialize loading state
     initialize(state) {
@@ -66,10 +59,11 @@ const slice = createSlice({
     success(state, action: PayloadAction<{ data: unknown }>) {
       const { data } = action.payload;
 
-      if (data == null) {
-        // Warn on null values because they're ambiguous downstream on if the state is loading vs. the produced value
-        // is null. It's error-prone.
-        warnNullValueOnce();
+      if (data === undefined) {
+        // Warn on undefined values because they're ambiguous downstream on if the state is loading vs. the
+        // produced value is undefined. It's error-prone. Ideally should also warn for null values too, but there's
+        // to many places that produce null values right now.
+        warnUndefinedValueOnce();
       }
 
       state.isLoading = false;
@@ -93,10 +87,15 @@ const slice = createSlice({
 
 /**
  * Hook to asynchronously compute a value and return a standard asynchronous state.
+ *
+ * If you are calculating a value without arguments, you may want to use useAsyncExternalStore instead because it will
+ * share state across all instances of the component.
+ *
  * @param promiseOrGenerator a promise to await, of function that returns a promise to await
  * @param dependencies zero or more dependencies to trigger a re-fetch
  * @param initialValue the initial value of the state. If provided, the state will be initialized to this value and will
  *  skip the isLoading on the initial value generation.
+ * @see useAsyncExternalStore
  */
 function useAsyncState<T = unknown>(
   promiseOrGenerator: ValueFactory<T>,
@@ -116,14 +115,8 @@ function useAsyncState<T = unknown>(
   const [state, dispatch] = useReducer(
     slice.reducer,
     initialValue === undefined
-      ? initialAsyncState
-      : {
-          ...initialAsyncState,
-          isUninitialized: false,
-          data: initialValue,
-          currentData: initialValue,
-          isSuccess: true,
-        }
+      ? uninitializedAsyncStateFactory()
+      : valueToAsyncState(initialValue)
   );
 
   // Effect to automatically refetch when stated dependencies change

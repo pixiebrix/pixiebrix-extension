@@ -18,7 +18,10 @@
 import React from "react";
 import { useRequiredRecipe } from "@/recipes/recipesHooks";
 import * as api from "@/services/api";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import {
+  useGetMarketplaceListingsQuery,
+  useGetServicesQuery,
+} from "@/services/api";
 import {
   getRecipeWithBuiltInServiceAuths,
   marketplaceListingFactory,
@@ -34,7 +37,6 @@ import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { containsPermissions } from "@/background/messenger/api";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
@@ -42,14 +44,14 @@ import {
   queryLoadingFactory,
   querySuccessFactory,
 } from "@/testUtils/rtkQueryFactories";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRequiredRecipe: jest.fn(),
 }));
 
-const useRequiredRecipeMock = useRequiredRecipe as jest.MockedFunction<
-  typeof useRequiredRecipe
->;
+const useRequiredRecipeMock = jest.mocked(useRequiredRecipe);
+const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(),
@@ -82,10 +84,9 @@ jest.mock("@/services/api", () => ({
   },
 }));
 
-const useGetMarketplaceListingsQueryMock =
-  useGetMarketplaceListingsQuery as jest.MockedFunction<
-    typeof useGetMarketplaceListingsQuery
-  >;
+const useGetMarketplaceListingsQueryMock = jest.mocked(
+  useGetMarketplaceListingsQuery
+);
 
 jest.mock("@/store/optionsStore", () => ({
   persistor: {
@@ -104,29 +105,7 @@ jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
   default: jest.fn().mockResolvedValue(true),
 }));
 
-const includesQuickBarMock =
-  includesQuickBarExtensionPoint as jest.MockedFunction<
-    typeof includesQuickBarExtensionPoint
-  >;
-
-jest.mock("@/permissions/index", () => ({
-  collectPermissions: jest.fn().mockReturnValue({
-    permissions: [],
-    origins: [],
-  }),
-}));
-
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn(),
-}));
-
-const containsPermissionsMock = containsPermissions as jest.MockedFunction<
-  typeof containsPermissions
->;
-
-function setNeedsPermissions(needsPermissions: boolean) {
-  containsPermissionsMock.mockResolvedValue(!needsPermissions);
-}
+const includesQuickBarMock = jest.mocked(includesQuickBarExtensionPoint);
 
 jest.mock("@/registry/internal", () => ({
   // We're also mocking all the functions that this output is passed to, so we can return empty array
@@ -138,14 +117,12 @@ jest.mock("@/hooks/useQuickbarShortcut", () => ({
   default: jest.fn(),
 }));
 
+const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
+
 jest.mock("@/activation/useActivateRecipe", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
-
-const useQuickbarShortcutMock = useQuickbarShortcut as jest.MockedFunction<
-  typeof useQuickbarShortcut
->;
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -183,20 +160,27 @@ function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
 
 beforeEach(() => {
   includesQuickBarMock.mockResolvedValue(false);
-  setNeedsPermissions(false);
   useQuickbarShortcutMock.mockReturnValue({
     shortcut: null,
     isConfigured: false,
   });
 
-  (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue(
-    querySuccessFactory([])
-  );
+  checkRecipePermissionsMock.mockResolvedValue({
+    hasPermissions: true,
+    permissions: {},
+  });
+
+  jest
+    .mocked(api.useGetServiceAuthsQuery)
+    .mockReturnValue(querySuccessFactory([]));
 });
 
 describe("ActivateRecipePanel", () => {
   test("it renders with options, permissions info", async () => {
-    setNeedsPermissions(true);
+    jest.mocked(checkRecipePermissions).mockResolvedValue({
+      hasPermissions: false,
+      permissions: { origins: ["https://newurl.com"] },
+    });
 
     const rendered = setupMocksAndRender({
       options: {
@@ -272,24 +256,24 @@ describe("ActivateRecipePanel", () => {
 
   test("it renders with service configuration if no built-in service configs available", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
-
-    (api.useGetServicesQuery as jest.Mock).mockReturnValue(
-      querySuccessFactory([])
-    );
+    jest.mocked(useGetServicesQuery).mockReturnValue(querySuccessFactory([]));
 
     const rendered = setupMocksAndRender(recipe);
 
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
+    expect(
+      rendered.container.querySelector(".actionButton")
+    ).not.toBeDisabled();
   });
 
   test("it activates recipe with built-in services automatically and renders well-done page", async () => {
     const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue(
-      querySuccessFactory(builtInServiceAuths)
-    );
+    jest
+      .mocked(api.useGetServiceAuthsQuery)
+      .mockReturnValue(querySuccessFactory(builtInServiceAuths));
 
     const rendered = setupMocksAndRender(recipe);
 
@@ -301,9 +285,9 @@ describe("ActivateRecipePanel", () => {
   test("it doesn't flicker while built-in auths are loading", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue(
-      queryLoadingFactory()
-    );
+    jest
+      .mocked(api.useGetServiceAuthsQuery)
+      .mockReturnValue(queryLoadingFactory());
 
     const rendered = setupMocksAndRender(recipe);
 

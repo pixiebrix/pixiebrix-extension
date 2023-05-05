@@ -18,7 +18,7 @@
 import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
 import { type Target } from "@/types/messengerTypes";
-import { canAccessTab } from "@/utils/permissions";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import { debounce } from "lodash";
 
 export function reactivateEveryTab(): void {

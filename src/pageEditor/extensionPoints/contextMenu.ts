@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -31,47 +30,42 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
-import { omitEditorMetadata } from "./pipelineMapping";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import {
-  faExclamationTriangle,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
+  type ContextMenuConfig,
+  ContextMenuExtensionPoint,
+  type MenuDefinition,
+} from "@/extensionPoints/contextMenu";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import React from "react";
-import { Alert } from "react-bootstrap";
-import {
-  type QuickBarConfig,
-  type QuickBarDefinition,
-  QuickBarExtensionPoint,
-} from "@/extensionPoints/quickBarExtension";
-import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
+import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type QuickBarFormState } from "./formStateTypes";
-import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+import { type ContextMenuFormState } from "./formStateTypes";
+import { omitEditorMetadata } from "./pipelineMapping";
 
-function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
+function fromNativeElement(
+  url: string,
+  metadata: Metadata
+): ContextMenuFormState {
   const base = makeInitialBaseState();
 
   const isAvailable = makeIsAvailable(url);
 
-  const title = "Quick Bar item";
+  const title = "Context menu item";
 
   return {
-    type: "quickBar",
+    type: "contextMenu",
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
     extensionPoint: {
       metadata,
       definition: {
-        type: "quickBar",
-        reader: getImplicitReader("quickBar"),
+        type: "contextMenu",
+        reader: getImplicitReader("contextMenu"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         targetMode: "eventTarget",
@@ -81,14 +75,15 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
     },
     extension: {
       title,
+      onSuccess: true,
       blockPipeline: [],
     },
   };
 }
 
 function selectExtensionPointConfig(
-  formState: QuickBarFormState
-): ExtensionPointConfig<QuickBarDefinition> {
+  formState: ContextMenuFormState
+): ExtensionPointConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {
@@ -102,7 +97,7 @@ function selectExtensionPointConfig(
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "quickBar",
+      type: "contextMenu",
       documentUrlPatterns,
       contexts,
       targetMode,
@@ -113,13 +108,13 @@ function selectExtensionPointConfig(
 }
 
 function selectExtension(
-  state: QuickBarFormState,
+  state: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<QuickBarConfig> {
+): IExtension<ContextMenuConfig> {
   const { extension } = state;
-  const config: QuickBarConfig = {
+  const config: ContextMenuConfig = {
     title: extension.title,
-    icon: extension.icon,
+    onSuccess: extension.onSuccess,
     action: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
@@ -131,14 +126,13 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: IExtension<QuickBarConfig>
-): Promise<QuickBarFormState> {
+  config: IExtension<ContextMenuConfig>
+): Promise<ContextMenuFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    QuickBarDefinition,
-    QuickBarConfig,
-    "quickBar"
-  >(config, "quickBar");
-
+    MenuDefinition,
+    ContextMenuConfig,
+    "contextMenu"
+  >(config, "contextMenu");
   const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
     extensionPoint.definition;
 
@@ -156,7 +150,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        type: "quickBar",
+        type: "contextMenu",
         documentUrlPatterns,
         defaultOptions,
         targetMode,
@@ -169,91 +163,27 @@ async function fromExtension(
   };
 }
 
-function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
+function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
-    type: "quickBar",
+    type: "contextMenu",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
-export const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
-  const { isConfigured } = useQuickbarShortcut();
-
-  if (!isConfigured) {
-    return (
-      <Alert variant="warning">
-        <FontAwesomeIcon icon={faExclamationTriangle} />
-        &nbsp;You have not{" "}
-        <a
-          href={SHORTCUTS_URL}
-          onClick={(event) => {
-            event.preventDefault();
-            void openShortcutsTab();
-          }}
-        >
-          configured a Quick Bar shortcut
-        </a>
-      </Alert>
-    );
-  }
-
-  return null;
-};
-
-export const InsertModeHelpText: React.FunctionComponent = () => {
-  const { isConfigured, shortcut } = useQuickbarShortcut();
-
-  return (
-    <div className="text-center pb-2">
-      {isConfigured ? (
-        <p>
-          You&apos;ve configured&nbsp;
-          <kbd style={{ fontFamily: "system" }}>{shortcut}</kbd>&nbsp; to open
-          the Quick Bar.{" "}
-          <a
-            href={SHORTCUTS_URL}
-            onClick={(event) => {
-              event.preventDefault();
-              void openShortcutsTab();
-            }}
-          >
-            Change your Quick Bar shortcut
-          </a>
-        </p>
-      ) : (
-        <Alert variant="warning">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;You have not{" "}
-          <a
-            href={SHORTCUTS_URL}
-            onClick={(event) => {
-              event.preventDefault();
-              void openShortcutsTab();
-            }}
-          >
-            configured a Quick Bar shortcut
-          </a>
-        </Alert>
-      )}
-    </div>
-  );
-};
-
-const config: ElementConfig<undefined, QuickBarFormState> = {
+const config: ElementConfig<undefined, ContextMenuFormState> = {
   displayOrder: 1,
-  elementType: "quickBar",
-  label: "Quick Bar Action",
-  baseClass: QuickBarExtensionPoint,
-  EditorNode: QuickBarConfiguration,
+  elementType: "contextMenu",
+  label: "Context Menu",
+  baseClass: ContextMenuExtensionPoint,
+  EditorNode: ContextMenuConfiguration,
   selectNativeElement: undefined,
-  icon: faThLarge,
+  icon: faBars,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  InsertModeHelpText,
 };
 
 export default config;

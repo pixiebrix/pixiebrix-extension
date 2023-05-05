@@ -18,7 +18,7 @@
 import React, { type PropsWithoutRef } from "react";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type FetchableAsyncState } from "@/types/sliceTypes";
+import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
 
 /**
@@ -30,17 +30,19 @@ export const StandardError = ({
   refetch,
 }: {
   error: unknown;
-  refetch: () => void;
+  refetch?: () => void;
 }) => (
   <div>
     <div className="text-danger">
       Error fetching data: {getErrorMessage(error)}
     </div>
-    <div>
-      <Button variant="info" onClick={refetch}>
-        Try again
-      </Button>
-    </div>
+    {refetch && (
+      <div>
+        <Button variant="info" onClick={refetch}>
+          Try again
+        </Button>
+      </div>
+    )}
   </div>
 );
 
@@ -51,10 +53,10 @@ export const StandardError = ({
 const AsyncStateGate = <Data,>(
   props: PropsWithoutRef<{
     /**
-     * AsyncState from useAsyncState
-     * @see FetchableAsyncState
+     * FetchableAsyncState or AsyncState from useAsyncState
+     * @see useAsyncState
      */
-    state: FetchableAsyncState<Data>;
+    state: AsyncState<Data>;
     /**
      * Children to render once the state is loaded
      * @param args
@@ -70,7 +72,7 @@ const AsyncStateGate = <Data,>(
      */
     renderError?: (args: {
       error: unknown;
-      refetch: () => void;
+      refetch?: () => void;
     }) => React.ReactElement;
   }>
 ): React.ReactElement => {
@@ -81,9 +83,10 @@ const AsyncStateGate = <Data,>(
     isUninitialized,
     isFetching,
     isError,
-    error,
     refetch,
-  } = state;
+    error,
+    // I couldn't get type inference to work at the callsites to allow State extends AsyncState<Data> & {refetch}
+  } = state as unknown as FetchableAsyncState<Data>;
 
   if (isUninitialized || isLoading || (isError && isFetching)) {
     return renderLoader ? renderLoader() : <Loader />;

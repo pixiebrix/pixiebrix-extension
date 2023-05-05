@@ -92,14 +92,6 @@ jest.mock("@/store/optionsStore", () => ({
   },
 }));
 
-jest.mock("@/utils/permissions", () => ({
-  requestPermissions: jest.fn().mockResolvedValue(true),
-}));
-
-jest.mock("@/permissions", () => ({
-  serviceOriginPermissions: jest.fn().mockResolvedValue({ origins: [] }),
-}));
-
 function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
   (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
 }
@@ -192,7 +184,7 @@ describe("SetupPage", () => {
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value")
-      // Schema get pre-pended automatically
+      // Schema should get pre-pended automatically
     ).toStrictEqual("https://mycontrolroom.com");
 
     // Sanity check we haven't redirected away from the start page yet

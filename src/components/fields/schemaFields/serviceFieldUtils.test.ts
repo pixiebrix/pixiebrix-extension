@@ -26,7 +26,7 @@ import {
 import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
-import { makeEmptyPermissions } from "@/utils/permissions";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -173,7 +173,7 @@ describe("selectVariables", () => {
           config: null,
         },
       ],
-      permissions: makeEmptyPermissions(),
+      permissions: emptyPermissionsFactory(),
       optionsArgs: {},
       type: "actionPanel",
       recipe: null,

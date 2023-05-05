@@ -90,6 +90,9 @@ export type NodeUIState = {
     activeTabKey: DataPanelTabKey | null;
   };
 
+  /**
+   * Which fields are expanded or collapsed
+   */
   expandedFieldSections: Record<string, boolean>;
 };
 

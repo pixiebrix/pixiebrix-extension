@@ -22,7 +22,7 @@ import webextAlert from "./webextAlert";
 import { memoizeUntilSettled, isMac } from "@/utils";
 import { notify } from "@/extensionConsole/messenger/api";
 import { browserAction, type Tab } from "@/mv3/api";
-import { isScriptableUrl } from "@/utils/permissions";
+import { isScriptableUrl } from "@/permissions/permissionsUtils";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";

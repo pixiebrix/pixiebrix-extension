@@ -70,7 +70,7 @@ import {
 } from "@/auth/authTypes";
 import { type JsonObject } from "type-fest";
 import objectHash from "object-hash";
-import { makeEmptyPermissions } from "@/utils/permissions";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type Permissions } from "webextension-polyfill";
 import quickBar from "@/pageEditor/extensionPoints/quickBar";
 import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
@@ -330,7 +330,7 @@ export const blockFactory = define<IBlock>({
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
   name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
-  permissions: makeEmptyPermissions(),
+  permissions: emptyPermissionsFactory(),
   run: jest.fn(),
 });
 
@@ -370,7 +370,7 @@ export const extensionPointConfigFactory = define<ExtensionDefinition>({
     return {};
   },
   permissions(): Permissions.Permissions {
-    return makeEmptyPermissions();
+    return emptyPermissionsFactory();
   },
   config: () => ({
     caption: "Button",
@@ -441,7 +441,7 @@ export const versionedExtensionPointRecipeFactory = ({
         id: extensionPointId ?? validateRegistryId("test/extension-point"),
         label: `Test Extension for Recipe ${n}`,
         services: {},
-        permissions: makeEmptyPermissions(),
+        permissions: emptyPermissionsFactory(),
         config: {
           caption: "Button",
           action: [] as BlockPipeline,

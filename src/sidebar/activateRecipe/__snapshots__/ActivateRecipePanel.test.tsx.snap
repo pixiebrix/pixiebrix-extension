@@ -659,7 +659,6 @@ exports[`ActivateRecipePanel it renders with service configuration if no built-i
               >
                 <button
                   class="actionButton btn btn-info btn-sm"
-                  disabled=""
                   type="button"
                 >
                   <svg
@@ -722,7 +721,6 @@ exports[`ActivateRecipePanel it renders with service configuration if no built-i
               >
                 <button
                   class="actionButton btn btn-info btn-sm"
-                  disabled=""
                   type="button"
                 >
                   <svg

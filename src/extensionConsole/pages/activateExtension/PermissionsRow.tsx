@@ -19,7 +19,7 @@ import { Col, Row } from "react-bootstrap";
 import React from "react";
 import { useFormikContext } from "formik";
 import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
-import useEnsurePermissions from "@/extensionConsole/pages/activateExtension/useEnsurePermissions";
+import useCloudExtensionPermissions from "@/extensionConsole/pages/activateExtension/useCloudExtensionPermissions";
 import { type CloudExtension } from "@/types/contract";
 import { type FormState } from "@/extensionConsole/pages/activateExtension/activateTypes";
 
@@ -27,7 +27,10 @@ const PermissionsRow: React.FunctionComponent<{
   extension: CloudExtension;
 }> = ({ extension }) => {
   const { values } = useFormikContext<FormState>();
-  const permissionsState = useEnsurePermissions(extension, values.services);
+  const permissionsState = useCloudExtensionPermissions(
+    extension,
+    values.services
+  );
 
   return (
     <Row>
