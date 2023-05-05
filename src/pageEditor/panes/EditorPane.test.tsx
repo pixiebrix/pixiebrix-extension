@@ -55,7 +55,10 @@ import {
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
-import { EditablePackage, type MarketplaceListing } from "@/types/contract";
+import {
+  type EditablePackage,
+  type MarketplaceListing,
+} from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";

@@ -48,22 +48,24 @@ function selectFilters(state: { workshop: WorkshopState }) {
 function useEnrichBricks(bricks: EditablePackage[]): EnrichedBrick[] {
   const recent = useSelector(selectRecent);
 
-  return useMemo(() => {
-    return orderBy(
-      (bricks ?? []).map((brick) => {
-        const match = PACKAGE_NAME_REGEX.exec(brick.name);
-        return {
-          ...brick,
-          scope: match.groups.scope,
-          collection: match.groups.collection,
-          timestamp: recent.get(brick.id),
-        };
-      }),
-      // Show recently accessed first
-      [(x) => x.timestamp ?? -1, (x) => x.verbose_name],
-      ["desc", "asc"]
-    );
-  }, [recent, bricks]);
+  return useMemo(
+    () =>
+      orderBy(
+        (bricks ?? []).map((brick) => {
+          const match = PACKAGE_NAME_REGEX.exec(brick.name);
+          return {
+            ...brick,
+            scope: match.groups.scope,
+            collection: match.groups.collection,
+            timestamp: recent.get(brick.id),
+          };
+        }),
+        // Show recently accessed first
+        [(x) => x.timestamp ?? -1, (x) => x.verbose_name],
+        ["desc", "asc"]
+      ),
+    [recent, bricks]
+  );
 }
 
 function useSearchOptions(bricks: EnrichedBrick[]) {
