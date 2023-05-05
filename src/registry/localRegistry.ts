@@ -174,8 +174,10 @@ async function putAll(packages: Package[]): Promise<void> {
   const db = await getBrickDB();
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
+  await tx.store.clear();
   for (const obj of packages) {
-    void tx.store.put(obj);
+    // eslint-disable-next-line no-await-in-loop
+    await tx.store.put(obj);
   }
 
   await tx.done;
@@ -220,11 +222,7 @@ export const syncPackages = memoizeUntilSettled(async () => {
     timestamp,
   }));
 
-  const db = await getBrickDB();
-  const tx = db.transaction(BRICK_STORE, "readwrite");
-  await clear();
   await putAll(packages);
-  await tx.done;
 });
 
 /**
@@ -242,6 +240,8 @@ export async function find(id: string): Promise<Package | null> {
   }
 
   const db = await getBrickDB();
+  const dbState = await db.getAll(BRICK_STORE);
+  console.log("*** db state", dbState);
   const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
   return latestVersion(versions);
 }
