@@ -174,9 +174,8 @@ async function putAll(packages: Package[]): Promise<void> {
   const db = await getBrickDB();
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
-  for (const obj of packages) {
-    void tx.store.put(obj);
-  }
+  await tx.store.clear();
+  await Promise.all(packages.map(async (obj) => tx.store.put(obj)));
 
   await tx.done;
 }
@@ -220,11 +219,7 @@ export const syncPackages = memoizeUntilSettled(async () => {
     timestamp,
   }));
 
-  const db = await getBrickDB();
-  const tx = db.transaction(BRICK_STORE, "readwrite");
-  await clear();
   await putAll(packages);
-  await tx.done;
 });
 
 /**
