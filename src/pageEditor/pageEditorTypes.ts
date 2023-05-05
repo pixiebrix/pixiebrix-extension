@@ -212,7 +212,7 @@ export interface EditorState {
   /**
    * Is data panel expanded or collapsed
    */
-  expandedDataPanel: boolean;
+  isDataPanelExpanded: boolean;
 
   /**
    * Is mod list expanded or collapsed

@@ -122,7 +122,7 @@ export const initialState: EditorState = {
   unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
-  expandedDataPanel: true,
+  isDataPanelExpanded: true,
 };
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
@@ -868,7 +868,7 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ isExpanded: boolean }>
     ) {
-      state.expandedDataPanel = payload.isExpanded;
+      state.isDataPanelExpanded = payload.isExpanded;
     },
     setModListExpanded(
       state,
