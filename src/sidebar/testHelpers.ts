@@ -25,6 +25,8 @@ import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
+import { appApi } from "@/services/api";
+import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -34,6 +36,14 @@ const configureStoreForTests = () =>
       sidebar: sidebarSlice.reducer,
       settings: settingsSlice.reducer,
       services: servicesSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(recipesMiddleware);
+      /* eslint-enable unicorn/prefer-spread */
     },
   });
 

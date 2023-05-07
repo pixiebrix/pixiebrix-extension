@@ -19,27 +19,18 @@ import React from "react";
 import ConnectedSidebar from "@/sidebar/ConnectedSidebar";
 import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
-import { authStateFactory } from "@/testUtils/factories";
+import {
+  authStateFactory,
+  partnerUserFactory,
+  userFactory,
+} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { appApi, useGetMeQuery } from "@/services/api";
-import { anonAuth } from "@/auth/authConstants";
 import { MemoryRouter } from "react-router";
-import { type Me } from "@/types/contract";
+import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 
 jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
-  },
-}));
-jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
-  appApi: {
-    reducerPath: "appApi",
-    endpoints: {
-      getMe: {
-        useQueryState: jest.fn(),
-      },
-    },
   },
 }));
 
@@ -57,11 +48,6 @@ jest.mock("@/auth/token", () => {
   };
 });
 
-function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
-  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
-  (useGetMeQuery as jest.Mock).mockReturnValue(state);
-}
-
 browser.runtime.getURL = (path: string) =>
   `chrome-extension://example.url/${path}`;
 
@@ -76,10 +62,7 @@ afterAll(() => {
 
 describe("SidebarApp", () => {
   test("renders not connected", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: anonAuth as any,
-    });
+    mockAnonymousUser();
 
     const rendered = render(
       <MemoryRouter>
@@ -93,13 +76,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders not connected partner view", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: {
-        partner: {},
-        ...anonAuth,
-      } as any,
-    });
+    mockCachedUser(partnerUserFactory());
 
     const rendered = render(
       <MemoryRouter>
@@ -113,10 +90,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: authStateFactory() as any,
-    });
+    mockCachedUser(userFactory());
 
     const rendered = render(
       <MemoryRouter>

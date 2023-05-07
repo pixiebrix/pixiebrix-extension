@@ -102,9 +102,9 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const installableIcon = useCallback(
     (installable: Installable) => {
-      const listing: MarketplaceListing | null = listingsQuery.isLoading
-        ? null
-        : listingsQuery.data[getPackageId(installable)];
+      const listing: MarketplaceListing | null = listingsQuery.isSuccess
+        ? listingsQuery.data[getPackageId(installable)]
+        : null;
 
       return (
         <InstallableIcon

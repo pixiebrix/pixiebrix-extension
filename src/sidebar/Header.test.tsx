@@ -19,32 +19,14 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { appApi } from "@/services/api";
-import { type Me } from "@/types/contract";
+import { mockCachedUser } from "@/testUtils/userMock";
+import { userFactory, userOrganizationFactory } from "@/testUtils/factories";
 
 jest.mock("@/store/optionsStore", () => ({
   persistor: {
     flush: jest.fn(),
   },
 }));
-
-jest.mock("@/services/api", () => ({
-  appApi: {
-    reducerPath: "appApi",
-    endpoints: {
-      getMe: {
-        useQueryState: jest.fn(() => ({
-          data: {},
-          isLoading: false,
-        })),
-      },
-    },
-  },
-}));
-
-function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
-  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
-}
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -59,16 +41,15 @@ describe("Header", () => {
   });
 
   it("renders sidebar header logo per organization theme", () => {
-    mockMeQuery({
-      isLoading: false,
-      data: {
-        organization: {
+    mockCachedUser(
+      userFactory({
+        organization: userOrganizationFactory({
           theme: {
             show_sidebar_logo: true,
           },
-        },
-      } as any,
-    });
+        }),
+      })
+    );
 
     const rendered = render(<Header />);
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -76,16 +57,15 @@ describe("Header", () => {
   });
 
   it("renders no sidebar header logo per organization theme", () => {
-    mockMeQuery({
-      isLoading: false,
-      data: {
-        organization: {
+    mockCachedUser(
+      userFactory({
+        organization: userOrganizationFactory({
           theme: {
             show_sidebar_logo: false,
           },
-        },
-      } as any,
-    });
+        }),
+      })
+    );
 
     render(<Header />);
 

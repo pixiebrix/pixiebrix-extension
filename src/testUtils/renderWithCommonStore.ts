@@ -16,28 +16,24 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
+import { persistReducer } from "redux-persist";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
+import { appApi } from "@/services/api";
+import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import servicesSlice from "@/store/servicesSlice";
 
-const configureStoreForTests = () =>
-  configureStore({
+function configureCommonStoreForTests(initialState?: any) {
+  return configureStore({
     reducer: {
-      auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
-      options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
-      recipes: recipesSlice.reducer,
+      auth: persistReducer(persistAuthConfig, authSlice.reducer),
+      settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
+      services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
@@ -47,11 +43,15 @@ const configureStoreForTests = () =>
         .concat(recipesMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
+    preloadedState: initialState,
   });
+}
 
-const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
+const renderWithWrappers = createRenderWithWrappers(
+  configureCommonStoreForTests
+);
 const renderHookWithWrappers = createRenderHookWithWrappers(
-  configureStoreForTests
+  configureCommonStoreForTests
 );
 
 // eslint-disable-next-line import/export -- re-export RTL

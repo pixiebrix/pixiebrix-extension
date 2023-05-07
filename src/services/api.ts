@@ -182,7 +182,11 @@ export const appApi = createApi({
       providesTags: ["Services"],
     }),
     getServiceAuths: builder.query<SanitizedAuth[], void>({
-      query: () => ({ url: "/api/services/shared/?meta=1", method: "get" }),
+      query: () => ({
+        url: "/api/services/shared/",
+        method: "get",
+        params: { meta: "1" },
+      }),
       providesTags: ["ServiceAuths"],
     }),
     getOrganizations: builder.query<Organization[], void>({

@@ -20,41 +20,19 @@ import { render } from "@/extensionConsole/testHelpers";
 import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/BlueprintsPageLayout";
 import { type Installable } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
 import { screen } from "@testing-library/react";
-import { organizationFactory } from "@/testUtils/factories";
-import { configureStore } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { Provider } from "react-redux";
-import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import extensionsSlice from "@/store/extensionsSlice";
-import blueprintsSlice, {
-  persistBlueprintsConfig,
-} from "@/extensionConsole/pages/blueprints/blueprintsSlice";
-import { type Me } from "@/types/contract";
+import {
+  authStateFactory,
+  userFactory,
+  userOrganizationFactory,
+} from "@/testUtils/factories";
+import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
+import pDefer from "p-defer";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { mockCachedUser, mockLoadingUser } from "@/testUtils/userMock";
+import { authSlice } from "@/auth/authSlice";
 
-const EMPTY_RESPONSE = Object.freeze({
-  data: Object.freeze([]),
-  isLoading: false,
-});
-
-// Need to return the same object every time, because useInstallableViewItems doesn't destructure the object. Or maybe
-// we just need to make sure the data [] array is the same object?
-jest.mock("@/services/api", () => ({
-  useGetCloudExtensionsQuery: jest.fn(() => EMPTY_RESPONSE),
-  useGetMarketplaceListingsQuery: jest.fn(() => EMPTY_RESPONSE),
-  useGetOrganizationsQuery: jest.fn(() => EMPTY_RESPONSE),
-  useGetStarterBlueprintsQuery: jest.fn(() => EMPTY_RESPONSE),
-  appApi: {
-    endpoints: {
-      getMe: {
-        useQueryState: jest.fn(() => EMPTY_RESPONSE),
-      },
-    },
-    useLazyGetMeQuery: jest.fn(() => [jest.fn(), EMPTY_RESPONSE]),
-  },
-}));
+jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest
@@ -64,28 +42,6 @@ jest.mock("@/recipes/recipesHooks", () => ({
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));
-
-function optionsStore(initialState?: any) {
-  return configureStore({
-    reducer: {
-      auth: persistReducer(persistAuthConfig, authSlice.reducer),
-      options: persistReducer(
-        persistExtensionOptionsConfig,
-        extensionsSlice.reducer
-      ),
-      blueprints: persistReducer(
-        persistBlueprintsConfig,
-        blueprintsSlice.reducer
-      ),
-    },
-    preloadedState: initialState,
-  });
-}
-
-function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
-  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
-  (appApi.useLazyGetMeQuery as jest.Mock).mockReturnValue([jest.fn(), state]);
-}
 
 const installables: Installable[] = [];
 
@@ -111,9 +67,12 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("doesn't flash the 'Get Started' tab while loading", async () => {
-    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: true,
-    }));
+    appApiMock.reset();
+    const deferred = pDefer<any>();
+    // Force loading state
+    appApiMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(async () => deferred.promise);
 
     render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
@@ -122,11 +81,8 @@ describe("BlueprintsPageLayout", () => {
     ).toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
 
-    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-    }));
+    deferred.resolve([200, []]);
 
-    render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
@@ -135,10 +91,6 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("get started tab is active by default", async () => {
-    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-    }));
-
     render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
     expect(
@@ -151,10 +103,11 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("does not show 'Get Started' tab for enterprise users", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: { organization: organizationFactory() as any } as any,
-    });
+    mockCachedUser(
+      userFactory({
+        organization: userOrganizationFactory(),
+      })
+    );
 
     render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
@@ -165,72 +118,63 @@ describe("BlueprintsPageLayout", () => {
   });
 
   test("shows the bot games tab", async () => {
-    mockMeQuery({
-      isLoading: false,
-    });
+    mockCachedUser();
 
-    render(
-      <Provider
-        store={optionsStore({
-          auth: {
-            isLoggedIn: true,
-            flags: ["bot-games-event-in-progress"],
-            milestones: [{ key: "bot_games_2022_register" }],
-          },
-        })}
-      >
-        <BlueprintsPageLayout installables={installables} />
-      </Provider>
-    );
+    render(<BlueprintsPageLayout installables={installables} />, {
+      setupRedux(dispatch) {
+        dispatch(
+          authSlice.actions.setAuth(
+            authStateFactory({
+              flags: ["bot-games-event-in-progress"],
+              milestones: [{ key: "bot_games_2022_register" }],
+            })
+          )
+        );
+      },
+    });
     await waitForEffect();
     expect(screen.getByText("Bot Games")).not.toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
   });
 
   test("doesn't flash get started tab while loading the bot games tab", async () => {
-    mockMeQuery({
-      isLoading: true,
-    });
-    (useGetStarterBlueprintsQuery as jest.Mock).mockImplementation(() => ({
-      isLoading: false,
-    }));
+    mockLoadingUser();
 
     render(<BlueprintsPageLayout installables={installables} />);
     await waitForEffect();
     expect(screen.queryByText("Get Started")).toBeNull();
 
-    render(
-      <Provider
-        store={optionsStore({
-          auth: {
-            isLoggedIn: true,
-            flags: ["bot-games-event-in-progress"],
-            milestones: [{ key: "bot_games_2022_register" }],
-          },
-        })}
-      >
-        <BlueprintsPageLayout installables={installables} />
-      </Provider>
-    );
+    render(<BlueprintsPageLayout installables={installables} />, {
+      setupRedux(dispatch) {
+        dispatch(
+          authSlice.actions.setAuth(
+            authStateFactory({
+              flags: ["bot-games-event-in-progress"],
+              milestones: [{ key: "bot_games_2022_register" }],
+            })
+          )
+        );
+      },
+    });
     await waitForEffect();
     expect(screen.getByText("Bot Games")).not.toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
   });
 
   test("bot games tab is active by default", async () => {
-    render(
-      <Provider
-        store={optionsStore({
-          auth: {
-            isLoggedIn: true,
-            flags: ["bot-games-event-in-progress"],
-            milestones: [{ key: "bot_games_2022_register" }],
-          },
-        })}
-      >
-        <BlueprintsPageLayout installables={installables} />
-      </Provider>
-    );
+    render(<BlueprintsPageLayout installables={installables} />, {
+      setupRedux(dispatch) {
+        dispatch(
+          authSlice.actions.setAuth(
+            authStateFactory({
+              flags: ["bot-games-event-in-progress"],
+              milestones: [{ key: "bot_games_2022_register" }],
+            })
+          )
+        );
+      },
+    });
+
     await waitForEffect();
     expect(screen.queryByText("Bot Games")).not.toBeNull();
     expect(screen.getByTestId("bot-games-blueprint-tab")).toHaveClass("active");

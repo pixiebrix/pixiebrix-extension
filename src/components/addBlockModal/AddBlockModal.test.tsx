@@ -27,53 +27,29 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import * as api from "@/services/api";
-import { type RegistryId } from "@/types/registryTypes";
-import { type MarketplaceListing } from "@/types/contract";
-import { useAsyncIcon } from "@/components/asyncIcon";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import blocksRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { appApiMock } from "@/testUtils/appApiMock";
+
+// Required to simulate authenticated API calls
+jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
 
 // Need at least one item so callers see the registry as initialized
 blocksRegistry.register([echoBlock]);
 
-jest.mock("@/services/api", () => {
-  const originalModule = jest.requireActual("@/services/api");
-
-  return {
-    ...originalModule,
-    useGetMarketplaceTagsQuery: jest.fn(),
-    useGetMarketplaceListingsQuery: jest.fn(),
-  };
-});
-jest.mock("@/components/asyncIcon", () => ({
-  useAsyncIcon: jest.fn(),
-}));
 jest.mock("@/hooks/useTheme", () => ({
   useGetTheme: jest.fn(),
 }));
 
 beforeAll(() => {
   const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });
-  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
-    data: tags,
-    isLoading: false,
-  });
-  const listings: Record<RegistryId, MarketplaceListing> = {};
-  for (let i = 0; i < 10; i++) {
-    const listing = marketplaceListingFactory({ tags });
-    listings[listing.id as RegistryId] = listing;
-  }
+  const listings = array(marketplaceListingFactory, 10)({ tags });
 
-  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
-    data: listings,
-    isLoading: false,
-  });
-
-  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
+  appApiMock.reset();
+  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
+  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
 });
 
 describe("AddBlockModal", () => {
@@ -95,6 +71,7 @@ describe("AddBlockModal", () => {
       //  See: https://github.com/testing-library/react-testing-library/issues/62
       container: document.body,
     });
+
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -118,10 +95,13 @@ describe("AddBlockModal", () => {
       container: document.body,
     });
 
+    await waitForEffect();
+
     // Click the last tag
     const tags = screen.getAllByTestId("search-tag-item", {
       exact: false,
     });
+
     await userEvent.click(tags.at(-1));
 
     // Enter a query

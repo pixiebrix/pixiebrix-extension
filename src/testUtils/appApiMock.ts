@@ -14,21 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { absoluteApiUrl } from "@/services/apiClient";
 
-describe("absoluteApiUrl", () => {
-  it("makes relative url absolute", async () => {
-    await expect(absoluteApiUrl("/relative")).resolves.toBe(
-      "https://app.pixiebrix.com/relative"
-    );
-  });
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
 
-  it("throws on other absolute URL", async () => {
-    await expect(absoluteApiUrl("https://virus.com")).rejects.toThrow();
-  });
+export const appApiMock = new MockAdapter(axios);
 
-  it("handles absolute URL", async () => {
-    const absoluteUrl = "https://app.pixiebrix.com/path";
-    await expect(absoluteApiUrl(absoluteUrl)).resolves.toBe(absoluteUrl);
-  });
-});
+appApiMock.onGet().reply(200, []);
+appApiMock.onPost().reply(201, {});
+appApiMock.onPut().reply(201, {});
+appApiMock.onDelete().reply(201, {});

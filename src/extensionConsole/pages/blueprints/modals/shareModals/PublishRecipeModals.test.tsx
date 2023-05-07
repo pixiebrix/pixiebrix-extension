@@ -28,6 +28,11 @@ import {
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { appApiMock } from "@/testUtils/appApiMock";
+
+jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
 
 let blueprint: RecipeDefinition;
 let auth: AuthState;
@@ -38,19 +43,14 @@ jest.mock("@/recipes/recipesHooks", () => ({
     isFetching: false,
   })),
 }));
-jest.mock("@/services/api", () => ({
-  appApi: {
-    endpoints: {
-      getMarketplaceListings: {
-        useQueryState: jest.fn().mockReturnValue({ data: {} }),
-      },
-    },
-  },
-  useGetEditablePackagesQuery: jest
-    .fn()
-    .mockReturnValue({ data: [], isFetching: false }),
-  useUpdateRecipeMutation: jest.fn().mockReturnValue([jest.fn()]),
-}));
+
+/**
+ * Wrapper component to fetch marketplace listings because the PublishRecipeModals component does not fetch.
+ */
+const MarketplaceListingsWrapper: React.FC = ({ children }) => {
+  useGetMarketplaceListingsQuery();
+  return <>{children}</>;
+};
 
 beforeEach(() => {
   auth = authStateFactory();
@@ -59,61 +59,85 @@ beforeEach(() => {
       id: validateRegistryId(`${auth.scope}/test`),
     }),
   });
+
+  // XXX: why do we need to call this if it's already defined in appApiMock?
+  appApiMock.onGet("/api/marketplace/listings/").reply(200, []);
 });
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-test("renders publish modal", () => {
-  const rendered = render(<PublishRecipeModals />, {
-    setupRedux(dispatch) {
-      dispatch(authSlice.actions.setAuth(auth));
+test("renders publish modal", async () => {
+  const rendered = render(
+    <MarketplaceListingsWrapper>
+      <PublishRecipeModals />
+    </MarketplaceListingsWrapper>,
+    {
+      setupRedux(dispatch) {
+        dispatch(authSlice.actions.setAuth(auth));
 
-      dispatch(
-        blueprintModalsSlice.actions.setPublishContext({
-          blueprintId: blueprint.metadata.id,
-        })
-      );
-    },
-  });
+        dispatch(
+          blueprintModalsSlice.actions.setPublishContext({
+            blueprintId: blueprint.metadata.id,
+          })
+        );
+      },
+    }
+  );
 
-  expect(rendered.getByRole("dialog")).toMatchSnapshot();
-});
-
-test("renders edit publish modal", () => {
-  blueprint.sharing.public = true;
-
-  const rendered = render(<PublishRecipeModals />, {
-    setupRedux(dispatch) {
-      dispatch(authSlice.actions.setAuth(auth));
-
-      dispatch(
-        blueprintModalsSlice.actions.setPublishContext({
-          blueprintId: blueprint.metadata.id,
-        })
-      );
-    },
-  });
+  await waitForEffect();
 
   expect(rendered.getByRole("dialog")).toMatchSnapshot();
 });
 
-test("renders cancel publish modal", () => {
+test("renders edit publish modal", async () => {
   blueprint.sharing.public = true;
 
-  const rendered = render(<PublishRecipeModals />, {
-    setupRedux(dispatch) {
-      dispatch(authSlice.actions.setAuth(auth));
+  const rendered = render(
+    <MarketplaceListingsWrapper>
+      <PublishRecipeModals />
+    </MarketplaceListingsWrapper>,
+    {
+      setupRedux(dispatch) {
+        dispatch(authSlice.actions.setAuth(auth));
 
-      dispatch(
-        blueprintModalsSlice.actions.setPublishContext({
-          blueprintId: blueprint.metadata.id,
-          cancelingPublish: true,
-        })
-      );
-    },
-  });
+        dispatch(
+          blueprintModalsSlice.actions.setPublishContext({
+            blueprintId: blueprint.metadata.id,
+          })
+        );
+      },
+    }
+  );
+
+  await waitForEffect();
+
+  expect(rendered.getByRole("dialog")).toMatchSnapshot();
+});
+
+test("renders cancel publish modal", async () => {
+  blueprint.sharing.public = true;
+
+  const rendered = render(
+    <MarketplaceListingsWrapper>
+      <PublishRecipeModals />
+    </MarketplaceListingsWrapper>,
+    {
+      setupRedux(dispatch) {
+        dispatch(authSlice.actions.setAuth(auth));
+
+        dispatch(
+          blueprintModalsSlice.actions.setPublishContext({
+            blueprintId: blueprint.metadata.id,
+            cancelingPublish: true,
+          })
+        );
+      },
+    }
+  );
+
+  await waitForEffect();
 
   expect(rendered.getByRole("dialog")).toMatchSnapshot();
 });

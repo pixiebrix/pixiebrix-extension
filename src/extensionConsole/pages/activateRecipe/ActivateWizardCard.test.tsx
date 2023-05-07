@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { render } from "@/extensionConsole/testHelpers";
 import ActivateWizardCard from "@/extensionConsole/pages/activateRecipe/ActivateWizardCard";
 import {
   extensionPointConfigFactory,
@@ -30,6 +29,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
+import { render } from "@/extensionConsole/testHelpers";
 
 registerDefaultWidgets();
 
@@ -45,36 +45,9 @@ jest.mock(
   "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall",
   () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(() => installMock),
+    default: jest.fn(() => installMock),
   })
 );
-
-jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: jest
-    .fn()
-    .mockReturnValue({ data: {}, isLoading: false }),
-  useGetDatabasesQuery: jest.fn(() => ({
-    data: [],
-  })),
-  useGetOrganizationsQuery: jest.fn(() => ({
-    data: [],
-  })),
-  useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
-  useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
-  useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
-  useGetServiceAuthsQuery: jest
-    .fn()
-    .mockReturnValue({ data: [], isLoading: false }),
-  appApi: {
-    useLazyGetMeQuery: jest.fn(() => [
-      jest.fn(),
-      {
-        data: Object.freeze({}),
-        isLoading: false,
-      },
-    ]),
-  },
-}));
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ data: [] }),

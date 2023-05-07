@@ -32,12 +32,12 @@ import PublishedContent from "./PublishedContent";
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
   const { blueprintId, cancelingPublish } = showPublishContext;
-  const { data: listings, isLoading: areListingsLoading } =
+  const { data: listings, isSuccess: areListingsLoaded } =
     appApi.endpoints.getMarketplaceListings.useQueryState();
   const { data: recipe, isFetching: isFetchingRecipe } =
     useOptionalRecipe(blueprintId);
 
-  if (isFetchingRecipe || areListingsLoading) {
+  if (isFetchingRecipe || !areListingsLoaded) {
     return (
       <Modal.Body>
         <Loader />

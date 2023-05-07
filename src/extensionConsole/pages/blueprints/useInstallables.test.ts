@@ -18,7 +18,6 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useGetCloudExtensionsQuery } from "@/services/api";
 import {
   cloudExtensionFactory,
   persistedExtensionFactory,
@@ -28,32 +27,22 @@ import {
 import { validateTimestamp } from "@/types/helpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { range } from "lodash";
+import { appApiMock } from "@/testUtils/appApiMock";
 
-jest.mock("@/services/api", () => ({
-  useGetCloudExtensionsQuery: jest.fn(),
-}));
+jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));
 
-const useGetCloudExtensionsQueryMock =
-  useGetCloudExtensionsQuery as jest.MockedFunction<
-    typeof useGetCloudExtensionsQuery
-  >;
 const useAllRecipesMock = useAllRecipes as jest.MockedFunction<
   typeof useAllRecipes
 >;
 
 describe("useInstallables", () => {
   beforeEach(() => {
-    useGetCloudExtensionsQueryMock.mockReset();
-    useGetCloudExtensionsQueryMock.mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: false,
-      refetch: jest.fn(),
-    });
+    appApiMock.reset();
+    appApiMock.onGet("/api/extensions/").reply(200, []);
 
     useAllRecipesMock.mockReset();
     useAllRecipesMock.mockReturnValue({ data: undefined } as any);
@@ -67,7 +56,7 @@ describe("useInstallables", () => {
     expect(wrapper.result.current).toEqual({
       installables: [],
       isLoading: false,
-      error: false,
+      error: undefined,
     });
   });
 
@@ -98,7 +87,7 @@ describe("useInstallables", () => {
         }),
       ],
       isLoading: false,
-      error: false,
+      error: undefined,
     });
   });
 
@@ -133,7 +122,7 @@ describe("useInstallables", () => {
         }),
       ],
       isLoading: false,
-      error: false,
+      error: undefined,
     });
   });
 
@@ -172,19 +161,15 @@ describe("useInstallables", () => {
         }),
       ],
       isLoading: false,
-      error: false,
+      error: undefined,
     });
 
     expect(wrapper.result.current.installables[0]).not.toHaveProperty("isStub");
   });
 
   it("handles inactive cloud extension", async () => {
-    useGetCloudExtensionsQueryMock.mockReturnValue({
-      data: [cloudExtensionFactory()],
-      isLoading: false,
-      error: false,
-      refetch: jest.fn(),
-    });
+    appApiMock.reset();
+    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtensionFactory()]);
 
     const wrapper = renderHook(() => useInstallables());
 
@@ -198,19 +183,14 @@ describe("useInstallables", () => {
         }),
       ],
       isLoading: false,
-      error: false,
+      error: undefined,
     });
   });
 
   it("handles active cloud extension", async () => {
     const cloudExtension = cloudExtensionFactory();
-
-    useGetCloudExtensionsQueryMock.mockReturnValue({
-      data: [cloudExtension],
-      isLoading: false,
-      error: false,
-      refetch: jest.fn(),
-    });
+    appApiMock.reset();
+    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtension]);
 
     const wrapper = renderHook(() => useInstallables(), {
       setupRedux(dispatch) {
@@ -234,7 +214,7 @@ describe("useInstallables", () => {
         }),
       ],
       isLoading: false,
-      error: false,
+      error: undefined,
     });
   });
 });
