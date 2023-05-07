@@ -32,6 +32,7 @@ import {
   formStateFactory,
   marketplaceListingFactory,
   marketplaceTagFactory,
+  partnerUserFactory,
   triggerFormStateFactory,
   uuidSequence,
 } from "@/testUtils/factories";
@@ -60,8 +61,6 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
-import { useGetTheme } from "@/hooks/useTheme";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
@@ -69,6 +68,7 @@ import { type EditablePackage } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { array } from "cooky-cutter";
+import { mockCachedUser } from "@/testUtils/userMock";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -87,9 +87,6 @@ jest.mock("@/background/messenger/api", () => ({
 }));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
-jest.mock("@/hooks/useTheme", () => ({
-  useGetTheme: jest.fn(),
-}));
 
 const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
@@ -932,7 +929,8 @@ describe("block validation in Add Block Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    (useGetTheme as jest.Mock).mockReturnValue(AUTOMATION_ANYWHERE_PARTNER_KEY);
+    mockCachedUser(partnerUserFactory());
+
     const formState = formStateFactory();
     render(
       <>

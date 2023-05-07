@@ -36,10 +36,6 @@ import { appApiMock } from "@/testUtils/appApiMock";
 // Need at least one item so callers see the registry as initialized
 blocksRegistry.register([echoBlock]);
 
-jest.mock("@/hooks/useTheme", () => ({
-  useGetTheme: jest.fn(),
-}));
-
 beforeAll(() => {
   const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });
   const listings = array(marketplaceListingFactory, 10)({ tags });
