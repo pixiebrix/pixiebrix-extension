@@ -23,13 +23,6 @@ import { type BlockOptions } from "@/types/runtimeTypes";
 import { CancelError, PropError } from "@/errors/businessErrors";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
-jest.mock("@/utils/injectStylesheet", () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue({
-    remove: jest.fn(),
-  }),
-}));
-
 const brick = new TourEffect();
 
 const logger = new ConsoleLogger({

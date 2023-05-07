@@ -66,7 +66,6 @@ import {
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 
 jest.mock("@/background/contextMenus");
-jest.mock("@/telemetry/events");
 jest.mock("@/blocks/registry", () => ({
   __esModule: true,
   default: {

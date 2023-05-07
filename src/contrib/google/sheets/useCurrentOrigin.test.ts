@@ -37,13 +37,8 @@ const isDevToolsPageMock = isDevToolsPage as jest.MockedFunction<
 const originalRuntime = browser.runtime;
 browser.runtime = {
   ...originalRuntime,
-  getURL: jest.fn(),
 };
-const getURLMock = browser.runtime.getURL as jest.MockedFunction<
-  typeof browser.runtime.getURL
->;
 
-const OPTIONS_PATHNAME = "/options.html";
 const PAGE_EDITOR_PATHNAME = "/pageEditor.html";
 const DEVTOOLS_ORIGIN = "devtools://devtools";
 
@@ -71,11 +66,10 @@ describe("useCurrentOrigin", () => {
 
   test("if options page, should return options url", async () => {
     isOptionsPageMock.mockReturnValue(true);
-    getURLMock.mockReturnValue(OPTIONS_PATHNAME);
     const { result } = renderHook(() => useCurrentOrigin());
     // Wait for origin to load (async state)
     await waitForEffect();
-    expect(result.current).toBe(OPTIONS_PATHNAME);
+    expect(result.current).toBe("chrome-extension://abcxyz/");
   });
 
   test("if devtools page, should return devtools origin", async () => {

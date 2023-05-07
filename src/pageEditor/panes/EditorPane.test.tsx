@@ -79,9 +79,6 @@ async function tickAsyncEffects() {
   });
 }
 
-jest.mock("@/telemetry/events", () => ({
-  reportEvent: jest.fn(),
-}));
 jest.mock("@/background/messenger/api", () => ({
   containsPermissions: jest.fn().mockResolvedValue(true),
   registry: {
