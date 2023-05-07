@@ -25,6 +25,8 @@ import crypto from "node:crypto";
 import "jest-location-mock";
 // eslint-disable-next-line import/no-unassigned-import -- mocking permissions API
 import "./permissionsMock";
+import * as apiClientMock from "./apiClientMock";
+import * as storePersistorMock from "./storePersistorMock";
 
 global.$ = $;
 global.jQuery = $;
@@ -43,5 +45,5 @@ globalThis.crypto = {
   getRandomValues: (array) => crypto.randomBytes(array.length),
 };
 
-jest.setMock("@/services/apiClient", require("@/testUtils/apiClientMock"));
-jest.setMock("@/store/optionsStore", require("@/testUtils/storePersistorMock"));
+jest.setMock("@/services/apiClient", apiClientMock);
+jest.setMock("@/store/optionsStore", storePersistorMock);
