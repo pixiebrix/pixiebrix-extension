@@ -32,13 +32,10 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type IService } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { setContext } from "@/testUtils/detectPageMock";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
+setContext("devToolsPage");
+
 // Default mock to return missing dependency
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({

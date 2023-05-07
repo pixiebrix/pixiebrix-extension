@@ -34,13 +34,9 @@ import {
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { setContext } from "@/testUtils/detectPageMock";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
+setContext("devToolsPage");
 
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({

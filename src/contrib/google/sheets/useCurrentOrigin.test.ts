@@ -15,24 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isDevToolsPage, isOptionsPage } from "webext-detect-page";
 import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
 import { renderHook } from "@/sidebar/testHelpers";
 import Tab = chrome.tabs.Tab;
 import { waitForEffect } from "@/testUtils/testHelpers";
-
-jest.mock("webext-detect-page", () => ({
-  isOptionsPage: jest.fn(),
-  isDevToolsPage: jest.fn(),
-  isExtensionContext: jest.fn().mockReturnValue(true),
-}));
-
-const isOptionsPageMock = isOptionsPage as jest.MockedFunction<
-  typeof isOptionsPage
->;
-const isDevToolsPageMock = isDevToolsPage as jest.MockedFunction<
-  typeof isDevToolsPage
->;
+import { setContext } from "@/testUtils/detectPageMock";
 
 const originalRuntime = browser.runtime;
 browser.runtime = {
@@ -65,7 +52,7 @@ describe("useCurrentOrigin", () => {
   });
 
   test("if options page, should return options url", async () => {
-    isOptionsPageMock.mockReturnValue(true);
+    setContext("options");
     const { result } = renderHook(() => useCurrentOrigin());
     // Wait for origin to load (async state)
     await waitForEffect();
@@ -73,8 +60,7 @@ describe("useCurrentOrigin", () => {
   });
 
   test("if devtools page, should return devtools origin", async () => {
-    isOptionsPageMock.mockReturnValue(false);
-    isDevToolsPageMock.mockReturnValue(true);
+    setContext("devToolsPage");
     const { result } = renderHook(() => useCurrentOrigin());
     // Wait for origin to load (async state)
     await waitForEffect();
@@ -82,8 +68,7 @@ describe("useCurrentOrigin", () => {
   });
 
   test("if page editor page, should return devtools origin", async () => {
-    isOptionsPageMock.mockReturnValue(false);
-    isDevToolsPageMock.mockReturnValue(false);
+    setContext("extension");
     location = {
       pathname: PAGE_EDITOR_PATHNAME,
     } as Location;
@@ -96,8 +81,7 @@ describe("useCurrentOrigin", () => {
 
   test("if other page, should return current tab url", async () => {
     const OTHER_URL = "https://www.pixiebrix.com";
-    isOptionsPageMock.mockReturnValue(false);
-    isDevToolsPageMock.mockReturnValue(false);
+    setContext("web");
     queryMock.mockResolvedValue([
       {
         url: OTHER_URL,

@@ -33,8 +33,9 @@ import * as backgroundApi from "@/background/messenger/api";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type IExtension } from "@/types/extensionTypes";
 import chromeP from "webext-polyfill-kinda";
+import { setContext } from "@/testUtils/detectPageMock";
 
-jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+setContext("background");
 
 jest.mock("webext-polyfill-kinda", () => ({
   contextMenus: {
@@ -42,28 +43,13 @@ jest.mock("webext-polyfill-kinda", () => ({
   },
 }));
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => false,
-  isExtensionContext: () => true,
-  isBackground: () => true,
-  isBackgroundPage: () => true,
-  isContentScript: () => false,
-}));
-
 (browser.contextMenus as any) = {
   update: jest.fn(),
 };
 
-const updateMenuMock = browser.contextMenus.update as jest.MockedFunction<
-  typeof browser.contextMenus.update
->;
-const createMenuMock = chromeP.contextMenus.create as jest.MockedFunction<
-  typeof chromeP.contextMenus.create
->;
-const ensureContextMenuMock =
-  backgroundApi.ensureContextMenu as jest.MockedFunction<
-    typeof backgroundApi.ensureContextMenu
-  >;
+const updateMenuMock = jest.mocked(browser.contextMenus.update);
+const createMenuMock = jest.mocked(chromeP.contextMenus.create);
+const ensureContextMenuMock = jest.mocked(backgroundApi.ensureContextMenu);
 
 describe("contextMenus", () => {
   beforeEach(() => {
