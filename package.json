@@ -241,7 +241,7 @@
     "jest-extended": "^3.2.3",
     "jest-location-mock": "^1.0.9",
     "jest-webextension-mock": "^3.8.9",
-    "jsdom": "^21.1.1",
+    "jsdom": "^22.0.0",
     "jsdom-testing-mocks": "^1.8.0",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.6.1",
