@@ -32,8 +32,6 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 
-jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
-
 let blueprint: RecipeDefinition;
 let auth: AuthState;
 

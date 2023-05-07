@@ -27,42 +27,31 @@ import {
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
+import useLinkState from "@/auth/useLinkState";
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
+jest.mock("@/auth/useLinkState", () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
-jest.mock("@/sidebar/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
-jest.mock("@/auth/token", () => {
-  const originalModule = jest.requireActual("@/auth/token");
-  return {
-    ...originalModule,
-    isLinked: jest.fn().mockResolvedValue(true),
-  };
-});
-
-browser.runtime.getURL = (path: string) =>
-  `chrome-extension://example.url/${path}`;
-
-beforeAll(() => {
-  jest.useFakeTimers();
-});
-
-afterAll(() => {
-  jest.runAllTimers();
-  jest.useRealTimers();
-});
+const useLinkStateMock = jest.mocked(useLinkState);
 
 describe("SidebarApp", () => {
+  beforeEach(() => {
+    useLinkStateMock.mockReturnValue({
+      hasToken: true,
+      tokenLoading: false,
+      tokenError: null,
+    });
+  });
+
   test("renders not connected", async () => {
     mockAnonymousUser();
+    useLinkStateMock.mockReturnValue({
+      hasToken: false,
+      tokenLoading: false,
+      tokenError: null,
+    });
 
     const rendered = render(
       <MemoryRouter>
@@ -71,12 +60,17 @@ describe("SidebarApp", () => {
     );
     await waitForEffect();
 
-    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("renders not connected partner view", async () => {
+    // Is this a real state? The use in meQueryState couldn't be set if hasToken is `false`
     mockCachedUser(partnerUserFactory());
+    useLinkStateMock.mockReturnValue({
+      hasToken: false,
+      tokenLoading: false,
+      tokenError: null,
+    });
 
     const rendered = render(
       <MemoryRouter>
@@ -85,7 +79,6 @@ describe("SidebarApp", () => {
     );
     await waitForEffect();
 
-    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
@@ -105,7 +98,6 @@ describe("SidebarApp", () => {
 
     await waitForEffect();
 
-    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

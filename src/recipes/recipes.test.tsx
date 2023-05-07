@@ -28,8 +28,6 @@ import { recipeDefinitionFactory } from "@/testUtils/factories";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
 
-jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
-
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
   useModals: () => ({

@@ -125,7 +125,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
     }
 
     return extension;
-  }, [extensions, extensionId]);
+  }, [cloudExtensions, extensions, extensionId]);
 
   const scope = useSelector(selectScope);
 

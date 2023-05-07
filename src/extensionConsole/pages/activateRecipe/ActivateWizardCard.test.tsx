@@ -30,14 +30,10 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
 import { render } from "@/extensionConsole/testHelpers";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
+mockAllApiEndpoints();
 registerDefaultWidgets();
-
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
 
 const installMock = jest.fn();
 

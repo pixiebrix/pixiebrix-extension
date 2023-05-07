@@ -33,9 +33,6 @@ import blocksRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 
-// Required to simulate authenticated API calls
-jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
-
 // Need at least one item so callers see the registry as initialized
 blocksRegistry.register([echoBlock]);
 

@@ -29,12 +29,6 @@ import settingsSlice from "@/store/settingsSlice";
 import { uuidv4 } from "@/types/helpers";
 import { authSlice } from "@/auth/authSlice";
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
 describe("useGetTheme", () => {
   test("has no partner", () => {
     mockCachedUser(userFactory());

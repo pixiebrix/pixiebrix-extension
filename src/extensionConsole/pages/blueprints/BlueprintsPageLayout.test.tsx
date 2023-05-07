@@ -32,8 +32,6 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { mockCachedUser, mockLoadingUser } from "@/testUtils/userMock";
 import { authSlice } from "@/auth/authSlice";
 
-jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
-
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest
     .fn()
@@ -46,19 +44,10 @@ jest.mock("@/recipes/recipesHooks", () => ({
 const installables: Installable[] = [];
 
 describe("BlueprintsPageLayout", () => {
-  const { env } = process;
-
-  beforeEach(() => {
-    jest.resetModules();
-    process.env = { ...env };
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    process.env = env;
-  });
-
   test("renders", async () => {
+    appApiMock.reset();
+    appApiMock.onGet().reply(200, []);
+
     const rendered = render(
       <BlueprintsPageLayout installables={installables} />
     );

@@ -16,6 +16,8 @@
  */
 import { absoluteApiUrl } from "@/services/apiClient";
 
+jest.unmock("@/services/apiClient");
+
 describe("absoluteApiUrl", () => {
   it("makes relative url absolute", async () => {
     await expect(absoluteApiUrl("/relative")).resolves.toBe(

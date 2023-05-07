@@ -39,26 +39,12 @@ import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import pDefer from "p-defer";
 
-jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
-
 jest.mock("@/recipes/recipesHooks", () => ({
   useRequiredRecipe: jest.fn(),
 }));
 
 const useRequiredRecipeMock = jest.mocked(useRequiredRecipe);
 const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
-
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
-jest.mock("@/sidebar/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
 
 jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
   __esModule: true,

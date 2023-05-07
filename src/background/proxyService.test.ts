@@ -34,6 +34,8 @@ import {
   type SecretsConfig,
 } from "@/types/serviceTypes";
 
+jest.unmock("@/services/apiClient");
+
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
   typeof isBackground

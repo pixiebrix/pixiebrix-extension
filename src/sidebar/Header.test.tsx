@@ -22,12 +22,6 @@ import Header from "@/sidebar/Header";
 import { mockCachedUser } from "@/testUtils/userMock";
 import { userFactory, userOrganizationFactory } from "@/testUtils/factories";
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
 beforeEach(() => {
   jest.clearAllMocks();
 });

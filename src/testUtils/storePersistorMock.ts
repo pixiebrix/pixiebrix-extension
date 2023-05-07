@@ -15,25 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import SidebarApp from "@/sidebar/SidebarApp";
-import { render } from "@testing-library/react";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
-
-jest.mock("@/hooks/useContextInvalidated", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-describe("SidebarApp", () => {
-  test("it renders", () => {
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-
-  test("it renders error when context is invalidated", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(true);
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-});
+/**
+ * A mock to provide persistor.flush() for testing, e.g., from optionsStore.
+ *
+ * The useTheme hook imports optionsStore:persistor. The optionsStore module requires additional setup because the
+ * file uses connectRouter. Therefore, we're mocking globally in to avoid having to mock in arbitrary test files
+ * the test components that use useTheme
+ */
+export const persistor = {
+  flush: jest.fn(),
+};

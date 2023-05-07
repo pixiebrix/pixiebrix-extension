@@ -133,7 +133,7 @@ exports[`UiPath Options Render integration selector 1`] = `
             Select an integration configuration.
              
             <a
-              href="moz-extension://8b413e68-1e0d-4cad-b98e-1eb000799783/options.html#/services"
+              href="chrome-extension://abcxyz/options.html#/services"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -295,7 +295,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
             Select an integration configuration.
              
             <a
-              href="moz-extension://8b413e68-1e0d-4cad-b98e-1eb000799783/options.html#/services"
+              href="chrome-extension://abcxyz/options.html#/services"
               rel="noopener noreferrer"
               target="_blank"
             >

@@ -29,8 +29,6 @@ import { useAllRecipes } from "@/recipes/recipesHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
 
-jest.mock("@/services/apiClient", () => require("@/testUtils/apiClientMock"));
-
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));

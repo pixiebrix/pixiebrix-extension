@@ -29,6 +29,10 @@ import { userFactory } from "@/testUtils/factories";
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
 
+// Other things we'd need to eventually mock here:
+// - auth.ts:useLinkState
+// - auth:ts:isLinked
+
 export function mockAnonymousUser(): void {
   (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
     querySuccessFactory({})

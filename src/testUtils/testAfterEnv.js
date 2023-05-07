@@ -36,7 +36,12 @@ browser.runtime.getManifest = jest.fn().mockReturnValue({
   version: "1.5.2",
 });
 
+browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
+
 // https://stackoverflow.com/q/52612122/288906
 globalThis.crypto = {
   getRandomValues: (array) => crypto.randomBytes(array.length),
 };
+
+jest.setMock("@/services/apiClient", require("@/testUtils/apiClientMock"));
+jest.setMock("@/store/optionsStore", require("@/testUtils/storePersistorMock"));

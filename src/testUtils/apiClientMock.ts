@@ -24,3 +24,7 @@ export async function getLinkedApiClient() {
 export async function getApiClient() {
   return axios.create();
 }
+
+export async function maybeGetLinkedApiClient() {
+  return axios.create();
+}

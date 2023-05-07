@@ -20,7 +20,14 @@ import axios from "axios";
 
 export const appApiMock = new MockAdapter(axios);
 
-appApiMock.onGet().reply(200, []);
-appApiMock.onPost().reply(201, {});
-appApiMock.onPut().reply(201, {});
-appApiMock.onDelete().reply(201, {});
+/**
+ * Mock all API endpoints to return empty responses.
+ */
+export function mockAllApiEndpoints() {
+  // Ideally we could do this automatically, but rules provided to appApiMock are evaluated in order. So we can't
+  // fall back to these defaults. :shrug:
+  appApiMock.onGet().reply(200, []);
+  appApiMock.onPost().reply(201, {});
+  appApiMock.onPut().reply(201, {});
+  appApiMock.onDelete().reply(201, {});
+}
