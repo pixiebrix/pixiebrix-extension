@@ -19,7 +19,7 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
-import { pollUntilTruthy } from "@/utils";
+import { logPromiseDuration, pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
@@ -85,9 +85,11 @@ const WAIT_LOADED_INTERVAL_MS = 25;
 
 const injectPageScriptOnce = once(async (): Promise<void> => {
   console.debug("Injecting page script");
-  const script = await injectScriptTag(browser.runtime.getURL("pageScript.js"));
+  const script = await logPromiseDuration(
+    "injectPageScript",
+    injectScriptTag(browser.runtime.getURL("pageScript.js"))
+  );
   script.remove();
-  console.debug("Injected page script");
 });
 
 /**
@@ -347,7 +349,10 @@ export async function runEditorExtension(
  */
 async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
   console.debug("lifecycle:loadPersistedExtensions");
-  const options = await loadOptions();
+  const options = await logPromiseDuration(
+    "loadPersistedExtensions:loadOptions",
+    loadOptions()
+  );
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
@@ -357,8 +362,9 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
       isDeploymentActive(extension) && !_editorExtensions.has(extension.id)
   );
 
-  const resolvedExtensions = await Promise.all(
-    activeExtensions.map(async (x) => resolveDefinitions(x))
+  const resolvedExtensions = await logPromiseDuration(
+    "loadPersistedExtensions:resolveDefinitions",
+    Promise.all(activeExtensions.map(async (x) => resolveDefinitions(x)))
   );
 
   const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
@@ -410,7 +416,10 @@ async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
     // XXX: could also include _editorExtensions to handle case where user activates a mod while the page editor
     // is open. However, that would require handling corner case where the user reactivating a mod that has dirty
     // changes. It's not worth the complexity of handling the corner case.
-    return loadPersistedExtensions();
+    return logPromiseDuration(
+      "loadPersistedExtensionsOnce:loadPersistedExtensions",
+      loadPersistedExtensions()
+    );
   }
 
   // NOTE: don't want _activeExtensionPoints, because we also want extension points that weren't active for the
@@ -491,32 +500,43 @@ export async function handleNavigate({
   updateNavigationId();
   notifyNavigationListeners();
 
-  const extensionPoints = await loadPersistedExtensionsOnce();
+  const [extensionPoints] = await Promise.all([
+    loadPersistedExtensionsOnce(),
+    // Must always inject Page Script, so it's available to the Page Editor. Alternatively, we would inject it on
+    // demand when the Page Editor loads.
+    injectPageScriptOnce(),
+  ]);
 
   const abortSignal = createNavigationAbortSignal();
 
-  // Page script is needed for inserting elements into the page
-  await Promise.all([injectPageScriptOnce(), waitDocumentLoad(abortSignal)]);
-
   if (extensionPoints.length > 0) {
-    // Safe to use Promise.all because the inner method can't throw
-    await Promise.all(
-      extensionPoints.map(async (extensionPoint) => {
-        // Don't await each extension point since the extension point may never appear. For example, an
-        // extension point that runs on the contact information modal on LinkedIn
-        const runPromise = runExtensionPoint(extensionPoint, {
-          reason: runReason,
-          abortSignal,
-        }).catch((error) => {
-          console.error("Error installing/running: %s", extensionPoint.id, {
-            error,
-          });
-        });
+    // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
+    await logPromiseDuration(
+      "handleNavigate:waitDocumentLoad",
+      waitDocumentLoad(abortSignal)
+    );
 
-        if (extensionPoint.syncInstall) {
-          await runPromise;
-        }
-      })
+    // Safe to use Promise.all because the inner method can't throw
+    await logPromiseDuration(
+      "handleNavigate:runExtensionPoints",
+      Promise.all(
+        extensionPoints.map(async (extensionPoint) => {
+          // Don't await each extension point since the extension point may never appear. For example, an
+          // extension point that runs on the contact information modal on LinkedIn
+          const runPromise = runExtensionPoint(extensionPoint, {
+            reason: runReason,
+            abortSignal,
+          }).catch((error) => {
+            console.error("Error installing/running: %s", extensionPoint.id, {
+              error,
+            });
+          });
+
+          if (extensionPoint.syncInstall) {
+            await runPromise;
+          }
+        })
+      )
     );
   }
 }
