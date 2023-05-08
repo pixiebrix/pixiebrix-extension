@@ -50,7 +50,7 @@ import {
 } from "@/extensionPoints/types";
 import {
   type CloudExtension,
-  Database,
+  type Database,
   type Deployment,
   type MarketplaceListing,
   type MarketplaceTag,
