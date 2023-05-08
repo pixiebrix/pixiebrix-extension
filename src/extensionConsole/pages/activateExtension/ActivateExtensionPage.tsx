@@ -32,14 +32,16 @@ import { type UUID } from "@/types/stringTypes";
 const ActivateExtensionPage: React.FunctionComponent = () => {
   const { extensionId } = useParams<{ extensionId: UUID }>();
 
-  // Force-refetch the latest data for this extension before activation
   const {
     data: extension,
     isFetching,
     error,
   } = useGetCloudExtensionQuery(
     { extensionId },
-    { refetchOnMountOrArgChange: true }
+    {
+      // Force-refetch the latest data for this extension before activation
+      refetchOnMountOrArgChange: true,
+    }
   );
 
   const { data: authOptions, refetch: refreshAuthOptions } = useAuthOptions();
