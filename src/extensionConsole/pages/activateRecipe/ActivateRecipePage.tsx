@@ -27,7 +27,7 @@ import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegi
 import { useGetRecipeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
-import { useRecipeIdParam } from "@/extensionConsole/pages/pageHelpers";
+import { useRecipeIdParam } from "@/extensionConsole/pages/useRecipeIdParam";
 
 const ActivateRecipePageContent: React.FC = () => {
   const recipeId = useRecipeIdParam();

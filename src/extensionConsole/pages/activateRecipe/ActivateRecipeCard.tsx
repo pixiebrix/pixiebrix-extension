@@ -29,7 +29,7 @@ import ReduxPersistenceContext, {
 import { persistor } from "@/store/optionsStore";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
-import { useRecipeIdParam } from "@/extensionConsole/pages/pageHelpers";
+import { useRecipeIdParam } from "@/extensionConsole/pages/useRecipeIdParam";
 import { useCreateMilestoneMutation, useGetRecipeQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faMagic } from "@fortawesome/free-solid-svg-icons";

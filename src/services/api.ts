@@ -280,6 +280,32 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["CloudExtensions"],
     }),
+    getRecipe: builder.query<RecipeDefinition, { recipeId: RegistryId }>({
+      query: ({ recipeId }) => ({
+        url: `/api/recipes/${recipeId}/`,
+        method: "get",
+      }),
+      transformResponse(
+        baseQueryReturnValue: RecipeResponse
+      ): RecipeDefinition {
+        // Pull out sharing and updated_at from response and merge into the base
+        // response to create a RecipeDefinition
+        const {
+          sharing,
+          updated_at,
+          config: unsavedRecipeDefinition,
+        } = baseQueryReturnValue;
+        return {
+          ...unsavedRecipeDefinition,
+          sharing,
+          updated_at,
+        };
+      },
+      providesTags: (result, error, { recipeId }) => [
+        { type: "Package", id: recipeId },
+        "EditablePackages",
+      ],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
@@ -422,32 +448,6 @@ export const appApi = createApi({
         data,
       }),
       invalidatesTags: ["Me"],
-    }),
-    getRecipe: builder.query<RecipeDefinition, { recipeId: RegistryId }>({
-      query: ({ recipeId }) => ({
-        url: `/api/recipes/${recipeId}/`,
-        method: "get",
-      }),
-      transformResponse(
-        baseQueryReturnValue: RecipeResponse
-      ): RecipeDefinition {
-        // Pull out sharing and updated_at from response and merge into the base
-        // response to create a RecipeDefinition
-        const {
-          sharing,
-          updated_at,
-          config: unsavedRecipeDefinition,
-        } = baseQueryReturnValue;
-        return {
-          ...unsavedRecipeDefinition,
-          sharing,
-          updated_at,
-        };
-      },
-      providesTags: (result, error, { recipeId }) => [
-        { type: "Package", id: recipeId },
-        "EditablePackages",
-      ],
     }),
   }),
 });
