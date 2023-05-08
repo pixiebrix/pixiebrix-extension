@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import {
+  INNER_SCOPE,
+  isInnerDefinitionRef,
+  type Metadata,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
@@ -50,11 +55,7 @@ import {
   getMinimalSchema,
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
-import {
-  hasInnerExtensionPoint,
-  INNER_SCOPE,
-  isInnerDefinitionRef,
-} from "@/registry/internal";
+import { hasInnerExtensionPoint } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";

@@ -31,7 +31,6 @@ import {
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { $safeFind } from "@/helpers";
-import { isInnerDefinitionRef } from "@/registry/internal";
 import { BusinessError } from "@/errors/businessErrors";
 import { validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
@@ -44,6 +43,7 @@ import {
   type RenderedArgs,
 } from "@/types/runtimeTypes";
 import { type IExtension } from "@/types/extensionTypes";
+import { isInnerDefinitionRef } from "@/types/registryTypes";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block

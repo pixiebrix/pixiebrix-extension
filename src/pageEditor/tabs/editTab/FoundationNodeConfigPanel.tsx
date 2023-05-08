@@ -20,7 +20,6 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import useFlags from "@/hooks/useFlags";
-import { isInnerDefinitionRef } from "@/registry/internal";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -31,6 +30,7 @@ import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+import { isInnerDefinitionRef } from "@/types/registryTypes";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();

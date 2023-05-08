@@ -21,6 +21,7 @@ import {
   type Metadata,
   type RegistryId,
   type InnerDefinitions,
+  isInnerDefinitionRef,
 } from "@/types/registryTypes";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
@@ -28,7 +29,6 @@ import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isInnerDefinitionRef } from "@/registry/internal";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,

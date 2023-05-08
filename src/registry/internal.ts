@@ -38,8 +38,9 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
-  type InnerDefinitionRef,
+  INNER_SCOPE,
   type InnerDefinitions,
+  isInnerDefinitionRef,
   type RegistryId,
 } from "@/types/registryTypes";
 import {
@@ -57,18 +58,9 @@ type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
 
 type InnerDefinition = InnerExtensionPoint | InnerBlock;
 
-/**
- * Scope for inner definitions
- */
-export const INNER_SCOPE = "@internal";
-
 export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
   return `${INNER_SCOPE}/${hash}` as RegistryId;
-}
-
-export function isInnerDefinitionRef(id: string): id is InnerDefinitionRef {
-  return id.startsWith(INNER_SCOPE + "/");
 }
 
 async function resolveBlockDefinition(
@@ -98,7 +90,7 @@ async function resolveBlockDefinition(
     },
   });
 
-  blockRegistry.register([item]);
+  blockRegistry.register([item], { source: "internal", notify: false });
 
   return item;
 }
@@ -184,7 +176,10 @@ async function resolveExtensionPointDefinition(
     },
   } as ExtensionPointConfig);
 
-  extensionPointRegistry.register([item]);
+  extensionPointRegistry.register([item], {
+    source: "internal",
+    notify: false,
+  });
   return item;
 }
 
@@ -224,6 +219,7 @@ async function resolveInnerDefinition(
 
 /**
  * Return a new copy of the IExtension with its inner references re-written.
+ * TODO: resolve/map ids for other definitions (brick, service, etc.) within the extension
  */
 export async function resolveExtensionInnerDefinitions<
   T extends UnknownObject = UnknownObject
@@ -242,15 +238,15 @@ export async function resolveExtensionInnerDefinitions<
         definition.kind !== "extensionPoint"
     );
 
-    const ensured = await resolveObj(
+    const resolvedDefinitions = await resolveObj(
       mapValues(relevantDefinitions, async (definition) =>
         resolveInnerDefinition(draft.definitions, definition)
       )
     );
 
     delete draft.definitions;
-    if (ensured[draft.extensionPointId] != null) {
-      draft.extensionPointId = ensured[draft.extensionPointId].id;
+    if (resolvedDefinitions[draft.extensionPointId] != null) {
+      draft.extensionPointId = resolvedDefinitions[draft.extensionPointId].id;
     }
   }) as Promise<ResolvedExtension<T>>;
 }
@@ -282,7 +278,7 @@ export async function resolveRecipeInnerDefinitions(
       definition.kind !== "extensionPoint"
   );
 
-  const ensured = await resolveObj(
+  const resolvedDefinitions = await resolveObj(
     mapValues(relevantDefinitions, async (config) =>
       resolveInnerDefinition(relevantDefinitions, config)
     )
@@ -290,8 +286,8 @@ export async function resolveRecipeInnerDefinitions(
 
   return extensionDefinitions.map(
     (definition) =>
-      (definition.id in ensured
-        ? { ...definition, id: ensured[definition.id].id }
+      (definition.id in resolvedDefinitions
+        ? { ...definition, id: resolvedDefinitions[definition.id].id }
         : definition) as ResolvedExtensionDefinition
   );
 }

@@ -16,11 +16,9 @@
  */
 
 import { isEmpty } from "lodash";
-import { type Metadata } from "@/types/registryTypes";
-
+import { isInnerDefinitionRef, type Metadata } from "@/types/registryTypes";
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
-import { isInnerDefinitionRef } from "@/registry/internal";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
   type OptionsDefinition,

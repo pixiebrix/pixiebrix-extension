@@ -29,6 +29,11 @@ export type RegistryId = string & {
 };
 
 /**
+ * Scope for inner definitions
+ */
+export const INNER_SCOPE = "@internal";
+
+/**
  * The kind of definition in the external registry
  */
 export type Kind =
@@ -114,6 +119,13 @@ export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
 };
+
+/**
+ * Return true if `id` refers to an inner registry definition
+ */
+export function isInnerDefinitionRef(id: string): id is InnerDefinitionRef {
+  return id.startsWith(INNER_SCOPE + "/");
+}
 
 /**
  * A reference to a package in the registry that the user has edit permissions for.

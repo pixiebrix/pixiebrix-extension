@@ -31,10 +31,10 @@ import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isInnerDefinitionRef } from "@/registry/internal";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type UUID } from "@/types/stringTypes";
+import { isInnerDefinitionRef } from "@/types/registryTypes";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
