@@ -205,11 +205,6 @@ export async function resolveDefinitions<
     return extension as ResolvedExtension<T>;
   }
 
-  // Too noisy since all IExtensions created with Page Editor have definitions
-  // console.debug("Resolving definitions for extension: %s", extension.id, {
-  //   extension,
-  // });
-
   return produce(extension, async (draft) => {
     const ensured = await resolveObj(
       mapValues(draft.definitions, async (definition) =>
