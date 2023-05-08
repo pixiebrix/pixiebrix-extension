@@ -98,7 +98,7 @@ describe("useActivateRecipe", () => {
     const {
       result: { current: activateRecipe },
       getReduxStore,
-    } = renderHook(() => useActivateRecipe(), {
+    } = renderHook(() => useActivateRecipe("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },
@@ -124,7 +124,7 @@ describe("useActivateRecipe", () => {
       result: { current: activateRecipe },
       getReduxStore,
       act,
-    } = renderHook(() => useActivateRecipe(), {
+    } = renderHook(() => useActivateRecipe("extensionConsole"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
       },

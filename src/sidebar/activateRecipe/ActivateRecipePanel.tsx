@@ -180,7 +180,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   defaultAuthOptions,
 }) => {
   const reduxDispatch = useDispatch();
-  const marketplaceActivateRecipe = useActivateRecipe();
+  const marketplaceActivateRecipe = useActivateRecipe("marketplace");
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,

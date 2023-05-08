@@ -122,7 +122,6 @@ function useWizard(
           extensionPoints.map((_, index) => [index, Yup.boolean().required()])
         )
       ),
-      // Services are also validated in useInstall()
       services: Yup.array().of(
         Yup.object().test(
           "servicesRequired",

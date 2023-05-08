@@ -20,8 +20,7 @@ import styles from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard.m
 import React, { useCallback, useMemo } from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { type CloudExtension } from "@/types/contract";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, Formik, type FormikProps, useFormikContext } from "formik";
+import { type FormikProps, useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
@@ -35,6 +34,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faMagic } from "@fortawesome/free-solid-svg-icons";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AsyncButton from "@/components/AsyncButton";
+import Form, { type RenderBody } from "@/components/form/Form";
+import { object } from "yup";
+import * as Yup from "yup";
 
 const { actions } = extensionsSlice;
 
@@ -56,7 +58,17 @@ const ActivateButton: React.FunctionComponent = () => {
   );
 };
 
-const ActivateForm: React.FunctionComponent<{
+const validationSchema = object().shape({
+  services: Yup.array().of(
+    Yup.object().test(
+      "servicesRequired",
+      "Please select a configuration",
+      (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
+    )
+  ),
+});
+
+const ActivateExtensionCard: React.FunctionComponent<{
   extension: CloudExtension;
   authOptions: AuthOption[];
   refreshAuthOptions: () => void;
@@ -92,43 +104,47 @@ const ActivateForm: React.FunctionComponent<{
     [extension, dispatch]
   );
 
+  const renderBody: RenderBody = () => (
+    <Card>
+      <Card.Header className={styles.wizardHeader}>
+        <Row>
+          <Col>
+            <div className={styles.wizardHeaderLayout}>
+              <div className={styles.wizardMainInfo}>
+                <span className={styles.blueprintIcon}>
+                  <FontAwesomeIcon icon={faCube} />
+                </span>
+                <Card.Title>{extension.label}</Card.Title>
+              </div>
+              <div className={styles.wizardDescription}>
+                Created in the Page Editor
+              </div>
+            </div>
+            <div className={styles.activateButtonContainer}>
+              <ActivateButton />
+            </div>
+          </Col>
+        </Row>
+      </Card.Header>
+      <Card.Body>
+        <ServicesRow
+          authOptions={authOptions}
+          refreshAuthOptions={refreshAuthOptions}
+        />
+        <PermissionsRow extension={extension} />
+      </Card.Body>
+    </Card>
+  );
+
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      {() => (
-        <Form id="activate-wizard" noValidate>
-          <Card>
-            <Card.Header className={styles.wizardHeader}>
-              <Row>
-                <Col>
-                  <div className={styles.wizardHeaderLayout}>
-                    <div className={styles.wizardMainInfo}>
-                      <span className={styles.blueprintIcon}>
-                        <FontAwesomeIcon icon={faCube} />
-                      </span>
-                      <Card.Title>{extension.label}</Card.Title>
-                    </div>
-                    <div className={styles.wizardDescription}>
-                      Created in the Page Editor
-                    </div>
-                  </div>
-                  <div className={styles.activateButtonContainer}>
-                    <ActivateButton />
-                  </div>
-                </Col>
-              </Row>
-            </Card.Header>
-            <Card.Body>
-              <ServicesRow
-                authOptions={authOptions}
-                refreshAuthOptions={refreshAuthOptions}
-              />
-              <PermissionsRow extension={extension} />
-            </Card.Body>
-          </Card>
-        </Form>
-      )}
-    </Formik>
+    <Form
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+      renderBody={renderBody}
+      renderSubmit={() => null}
+    />
   );
 };
 
-export default ActivateForm;
+export default ActivateExtensionCard;

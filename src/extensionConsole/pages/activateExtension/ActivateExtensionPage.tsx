@@ -21,7 +21,7 @@ import { useParams } from "react-router";
 import { Col, Row } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Page from "@/layout/Page";
-import ActivateForm from "@/extensionConsole/pages/activateExtension/ActivateForm";
+import ActivateExtensionCard from "@/extensionConsole/pages/activateExtension/ActivateExtensionCard";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetCloudExtensionQuery } from "@/services/api";
 import { type UUID } from "@/types/stringTypes";
@@ -57,7 +57,7 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
         <Col xs={12} xl={10}>
           <ErrorBoundary>
             {extension && authOptions && (
-              <ActivateForm
+              <ActivateExtensionCard
                 extension={extension}
                 authOptions={authOptions}
                 refreshAuthOptions={refreshAuthOptions}

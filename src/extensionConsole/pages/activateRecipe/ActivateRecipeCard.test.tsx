@@ -29,7 +29,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
 import { useGetRecipeQuery } from "@/services/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 
@@ -43,13 +42,10 @@ jest.mock("@/store/optionsStore", () => ({
 
 const installMock = jest.fn();
 
-jest.mock(
-  "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall",
-  () => ({
-    __esModule: true,
-    default: jest.fn().mockImplementation(() => installMock),
-  })
-);
+jest.mock("@/activation/useActivateRecipe.ts", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => installMock),
+}));
 
 jest.mock("@/services/api", () => ({
   useGetDatabasesQuery: jest.fn(() => ({
@@ -63,6 +59,7 @@ jest.mock("@/services/api", () => ({
   useGetRecipeQuery: jest.fn(() => ({
     data: null,
   })),
+  useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
   appApi: {
     useLazyGetMeQuery: jest.fn(() => [
       jest.fn(),
@@ -164,15 +161,13 @@ describe("ActivateRecipeCard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(recipe);
-
     expect(installMock).toHaveBeenCalledWith(
       {
         extensions: { "0": true },
         optionsArgs: {},
         services: [],
       },
-      expect.toBeObject()
+      recipe
     );
   });
 
@@ -200,7 +195,6 @@ describe("ActivateRecipeCard", () => {
     await waitForEffect();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(recipe);
     expect(installMock).not.toHaveBeenCalled();
   });
 });

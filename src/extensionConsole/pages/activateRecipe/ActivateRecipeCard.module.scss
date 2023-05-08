@@ -68,6 +68,6 @@
 
 .activateButtonContainer {
   display: flex;
-  justify-content: end;
+  flex-direction: column;
   align-items: center;
 }

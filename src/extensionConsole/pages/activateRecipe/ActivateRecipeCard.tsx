@@ -17,41 +17,49 @@
 
 import styles from "./ActivateRecipeCard.module.scss";
 
-import React from "react";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Card, Col, Form, Row } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { truncate } from "lodash";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik } from "formik";
 import { useTitle } from "@/hooks/title";
-import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
 import useWizard from "@/activation/useWizard";
-import ActivateButton from "@/extensionConsole/pages/activateRecipe/ActivateButton";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
 import { persistor } from "@/store/optionsStore";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
 import { useRecipeIdParam } from "@/extensionConsole/pages/pageHelpers";
-import { useGetRecipeQuery } from "@/services/api";
+import { useCreateMilestoneMutation, useGetRecipeQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCubes } from "@fortawesome/free-solid-svg-icons";
+import { faCubes, faMagic } from "@fortawesome/free-solid-svg-icons";
+import useActivateRecipe from "@/activation/useActivateRecipe";
+import useMilestones from "@/hooks/useMilestones";
+import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
+import { type WizardValues } from "@/activation/wizardTypes";
+import Alert from "@/components/Alert";
+import notify from "@/utils/notify";
+import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
+import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/blueprints/BlueprintsPageSidebar";
+import { push } from "connected-react-router";
 
 const ActivateRecipeCard: React.FC = () => {
+  const dispatch = useDispatch();
   const recipeId = useRecipeIdParam();
-  const isReinstall = useSelector(
+  const isReactivate = useSelector(
     selectRecipeHasAnyExtensionsInstalled(recipeId)
   );
-  const actionText = isReinstall ? "Reactivate" : "Activate";
+  const actionText = isReactivate ? "Reactivate" : "Activate";
   // Page parent component is gating this content component on isFetching, so
   // recipe will always be resolved here
   const { data: recipe } = useGetRecipeQuery({ recipeId }, { skip: !recipeId });
 
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
 
-  const install = useExtensionConsoleInstall(recipe);
+  const activateRecipe = useActivateRecipe("extensionConsole");
+  const [activationError, setActivationError] = useState<unknown>();
+  const [createMilestone] = useCreateMilestoneMutation();
+  const { hasMilestone } = useMilestones();
 
   useTitle(`${actionText} ${truncate(recipe.metadata.name, { length: 15 })}`);
 
@@ -61,56 +69,95 @@ const ActivateRecipeCard: React.FC = () => {
     },
   };
 
+  const renderBody: RenderBody = ({ values, isSubmitting }) => (
+    <>
+      <BlockFormSubmissionViaEnterIfFirstChild />
+      <Card>
+        <Card.Header className={styles.wizardHeader}>
+          <Row>
+            <Col>
+              <div className={styles.wizardHeaderLayout}>
+                <div className={styles.wizardMainInfo}>
+                  <span className={styles.blueprintIcon}>
+                    <FontAwesomeIcon icon={faCubes} size="2x" />
+                  </span>
+                  <span>
+                    <Card.Title>{recipe.metadata.name}</Card.Title>
+                    <code className={styles.packageId}>
+                      {recipe.metadata.id}
+                    </code>
+                  </span>
+                </div>
+                <div className={styles.wizardDescription}>
+                  {recipe.metadata.description}
+                </div>
+              </div>
+              <div className={styles.activateButtonContainer}>
+                <Button
+                  className="text-nowrap"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  <FontAwesomeIcon icon={faMagic} />{" "}
+                  {isReactivate ? "Reactivate" : "Activate"}
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </Card.Header>
+        <Card.Body className={styles.wizardBody}>
+          {activationError && (
+            <Alert variant="danger" className="m-3">
+              {activationError}
+            </Alert>
+          )}
+          {wizardSteps.map(({ Component, label, key }) => (
+            <div key={key} className={styles.wizardBodyRow}>
+              <div>
+                <h4>{label}</h4>
+              </div>
+              <Component blueprint={recipe} reinstall={isReactivate} />
+            </div>
+          ))}
+        </Card.Body>
+      </Card>
+    </>
+  );
+
+  const onSubmit: OnSubmit<WizardValues> = async (values, helpers) => {
+    const { success, error } = await activateRecipe(values, recipe);
+
+    if (success) {
+      notify.success(`Installed ${recipe.metadata.name}`);
+
+      if (!hasMilestone("first_time_public_blueprint_install")) {
+        await createMilestone({
+          key: "first_time_public_blueprint_install",
+          metadata: {
+            blueprintId: recipeId,
+          },
+        });
+
+        dispatch(
+          blueprintsSlice.actions.setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted)
+        );
+      }
+
+      dispatch(push("/mods"));
+    } else {
+      setActivationError(error);
+    }
+  };
+
   return (
     <ReduxPersistenceContext.Provider value={reduxPersistenceContext}>
-      <Formik
+      <Form
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={install}
-      >
-        {({ handleSubmit }) => (
-          <Form id="activate-wizard" onSubmit={handleSubmit}>
-            <BlockFormSubmissionViaEnterIfFirstChild />
-            <Card>
-              <Card.Header className={styles.wizardHeader}>
-                <Row>
-                  <Col>
-                    <div className={styles.wizardHeaderLayout}>
-                      <div className={styles.wizardMainInfo}>
-                        <span className={styles.blueprintIcon}>
-                          <FontAwesomeIcon icon={faCubes} size="2x" />
-                        </span>
-                        <span>
-                          <Card.Title>{recipe.metadata.name}</Card.Title>
-                          <code className={styles.packageId}>
-                            {recipe.metadata.id}
-                          </code>
-                        </span>
-                      </div>
-                      <div className={styles.wizardDescription}>
-                        {recipe.metadata.description}
-                      </div>
-                    </div>
-                    <div className={styles.activateButtonContainer}>
-                      <ActivateButton blueprint={recipe} />
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Header>
-              <Card.Body className={styles.wizardBody}>
-                {wizardSteps.map(({ Component, label, key }) => (
-                  <div key={key} className={styles.wizardBodyRow}>
-                    <div>
-                      <h4>{label}</h4>
-                    </div>
-                    <Component blueprint={recipe} reinstall={isReinstall} />
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
-          </Form>
-        )}
-      </Formik>
+        onSubmit={onSubmit}
+        renderBody={renderBody}
+        renderSubmit={() => null}
+      />
     </ReduxPersistenceContext.Provider>
   );
 };

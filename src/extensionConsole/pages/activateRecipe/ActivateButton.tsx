@@ -28,10 +28,10 @@ import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useRecipePermissions from "./useRecipePermissions";
 
-function selectActivateEventData(blueprint: RecipeDefinition) {
+function selectActivateEventData(recipe: RecipeDefinition) {
   return {
-    blueprintId: blueprint.metadata.id,
-    extensions: blueprint.extensionPoints.map((x) => x.label),
+    blueprintId: recipe.metadata.id,
+    extensions: recipe.extensionPoints.map((x) => x.label),
   };
 }
 
@@ -41,13 +41,13 @@ function selectActivateEventData(blueprint: RecipeDefinition) {
  * @constructor
  */
 const ActivateButton: React.FunctionComponent<{
-  blueprint: RecipeDefinition;
-}> = ({ blueprint }) => {
+  recipe: RecipeDefinition;
+}> = ({ recipe }) => {
   const { submitForm } = useFormikContext();
   const location = useLocation();
   const serviceAuths = useSelectedAuths();
   const { request, isFetching: isPermissionsPending } = useRecipePermissions(
-    blueprint,
+    recipe,
     serviceAuths
   );
 
@@ -63,14 +63,14 @@ const ActivateButton: React.FunctionComponent<{
       .then((accepted) => {
         if (accepted) {
           reportEvent("MarketplaceActivate", {
-            ...selectActivateEventData(blueprint),
+            ...selectActivateEventData(recipe),
             reactivate: isReactivate,
           });
           return submitForm();
         }
 
         reportEvent("MarketplaceRejectPermissions", {
-          ...selectActivateEventData(blueprint),
+          ...selectActivateEventData(recipe),
           reactivate: isReactivate,
         });
       })
