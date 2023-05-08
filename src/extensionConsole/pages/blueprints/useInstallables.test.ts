@@ -18,7 +18,7 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useGetCloudExtensionsQuery } from "@/services/api";
+import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import {
   cloudExtensionFactory,
   persistedExtensionFactory,
@@ -30,16 +30,16 @@ import { useAllRecipes } from "@/recipes/recipesHooks";
 import { range } from "lodash";
 
 jest.mock("@/services/api", () => ({
-  useGetCloudExtensionsQuery: jest.fn(),
+  useGetAllCloudExtensionsQuery: jest.fn(),
 }));
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));
 
-const useGetCloudExtensionsQueryMock =
-  useGetCloudExtensionsQuery as jest.MockedFunction<
-    typeof useGetCloudExtensionsQuery
+const useGetAllCloudExtensionsQueryMock =
+  useGetAllCloudExtensionsQuery as jest.MockedFunction<
+    typeof useGetAllCloudExtensionsQuery
   >;
 const useAllRecipesMock = useAllRecipes as jest.MockedFunction<
   typeof useAllRecipes
@@ -47,8 +47,8 @@ const useAllRecipesMock = useAllRecipes as jest.MockedFunction<
 
 describe("useInstallables", () => {
   beforeEach(() => {
-    useGetCloudExtensionsQueryMock.mockReset();
-    useGetCloudExtensionsQueryMock.mockReturnValue({
+    useGetAllCloudExtensionsQueryMock.mockReset();
+    useGetAllCloudExtensionsQueryMock.mockReturnValue({
       data: [],
       isLoading: false,
       error: false,
@@ -179,7 +179,7 @@ describe("useInstallables", () => {
   });
 
   it("handles inactive cloud extension", async () => {
-    useGetCloudExtensionsQueryMock.mockReturnValue({
+    useGetAllCloudExtensionsQueryMock.mockReturnValue({
       data: [cloudExtensionFactory()],
       isLoading: false,
       error: false,
@@ -205,7 +205,7 @@ describe("useInstallables", () => {
   it("handles active cloud extension", async () => {
     const cloudExtension = cloudExtensionFactory();
 
-    useGetCloudExtensionsQueryMock.mockReturnValue({
+    useGetAllCloudExtensionsQueryMock.mockReturnValue({
       data: [cloudExtension],
       isLoading: false,
       error: false,

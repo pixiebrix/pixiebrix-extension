@@ -27,30 +27,69 @@ import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { isEmpty } from "lodash";
 
 export type ActivateResult = {
   success: boolean;
   error?: string;
 };
 
-type ActivateRecipeFormCallback = (
-  formValues: WizardValues,
-  recipe: RecipeDefinition
-) => Promise<ActivateResult>;
+export type ActivateRecipeFormCallback =
+  /**
+   * Callback for activating a recipe.
+   *
+   * @param {WizardValues} formValues - The form values for recipe configuration options
+   * @param {RecipeDefinition} recipe - The recipe definition to install
+   * @returns {Promise<ActivateResult>} a promise that resolves to an ActivateResult
+   */
+  (
+    formValues: WizardValues,
+    recipe: RecipeDefinition
+  ) => Promise<ActivateResult>;
+
+type ActivationSource = "marketplace" | "extensionConsole";
+
+function selectActivateEventData(recipe: RecipeDefinition) {
+  return {
+    blueprintId: recipe.metadata.id,
+    extensions: recipe.extensionPoints.map((x) => x.label),
+  };
+}
 
 /**
- * React hook to install a recipe, suitable for using as a Formik `onSubmit` handler.
+ * React hook to install a recipe.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
  *
- * @see useExtensionConsoleInstall
+ * @param {ActivationSource} source - The source of the activation, only used for reporting purposes
+ * @returns {ActivateRecipeFormCallback} - A callback that can be used to activate a recipe
+ * @see useWizard
  */
-function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
+function useActivateRecipe(
+  source: ActivationSource
+): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 
   return useCallback(
     async (formValues: WizardValues, recipe: RecipeDefinition) => {
+      const recipeExtensions = extensions.filter(
+        (extension) => extension._recipe?.id === recipe.metadata.id
+      );
+      const isReactivate = !isEmpty(recipeExtensions);
+
+      if (source === "extensionConsole") {
+        // Note: The prefix "Marketplace" on the telemetry event name
+        // here is legacy terminology from before the public marketplace
+        // was created. It refers to the mod-list part of the extension
+        // console, to distinguish that from the workshop.
+        // It's being kept to keep our metrics history clean.
+        reportEvent("MarketplaceActivate", {
+          ...selectActivateEventData(recipe),
+          reactivate: isReactivate,
+        });
+      }
+
       const serviceAuths = formValues.services.filter(({ config }) =>
         Boolean(config)
       );
@@ -61,15 +100,23 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
             await checkRecipePermissions(recipe, serviceAuths)
           ))
         ) {
+          if (source === "extensionConsole") {
+            // Note: The prefix "Marketplace" on the telemetry event name
+            // here is legacy terminology from before the public marketplace
+            // was created. It refers to the mod-list part of the extension
+            // console, to distinguish that from the workshop.
+            // It's being kept like this so our metrics history stays clean.
+            reportEvent("MarketplaceRejectPermissions", {
+              ...selectActivateEventData(recipe),
+              reactivate: isReactivate,
+            });
+          }
+
           return {
             success: false,
             error: "You must accept browser permissions to activate.",
           };
         }
-
-        const recipeExtensions = extensions.filter(
-          (extension) => extension._recipe?.id === recipe.metadata.id
-        );
 
         await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
 
@@ -86,7 +133,7 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
 
         reportEvent("InstallBlueprint", {
           blueprintId: recipe.metadata.id,
-          screen: "marketplace",
+          screen: source,
           reinstall: recipeExtensions.length > 0,
         });
 
@@ -105,8 +152,8 @@ function useMarketplaceActivateRecipe(): ActivateRecipeFormCallback {
         success: true,
       };
     },
-    [dispatch, extensions]
+    [dispatch, extensions, source]
   );
 }
 
-export default useMarketplaceActivateRecipe;
+export default useActivateRecipe;

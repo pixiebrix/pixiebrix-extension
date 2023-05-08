@@ -20,10 +20,6 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import type React from "react";
 import { useMemo } from "react";
-import {
-  inferRecipeAuths,
-  inferRecipeOptions,
-} from "@/extensionConsole/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isPrimitive } from "@/utils";
@@ -37,6 +33,7 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
+import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -122,7 +119,6 @@ function useWizard(
           extensionPoints.map((_, index) => [index, Yup.boolean().required()])
         )
       ),
-      // Services are also validated in useInstall()
       services: Yup.array().of(
         Yup.object().test(
           "servicesRequired",

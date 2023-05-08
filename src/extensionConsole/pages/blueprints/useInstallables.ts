@@ -22,7 +22,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
-import { useGetCloudExtensionsQuery } from "@/services/api";
+import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
@@ -42,7 +42,7 @@ function useInstallables(): InstallablesState {
   const unresolvedExtensions = useSelector(selectExtensions);
 
   const { data: knownRecipes, ...recipesState } = useAllRecipes();
-  const cloudExtensions = useGetCloudExtensionsQuery();
+  const cloudExtensions = useGetAllCloudExtensionsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
