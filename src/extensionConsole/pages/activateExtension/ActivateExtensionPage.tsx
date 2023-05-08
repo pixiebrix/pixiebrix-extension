@@ -16,7 +16,7 @@
  */
 
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router";
 import { Col, Row } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
