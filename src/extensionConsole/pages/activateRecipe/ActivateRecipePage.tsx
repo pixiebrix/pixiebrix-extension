@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import ActivateRecipeCard from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -72,7 +72,6 @@ const ActivateRecipePage: React.FunctionComponent = () => {
   const isReinstall = useSelector(
     selectRecipeHasAnyExtensionsInstalled(recipeId)
   );
-  const actionText = isReinstall ? "Reactivate" : "Activate";
 
   const { isFetching, error } = useGetRecipeQuery(
     { recipeId },
@@ -84,7 +83,7 @@ const ActivateRecipePage: React.FunctionComponent = () => {
 
   return (
     <Page
-      title={`${actionText} Mod`}
+      title={`${isReinstall ? "Reactivate" : "Activate"} Mod`}
       icon={faStoreAlt}
       isPending={isFetching}
       error={error}

@@ -19,6 +19,11 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useParams } from "react-router";
 import { validateRegistryId } from "@/types/helpers";
 
+/**
+ * Search the React-Router dynamic route parameters for a :recipeId param,
+ * convert it into a RegistryId, and return it. Can be used with any route
+ * that includes a :recipeId param.
+ */
 export function useRecipeIdParam(): RegistryId | null {
   const { recipeId } = useParams<{ recipeId: string }>();
   try {

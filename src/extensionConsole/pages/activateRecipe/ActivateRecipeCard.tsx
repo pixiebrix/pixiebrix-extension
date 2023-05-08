@@ -49,10 +49,9 @@ const ActivateRecipeCard: React.FC = () => {
   const isReactivate = useSelector(
     selectRecipeHasAnyExtensionsInstalled(recipeId)
   );
-  const actionText = isReactivate ? "Reactivate" : "Activate";
   // Page parent component is gating this content component on isFetching, so
   // recipe will always be resolved here
-  const { data: recipe } = useGetRecipeQuery({ recipeId }, { skip: !recipeId });
+  const { data: recipe } = useGetRecipeQuery({ recipeId });
 
   const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
 
@@ -61,7 +60,12 @@ const ActivateRecipeCard: React.FC = () => {
   const [createMilestone] = useCreateMilestoneMutation();
   const { hasMilestone } = useMilestones();
 
-  useTitle(`${actionText} ${truncate(recipe.metadata.name, { length: 15 })}`);
+  useTitle(
+    `${isReactivate ? "Reactivate" : "Activate"} ${truncate(
+      recipe.metadata.name,
+      { length: 15 }
+    )}`
+  );
 
   const reduxPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
