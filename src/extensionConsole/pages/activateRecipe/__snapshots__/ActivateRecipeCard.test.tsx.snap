@@ -4,7 +4,7 @@ exports[`ActivateRecipeCard activate recipe permissions 1`] = `
 <DocumentFragment>
   <form
     class=""
-    id="activate-wizard"
+    novalidate=""
   >
     <input
       disabled=""
@@ -72,7 +72,7 @@ exports[`ActivateRecipeCard activate recipe permissions 1`] = `
             >
               <button
                 class="text-nowrap btn btn-primary"
-                type="button"
+                type="submit"
               >
                 <svg
                   aria-hidden="true"
@@ -130,7 +130,7 @@ exports[`ActivateRecipeCard activate recipe with missing required recipe options
 <DocumentFragment>
   <form
     class=""
-    id="activate-wizard"
+    novalidate=""
   >
     <input
       disabled=""
@@ -198,7 +198,7 @@ exports[`ActivateRecipeCard activate recipe with missing required recipe options
             >
               <button
                 class="text-nowrap btn btn-primary"
-                type="button"
+                type="submit"
               >
                 <svg
                   aria-hidden="true"
@@ -387,7 +387,7 @@ exports[`ActivateRecipeCard renders 1`] = `
 <DocumentFragment>
   <form
     class=""
-    id="activate-wizard"
+    novalidate=""
   >
     <input
       disabled=""
@@ -455,7 +455,7 @@ exports[`ActivateRecipeCard renders 1`] = `
             >
               <button
                 class="text-nowrap btn btn-primary"
-                type="button"
+                type="submit"
               >
                 <svg
                   aria-hidden="true"

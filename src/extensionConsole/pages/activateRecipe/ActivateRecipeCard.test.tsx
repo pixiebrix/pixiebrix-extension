@@ -172,7 +172,10 @@ describe("ActivateRecipeCard", () => {
   });
 
   test("user reject permissions", async () => {
-    jest.mocked(browser.permissions.request).mockResolvedValueOnce(false);
+    installMock.mockResolvedValue({
+      success: false,
+      error: "You must accept browser permissions to activate",
+    });
 
     const recipe = recipeDefinitionFactory({
       metadata: recipeMetadataFactory({
@@ -195,6 +198,9 @@ describe("ActivateRecipeCard", () => {
     await waitForEffect();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(installMock).not.toHaveBeenCalled();
+
+    expect(
+      screen.getByText("You must accept browser permissions to activate")
+    ).toBeVisible();
   });
 });

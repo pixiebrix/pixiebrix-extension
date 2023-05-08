@@ -106,11 +106,7 @@ const ActivateRecipeCard: React.FC = () => {
           </Row>
         </Card.Header>
         <Card.Body className={styles.wizardBody}>
-          {activationError && (
-            <Alert variant="danger" className="m-3">
-              {activationError}
-            </Alert>
-          )}
+          {activationError && <Alert variant="danger">{activationError}</Alert>}
           {wizardSteps.map(({ Component, label, key }) => (
             <div key={key} className={styles.wizardBodyRow}>
               <div>
