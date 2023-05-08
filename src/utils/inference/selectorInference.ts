@@ -27,7 +27,6 @@ import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
-import { isString } from "@/utils/stringUtils";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -51,7 +50,7 @@ type SiteSelectorHint = {
   badPatterns: CssSelectorMatch[];
   uniqueAttributes: string[];
   stableAnchors: CssSelectorMatch[];
-  requiredAnchors: CssSelectorMatch[];
+  requiredSelectors: string[];
 };
 
 const SELECTOR_HINTS: SiteSelectorHint[] = [
@@ -83,7 +82,7 @@ const SELECTOR_HINTS: SiteSelectorHint[] = [
       ".oneWorkspaceTabWrapper",
       ".active",
     ],
-    requiredAnchors: ['[role="main"]>.active'],
+    requiredSelectors: ['[role="main"]>.active'],
   },
 ];
 
@@ -139,7 +138,7 @@ function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
       badPatterns: [],
       uniqueAttributes: [],
       stableAnchors: [],
-      requiredAnchors: [],
+      requiredSelectors: [],
     };
   }
 
@@ -401,7 +400,7 @@ export function expandedCssSelector(
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
-    ...siteSelectorHint.requiredAnchors,
+    ...siteSelectorHint.requiredSelectors,
   ];
 
   // Find ancestors of each user-selected element. Unlike single-element select, includes both
@@ -494,9 +493,8 @@ export function getRequiredSelectors(element: HTMLElement, root?: Element) {
 
   const ancestors = findAncestorsWithIdLikeSelectors(element, root);
 
-  return siteSelectorHint.requiredAnchors.filter(
-    (anchor) =>
-      isString(anchor) && ancestors.some((ancestor) => ancestor.matches(anchor))
+  return siteSelectorHint.requiredSelectors.filter((anchor) =>
+    ancestors.some((ancestor) => ancestor.matches(anchor))
   );
 }
 
