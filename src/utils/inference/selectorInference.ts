@@ -74,13 +74,13 @@ const SELECTOR_HINTS: SiteSelectorHint[] = [
     ],
     uniqueAttributes: ["data-component-id"],
     stableAnchors: [
+      ".active",
       ".consoleRelatedRecord",
       /\.consoleRelatedRecord\d+/,
       ".navexWorkspaceManager",
       ".oneConsoleTab",
-      ".tabContent",
       ".oneWorkspaceTabWrapper",
-      ".active",
+      ".tabContent",
     ],
     requiredSelectors: ['[role="main"]>.active'],
   },
@@ -491,7 +491,7 @@ function findAncestorsWithIdLikeSelectors(
 export function getRequiredSelectors(element: HTMLElement, root?: Element) {
   const siteSelectorHint = getSiteSelectorHint(element);
 
-  const ancestors = findAncestorsWithIdLikeSelectors(element, root);
+  const ancestors = $(element).parents().get();
 
   return siteSelectorHint.requiredSelectors.filter((anchor) =>
     ancestors.some((ancestor) => ancestor.matches(anchor))
