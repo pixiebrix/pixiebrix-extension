@@ -72,7 +72,7 @@ const SELECTOR_HINTS: SiteSelectorHint[] = [
       /.*\.not-selected.*/,
       /^\[name='leftsidebar'] */,
     ],
-    uniqueAttributes: ["data-component-id"],
+    requiredSelectors: ['[role="main"]>.active'],
     stableAnchors: [
       ".active",
       ".consoleRelatedRecord",
@@ -82,7 +82,7 @@ const SELECTOR_HINTS: SiteSelectorHint[] = [
       ".oneWorkspaceTabWrapper",
       ".tabContent",
     ],
-    requiredSelectors: ['[role="main"]>.active'],
+    uniqueAttributes: ["data-component-id"],
   },
 ];
 
