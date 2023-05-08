@@ -16,7 +16,7 @@
  */
 
 import { type Manifest, type Permissions } from "webextension-polyfill";
-import { cloneDeep, remove, uniq } from "lodash";
+import { castArray, cloneDeep, remove, uniq } from "lodash";
 import {
   containsPermissions,
   openPopupPrompt,
@@ -28,10 +28,52 @@ import {
   canAccessTab as _canAccessTab,
   type Target,
 } from "webext-tools";
+import {
+  isPermissionsStatus,
+  type PermissionsStatus,
+} from "@/permissions/permissionsTypes";
 
-/** Filters out any permissions that are not part of `optional_permissions` */
+// Copied from the `permissions` section of manifest.json for required permissions
+const MANDATORY_PERMISSIONS = new Set([
+  "activeTab",
+  "storage",
+  "identity",
+  "tabs",
+  "webNavigation",
+  "contextMenus",
+]);
+
+/**
+ * Returns an empty-set of permissions.
+ */
+export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
+  return { origins: [], permissions: [] };
+}
+
+/**
+ * Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request a permission
+ * that's in the permissions, but not the optional_permissions
+ */
+function normalizeOptionalPermissions(
+  permissions: Permissions.Permissions
+): Required<Permissions.Permissions> {
+  if (permissions == null) {
+    return emptyPermissionsFactory();
+  }
+
+  return {
+    origins: uniq(castArray(permissions.origins ?? [])),
+    permissions: uniq(
+      castArray(permissions.permissions ?? []).filter(
+        (permission) => !MANDATORY_PERMISSIONS.has(permission)
+      )
+    ),
+  };
+}
+
+/** Filters to only include permissions that are part of `optional_permissions` */
 export function selectOptionalPermissions(
-  permissions: string[]
+  permissions: string[] = []
 ): Manifest.OptionalPermission[] {
   const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
@@ -39,7 +81,10 @@ export function selectOptionalPermissions(
   ) as Manifest.OptionalPermission[];
 }
 
-/** Merge a list of permissions into a single permissions object */
+/**
+ * Merge a list of permissions into a single permissions object
+ * @see mergePermissionsStatuses
+ */
 export function mergePermissions(
   permissions: Permissions.Permissions[] = []
 ): Required<Permissions.Permissions> {
@@ -49,11 +94,53 @@ export function mergePermissions(
   };
 }
 
-// TODO: Make it work in content scripts as well, or any context that doesn't have the API
-/** An alternative API to permissions.request() that works in Firefox’ Dev Tools */
-export async function requestPermissions(
+/**
+ * Merge a list of permissions statuses into a single permissions status object
+ * @see mergePermissions
+ */
+export function mergePermissionsStatuses(
+  statuses: PermissionsStatus[]
+): PermissionsStatus {
+  return {
+    permissions: mergePermissions(statuses.map((x) => x.permissions)),
+    hasPermissions: statuses.every((x) => x.hasPermissions),
+  };
+}
+
+/**
+ * Request any permissions the user has not already granted. Must be called from a user gesture.
+ * @returns {Promise<boolean>} true iff the all the permissions already existed, or if the user accepted
+ * the new permissions.
+ */
+export async function ensurePermissionsFromUserGesture(
+  permissionsOrStatus: Permissions.Permissions | PermissionsStatus
+): Promise<boolean> {
+  if (
+    isPermissionsStatus(permissionsOrStatus) &&
+    permissionsOrStatus.hasPermissions
+  ) {
+    return true;
+  }
+
+  const permissions = isPermissionsStatus(permissionsOrStatus)
+    ? permissionsOrStatus.permissions
+    : permissionsOrStatus;
+
+  // `normalize` to ensure the request will succeed on Firefox. See normalizeOptionalPermissions
+  return requestPermissionsFromUserGesture(
+    normalizeOptionalPermissions(permissions)
+  );
+}
+
+/**
+ * An alternative API to permissions.request() that works in Firefox’s Dev Tools.
+ * @see ensurePermissionsFromUserGesture
+ */
+async function requestPermissionsFromUserGesture(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
+  // TODO: Make requestPermissionsFromUserGesture work in contentScripts, or any context that doesn't have the extension API
+
   // We're going to alter this object so we should clone it
   permissions = cloneDeep(permissions);
 
@@ -64,10 +151,12 @@ export async function requestPermissions(
     remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
   }
 
+  // Make request on Chromium. Doesn't show a popup if the permissions already exist.
   if (browser.permissions) {
     return browser.permissions.request(permissions);
   }
 
+  // On Firefox, first check if the permissions already exist to avoid showing the popup.
   if (await containsPermissions(permissions)) {
     return true;
   }
@@ -94,10 +183,6 @@ export async function requestPermissions(
  */
 export function isScriptableUrl(url?: string): boolean {
   return url?.startsWith("https") && _isScriptableUrl(url);
-}
-
-export function makeEmptyPermissions(): Permissions.Permissions {
-  return { origins: [], permissions: [] };
 }
 
 /**

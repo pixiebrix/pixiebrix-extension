@@ -22,13 +22,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { type FormikHelpers } from "formik";
 import { type WizardValues } from "@/activation/wizardTypes";
-import {
-  containsPermissions,
-  reactivateEveryTab,
-} from "@/background/messenger/api";
-import { collectPermissions } from "@/permissions";
+import { reactivateEveryTab } from "@/background/messenger/api";
 import { push } from "connected-react-router";
-import { resolveRecipe } from "@/registry/internal";
 import useMilestones from "@/hooks/useMilestones";
 import { useCreateMilestoneMutation } from "@/services/api";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
@@ -37,6 +32,7 @@ import { uninstallRecipe } from "@/store/uninstallUtils";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 type InstallRecipeFormCallback = (
   values: WizardValues,
@@ -84,8 +80,9 @@ function useExtensionConsoleInstall(
 
       const configuredAuths = values.services.filter(({ config }) => config);
 
-      const enabled = await containsPermissions(
-        await collectPermissions(await resolveRecipe(recipe), configuredAuths)
+      const { hasPermissions } = await checkRecipePermissions(
+        recipe,
+        configuredAuths
       );
 
       if (missingServiceIds.length > 0) {
@@ -98,10 +95,9 @@ function useExtensionConsoleInstall(
         return;
       }
 
-      if (!enabled) {
+      if (!hasPermissions) {
         notify.error({
-          message:
-            "You must accept browser permissions for the selected bricks",
+          message: "You must accept browser permissions for the mod",
           reportError: false,
         });
         setSubmitting(false);

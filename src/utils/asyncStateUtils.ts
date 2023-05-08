@@ -129,6 +129,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
  * Helper function that transforms AsyncState to provide a default value. Useful to provide optimistic defaults
  * @param state the async state
  * @param initialValue the value to use if the state is uninitialized or loading
+ * @see fallbackValue
  */
 export function defaultInitialValue<Value, State extends AsyncState<Value>>(
   state: State,
@@ -148,7 +149,47 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
 }
 
 /**
- * Convert an async state to an initial loading state.
+ * Helper function that transforms AsyncState to provide a fallback value. Used to provide optimistic defaults for
+ * loading and error states.
+ * @param state the async state
+ * @param fallbackValue the value to use if the state is uninitialized or loading
+ * @see defaultInitialValue
+ */
+export function fallbackValue<Value, State extends AsyncState<Value>>(
+  state: State,
+  fallbackValue: Value
+): State {
+  if (!state.isSuccess) {
+    return {
+      // Spread state to get any other inherited properties, e.g., refetch
+      ...state,
+      ...valueToAsyncState(fallbackValue),
+      isFetching: state.isFetching,
+      currentData: state.isFetching ? undefined : fallbackValue,
+    };
+  }
+
+  return state;
+}
+
+/**
+ * A loading state.
+ */
+export function uninitializedAsyncStateFactory<Value>(): AsyncState<Value> {
+  return {
+    isUninitialized: true,
+    currentData: undefined,
+    data: undefined,
+    isLoading: false,
+    isFetching: false,
+    isError: false,
+    isSuccess: false,
+    error: undefined,
+  };
+}
+
+/**
+ * A loading state.
  */
 export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
   return {
@@ -180,6 +221,23 @@ export function valueToAsyncState<Value>(
     isSuccess: true,
     error: undefined,
     refetch: noop,
+  };
+}
+
+/**
+ * Lift a known value to a FetchableAsyncState.
+ * @param error the error
+ */
+export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
+  return {
+    isError: true,
+    error,
+    data: undefined,
+    currentData: undefined,
+    isUninitialized: false,
+    isLoading: false,
+    isFetching: false,
+    isSuccess: false,
   };
 }
 

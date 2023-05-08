@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { Collapse, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
+  selectDataPanelExpanded,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
@@ -58,6 +59,8 @@ const EditTab: React.FC<{
 
   const pipelineMap = useSelector(selectPipelineMap);
 
+  const isDataPanelExpanded = useSelector(selectDataPanelExpanded);
+
   function copyBlock(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const blockToCopy = pipelineMap[instanceId]?.blockConfig;
@@ -69,8 +72,6 @@ const EditTab: React.FC<{
   function removeBlock(nodeIdToRemove: UUID) {
     dispatch(actions.removeNode(nodeIdToRemove));
   }
-
-  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -131,16 +132,22 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.collapseWrapper}>
           <button
-            className={cx(styles.toggle, { [styles.active]: isExpanded })}
+            className={cx(styles.toggle, {
+              [styles.active]: isDataPanelExpanded,
+            })}
             onClick={() => {
-              setIsExpanded(!isExpanded);
+              dispatch(
+                actions.setDataSectionExpanded({
+                  isExpanded: !isDataPanelExpanded,
+                })
+              );
             }}
           >
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
           </button>
           <Collapse
             dimension="width"
-            in={isExpanded}
+            in={isDataPanelExpanded}
             unmountOnExit={true}
             mountOnEnter={true}
           >

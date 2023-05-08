@@ -77,7 +77,7 @@ import {
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IExtension } from "@/types/extensionTypes";
-import { checkPermissions } from "@/pageEditor/permissionsHelpers";
+import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -110,47 +110,49 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
     // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     (element: FormState, metadata: RecipeMetadataFormState) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-      checkPermissions(element).then(async (hasPermissions) => {
-        if (!hasPermissions) {
-          return;
-        }
+      ensureElementPermissionsFromUserGesture(element).then(
+        async (hasPermissions) => {
+          if (!hasPermissions) {
+            return;
+          }
 
-        let recipeElement = produce(activeElement, (draft) => {
-          draft.uuid = uuidv4();
-        });
-        const newRecipe = buildRecipe({
-          cleanRecipeExtensions: [],
-          dirtyRecipeElements: [recipeElement],
-          metadata,
-        });
-        const response = await createRecipe({
-          recipe: newRecipe,
-          organizations: [],
-          public: false,
-        }).unwrap();
-        recipeElement = produce(recipeElement, (draft) => {
-          draft.recipe = selectRecipeMetadata(newRecipe, response);
-        });
-        dispatch(editorActions.addElement(recipeElement));
-        await createExtension({
-          element: recipeElement,
-          options: {
-            // Don't push to cloud since we're saving it with the recipe
-            pushToCloud: false,
-            // Permissions are already checked above
-            checkPermissions: false,
-            // Need to provide user feedback
-            notifySuccess: true,
-            reactivateEveryTab: true,
-          },
-        });
-        if (!keepLocalCopy) {
-          await removeExtension({
-            extensionId: activeElement.uuid,
-            shouldShowConfirmation: false,
+          let recipeElement = produce(activeElement, (draft) => {
+            draft.uuid = uuidv4();
           });
+          const newRecipe = buildRecipe({
+            cleanRecipeExtensions: [],
+            dirtyRecipeElements: [recipeElement],
+            metadata,
+          });
+          const response = await createRecipe({
+            recipe: newRecipe,
+            organizations: [],
+            public: false,
+          }).unwrap();
+          recipeElement = produce(recipeElement, (draft) => {
+            draft.recipe = selectRecipeMetadata(newRecipe, response);
+          });
+          dispatch(editorActions.addElement(recipeElement));
+          await createExtension({
+            element: recipeElement,
+            options: {
+              // Don't push to cloud since we're saving it with the recipe
+              pushToCloud: false,
+              // Permissions are already checked above
+              checkPermissions: false,
+              // Need to provide user feedback
+              notifySuccess: true,
+              reactivateEveryTab: true,
+            },
+          });
+          if (!keepLocalCopy) {
+            await removeExtension({
+              extensionId: activeElement.uuid,
+              shouldShowConfirmation: false,
+            });
+          }
         }
-      }),
+      ),
     [
       activeElement,
       createExtension,

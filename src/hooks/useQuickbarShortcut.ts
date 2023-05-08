@@ -15,29 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useState } from "react";
+import chromeP from "webext-polyfill-kinda";
+import useAsyncState from "@/hooks/useAsyncState";
 
 function useQuickbarShortcut(): {
   shortcut: string | null;
   isConfigured: boolean;
 } {
-  const [shortcut, setShortcut] = useState(null);
-
-  useEffect(() => {
-    chrome.commands.getAll((commands) => {
-      const command = commands.find(
-        (command) => command.name === "toggle-quick-bar"
-      );
-      if (command) {
-        setShortcut(command.shortcut);
-      }
-    });
+  // Can't use useAsyncExternalStore because Chrome doesn't provide an API for subscribing to command changes
+  const { data: shortcut } = useAsyncState(async () => {
+    const commands = await chromeP.commands.getAll();
+    const command = commands.find(
+      (command) => command.name === "toggle-quick-bar"
+    );
+    return command?.shortcut;
   }, []);
 
   const isConfigured = shortcut !== "";
 
   return {
     // Optimistically return as isConfigured so interface doesn't show a warning
+    // TODO: rewrite this hook to return AsyncState so call-site can decide how to handle loading state
     isConfigured: isConfigured || shortcut == null,
     shortcut: isConfigured ? shortcut : null,
   };

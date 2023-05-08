@@ -17,7 +17,6 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { useAsyncState } from "@/hooks/common";
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
@@ -30,6 +29,7 @@ import { useLocation } from "react-router";
 import { clearServiceCache } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import { syncRemotePackages } from "@/baseRegistry";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <Row className="w-100 mx-0">
@@ -47,6 +47,7 @@ const Layout: React.FunctionComponent = ({ children }) => (
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
   const location = useLocation();
+  const isStartUrl = location.pathname.startsWith("/start");
 
   // Local override for authentication method
   const { authMethod } = useSelector(selectSettings);
@@ -59,7 +60,7 @@ const SetupPage: React.FunctionComponent = () => {
 
   // Fetch service definitions which are required for partner JWT login.
   // useAsyncState with ignored output to track loading state
-  const [_, serviceDefinitionsLoading] = useAsyncState(async () => {
+  const { isLoading: isServiceDefinitionsLoading } = useAsyncState(async () => {
     try {
       await syncRemotePackages();
       // Must happen after the call to fetch service definitions
@@ -74,17 +75,18 @@ const SetupPage: React.FunctionComponent = () => {
     }
   }, []);
 
-  const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
+  const { data: baseURL, isLoading: isBaseUrlLoading } = useAsyncState(
+    getBaseURL,
+    []
+  );
 
-  if (baseURLPending || isPartnerLoading || serviceDefinitionsLoading) {
+  if (isBaseUrlLoading || isPartnerLoading || isServiceDefinitionsLoading) {
     return (
       <Layout>
         <Loader />
       </Layout>
     );
   }
-
-  const isStartUrl = location.pathname.startsWith("/start");
 
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 

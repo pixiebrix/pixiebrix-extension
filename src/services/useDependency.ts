@@ -15,35 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAsyncState } from "@/hooks/common";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
-import { castArray, compact, head } from "lodash";
+import { castArray, compact, head, omit } from "lodash";
 import serviceRegistry from "@/services/registry";
 import {
   type SanitizedServiceConfiguration,
   type Service,
   type ServiceDependency,
 } from "@/types/serviceTypes";
-import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions, services } from "@/background/messenger/api";
-import notify from "@/utils/notify";
 import { type RegistryId } from "@/types/registryTypes";
-
-type Listener = () => void;
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { fallbackValue, valueToAsyncState } from "@/utils/asyncStateUtils";
+import useMemoCompare from "@/hooks/useMemoCompare";
+import deepEquals from "fast-deep-equal";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { type Permissions } from "webextension-polyfill";
 
 export type Dependency = {
-  config: SanitizedServiceConfiguration;
-  service: Service;
+  config: SanitizedServiceConfiguration | undefined;
+  service: Service | undefined;
   hasPermissions: boolean;
   requestPermissions: () => void;
 };
-
-const permissionsListeners = new Map<string, Listener[]>();
-
-function listenerKey(dependency: ServiceDependency) {
-  return `${dependency.id}:${dependency.config}`;
-}
 
 export function pickDependency(
   services: ServiceDependency[],
@@ -59,109 +55,68 @@ export function pickDependency(
   return head(configuredServices);
 }
 
-export async function lookupDependency(dependency: ServiceDependency) {
+async function lookupDependency(dependency: ServiceDependency) {
   const localConfig = await services.locate(dependency.id, dependency.config);
-
   const service = await serviceRegistry.lookup(dependency.id);
-
   const origins = service.getOrigins(localConfig.config);
+  const permissions = { origins };
 
-  const hasPermissions = await containsPermissions({ origins });
-
-  return { localConfig, service, origins, hasPermissions };
+  return {
+    config: localConfig,
+    service,
+    origins,
+    permissions,
+    hasPermissions: await containsPermissions(permissions),
+  };
 }
+
+const lookupFallback = {
+  config: undefined as SanitizedServiceConfiguration,
+  service: undefined as Service,
+  hasPermissions: false,
+  permissions: emptyPermissionsFactory() as Permissions.Permissions,
+};
 
 /**
  * Hook connected to the Formik state to return currently configuration for a given service
  * @param serviceId valid integration ids for providing the service
  */
-function useDependency(
-  serviceId: RegistryId | RegistryId[] | null
-): Dependency | null {
+function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
+  // Listen for permissions changes
+  const permissionsState = useExtensionPermissions();
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-  const [grantedPermissions, setGrantedPermissions] = useState(false);
 
-  const serviceIds = useMemo(() => compact(castArray(serviceId)), [serviceId]);
-  const dependency: ServiceDependency = useMemo(
-    () => pickDependency(values.services, serviceIds),
-    [serviceIds, values.services]
+  const selected = pickDependency(
+    values.services,
+    compact(castArray(serviceId))
   );
 
-  const [serviceResult] = useAsyncState(async () => {
-    if (dependency?.config) {
-      return lookupDependency(dependency);
-    }
-
-    throw new Error("No integration dependency selected");
-  }, [dependency?.config]);
-
-  // Listen for permissions changes granted from hook instances, so the useDependency can be used in multiple
-  // places in the React tree
-  useEffect(() => {
-    if (dependency && !serviceResult?.hasPermissions) {
-      const key = listenerKey(dependency);
-      const onPermissionGranted = () => {
-        setGrantedPermissions(true);
-      };
-
-      permissionsListeners.set(key, [
-        ...(permissionsListeners.get(key) ?? []),
-        onPermissionGranted,
-      ]);
-      return () => {
-        permissionsListeners.set(
-          key,
-          (permissionsListeners.get(key) ?? []).filter(
-            (x) => x !== onPermissionGranted
-          )
-        );
-      };
-    }
-  }, [dependency, setGrantedPermissions, serviceResult]);
-
-  const requestPermissionCallback = useCallback(async () => {
-    const permissions = { origins: serviceResult?.origins ?? [] };
-    console.debug("requesting origins", { permissions });
-    try {
-      const result = await requestPermissions(permissions);
-      setGrantedPermissions(result);
-      if (result && dependency != null) {
-        const key = listenerKey(dependency);
-        for (const listener of permissionsListeners.get(key)) {
-          listener();
+  const { data } = fallbackValue(
+    useDeriveAsyncState(
+      permissionsState,
+      valueToAsyncState(selected),
+      async (_permissions, dependency: ServiceDependency) => {
+        if (dependency?.config) {
+          return lookupDependency(dependency);
         }
-      } else if (!result) {
-        notify.warning("You must accept the permissions request");
+
+        // No integration dependency selected, use the fallback
+        throw new Error("No dependency selected");
       }
-    } catch (error) {
-      setGrantedPermissions(false);
-      notify.error({
-        message: "Error granting permissions",
-        error,
-      });
-    }
-  }, [setGrantedPermissions, serviceResult?.origins, dependency]);
+    ),
+    lookupFallback
+  );
+
+  const requestPermissions = useRequestPermissionsCallback(data.permissions);
 
   // Wrap in use memo so callers don't have to do their own guards
-  return useMemo(() => {
-    if (serviceId == null) {
-      return null;
-    }
-
-    return {
-      config: serviceResult?.localConfig,
-      service: serviceResult?.service,
-      hasPermissions: serviceResult?.hasPermissions || grantedPermissions,
-      requestPermissions: requestPermissionCallback,
-    };
-  }, [
-    grantedPermissions,
-    requestPermissionCallback,
-    serviceId,
-    serviceResult?.hasPermissions,
-    serviceResult?.localConfig,
-    serviceResult?.service,
-  ]);
+  return useMemoCompare(
+    {
+      ...omit(data, "permissions", "origins"),
+      requestPermissions,
+    },
+    deepEquals
+  );
 }
 
 export default useDependency;

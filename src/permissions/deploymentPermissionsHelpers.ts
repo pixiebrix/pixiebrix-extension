@@ -18,31 +18,13 @@
 // Split from deploymentUtils.ts to avoid circular dependency
 
 import { type Deployment } from "@/types/contract";
-import { type Permissions } from "webextension-polyfill";
-import { mergePermissions } from "@/utils/permissions";
-import { resolveRecipe } from "@/registry/internal";
-import { collectPermissions } from "@/permissions";
 import { flatten } from "lodash";
 import {
   findLocalDeploymentServiceConfigurations,
   type Locate,
 } from "@/utils/deploymentUtils";
-
-/**
- * Helper method to collect permissions required for a set of deployments.
- * @see deploymentPermissions
- */
-export async function selectDeploymentPermissions(
-  deployments: Deployment[],
-  locate: Locate
-): Promise<Permissions.Permissions> {
-  const permissions = await Promise.all(
-    deployments.map(async (deployment) =>
-      deploymentPermissions(deployment, locate)
-    )
-  );
-  return mergePermissions(permissions);
-}
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 /**
  * Return permissions required to activate a deployment.
@@ -51,21 +33,21 @@ export async function selectDeploymentPermissions(
  * deployment activation if there is not a unique local configuration matching the unbound service.)
  *
  * @see mergeDeploymentServiceConfigurations
- * @see collectPermissions
+ * @see collectExtensionDefinitionPermissions
+ * @see mergePermissionsStatuses
  */
-export async function deploymentPermissions(
+export async function checkDeploymentPermissions(
   deployment: Deployment,
   locate: Locate
-): Promise<Permissions.Permissions> {
+): Promise<PermissionsStatus> {
   const blueprint = deployment.package.config;
-  const resolved = await resolveRecipe(blueprint);
   const localAuths = await findLocalDeploymentServiceConfigurations(
     deployment,
     locate
   );
 
-  return collectPermissions(
-    resolved,
+  return checkRecipePermissions(
+    blueprint,
     flatten(Object.values(localAuths)).map((x) => ({
       id: x.serviceId,
       config: x.id,

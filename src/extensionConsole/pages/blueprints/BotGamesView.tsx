@@ -21,15 +21,13 @@ import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import { type RegistryId } from "@/types/registryTypes";
-import { containsPermissions } from "@/background/messenger/api";
-import { collectPermissions, ensureAllPermissions } from "@/permissions";
-import { resolveRecipe } from "@/registry/internal";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
+import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -47,24 +45,20 @@ export const useInstallBotGamesBlueprint = () => {
   );
 
   const installBotGamesBlueprint = async () => {
-    const permissions = await collectPermissions(
-      await resolveRecipe(botGamesRecipe),
-      // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
-      []
-    );
-    const enabled = await containsPermissions(permissions);
     let accepted = true;
 
-    if (!enabled) {
-      try {
-        accepted = await ensureAllPermissions(permissions);
-      } catch (error) {
-        notify.error({
-          message: "Error granting permissions",
-          error,
-        });
-        return;
-      }
+    // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
+    try {
+      accepted = await ensureRecipePermissionsFromUserGesture(
+        botGamesRecipe,
+        []
+      );
+    } catch (error) {
+      notify.error({
+        message: "Error granting permissions",
+        error,
+      });
+      return;
     }
 
     if (!accepted) {

@@ -841,7 +841,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -857,7 +857,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 Advanced
               </button>
               <div
-                class="body collapse show"
+                class="body collapse"
               >
                 <div
                   class="formGroup form-group row"
@@ -1008,7 +1008,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -1024,7 +1024,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 Advanced: Match Rules
               </button>
               <div
-                class="body collapse show"
+                class="body collapse"
               >
                 <div
                   class="formGroup form-group row"
@@ -1142,7 +1142,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -1158,7 +1158,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 Advanced: Extra Permissions
               </button>
               <div
-                class="body collapse show"
+                class="body collapse"
               >
                 <div
                   class="formGroup form-group row"
@@ -2058,7 +2058,7 @@ exports[`renders the first selected node 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator active"
+                  class="svg-inline--fa fa-chevron-right fa-w-10 activeIndicator"
                   data-icon="chevron-right"
                   data-prefix="fas"
                   focusable="false"
@@ -2074,7 +2074,7 @@ exports[`renders the first selected node 1`] = `
                 Advanced Options
               </button>
               <div
-                class="body collapse show"
+                class="body collapse"
               >
                 <small
                   class="text-muted font-italic"

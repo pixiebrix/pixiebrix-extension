@@ -110,16 +110,8 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 describe("UiPath LocalProcess Options", () => {
   test("Can render options", async () => {
-    (
-      contentScriptApi.getProcesses as jest.MockedFunction<
-        typeof contentScriptApi.getProcesses
-      >
-    ).mockResolvedValue([]);
-    (
-      contentScriptApi.initRobot as jest.MockedFunction<
-        typeof contentScriptApi.initRobot
-      >
-    ).mockResolvedValue({
+    jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
+    jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
       available: false,
       consentCode: null,
       missingComponents: false,
@@ -134,19 +126,9 @@ describe("UiPath LocalProcess Options", () => {
   });
 
   test("Can render consent code and service selector", async () => {
-    (
-      auth.useAuthOptions as jest.MockedFunction<typeof auth.useAuthOptions>
-    ).mockReturnValue(valueToAsyncState([]));
-    (
-      contentScriptApi.getProcesses as jest.MockedFunction<
-        typeof contentScriptApi.getProcesses
-      >
-    ).mockResolvedValue([]);
-    (
-      contentScriptApi.initRobot as jest.MockedFunction<
-        typeof contentScriptApi.initRobot
-      >
-    ).mockResolvedValue({
+    jest.mocked(auth.useAuthOptions).mockReturnValue(valueToAsyncState([]));
+    jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
+    jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
       available: true,
       consentCode: "abc123",
       missingComponents: false,
@@ -164,12 +146,7 @@ describe("UiPath LocalProcess Options", () => {
 
   test("Can render arguments", async () => {
     const config = uuidv4();
-
-    (
-      dependencyHooks.default as jest.MockedFunction<
-        typeof dependencyHooks.default
-      >
-    ).mockReturnValue({
+    jest.mocked(dependencyHooks.default).mockReturnValue({
       // Pass minimal arguments
       config: {
         id: config,
@@ -179,9 +156,8 @@ describe("UiPath LocalProcess Options", () => {
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
-    (
-      auth.useAuthOptions as jest.MockedFunction<typeof auth.useAuthOptions>
-    ).mockReturnValue(
+
+    jest.mocked(auth.useAuthOptions).mockReturnValue(
       valueToAsyncState([
         {
           label: "Test Auth",
@@ -192,16 +168,8 @@ describe("UiPath LocalProcess Options", () => {
         },
       ])
     );
-    (
-      contentScriptApi.getProcesses as jest.MockedFunction<
-        typeof contentScriptApi.getProcesses
-      >
-    ).mockResolvedValue([]);
-    (
-      contentScriptApi.initRobot as jest.MockedFunction<
-        typeof contentScriptApi.initRobot
-      >
-    ).mockResolvedValue({
+    jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
+    jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
       available: true,
       consentCode: null,
       missingComponents: false,
