@@ -68,6 +68,13 @@ function useBlockSearch(
     );
     const fuse = new Fuse<BlockOption>(blockOptions, {
       keys: ["label", "blockResult.description", "value"],
+      // Arbitrary threshold that seems strict enough to avoid search results that are unrelated to the query.
+      threshold: 0.2,
+      // If ignoreLocation is false (which it is, by default), Fuse will only consider the first threshold * distance
+      // number of characters while scoring (assuming location is 0).
+      // We want to match on any part of the string, so we set ignoreLocation to true.
+      // See https://fusejs.io/concepts/scoring-theory.html#scoring-theory for more information.
+      ignoreLocation: true,
     });
 
     return { blockOptions, fuse };
