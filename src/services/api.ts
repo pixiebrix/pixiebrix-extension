@@ -37,7 +37,7 @@ import {
   type PackageUpsertResponse,
   type PackageVersion,
   type PendingInvitation,
-  RecipeResponse,
+  type RecipeResponse,
   type SanitizedAuth,
   UserRole,
 } from "@/types/contract";
