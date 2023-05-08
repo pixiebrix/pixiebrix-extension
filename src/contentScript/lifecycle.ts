@@ -24,7 +24,7 @@ import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, groupBy, intersection, once, uniq } from "lodash";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
@@ -364,7 +364,9 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
 
   const resolvedExtensions = await logPromiseDuration(
     "loadPersistedExtensions:resolveDefinitions",
-    Promise.all(activeExtensions.map(async (x) => resolveDefinitions(x)))
+    Promise.all(
+      activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
+    )
   );
 
   const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);

@@ -30,7 +30,7 @@ import sidebarExtension from "@/pageEditor/extensionPoints/sidebar";
 import quickBarProviderExtension from "@/pageEditor/extensionPoints/quickBarProvider";
 import tourExtension from "@/pageEditor/extensionPoints/tour";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
-import { hasInnerExtensionPoint } from "@/registry/internal";
+import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 
@@ -48,7 +48,7 @@ export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
 export async function selectType(
   extension: IExtension
 ): Promise<ExtensionPointType> {
-  if (hasInnerExtensionPoint(extension)) {
+  if (hasInnerExtensionPointRef(extension)) {
     return (
       extension.definitions[
         extension.extensionPointId

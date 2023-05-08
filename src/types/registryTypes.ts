@@ -29,6 +29,11 @@ export type RegistryId = string & {
 };
 
 /**
+ * Scope for inner definitions
+ */
+export const INNER_SCOPE = "@internal";
+
+/**
  * The kind of definition in the external registry
  */
 export type Kind =
@@ -107,7 +112,7 @@ export interface Definition<K extends Kind = Kind> {
 export type InnerDefinitions = Record<string, UnknownObject>;
 
 /**
- * A reference to an entry in the recipe's `definitions` map.
+ * A reference to an entry in the recipe's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
 export type InnerDefinitionRef = string & {
