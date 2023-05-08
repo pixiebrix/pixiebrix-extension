@@ -28,3 +28,7 @@ export function splitStartingEmoji(value: string) {
     rest: match[2],
   };
 }
+
+export function isString(value: any): value is string {
+  return typeof value === "string";
+}

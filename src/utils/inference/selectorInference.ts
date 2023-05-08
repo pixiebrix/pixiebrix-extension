@@ -27,6 +27,7 @@ import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import { isString } from "@/utils/stringUtils";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -50,6 +51,7 @@ type SiteSelectorHint = {
   badPatterns: CssSelectorMatch[];
   uniqueAttributes: string[];
   stableAnchors: CssSelectorMatch[];
+  requiredAnchors: CssSelectorMatch[];
 };
 
 const SELECTOR_HINTS: SiteSelectorHint[] = [
@@ -76,16 +78,19 @@ const SELECTOR_HINTS: SiteSelectorHint[] = [
       ".consoleRelatedRecord",
       /\.consoleRelatedRecord\d+/,
       ".navexWorkspaceManager",
-      ".active",
       ".oneConsoleTab",
       ".tabContent",
+      ".oneWorkspaceTabWrapper",
+      ".active",
     ],
+    requiredAnchors: ['[role="main"]>.active'],
   },
 ];
 
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
+  "role",
 
   // Data attributes people use in automated tests are unlikely to change frequently
   "data-cy", // Cypress
@@ -134,6 +139,7 @@ function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
       badPatterns: [],
       uniqueAttributes: [],
       stableAnchors: [],
+      requiredAnchors: [],
     };
   }
 
@@ -395,6 +401,7 @@ export function expandedCssSelector(
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
+    ...siteSelectorHint.requiredAnchors,
   ];
 
   // Find ancestors of each user-selected element. Unlike single-element select, includes both
@@ -480,6 +487,17 @@ function findAncestorsWithIdLikeSelectors(
 ): HTMLElement[] {
   // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
+}
+
+export function getRequiredSelectors(element: HTMLElement, root?: Element) {
+  const siteSelectorHint = getSiteSelectorHint(element);
+
+  const ancestors = findAncestorsWithIdLikeSelectors(element, root);
+
+  return siteSelectorHint.requiredAnchors.filter(
+    (anchor) =>
+      isString(anchor) && ancestors.some((ancestor) => ancestor.matches(anchor))
+  );
 }
 
 export function inferSelectorsIncludingStableAncestors(
@@ -695,9 +713,9 @@ function getElementSelectors(target: Element): string[] {
   );
 
   return compact([
+    target.tagName.toLowerCase(),
     ...attributeSelectors,
     ...classSelectors,
-    target.tagName.toLowerCase(),
   ]);
 }
 

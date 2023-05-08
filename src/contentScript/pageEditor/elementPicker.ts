@@ -20,6 +20,7 @@ import Overlay from "@/vendors/Overlay";
 import {
   expandedCssSelector,
   findContainer,
+  getRequiredSelectors,
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
 } from "@/utils/inference/selectorInference";
@@ -57,6 +58,7 @@ export function stopInspectingNativeHandler(): void {
 }
 
 let _cancelSelect: () => void = null;
+
 interface UserSelection {
   root?: HTMLElement;
   /** CSS selector to limit the selection to */
@@ -471,10 +473,13 @@ export async function selectElement({
         });
       }
 
-      const inferredSelectors = uniq([
-        selector,
-        ...inferSelectorsIncludingStableAncestors(element),
-      ]);
+      const requiredSelectors = getRequiredSelectors(element);
+
+      const inferredSelectors = uniq(
+        [selector, ...inferSelectorsIncludingStableAncestors(element)].map(
+          (selector) => [...requiredSelectors, selector].join(" ")
+        )
+      );
 
       return {
         selectors: inferredSelectors,
