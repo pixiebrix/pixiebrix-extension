@@ -24,7 +24,7 @@ import { validateRegistryId } from "@/types/helpers";
  * convert it into a RegistryId, and return it. Can be used with any route
  * that includes a :recipeId param.
  */
-export function useRecipeIdParam(): RegistryId | null {
+export default function useRecipeIdParam(): RegistryId | null {
   const { recipeId } = useParams<{ recipeId: string }>();
   try {
     return validateRegistryId(decodeURIComponent(recipeId));

@@ -71,8 +71,9 @@ jest.mock("@/services/api", () => ({
   },
 }));
 
-jest.mock("@/extensionConsole/pages/pageHelpers", () => ({
-  useRecipeIdParam: jest.fn().mockReturnValue("@test/recipe"),
+jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue("@test/recipe"),
 }));
 
 global.chrome.commands.getAll = jest.fn();
