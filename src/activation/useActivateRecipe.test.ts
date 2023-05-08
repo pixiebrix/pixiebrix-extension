@@ -16,6 +16,7 @@
  */
 
 import {
+  databaseFactory,
   extensionPointConfigFactory,
   extensionPointDefinitionFactory,
   recipeDefinitionFactory,
@@ -33,16 +34,36 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
-import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import {
+  emptyPermissionsFactory,
+  ensurePermissionsFromUserGesture,
+} from "@/permissions/permissionsUtils";
+import databaseSchema from "@schemas/database.json";
 
-jest.mocked(checkRecipePermissions).mockResolvedValue({
-  hasPermissions: false,
-  // The exact permissions don't matter because hasPermissions is false
-  permissions: emptyPermissionsFactory(),
+const checkPermissionsMock = jest.mocked(checkRecipePermissions);
+
+jest.mock("@/permissions/permissionsUtils", () => {
+  const actual = jest.requireActual("@/permissions/permissionsUtils");
+  return {
+    ...actual,
+    ensurePermissionsFromUserGesture: jest.fn(),
+  };
 });
+
+const ensurePermissionsMock = jest.mocked(ensurePermissionsFromUserGesture);
 
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
+
+const createDatabaseMock = jest.fn();
+
+jest.mock("@/services/api", () => {
+  const actual = jest.requireActual("@/services/api");
+  return {
+    ...actual,
+    useCreateDatabaseMutation: jest.fn(() => [createDatabaseMock]),
+  };
+});
 
 function setupInputs(): {
   formValues: WizardValues;
@@ -90,10 +111,23 @@ function setupInputs(): {
   };
 }
 
+function setRecipeHasPermissions(hasPermissions: boolean) {
+  checkPermissionsMock.mockResolvedValue({
+    hasPermissions,
+    // The exact permissions don't matter because we're mocking the check also
+    permissions: emptyPermissionsFactory(),
+  });
+}
+
+function setUserAcceptedPermissions(accepted: boolean) {
+  ensurePermissionsMock.mockResolvedValue(accepted);
+}
+
 describe("useActivateRecipe", () => {
   it("returns error if permissions are not granted", async () => {
     const { formValues, recipe } = setupInputs();
-    jest.mocked(browser.permissions.request).mockResolvedValueOnce(false);
+    setRecipeHasPermissions(false);
+    setUserAcceptedPermissions(false);
 
     const {
       result: { current: activateRecipe },
@@ -118,7 +152,8 @@ describe("useActivateRecipe", () => {
 
   it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, recipe } = setupInputs();
-    jest.mocked(browser.permissions.request).mockResolvedValueOnce(true);
+    setRecipeHasPermissions(false);
+    setUserAcceptedPermissions(true);
 
     const {
       result: { current: activateRecipe },
@@ -159,5 +194,124 @@ describe("useActivateRecipe", () => {
     );
 
     expect(reactivateEveryTabMock).toHaveBeenCalledOnce();
+  });
+
+  it("handles auto-created personal databases successfully", async () => {
+    const { formValues: inputFormValues, recipe: inputRecipe } = setupInputs();
+    const databaseName = "Auto-created Personal Test Database";
+    const formValues = {
+      ...inputFormValues,
+      optionsArgs: {
+        myDatabase: databaseName,
+      },
+    };
+    const recipe = {
+      ...inputRecipe,
+      options: {
+        schema: {
+          ...inputRecipe.options?.schema,
+          properties: {
+            ...inputRecipe.options?.schema?.properties,
+            myDatabase: {
+              $ref: databaseSchema.$id,
+              format: "preview",
+            },
+          },
+        },
+        uiSchema: inputRecipe.options?.uiSchema,
+      },
+    };
+    setRecipeHasPermissions(true);
+    const createdDatabase = databaseFactory({ name: databaseName });
+    createDatabaseMock.mockImplementation(async (name) => ({
+      data: createdDatabase,
+    }));
+
+    const {
+      result: { current: activateRecipe },
+      getReduxStore,
+      act,
+    } = renderHook(() => useActivateRecipe("marketplace"), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
+      },
+    });
+
+    let success: boolean;
+    let error: unknown;
+    await act(async () => {
+      const result = await activateRecipe(formValues, recipe);
+      success = result.success;
+      error = result.error;
+    });
+
+    expect(success).toBe(true);
+    expect(error).toBeUndefined();
+    expect(createDatabaseMock).toHaveBeenCalledWith({ name: databaseName });
+
+    const { dispatch } = getReduxStore();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        extensionPoints: recipe.extensionPoints,
+        services: {},
+        optionsArgs: {
+          myDatabase: createdDatabase.id,
+        },
+      })
+    );
+  });
+
+  it("handles error in auto-created personal database", async () => {
+    const { formValues: inputFormValues, recipe: inputRecipe } = setupInputs();
+    const databaseName = "Auto-created Personal Test Database";
+    const formValues = {
+      ...inputFormValues,
+      optionsArgs: {
+        myDatabase: databaseName,
+      },
+    };
+    const recipe = {
+      ...inputRecipe,
+      options: {
+        schema: {
+          ...inputRecipe.options?.schema,
+          properties: {
+            ...inputRecipe.options?.schema?.properties,
+            myDatabase: {
+              $ref: databaseSchema.$id,
+              format: "preview",
+            },
+          },
+        },
+        uiSchema: inputRecipe.options?.uiSchema,
+      },
+    };
+    setRecipeHasPermissions(true);
+    const errorMessage = "Error creating database";
+    createDatabaseMock.mockImplementation(async (name) => {
+      throw new Error(errorMessage);
+    });
+
+    const {
+      result: { current: activateRecipe },
+      act,
+    } = renderHook(() => useActivateRecipe("marketplace"), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
+      },
+    });
+
+    let success: boolean;
+    let error: unknown;
+    await act(async () => {
+      const result = await activateRecipe(formValues, recipe);
+      success = result.success;
+      error = result.error;
+    });
+
+    expect(success).toBe(false);
+    expect(error).toBe(errorMessage);
   });
 });
