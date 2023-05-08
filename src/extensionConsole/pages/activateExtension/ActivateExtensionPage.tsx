@@ -46,8 +46,6 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
 
   const { data: authOptions, refetch: refreshAuthOptions } = useAuthOptions();
 
-  useEffect(() => {}, []);
-
   return (
     <Page
       title="Activate Mod"
