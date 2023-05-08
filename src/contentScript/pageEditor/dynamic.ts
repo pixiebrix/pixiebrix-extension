@@ -21,7 +21,7 @@ import {
 } from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/vendors/Overlay";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { $safeFind } from "@/helpers";
 import { type TriggerDefinition } from "@/extensionPoints/triggerExtension";
@@ -126,7 +126,7 @@ export async function updateDynamicElement({
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
-  const resolved = await resolveDefinitions(extensionConfig);
+  const resolved = await resolveExtensionInnerDefinitions(extensionConfig);
 
   extensionPoint.addExtension(resolved);
   await runEditorExtension(extensionConfig.id, extensionPoint);

@@ -23,7 +23,6 @@ import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
-import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
@@ -34,6 +33,7 @@ import CustomBricksCard from "./CustomBricksCard";
 import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { PACKAGE_REGEX } from "@/types/helpers";
 
 const { actions } = workshopSlice;
 
@@ -53,7 +53,7 @@ function useEnrichBricks(bricks: Brick[]): EnrichedBrick[] {
 
     return orderBy(
       (bricks ?? []).map((brick) => {
-        const match = PACKAGE_NAME_REGEX.exec(brick.name);
+        const match = PACKAGE_REGEX.exec(brick.name);
         return {
           ...brick,
           scope: match.groups.scope,

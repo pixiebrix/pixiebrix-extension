@@ -17,7 +17,14 @@
 
 import { produce } from "immer";
 import objectHash from "object-hash";
-import { cloneDeep, isEmpty, isPlainObject, mapValues, pick } from "lodash";
+import {
+  cloneDeep,
+  isEmpty,
+  isPlainObject,
+  mapValues,
+  pick,
+  pickBy,
+} from "lodash";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
@@ -31,7 +38,7 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
-  type InnerDefinitionRef,
+  INNER_SCOPE,
   type InnerDefinitions,
   type RegistryId,
 } from "@/types/registryTypes";
@@ -55,11 +62,11 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
   return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
 
-async function ensureBlock(
+async function resolveBlockDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinition
 ) {
-  // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
+  // Don't include outputSchema in because it can't affect functionality
   const obj = pick(innerDefinition, [
     "inputSchema",
     "kind",
@@ -68,8 +75,10 @@ async function ensureBlock(
   ]);
   const registryId = makeInternalId(obj);
 
-  if (await blockRegistry.exists(registryId)) {
-    return blockRegistry.lookup(registryId);
+  try {
+    return await blockRegistry.lookup(registryId);
+  } catch {
+    // Not in registry yet, so add it
   }
 
   const item = blockFactory({
@@ -80,12 +89,12 @@ async function ensureBlock(
     },
   });
 
-  blockRegistry.register([item]);
+  blockRegistry.register([item], { source: "internal", notify: false });
 
   return item;
 }
 
-async function ensureReaders(
+async function resolveReaderDefinition(
   definitions: InnerDefinitions,
   reader: unknown
 ): Promise<ReaderConfig> {
@@ -103,7 +112,7 @@ async function ensureReaders(
         );
       }
 
-      const block = await ensureBlock(
+      const block = await resolveBlockDefinition(
         definitions,
         definition as InnerBlock<"component">
       );
@@ -115,13 +124,15 @@ async function ensureReaders(
   }
 
   if (Array.isArray(reader)) {
-    return Promise.all(reader.map(async (x) => ensureReaders(definitions, x)));
+    return Promise.all(
+      reader.map(async (x) => resolveReaderDefinition(definitions, x))
+    );
   }
 
   if (isPlainObject(reader)) {
     return resolveObj(
       mapValues(reader as Record<string, unknown>, async (x) =>
-        ensureReaders(definitions, x)
+        resolveReaderDefinition(definitions, x)
       )
     );
   }
@@ -134,39 +145,49 @@ async function ensureReaders(
   throw new TypeError("Unexpected reader definition");
 }
 
-async function ensureExtensionPoint(
+async function resolveExtensionPointDefinition(
   definitions: InnerDefinitions,
   originalInnerDefinition: InnerExtensionPoint
-) {
+): Promise<IExtensionPoint> {
   const innerDefinition = cloneDeep(originalInnerDefinition);
 
   // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
   // clash if they use the same name for different readers
-  innerDefinition.definition.reader = await ensureReaders(
+  innerDefinition.definition.reader = await resolveReaderDefinition(
     definitions,
     innerDefinition.definition.reader
   );
 
   const obj = pick(innerDefinition, ["kind", "definition"]);
-  const registryId = makeInternalId(obj);
+  const internalRegistryId = makeInternalId(obj);
 
-  if (await extensionPointRegistry.exists(registryId)) {
-    return extensionPointRegistry.lookup(registryId);
+  try {
+    return await extensionPointRegistry.lookup(internalRegistryId);
+  } catch {
+    // NOP - will register
   }
 
   const item = extensionPointFactory({
     ...obj,
     metadata: {
-      id: registryId,
+      id: internalRegistryId,
       name: "Anonymous extensionPoint",
     },
   } as ExtensionPointConfig);
 
-  extensionPointRegistry.register([item]);
+  extensionPointRegistry.register([item], {
+    source: "internal",
+    notify: false,
+  });
   return item;
 }
 
-async function ensureInner(
+/**
+ * Ensure inner definitions are registered in the in-memory brick registry
+ * @param definitions all of the definitions. Used to resolve references from innerDefinition
+ * @param innerDefinition the inner definition to resolve
+ */
+async function resolveInnerDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinitions[string]
 ): Promise<IBlock | IExtensionPoint> {
@@ -176,7 +197,7 @@ async function ensureInner(
 
   switch (innerDefinition.kind) {
     case "extensionPoint": {
-      return ensureExtensionPoint(
+      return resolveExtensionPointDefinition(
         definitions,
         innerDefinition as InnerExtensionPoint
       );
@@ -184,7 +205,7 @@ async function ensureInner(
 
     case "reader":
     case "component": {
-      return ensureBlock(definitions, innerDefinition as InnerBlock);
+      return resolveBlockDefinition(definitions, innerDefinition as InnerBlock);
     }
 
     default: {
@@ -197,8 +218,9 @@ async function ensureInner(
 
 /**
  * Return a new copy of the IExtension with its inner references re-written.
+ * TODO: resolve/map ids for other definitions (brick, service, etc.) within the extension
  */
-export async function resolveDefinitions<
+export async function resolveExtensionInnerDefinitions<
   T extends UnknownObject = UnknownObject
 >(extension: IExtension<T>): Promise<ResolvedExtension<T>> {
   if (isEmpty(extension.definitions)) {
@@ -206,24 +228,31 @@ export async function resolveDefinitions<
   }
 
   return produce(extension, async (draft) => {
-    const ensured = await resolveObj(
-      mapValues(draft.definitions, async (definition) =>
-        ensureInner(draft.definitions, definition)
+    // The IExtension has definitions for all extensionPoints from the mod, even ones it doesn't use
+    const relevantDefinitions = pickBy(
+      draft.definitions,
+      (definition, name) =>
+        definition.kind !== "extensionPoint" || draft.extensionPointId === name
+    );
+
+    const resolvedDefinitions = await resolveObj(
+      mapValues(relevantDefinitions, async (definition) =>
+        resolveInnerDefinition(draft.definitions, definition)
       )
     );
-    const definitions = new Map(Object.entries(ensured));
+
     delete draft.definitions;
-    if (definitions.has(draft.extensionPointId)) {
-      draft.extensionPointId = definitions.get(draft.extensionPointId).id;
+    if (resolvedDefinitions[draft.extensionPointId] != null) {
+      draft.extensionPointId = resolvedDefinitions[draft.extensionPointId].id;
     }
   }) as Promise<ResolvedExtension<T>>;
 }
 
 /**
  * Resolve inline extension point definitions.
- * TODO: resolve other definitions within the extensions
+ * TODO: resolve other definitions (brick, service, etc.) within the extensions
  */
-export async function resolveRecipe(
+export async function resolveRecipeInnerDefinitions(
   recipe: Pick<RecipeDefinition, "extensionPoints" | "definitions">
 ): Promise<ResolvedExtensionDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
@@ -232,39 +261,40 @@ export async function resolveRecipe(
     return extensionDefinitions as ResolvedExtensionDefinition[];
   }
 
-  const ensured = await resolveObj(
-    mapValues(recipe.definitions, async (config) =>
-      ensureInner(recipe.definitions, config)
+  const extensionPointReferences = new Set<string>(
+    recipe.extensionPoints.map((x) => x.id)
+  );
+
+  // Some mods created with the Page Editor end up with irrelevant definitions in the recipe, because they aren't
+  // cleaned up properly on save, etc.
+  const relevantDefinitions = pickBy(
+    recipe.definitions,
+    (definition, name) =>
+      definition.kind !== "extensionPoint" || extensionPointReferences.has(name)
+  );
+
+  const resolvedDefinitions = await resolveObj(
+    mapValues(relevantDefinitions, async (config) =>
+      resolveInnerDefinition(relevantDefinitions, config)
     )
   );
-  const definitions = new Map(Object.entries(ensured));
+
   return extensionDefinitions.map(
     (definition) =>
-      (definitions.has(definition.id)
-        ? { ...definition, id: definitions.get(definition.id).id }
+      (definition.id in resolvedDefinitions
+        ? { ...definition, id: resolvedDefinitions[definition.id].id }
         : definition) as ResolvedExtensionDefinition
   );
 }
 
 /**
- * Scope for inner definitions
+ * Returns true if the extension is using an InnerDefinitionRef. _Will always return false for ResolvedExtensions._
+ * @see InnerDefinitionRef
+ * @see UnresolvedExtension
+ * @see ResolvedExtension
  */
-export const INNER_SCOPE = "@internal";
-
-export function isInnerExtensionPoint(id: string): id is InnerDefinitionRef {
-  return id.startsWith(INNER_SCOPE + "/");
-}
-
-export function hasInnerExtensionPoint(extension: IExtension): boolean {
-  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
-
-  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
-    console.warn(
-      "Extension is missing inner definition for %s",
-      extension.extensionPointId,
-      { extension }
-    );
-  }
-
-  return hasInner;
+export function hasInnerExtensionPointRef(extension: IExtension): boolean {
+  // XXX: should this also check for `@internal/` scope in the referenced id? The type IExtension could receive a
+  // ResolvedExtension, which would have the id mapped to the internal registry id
+  return extension.extensionPointId in (extension.definitions ?? {});
 }

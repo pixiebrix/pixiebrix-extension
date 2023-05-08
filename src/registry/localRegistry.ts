@@ -22,13 +22,11 @@ import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
 import { memoizeUntilSettled } from "@/utils";
 import { deleteDatabase } from "@/utils/idbUtils";
+import { PACKAGE_REGEX } from "@/types/helpers";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
-
-export const PACKAGE_NAME_REGEX =
-  /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
 export type Version = {
   major: number;
@@ -187,7 +185,7 @@ export function parsePackage(
     .split(".")
     .map((x) => Number.parseInt(x, 10));
 
-  const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
+  const match = PACKAGE_REGEX.exec(item.metadata.id);
 
   return {
     id: item.metadata.id,
