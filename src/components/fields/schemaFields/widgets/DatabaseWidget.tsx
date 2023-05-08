@@ -62,7 +62,9 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     if (
       schema.format === "preview" &&
       typeof initialFieldValue === "string" &&
-      !isUUID(initialFieldValue)
+      !isUUID(initialFieldValue) &&
+      // Don't add the placeholder if a DB with the name already exists
+      !loadedOptions.some((option) => option.label === initialFieldValue)
     ) {
       loadedOptions.unshift({
         label: initialFieldValue,

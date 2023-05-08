@@ -35,7 +35,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { Primitive } from "type-fest";
+import { type Primitive } from "type-fest";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
