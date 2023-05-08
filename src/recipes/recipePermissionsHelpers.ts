@@ -20,7 +20,7 @@ import {
   type ResolvedExtensionDefinition,
 } from "@/types/recipeTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
-import { resolveRecipe } from "@/registry/internal";
+import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissions,
@@ -87,7 +87,7 @@ export async function checkRecipePermissions(
   recipe: Pick<RecipeDefinition, "definitions" | "extensionPoints">,
   selectedAuths: ServiceAuthPair[]
 ): Promise<PermissionsStatus> {
-  const extensionDefinitions = await resolveRecipe(recipe);
+  const extensionDefinitions = await resolveRecipeInnerDefinitions(recipe);
   const permissions = await collectExtensionDefinitionPermissions(
     extensionDefinitions,
     selectedAuths

@@ -20,7 +20,7 @@ import { type Metadata } from "@/types/registryTypes";
 
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
-import { isInnerExtensionPoint } from "@/registry/internal";
+import { isInnerDefinitionRef } from "@/registry/internal";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
   type OptionsDefinition,
@@ -62,7 +62,7 @@ export function makeBlueprint(
     config,
   } = extension;
 
-  if (isInnerExtensionPoint(extensionPointId)) {
+  if (isInnerDefinitionRef(extensionPointId)) {
     throw new Error("Expected unresolved extension");
   }
 

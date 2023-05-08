@@ -28,7 +28,7 @@ import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
+import { isInnerDefinitionRef } from "@/registry/internal";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -181,7 +181,7 @@ export function replaceRecipeExtension(
     const adapter = ADAPTERS.get(element.type);
     const rawExtension = adapter.selectExtension(element);
     const extensionPointId = element.extensionPoint.metadata.id;
-    const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
+    const hasInnerExtensionPoint = isInnerDefinitionRef(extensionPointId);
 
     const commonExtensionConfig: Except<ExtensionDefinition, "id"> = {
       ...pick(rawExtension, [
@@ -364,7 +364,7 @@ export function buildRecipe({
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
 
-        if (isInnerExtensionPoint(extension.extensionPointId)) {
+        if (isInnerDefinitionRef(extension.extensionPointId)) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
           extension.definitions = {
@@ -419,7 +419,7 @@ function buildExtensionPoints(
       let isDefinitionAlreadyAdded = false;
       let needsFreshExtensionPointId = false;
 
-      if (isInnerExtensionPoint(extensionPointId)) {
+      if (isInnerDefinitionRef(extensionPointId)) {
         // Always replace inner ids
         needsFreshExtensionPointId = true;
 

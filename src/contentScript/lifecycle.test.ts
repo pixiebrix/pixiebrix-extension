@@ -32,7 +32,7 @@ import { type PersistedExtension } from "@/types/extensionTypes";
 import { type BlockPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 
 let extensionPointRegistry: any;
 let loadOptionsMock: jest.Mock;
@@ -153,7 +153,9 @@ describe("lifecycle", () => {
       extensionPointId: extensionPoint.id,
     });
 
-    extensionPoint.addExtension(await resolveDefinitions(extension));
+    extensionPoint.addExtension(
+      await resolveExtensionInnerDefinitions(extension)
+    );
 
     await lifecycleModule.runEditorExtension(extension.id, extensionPoint);
 
@@ -191,7 +193,9 @@ describe("lifecycle", () => {
       extensionPoint,
     ]);
 
-    extensionPoint.addExtension(await resolveDefinitions(extension));
+    extensionPoint.addExtension(
+      await resolveExtensionInnerDefinitions(extension)
+    );
 
     await lifecycleModule.runEditorExtension(extension.id, extensionPoint);
 

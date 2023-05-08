@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
 import { useGetCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
@@ -88,7 +88,9 @@ function useInstallables(): InstallablesState {
     useAsyncState(
       async () =>
         Promise.all(
-          allExtensions.map(async (extension) => resolveDefinitions(extension))
+          allExtensions.map(async (extension) =>
+            resolveExtensionInnerDefinitions(extension)
+          )
         ),
       [allExtensions],
       []

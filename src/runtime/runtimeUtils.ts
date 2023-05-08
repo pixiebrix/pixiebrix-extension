@@ -31,7 +31,7 @@ import {
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { $safeFind } from "@/helpers";
-import { isInnerExtensionPoint } from "@/registry/internal";
+import { isInnerDefinitionRef } from "@/registry/internal";
 import { BusinessError } from "@/errors/businessErrors";
 import { validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
@@ -242,7 +242,7 @@ export function assertExtensionNotResolved<T extends IExtension>(
 ): asserts extension is T & {
   _unresolvedExtensionBrand: never;
 } {
-  if (isInnerExtensionPoint(extension.extensionPointId)) {
+  if (isInnerDefinitionRef(extension.extensionPointId)) {
     throw new Error("Expected UnresolvedExtension");
   }
 }

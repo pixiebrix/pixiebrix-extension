@@ -53,7 +53,7 @@ import {
 import {
   hasInnerExtensionPoint,
   INNER_SCOPE,
-  isInnerExtensionPoint,
+  isInnerDefinitionRef,
 } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -333,7 +333,7 @@ export function extensionWithInnerDefinitions(
   extension: IExtension,
   extensionPointDefinition: ExtensionPointDefinition
 ): IExtension {
-  if (isInnerExtensionPoint(extension.extensionPointId)) {
+  if (isInnerDefinitionRef(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
       Object.keys(extension.definitions ?? {})

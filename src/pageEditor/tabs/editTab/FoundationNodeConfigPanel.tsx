@@ -20,7 +20,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import useFlags from "@/hooks/useFlags";
-import { isInnerExtensionPoint } from "@/registry/internal";
+import { isInnerDefinitionRef } from "@/registry/internal";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -63,7 +63,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
+    () => !isInnerDefinitionRef(extensionPoint.metadata.id),
     [extensionPoint.metadata.id]
   );
 
