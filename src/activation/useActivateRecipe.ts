@@ -78,7 +78,12 @@ function useActivateRecipe(
       );
       const isReactivate = !isEmpty(recipeExtensions);
 
-      if (source === "marketplace") {
+      if (source === "extensionConsole") {
+        // Note: The prefix "Marketplace" on the telemetry event name
+        // here is legacy terminology from before the public marketplace
+        // was created. It refers to the mod-list part of the extension
+        // console, to distinguish that from the workshop.
+        // It's being kept to keep our metrics history clean.
         reportEvent("MarketplaceActivate", {
           ...selectActivateEventData(recipe),
           reactivate: isReactivate,
@@ -95,7 +100,12 @@ function useActivateRecipe(
             await checkRecipePermissions(recipe, serviceAuths)
           ))
         ) {
-          if (source === "marketplace") {
+          if (source === "extensionConsole") {
+            // Note: The prefix "Marketplace" on the telemetry event name
+            // here is legacy terminology from before the public marketplace
+            // was created. It refers to the mod-list part of the extension
+            // console, to distinguish that from the workshop.
+            // It's being kept like this so our metrics history stays clean.
             reportEvent("MarketplaceRejectPermissions", {
               ...selectActivateEventData(recipe),
               reactivate: isReactivate,
