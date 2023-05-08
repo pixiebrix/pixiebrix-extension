@@ -48,9 +48,9 @@ type SiteSelectorHint = {
    */
   siteValidator: (element?: HTMLElement) => boolean;
   badPatterns: CssSelectorMatch[];
-  uniqueAttributes: string[];
-  stableAnchors: CssSelectorMatch[];
   requiredSelectors: string[];
+  stableAnchors: CssSelectorMatch[];
+  uniqueAttributes: string[];
 };
 
 const SELECTOR_HINTS: SiteSelectorHint[] = [
