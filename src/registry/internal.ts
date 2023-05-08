@@ -233,9 +233,7 @@ export async function resolveExtensionInnerDefinitions<
     const relevantDefinitions = pickBy(
       draft.definitions,
       (definition, name) =>
-        (definition.kind === "extensionPoint" &&
-          draft.extensionPointId === name) ||
-        definition.kind !== "extensionPoint"
+        definition.kind !== "extensionPoint" || draft.extensionPointId === name
     );
 
     const resolvedDefinitions = await resolveObj(
@@ -273,9 +271,7 @@ export async function resolveRecipeInnerDefinitions(
   const relevantDefinitions = pickBy(
     recipe.definitions,
     (definition, name) =>
-      (definition.kind === "extensionPoint" &&
-        extensionPointReferences.has(name)) ||
-      definition.kind !== "extensionPoint"
+      definition.kind !== "extensionPoint" || extensionPointReferences.has(name)
   );
 
   const resolvedDefinitions = await resolveObj(
