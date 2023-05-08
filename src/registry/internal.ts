@@ -40,7 +40,6 @@ import { type UnknownObject } from "@/types/objectTypes";
 import {
   INNER_SCOPE,
   type InnerDefinitions,
-  isInnerDefinitionRef,
   type RegistryId,
 } from "@/types/registryTypes";
 import {
@@ -288,16 +287,14 @@ export async function resolveRecipeInnerDefinitions(
   );
 }
 
-export function hasInnerExtensionPoint(extension: IExtension): boolean {
-  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
-
-  if (!hasInner && isInnerDefinitionRef(extension.extensionPointId)) {
-    console.warn(
-      "Extension is missing inner definition for %s",
-      extension.extensionPointId,
-      { extension }
-    );
-  }
-
-  return hasInner;
+/**
+ * Returns true if the extension is using an InnerDefinitionRef. _Will always return false for ResolvedExtensions._
+ * @see InnerDefinitionRef
+ * @see UnresolvedExtension
+ * @see ResolvedExtension
+ */
+export function hasInnerExtensionPointRef(extension: IExtension): boolean {
+  // XXX: should this also check for `@internal/` scope in the referenced id? The type IExtension could receive a
+  // ResolvedExtension, which would have the id mapped to the internal registry id
+  return extension.extensionPointId in (extension.definitions ?? {});
 }

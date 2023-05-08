@@ -17,7 +17,6 @@
 
 import {
   INNER_SCOPE,
-  isInnerDefinitionRef,
   type Metadata,
   type RegistryId,
 } from "@/types/registryTypes";
@@ -38,6 +37,7 @@ import {
 } from "@/pageEditor/extensionPoints/elementConfig";
 import { type Except } from "type-fest";
 import {
+  isInnerDefinitionRegistryId,
   uuidv4,
   validateRegistryId,
   validateSemVerString,
@@ -55,7 +55,7 @@ import {
   getMinimalSchema,
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { hasInnerExtensionPoint } from "@/registry/internal";
+import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -272,7 +272,7 @@ export async function lookupExtensionPoint<
     throw new Error("config is required");
   }
 
-  if (hasInnerExtensionPoint(config)) {
+  if (hasInnerExtensionPointRef(config)) {
     const definition = config.definitions[config.extensionPointId];
     console.debug(
       "Converting extension definition to temporary extension point",
@@ -334,7 +334,7 @@ export function extensionWithInnerDefinitions(
   extension: IExtension,
   extensionPointDefinition: ExtensionPointDefinition
 ): IExtension {
-  if (isInnerDefinitionRef(extension.extensionPointId)) {
+  if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
       Object.keys(extension.definitions ?? {})

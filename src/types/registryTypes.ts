@@ -112,20 +112,13 @@ export interface Definition<K extends Kind = Kind> {
 export type InnerDefinitions = Record<string, UnknownObject>;
 
 /**
- * A reference to an entry in the recipe's `definitions` map.
+ * A reference to an entry in the recipe's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
 export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
 };
-
-/**
- * Return true if `id` refers to an inner registry definition
- */
-export function isInnerDefinitionRef(id: string): id is InnerDefinitionRef {
-  return id.startsWith(INNER_SCOPE + "/");
-}
 
 /**
  * A reference to a package in the registry that the user has edit permissions for.

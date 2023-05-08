@@ -20,7 +20,8 @@ import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils";
-import { isInnerDefinitionRef, type RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 type Source =
   // From the remote brick registry
@@ -186,7 +187,7 @@ export class Registry<
       return localItem;
     }
 
-    if (isInnerDefinitionRef(id)) {
+    if (isInnerDefinitionRegistryId(id)) {
       // Avoid the IDB lookup for internal definitions, because we know they are not there
       throw new DoesNotExistError(id);
     }

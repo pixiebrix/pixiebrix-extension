@@ -34,7 +34,8 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type UUID } from "@/types/stringTypes";
-import { isInnerDefinitionRef } from "@/types/registryTypes";
+
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -134,7 +135,8 @@ function useUpsertFormElement(): SaveCallback {
       const adapter = ADAPTERS.get(element.type);
 
       const extensionPointId = element.extensionPoint.metadata.id;
-      const hasInnerExtensionPoint = isInnerDefinitionRef(extensionPointId);
+      const hasInnerExtensionPoint =
+        isInnerDefinitionRegistryId(extensionPointId);
 
       let isEditable = false;
 

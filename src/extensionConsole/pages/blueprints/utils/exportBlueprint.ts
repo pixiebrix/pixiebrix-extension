@@ -16,7 +16,7 @@
  */
 
 import { isEmpty } from "lodash";
-import { isInnerDefinitionRef, type Metadata } from "@/types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -26,6 +26,7 @@ import {
 } from "@/types/recipeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 /**
  * Infer optionsSchema from the options provided to the extension.
@@ -60,8 +61,8 @@ export function makeBlueprint(
     config,
   } = extension;
 
-  if (isInnerDefinitionRef(extensionPointId)) {
-    throw new Error("Expected unresolved extension");
+  if (isInnerDefinitionRegistryId(extensionPointId)) {
+    throw new Error("Expected UnresolvedExtension");
   }
 
   return {

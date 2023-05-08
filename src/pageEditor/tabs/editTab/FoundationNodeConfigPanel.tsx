@@ -30,7 +30,8 @@ import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
-import { isInnerDefinitionRef } from "@/types/registryTypes";
+
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -63,7 +64,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => !isInnerDefinitionRef(extensionPoint.metadata.id),
+    () => !isInnerDefinitionRegistryId(extensionPoint.metadata.id),
     [extensionPoint.metadata.id]
   );
 
