@@ -17,16 +17,18 @@
 
 import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import {
-  type CssSelectorType,
-  type CssSelectorMatch,
-} from "css-selector-generator/types/types";
+import { type CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import {
+  getSiteSelectorHint,
+  SELECTOR_HINTS,
+  type SiteSelectorHint,
+} from "@/utils/inference/siteSelectorHints";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -37,54 +39,6 @@ export const BUTTON_TAGS: string[] = [
   "svg",
 ];
 const MENU_TAGS = ["ul", "tbody"];
-
-type SiteSelectorHint = {
-  /**
-   * Name for the rule hint-set.
-   */
-  siteName: string;
-  /**
-   * Return true if the these hints apply to the current site.
-   */
-  siteValidator: (element?: HTMLElement) => boolean;
-  badPatterns: CssSelectorMatch[];
-  requiredSelectors: string[];
-  stableAnchors: CssSelectorMatch[];
-  uniqueAttributes: string[];
-};
-
-const SELECTOR_HINTS: SiteSelectorHint[] = [
-  {
-    // Matches all sites using Salesforce's Lightning framework
-    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
-    siteName: "Salesforce",
-    siteValidator: (element) =>
-      $(element).closest("[data-aura-rendered-by]").length > 0,
-    badPatterns: [
-      getAttributeSelectorRegex(
-        // Salesforce Aura component tracking
-        "data-aura-rendered-by"
-      ),
-
-      /#\\+\d+ \d+\\+:0/,
-      /#\w+[_-]\d+/,
-      /.*\.hover.*/,
-      /.*\.not-selected.*/,
-      /^\[name='leftsidebar'] */,
-    ],
-    requiredSelectors: ['[role="main"]>.active'],
-    stableAnchors: [
-      ".active",
-      ".consoleRelatedRecord",
-      /\.consoleRelatedRecord\d+/,
-      ".navexWorkspaceManager",
-      ".oneConsoleTab",
-      ".oneWorkspaceTabWrapper",
-      ".tabContent",
-    ],
-    uniqueAttributes: ["data-component-id"],
-  },
-];
 
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
@@ -126,24 +80,6 @@ const UNSTABLE_SELECTORS = [
     "style"
   ),
 ];
-
-function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
-  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator(element)
-  );
-  if (!siteSelectorHint) {
-    siteSelectorHint = {
-      siteName: "",
-      siteValidator: () => false,
-      badPatterns: [],
-      uniqueAttributes: [],
-      stableAnchors: [],
-      requiredSelectors: [],
-    };
-  }
-
-  return siteSelectorHint;
-}
 
 function getUniqueAttributeSelectors(
   element: HTMLElement,
@@ -488,8 +424,12 @@ function findAncestorsWithIdLikeSelectors(
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
 }
 
-export function getRequiredSelectors(element: HTMLElement, root?: Element) {
-  const siteSelectorHint = getSiteSelectorHint(element);
+export function getRequiredSelectors(
+  element: HTMLElement,
+  siteSelectorHintOverride?: SiteSelectorHint
+) {
+  const siteSelectorHint =
+    siteSelectorHintOverride ?? getSiteSelectorHint(element);
 
   const ancestors = $(element).parents().get();
 

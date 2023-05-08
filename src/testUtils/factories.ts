@@ -114,6 +114,7 @@ import {
   type RecipeDefinition,
 } from "@/types/recipeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type SiteSelectorHint } from "@/utils/inference/siteSelectorHints";
 
 /**
  * UUID sequence generator that's predictable across runs.
@@ -962,3 +963,12 @@ export const getRecipeWithBuiltInServiceAuths = () => {
 
   return { recipe, builtInServiceAuths };
 };
+
+export const siteSelectorHintFactory = define<SiteSelectorHint>({
+  siteName: "testSite",
+  siteValidator: () => false,
+  badPatterns: [],
+  uniqueAttributes: [],
+  stableAnchors: [],
+  requiredSelectors: [],
+});

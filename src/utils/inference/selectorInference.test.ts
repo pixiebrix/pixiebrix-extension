@@ -20,6 +20,7 @@ import {
   generateSelector,
   getAttributeSelector,
   getAttributeSelectorRegex,
+  getRequiredSelectors,
   getSelectorPreference,
   inferSelectors,
   inferSelectorsIncludingStableAncestors,
@@ -30,6 +31,7 @@ import { JSDOM } from "jsdom";
 import { html } from "@/utils";
 import { uniq } from "lodash";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
+import { siteSelectorHintFactory } from "@/testUtils/factories";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
@@ -522,6 +524,46 @@ describe("inferSelectors", () => {
   );
 
   /* eslint-enable jest/expect-expect */
+});
+
+describe("getRequiredSelectors", () => {
+  document.body.innerHTML = html`
+    <div id="grandparent" class="grandparent" role="main">
+      <div class="parent">
+        <div id="test"></div>
+      </div>
+    </div>
+  `;
+  const element = document.body.querySelector<HTMLElement>("#test");
+
+  const testSelectors = (
+    requiredSelectors: string[],
+    expectedResult: string[]
+  ) => {
+    const siteSelectorHint = siteSelectorHintFactory({
+      requiredSelectors,
+    });
+
+    expect(getRequiredSelectors(element, siteSelectorHint)).toEqual(
+      expectedResult
+    );
+  };
+
+  test("default behavior", () => {
+    testSelectors([], []);
+  });
+
+  test("should return a simple selector", () => {
+    testSelectors([".grandparent", ".non-applicable"], [".grandparent"]);
+  });
+
+  test("should return a selector with child combinator", () => {
+    testSelectors([".grandparent>.parent"], [".grandparent>.parent"]);
+  });
+
+  test("should return a selector ordered ancestor", () => {
+    testSelectors(["#grandparent .parent"], ["#grandparent .parent"]);
+  });
 });
 
 describe("inferSelectorsIncludingStableAncestors", () => {
