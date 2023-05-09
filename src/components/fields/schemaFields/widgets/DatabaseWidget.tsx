@@ -63,10 +63,13 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
       // Don't add the placeholder if a DB with the name already exists
       !loadedOptions.some((option) => option.label === initialFieldValue)
     ) {
-      loadedOptions.unshift({
-        label: initialFieldValue,
-        value: initialFieldValue,
-      });
+      return [
+        {
+          label: initialFieldValue,
+          value: initialFieldValue,
+        },
+        ...loadedOptions,
+      ];
     }
 
     return loadedOptions;
