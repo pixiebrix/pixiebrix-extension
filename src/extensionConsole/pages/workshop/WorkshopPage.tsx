@@ -112,7 +112,10 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
     data: remoteBricks,
     isLoading,
     error,
-  } = useGetEditablePackagesQuery();
+  } = useGetEditablePackagesQuery(undefined, {
+    // Make sure user always see the latest bricks available
+    refetchOnMountOrArgChange: true,
+  });
   const {
     scopes = [],
     collections = [],
