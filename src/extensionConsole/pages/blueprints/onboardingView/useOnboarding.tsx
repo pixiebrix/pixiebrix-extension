@@ -17,11 +17,11 @@
 
 import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
-import { useMemo } from "react";
-import useDeployments from "@/hooks/useDeployments";
+import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/extensionConsole/pages/blueprints/blueprintsSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 export type OnboardingType =
   | "default"
@@ -41,7 +41,7 @@ function useOnboarding(): {
   const { data: organizations, isLoading: isOrganizationsLoading } =
     useGetOrganizationsQuery();
   const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =
-    useDeployments();
+    useContext(DeploymentsContext);
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0
