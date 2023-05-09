@@ -34,25 +34,11 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
-import {
-  emptyPermissionsFactory,
-  ensurePermissionsFromUserGesture,
-} from "@/permissions/permissionsUtils";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
 
 const checkPermissionsMock = jest.mocked(checkRecipePermissions);
-
-jest.mock("@/permissions/permissionsUtils", () => {
-  const actual = jest.requireActual("@/permissions/permissionsUtils");
-  return {
-    ...actual,
-    ensurePermissionsFromUserGesture: jest.fn(),
-  };
-});
-
-const ensurePermissionsMock = jest.mocked(ensurePermissionsFromUserGesture);
-
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
@@ -121,7 +107,7 @@ function setRecipeHasPermissions(hasPermissions: boolean) {
 }
 
 function setUserAcceptedPermissions(accepted: boolean) {
-  ensurePermissionsMock.mockResolvedValue(accepted);
+  jest.mocked(browser.permissions.request).mockResolvedValue(accepted);
 }
 
 describe("useActivateRecipe", () => {
