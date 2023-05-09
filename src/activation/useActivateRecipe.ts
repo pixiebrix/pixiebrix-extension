@@ -28,6 +28,9 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { isEmpty } from "lodash";
+import { useCreateDatabaseMutation } from "@/services/api";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isUUID, validateUUID } from "@/types/helpers";
 
 export type ActivateResult = {
   success: boolean;
@@ -71,6 +74,8 @@ function useActivateRecipe(
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 
+  const [createDatabase] = useCreateDatabaseMutation();
+
   return useCallback(
     async (formValues: WizardValues, recipe: RecipeDefinition) => {
       const recipeExtensions = extensions.filter(
@@ -95,11 +100,13 @@ function useActivateRecipe(
       );
 
       try {
-        if (
-          !(await ensurePermissionsFromUserGesture(
-            await checkRecipePermissions(recipe, serviceAuths)
-          ))
-        ) {
+        const recipePermissions = await checkRecipePermissions(
+          recipe,
+          serviceAuths
+        );
+        const isPermissionsAcceptedByUser =
+          await ensurePermissionsFromUserGesture(recipePermissions);
+        if (!isPermissionsAcceptedByUser) {
           if (source === "extensionConsole") {
             // Note: The prefix "Marketplace" on the telemetry event name
             // here is legacy terminology from before the public marketplace
@@ -118,6 +125,43 @@ function useActivateRecipe(
           };
         }
 
+        const { optionsArgs, services } = formValues;
+
+        // Create databases for any recipe options database fields where the
+        // schema format is "preview", and the field value is a string to use
+        // as the database name
+        const autoCreateDatabaseFieldNames = Object.entries(
+          recipe.options?.schema?.properties ?? {}
+        )
+          .filter(
+            ([name, fieldSchema]) =>
+              typeof fieldSchema !== "boolean" &&
+              isDatabaseField(fieldSchema) &&
+              fieldSchema.format === "preview" &&
+              typeof optionsArgs[name] === "string" &&
+              !isEmpty(optionsArgs[name]) &&
+              // If the value is a UUID, then it's a database ID for an existing database
+              !isUUID(optionsArgs[name] as string)
+          )
+          .map(([name]) => name);
+        await Promise.all(
+          autoCreateDatabaseFieldNames.map(async (name) => {
+            // Type-checked in the filter above
+            const databaseName: string = optionsArgs[name] as string;
+            const result = await createDatabase({ name: databaseName });
+
+            if ("error" in result) {
+              throw result.error;
+            }
+
+            optionsArgs[name] = validateUUID(result.data.id);
+          })
+        );
+
+        const recipeExtensions = extensions.filter(
+          (extension) => extension._recipe?.id === recipe.metadata.id
+        );
+
         await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
 
         dispatch(
@@ -125,9 +169,9 @@ function useActivateRecipe(
             recipe,
             extensionPoints: recipe.extensionPoints,
             services: Object.fromEntries(
-              formValues.services.map(({ id, config }) => [id, config])
+              services.map(({ id, config }) => [id, config])
             ),
-            optionsArgs: formValues.optionsArgs,
+            optionsArgs,
           })
         );
 
@@ -152,7 +196,7 @@ function useActivateRecipe(
         success: true,
       };
     },
-    [dispatch, extensions, source]
+    [createDatabase, dispatch, extensions, source]
   );
 }
 

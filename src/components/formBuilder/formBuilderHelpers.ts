@@ -82,6 +82,11 @@ export const FIELD_TYPES_WITHOUT_DEFAULT = [
   stringifyUiType({ propertyType: "string", uiWidget: "database" }),
   stringifyUiType({
     propertyType: "string",
+    uiWidget: "database",
+    propertyFormat: "preview",
+  }),
+  stringifyUiType({
+    propertyType: "string",
     uiWidget: "googleSheet",
   }),
 ];

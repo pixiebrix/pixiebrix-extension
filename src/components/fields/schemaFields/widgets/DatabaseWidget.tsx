@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useField } from "formik";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
@@ -29,38 +29,69 @@ import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { useIsMounted } from "@/hooks/common";
+import { isUUID } from "@/types/helpers";
 
-const DatabaseWidget: React.FunctionComponent<{
-  /**
-   * The database Formik field name.
-   */
-  name: string;
-}> = ({ name }) => {
+const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
+  name,
+  schema,
+  isRequired,
+}) => {
   const [showModal, setShowModal] = useState(false);
-  const [{ value }, , { setValue }] = useField<UUID | Expression>(name);
+  const [{ value: fieldValue }, , { setValue: setFieldValue }] = useField<
+    UUID | Expression | string
+  >(name);
   const { allowExpressions } = useContext(FieldRuntimeContext);
 
   const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
-  const isMountedRef = useRef(true);
-  useEffect(
-    () => () => {
-      isMountedRef.current = false;
-    },
-    []
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
+  const initialFieldValue = useMemo(() => fieldValue, []);
+
+  const fullDatabaseOptions = useMemo(() => {
+    const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions;
+
+    // If the schema format is 'preview', and the initial field value is a string, use that string
+    // as the auto-created database name, and add it as an option to the database dropdown at the
+    // top of the list.
+    if (
+      schema.format === "preview" &&
+      typeof initialFieldValue === "string" &&
+      !isUUID(initialFieldValue) &&
+      // Don't add the placeholder if a DB with the name already exists
+      !loadedOptions.some((option) => option.label === initialFieldValue)
+    ) {
+      return [
+        {
+          label: initialFieldValue,
+          value: initialFieldValue,
+        },
+        ...loadedOptions,
+      ];
+    }
+
+    return loadedOptions;
+  }, [
+    databaseOptions,
+    initialFieldValue,
+    isLoadingDatabaseOptions,
+    schema.format,
+  ]);
+
+  const checkIsMounted = useIsMounted();
 
   const setDatabaseId = (databaseId: UUID) => {
     if (allowExpressions) {
-      setValue(makeTemplateExpression("nunjucks", databaseId));
+      setFieldValue(makeTemplateExpression("nunjucks", databaseId));
     } else {
-      setValue(databaseId);
+      setFieldValue(databaseId);
     }
   };
 
   const onModalClose = () => {
-    if (!isMountedRef.current) {
+    if (!checkIsMounted()) {
       return;
     }
 
@@ -68,7 +99,7 @@ const DatabaseWidget: React.FunctionComponent<{
   };
 
   const onDatabaseCreated = (databaseId: UUID) => {
-    if (!isMountedRef.current) {
+    if (!checkIsMounted()) {
       return;
     }
 
@@ -86,9 +117,10 @@ const DatabaseWidget: React.FunctionComponent<{
 
       <SelectWidget
         name={name}
-        options={databaseOptions}
+        options={fullDatabaseOptions}
         isLoading={isLoadingDatabaseOptions}
-        value={isExpression(value) ? value.__value__ : value}
+        isClearable={!isRequired || isLoadingDatabaseOptions}
+        value={isExpression(fieldValue) ? fieldValue.__value__ : fieldValue}
         onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
           setDatabaseId(event.target.value);
         }}

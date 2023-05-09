@@ -34,6 +34,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { type Primitive } from "type-fest";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
@@ -48,6 +50,10 @@ const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: ServicesBody },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
+
+function forcePrimitive(value: unknown): Primitive | undefined {
+  return isPrimitive(value) ? value : undefined;
+}
 
 function useWizard(
   blueprint: RecipeDefinition,
@@ -106,9 +112,19 @@ function useWizard(
       optionsArgs: mapValues(
         blueprint.options?.schema?.properties ?? {},
         (optionSchema: Schema, name: string) => {
-          // eslint-disable-next-line security/detect-object-injection -- name from the schema
-          const value = installedOptions[name] ?? optionSchema.default;
-          return isPrimitive(value) ? value : undefined;
+          const installed = installedOptions[name];
+          if (installed) {
+            return forcePrimitive(installed);
+          }
+
+          if (
+            isDatabaseField(optionSchema) &&
+            optionSchema.format === "preview"
+          ) {
+            return `${blueprint.metadata.name} - ${optionSchema.title ?? name}`;
+          }
+
+          return forcePrimitive(optionSchema.default);
         }
       ),
     };
