@@ -27,6 +27,7 @@ import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
@@ -43,7 +44,9 @@ type Props = {
 
 /**
  * Return true if the recipe requires a user to configure options/integration configurations.
+ *
  * NOTE: does not perform a permissions check.
+ *
  * @param recipe the recipe definition
  * @param authOptions the integration configurations available to the user
  * @see checkRecipePermissions
@@ -57,7 +60,29 @@ function requiresUserConfiguration(
     authOptions
   );
 
-  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+  const recipeOptions = recipe.options?.schema?.properties;
+
+  const needsOptionsInputs =
+    !isEmpty(recipeOptions) &&
+    Object.values(recipeOptions).some((optionSchema) => {
+      // This should not occur in practice, but it's here for type narrowing
+      if (typeof optionSchema === "boolean") {
+        return false;
+      }
+
+      // We return false here for any option that does not need user input
+      // and can be auto-activated in the marketplace activation flow.
+      // Options that allow auto-activation:
+      // - Database fields with format "preview"
+      // TODO: add more safe-default option types here
+
+      if (isDatabaseField(optionSchema) && optionSchema.format === "preview") {
+        return false;
+      }
+
+      // We require user input for any option that isn't explicitly excluded, so we return true here
+      return true;
+    });
 
   const recipeServiceIds = uniq(
     recipe.extensionPoints.flatMap(({ services }) =>
@@ -77,7 +102,7 @@ function requiresUserConfiguration(
     return defaultOption?.sharingType !== "built-in";
   });
 
-  return hasRecipeOptions || needsServiceInputs;
+  return needsOptionsInputs || needsServiceInputs;
 }
 
 /**
