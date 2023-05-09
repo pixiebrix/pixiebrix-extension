@@ -566,7 +566,7 @@ export const deploymentFactory = define<Deployment>({
     "package"
   ),
   package: deploymentPackageFactory,
-  options_config: {},
+  options_config: () => ({} as Deployment["options_config"]),
 });
 
 const internalFormStateFactory = define<FormState>({
