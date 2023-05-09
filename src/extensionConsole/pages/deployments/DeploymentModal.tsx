@@ -16,7 +16,6 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { type DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { Alert, Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +28,7 @@ import { noop } from "lodash";
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import pluralize from "@/utils/pluralize";
 import { type SettingsRootState } from "@/store/settingsTypes";
+import { DeploymentsState } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 const FIVE_MINUTES_MILLIS = 300_000;
 const FIFTEEN_MINUTES_MILLIS = 900_000;
@@ -136,7 +136,7 @@ const SnoozeButton: React.FC<{
  */
 const DeploymentModal: React.FC<
   Pick<
-    DeploymentState,
+    DeploymentsState,
     "extensionUpdateRequired" | "update" | "updateExtension"
   >
 > = ({ extensionUpdateRequired, updateExtension, update }) => {

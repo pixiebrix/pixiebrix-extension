@@ -54,7 +54,7 @@ import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
-import { DeploymentsProvider } from "@/hooks/DeploymentsContext";
+import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 // Register the built-in bricks
 registerEditors();

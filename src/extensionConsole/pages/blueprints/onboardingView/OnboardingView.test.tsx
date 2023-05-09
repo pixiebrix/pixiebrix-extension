@@ -23,8 +23,8 @@ import useOnboarding from "@/extensionConsole/pages/blueprints/onboardingView/us
 import { renderHook } from "@testing-library/react-hooks";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import DeploymentsContext, {
-  type DeploymentsState,
-} from "@/hooks/DeploymentsContext";
+  DeploymentsState,
+} from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),

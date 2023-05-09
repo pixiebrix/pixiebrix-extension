@@ -21,7 +21,7 @@ import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/extensionConsole/pages/blueprints/blueprintsSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
-import DeploymentsContext from "@/hooks/DeploymentsContext";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 export type OnboardingType =
   | "default"
