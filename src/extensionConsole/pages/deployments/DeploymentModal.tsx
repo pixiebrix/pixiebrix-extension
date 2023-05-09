@@ -28,7 +28,7 @@ import { noop } from "lodash";
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
 import pluralize from "@/utils/pluralize";
 import { type SettingsRootState } from "@/store/settingsTypes";
-import { DeploymentsState } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import { type DeploymentsState } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 const FIVE_MINUTES_MILLIS = 300_000;
 const FIFTEEN_MINUTES_MILLIS = 900_000;
