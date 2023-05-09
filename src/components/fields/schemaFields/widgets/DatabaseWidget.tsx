@@ -32,6 +32,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
 import { isUUID } from "@/types/helpers";
+import cx from "classnames";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
@@ -49,7 +50,10 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
-
+  const hasPreviewValue =
+    schema.format === "preview" &&
+    typeof initialFieldValue === "string" &&
+    !isUUID(initialFieldValue);
   const fullDatabaseOptions = useMemo(() => {
     const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions;
 
@@ -57,11 +61,11 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     // as the auto-created database name, and add it as an option to the database dropdown at the
     // top of the list.
     if (
-      schema.format === "preview" &&
-      typeof initialFieldValue === "string" &&
-      !isUUID(initialFieldValue) &&
-      // Don't add the placeholder if a DB with the name already exists
-      !loadedOptions.some((option) => option.label === initialFieldValue)
+      hasPreviewValue &&
+      // Don't add the preview option if a database with the name already exists
+      !loadedOptions.some(
+        (option) => option.label === `${initialFieldValue} - Private`
+      )
     ) {
       return [
         {
@@ -75,9 +79,9 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     return loadedOptions;
   }, [
     databaseOptions,
+    hasPreviewValue,
     initialFieldValue,
     isLoadingDatabaseOptions,
-    schema.format,
   ]);
 
   const checkIsMounted = useIsMounted();
@@ -129,6 +133,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
             setShowModal(true);
           }),
         }}
+        className={cx({ "database-preview": hasPreviewValue })}
       />
     </>
   );

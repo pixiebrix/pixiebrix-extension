@@ -27,6 +27,7 @@ import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 export type RecipeState = {
   recipe: RecipeDefinition;
@@ -43,7 +44,9 @@ type Props = {
 
 /**
  * Return true if the recipe requires a user to configure options/integration configurations.
+ *
  * NOTE: does not perform a permissions check.
+ *
  * @param recipe the recipe definition
  * @param authOptions the integration configurations available to the user
  * @see checkRecipePermissions
@@ -57,7 +60,24 @@ function requiresUserConfiguration(
     authOptions
   );
 
-  const hasRecipeOptions = !isEmpty(recipe.options?.schema?.properties);
+  const recipeOptions = recipe.options?.schema?.properties ?? {};
+
+  // Options that allow auto-activation:
+  // - Database fields with format "preview"
+  const needsOptionsInputs =
+    !isEmpty(recipeOptions) &&
+    Object.values(recipeOptions).some((optionSchema) => {
+      if (typeof optionSchema === "boolean") {
+        return false;
+      }
+
+      // Exclude preview database fields
+      if (isDatabaseField(optionSchema) && optionSchema.format === "preview") {
+        return false;
+      }
+
+      return true;
+    });
 
   const recipeServiceIds = uniq(
     recipe.extensionPoints.flatMap(({ services }) =>
@@ -77,7 +97,7 @@ function requiresUserConfiguration(
     return defaultOption?.sharingType !== "built-in";
   });
 
-  return hasRecipeOptions || needsServiceInputs;
+  return needsOptionsInputs || needsServiceInputs;
 }
 
 /**
