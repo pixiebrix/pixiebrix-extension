@@ -21,7 +21,6 @@ import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import {
-  type BlueprintResponse,
   type EditablePackage,
   type CloudExtension,
   type Database,
@@ -35,6 +34,7 @@ import {
   type PackageUpsertResponse,
   type PackageVersion,
   type PendingInvitation,
+  type RecipeResponse,
   type SanitizedAuth,
   UserRole,
 } from "@/types/contract";
@@ -147,7 +147,7 @@ export const appApi = createApi({
     }),
     createDatabase: builder.mutation<
       Database,
-      { name: string; organizationId: string }
+      { name: string; organizationId?: string | undefined }
     >({
       query: ({ name, organizationId }) => ({
         url: organizationId
@@ -260,7 +260,7 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getCloudExtensions: builder.query<CloudExtension[], void>({
+    getAllCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
     }),
@@ -283,6 +283,32 @@ export const appApi = createApi({
         method: "delete",
       }),
       invalidatesTags: ["CloudExtensions"],
+    }),
+    getRecipe: builder.query<RecipeDefinition, { recipeId: RegistryId }>({
+      query: ({ recipeId }) => ({
+        url: `/api/recipes/${encodeURIComponent(recipeId)}/`,
+        method: "get",
+      }),
+      transformResponse(
+        baseQueryReturnValue: RecipeResponse
+      ): RecipeDefinition {
+        // Pull out sharing and updated_at from response and merge into the base
+        // response to create a RecipeDefinition
+        const {
+          sharing,
+          updated_at,
+          config: unsavedRecipeDefinition,
+        } = baseQueryReturnValue;
+        return {
+          ...unsavedRecipeDefinition,
+          sharing,
+          updated_at,
+        };
+      },
+      providesTags: (result, error, { recipeId }) => [
+        { type: "Package", id: recipeId },
+        "EditablePackages",
+      ],
     }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
@@ -343,13 +369,6 @@ export const appApi = createApi({
     getInvitations: builder.query<PendingInvitation[], void>({
       query: () => ({ url: "/api/invitations/me/", method: "get" }),
       providesTags: ["Invitations"],
-    }),
-    getRecipe: builder.query<BlueprintResponse, { id: RegistryId }>({
-      // Not setting providesTags, because only used in contexts where we fetch the latest one anyway
-      query: ({ id }) => ({
-        url: `/api/recipes/${encodeURIComponent(id)}/`,
-        method: "get",
-      }),
     }),
     getZapierKey: builder.query<{ api_key: string }, void>({
       query: () => ({ url: "/api/webhooks/key/", method: "get" }),
@@ -452,12 +471,12 @@ export const {
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
-  useGetRecipeQuery,
   useGetZapierKeyQuery,
-  useGetCloudExtensionsQuery,
   useGetCloudExtensionQuery,
+  useGetAllCloudExtensionsQuery,
   useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
+  useGetRecipeQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
   useGetInvitationsQuery,

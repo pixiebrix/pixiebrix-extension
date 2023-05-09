@@ -21,7 +21,7 @@ import { useParams } from "react-router";
 import { Col, Row } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Page from "@/layout/Page";
-import ActivateForm from "@/extensionConsole/pages/activateExtension/ActivateForm";
+import ActivateExtensionCard from "@/extensionConsole/pages/activateExtension/ActivateExtensionCard";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetCloudExtensionQuery } from "@/services/api";
 import { type UUID } from "@/types/stringTypes";
@@ -29,18 +29,17 @@ import { type UUID } from "@/types/stringTypes";
 /**
  * Page for activating an extension that's stored in the cloud.
  */
-const ActivatePage: React.FunctionComponent = () => {
+const ActivateExtensionPage: React.FunctionComponent = () => {
   const { extensionId } = useParams<{ extensionId: UUID }>();
 
   const {
     data: extension,
-    isLoading,
+    isFetching,
     error,
   } = useGetCloudExtensionQuery(
     { extensionId },
     {
-      // Always want the latest version of the CloudExtension. Otherwise, if the user had their Extension Console open
-      // for a while, they may get the older version when they go to re-activate.
+      // Force-refetch the latest data for this extension before activation
       refetchOnMountOrArgChange: true,
     }
   );
@@ -52,13 +51,13 @@ const ActivatePage: React.FunctionComponent = () => {
       title="Activate Mod"
       icon={faCloudDownloadAlt}
       error={error}
-      isPending={isLoading || authOptions == null}
+      isPending={isFetching || authOptions == null}
     >
       <Row>
         <Col xs={12} xl={10}>
           <ErrorBoundary>
             {extension && authOptions && (
-              <ActivateForm
+              <ActivateExtensionCard
                 extension={extension}
                 authOptions={authOptions}
                 refreshAuthOptions={refreshAuthOptions}
@@ -71,4 +70,4 @@ const ActivatePage: React.FunctionComponent = () => {
   );
 };
 
-export default ActivatePage;
+export default ActivateExtensionPage;

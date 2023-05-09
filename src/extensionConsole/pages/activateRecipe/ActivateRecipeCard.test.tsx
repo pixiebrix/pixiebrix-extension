@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import ActivateWizardCard from "@/extensionConsole/pages/activateRecipe/ActivateWizardCard";
+import ActivateRecipeCard from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard";
 import {
   extensionPointConfigFactory,
   recipeDefinitionFactory,
@@ -29,7 +29,8 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import useExtensionConsoleInstall from "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall";
+import { useGetRecipeQuery } from "@/services/api";
+import { type RecipeDefinition } from "@/types/recipeTypes";
 
 registerDefaultWidgets();
 
@@ -41,18 +42,12 @@ jest.mock("@/store/optionsStore", () => ({
 
 const installMock = jest.fn();
 
-jest.mock(
-  "@/extensionConsole/pages/blueprints/utils/useExtensionConsoleInstall",
-  () => ({
-    __esModule: true,
-    default: jest.fn().mockImplementation(() => installMock),
-  })
-);
+jest.mock("@/activation/useActivateRecipe.ts", () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => installMock),
+}));
 
 jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: jest
-    .fn()
-    .mockReturnValue({ data: {}, isLoading: false }),
   useGetDatabasesQuery: jest.fn(() => ({
     data: [],
   })),
@@ -61,10 +56,10 @@ jest.mock("@/services/api", () => ({
   })),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
+  useGetRecipeQuery: jest.fn(() => ({
+    data: null,
+  })),
   useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
-  useGetServiceAuthsQuery: jest
-    .fn()
-    .mockReturnValue({ data: [], isLoading: false }),
   appApi: {
     useLazyGetMeQuery: jest.fn(() => [
       jest.fn(),
@@ -76,61 +71,66 @@ jest.mock("@/services/api", () => ({
   },
 }));
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useAllRecipes: jest.fn().mockReturnValue({ data: [] }),
+jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue("@test/recipe"),
 }));
 
 global.chrome.commands.getAll = jest.fn();
+
+function setupRecipe(recipe: RecipeDefinition) {
+  jest
+    .mocked(useGetRecipeQuery)
+    .mockReturnValue({ data: recipe, refetch: jest.fn() });
+}
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("ActivateWizardCard", () => {
+describe("ActivateRecipeCard", () => {
   test("renders", async () => {
+    setupRecipe(recipeDefinitionFactory());
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizardCard
-          blueprint={recipeDefinitionFactory()}
-          isReinstall={false}
-        />
+        <ActivateRecipeCard />
       </MemoryRouter>
     );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("activate blueprint with missing required blueprint options", async () => {
+  test("activate recipe with missing required recipe options", async () => {
+    const recipe = recipeDefinitionFactory({
+      metadata: recipeMetadataFactory({
+        id: "test/blueprint-with-required-options" as RegistryId,
+        name: "Mod with Required Options",
+      }),
+      options: {
+        schema: {
+          $schema: "https://json-schema.org/draft/2019-09/schema#",
+          properties: {
+            database: {
+              $ref: "https://app.pixiebrix.com/schemas/database#",
+              title: "Database",
+            },
+          },
+          required: ["database"],
+          type: "object",
+        },
+        uiSchema: {},
+      },
+      extensionPoints: [
+        extensionPointConfigFactory({
+          label: "Extension Point for Mod with Required Options",
+        }),
+      ],
+    });
+    setupRecipe(recipe);
+
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizardCard
-          isReinstall={false}
-          blueprint={recipeDefinitionFactory({
-            metadata: recipeMetadataFactory({
-              id: "test/blueprint-with-required-options" as RegistryId,
-              name: "Mod with Required Options",
-            }),
-            options: {
-              schema: {
-                $schema: "https://json-schema.org/draft/2019-09/schema#",
-                properties: {
-                  database: {
-                    $ref: "https://app.pixiebrix.com/schemas/database#",
-                    title: "Database",
-                  },
-                },
-                required: ["database"],
-                type: "object",
-              },
-              uiSchema: {},
-            },
-            extensionPoints: [
-              extensionPointConfigFactory({
-                label: "Extension Point for Mod with Required Options",
-              }),
-            ],
-          })}
-        />
+        <ActivateRecipeCard />
       </MemoryRouter>
     );
     await waitForEffect();
@@ -139,8 +139,8 @@ describe("ActivateWizardCard", () => {
     expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 
-  test("activate blueprint permissions", async () => {
-    const blueprint = recipeDefinitionFactory({
+  test("activate recipe permissions", async () => {
+    const recipe = recipeDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
@@ -151,32 +151,34 @@ describe("ActivateWizardCard", () => {
         }),
       ],
     });
+    setupRecipe(recipe);
 
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizardCard blueprint={blueprint} isReinstall={false} />
+        <ActivateRecipeCard />
       </MemoryRouter>
     );
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(blueprint);
-
     expect(installMock).toHaveBeenCalledWith(
       {
         extensions: { "0": true },
         optionsArgs: {},
         services: [],
       },
-      expect.toBeObject()
+      recipe
     );
   });
 
   test("user reject permissions", async () => {
-    jest.mocked(browser.permissions.request).mockResolvedValueOnce(false);
+    installMock.mockResolvedValue({
+      success: false,
+      error: "You must accept browser permissions to activate",
+    });
 
-    const blueprint = recipeDefinitionFactory({
+    const recipe = recipeDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
@@ -187,16 +189,19 @@ describe("ActivateWizardCard", () => {
         }),
       ],
     });
+    setupRecipe(recipe);
 
     const rendered = render(
       <MemoryRouter>
-        <ActivateWizardCard blueprint={blueprint} isReinstall={false} />
+        <ActivateRecipeCard />
       </MemoryRouter>
     );
     await waitForEffect();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(useExtensionConsoleInstall).toHaveBeenCalledWith(blueprint);
-    expect(installMock).not.toHaveBeenCalled();
+
+    expect(
+      screen.getByText("You must accept browser permissions to activate")
+    ).toBeVisible();
   });
 });

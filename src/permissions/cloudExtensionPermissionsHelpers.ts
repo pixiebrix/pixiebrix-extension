@@ -18,7 +18,7 @@
 import { type CloudExtension } from "@/types/contract";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type ResolvedExtensionDefinition } from "@/types/recipeTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
@@ -33,7 +33,10 @@ export async function checkCloudExtensionPermissions(
   extension: CloudExtension,
   services: ServiceDependency[]
 ): Promise<PermissionsStatus> {
-  const resolved = await resolveDefinitions({ ...extension, services });
+  const resolved = await resolveExtensionInnerDefinitions({
+    ...extension,
+    services,
+  });
 
   const configured = services.filter((x) => x.config);
 

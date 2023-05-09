@@ -39,14 +39,16 @@ jest.mock("@/services/api", () => {
   const originalModule = jest.requireActual("@/services/api");
   return {
     ...originalModule,
-    useGetCloudExtensionsQuery: jest.fn(),
+    useGetAllCloudExtensionsQuery: jest.fn(),
     useCreateRecipeMutation: jest.fn(),
     useDeleteCloudExtensionMutation: jest.fn(),
   };
 });
 
 beforeEach(() => {
-  (api.useGetCloudExtensionsQuery as jest.Mock).mockReturnValue({ data: [] });
+  (api.useGetAllCloudExtensionsQuery as jest.Mock).mockReturnValue({
+    data: [],
+  });
   (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
   (api.useDeleteCloudExtensionMutation as jest.Mock).mockReturnValue([
     jest.fn(),
@@ -175,7 +177,7 @@ describe("it renders", () => {
   test("converts cloud extension", async () => {
     const extension = cloudExtensionFactory();
 
-    (api.useGetCloudExtensionsQuery as jest.Mock).mockReturnValue({
+    (api.useGetAllCloudExtensionsQuery as jest.Mock).mockReturnValue({
       data: [extension],
     });
     (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([

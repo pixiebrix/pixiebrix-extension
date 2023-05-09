@@ -19,7 +19,11 @@ import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
-import { type RegistryId, type SemVerString } from "@/types/registryTypes";
+import {
+  INNER_SCOPE,
+  type RegistryId,
+  type SemVerString,
+} from "@/types/registryTypes";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -55,8 +59,19 @@ export function validateUUID(uuid: unknown): UUID {
   throw new Error("Invalid UUID");
 }
 
+/**
+ * Return true if id is a valid registry id
+ */
 export function isRegistryId(id: string): id is RegistryId {
   return id != null && PACKAGE_REGEX.test(id);
+}
+
+/**
+ * Return true if `id` refers to an internal registry definition
+ * @see makeInternalId
+ */
+export function isInnerDefinitionRegistryId(id: string): id is RegistryId {
+  return id.startsWith(INNER_SCOPE + "/");
 }
 
 export function validateRegistryId(id: string): RegistryId {

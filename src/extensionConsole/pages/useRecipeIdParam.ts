@@ -15,59 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.wizardHeader {
-  padding: 32px;
+import { type RegistryId } from "@/types/registryTypes";
+import { useParams } from "react-router";
+import { validateRegistryId } from "@/types/helpers";
 
-  :global(.col) {
-    display: flex;
+/**
+ * Search the React-Router dynamic route parameters for a :recipeId param,
+ * convert it into a RegistryId, and return it. Can be used with any route
+ * that includes a :recipeId param.
+ */
+export default function useRecipeIdParam(): RegistryId | null {
+  const { recipeId } = useParams<{ recipeId: string }>();
+  try {
+    return validateRegistryId(decodeURIComponent(recipeId));
+  } catch {
+    return null;
   }
-}
-
-.wizardHeaderLayout {
-  flex-grow: 1;
-}
-
-.wizardDescription {
-  margin-top: 12px;
-}
-
-.wizardMainInfo {
-  display: flex;
-
-  :global(.card-title) {
-    font-size: 25px;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  code {
-    margin-top: 4px;
-    font-size: 14px;
-  }
-}
-
-.packageId {
-  padding: 0;
-}
-
-.wizardBody {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-
-  .wizardBodyRow:not(:first-child) {
-    margin-top: 40px;
-  }
-}
-
-.blueprintIcon {
-  font-size: 25px;
-  margin-right: 16px;
-}
-
-.activateButtonContainer {
-  display: flex;
-  justify-content: end;
-  align-items: center;
 }

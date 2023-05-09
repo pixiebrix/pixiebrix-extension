@@ -119,7 +119,7 @@ jest.mock("@/hooks/useQuickbarShortcut", () => ({
 
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
-jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
+jest.mock("@/activation/useActivateRecipe", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));

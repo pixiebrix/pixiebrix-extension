@@ -32,8 +32,8 @@ import Sidebar from "@/extensionConsole/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
-import ActivateBlueprintPage from "@/extensionConsole/pages/activateRecipe/ActivateBlueprintPage";
-import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivatePage";
+import ActivateRecipePage from "@/extensionConsole/pages/activateRecipe/ActivateRecipePage";
+import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivateExtensionPage";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
@@ -104,8 +104,8 @@ const Layout = () => {
                     />
                     <Route
                       exact
-                      path="/:sourcePage/activate/:blueprintId"
-                      component={ActivateBlueprintPage}
+                      path="/:sourcePage/activate/:recipeId"
+                      component={ActivateRecipePage}
                     />
 
                     <Route exact path="/settings" component={SettingsPage} />

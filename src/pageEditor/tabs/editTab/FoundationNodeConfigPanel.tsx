@@ -20,7 +20,6 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import useFlags from "@/hooks/useFlags";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -31,6 +30,8 @@ import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -63,7 +64,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
+    () => !isInnerDefinitionRegistryId(extensionPoint.metadata.id),
     [extensionPoint.metadata.id]
   );
 

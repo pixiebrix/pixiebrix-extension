@@ -76,7 +76,7 @@ import {
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
@@ -167,7 +167,9 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
   );
   const resolved = await Promise.all(
-    extensions.map(async (extension) => resolveDefinitions(extension))
+    extensions.map(async (extension) =>
+      resolveExtensionInnerDefinitions(extension)
+    )
   );
   const tabUrl = await getCurrentURL();
   const availableExtensionPointIds = resolved

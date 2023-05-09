@@ -17,7 +17,7 @@
 
 import { type IExtension } from "@/types/extensionTypes";
 import { type Permissions } from "webextension-polyfill";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
@@ -59,7 +59,7 @@ export async function collectExtensionPermissions(
   options: PermissionOptions = {}
 ): Promise<Permissions.Permissions> {
   const { includeExtensionPoint = true, includeServices = true } = options;
-  const resolved = await resolveDefinitions(extension);
+  const resolved = await resolveExtensionInnerDefinitions(extension);
 
   const extensionPoint =
     options.extensionPoint ??

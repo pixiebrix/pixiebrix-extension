@@ -74,6 +74,7 @@ interface OwnProps {
 
 function useOpenEditorTab() {
   return useCallback(async (id: string) => {
+    // Call to translate the brick registry id into the editable package id
     const available = await fetch<EditablePackage[]>("/api/bricks/");
     const brick = available.find((x) => x.name === id);
     if (brick) {

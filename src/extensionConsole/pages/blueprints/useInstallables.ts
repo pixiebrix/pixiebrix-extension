@@ -20,9 +20,9 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
-import { useGetCloudExtensionsQuery } from "@/services/api";
+import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
@@ -42,7 +42,7 @@ function useInstallables(): InstallablesState {
   const unresolvedExtensions = useSelector(selectExtensions);
 
   const { data: knownRecipes, ...recipesState } = useAllRecipes();
-  const cloudExtensions = useGetCloudExtensionsQuery();
+  const cloudExtensions = useGetAllCloudExtensionsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -88,7 +88,9 @@ function useInstallables(): InstallablesState {
     useAsyncState(
       async () =>
         Promise.all(
-          allExtensions.map(async (extension) => resolveDefinitions(extension))
+          allExtensions.map(async (extension) =>
+            resolveExtensionInnerDefinitions(extension)
+          )
         ),
       [allExtensions],
       []

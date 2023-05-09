@@ -131,6 +131,7 @@ class LazyLocatorFactory {
       // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gradually handles unauthenticated calls
       // to this endpoint. However, there's no need to pull the built-in services since the user can't call them
       // without being authenticated
+      // TODO: wrap in memoizeUntilSettled to avoid duplicate calls.
       this.remote = await fetch<SanitizedAuth[]>(
         "/api/services/shared/?meta=1",
         { requireLinked: true }
