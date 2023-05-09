@@ -39,6 +39,7 @@ import {
   ensurePermissionsFromUserGesture,
 } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
+import { set } from "lodash";
 
 const checkPermissionsMock = jest.mocked(checkRecipePermissions);
 
@@ -222,6 +223,7 @@ describe("useActivateRecipe", () => {
       },
     };
     setRecipeHasPermissions(true);
+    setUserAcceptedPermissions(true);
     const createdDatabase = databaseFactory({ name: databaseName });
     createDatabaseMock.mockImplementation(async (name) => ({
       data: createdDatabase,
@@ -263,55 +265,60 @@ describe("useActivateRecipe", () => {
     );
   });
 
-  it("handles error in auto-created personal database", async () => {
-    const { formValues: inputFormValues, recipe: inputRecipe } = setupInputs();
-    const databaseName = "Auto-created Personal Test Database";
-    const formValues = {
-      ...inputFormValues,
-      optionsArgs: {
-        myDatabase: databaseName,
+  const errorMessage = "Error creating database";
+  const testCases = [
+    {
+      title: "handles un-caught error in auto-created personal database",
+      async createDatabaseMockImplementation() {
+        throw new Error(errorMessage);
       },
-    };
-    const recipe = {
-      ...inputRecipe,
-      options: {
-        schema: {
-          ...inputRecipe.options?.schema,
-          properties: {
-            ...inputRecipe.options?.schema?.properties,
-            myDatabase: {
-              $ref: databaseSchema.$id,
-              format: "preview",
-            },
-          },
+    },
+    {
+      title: "handles error response in auto-created personal database request",
+      async createDatabaseMockImplementation() {
+        return { error: errorMessage };
+      },
+    },
+  ];
+
+  test.each(testCases)(
+    "$title",
+    async ({ createDatabaseMockImplementation }) => {
+      const { formValues: inputFormValues, recipe: inputRecipe } =
+        setupInputs();
+      const databaseName = "Auto-created Personal Test Database";
+      const formValues = set(
+        inputFormValues,
+        "optionsArgs.myDatabase",
+        databaseName
+      );
+      const recipe = set(inputRecipe, "options.schema.properties.myDatabase", {
+        $ref: databaseSchema.$id,
+        format: "preview",
+      });
+      setRecipeHasPermissions(true);
+      const errorMessage = "Error creating database";
+      createDatabaseMock.mockImplementation(createDatabaseMockImplementation);
+
+      const {
+        result: { current: activateRecipe },
+        act,
+      } = renderHook(() => useActivateRecipe("marketplace"), {
+        setupRedux(dispatch, { store }) {
+          jest.spyOn(store, "dispatch");
         },
-        uiSchema: inputRecipe.options?.uiSchema,
-      },
-    };
-    setRecipeHasPermissions(true);
-    const errorMessage = "Error creating database";
-    createDatabaseMock.mockImplementation(async (name) => {
-      throw new Error(errorMessage);
-    });
+      });
 
-    const {
-      result: { current: activateRecipe },
-      act,
-    } = renderHook(() => useActivateRecipe("marketplace"), {
-      setupRedux(dispatch, { store }) {
-        jest.spyOn(store, "dispatch");
-      },
-    });
+      let success: boolean;
+      let error: unknown;
+      await act(async () => {
+        const result = await activateRecipe(formValues, recipe);
+        success = result.success;
+        error = result.error;
+      });
 
-    let success: boolean;
-    let error: unknown;
-    await act(async () => {
-      const result = await activateRecipe(formValues, recipe);
-      success = result.success;
-      error = result.error;
-    });
-
-    expect(success).toBe(false);
-    expect(error).toBe(errorMessage);
-  });
+      expect(success).toBe(false);
+      expect(error).toBe(errorMessage);
+    }
+  );
 });

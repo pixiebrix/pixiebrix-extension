@@ -138,29 +138,25 @@ function useActivateRecipe(
               typeof fieldSchema !== "boolean" &&
               isDatabaseField(fieldSchema) &&
               fieldSchema.format === "preview" &&
-              optionsArgs[name] &&
               typeof optionsArgs[name] === "string" &&
+              !isEmpty(optionsArgs[name]) &&
               // If the value is a UUID, then it's a database ID for an existing database
               !isUUID(optionsArgs[name] as string)
           )
           .map(([name]) => name);
-        const createDatabasePromises = autoCreateDatabaseFieldNames.map(
-          async (name) => {
+        await Promise.all(
+          autoCreateDatabaseFieldNames.map(async (name) => {
             // Type-checked in the filter above
             const databaseName: string = optionsArgs[name] as string;
             const result = await createDatabase({ name: databaseName });
 
             if ("error" in result) {
-              return {
-                success: false,
-                error: getErrorMessage(result.error),
-              };
+              throw result.error;
             }
 
             optionsArgs[name] = validateUUID(result.data.id);
-          }
+          })
         );
-        await Promise.all(createDatabasePromises);
 
         const recipeExtensions = extensions.filter(
           (extension) => extension._recipe?.id === recipe.metadata.id
@@ -200,7 +196,7 @@ function useActivateRecipe(
         success: true,
       };
     },
-    [dispatch, extensions, source]
+    [createDatabase, dispatch, extensions, source]
   );
 }
 
