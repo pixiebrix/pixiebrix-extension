@@ -176,7 +176,7 @@ beforeEach(() => {
 });
 
 describe("ActivateRecipePanel", () => {
-  test("it renders with options, permissions info", async () => {
+  it("renders with options, permissions info", async () => {
     jest.mocked(checkRecipePermissions).mockResolvedValue({
       hasPermissions: false,
       permissions: { origins: ["https://newurl.com"] },
@@ -206,7 +206,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it activates basic recipe automatically and renders well-done page", async () => {
+  it("activates basic recipe automatically and renders well-done page", async () => {
     const rendered = setupMocksAndRender();
 
     await waitForEffect();
@@ -214,7 +214,25 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut not configured", async () => {
+  it("activates recipe with database preview automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: propertiesToSchema({
+          testDatabase: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+            title: "Database",
+            format: "preview",
+          },
+        }),
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("renders well-done page for quick bar mod shortcut not configured", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     const rendered = setupMocksAndRender();
@@ -224,7 +242,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
+  it("renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
@@ -239,7 +257,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
+  it("renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
@@ -254,7 +272,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with service configuration if no built-in service configs available", async () => {
+  it("renders with service configuration if no built-in service configs available", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
     jest.mocked(useGetServicesQuery).mockReturnValue(querySuccessFactory([]));
 
@@ -268,7 +286,7 @@ describe("ActivateRecipePanel", () => {
     ).not.toBeDisabled();
   });
 
-  test("it activates recipe with built-in services automatically and renders well-done page", async () => {
+  it("activates recipe with built-in services automatically and renders well-done page", async () => {
     const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
     jest
@@ -282,7 +300,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it doesn't flicker while built-in auths are loading", async () => {
+  it("doesn't flicker while built-in auths are loading", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
     jest
