@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useField } from "formik";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
@@ -31,7 +31,6 @@ import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
-import { type SelectStringOption } from "@/components/formBuilder/formBuilderTypes";
 import { isUUID } from "@/types/helpers";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
@@ -48,17 +47,15 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
-  const [fullDatabaseOptions, setFullDatabaseOptions] = useState<
-    SelectStringOption[]
-  >([]);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
 
-  // If the schema format is 'preview', and the initial field value is a string, use that string
-  // as the auto-created database name, and add it as an option to the database dropdown at the
-  // top of the list.
-  useEffect(() => {
+  const fullDatabaseOptions = useMemo(() => {
     const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions;
+
+    // If the schema format is 'preview', and the initial field value is a string, use that string
+    // as the auto-created database name, and add it as an option to the database dropdown at the
+    // top of the list.
     if (
       schema.format === "preview" &&
       typeof initialFieldValue === "string" &&
@@ -72,12 +69,12 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
       });
     }
 
-    setFullDatabaseOptions(loadedOptions);
+    return loadedOptions;
   }, [
-    initialFieldValue,
     databaseOptions,
-    schema.format,
+    initialFieldValue,
     isLoadingDatabaseOptions,
+    schema.format,
   ]);
 
   const checkIsMounted = useIsMounted();
