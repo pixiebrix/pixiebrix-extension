@@ -112,6 +112,8 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         onModeChange("number");
       } else if (inputModeOptions.some((option) => option.value === "var")) {
         onModeChange("var");
+      } else if (inputModeOptions.some((option) => option.value === "select")) {
+        onModeChange("select");
       }
     };
   }
