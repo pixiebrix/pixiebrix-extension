@@ -54,6 +54,7 @@ import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
+import { DeploymentsProvider } from "@/hooks/DeploymentsContext";
 
 // Register the built-in bricks
 registerEditors();
@@ -86,61 +87,70 @@ const Layout = () => {
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
           <RequireAuth LoginPage={SetupPage}>
-            <RefreshBricks />
-            <Sidebar />
-            <div className="main-panel">
-              <BrowserBanner />
-              <EnvironmentBanner />
-              <UpdateBanner />
-              <DeploymentBanner />
-              <InvitationBanner />
-              <div className="content-wrapper">
-                <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
-                  <Switch>
-                    <Route
-                      exact
-                      path="/extensions/install/:extensionId"
-                      component={ActivateExtensionPage}
-                    />
-                    <Route
-                      exact
-                      path="/:sourcePage/activate/:recipeId"
-                      component={ActivateRecipePage}
-                    />
-
-                    <Route exact path="/settings" component={SettingsPage} />
-
-                    {permit("services") && (
-                      <Route path="/services/:id?" component={ServicesEditor} />
-                    )}
-
-                    {/* Switch does not support consolidating Routes using a React fragment */}
-                    {permit("workshop") && (
-                      <Route exact path="/workshop" component={WorkshopPage} />
-                    )}
-
-                    {permit("workshop") && (
+            <DeploymentsProvider>
+              <RefreshBricks />
+              <Sidebar />
+              <div className="main-panel">
+                <BrowserBanner />
+                <EnvironmentBanner />
+                <UpdateBanner />
+                <DeploymentBanner />
+                <InvitationBanner />
+                <div className="content-wrapper">
+                  <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
+                    <Switch>
                       <Route
                         exact
-                        path="/workshop/create/"
-                        component={BrickCreatePage}
+                        path="/extensions/install/:extensionId"
+                        component={ActivateExtensionPage}
                       />
-                    )}
-
-                    {permit("workshop") && (
                       <Route
                         exact
-                        path="/workshop/bricks/:id/"
-                        component={BrickEditPage}
+                        path="/:sourcePage/activate/:recipeId"
+                        component={ActivateRecipePage}
                       />
-                    )}
 
-                    <Route component={BlueprintsPage} />
-                  </Switch>
-                </ErrorBoundary>
+                      <Route exact path="/settings" component={SettingsPage} />
+
+                      {permit("services") && (
+                        <Route
+                          path="/services/:id?"
+                          component={ServicesEditor}
+                        />
+                      )}
+
+                      {/* Switch does not support consolidating Routes using a React fragment */}
+                      {permit("workshop") && (
+                        <Route
+                          exact
+                          path="/workshop"
+                          component={WorkshopPage}
+                        />
+                      )}
+
+                      {permit("workshop") && (
+                        <Route
+                          exact
+                          path="/workshop/create/"
+                          component={BrickCreatePage}
+                        />
+                      )}
+
+                      {permit("workshop") && (
+                        <Route
+                          exact
+                          path="/workshop/bricks/:id/"
+                          component={BrickEditPage}
+                        />
+                      )}
+
+                      <Route component={BlueprintsPage} />
+                    </Switch>
+                  </ErrorBoundary>
+                </div>
+                <Footer />
               </div>
-              <Footer />
-            </div>
+            </DeploymentsProvider>
           </RequireAuth>
         </ErrorBoundary>
       </Container>

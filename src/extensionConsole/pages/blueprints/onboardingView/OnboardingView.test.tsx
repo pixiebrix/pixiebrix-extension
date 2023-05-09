@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
 import { type Organization } from "@/types/contract";
-import useDeployments from "@/hooks/useDeployments";
 import useOnboarding from "@/extensionConsole/pages/blueprints/onboardingView/useOnboarding";
 import { renderHook } from "@testing-library/react-hooks";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import DeploymentsContext, {
+  type DeploymentsState,
+} from "@/hooks/DeploymentsContext";
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn(),
@@ -32,36 +35,22 @@ jest.mock("@/services/api", () => ({
 }));
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/hooks/useDeployments", () => jest.fn());
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));
 
 const mockOnboarding = ({
   hasOrganization = false,
-  hasDeployments = false,
   hasTeamBlueprints = false,
   hasRestrictedFlag = false,
 }: {
   hasOrganization?: boolean;
-  hasDeployments?: boolean;
   hasTeamBlueprints?: boolean;
   hasRestrictedFlag?: boolean;
 } = {}) => {
   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
     data: hasOrganization ? [{} as Organization] : [],
   }));
-
-  // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-  (useDeployments as jest.Mock).mockImplementation(() => {
-    return {
-      hasUpdate: hasDeployments,
-      update() {},
-      extensionUpdateRequired: false,
-      isLoading: false,
-      error: undefined as unknown,
-    };
-  });
 
   (useAllRecipes as jest.Mock).mockImplementation(() => ({
     data: hasTeamBlueprints
@@ -106,8 +95,23 @@ describe("useOnboarding", () => {
   });
 
   test("enterprise user with deployments", () => {
-    mockOnboarding({ hasOrganization: true, hasDeployments: true });
-    const { result } = renderHook(() => useOnboarding());
+    const deployments: DeploymentsState = {
+      hasUpdate: true,
+      extensionUpdateRequired: false,
+      isLoading: false,
+      error: undefined as unknown,
+      async update() {},
+      async updateExtension() {},
+    };
+
+    mockOnboarding({ hasOrganization: true });
+    const { result } = renderHook(() => useOnboarding(), {
+      wrapper: ({ children }) => (
+        <DeploymentsContext.Provider value={deployments}>
+          {children}
+        </DeploymentsContext.Provider>
+      ),
+    });
     expect(result.current.onboardingType).toBe("hasDeployments");
   });
 });

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import useDeployments from "@/hooks/useDeployments";
+import React, { useContext } from "react";
+import DeploymentsContext from "@/hooks/DeploymentsContext";
 import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
 import Banner from "@/components/banner/Banner";
@@ -29,7 +29,7 @@ import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModa
 const DeploymentBanner: React.FunctionComponent = () => {
   // Use a single useDeployments for both the banner and modal because useDeployments makes a network call. In the
   // future, we need to move the state to Redux
-  const deploymentState = useDeployments();
+  const deploymentState = useContext(DeploymentsContext);
   const { hasUpdate, update, extensionUpdateRequired, updateExtension } =
     deploymentState;
 
