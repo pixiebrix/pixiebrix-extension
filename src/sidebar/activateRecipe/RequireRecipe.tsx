@@ -60,22 +60,27 @@ function requiresUserConfiguration(
     authOptions
   );
 
-  const recipeOptions = recipe.options?.schema?.properties ?? {};
+  const recipeOptions = recipe.options?.schema?.properties;
 
-  // Options that allow auto-activation:
-  // - Database fields with format "preview"
   const needsOptionsInputs =
     !isEmpty(recipeOptions) &&
     Object.values(recipeOptions).some((optionSchema) => {
+      // This should not occur in practice, but it's here for type narrowing
       if (typeof optionSchema === "boolean") {
         return false;
       }
 
-      // Exclude preview database fields
+      // We return false here for any option that does not need user input
+      // and can be auto-activated in the marketplace activation flow.
+      // Options that allow auto-activation:
+      // - Database fields with format "preview"
+      // TODO: add more safe-default option types here
+
       if (isDatabaseField(optionSchema) && optionSchema.format === "preview") {
         return false;
       }
 
+      // We require user input for any option that isn't explicitly excluded, so we return true here
       return true;
     });
 
