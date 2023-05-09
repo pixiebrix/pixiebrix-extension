@@ -114,6 +114,14 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         onModeChange("var");
       } else if (inputModeOptions.some((option) => option.value === "select")) {
         onModeChange("select");
+      } else if (
+        inputModeOptions.some((option) => option.value === "boolean")
+      ) {
+        onModeChange("boolean");
+      } else if (inputModeOptions.some((option) => option.value === "array")) {
+        onModeChange("array");
+      } else if (inputModeOptions.some((option) => option.value === "object")) {
+        onModeChange("object");
       }
     };
   }
