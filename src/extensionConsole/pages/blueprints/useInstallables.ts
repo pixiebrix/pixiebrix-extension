@@ -26,6 +26,7 @@ import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
+import { IExtension } from "@/types/extensionTypes";
 
 type InstallablesState = {
   /**
@@ -38,6 +39,18 @@ type InstallablesState = {
    */
   error: unknown;
 };
+
+export function selectUnavailableRecipe(
+  extension: IExtension
+): UnavailableRecipe {
+  return {
+    metadata: extension._recipe,
+    kind: "recipe",
+    isStub: true,
+    updated_at: extension._recipe.updated_at,
+    sharing: extension._recipe.sharing,
+  };
+}
 
 /**
  * React Hook returning `Installable`s, a common abstraction for recipes and un-packaged IExtensions.
@@ -107,7 +120,9 @@ function useInstallables(): InstallablesState {
     [installedRecipeIds, resolvedExtensions]
   );
 
-  const unknownRecipes: UnavailableRecipe[] = useMemo(() => {
+  // Find extensions that were installed by a recipe that's no longer available to the user, e.g., because it was
+  // deleted, or because the user no longer has access to it.
+  const unavailableRecipes: UnavailableRecipe[] = useMemo(() => {
     const knownRecipeIds = new Set(
       (knownRecipes ?? []).map((x) => x.metadata.id)
     );
@@ -120,13 +135,7 @@ function useInstallables(): InstallablesState {
 
     // Show one entry per missing recipe
     return uniqBy(
-      unavailable.map((x) => ({
-        metadata: x._recipe,
-        kind: "recipe",
-        isStub: true,
-        updated_at: x._recipe.updated_at,
-        sharing: x._recipe.sharing,
-      })),
+      unavailable.map((x) => selectUnavailableRecipe(x)),
       (x) => x.metadata.id
     );
   }, [knownRecipes, resolvedExtensions]);
@@ -135,7 +144,7 @@ function useInstallables(): InstallablesState {
     installables: [
       ...extensionsWithoutRecipe,
       ...knownPersonalOrTeamRecipes,
-      ...unknownRecipes,
+      ...unavailableRecipes,
     ],
     error: cloudExtensions.error ?? recipesState.error ?? resolveError,
   };

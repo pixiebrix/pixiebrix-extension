@@ -41,6 +41,7 @@ import { appApi } from "@/services/api";
 import pageEditorAnalysisManager from "@/pageEditor/analysisManager";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import { createRenderHookWithWrappers } from "@/testUtils/testHelpers";
+import { selectUnavailableRecipe } from "@/extensionConsole/pages/blueprints/useInstallables";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -127,16 +128,12 @@ describe("useInstallableViewItems", () => {
     const extension = persistedExtensionFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });
-    const stub: UnavailableRecipe = {
-      kind: "recipe" as const,
-      metadata: extension._recipe,
-      isStub: true,
-      updated_at: extension._recipe.updated_at,
-      sharing: extension._recipe.sharing,
-    };
+
+    const unavailableRecipe: UnavailableRecipe =
+      selectUnavailableRecipe(extension);
 
     const wrapper = renderHookWithWrappers(
-      () => useInstallableViewItems([stub]),
+      () => useInstallableViewItems([unavailableRecipe]),
       {
         setupRedux(dispatch) {
           dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));

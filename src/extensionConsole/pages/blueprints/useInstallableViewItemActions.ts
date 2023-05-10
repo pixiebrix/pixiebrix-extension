@@ -91,7 +91,7 @@ function useInstallableViewItemActions(
   // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
   const isRestricted = isDeployment && restrict("uninstall");
 
-  // Without memoization, the selector the reference changes on every render, which causes useInstallablePermissions
+  // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
     (state: { options: OptionsState }) =>
