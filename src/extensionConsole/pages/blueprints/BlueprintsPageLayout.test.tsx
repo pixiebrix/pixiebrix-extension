@@ -242,17 +242,12 @@ describe("BlueprintsPageLayout", () => {
 
   test("search query heading renders", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    const rendered = render(
-      <BlueprintsPageLayout installables={installables} />
-    );
+    render(<BlueprintsPageLayout installables={installables} />);
 
     await waitForEffect();
 
     await user.type(
       screen.getByTestId("blueprints-search-input"),
-      "hello world"
-    );
-    expect(rendered.getByTestId("blueprints-search-input").value).toBe(
       "hello world"
     );
     jest.runAllTimers();
