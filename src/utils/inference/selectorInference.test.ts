@@ -617,7 +617,8 @@ describe("inferElementSelector", () => {
       tagName: "DIV",
     });
   });
-  test("salesforce required element case", async () => {
+  test("requiredSelector should override other inferred selectors", async () => {
+    // The siteSelectorHints include a special test if the [data-test-hint] attribute is visible
     const body = html`
       <div id="grandparent" class="grandparent" data-test-hint="1">
         <div class="parent" role="main">

@@ -72,8 +72,8 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     uniqueAttributes: ["data-component-id"],
   },
   {
-    // Matches all sites using Salesforce's Lightning framework
-    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
+    // We need a selector hint to use in tests because and they're currently hardcoded.
+    // TODO: Delete the test hint(s) once we have them in an API
     siteName: "TestHint",
     siteValidator: (element) =>
       $(element).closest("[data-test-hint]").length > 0,
@@ -85,19 +85,18 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
 ];
 
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
-  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
+  const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
     hint.siteValidator(element)
   );
-  if (!siteSelectorHint) {
-    siteSelectorHint = {
+
+  return (
+    siteSelectorHint ?? {
       siteName: "",
       siteValidator: () => false,
       badPatterns: [],
       uniqueAttributes: [],
       stableAnchors: [],
       requiredSelectors: [],
-    };
-  }
-
-  return siteSelectorHint;
+    }
+  );
 }
