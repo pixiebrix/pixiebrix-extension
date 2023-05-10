@@ -305,6 +305,8 @@ export const appApi = createApi({
           updated_at,
         };
       },
+      // Reminder, RTK Query caching is per-endpoint, not across endpoints. So we want to list the tags here for which
+      // we want to watch for invalidation.
       providesTags: (result, error, { recipeId }) => [
         { type: "Package", id: recipeId },
         "EditablePackages",
