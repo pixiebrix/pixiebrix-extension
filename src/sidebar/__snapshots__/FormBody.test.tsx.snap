@@ -5,85 +5,21 @@ exports[`FormBody renders successfully 1`] = `
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <div>
-        <div
-          class="root"
-          data-testid="loader"
-        >
-          <span
-            style="width: 57px; font-size: 0px; display: inline-block;"
-          >
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9134749066027136s 0.11347490660271359s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.8207755139746052s 0.020775513974605225s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3187394943396273s 0.5187394943396273s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.2017501454188793s 0.4017501454188794s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3830899830651142s 0.5830899830651142s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.810462737632171s 0.010462737632171037s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3844766626576503s 0.5844766626576505s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.1935808917402086s 0.39358089174020877s infinite ease;"
-            />
-            <span
-              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.5198505526235322s 0.7198505526235321s infinite ease;"
-            />
-          </span>
-        </div>
-      </div>
+      <iframe
+        height="100%"
+        src="https://www.testurl.com/"
+        title="00000001-0000-4000-A000-000000000000"
+        width="100%"
+      />
     </div>
   </body>,
   "container": <div>
-    <div>
-      <div
-        class="root"
-        data-testid="loader"
-      >
-        <span
-          style="width: 57px; font-size: 0px; display: inline-block;"
-        >
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9134749066027136s 0.11347490660271359s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.8207755139746052s 0.020775513974605225s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3187394943396273s 0.5187394943396273s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.2017501454188793s 0.4017501454188794s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3830899830651142s 0.5830899830651142s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.810462737632171s 0.010462737632171037s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3844766626576503s 0.5844766626576505s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.1935808917402086s 0.39358089174020877s infinite ease;"
-          />
-          <span
-            style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.5198505526235322s 0.7198505526235321s infinite ease;"
-          />
-        </span>
-      </div>
-    </div>
+    <iframe
+      height="100%"
+      src="https://www.testurl.com/"
+      title="00000001-0000-4000-A000-000000000000"
+      width="100%"
+    />
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],
