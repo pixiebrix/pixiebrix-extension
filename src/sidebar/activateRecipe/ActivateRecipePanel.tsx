@@ -37,12 +37,15 @@ import { Button } from "react-bootstrap";
 import useActivateRecipe from "@/activation/useActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import useWizard from "@/activation/useWizard";
+import useActivateRecipeWizard, {
+  type UseActivateRecipeWizardResult,
+} from "@/activation/useActivateRecipeWizard";
 import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { persistor } from "@/sidebar/store";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 const { actions } = sidebarSlice;
 
@@ -172,12 +175,16 @@ const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
   return <div>Go try it out now, or activate another mod.</div>;
 };
 
-const ActivateRecipePanelContent: React.FC<RecipeState> = ({
+const ActivateRecipePanelContent: React.FC<
+  RecipeState & UseActivateRecipeWizardResult
+> = ({
   recipe,
   recipeNameNode,
   includesQuickBar,
   requiresConfiguration,
-  defaultAuthOptions,
+  wizardSteps,
+  initialValues,
+  validationSchema,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useActivateRecipe("marketplace");
@@ -192,11 +199,6 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
   }
-
-  const [wizardSteps, initialValues, validationSchema] = useWizard(
-    recipe,
-    defaultAuthOptions
-  );
 
   const formValuesRef = useRef<WizardValues>(initialValues);
 
@@ -326,11 +328,25 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   );
 };
 
+const ActivateRecipeWizardPanel: React.FC<RecipeState> = (recipeState) => {
+  const wizardState = useActivateRecipeWizard(
+    recipeState.recipe,
+    recipeState.defaultAuthOptions
+  );
+  return (
+    <AsyncStateGate state={wizardState}>
+      {({ data: wizardResult }) => (
+        <ActivateRecipePanelContent {...recipeState} {...wizardResult} />
+      )}
+    </AsyncStateGate>
+  );
+};
+
 const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
   recipeId,
 }) => (
   <RequireRecipe recipeId={recipeId}>
-    {(recipeState) => <ActivateRecipePanelContent {...recipeState} />}
+    {(recipeState) => <ActivateRecipeWizardPanel {...recipeState} />}
   </RequireRecipe>
 );
 

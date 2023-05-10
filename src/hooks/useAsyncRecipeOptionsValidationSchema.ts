@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { object } from "yup";
+import { type AnyObjectSchema, object } from "yup";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, isEmpty, mapValues } from "lodash";
 import { type Schema } from "@/types/schemaTypes";
 import { buildYup } from "schema-to-yup";
-import { useAsyncState } from "@/hooks/common";
+import useAsyncState from "@/hooks/useAsyncState";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
 
 function isEmptySchema(schema: Schema | undefined) {
   return (
@@ -32,7 +33,7 @@ function isEmptySchema(schema: Schema | undefined) {
 
 const useAsyncRecipeOptionsValidationSchema = (
   optionsDefinitionSchema: Schema | undefined
-) =>
+): FetchableAsyncState<AnyObjectSchema> =>
   useAsyncState(async () => {
     if (isEmptySchema(optionsDefinitionSchema)) {
       return object().shape({});

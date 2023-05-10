@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, groupBy, uniq } from "lodash";
+import { compact, groupBy, isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -31,7 +31,7 @@ export function inferRecipeOptions(
 ): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't
   // use the options), so we can just take the optionsArgs for any of the extensions
-  return extensions[0]?.optionsArgs ?? {};
+  return extensions?.[0]?.optionsArgs ?? {};
 }
 
 /**
@@ -42,6 +42,10 @@ export function inferRecipeAuths(
   extensions: Array<Pick<IExtension, "services">>,
   { optional = false }: { optional?: boolean } = {}
 ): Record<RegistryId, UUID> {
+  if (isEmpty(extensions)) {
+    return {};
+  }
+
   // The extensions for the recipe will only have the services that are declared on each extension. So we have to take
   // the union of the service credentials. There's currently no way in the UX that the service auths could become
   // inconsistent for a given service key, but guard against that case anyway.

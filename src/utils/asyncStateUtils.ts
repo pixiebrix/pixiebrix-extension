@@ -322,3 +322,9 @@ export function setErrorOnState<T>(
 
   return state;
 }
+
+export function isFetchableAsyncState<Value>(
+  state: AsyncState<Value>
+): state is FetchableAsyncState<Value> {
+  return "refetch" in state;
+}

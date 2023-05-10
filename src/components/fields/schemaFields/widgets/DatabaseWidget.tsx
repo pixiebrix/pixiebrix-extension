@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useField } from "formik";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import { isExpression } from "@/runtime/mapArgs";
 import SelectWidget, {
-  type SelectLike,
   type Option,
+  type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
@@ -44,15 +44,11 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   >(name);
   const { allowExpressions } = useContext(FieldRuntimeContext);
 
-  const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
+  const { data: databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
-  const hasPreviewValue =
-    schema.format === "preview" &&
-    typeof initialFieldValue === "string" &&
-    !isUUID(initialFieldValue);
   const fullDatabaseOptions = useMemo(() => {
     const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions;
 
@@ -60,7 +56,9 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     // as the auto-created database name, and add it as an option to the database dropdown at the
     // top of the list.
     if (
-      hasPreviewValue &&
+      schema.format === "preview" &&
+      typeof initialFieldValue === "string" &&
+      !isUUID(initialFieldValue) &&
       // Don't add the preview option if a database with the name already exists
       !loadedOptions.some(
         (option) => option.label === `${initialFieldValue} - Private`
@@ -78,28 +76,10 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     return loadedOptions;
   }, [
     databaseOptions,
-    hasPreviewValue,
     initialFieldValue,
     isLoadingDatabaseOptions,
+    schema.format,
   ]);
-
-  const containerRef = useRef<HTMLDivElement>();
-  useEffect(() => {
-    // If the field has a preview value, traverse up to the .form-group parent,
-    // and add a CSS class. I realize this is kinda gross. If you have a better
-    // idea then plz fix thx.
-    if (hasPreviewValue && containerRef) {
-      let parent = containerRef.current?.parentElement;
-      while (parent) {
-        if (parent.classList.contains("form-group")) {
-          parent.classList.add("has-preview-value");
-          break;
-        }
-
-        parent = parent.parentElement;
-      }
-    }
-  }, [hasPreviewValue]);
 
   const checkIsMounted = useIsMounted();
 
@@ -129,7 +109,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   };
 
   return (
-    <div ref={containerRef}>
+    <>
       <DatabaseCreateModal
         show={showModal}
         onClose={onModalClose}
@@ -151,7 +131,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
           }),
         }}
       />
-    </div>
+    </>
   );
 };
 

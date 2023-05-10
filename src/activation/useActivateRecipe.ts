@@ -66,7 +66,7 @@ function selectActivateEventData(recipe: RecipeDefinition) {
  *
  * @param {ActivationSource} source - The source of the activation, only used for reporting purposes
  * @returns {ActivateRecipeFormCallback} - A callback that can be used to activate a recipe
- * @see useWizard
+ * @see useActivateRecipeWizard
  */
 function useActivateRecipe(
   source: ActivationSource

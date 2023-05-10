@@ -34,6 +34,9 @@ import { type AnyObjectSchema } from "yup";
 import { useSelector } from "react-redux";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import { isEmpty } from "lodash";
+import { produce } from "immer";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isUUID } from "@/types/helpers";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -50,7 +53,7 @@ type ActivateRecipeInputsProps = {
 };
 
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
-  recipe,
+  recipe: inputRecipe,
   wizardSteps,
   initialValues,
   onChange,
@@ -63,6 +66,29 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
 }) => {
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
+
+  const recipe = inputRecipe.options
+    ? produce(inputRecipe, (draft) => {
+        for (const [name, optionSchema] of Object.entries(
+          inputRecipe.options.schema.properties
+        )) {
+          if (typeof optionSchema === "boolean") {
+            return;
+          }
+
+          // Hide database preview fields if the value is a preview database name string (not UUID)
+          const optionValue = initialValues.optionsArgs[name];
+          if (
+            isDatabaseField(optionSchema) &&
+            optionSchema.format === "preview" &&
+            typeof optionValue === "string" &&
+            !isUUID(optionValue)
+          ) {
+            delete draft.options.schema.properties[name];
+          }
+        }
+      })
+    : inputRecipe;
 
   const recipeExtensions = useSelector(
     selectExtensionsForRecipe(recipe?.metadata?.id)
