@@ -18,7 +18,10 @@
 import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
 import { useMemo } from "react";
 
-const useDatabaseOptions = () => {
+const useDatabaseOptions = (): {
+  databaseOptions: Array<{ label: string; value: string }>;
+  isLoading: boolean;
+} => {
   const { data: databases, isLoading: isLoadingDatabases } =
     useGetDatabasesQuery();
   const { data: organizations, isLoading: isLoadingOrganizations } =

@@ -251,12 +251,14 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);
 
-  // Trigger auto-activation if the recipe does not require permissions
+  // Trigger auto-activation if the recipe does not require permissions or user
+  // configuration, and there's no error
   useEffect(() => {
     if (
       state.needsPermissions != null &&
       !state.needsPermissions &&
-      !requiresConfiguration
+      !requiresConfiguration &&
+      !state.activationError
     ) {
       // State is checked inside activateRecipe to prevent double-activation
       void activateRecipe();
@@ -266,6 +268,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     activateRecipe,
     requiresConfiguration,
     state.needsPermissions,
+    state.activationError,
   ]);
 
   // Show loader if panel is determining if it can auto-activate, or if it's activating.

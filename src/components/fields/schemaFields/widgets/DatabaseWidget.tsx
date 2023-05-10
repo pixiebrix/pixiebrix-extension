@@ -31,7 +31,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
-import { isUUID, validateUUID } from "@/types/helpers";
+import { isUUID } from "@/types/helpers";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
@@ -47,14 +47,6 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
-  const setDatabaseId = (databaseId: UUID) => {
-    if (allowExpressions) {
-      setFieldValue(makeTemplateExpression("nunjucks", databaseId));
-    } else {
-      setFieldValue(databaseId);
-    }
-  };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
   const hasPreviewValue =
@@ -67,24 +59,20 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     // If the schema format is 'preview', and the initial field value is a string, use that string
     // as the auto-created database name, and add it as an option to the database dropdown at the
     // top of the list.
-    if (hasPreviewValue) {
-      const existingDatabaseOption = loadedOptions.find(
+    if (
+      hasPreviewValue &&
+      // Don't add the preview option if a database with the name already exists
+      !loadedOptions.some(
         (option) => option.label === `${initialFieldValue} - Private`
-      );
-
-      // If the database doesn't exist, add the preview option to match the field value
-      if (!existingDatabaseOption) {
-        return [
-          {
-            label: initialFieldValue,
-            value: initialFieldValue,
-          },
-          ...loadedOptions,
-        ];
-      }
-
-      // Database already exists, select it
-      setDatabaseId(validateUUID(existingDatabaseOption.value));
+      )
+    ) {
+      return [
+        {
+          label: initialFieldValue,
+          value: initialFieldValue,
+        },
+        ...loadedOptions,
+      ];
     }
 
     return loadedOptions;
@@ -93,7 +81,6 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     hasPreviewValue,
     initialFieldValue,
     isLoadingDatabaseOptions,
-    setDatabaseId,
   ]);
 
   const containerRef = useRef<HTMLDivElement>();
@@ -115,6 +102,14 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   }, [hasPreviewValue]);
 
   const checkIsMounted = useIsMounted();
+
+  const setDatabaseId = (databaseId: UUID) => {
+    if (allowExpressions) {
+      setFieldValue(makeTemplateExpression("nunjucks", databaseId));
+    } else {
+      setFieldValue(databaseId);
+    }
+  };
 
   const onModalClose = () => {
     if (!checkIsMounted()) {
