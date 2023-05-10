@@ -33,6 +33,7 @@ import blueprintsSlice, {
   persistBlueprintsConfig,
 } from "@/extensionConsole/pages/blueprints/blueprintsSlice";
 import { type Me } from "@/types/contract";
+import userEvent from "@testing-library/user-event";
 
 const EMPTY_RESPONSE = Object.freeze({
   data: Object.freeze([]),
@@ -96,10 +97,13 @@ describe("BlueprintsPageLayout", () => {
     jest.resetModules();
     process.env = { ...env };
     jest.clearAllMocks();
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     process.env = env;
+    jest.runAllTimers();
+    jest.useRealTimers();
   });
 
   test("renders", async () => {
@@ -234,6 +238,26 @@ describe("BlueprintsPageLayout", () => {
     await waitForEffect();
     expect(screen.queryByText("Bot Games")).not.toBeNull();
     expect(screen.getByTestId("bot-games-blueprint-tab")).toHaveClass("active");
+  });
+
+  test("search query heading renders", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const rendered = render(
+      <BlueprintsPageLayout installables={installables} />
+    );
+
+    await waitForEffect();
+
+    await user.type(
+      screen.getByTestId("blueprints-search-input"),
+      "hello world"
+    );
+    screen.debug();
+    expect(rendered.getByTestId("blueprints-search-input").value).toBe(
+      "hello world"
+    );
+    jest.runAllTimers();
+    expect(screen.queryByText('0 results for "hello world"')).not.toBeNull();
   });
 });
 
