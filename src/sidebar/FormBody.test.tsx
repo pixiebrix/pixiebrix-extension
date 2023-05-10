@@ -30,6 +30,6 @@ describe("FormBody", () => {
     const form = formEntryFactory();
     const rendered = render(<FormBody form={form} />);
     await waitForEffect();
-    expect(rendered).toMatchSnapshot();
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
