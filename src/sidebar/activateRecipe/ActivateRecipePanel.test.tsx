@@ -201,6 +201,18 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
+  it("activates basic recipe with empty options structure automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: {},
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
   it("activates recipe with database preview automatically and renders well-done page", async () => {
     const rendered = setupMocksAndRender({
       options: {
