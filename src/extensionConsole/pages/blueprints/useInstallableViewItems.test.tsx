@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@/extensionConsole/testHelpers";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 import {
   extensionFactory,
@@ -45,7 +44,7 @@ import { createRenderHookWithWrappers } from "@/testUtils/testHelpers";
 
 const axiosMock = new MockAdapter(axios);
 
-// TODO: clean up in https://github.com/pixiebrix/pixiebrix-extension/pull/5674
+// TODO: remove in/after and use testUtils https://github.com/pixiebrix/pixiebrix-extension/pull/5674
 const configureStoreForTests = () =>
   configureStore({
     reducer: {
