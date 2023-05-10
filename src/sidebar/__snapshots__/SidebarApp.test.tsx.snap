@@ -3,7 +3,7 @@
 exports[`SidebarApp it renders 1`] = `
 <DocumentFragment>
   <div
-    class="d-flex p-2 justify-content-between align-content-center"
+    class="d-flex p-2 justify-content-between align-items-start"
   >
     <button
       class="button themeColorOverride btn btn-link btn-sm"
@@ -132,7 +132,7 @@ exports[`SidebarApp it renders error when context is invalidated 1`] = `
     Close and reopen the sidebar to continue.
   </div>
   <div
-    class="d-flex p-2 justify-content-between align-content-center"
+    class="d-flex p-2 justify-content-between align-items-start"
   >
     <div
       class="align-self-center"
