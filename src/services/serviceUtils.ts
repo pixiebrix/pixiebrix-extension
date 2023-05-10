@@ -105,8 +105,9 @@ async function _locateWithRetry(
  * Locate a service by id and configuration. If it's not found, fetch the latest configurations from local storage
  * and remote, and then try again.
  */
-// Memoize, because multiple elements on the screen may be trying to locate the same service. Might also consider
-// caching, but would have to be careful about invalidating the cache on service configuration changes
+// Memoize until settled, because multiple elements on the screen may be trying to locate the same service. Might
+// also consider full memoization/caching, but would have to be careful about invalidating the cache on service
+// configuration changes
 export const locateWithRetry = memoizeUntilSettled(_locateWithRetry, {
   cacheKey: JSON.stringify,
 });

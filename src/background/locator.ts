@@ -17,7 +17,7 @@
 
 import LazyLocatorFactory from "@/services/locator";
 import { expectContext } from "@/utils/expectContext";
-import pMemoize from "p-memoize";
+import { memoizeUntilSettled } from "@/utils";
 
 export const locator = new LazyLocatorFactory();
 
@@ -57,9 +57,11 @@ async function _refreshServices({
 }
 
 /**
+ * Sync local and remote service configurations.
  * @see locateWithRetry
  */
-// Memoize, because multiple elements on the page might be trying to access services
-export const refreshServices = pMemoize(_refreshServices, {
+// Memoize while running, because multiple elements on the page might be trying to refresh services. But can't
+// memoize completely, as that would prevent future refreshes
+export const refreshServices = memoizeUntilSettled(_refreshServices, {
   cacheKey: JSON.stringify,
 });
