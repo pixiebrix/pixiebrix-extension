@@ -835,7 +835,7 @@ const formDefinitionFactory = define<FormDefinition>({
   submitCaption: "Submit",
 });
 
-const formEntryFactory = define<FormEntry>({
+export const formEntryFactory = define<FormEntry>({
   type: "form",
   extensionId: uuidSequence,
   nonce: uuidSequence,
