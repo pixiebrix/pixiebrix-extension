@@ -23,7 +23,7 @@ import { useIsMounted } from "@/hooks/common";
 import { once } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import {
-  uninitializedAsyncStateFactory,
+  loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 
@@ -39,10 +39,12 @@ const warnUndefinedValueOnce = once(() => {
 
 const slice = createSlice({
   name: "asyncSlice",
-  initialState: uninitializedAsyncStateFactory(),
+  // Initialize as loading instead of uninitialized. In RTK Query, uninitialized is used for conditional fetching
+  // via `skip`: https://redux-toolkit.js.org/rtk-query/usage/conditional-fetching
+  initialState: loadingAsyncStateFactory(),
   reducers: {
-    // Initialize loading state
     initialize(state) {
+      // Initialize loading state
       state.isUninitialized = false;
       state.isFetching = true;
       state.isLoading = true;
@@ -115,7 +117,9 @@ function useAsyncState<T = unknown>(
   const [state, dispatch] = useReducer(
     slice.reducer,
     initialValue === undefined
-      ? uninitializedAsyncStateFactory()
+      ? // Initialize as loading instead of uninitialized. In RTK Query, uninitialized is used for conditional fetching
+        // via `skip`: https://redux-toolkit.js.org/rtk-query/usage/conditional-fetching
+        loadingAsyncStateFactory()
       : valueToAsyncState(initialValue)
   );
 
