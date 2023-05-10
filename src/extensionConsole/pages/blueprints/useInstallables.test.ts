@@ -66,7 +66,6 @@ describe("useInstallables", () => {
 
     expect(wrapper.result.current).toEqual({
       installables: [],
-      isLoading: false,
       error: false,
     });
   });
@@ -97,7 +96,6 @@ describe("useInstallables", () => {
           isStub: true,
         }),
       ],
-      isLoading: false,
       error: false,
     });
   });
@@ -132,7 +130,6 @@ describe("useInstallables", () => {
           isStub: true,
         }),
       ],
-      isLoading: false,
       error: false,
     });
   });
@@ -142,7 +139,6 @@ describe("useInstallables", () => {
 
     useAllRecipesMock.mockReturnValue({
       data: [recipeDefinitionFactory({ metadata })],
-      isLoading: false,
       error: undefined,
     } as any);
 
@@ -171,7 +167,6 @@ describe("useInstallables", () => {
           kind: "recipe",
         }),
       ],
-      isLoading: false,
       error: false,
     });
 
@@ -197,7 +192,6 @@ describe("useInstallables", () => {
           extensionPointId: expect.toBeString(),
         }),
       ],
-      isLoading: false,
       error: false,
     });
   });
@@ -207,7 +201,6 @@ describe("useInstallables", () => {
 
     useGetAllCloudExtensionsQueryMock.mockReturnValue({
       data: [cloudExtension],
-      isLoading: false,
       error: false,
       refetch: jest.fn(),
     });
@@ -233,7 +226,6 @@ describe("useInstallables", () => {
           extensionPointId: expect.toBeString(),
         }),
       ],
-      isLoading: false,
       error: false,
     });
   });

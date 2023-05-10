@@ -119,8 +119,16 @@ function useInstallableViewItems(installables: Installable[]): {
   );
 
   const installableViewItems = useMemo(() => {
+    // Load to map for fast lookup if you have a lot of recipes. Could put in its own memo
     const recipeMap = new Map(
       (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
+    );
+
+    // Pick any IExtension from the blueprint to check for updates. All of their versions should be the same.
+    const extensionsMap = new Map(
+      installedExtensions
+        .filter((x) => x._recipe?.id)
+        .map((extension) => [extension._recipe.id, extension])
     );
 
     return installables.map((installable) => {
@@ -142,7 +150,7 @@ function useInstallableViewItems(installables: Installable[]): {
         },
         updatedAt: getUpdatedAt(installable),
         status: getStatus(installable),
-        hasUpdate: updateAvailable(recipeMap, installedExtensions, installable),
+        hasUpdate: updateAvailable(recipeMap, extensionsMap, installable),
         installedVersionNumber: getInstalledVersionNumber(
           installedExtensions,
           installable
@@ -165,8 +173,9 @@ function useInstallableViewItems(installables: Installable[]): {
 
   return {
     installableViewItems,
-    // Don't wait for the marketplace listings to load. They're only used to determine the icon and
-    // FIXME: should this be blocking on loading the listing? It will delay Extension Console load time
+    // Don't wait for the marketplace listings to load. They're only used to determine the icon and sharing options.
+    // FIXME: when the marketplace data loads, it seems to cause a re-render. So if the user had a 3-dot menu open
+    //  for one of the installables, it will close. This is a bit jarring.
     isLoading: isRecipesLoading,
   };
 }
