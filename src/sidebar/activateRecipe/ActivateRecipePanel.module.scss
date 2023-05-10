@@ -107,8 +107,6 @@
   margin-right: 0;
 }
 
-:global(.database-preview) {
-  @at-root :global(.form-group.row) {
-    display: none;
-  }
+:global(.has-preview-value) {
+  display: none;
 }

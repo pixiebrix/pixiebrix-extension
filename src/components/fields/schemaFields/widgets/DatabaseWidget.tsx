@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useField } from "formik";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
@@ -31,8 +31,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
-import { isUUID } from "@/types/helpers";
-import cx from "classnames";
+import { isUUID, validateUUID } from "@/types/helpers";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
@@ -48,6 +47,14 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
+  const setDatabaseId = (databaseId: UUID) => {
+    if (allowExpressions) {
+      setFieldValue(makeTemplateExpression("nunjucks", databaseId));
+    } else {
+      setFieldValue(databaseId);
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
   const hasPreviewValue =
@@ -60,20 +67,24 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     // If the schema format is 'preview', and the initial field value is a string, use that string
     // as the auto-created database name, and add it as an option to the database dropdown at the
     // top of the list.
-    if (
-      hasPreviewValue &&
-      // Don't add the preview option if a database with the name already exists
-      !loadedOptions.some(
+    if (hasPreviewValue) {
+      const existingDatabaseOption = loadedOptions.find(
         (option) => option.label === `${initialFieldValue} - Private`
-      )
-    ) {
-      return [
-        {
-          label: initialFieldValue,
-          value: initialFieldValue,
-        },
-        ...loadedOptions,
-      ];
+      );
+
+      // If the database doesn't exist, add the preview option to match the field value
+      if (!existingDatabaseOption) {
+        return [
+          {
+            label: initialFieldValue,
+            value: initialFieldValue,
+          },
+          ...loadedOptions,
+        ];
+      }
+
+      // Database already exists, select it
+      setDatabaseId(validateUUID(existingDatabaseOption.value));
     }
 
     return loadedOptions;
@@ -82,17 +93,28 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     hasPreviewValue,
     initialFieldValue,
     isLoadingDatabaseOptions,
+    setDatabaseId,
   ]);
 
-  const checkIsMounted = useIsMounted();
+  const containerRef = useRef<HTMLDivElement>();
+  useEffect(() => {
+    // If the field has a preview value, traverse up to the .form-group parent,
+    // and add a CSS class. I realize this is kinda gross. If you have a better
+    // idea then plz fix thx.
+    if (hasPreviewValue && containerRef) {
+      let parent = containerRef.current?.parentElement;
+      while (parent) {
+        if (parent.classList.contains("form-group")) {
+          parent.classList.add("has-preview-value");
+          break;
+        }
 
-  const setDatabaseId = (databaseId: UUID) => {
-    if (allowExpressions) {
-      setFieldValue(makeTemplateExpression("nunjucks", databaseId));
-    } else {
-      setFieldValue(databaseId);
+        parent = parent.parentElement;
+      }
     }
-  };
+  }, [hasPreviewValue]);
+
+  const checkIsMounted = useIsMounted();
 
   const onModalClose = () => {
     if (!checkIsMounted()) {
@@ -112,7 +134,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   };
 
   return (
-    <>
+    <div ref={containerRef}>
       <DatabaseCreateModal
         show={showModal}
         onClose={onModalClose}
@@ -133,9 +155,8 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
             setShowModal(true);
           }),
         }}
-        className={cx({ "database-preview": hasPreviewValue })}
       />
-    </>
+    </div>
   );
 };
 
