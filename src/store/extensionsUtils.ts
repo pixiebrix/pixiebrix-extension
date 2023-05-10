@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, groupBy, isEmpty, uniq } from "lodash";
+import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";

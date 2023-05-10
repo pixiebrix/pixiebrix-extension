@@ -80,15 +80,8 @@ const AsyncStateGate = <Data,>(
   props: AsyncStateGateProps<Data>
 ): React.ReactElement => {
   const { children, state, renderError, renderLoader } = props;
-  const {
-    data,
-    isLoading,
-    isUninitialized,
-    isFetching,
-    isError,
-    error,
-    // I couldn't get type inference to work at the callsites to allow State extends AsyncState<Data> & {refetch}
-  } = state;
+  const { data, isLoading, isUninitialized, isFetching, isError, error } =
+    state;
 
   const refetch = isFetchableAsyncState(state) ? state.refetch : undefined;
 
