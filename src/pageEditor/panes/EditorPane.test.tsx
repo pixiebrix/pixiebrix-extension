@@ -55,7 +55,10 @@ import {
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import * as api from "@/services/api";
-import { type MarketplaceListing } from "@/types/contract";
+import {
+  type EditablePackage,
+  type MarketplaceListing,
+} from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
@@ -69,7 +72,7 @@ import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { type EditablePackage, type RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms

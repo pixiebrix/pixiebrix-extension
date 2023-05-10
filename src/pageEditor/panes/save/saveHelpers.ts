@@ -16,7 +16,6 @@
  */
 
 import {
-  type EditablePackage,
   type InnerDefinitionRef,
   type Metadata,
   type RegistryId,
@@ -49,6 +48,7 @@ import {
 } from "@/types/extensionTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type EditablePackage } from "@/types/contract";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
