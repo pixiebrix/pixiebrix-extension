@@ -30,7 +30,7 @@ type FetchOptions = {
 };
 
 /**
- * A fetch method automatically authenticates calls to the app API. Prefer RTK Query in React code.
+ * A `fetch` method that automatically authenticates calls to the app API. Prefer RTK Query in React code.
  * @see getLinkedApiClient
  * @see getApiClient
  */
