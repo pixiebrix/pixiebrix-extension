@@ -159,7 +159,10 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                   <div className="d-flex justify-content-end">
                     {isBlueprint && isInstalled && (
                       <div className="mr-4 my-auto">
-                        <BooleanWidget name="reactivate" />
+                        <BooleanWidget
+                          name="reactivate"
+                          schema={{ type: "boolean" }}
+                        />
                         <span className="ml-2">Re-activate Mod</span>
                       </div>
                     )}

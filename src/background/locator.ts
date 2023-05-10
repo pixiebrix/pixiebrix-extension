@@ -17,6 +17,7 @@
 
 import LazyLocatorFactory from "@/services/locator";
 import { expectContext } from "@/utils/expectContext";
+import { memoizeUntilSettled } from "@/utils";
 
 export const locator = new LazyLocatorFactory();
 
@@ -32,7 +33,7 @@ export default async function initLocator() {
   await locator.refresh();
 }
 
-export async function refreshServices({
+async function _refreshServices({
   local = true,
   remote = true,
 } = {}): Promise<void> {
@@ -54,3 +55,13 @@ export async function refreshServices({
     throw new Error("Either local or remote must be set to true");
   }
 }
+
+/**
+ * Sync local and remote service configurations.
+ * @see locateWithRetry
+ */
+// Memoize while running, because multiple elements on the page might be trying to refresh services. But can't
+// memoize completely, as that would prevent future refreshes
+export const refreshServices = memoizeUntilSettled(_refreshServices, {
+  cacheKey: JSON.stringify,
+});

@@ -21,8 +21,8 @@ import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import { isExpression } from "@/runtime/mapArgs";
 import SelectWidget, {
-  type SelectLike,
   type Option,
+  type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
@@ -44,12 +44,11 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   >(name);
   const { allowExpressions } = useContext(FieldRuntimeContext);
 
-  const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
+  const { data: databaseOptions, isLoading: isLoadingDatabaseOptions } =
     useDatabaseOptions();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   const initialFieldValue = useMemo(() => fieldValue, []);
-
   const fullDatabaseOptions = useMemo(() => {
     const loadedOptions = isLoadingDatabaseOptions ? [] : databaseOptions;
 
@@ -60,8 +59,10 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
       schema.format === "preview" &&
       typeof initialFieldValue === "string" &&
       !isUUID(initialFieldValue) &&
-      // Don't add the placeholder if a DB with the name already exists
-      !loadedOptions.some((option) => option.label === initialFieldValue)
+      // Don't add the preview option if a database with the name already exists
+      !loadedOptions.some(
+        (option) => option.label === `${initialFieldValue} - Private`
+      )
     ) {
       return [
         {

@@ -20,6 +20,7 @@ import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
+import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
@@ -46,47 +47,43 @@ export const StandardError = ({
   </div>
 );
 
+type AsyncStateGateProps<Data> = PropsWithoutRef<{
+  /**
+   * FetchableAsyncState or AsyncState from useAsyncState
+   * @see useAsyncState
+   */
+  state: AsyncState<Data> | FetchableAsyncState<Data>;
+  /**
+   * Children to render once the state is loaded
+   * @param args
+   */
+  children: (args: { data: Data }) => React.ReactElement;
+  /**
+   * If provided, the loader will be rendered instead of the default loader
+   */
+  renderLoader?: () => React.ReactElement;
+  /**
+   * If provided, the error will be rendered instead of throwing it
+   * @see StandardError
+   */
+  renderError?: (args: {
+    error: unknown;
+    refetch?: () => void;
+  }) => React.ReactElement;
+}>;
+
 /**
  * Renders the children if the state is not loading or errored
  * @see useAsyncState
  */
 const AsyncStateGate = <Data,>(
-  props: PropsWithoutRef<{
-    /**
-     * FetchableAsyncState or AsyncState from useAsyncState
-     * @see useAsyncState
-     */
-    state: AsyncState<Data>;
-    /**
-     * Children to render once the state is loaded
-     * @param args
-     */
-    children: (args: { data: Data }) => React.ReactElement;
-    /**
-     * If provided, the loader will be rendered instead of the default loader
-     */
-    renderLoader?: () => React.ReactElement;
-    /**
-     * If provided, the error will be rendered instead of throwing it
-     * @see StandardError
-     */
-    renderError?: (args: {
-      error: unknown;
-      refetch?: () => void;
-    }) => React.ReactElement;
-  }>
+  props: AsyncStateGateProps<Data>
 ): React.ReactElement => {
   const { children, state, renderError, renderLoader } = props;
-  const {
-    data,
-    isLoading,
-    isUninitialized,
-    isFetching,
-    isError,
-    refetch,
-    error,
-    // I couldn't get type inference to work at the callsites to allow State extends AsyncState<Data> & {refetch}
-  } = state as unknown as FetchableAsyncState<Data>;
+  const { data, isLoading, isUninitialized, isFetching, isError, error } =
+    state;
+
+  const refetch = isFetchableAsyncState(state) ? state.refetch : undefined;
 
   if (isUninitialized || isLoading || (isError && isFetching)) {
     return renderLoader ? renderLoader() : <Loader />;

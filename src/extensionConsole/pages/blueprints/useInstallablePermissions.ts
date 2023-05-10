@@ -32,22 +32,25 @@ const fallback: PermissionsStatus = {
 
 /**
  * WARNING: This hook swallows errors (to simplify the behavior for the blueprints page.
- * Outside of the `BlueprintsPage` you probably want to use useAsyncState with `collectExtensionPermissions`
+ * Outside the `BlueprintsPage` you probably want to use useAsyncState with `collectExtensionPermissions`
  * @see collectExtensionPermissions
  */
 function useInstallablePermissions(extensions: IExtension[]): {
   hasPermissions: boolean;
   requestPermissions: () => Promise<boolean>;
 } {
-  const { data: browserPermissions } = useExtensionPermissions();
+  const { data: browserPermissions, isSuccess } = useExtensionPermissions();
 
   const {
     data: { hasPermissions, permissions },
   } = fallbackValue(
-    useAsyncState(
-      async () => checkExtensionPermissions(extensions),
-      [extensions, browserPermissions]
-    ),
+    useAsyncState(async () => {
+      if (isSuccess) {
+        return checkExtensionPermissions(extensions);
+      }
+
+      return fallback;
+    }, [extensions, browserPermissions, isSuccess]),
     fallback
   );
 

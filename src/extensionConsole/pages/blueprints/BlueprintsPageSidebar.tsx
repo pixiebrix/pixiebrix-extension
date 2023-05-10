@@ -257,6 +257,7 @@ const BlueprintsPageSidebar: React.FunctionComponent<
           placeholder="Search all mods"
           size="sm"
           value={searchInput}
+          data-testid="blueprints-search-input"
           onChange={({ target }) => {
             setSearchInput(target.value);
           }}

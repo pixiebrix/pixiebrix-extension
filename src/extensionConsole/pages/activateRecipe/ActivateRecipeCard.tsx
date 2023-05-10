@@ -21,7 +21,7 @@ import React, { useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { truncate } from "lodash";
 import { useTitle } from "@/hooks/title";
-import useWizard from "@/activation/useWizard";
+import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
@@ -42,6 +42,7 @@ import notify from "@/utils/notify";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
 import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/blueprints/BlueprintsPageSidebar";
 import { push } from "connected-react-router";
+import Loader from "@/components/Loader";
 
 const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();
@@ -53,7 +54,11 @@ const ActivateRecipeCard: React.FC = () => {
   // recipe will always be resolved here
   const { data: recipe } = useGetRecipeQuery({ recipeId });
 
-  const [wizardSteps, initialValues, validationSchema] = useWizard(recipe);
+  const {
+    data: wizardState,
+    isLoading: isLoadingWizard,
+    error: wizardError,
+  } = useActivateRecipeWizard(recipe);
 
   const activateRecipe = useActivateRecipe("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();
@@ -66,6 +71,16 @@ const ActivateRecipeCard: React.FC = () => {
       { length: 15 }
     )}`
   );
+
+  if (isLoadingWizard) {
+    return <Loader />;
+  }
+
+  if (wizardError) {
+    throw wizardError;
+  }
+
+  const { wizardSteps, initialValues, validationSchema } = wizardState;
 
   const reduxPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
