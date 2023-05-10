@@ -21,7 +21,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, partition, pick } from "lodash";
+import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -35,6 +35,7 @@ import { revertAll } from "@/store/commonActions";
 import {
   type IExtension,
   type PersistedExtension,
+  selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
@@ -161,11 +162,7 @@ const extensionsSlice = createSlice({
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
           _deployment: selectDeploymentContext(deployment),
-          _recipe: {
-            ...pick(recipe.metadata, ["id", "version", "name", "description"]),
-            sharing: recipe.sharing,
-            updated_at: recipe.updated_at,
-          },
+          _recipe: selectSourceRecipeMetadata(recipe),
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
           definitions: recipe.definitions ?? {},

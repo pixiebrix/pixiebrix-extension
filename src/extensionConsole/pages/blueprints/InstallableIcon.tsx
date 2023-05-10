@@ -66,6 +66,7 @@ const InstallableIcon: React.FunctionComponent<{
         icon={faCube}
         color={DEFAULT_TEXT_ICON_COLOR}
         size={size}
+        fixedWidth
       />
     );
   }
