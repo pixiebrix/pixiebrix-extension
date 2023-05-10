@@ -35,14 +35,13 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
   const {
     data: sourceURL,
     isFetching,
-    isUninitialized,
     error,
   } = useAsyncState(
     async () => createFrameSource(form.nonce, "panel"),
     [form.nonce]
   );
 
-  if (isUninitialized || isFetching) {
+  if (isFetching) {
     return (
       <div>
         <Loader />
