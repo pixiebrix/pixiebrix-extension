@@ -28,6 +28,10 @@ export type SiteSelectorHint = {
    */
   siteValidator: (element?: HTMLElement) => boolean;
   badPatterns: CssSelectorMatch[];
+  /**
+   * If any of these selectors apply, they will be included in the generated selector. Useful for SPA sites that have
+   * tabs/workspaces, e.g., Salesforce and Zendesk.
+   */
   requiredSelectors: string[];
   stableAnchors: CssSelectorMatch[];
   uniqueAttributes: string[];
