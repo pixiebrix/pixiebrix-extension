@@ -252,7 +252,6 @@ describe("BlueprintsPageLayout", () => {
       screen.getByTestId("blueprints-search-input"),
       "hello world"
     );
-    screen.debug();
     expect(rendered.getByTestId("blueprints-search-input").value).toBe(
       "hello world"
     );
