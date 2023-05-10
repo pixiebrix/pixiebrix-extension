@@ -21,12 +21,14 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Database, type Organization } from "@/types/contract";
 
-const useDatabaseOptions = (): FetchableAsyncState<Option[]> => {
+const useDatabaseOptions = ({
+  refetchOnMount,
+}: { refetchOnMount?: boolean } = {}): FetchableAsyncState<Option[]> => {
   const databasesQueryState = useGetDatabasesQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: refetchOnMount,
   });
   const organizationsQueryState = useGetOrganizationsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: refetchOnMount,
   });
 
   return useMergeAsyncState(

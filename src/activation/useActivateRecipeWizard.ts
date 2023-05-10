@@ -81,7 +81,8 @@ function useActivateRecipeWizard(
   const optionsValidationSchemaState = useAsyncRecipeOptionsValidationSchema(
     recipe.options?.schema
   );
-  const databaseOptionsState = useDatabaseOptions();
+  // Force-fetch latest database options
+  const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
 
   return useMergeAsyncState(
     optionsValidationSchemaState,
