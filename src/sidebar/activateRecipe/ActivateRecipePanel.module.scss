@@ -106,9 +106,3 @@
   vertical-align: baseline;
   margin-right: 0;
 }
-
-:global(.database-preview) {
-  @at-root :global(.form-group.row) {
-    display: none;
-  }
-}
