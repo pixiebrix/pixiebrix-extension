@@ -21,7 +21,7 @@ import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/Blueprints
 import { type Installable } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { organizationFactory } from "@/testUtils/factories";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
@@ -33,6 +33,7 @@ import blueprintsSlice, {
   persistBlueprintsConfig,
 } from "@/extensionConsole/pages/blueprints/blueprintsSlice";
 import { type Me } from "@/types/contract";
+import userEvent from "@testing-library/user-event";
 
 const EMPTY_RESPONSE = Object.freeze({
   data: Object.freeze([]),
@@ -96,10 +97,13 @@ describe("BlueprintsPageLayout", () => {
     jest.resetModules();
     process.env = { ...env };
     jest.clearAllMocks();
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     process.env = env;
+    jest.runAllTimers();
+    jest.useRealTimers();
   });
 
   test("renders", async () => {
@@ -234,6 +238,33 @@ describe("BlueprintsPageLayout", () => {
     await waitForEffect();
     expect(screen.queryByText("Bot Games")).not.toBeNull();
     expect(screen.getByTestId("bot-games-blueprint-tab")).toHaveClass("active");
+  });
+
+  test("search query heading renders", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    render(<BlueprintsPageLayout installables={installables} />);
+
+    await waitForEffect();
+
+    await user.type(
+      screen.getByTestId("blueprints-search-input"),
+      "hello world"
+    );
+    act(() => {
+      jest.runAllTimers();
+    });
+    expect(screen.queryByText('0 results for "hello world"')).not.toBeNull();
+
+    await user.type(
+      screen.getByTestId("blueprints-search-input"),
+      " hello world again!"
+    );
+    act(() => {
+      jest.runAllTimers();
+    });
+    expect(
+      screen.queryByText('0 results for "hello world hello world again!"')
+    ).not.toBeNull();
   });
 });
 

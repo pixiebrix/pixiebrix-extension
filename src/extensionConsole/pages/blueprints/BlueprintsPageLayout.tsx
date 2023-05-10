@@ -146,7 +146,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
             globalFilter: searchQuery,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
-          [state, groupBy, sortBy, activeTab.filters]
+          [searchQuery, state, groupBy, sortBy, activeTab.filters]
         ),
     },
     useFilters,
