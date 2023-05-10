@@ -37,6 +37,7 @@ import {
   type PackageUpsertResponse,
   type PackageVersion,
   type PendingInvitation,
+  type RecipeResponse,
   type SanitizedAuth,
   UserRole,
 } from "@/types/contract";
@@ -148,7 +149,7 @@ export const appApi = createApi({
     }),
     createDatabase: builder.mutation<
       Database,
-      { name: string; organizationId: string }
+      { name: string; organizationId?: string | undefined }
     >({
       query: ({ name, organizationId }) => ({
         url: organizationId
@@ -258,8 +259,15 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getCloudExtensions: builder.query<CloudExtension[], void>({
+    getAllCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
+      providesTags: ["CloudExtensions"],
+    }),
+    getCloudExtension: builder.query<CloudExtension, { extensionId: UUID }>({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "get",
+      }),
       providesTags: ["CloudExtensions"],
     }),
     deleteCloudExtension: builder.mutation<
@@ -271,6 +279,32 @@ export const appApi = createApi({
         method: "delete",
       }),
       invalidatesTags: ["CloudExtensions"],
+    }),
+    getRecipe: builder.query<RecipeDefinition, { recipeId: RegistryId }>({
+      query: ({ recipeId }) => ({
+        url: `/api/recipes/${recipeId}/`,
+        method: "get",
+      }),
+      transformResponse(
+        baseQueryReturnValue: RecipeResponse
+      ): RecipeDefinition {
+        // Pull out sharing and updated_at from response and merge into the base
+        // response to create a RecipeDefinition
+        const {
+          sharing,
+          updated_at,
+          config: unsavedRecipeDefinition,
+        } = baseQueryReturnValue;
+        return {
+          ...unsavedRecipeDefinition,
+          sharing,
+          updated_at,
+        };
+      },
+      providesTags: (result, error, { recipeId }) => [
+        { type: "Package", id: recipeId },
+        "EditablePackages",
+      ],
     }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
@@ -429,7 +463,8 @@ export const {
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
-  useGetCloudExtensionsQuery,
+  useGetAllCloudExtensionsQuery,
+  useGetCloudExtensionQuery,
   useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
@@ -443,5 +478,6 @@ export const {
   useUpdateScopeMutation,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
+  useGetRecipeQuery,
   util,
 } = appApi;

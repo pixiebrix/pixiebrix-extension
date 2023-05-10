@@ -50,6 +50,7 @@ import {
 } from "@/extensionPoints/types";
 import {
   type CloudExtension,
+  type Database,
   type Deployment,
   type MarketplaceListing,
   type MarketplaceTag,
@@ -566,7 +567,7 @@ export const deploymentFactory = define<Deployment>({
     "package"
   ),
   package: deploymentPackageFactory,
-  options_config: {},
+  options_config: () => ({} as Deployment["options_config"]),
 });
 
 const internalFormStateFactory = define<FormState>({
@@ -971,4 +972,11 @@ export const siteSelectorHintFactory = define<SiteSelectorHint>({
   uniqueAttributes: [],
   stableAnchors: [],
   requiredSelectors: [],
+});
+
+export const databaseFactory = define<Database>({
+  id: uuidSequence,
+  name: (n: number) => `Test Database ${n}`,
+  created_at: () => new Date().toISOString(),
+  last_write_at: () => new Date().toISOString(),
 });

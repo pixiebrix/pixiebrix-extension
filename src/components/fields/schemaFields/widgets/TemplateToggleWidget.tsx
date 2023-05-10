@@ -103,15 +103,29 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     inputRef,
   };
   if (inputMode === "omit") {
-    widgetProps.onClick = () => {
+    const optionValues = new Set(
+      inputModeOptions.map((option) => option.value)
+    );
+    widgetProps.onClick = (event) => {
       if (defaultType != null) {
         onModeChange(defaultType);
-      } else if (inputModeOptions.some((option) => option.value === "string")) {
-        onModeChange("string");
-      } else if (inputModeOptions.some((option) => option.value === "number")) {
-        onModeChange("number");
-      } else if (inputModeOptions.some((option) => option.value === "var")) {
-        onModeChange("var");
+      }
+
+      // Order matters here, for ex. we want select to take precedence over string
+      const fieldInputModePriorities: FieldInputMode[] = [
+        "select",
+        "string",
+        "number",
+        "var",
+        "boolean",
+        "array",
+        "object",
+      ];
+      for (const fieldInputMode of fieldInputModePriorities) {
+        if (optionValues.has(fieldInputMode)) {
+          onModeChange(fieldInputMode);
+          break;
+        }
       }
     };
   }

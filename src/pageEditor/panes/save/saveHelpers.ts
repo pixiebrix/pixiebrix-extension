@@ -22,13 +22,16 @@ import {
   type RegistryId,
   type InnerDefinitions,
 } from "@/types/registryTypes";
-import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
+import {
+  isInnerDefinitionRegistryId,
+  PACKAGE_REGEX,
+  validateRegistryId,
+} from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -181,7 +184,8 @@ export function replaceRecipeExtension(
     const adapter = ADAPTERS.get(element.type);
     const rawExtension = adapter.selectExtension(element);
     const extensionPointId = element.extensionPoint.metadata.id;
-    const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
+    const hasInnerExtensionPoint =
+      isInnerDefinitionRegistryId(extensionPointId);
 
     const commonExtensionConfig: Except<ExtensionDefinition, "id"> = {
       ...pick(rawExtension, [
@@ -364,7 +368,7 @@ export function buildRecipe({
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
 
-        if (isInnerExtensionPoint(extension.extensionPointId)) {
+        if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
           extension.definitions = {
@@ -419,7 +423,7 @@ function buildExtensionPoints(
       let isDefinitionAlreadyAdded = false;
       let needsFreshExtensionPointId = false;
 
-      if (isInnerExtensionPoint(extensionPointId)) {
+      if (isInnerDefinitionRegistryId(extensionPointId)) {
         // Always replace inner ids
         needsFreshExtensionPointId = true;
 

@@ -28,7 +28,7 @@ import {
   ContextMenuExtensionPoint,
 } from "@/extensionPoints/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
@@ -168,7 +168,7 @@ export async function preloadContextMenus(
   expectContext("background");
   await Promise.allSettled(
     extensions.map(async (definition) => {
-      const resolved = await resolveDefinitions(definition);
+      const resolved = await resolveExtensionInnerDefinitions(definition);
 
       const extensionPoint = await extensionPointRegistry.lookup(
         resolved.extensionPointId
@@ -185,7 +185,7 @@ export async function preloadContextMenus(
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await loadOptions();
   const resolved = await allSettledValues(
-    extensions.map(async (x) => resolveDefinitions(x))
+    extensions.map(async (x) => resolveExtensionInnerDefinitions(x))
   );
   await preloadContextMenus(resolved);
 }

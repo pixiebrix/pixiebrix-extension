@@ -16,8 +16,7 @@
  */
 
 import { type Deployment } from "@/types/contract";
-import { useCallback, useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
+import React, { useCallback, useMemo } from "react";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
@@ -42,6 +41,8 @@ import {
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settingsSlice";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import useAsyncState from "@/hooks/useAsyncState";
+import { logPromiseDuration } from "@/utils";
 
 const { actions } = extensionsSlice;
 
@@ -54,6 +55,7 @@ async function fetchDeployments(
   const client = await maybeGetLinkedApiClient();
 
   if (!client) {
+    // Not authenticated
     return [];
   }
 
@@ -130,7 +132,7 @@ async function activateDeployments(
   }
 }
 
-export type DeploymentState = {
+export type DeploymentsState = {
   /**
    * `true` iff one or more new deployments/deployment updates are available
    */
@@ -162,15 +164,39 @@ export type DeploymentState = {
   error: unknown;
 };
 
-function useDeployments(): DeploymentState {
+function useDeployments(): DeploymentsState {
   const dispatch = useDispatch();
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
 
-  const [deployments, isLoading, fetchError] = useAsyncState(
-    async () => fetchDeployments(installedExtensions),
-    [installedExtensions]
-  );
+  const { data, isLoading, error } = useAsyncState(async () => {
+    // `refreshRegistries` to ensure user has the latest brick definitions. `refreshRegistries` uses
+    // memoizedUntilSettled to avoid excessive calls
+    const [deployments] = await Promise.all([
+      fetchDeployments(installedExtensions),
+      refreshRegistries(),
+    ]);
+
+    // Log performance to determine if we're having issues with messenger/IDB performance
+    const { permissions } = mergePermissionsStatuses(
+      await logPromiseDuration(
+        "useDeployments:checkDeploymentPermissions",
+        Promise.all(
+          deployments.map(async (deployment) =>
+            checkDeploymentPermissions(deployment, services.locateAllForId)
+          )
+        )
+      )
+    );
+
+    return {
+      deployments,
+      permissions,
+    };
+  }, [installedExtensions]);
+
+  // Don't default to [] here to avoid re-render
+  const { deployments } = data ?? {};
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
     const isUpdated = makeUpdatedFilter(installedExtensions, {
@@ -183,30 +209,31 @@ function useDeployments(): DeploymentState {
     ];
   }, [restrict, installedExtensions, deployments]);
 
-  const handleUpdate = useCallback(async () => {
+  const handleUpdateFromUserGesture = useCallback(async () => {
+    // IMPORTANT: can't do a fetch or any potentially stalling operation (including IDB calls) because the call to
+    // request permissions must occur within 5 seconds of the user gesture. ensurePermissionsFromUserGesture check
+    // must come as early as possible.
+
     // Always reset. So even if there's an error, the user at least has a grace period before PixieBrix starts
     // notifying them to update again
     dispatch(settingsSlice.actions.resetUpdatePromptTimestamp());
+
+    const { deployments, permissions } = data ?? {};
 
     if (deployments == null) {
       notify.error("Deployments have not been fetched");
       return;
     }
 
-    // FIXME: if refreshing registries takes more than 5-10 seconds, the ensurePermissionsFromUserGesture call
-    //  will fail because the user gesture timer will have expired
+    let accepted = false;
     try {
-      notify.info("Fetching latest brick definitions");
-      // Get the latest brick definitions so we have the latest permission and version requirements
-      // XXX: is this being broadcast to the content scripts so they get the updated brick definition content?
-      await refreshRegistries();
+      accepted = await ensurePermissionsFromUserGesture(permissions);
     } catch (error) {
-      // Try to proceed if we can't refresh the brick definitions
-      notify.warning({
-        message: "Unable to fetch latest bricks",
+      notify.error({
+        message: "Error granting permissions, try again",
         error,
-        reportError: true,
       });
+      return;
     }
 
     if (checkExtensionUpdateRequired(deployments)) {
@@ -215,25 +242,6 @@ function useDeployments(): DeploymentState {
         "You must update the PixieBrix browser extension to activate the deployment"
       );
       reportEvent("DeploymentRejectVersion");
-      return;
-    }
-
-    const { permissions } = mergePermissionsStatuses(
-      await Promise.all(
-        deployments.map(async (deployment) =>
-          checkDeploymentPermissions(deployment, services.locateAllForId)
-        )
-      )
-    );
-
-    let accepted = false;
-    try {
-      accepted = await ensurePermissionsFromUserGesture(permissions);
-    } catch (error) {
-      notify.error({
-        message: "Error granting permissions",
-        error,
-      });
       return;
     }
 
@@ -249,7 +257,7 @@ function useDeployments(): DeploymentState {
     } catch (error) {
       notify.error({ message: "Error activating team deployments", error });
     }
-  }, [deployments, dispatch, installedExtensions]);
+  }, [data, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
@@ -260,12 +268,39 @@ function useDeployments(): DeploymentState {
 
   return {
     hasUpdate: updatedDeployments?.length > 0,
-    update: handleUpdate,
+    update: handleUpdateFromUserGesture,
     updateExtension,
     extensionUpdateRequired,
     isLoading,
-    error: fetchError,
+    error,
   };
 }
 
-export default useDeployments;
+const defaultValue: DeploymentsState = {
+  hasUpdate: false,
+  async update() {},
+  extensionUpdateRequired: false,
+  async updateExtension() {},
+  isLoading: true,
+  error: false,
+};
+
+const DeploymentsContext = React.createContext<DeploymentsState>(defaultValue);
+
+/**
+ * Provides deployment status to the children. Written as React context instead of a hook to allow for a singleton
+ * instance tracking the deployment status.
+ * @constructor
+ * @see DeploymentBanner
+ * @see useOnboarding
+ */
+export const DeploymentsProvider: React.FC = ({ children }) => {
+  const deployments = useDeployments();
+  return (
+    <DeploymentsContext.Provider value={deployments}>
+      {children}
+    </DeploymentsContext.Provider>
+  );
+};
+
+export default DeploymentsContext;

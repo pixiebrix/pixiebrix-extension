@@ -35,7 +35,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useCreateRecipeMutation,
   useDeleteCloudExtensionMutation,
-  useGetCloudExtensionsQuery,
+  useGetAllCloudExtensionsQuery,
 } from "@/services/api";
 import { type FormikHelpers } from "formik";
 import { makeBlueprint } from "@/extensionConsole/pages/blueprints/utils/exportBlueprint";
@@ -109,7 +109,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   const extensionId =
     showShareContext?.extensionId ?? showPublishContext?.extensionId;
   const extensions = useSelector(selectExtensions);
-  const { data: cloudExtensions } = useGetCloudExtensionsQuery();
+  const { data: cloudExtensions } = useGetAllCloudExtensionsQuery();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
 
   const extension = useMemo(() => {
