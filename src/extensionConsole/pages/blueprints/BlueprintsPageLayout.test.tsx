@@ -21,7 +21,7 @@ import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/Blueprints
 import { type Installable } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { organizationFactory } from "@/testUtils/factories";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
@@ -250,8 +250,21 @@ describe("BlueprintsPageLayout", () => {
       screen.getByTestId("blueprints-search-input"),
       "hello world"
     );
-    jest.runAllTimers();
+    act(() => {
+      jest.runAllTimers();
+    });
     expect(screen.queryByText('0 results for "hello world"')).not.toBeNull();
+
+    await user.type(
+      screen.getByTestId("blueprints-search-input"),
+      " hello world again!"
+    );
+    act(() => {
+      jest.runAllTimers();
+    });
+    expect(
+      screen.queryByText('0 results for "hello world hello world again!"')
+    ).not.toBeNull();
   });
 });
 
