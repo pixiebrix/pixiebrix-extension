@@ -41,10 +41,11 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .logo {
-  // see _themes.scss
-  height: var(--logo-height);
+  max-width: 100%;
+  max-height: 80px;
   padding: 0 1.5rem;
 }
