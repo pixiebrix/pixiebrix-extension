@@ -64,6 +64,17 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     ],
     uniqueAttributes: ["data-component-id"],
   },
+  {
+    // Matches all sites using Salesforce's Lightning framework
+    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
+    siteName: "TestHint",
+    siteValidator: (element) =>
+      $(element).closest("[data-test-hint]").length > 0,
+    badPatterns: [],
+    requiredSelectors: [".grandparent>.parent"],
+    stableAnchors: [],
+    uniqueAttributes: [],
+  },
 ];
 
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {

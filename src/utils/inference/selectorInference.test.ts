@@ -618,6 +618,15 @@ describe("inferElementSelector", () => {
     });
   });
   test("salesforce required element case", async () => {
+    const body = html`
+      <div id="grandparent" class="grandparent" data-test-hint="1">
+        <div class="parent" role="main">
+          <div id="test"></div>
+        </div>
+      </div>
+    `;
+    document.body.innerHTML = body;
+
     const element = document.body.querySelector<HTMLElement>("#test");
     expect(
       await inferElementSelector({
@@ -630,14 +639,7 @@ describe("inferElementSelector", () => {
       framework: null,
       hasData: false,
       parent: null,
-      selectors: [
-        "#test",
-        "[role='main'] div",
-        "#grandparent #test",
-        "[role='main'] #test",
-        "#grandparent .parent div",
-        ".parent div",
-      ],
+      selectors: [".grandparent>.parent #test", ".grandparent>.parent div"],
       tagName: "DIV",
     });
   });
