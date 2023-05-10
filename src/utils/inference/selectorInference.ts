@@ -29,6 +29,10 @@ import {
   SELECTOR_HINTS,
   type SiteSelectorHint,
 } from "@/utils/inference/siteSelectorHints";
+import { type ElementInfo } from "@/pageScript/frameworks";
+import { findSingleElement } from "@/utils/requireSingleElement";
+import { type Framework } from "@/pageScript/messenger/constants";
+import * as pageScript from "@/pageScript/messenger/api";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -424,18 +428,19 @@ function findAncestorsWithIdLikeSelectors(
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
 }
 
-export function getRequiredSelectors(
-  element: HTMLElement,
-  siteSelectorHintOverride?: SiteSelectorHint
-) {
-  const siteSelectorHint =
-    siteSelectorHintOverride ?? getSiteSelectorHint(element);
+export function getRequiredSelectors(element: HTMLElement) {
+  const siteSelectorHint = getSiteSelectorHint(element);
 
   const ancestors = $(element).parents().get();
 
-  return siteSelectorHint.requiredSelectors.filter((anchor) =>
-    ancestors.some((ancestor) => ancestor.matches(anchor))
-  );
+  return ancestors
+    .map((ancestor) => ({
+      selector: siteSelectorHint.requiredSelectors.find((selector) =>
+        ancestor.matches(selector)
+      ),
+      element: ancestor,
+    }))
+    .filter(({ selector }) => selector != null);
 }
 
 export function inferSelectorsIncludingStableAncestors(
@@ -505,6 +510,113 @@ export function inferSelectors(
       ])
     )
   );
+}
+
+type InferSelector = {
+  elements: HTMLElement[];
+  root: HTMLElement;
+  excludeRandomClasses: boolean;
+};
+
+export async function inferElementSelector({
+  elements,
+  root,
+  excludeRandomClasses,
+  framework,
+  traverseUp,
+}: InferSelector & {
+  framework?: Framework;
+  traverseUp: number;
+}): Promise<ElementInfo> {
+  console.log({ elements });
+  const selector = safeCssSelector(elements, {
+    excludeRandomClasses,
+  });
+
+  // We're using pageScript getElementInfo only when specific framework is used.
+  // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+  // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+  // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+  // only needs to return the selector alternatives.
+  if (framework) {
+    return pageScript.getElementInfo({
+      selector,
+      framework,
+      traverseUp,
+    });
+  }
+
+  const element = findSingleElement(selector);
+
+  // Get array selectors that match the element's parents mapped with the element
+  const requiredElementSelectors = getRequiredSelectors(element);
+
+  // Pull the selectors from the array
+  const requiredSelectors = requiredElementSelectors.map(
+    ({ selector }) => selector
+  );
+
+  // If any required selectors exist, get the closest parent from them to use
+  // as the new root
+  const requiredSelectorRoot =
+    requiredElementSelectors.length > 0
+      ? requiredElementSelectors[0].element
+      : root;
+
+  const selectorWithRequiredRoot = safeCssSelector(elements, {
+    root: requiredSelectorRoot,
+    excludeRandomClasses,
+  });
+
+  // Prepend all the selectors with the required selectors
+  const inferredSelectors = uniq(
+    [
+      selectorWithRequiredRoot,
+      ...inferSelectorsIncludingStableAncestors(element, requiredSelectorRoot),
+    ].map((selector) => [...requiredSelectors, selector].join(" "))
+  );
+
+  return {
+    selectors: inferredSelectors,
+    framework: null,
+    hasData: false,
+    tagName: element.tagName,
+    parent: null,
+  };
+}
+
+export function inferMultiElementSelector({
+  elements,
+  root,
+  excludeRandomClasses,
+  shouldSelectSimilar,
+}: InferSelector & {
+  shouldSelectSimilar?: boolean;
+}): ElementInfo {
+  const selector = shouldSelectSimilar
+    ? expandedCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      })
+    : safeCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      });
+
+  const inferredSelectors = uniq([
+    selector,
+    // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
+    // ...inferSelectorsIncludingStableAncestors(elements[0]),
+  ]);
+
+  return {
+    selectors: inferredSelectors,
+    framework: null,
+    hasData: false,
+    tagName: elements[0].tagName, // Will first element tag be enough/same for all elemtns?
+    parent: null,
+    isMulti: true,
+  };
 }
 
 /**

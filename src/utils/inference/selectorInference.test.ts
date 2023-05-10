@@ -20,8 +20,8 @@ import {
   generateSelector,
   getAttributeSelector,
   getAttributeSelectorRegex,
-  getRequiredSelectors,
   getSelectorPreference,
+  inferElementSelector,
   inferSelectors,
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
@@ -31,7 +31,6 @@ import { JSDOM } from "jsdom";
 import { html } from "@/utils";
 import { uniq } from "lodash";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
-import { siteSelectorHintFactory } from "@/testUtils/factories";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
@@ -526,46 +525,6 @@ describe("inferSelectors", () => {
   /* eslint-enable jest/expect-expect */
 });
 
-describe("getRequiredSelectors", () => {
-  document.body.innerHTML = html`
-    <div id="grandparent" class="grandparent" role="main">
-      <div class="parent">
-        <div id="test"></div>
-      </div>
-    </div>
-  `;
-  const element = document.body.querySelector<HTMLElement>("#test");
-
-  const testSelectors = (
-    requiredSelectors: string[],
-    expectedResult: string[]
-  ) => {
-    const siteSelectorHint = siteSelectorHintFactory({
-      requiredSelectors,
-    });
-
-    expect(getRequiredSelectors(element, siteSelectorHint)).toEqual(
-      expectedResult
-    );
-  };
-
-  test("default behavior", () => {
-    testSelectors([], []);
-  });
-
-  test("should return a simple selector", () => {
-    testSelectors([".grandparent", ".non-applicable"], [".grandparent"]);
-  });
-
-  test("should return a selector with child combinator", () => {
-    testSelectors([".grandparent>.parent"], [".grandparent>.parent"]);
-  });
-
-  test("should return a selector ordered ancestor", () => {
-    testSelectors(["#grandparent .parent"], ["#grandparent .parent"]);
-  });
-});
-
 describe("inferSelectorsIncludingStableAncestors", () => {
   /* eslint-disable jest/expect-expect -- Custom expectSelectors */
 
@@ -621,4 +580,65 @@ describe("inferSelectorsIncludingStableAncestors", () => {
   });
 
   /* eslint-enable jest/expect-expect */
+});
+
+describe("inferElementSelector", () => {
+  test("default", async () => {
+    const body = html`
+      <div id="grandparent" class="grandparent">
+        <div class="parent" role="main">
+          <div id="test"></div>
+        </div>
+      </div>
+    `;
+
+    document.body.innerHTML = body;
+
+    const element = document.body.querySelector<HTMLElement>("#test");
+    expect(
+      await inferElementSelector({
+        elements: [element],
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      selectors: [
+        "#test",
+        "[role='main'] div",
+        "#grandparent #test",
+        "[role='main'] #test",
+        "#grandparent .parent div",
+        ".parent div",
+      ],
+      tagName: "DIV",
+    });
+  });
+  test("salesforce required element case", async () => {
+    const element = document.body.querySelector<HTMLElement>("#test");
+    expect(
+      await inferElementSelector({
+        elements: [element],
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      selectors: [
+        "#test",
+        "[role='main'] div",
+        "#grandparent #test",
+        "[role='main'] #test",
+        "#grandparent .parent div",
+        ".parent div",
+      ],
+      tagName: "DIV",
+    });
+  });
 });
