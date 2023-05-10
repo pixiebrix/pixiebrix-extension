@@ -17,16 +17,22 @@
 
 import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import {
-  type CssSelectorType,
-  type CssSelectorMatch,
-} from "css-selector-generator/types/types";
+import { type CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import {
+  getSiteSelectorHint,
+  SELECTOR_HINTS,
+  type SiteSelectorHint,
+} from "@/utils/inference/siteSelectorHints";
+import { type ElementInfo } from "@/pageScript/frameworks";
+import { findSingleElement } from "@/utils/requireSingleElement";
+import { type Framework } from "@/pageScript/messenger/constants";
+import * as pageScript from "@/pageScript/messenger/api";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -38,54 +44,10 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-type SiteSelectorHint = {
-  /**
-   * Name for the rule hint-set.
-   */
-  siteName: string;
-  /**
-   * Return true if the these hints apply to the current site.
-   */
-  siteValidator: (element?: HTMLElement) => boolean;
-  badPatterns: CssSelectorMatch[];
-  uniqueAttributes: string[];
-  stableAnchors: CssSelectorMatch[];
-};
-
-const SELECTOR_HINTS: SiteSelectorHint[] = [
-  {
-    // Matches all sites using Salesforce's Lightning framework
-    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
-    siteName: "Salesforce",
-    siteValidator: (element) =>
-      $(element).closest("[data-aura-rendered-by]").length > 0,
-    badPatterns: [
-      getAttributeSelectorRegex(
-        // Salesforce Aura component tracking
-        "data-aura-rendered-by"
-      ),
-
-      /#\\+\d+ \d+\\+:0/,
-      /#\w+[_-]\d+/,
-      /.*\.hover.*/,
-      /.*\.not-selected.*/,
-      /^\[name='leftsidebar'] */,
-    ],
-    uniqueAttributes: ["data-component-id"],
-    stableAnchors: [
-      ".consoleRelatedRecord",
-      /\.consoleRelatedRecord\d+/,
-      ".navexWorkspaceManager",
-      ".active",
-      ".oneConsoleTab",
-      ".tabContent",
-    ],
-  },
-];
-
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
+  "role",
 
   // Data attributes people use in automated tests are unlikely to change frequently
   "data-cy", // Cypress
@@ -122,23 +84,6 @@ const UNSTABLE_SELECTORS = [
     "style"
   ),
 ];
-
-function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
-  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator(element)
-  );
-  if (!siteSelectorHint) {
-    siteSelectorHint = {
-      siteName: "",
-      siteValidator: () => false,
-      badPatterns: [],
-      uniqueAttributes: [],
-      stableAnchors: [],
-    };
-  }
-
-  return siteSelectorHint;
-}
 
 function getUniqueAttributeSelectors(
   element: HTMLElement,
@@ -395,6 +340,7 @@ export function expandedCssSelector(
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
+    ...siteSelectorHint.requiredSelectors,
   ];
 
   // Find ancestors of each user-selected element. Unlike single-element select, includes both
@@ -482,6 +428,21 @@ function findAncestorsWithIdLikeSelectors(
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
 }
 
+export function getRequiredSelectors(element: HTMLElement) {
+  const siteSelectorHint = getSiteSelectorHint(element);
+
+  const ancestors = $(element).parents().get();
+
+  return ancestors
+    .map((ancestor) => ({
+      selector: siteSelectorHint.requiredSelectors.find((selector) =>
+        ancestor.matches(selector)
+      ),
+      element: ancestor,
+    }))
+    .filter(({ selector }) => selector != null);
+}
+
 export function inferSelectorsIncludingStableAncestors(
   element: HTMLElement,
   root?: Element,
@@ -549,6 +510,113 @@ export function inferSelectors(
       ])
     )
   );
+}
+
+type InferSelector = {
+  elements: HTMLElement[];
+  root: HTMLElement;
+  excludeRandomClasses: boolean;
+};
+
+export async function inferElementSelector({
+  elements,
+  root,
+  excludeRandomClasses,
+  framework,
+  traverseUp,
+}: InferSelector & {
+  framework?: Framework;
+  traverseUp: number;
+}): Promise<ElementInfo> {
+  console.log({ elements });
+  const selector = safeCssSelector(elements, {
+    excludeRandomClasses,
+  });
+
+  // We're using pageScript getElementInfo only when specific framework is used.
+  // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+  // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+  // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+  // only needs to return the selector alternatives.
+  if (framework) {
+    return pageScript.getElementInfo({
+      selector,
+      framework,
+      traverseUp,
+    });
+  }
+
+  const element = findSingleElement(selector);
+
+  // Get array selectors that match the element's parents mapped with the element
+  const requiredElementSelectors = getRequiredSelectors(element);
+
+  // Pull the selectors from the array
+  const requiredSelectors = requiredElementSelectors.map(
+    ({ selector }) => selector
+  );
+
+  // If any required selectors exist, get the closest parent from them to use
+  // as the new root
+  const requiredSelectorRoot =
+    requiredElementSelectors.length > 0
+      ? requiredElementSelectors[0].element
+      : root;
+
+  const selectorWithRequiredRoot = safeCssSelector(elements, {
+    root: requiredSelectorRoot,
+    excludeRandomClasses,
+  });
+
+  // Prepend all the selectors with the required selectors
+  const inferredSelectors = uniq(
+    [
+      selectorWithRequiredRoot,
+      ...inferSelectorsIncludingStableAncestors(element, requiredSelectorRoot),
+    ].map((selector) => [...requiredSelectors, selector].join(" "))
+  );
+
+  return {
+    selectors: inferredSelectors,
+    framework: null,
+    hasData: false,
+    tagName: element.tagName,
+    parent: null,
+  };
+}
+
+export function inferMultiElementSelector({
+  elements,
+  root,
+  excludeRandomClasses,
+  shouldSelectSimilar,
+}: InferSelector & {
+  shouldSelectSimilar?: boolean;
+}): ElementInfo {
+  const selector = shouldSelectSimilar
+    ? expandedCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      })
+    : safeCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      });
+
+  const inferredSelectors = uniq([
+    selector,
+    // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
+    // ...inferSelectorsIncludingStableAncestors(elements[0]),
+  ]);
+
+  return {
+    selectors: inferredSelectors,
+    framework: null,
+    hasData: false,
+    tagName: elements[0].tagName, // Will first element tag be enough/same for all elemtns?
+    parent: null,
+    isMulti: true,
+  };
 }
 
 /**
@@ -695,9 +763,9 @@ function getElementSelectors(target: Element): string[] {
   );
 
   return compact([
+    target.tagName.toLowerCase(),
     ...attributeSelectors,
     ...classSelectors,
-    target.tagName.toLowerCase(),
   ]);
 }
 
