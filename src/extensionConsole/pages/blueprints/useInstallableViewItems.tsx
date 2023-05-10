@@ -174,8 +174,8 @@ function useInstallableViewItems(installables: Installable[]): {
   return {
     installableViewItems,
     // Don't wait for the marketplace listings to load. They're only used to determine the icon and sharing options.
-    // FIXME: when the marketplace data loads, it seems to cause a re-render. So if the user had a 3-dot menu open
-    //  for one of the installables, it will close. This is a bit jarring.
+    // FIXME: when the marketplace data loads, it causes a re-render because the data is passed to React Table. So if
+    //  the user had a 3-dot menu open for one of the installables, it will close. This is a bit jarring.
     isLoading: isRecipesLoading,
   };
 }
