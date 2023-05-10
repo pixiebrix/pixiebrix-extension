@@ -26,7 +26,7 @@ import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
-import { IExtension } from "@/types/extensionTypes";
+import { type IExtension } from "@/types/extensionTypes";
 
 type InstallablesState = {
   /**
