@@ -43,7 +43,10 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     badPatterns: [
       getAttributeSelectorRegex(
         // Salesforce Aura component tracking
-        "data-aura-rendered-by"
+        "data-aura-rendered-by",
+        "data-interactive-lib-uid",
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir
+        "dir"
       ),
 
       /#\\+\d+ \d+\\+:0/,
