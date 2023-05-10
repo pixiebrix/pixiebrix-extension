@@ -42,6 +42,7 @@ import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
+import { useCallback } from "react";
 
 type ActionCallback = () => void;
 
@@ -62,6 +63,7 @@ function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
   const { installable, status, sharing, unavailable } = installableViewItem;
+
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
@@ -89,10 +91,15 @@ function useInstallableViewItemActions(
   // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
   const isRestricted = isDeployment && restrict("uninstall");
 
-  const extensionsFromInstallable = useSelector(
+  // Without memoization, the selector the reference changes on every render, which causes useInstallablePermissions
+  // to recompute, spamming the background worker with service locator requests
+  const memoizedExtensionsSelector = useCallback(
     (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, installable)
+      selectExtensionsFromInstallable(state, installable),
+    [installable]
   );
+
+  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
 
   const { hasPermissions, requestPermissions } = useInstallablePermissions(
     extensionsFromInstallable

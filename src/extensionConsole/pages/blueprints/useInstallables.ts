@@ -19,17 +19,23 @@ import { type UUID } from "@/types/stringTypes";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { useAsyncState } from "@/hooks/common";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
 import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type InstallablesState = {
+  /**
+   * The installables fetched/generated so far. There's no loading/fetching state. `useInstallables` just adds entries
+   * as they become available.
+   */
   installables: Installable[];
-  isLoading: boolean;
+  /**
+   * An error that occurred while fetching/generating installables, or undefined.
+   */
   error: unknown;
 };
 
@@ -56,11 +62,6 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
-  const knownRecipeIds = useMemo(
-    () => new Set((knownRecipes ?? []).map((x) => x.metadata.id)),
-    [knownRecipes]
-  );
-
   const knownPersonalOrTeamRecipes = useMemo(
     () =>
       (knownRecipes ?? []).filter(
@@ -84,17 +85,16 @@ function useInstallables(): InstallablesState {
     return [...unresolvedExtensions, ...inactiveExtensions];
   }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
 
-  const [resolvedExtensions, resolvedExtensionsIsLoading, resolveError] =
-    useAsyncState(
-      async () =>
-        Promise.all(
-          allExtensions.map(async (extension) =>
-            resolveExtensionInnerDefinitions(extension)
-          )
-        ),
-      [allExtensions],
-      []
-    );
+  const { data: resolvedExtensions, isError: resolveError } = useAsyncState(
+    async () =>
+      Promise.all(
+        allExtensions.map(async (extension) =>
+          resolveExtensionInnerDefinitions(extension)
+        )
+      ),
+    [allExtensions],
+    { initialValue: [] }
+  );
 
   const extensionsWithoutRecipe = useMemo(
     () =>
@@ -108,6 +108,10 @@ function useInstallables(): InstallablesState {
   );
 
   const unknownRecipes: UnavailableRecipe[] = useMemo(() => {
+    const knownRecipeIds = new Set(
+      (knownRecipes ?? []).map((x) => x.metadata.id)
+    );
+
     // `resolvedExtensions` can be undefined if resolveDefinitions errors above
     const unavailable = (resolvedExtensions ?? []).filter(
       (extension) =>
@@ -125,7 +129,7 @@ function useInstallables(): InstallablesState {
       })),
       (x) => x.metadata.id
     );
-  }, [knownRecipeIds, resolvedExtensions]);
+  }, [knownRecipes, resolvedExtensions]);
 
   return {
     installables: [
@@ -133,10 +137,6 @@ function useInstallables(): InstallablesState {
       ...knownPersonalOrTeamRecipes,
       ...unknownRecipes,
     ],
-    isLoading:
-      recipesState.isFetching ||
-      cloudExtensions.isLoading ||
-      resolvedExtensionsIsLoading,
     error: cloudExtensions.error ?? recipesState.error ?? resolveError,
   };
 }

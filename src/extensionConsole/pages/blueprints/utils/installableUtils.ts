@@ -246,7 +246,7 @@ export function getSharingType({
 }
 
 export function updateAvailable(
-  availableRecipes: RecipeDefinition[],
+  availableRecipes: Map<RegistryId, RecipeDefinition>,
   installedExtensions: UnresolvedExtension[],
   installable: Installable
 ): boolean {
@@ -258,6 +258,7 @@ export function updateAvailable(
   }
 
   if (isBlueprint(installable)) {
+    // Pick any IExtension from the blueprint to check for updates. All of their versions should be the same.
     installedExtension = installedExtensions?.find(
       (extension) => extension._recipe?.id === installable.metadata.id
     );
@@ -269,9 +270,7 @@ export function updateAvailable(
     return false;
   }
 
-  const availableRecipe = availableRecipes?.find(
-    (recipe) => recipe.metadata.id === installedExtension._recipe.id
-  );
+  const availableRecipe = availableRecipes.get(installedExtension._recipe.id);
 
   if (!availableRecipe) {
     return false;

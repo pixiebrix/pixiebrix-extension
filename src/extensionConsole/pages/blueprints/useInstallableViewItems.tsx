@@ -102,9 +102,9 @@ function useInstallableViewItems(installables: Installable[]): {
 
   const installableIcon = useCallback(
     (installable: Installable) => {
-      const listing: MarketplaceListing | null = listingsQuery.isLoading
-        ? null
-        : listingsQuery.data[getPackageId(installable)];
+      const listing: MarketplaceListing | null = listingsQuery.isSuccess
+        ? listingsQuery.data[getPackageId(installable)]
+        : null;
 
       return (
         <InstallableIcon
@@ -118,53 +118,56 @@ function useInstallableViewItems(installables: Installable[]): {
     [listingsQuery]
   );
 
-  const installableViewItems = useMemo(
-    () =>
-      installables.map((installable) => {
-        const packageId = getPackageId(installable);
+  const installableViewItems = useMemo(() => {
+    const recipeMap = new Map(
+      (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
+    );
 
-        return {
-          name: getLabel(installable),
-          description: getDescription(installable),
-          sharing: {
-            packageId,
-            source: getSharingType({
-              installable,
-              organizations,
-              scope,
-              installedExtensions,
-            }),
-            // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
-            listingId: listingsQuery.data?.[packageId]?.id,
-          },
-          updatedAt: getUpdatedAt(installable),
-          status: getStatus(installable),
-          hasUpdate: updateAvailable(recipes, installedExtensions, installable),
-          installedVersionNumber: getInstalledVersionNumber(
+    return installables.map((installable) => {
+      const packageId = getPackageId(installable);
+
+      return {
+        name: getLabel(installable),
+        description: getDescription(installable),
+        sharing: {
+          packageId,
+          source: getSharingType({
+            installable,
+            organizations,
+            scope,
             installedExtensions,
-            installable
-          ),
-          icon: installableIcon(installable),
-          unavailable: isUnavailableRecipe(installable),
-          installable,
-        } satisfies InstallableViewItem;
-      }),
-    [
-      getStatus,
-      installableIcon,
-      installables,
-      installedExtensions,
-      listingsQuery,
-      organizations,
-      recipes,
-      scope,
-    ]
-  );
+          }),
+          // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
+          listingId: listingsQuery.data?.[packageId]?.id,
+        },
+        updatedAt: getUpdatedAt(installable),
+        status: getStatus(installable),
+        hasUpdate: updateAvailable(recipeMap, installedExtensions, installable),
+        installedVersionNumber: getInstalledVersionNumber(
+          installedExtensions,
+          installable
+        ),
+        icon: installableIcon(installable),
+        unavailable: isUnavailableRecipe(installable),
+        installable,
+      } satisfies InstallableViewItem;
+    });
+  }, [
+    getStatus,
+    installableIcon,
+    installables,
+    installedExtensions,
+    listingsQuery,
+    organizations,
+    recipes,
+    scope,
+  ]);
 
   return {
     installableViewItems,
+    // Don't wait for the marketplace listings to load. They're only used to determine the icon and
     // FIXME: should this be blocking on loading the listing? It will delay Extension Console load time
-    isLoading: isRecipesLoading || listingsQuery.isLoading,
+    isLoading: isRecipesLoading,
   };
 }
 
