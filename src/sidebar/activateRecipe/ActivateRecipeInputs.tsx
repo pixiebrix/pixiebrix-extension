@@ -67,7 +67,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   const optionsStep = wizardSteps.find(({ key }) => key === "options");
   const servicesStep = wizardSteps.find(({ key }) => key === "services");
 
-  const recipe = inputRecipe.options
+  const recipe = inputRecipe.options?.schema?.properties
     ? produce(inputRecipe, (draft) => {
         for (const [name, optionSchema] of Object.entries(
           inputRecipe.options.schema.properties
