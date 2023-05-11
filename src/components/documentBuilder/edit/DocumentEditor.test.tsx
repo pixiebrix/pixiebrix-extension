@@ -36,8 +36,6 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 
-jest.mock("@/blocks/registry");
-
 beforeAll(() => {
   registerDefaultWidgets();
 });
