@@ -34,10 +34,14 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { useGetRecipeQuery } from "@/services/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
+import { type RecipeResponse } from "@/types/contract";
 
 registerDefaultWidgets();
 
+// XXX: Fix this mock, getting a warning that an unhandled error was caught from submitForm() TypeError: Cannot
+// destructure property 'success' of '(intermediate value)' as it is undefined
 const installMock = jest.fn();
+const testRecipeId = validateRegistryId("@test/recipe");
 
 jest.mock("@/activation/useActivateRecipe.ts", () => ({
   __esModule: true,
@@ -46,15 +50,27 @@ jest.mock("@/activation/useActivateRecipe.ts", () => ({
 
 jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue("@test/recipe"),
+  default: jest.fn(() => testRecipeId),
 }));
 
 global.chrome.commands.getAll = jest.fn();
 
 function setupRecipe(recipe: RecipeDefinition) {
+  const recipeResponse: RecipeResponse = {
+    config: recipe,
+    updated_at: recipe.updated_at,
+    sharing: {
+      public: false,
+      organizations: [],
+    },
+  };
+
   appApiMock
-    .onGet(`/api/recipes/${encodeURIComponent("@test/recipe")}/`)
-    .reply(200, recipe);
+    .onGet(`/api/recipes/${encodeURIComponent(testRecipeId)}/`)
+    .reply(200, recipeResponse)
+    // Databases, organizations, etc.
+    .onGet()
+    .reply(200, []);
 }
 
 beforeEach(() => {
@@ -65,7 +81,7 @@ beforeEach(() => {
 // Activate Recipe Card is always rendered when the recipe has already been found
 const RecipeCard: React.FC = () => {
   const recipeState = useGetRecipeQuery({
-    recipeId: validateRegistryId("@test/recipe"),
+    recipeId: testRecipeId,
   });
   return (
     <MemoryRouter>

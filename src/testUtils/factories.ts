@@ -86,7 +86,7 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type SafeString, type UUID } from "@/types/stringTypes";
+import { type SafeString, Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type IExtension,
   type PersistedExtension,
@@ -129,7 +129,7 @@ export const uuidSequence = (n: number) =>
 
 export const registryIdFactory = () => validateRegistryId(`test/${uuidv4()}`);
 
-const timestampFactory = () => new Date().toISOString();
+export const timestampFactory = () => new Date().toISOString() as Timestamp;
 
 export const organizationFactory = define<AuthUserOrganization>({
   id: uuidSequence,
