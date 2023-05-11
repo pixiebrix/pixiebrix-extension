@@ -19,7 +19,7 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { resolveRecipe } from "@/registry/internal";
+import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 
 /**
  * Returns true if the recipe includes a static or dynamic Quick Bar entries.
@@ -28,7 +28,9 @@ import { resolveRecipe } from "@/registry/internal";
 export default async function includesQuickBarExtensionPoint(
   recipe?: RecipeDefinition
 ): Promise<boolean> {
-  const resolvedExtensionDefinitions = await resolveRecipe(recipe);
+  const resolvedExtensionDefinitions = await resolveRecipeInnerDefinitions(
+    recipe
+  );
 
   for (const { id } of resolvedExtensionDefinitions) {
     // eslint-disable-next-line no-await-in-loop -- can break when we find one

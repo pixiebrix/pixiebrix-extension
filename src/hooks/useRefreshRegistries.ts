@@ -25,7 +25,7 @@ import {
 } from "@/background/messenger/api";
 import { syncRemotePackages } from "@/baseRegistry";
 
-const refreshServices = async () => {
+const syncServiceAuths = async () => {
   await serviceAuthRegistry.refresh();
   // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
   // the call to serviceRegistry, because that populates the local IDB definitions.
@@ -33,14 +33,14 @@ const refreshServices = async () => {
 };
 
 /**
- * Refresh registries for the current context.
+ * Refresh brick registry and integration configuration registries.
  *
  * Additionally, refreshes background states necessary for making network calls.
  */
 export async function refreshRegistries(): Promise<void> {
   // Sync remote packages in order to be able to remove packages that have been deleted/the user no longer has access to
   console.debug("Refreshing bricks from the server");
-  await Promise.all([syncRemotePackages(), refreshServices()]);
+  await Promise.all([syncRemotePackages(), syncServiceAuths()]);
 }
 
 const throttledRefreshRegistries = throttle(

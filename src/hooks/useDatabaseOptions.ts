@@ -16,35 +16,37 @@
  */
 
 import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
-import { useMemo } from "react";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type Database, type Organization } from "@/types/contract";
 
-const useDatabaseOptions = () => {
-  const { data: databases, isLoading: isLoadingDatabases } =
-    useGetDatabasesQuery();
-  const { data: organizations, isLoading: isLoadingOrganizations } =
-    useGetOrganizationsQuery();
+const useDatabaseOptions = ({
+  refetchOnMount,
+}: { refetchOnMount?: boolean } = {}): FetchableAsyncState<Option[]> => {
+  const databasesQueryState = useGetDatabasesQuery(undefined, {
+    refetchOnMountOrArgChange: refetchOnMount,
+  });
+  const organizationsQueryState = useGetOrganizationsQuery(undefined, {
+    refetchOnMountOrArgChange: refetchOnMount,
+  });
 
-  const isLoading = isLoadingDatabases || isLoadingOrganizations;
+  return useMergeAsyncState(
+    databasesQueryState,
+    organizationsQueryState,
+    (databases: Database[], organizations: Organization[]) =>
+      databases.map((db) => {
+        const organization = organizations.find(
+          (o) => o.id === db.organization_id
+        );
+        const dbName = `${db.name} - ${organization?.name ?? "Private"}`;
 
-  const databaseOptions = useMemo(
-    () =>
-      databases && organizations
-        ? databases.map((db) => {
-            const organization = organizations.find(
-              (o) => o.id === db.organization_id
-            );
-            const dbName = `${db.name} - ${organization?.name ?? "Private"}`;
-
-            return {
-              label: dbName,
-              value: db.id,
-            };
-          })
-        : [],
-    [databases, organizations]
+        return {
+          label: dbName,
+          value: db.id,
+        };
+      })
   );
-
-  return { databaseOptions, isLoading };
 };
 
 export default useDatabaseOptions;

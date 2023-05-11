@@ -17,6 +17,7 @@
 
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
+import pDefer, { type DeferredPromise } from "p-defer";
 
 export const appApiMock = new MockAdapter(axios);
 
@@ -30,4 +31,20 @@ export function mockAllApiEndpoints() {
   appApiMock.onPost().reply(201, {});
   appApiMock.onPut().reply(201, {});
   appApiMock.onDelete().reply(201, {});
+}
+
+/**
+ * Helper method to provide a deferred response to a GET request.
+ */
+export function onDeferredGet(
+  matcher?: string | RegExp
+): DeferredPromise<unknown> {
+  const valuePromise = pDefer<unknown>();
+
+  // eslint-disable-next-line promise/prefer-await-to-then -- transform value
+  const responsePromise = valuePromise.promise.then((value) => [200, value]);
+
+  appApiMock.onGet(matcher).reply(async () => responsePromise);
+
+  return valuePromise;
 }

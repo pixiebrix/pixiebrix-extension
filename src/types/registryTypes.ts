@@ -29,6 +29,11 @@ export type RegistryId = string & {
 };
 
 /**
+ * Scope for inner definitions
+ */
+export const INNER_SCOPE = "@internal";
+
+/**
  * The kind of definition in the external registry
  */
 export type Kind =
@@ -107,28 +112,10 @@ export interface Definition<K extends Kind = Kind> {
 export type InnerDefinitions = Record<string, UnknownObject>;
 
 /**
- * A reference to an entry in the recipe's `definitions` map.
+ * A reference to an entry in the recipe's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
 export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
-};
-
-/**
- * A reference to a package in the registry that the user has edit permissions for.
- */
-export type EditablePackage = {
-  /**
-   * The surrogate key of the package on the backend.
-   */
-  id: UUID;
-
-  /**
-   * The registry id of the package
-   */
-  name: RegistryId;
-
-  // Nominal typing to help distinguish from registry Metadata
-  _editablePackageBrand: never;
 };

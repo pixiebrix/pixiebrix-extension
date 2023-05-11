@@ -15,59 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.wizardHeader {
-  padding: 32px;
+import React from "react";
+import { render } from "@/sidebar/testHelpers";
+import { formEntryFactory } from "@/testUtils/factories";
+import FormBody from "@/sidebar/FormBody";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
-  :global(.col) {
-    display: flex;
-  }
-}
+jest.mock("@/blocks/transformers/ephemeralForm/formTransformer", () => ({
+  createFrameSource: jest.fn(() => new URL("https://www.testUrl.com")),
+}));
 
-.wizardHeaderLayout {
-  flex-grow: 1;
-}
-
-.wizardDescription {
-  margin-top: 12px;
-}
-
-.wizardMainInfo {
-  display: flex;
-
-  :global(.card-title) {
-    font-size: 25px;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  code {
-    margin-top: 4px;
-    font-size: 14px;
-  }
-}
-
-.packageId {
-  padding: 0;
-}
-
-.wizardBody {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-
-  .wizardBodyRow:not(:first-child) {
-    margin-top: 40px;
-  }
-}
-
-.blueprintIcon {
-  font-size: 25px;
-  margin-right: 16px;
-}
-
-.activateButtonContainer {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-}
+describe("FormBody", () => {
+  it("renders successfully", async () => {
+    const form = formEntryFactory();
+    const rendered = render(<FormBody form={form} />);
+    await waitForEffect();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+});

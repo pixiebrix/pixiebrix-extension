@@ -118,53 +118,65 @@ function useInstallableViewItems(installables: Installable[]): {
     [listingsQuery]
   );
 
-  const installableViewItems = useMemo(
-    () =>
-      installables.map((installable) => {
-        const packageId = getPackageId(installable);
+  const installableViewItems = useMemo(() => {
+    // Load to map for fast lookup if you have a lot of recipes. Could put in its own memo
+    const recipeMap = new Map(
+      (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
+    );
 
-        return {
-          name: getLabel(installable),
-          description: getDescription(installable),
-          sharing: {
-            packageId,
-            source: getSharingType({
-              installable,
-              organizations,
-              scope,
-              installedExtensions,
-            }),
-            // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
-            listingId: listingsQuery.data?.[packageId]?.id,
-          },
-          updatedAt: getUpdatedAt(installable),
-          status: getStatus(installable),
-          hasUpdate: updateAvailable(recipes, installedExtensions, installable),
-          installedVersionNumber: getInstalledVersionNumber(
+    // Pick any IExtension from the blueprint to check for updates. All of their versions should be the same.
+    const extensionsMap = new Map(
+      installedExtensions
+        .filter((x) => x._recipe?.id)
+        .map((extension) => [extension._recipe.id, extension])
+    );
+
+    return installables.map((installable) => {
+      const packageId = getPackageId(installable);
+
+      return {
+        name: getLabel(installable),
+        description: getDescription(installable),
+        sharing: {
+          packageId,
+          source: getSharingType({
+            installable,
+            organizations,
+            scope,
             installedExtensions,
-            installable
-          ),
-          icon: installableIcon(installable),
-          unavailable: isUnavailableRecipe(installable),
-          installable,
-        } satisfies InstallableViewItem;
-      }),
-    [
-      getStatus,
-      installableIcon,
-      installables,
-      installedExtensions,
-      listingsQuery,
-      organizations,
-      recipes,
-      scope,
-    ]
-  );
+          }),
+          // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
+          listingId: listingsQuery.data?.[packageId]?.id,
+        },
+        updatedAt: getUpdatedAt(installable),
+        status: getStatus(installable),
+        hasUpdate: updateAvailable(recipeMap, extensionsMap, installable),
+        installedVersionNumber: getInstalledVersionNumber(
+          installedExtensions,
+          installable
+        ),
+        icon: installableIcon(installable),
+        unavailable: isUnavailableRecipe(installable),
+        installable,
+      } satisfies InstallableViewItem;
+    });
+  }, [
+    getStatus,
+    installableIcon,
+    installables,
+    installedExtensions,
+    listingsQuery,
+    organizations,
+    recipes,
+    scope,
+  ]);
 
   return {
     installableViewItems,
-    // FIXME: should this be blocking on loading the listing? It will delay Extension Console load time
-    isLoading: isRecipesLoading || listingsQuery.isLoading,
+    // Don't wait for the marketplace listings to load. They're only used to determine the icon and sharing options.
+    // FIXME: when the marketplace data loads, it causes a re-render because the data is passed to React Table. So if
+    //  the user had a 3-dot menu open for one of the installables, it will close. This is a bit jarring.
+    isLoading: isRecipesLoading,
   };
 }
 

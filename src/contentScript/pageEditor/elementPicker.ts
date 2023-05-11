@@ -20,11 +20,11 @@ import Overlay from "@/vendors/Overlay";
 import {
   expandedCssSelector,
   findContainer,
-  inferSelectorsIncludingStableAncestors,
-  safeCssSelector,
+  inferElementSelector,
+  inferMultiElementSelector,
 } from "@/utils/inference/selectorInference";
 import { type Framework } from "@/pageScript/messenger/constants";
-import { uniq, compact, difference } from "lodash";
+import { compact, difference, uniq } from "lodash";
 import * as pageScript from "@/pageScript/messenger/api";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
@@ -57,6 +57,7 @@ export function stopInspectingNativeHandler(): void {
 }
 
 let _cancelSelect: () => void = null;
+
 interface UserSelection {
   root?: HTMLElement;
   /** CSS selector to limit the selection to */
@@ -425,64 +426,22 @@ export async function selectElement({
     }
 
     case "element": {
-      const selector = shouldSelectSimilar
-        ? expandedCssSelector(elements, {
-            root: rootElement,
-            excludeRandomClasses,
-          })
-        : safeCssSelector(elements, {
-            root: rootElement,
-            excludeRandomClasses,
-          });
-
-      console.debug(`Generated selector: ${selector}`);
-
       if (isMulti) {
-        const inferredSelectors = uniq([
-          selector,
-          // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
-          // ...inferSelectorsIncludingStableAncestors(elements[0]),
-        ]);
-
-        return {
-          selectors: inferredSelectors,
-          framework: null,
-          hasData: false,
-          tagName: elements[0].tagName, // Will first element tag be enough/same for all elemtns?
-          parent: null,
-          isMulti: true,
-        };
-      }
-
-      // Double-check we have a valid selector
-      const element = findSingleElement(selector);
-
-      // We're using pageScript getElementInfo only when specific framework is used.
-
-      // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
-      // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
-      // In any case, the pageScript is not necessary if framework is not specified, because selectElement
-      // only needs to return the selector alternatives.
-      if (framework) {
-        return pageScript.getElementInfo({
-          selector,
-          framework,
-          traverseUp,
+        return inferMultiElementSelector({
+          elements,
+          root: rootElement,
+          excludeRandomClasses,
+          shouldSelectSimilar,
         });
       }
 
-      const inferredSelectors = uniq([
-        selector,
-        ...inferSelectorsIncludingStableAncestors(element),
-      ]);
-
-      return {
-        selectors: inferredSelectors,
-        framework: null,
-        hasData: false,
-        tagName: element.tagName,
-        parent: null,
-      };
+      return inferElementSelector({
+        traverseUp,
+        root: rootElement,
+        elements,
+        excludeRandomClasses,
+        framework,
+      });
     }
 
     default: {

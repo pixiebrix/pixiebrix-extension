@@ -36,8 +36,7 @@ import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoi
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
-import { appApiMock } from "@/testUtils/appApiMock";
-import pDefer from "p-defer";
+import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRequiredRecipe: jest.fn(),
@@ -65,7 +64,7 @@ jest.mock("@/hooks/useQuickbarShortcut", () => ({
 
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
-jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
+jest.mock("@/activation/useActivateRecipe", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
@@ -121,7 +120,7 @@ beforeEach(() => {
 });
 
 describe("ActivateRecipePanel", () => {
-  test("it renders with options, permissions info", async () => {
+  it("renders with options, permissions info", async () => {
     jest.mocked(checkRecipePermissions).mockResolvedValue({
       hasPermissions: false,
       permissions: { origins: ["https://newurl.com"] },
@@ -151,7 +150,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it activates basic recipe automatically and renders well-done page", async () => {
+  it("activates basic recipe automatically and renders well-done page", async () => {
     const rendered = setupMocksAndRender();
 
     await waitForEffect();
@@ -159,7 +158,37 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut not configured", async () => {
+  it("activates basic recipe with empty options structure automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: {},
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("activates recipe with database preview automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: propertiesToSchema({
+          testDatabase: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+            title: "Database",
+            format: "preview",
+          },
+        }),
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("renders well-done page for quick bar mod shortcut not configured", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     const rendered = setupMocksAndRender();
@@ -169,7 +198,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
+  it("renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
@@ -184,7 +213,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
+  it("renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
@@ -199,7 +228,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with service configuration if no built-in service configs available", async () => {
+  it("renders with service configuration if no built-in service configs available", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
     const rendered = setupMocksAndRender(recipe);
@@ -212,7 +241,7 @@ describe("ActivateRecipePanel", () => {
     ).not.toBeDisabled();
   });
 
-  test("it activates recipe with built-in services automatically and renders well-done page", async () => {
+  it("activates recipe with built-in services automatically and renders well-done page", async () => {
     const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
     appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
@@ -224,14 +253,10 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it doesn't flicker while built-in auths are loading", async () => {
+  it("doesn't flicker while built-in auths are loading", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
-    const deferred = pDefer<any>();
-
-    appApiMock
-      .onGet("/api/services/shared/")
-      .reply(async () => deferred.promise);
+    onDeferredGet("/api/services/shared/");
 
     const rendered = setupMocksAndRender(recipe);
 

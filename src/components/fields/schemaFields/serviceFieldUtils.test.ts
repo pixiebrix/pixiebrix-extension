@@ -27,6 +27,8 @@ import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -98,6 +100,38 @@ describe("selectVariables", () => {
             },
           },
         ],
+      },
+      instanceId: uuidSequence(1),
+    };
+
+    const formState = formStateFactory(undefined, [
+      blockConfigFactory({
+        config: documentWithButtonConfig,
+      }),
+    ]);
+
+    const actual = selectServiceVariables(formState);
+    expect(actual).toEqual(new Set(["@foo"]));
+  });
+
+  test("handles list elements", () => {
+    const button = createNewElement("button");
+    button.config.onClick = toExpression("pipeline", [
+      {
+        id: "@test/service",
+        instanceId: uuidSequence(2),
+        config: {
+          input: toExpression("var", "@foo"),
+        },
+      },
+    ]);
+    const listElement = createNewElement("list") as ListDocumentElement;
+    listElement.config.element.__value__ = button;
+
+    const documentWithButtonConfig = {
+      id: "@test/document",
+      config: {
+        body: [listElement],
       },
       instanceId: uuidSequence(1),
     };

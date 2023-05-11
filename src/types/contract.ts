@@ -167,8 +167,18 @@ export type Deployment = Except<
   };
 };
 
-export type Brick = components["schemas"]["PackageMeta"] & {
+/**
+ * An editable package in the registry.
+ */
+export type EditablePackage = components["schemas"]["PackageMeta"] & {
+  id: UUID;
+
+  name: RegistryId;
+
   kind: Kind;
+
+  // Nominal typing to help distinguish from registry Metadata
+  _editableBrickBrand: never;
 };
 
 export type RegistryPackage = Pick<
@@ -193,9 +203,9 @@ export type CloudExtension<Config extends UnknownObject = JsonObject> = Except<
 };
 
 /**
- * `/api/recipes/${blueprintId}`
+ * `/api/recipes/${recipeId}`
  */
-export type BlueprintResponse = {
+export type RecipeResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedRecipeDefinition;
   sharing: RecipeDefinition["sharing"];

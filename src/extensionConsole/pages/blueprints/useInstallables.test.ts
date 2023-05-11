@@ -33,9 +33,7 @@ jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));
 
-const useAllRecipesMock = useAllRecipes as jest.MockedFunction<
-  typeof useAllRecipes
->;
+const useAllRecipesMock = jest.mocked(useAllRecipes);
 
 describe("useInstallables", () => {
   beforeEach(() => {
@@ -53,8 +51,7 @@ describe("useInstallables", () => {
 
     expect(wrapper.result.current).toEqual({
       installables: [],
-      isLoading: false,
-      error: undefined,
+      error: false,
     });
   });
 
@@ -84,8 +81,7 @@ describe("useInstallables", () => {
           isStub: true,
         }),
       ],
-      isLoading: false,
-      error: undefined,
+      error: false,
     });
   });
 
@@ -119,8 +115,7 @@ describe("useInstallables", () => {
           isStub: true,
         }),
       ],
-      isLoading: false,
-      error: undefined,
+      error: false,
     });
   });
 
@@ -129,7 +124,6 @@ describe("useInstallables", () => {
 
     useAllRecipesMock.mockReturnValue({
       data: [recipeDefinitionFactory({ metadata })],
-      isLoading: false,
       error: undefined,
     } as any);
 
@@ -158,15 +152,13 @@ describe("useInstallables", () => {
           kind: "recipe",
         }),
       ],
-      isLoading: false,
-      error: undefined,
+      error: false,
     });
 
     expect(wrapper.result.current.installables[0]).not.toHaveProperty("isStub");
   });
 
   it("handles inactive cloud extension", async () => {
-    appApiMock.reset();
     appApiMock.onGet("/api/extensions/").reply(200, [cloudExtensionFactory()]);
 
     const wrapper = renderHook(() => useInstallables());
@@ -180,14 +172,14 @@ describe("useInstallables", () => {
           extensionPointId: expect.toBeString(),
         }),
       ],
-      isLoading: false,
-      error: undefined,
+      error: false,
     });
   });
 
   it("handles active cloud extension", async () => {
-    const cloudExtension = cloudExtensionFactory();
     appApiMock.reset();
+
+    const cloudExtension = cloudExtensionFactory();
     appApiMock.onGet("/api/extensions/").reply(200, [cloudExtension]);
 
     const wrapper = renderHook(() => useInstallables(), {
@@ -211,8 +203,7 @@ describe("useInstallables", () => {
           extensionPointId: expect.toBeString(),
         }),
       ],
-      isLoading: false,
-      error: undefined,
+      error: false,
     });
   });
 });

@@ -50,6 +50,7 @@ import {
 } from "@/extensionPoints/types";
 import {
   type CloudExtension,
+  type Database,
   type Deployment,
   type MarketplaceListing,
   type MarketplaceTag,
@@ -115,6 +116,7 @@ import {
   type RecipeDefinition,
 } from "@/types/recipeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type SiteSelectorHint } from "@/utils/inference/siteSelectorHints";
 
 /**
  * UUID sequence generator that's predictable across runs.
@@ -598,7 +600,7 @@ export const deploymentFactory = define<Deployment>({
     "package"
   ),
   package: deploymentPackageFactory,
-  options_config: {},
+  options_config: () => ({} as Deployment["options_config"]),
 });
 
 const internalFormStateFactory = define<FormState>({
@@ -866,7 +868,7 @@ const formDefinitionFactory = define<FormDefinition>({
   submitCaption: "Submit",
 });
 
-const formEntryFactory = define<FormEntry>({
+export const formEntryFactory = define<FormEntry>({
   type: "form",
   extensionId: uuidSequence,
   nonce: uuidSequence,
@@ -995,3 +997,19 @@ export const getRecipeWithBuiltInServiceAuths = () => {
 
   return { recipe, builtInServiceAuths };
 };
+
+export const siteSelectorHintFactory = define<SiteSelectorHint>({
+  siteName: "testSite",
+  siteValidator: () => false,
+  badPatterns: [],
+  uniqueAttributes: [],
+  stableAnchors: [],
+  requiredSelectors: [],
+});
+
+export const databaseFactory = define<Database>({
+  id: uuidSequence,
+  name: (n: number) => `Test Database ${n}`,
+  created_at: () => new Date().toISOString(),
+  last_write_at: () => new Date().toISOString(),
+});

@@ -263,7 +263,12 @@ export function selectSourceRecipeMetadata(
   }
 
   return {
-    ...recipeDefinition.metadata,
+    ...pick(recipeDefinition.metadata, [
+      "id",
+      "version",
+      "name",
+      "description",
+    ]),
     ...pick(recipeDefinition, ["sharing", "updated_at"]),
   };
 }

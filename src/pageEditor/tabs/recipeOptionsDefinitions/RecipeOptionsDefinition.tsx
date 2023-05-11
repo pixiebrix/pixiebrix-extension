@@ -59,7 +59,11 @@ const fieldTypes = [
   },
   {
     label: "Database automatically created at activation",
-    value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+    value: stringifyUiType({
+      propertyType: "string",
+      uiWidget: "database",
+      propertyFormat: "preview",
+    }),
   },
   {
     label: "Google Sheet",

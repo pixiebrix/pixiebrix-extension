@@ -55,6 +55,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
+import { type EditablePackage } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
@@ -64,10 +65,9 @@ import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/re
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { type EditablePackage } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { appApiMock } from "@/testUtils/appApiMock";
 import { array } from "cooky-cutter";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { mockCachedUser } from "@/testUtils/userMock";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
@@ -930,7 +930,6 @@ describe("block validation in Add Block Modal UI", () => {
 
   test("hides UiPath bricks for AA users", async () => {
     mockCachedUser(partnerUserFactory());
-
     const formState = formStateFactory();
     render(
       <>
