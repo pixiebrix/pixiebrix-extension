@@ -47,6 +47,7 @@ import {
   act as actHook,
   type RenderHookOptions,
   type RenderHookResult,
+  type WrapperComponent,
 } from "@testing-library/react-hooks";
 import { type Expression, type ExpressionType } from "@/types/runtimeTypes";
 
@@ -248,8 +249,14 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
   };
 }
 
-type HookWrapperOptions<TProps> = Omit<RenderHookOptions<TProps>, "wrapper"> & {
+type HookWrapperOptions<TProps> = RenderHookOptions<TProps> & {
+  /**
+   * Initial Formik values.
+   */
   initialValues?: FormikValues;
+  /**
+   * Callback to setup Redux state by dispatching actions.
+   */
   setupRedux?: SetupRedux;
 };
 
@@ -280,12 +287,15 @@ type HookWrapperResult<
   getFormState(): FormikValues;
 };
 
+const DefaultExtraWrapper: React.FC = ({ children }) => <>{children}</>;
+
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
   return <TProps, TResult>(
     hook: (props: TProps) => TResult,
     {
       initialValues,
       setupRedux = noop,
+      wrapper,
       ...renderOptions
     }: HookWrapperOptions<TProps> = {}
   ): HookWrapperResult<TProps, TResult> => {
@@ -295,15 +305,18 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
     let formValues: FormikValues = null;
 
-    const Wrapper: React.FC = initialValues
-      ? ({ children }) => (
+    const ExtraWrapper: WrapperComponent<TProps> =
+      wrapper ?? DefaultExtraWrapper;
+
+    const Wrapper: WrapperComponent<TProps> = initialValues
+      ? (props) => (
           <Provider store={store}>
             <Formik initialValues={initialValues} onSubmit={jest.fn()}>
               {({ handleSubmit, values }) => {
                 formValues = values;
                 return (
                   <Form onSubmit={handleSubmit}>
-                    {children}
+                    <ExtraWrapper {...props} />
                     <button type="submit">Submit</button>
                   </Form>
                 );
@@ -311,7 +324,11 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
             </Formik>
           </Provider>
         )
-      : ({ children }) => <Provider store={store}>{children}</Provider>;
+      : (props) => (
+          <Provider store={store}>
+            <ExtraWrapper {...props} />
+          </Provider>
+        );
 
     const renderResult = renderHook(hook, {
       wrapper: Wrapper,
