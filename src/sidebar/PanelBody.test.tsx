@@ -24,7 +24,6 @@ import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { HtmlRenderer } from "@/blocks/renderers/html";
 import { registryIdFactory } from "@/testUtils/factories";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 
