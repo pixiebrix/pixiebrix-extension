@@ -28,7 +28,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import { ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
