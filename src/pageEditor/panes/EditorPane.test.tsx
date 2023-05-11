@@ -79,12 +79,6 @@ async function tickAsyncEffects() {
   });
 }
 
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn().mockResolvedValue(true),
-  registry: {
-    getByKinds: jest.fn().mockResolvedValue([]),
-  },
-}));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
 

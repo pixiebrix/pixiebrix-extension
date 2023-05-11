@@ -27,9 +27,7 @@ import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
   collectExtensionPermissions: jest.fn().mockResolvedValue({}),
 }));
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn().mockResolvedValue(true),
-}));
+
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
 

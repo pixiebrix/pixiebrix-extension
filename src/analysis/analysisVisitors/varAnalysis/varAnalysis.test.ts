@@ -20,6 +20,7 @@ import {
   formStateFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
+  sanitizedServiceConfigurationFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories";
 import VarAnalysis, {
@@ -51,15 +52,13 @@ import {
   type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { services } from "@/background/messenger/api";
 
-jest.mock("@/background/messenger/api", () => ({
-  __esModule: true,
-  services: {
-    locate: jest.fn().mockResolvedValue({
-      serviceId: "@test/service",
-    }),
-  },
-}));
+jest.mocked(services.locate).mockResolvedValue(
+  sanitizedServiceConfigurationFactory({
+    serviceId: validateRegistryId("@test/service"),
+  })
+);
 
 jest.mock("@/blocks/registry", () => ({
   __esModule: true,
