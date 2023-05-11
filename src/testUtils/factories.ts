@@ -86,7 +86,11 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type SafeString, Timestamp, type UUID } from "@/types/stringTypes";
+import {
+  type SafeString,
+  type Timestamp,
+  type UUID,
+} from "@/types/stringTypes";
 import {
   type IExtension,
   type PersistedExtension,
