@@ -17,6 +17,7 @@
 
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
+  isDeferExpression,
   isExpression,
   isPipelineExpression,
   isVarExpression,
@@ -56,7 +57,7 @@ function deepFindServiceVariables(obj: unknown, variables: Set<string>) {
     return;
   }
 
-  if (isPipelineExpression(obj)) {
+  if (isPipelineExpression(obj) || isDeferExpression(obj)) {
     deepFindServiceVariables(obj.__value__, variables);
   }
 }
