@@ -21,8 +21,6 @@ import { type Schema } from "@/types/schemaTypes";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { render } from "@/pageEditor/testHelpers";
 
-jest.unmock("react-redux");
-
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
 
