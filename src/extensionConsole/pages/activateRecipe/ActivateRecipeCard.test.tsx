@@ -29,63 +29,73 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { useGetRecipeQuery } from "@/services/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { querySuccessFactory } from "@/testUtils/rtkQueryFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { useGetRecipeQuery } from "@/services/api";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import { validateRegistryId } from "@/types/helpers";
+import { type RecipeResponse } from "@/types/contract";
 
 registerDefaultWidgets();
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
+// XXX: Fix this mock, getting a warning that an unhandled error was caught from submitForm() TypeError: Cannot
+// destructure property 'success' of '(intermediate value)' as it is undefined
 const installMock = jest.fn();
+const testRecipeId = validateRegistryId("@test/recipe");
 
 jest.mock("@/activation/useActivateRecipe.ts", () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => installMock),
 }));
 
-jest.mock("@/services/api", () => ({
-  useGetDatabasesQuery: jest.fn(() => querySuccessFactory([])),
-  useGetOrganizationsQuery: jest.fn(() => querySuccessFactory([])),
-  useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
-  useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
-  useGetRecipeQuery: jest.fn(() => querySuccessFactory([])),
-  useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
-  appApi: {
-    useLazyGetMeQuery: jest.fn(() => [
-      jest.fn(),
-      querySuccessFactory(Object.freeze({})),
-    ]),
-  },
-}));
-
 jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue("@test/recipe"),
+  default: jest.fn(() => testRecipeId),
 }));
 
 global.chrome.commands.getAll = jest.fn();
 
 function setupRecipe(recipe: RecipeDefinition) {
-  jest.mocked(useGetRecipeQuery).mockReturnValue(querySuccessFactory(recipe));
+  const recipeResponse: RecipeResponse = {
+    config: recipe,
+    updated_at: recipe.updated_at,
+    sharing: {
+      public: false,
+      organizations: [],
+    },
+  };
+
+  appApiMock
+    .onGet(`/api/recipes/${encodeURIComponent(testRecipeId)}/`)
+    .reply(200, recipeResponse)
+    // Databases, organizations, etc.
+    .onGet()
+    .reply(200, []);
 }
 
 beforeEach(() => {
+  appApiMock.reset();
   jest.clearAllMocks();
 });
+
+// Activate Recipe Card is always rendered when the recipe has already been found
+const RecipeCard: React.FC = () => {
+  const recipeState = useGetRecipeQuery({
+    recipeId: testRecipeId,
+  });
+  return (
+    <MemoryRouter>
+      <AsyncStateGate state={recipeState}>
+        {() => <ActivateRecipeCard />}
+      </AsyncStateGate>
+    </MemoryRouter>
+  );
+};
 
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
     setupRecipe(recipeDefinitionFactory());
-    const rendered = render(
-      <MemoryRouter>
-        <ActivateRecipeCard />
-      </MemoryRouter>
-    );
+    const rendered = render(<RecipeCard />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -118,11 +128,7 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(recipe);
 
-    const rendered = render(
-      <MemoryRouter>
-        <ActivateRecipeCard />
-      </MemoryRouter>
-    );
+    const rendered = render(<RecipeCard />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
@@ -143,11 +149,7 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(recipe);
 
-    const rendered = render(
-      <MemoryRouter>
-        <ActivateRecipeCard />
-      </MemoryRouter>
-    );
+    const rendered = render(<RecipeCard />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
@@ -181,11 +183,7 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(recipe);
 
-    const rendered = render(
-      <MemoryRouter>
-        <ActivateRecipeCard />
-      </MemoryRouter>
-    );
+    const rendered = render(<RecipeCard />);
     await waitForEffect();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();

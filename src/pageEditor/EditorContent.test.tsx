@@ -24,43 +24,12 @@ import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 
-jest.mock("@/services/api", () => {
-  const originalModule = jest.requireActual("@/services/api");
-
-  return {
-    appApi: {
-      ...originalModule.appApi,
-      endpoints: {
-        ...originalModule.appApi.endpoints,
-        getMarketplaceListings: {
-          useQueryState: jest.fn(),
-        },
-      },
-    },
-    useGetMarketplaceTagsQuery: jest.fn(),
-    useGetMarketplaceListingsQuery: jest.fn(),
-    useGetEditablePackagesQuery: jest.fn(),
-    useCreateRecipeMutation: jest.fn(),
-    useUpdateRecipeMutation: jest.fn(),
-  };
-});
-jest.mock("@/components/asyncIcon", () => ({
-  useAsyncIcon: jest.fn(),
-}));
-jest.mock("@/telemetry/events", () => ({
-  reportEvent: jest.fn(),
-}));
 jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
   collectExtensionPermissions: jest.fn().mockResolvedValue({}),
 }));
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn().mockResolvedValue(true),
-}));
+
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
-jest.mock("@/hooks/useTheme", () => ({
-  useGetTheme: jest.fn(),
-}));
 
 jest.mock("@/pageEditor/utils", () => {
   const actual = jest.requireActual("@/pageEditor/utils");

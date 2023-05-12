@@ -42,13 +42,9 @@ jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
-const proxyServiceMock = proxyService as jest.MockedFunction<
-  typeof proxyService
->;
-const getCachedAuthDataMock = getCachedAuthData as jest.MockedFunction<
-  typeof getCachedAuthData
->;
-const getUserDataMock = getUserData as jest.MockedFunction<typeof getUserData>;
+const proxyServiceMock = jest.mocked(proxyService);
+const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
+const getUserDataMock = jest.mocked(getUserData);
 
 const brick = new RunBot();
 

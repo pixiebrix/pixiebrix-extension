@@ -19,66 +19,38 @@ import React from "react";
 import ConnectedSidebar from "@/sidebar/ConnectedSidebar";
 import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
-import { authStateFactory } from "@/testUtils/factories";
+import {
+  authStateFactory,
+  partnerUserFactory,
+  userFactory,
+} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { appApi, useGetMeQuery } from "@/services/api";
-import { anonAuth } from "@/auth/authConstants";
 import { MemoryRouter } from "react-router";
-import { type Me } from "@/types/contract";
+import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
+import useLinkState from "@/auth/useLinkState";
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
-  appApi: {
-    reducerPath: "appApi",
-    endpoints: {
-      getMe: {
-        useQueryState: jest.fn(),
-      },
-    },
-  },
+jest.mock("@/auth/useLinkState", () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
-jest.mock("@/sidebar/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
-jest.mock("@/auth/token", () => {
-  const originalModule = jest.requireActual("@/auth/token");
-  return {
-    ...originalModule,
-    isLinked: jest.fn().mockResolvedValue(true),
-  };
-});
-
-function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
-  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
-  (useGetMeQuery as jest.Mock).mockReturnValue(state);
-}
-
-browser.runtime.getURL = (path: string) =>
-  `chrome-extension://example.url/${path}`;
-
-beforeAll(() => {
-  jest.useFakeTimers();
-});
-
-afterAll(() => {
-  jest.runAllTimers();
-  jest.useRealTimers();
-});
+const useLinkStateMock = jest.mocked(useLinkState);
 
 describe("SidebarApp", () => {
+  beforeEach(() => {
+    useLinkStateMock.mockReturnValue({
+      hasToken: true,
+      tokenLoading: false,
+      tokenError: null,
+    });
+  });
+
   test("renders not connected", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: anonAuth as any,
+    mockAnonymousUser();
+    useLinkStateMock.mockReturnValue({
+      hasToken: false,
+      tokenLoading: false,
+      tokenError: null,
     });
 
     const rendered = render(
@@ -88,17 +60,16 @@ describe("SidebarApp", () => {
     );
     await waitForEffect();
 
-    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("renders not connected partner view", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: {
-        partner: {},
-        ...anonAuth,
-      } as any,
+    // Is this a real state? The use in meQueryState couldn't be set if hasToken is `false`
+    mockCachedUser(partnerUserFactory());
+    useLinkStateMock.mockReturnValue({
+      hasToken: false,
+      tokenLoading: false,
+      tokenError: null,
     });
 
     const rendered = render(
@@ -108,15 +79,11 @@ describe("SidebarApp", () => {
     );
     await waitForEffect();
 
-    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("renders", async () => {
-    mockMeQuery({
-      isLoading: false,
-      data: authStateFactory() as any,
-    });
+    mockCachedUser(userFactory());
 
     const rendered = render(
       <MemoryRouter>
@@ -131,7 +98,6 @@ describe("SidebarApp", () => {
 
     await waitForEffect();
 
-    jest.runAllTimers();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

@@ -31,6 +31,7 @@ import useReportTraceError from "./useReportTraceError";
 import { Provider } from "react-redux";
 import { traceErrorFactory, traceRecordFactory } from "@/testUtils/factories";
 
+// Override the manual mock to support `expect` assertions
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));

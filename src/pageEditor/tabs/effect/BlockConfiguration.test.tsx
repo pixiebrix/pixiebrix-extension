@@ -33,21 +33,9 @@ import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type RegistryId } from "@/types/registryTypes";
-import { type MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-
-jest.mock("@/services/api", () => {
-  const actual = jest.requireActual("@/services/api");
-  return {
-    ...actual,
-    useGetMarketplaceListingsQuery: () => ({
-      data: {} as Record<RegistryId, MarketplaceListing>,
-    }),
-  };
-});
 
 beforeAll(() => {
   registerDefaultWidgets();

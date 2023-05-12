@@ -15,25 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import SidebarApp from "@/sidebar/SidebarApp";
-import { render } from "@testing-library/react";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
+import axios from "axios";
 
-jest.mock("@/hooks/useContextInvalidated", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+export async function getLinkedApiClient() {
+  return axios.create();
+}
 
-describe("SidebarApp", () => {
-  test("it renders", () => {
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
+export async function getApiClient() {
+  return axios.create();
+}
 
-  test("it renders error when context is invalidated", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(true);
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-});
+export async function maybeGetLinkedApiClient() {
+  return axios.create();
+}

@@ -31,45 +31,10 @@ import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type UnavailableRecipe } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import { configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "@/auth/authSlice";
-import settingsSlice from "@/store/settingsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { appApi } from "@/services/api";
-import pageEditorAnalysisManager from "@/pageEditor/analysisManager";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
-import { createRenderHookWithWrappers } from "@/testUtils/testHelpers";
 import { selectUnavailableRecipe } from "@/extensionConsole/pages/blueprints/useInstallables";
+import { renderHook } from "@/extensionConsole/testHelpers";
 
 const axiosMock = new MockAdapter(axios);
-
-// TODO: remove in/after and use testUtils https://github.com/pixiebrix/pixiebrix-extension/pull/5674
-const configureStoreForTests = () =>
-  configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
-      options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
-      recipes: recipesSlice.reducer,
-      [appApi.reducerPath]: appApi.reducer,
-    },
-    middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-      return getDefaultMiddleware()
-        .concat(appApi.middleware)
-        .concat(pageEditorAnalysisManager.middleware)
-        .concat(recipesMiddleware);
-      /* eslint-enable unicorn/prefer-spread */
-    },
-  });
-
-const renderHookWithWrappers = createRenderHookWithWrappers(
-  configureStoreForTests
-);
 
 describe("useInstallableViewItems", () => {
   beforeEach(() => {
@@ -79,18 +44,15 @@ describe("useInstallableViewItems", () => {
   it("creates entry for IExtension", async () => {
     const extension = extensionFactory() as ResolvedExtension;
 
-    const wrapper = renderHookWithWrappers(
-      () => useInstallableViewItems([extension]),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            extensionsSlice.actions.UNSAFE_setExtensions([
-              extension as unknown as PersistedExtension,
-            ])
-          );
-        },
-      }
-    );
+    const wrapper = renderHook(() => useInstallableViewItems([extension]), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.UNSAFE_setExtensions([
+            extension as unknown as PersistedExtension,
+          ])
+        );
+      },
+    });
 
     await wrapper.waitForEffect();
 
@@ -106,14 +68,11 @@ describe("useInstallableViewItems", () => {
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 
-    const wrapper = renderHookWithWrappers(
-      () => useInstallableViewItems([recipe]),
-      {
-        setupRedux(dispatch) {
-          dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
-        },
-      }
-    );
+    const wrapper = renderHook(() => useInstallableViewItems([recipe]), {
+      setupRedux(dispatch) {
+        dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
+      },
+    });
 
     await wrapper.waitForEffect();
 
@@ -132,7 +91,7 @@ describe("useInstallableViewItems", () => {
     const unavailableRecipe: UnavailableRecipe =
       selectUnavailableRecipe(extension);
 
-    const wrapper = renderHookWithWrappers(
+    const wrapper = renderHook(
       () => useInstallableViewItems([unavailableRecipe]),
       {
         setupRedux(dispatch) {

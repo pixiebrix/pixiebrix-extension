@@ -54,6 +54,7 @@ import {
   type Deployment,
   type MarketplaceListing,
   type MarketplaceTag,
+  type Me,
   type Milestone,
   type SanitizedAuth,
   type SanitizedAuthService,
@@ -85,7 +86,11 @@ import {
   type TemporaryPanelEntry,
 } from "@/sidebar/types";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type SafeString, type UUID } from "@/types/stringTypes";
+import {
+  type SafeString,
+  type Timestamp,
+  type UUID,
+} from "@/types/stringTypes";
 import {
   type IExtension,
   type PersistedExtension,
@@ -128,7 +133,7 @@ export const uuidSequence = (n: number) =>
 
 export const registryIdFactory = () => validateRegistryId(`test/${uuidv4()}`);
 
-const timestampFactory = () => new Date().toISOString();
+export const timestampFactory = () => new Date().toISOString() as Timestamp;
 
 export const organizationFactory = define<AuthUserOrganization>({
   id: uuidSequence,
@@ -141,6 +146,38 @@ export const organizationFactory = define<AuthUserOrganization>({
   },
   isDeploymentManager: false,
   hasComplianceAuthToken: false,
+});
+
+export const userOrganizationFactory = define<Me["organization"]>({
+  id: uuidSequence,
+  name(n: number): string {
+    return `Test Organization ${n}`;
+  },
+  scope(n: number): string {
+    return `@organization-${n}`;
+  },
+  control_room: null,
+  theme: null,
+});
+
+export const userFactory = define<Me>({
+  id: uuidSequence,
+  email: (n: number) => `user${n}@test.com`,
+  scope: (n: number) => `@user${n}`,
+  flags: () => [] as Me["flags"],
+  is_onboarded: true,
+  organization: null,
+  telemetry_organization: null,
+  organization_memberships: () => [] as Me["organization_memberships"],
+  group_memberships: () => [] as Me["group_memberships"],
+  milestones: () => [] as Me["milestones"],
+});
+
+export const partnerUserFactory = extend<Me, Me>(userFactory, {
+  partner: {
+    name: "Automation Anywhere",
+    theme: "automation-anywhere",
+  },
 });
 
 export const authStateFactory = define<AuthState>({

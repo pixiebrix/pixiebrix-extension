@@ -27,11 +27,6 @@ const logger = new ConsoleLogger({
   extensionId: uuidSequence(0),
 });
 
-jest.mock("@/utils/injectStylesheet", () => ({
-  default: jest.fn(),
-  __esModule: true,
-}));
-
 describe("AttachAutocomplete", () => {
   beforeEach(() => {
     document.body.innerHTML = `

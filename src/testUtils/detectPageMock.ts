@@ -15,25 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import SidebarApp from "@/sidebar/SidebarApp";
-import { render } from "@testing-library/react";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
+type ContextName =
+  | "contentScript"
+  | "background"
+  | "options"
+  | "devToolsPage"
+  | "extension"
+  | "web";
 
-jest.mock("@/hooks/useContextInvalidated", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+let _context: ContextName = "extension";
 
-describe("SidebarApp", () => {
-  test("it renders", () => {
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
+export function setContext(context: ContextName) {
+  _context = context;
+}
 
-  test("it renders error when context is invalidated", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(true);
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-});
+export function isChrome() {
+  return true;
+}
+
+export function isExtensionContext() {
+  return _context !== "web";
+}
+
+export function isOptionsPage() {
+  return _context === "options";
+}
+
+export function isDevToolsPage() {
+  return _context === "devToolsPage";
+}
+
+export function isBackground() {
+  return _context === "background";
+}
+
+export function isWeb() {
+  return _context === "web";
+}
+
+export function getContextName(): ContextName {
+  return _context;
+}

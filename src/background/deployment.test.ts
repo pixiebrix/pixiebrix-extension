@@ -46,10 +46,10 @@ import { type PersistedExtension } from "@/types/extensionTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { setContext } from "@/testUtils/detectPageMock";
 
+setContext("background");
 const axiosMock = new MockAdapter(axios);
-
-jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
 
 jest.mock("@/store/settingsStorage", () => ({
   getSettingsState: jest.fn(),
@@ -66,6 +66,7 @@ jest.mock("@/background/activeTab", () => ({
 
 jest.mock("webext-messenger");
 
+// Override manual mock to support `expect` assertions
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));
@@ -83,13 +84,6 @@ jest.mock("@/auth/token", () => ({
   }),
   isLinked: jest.fn().mockResolvedValue(true),
   async updateUserData() {},
-}));
-
-jest.mock("webext-detect-page", () => ({
-  isBackground: () => true,
-  isExtensionContext: () => true,
-  isDevToolsPage: () => false,
-  isContentScript: () => false,
 }));
 
 jest.mock("@/background/installer", () => ({

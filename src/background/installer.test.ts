@@ -42,16 +42,12 @@ jest.mock("@/background/locator", () => ({
 const createTabMock = browser.tabs.create as jest.Mock;
 const updateTabMock = browser.tabs.update as jest.Mock;
 const queryTabsMock = browser.tabs.query as jest.Mock;
-const getExtensionUrlMock = browser.runtime.getURL as jest.Mock;
 const isLinkedMock = auth.isLinked as jest.Mock;
 const getExtensionTokenMock = auth.getExtensionToken as jest.Mock;
 const getUserData = auth.getUserData as jest.Mock;
 const locateAllForServiceMock = locator.locateAllForService as jest.Mock;
 
 beforeEach(() => {
-  getExtensionUrlMock.mockImplementation(
-    (resource: string) => `chrome-extension://abc123/${resource}`
-  );
   jest.clearAllMocks();
 });
 
@@ -80,7 +76,7 @@ describe("openInstallPage", () => {
     ]);
     await openInstallPage();
     expect(updateTabMock).toHaveBeenCalledWith(1, {
-      url: "chrome-extension://abc123/options.html#/start?hostname=enterprise.com",
+      url: "chrome-extension://abcxyz/options.html#/start?hostname=enterprise.com",
       active: true,
     });
     expect(createTabMock.mock.calls.length).toBe(0);
@@ -167,7 +163,7 @@ describe("checkPartnerAuth", () => {
 
     expect(createTabMock.mock.calls.length).toBe(1);
     expect(createTabMock).toHaveBeenCalledWith({
-      url: "chrome-extension://abc123/options.html",
+      url: "chrome-extension://abcxyz/options.html",
     });
     expect(updateTabMock.mock.calls.length).toBe(0);
   });
@@ -193,7 +189,7 @@ describe("checkPartnerAuth", () => {
     expect(createTabMock.mock.calls.length).toBe(0);
     expect(updateTabMock.mock.calls.length).toBe(1);
     expect(updateTabMock).toHaveBeenCalledWith(1, {
-      url: "chrome-extension://abc123/options.html",
+      url: "chrome-extension://abcxyz/options.html",
       active: true,
     });
   });

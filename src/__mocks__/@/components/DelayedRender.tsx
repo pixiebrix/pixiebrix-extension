@@ -14,26 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React from "react";
-import SidebarApp from "@/sidebar/SidebarApp";
-import { render } from "@testing-library/react";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
 
-jest.mock("@/hooks/useContextInvalidated", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+/**
+ * A mock for DelayedRender, because otherwise you have to use jest fake timers in tests.
+ */
+const DelayedRender: React.FC = ({ children }) => (
+  // Unlike the real DelayedRender, this wraps in a div so that we can add a data-testid for testing
+  <div data-testid="DelayedRender">{children}</div>
+);
 
-describe("SidebarApp", () => {
-  test("it renders", () => {
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-
-  test("it renders error when context is invalidated", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(true);
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-});
+export default DelayedRender;

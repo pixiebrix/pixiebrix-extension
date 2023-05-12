@@ -304,6 +304,8 @@ export function setValueOnState<T>(
   state.isSuccess = true;
   state.error = undefined;
 
+  checkAsyncStateInvariants(state);
+
   return state;
 }
 
@@ -316,9 +318,11 @@ export function setErrorOnState<T>(
   state.isUninitialized = false;
   state.isLoading = false;
   state.isFetching = false;
-  state.isError = false;
-  state.isSuccess = true;
+  state.isSuccess = false;
+  state.isError = true;
   state.error = serializeError(error, { useToJSON: false });
+
+  checkAsyncStateInvariants(state);
 
   return state;
 }

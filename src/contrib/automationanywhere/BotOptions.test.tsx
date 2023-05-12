@@ -33,13 +33,6 @@ import { type IService } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
-
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({
     // Pass minimal arguments
