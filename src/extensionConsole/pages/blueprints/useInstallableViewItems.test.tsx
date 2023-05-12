@@ -18,11 +18,6 @@
 
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 import {
-  extensionFactory,
-  persistedExtensionFactory,
-  recipeFactory,
-} from "@/testUtils/factories";
-import {
   type PersistedExtension,
   type ResolvedExtension,
   selectSourceRecipeMetadata,
@@ -33,6 +28,11 @@ import axios from "axios";
 import { type UnavailableRecipe } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { selectUnavailableRecipe } from "@/extensionConsole/pages/blueprints/useInstallables";
 import { renderHook } from "@/extensionConsole/testHelpers";
+import {
+  extensionFactory,
+  persistedExtensionFactory,
+} from "@/testUtils/factories/extensionFactories";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 const axiosMock = new MockAdapter(axios);
 

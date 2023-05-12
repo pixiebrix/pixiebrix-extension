@@ -27,17 +27,17 @@ import ElementPreview, {
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import {
-  baseExtensionStateFactory,
-  blockConfigFactory,
-  formStateFactory,
-} from "@/testUtils/factories";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
+import {
+  baseExtensionStateFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 const renderElementPreview = (
   element: DocumentElement,

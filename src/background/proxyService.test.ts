@@ -24,7 +24,6 @@ import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
@@ -33,6 +32,7 @@ import {
   type SecretsConfig,
 } from "@/types/serviceTypes";
 import { setContext } from "@/testUtils/detectPageMock";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
 jest.unmock("@/services/apiClient");
 setContext("background");

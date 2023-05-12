@@ -15,14 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  blockConfigFactory,
-  formStateFactory,
-  installedRecipeMetadataFactory,
-  recipeFactory,
-  sanitizedServiceConfigurationFactory,
-  triggerFormStateFactory,
-} from "@/testUtils/factories";
 import VarAnalysis, {
   INVALID_VARIABLE_GENERIC_MESSAGE,
   VARIABLE_SHOULD_START_WITH_AT_MESSAGE,
@@ -53,6 +45,14 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { services } from "@/background/messenger/api";
+import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedServiceConfigurationFactory({

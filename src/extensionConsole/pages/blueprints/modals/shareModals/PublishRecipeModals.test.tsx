@@ -20,17 +20,17 @@ import { render } from "@/extensionConsole/testHelpers";
 import PublishRecipeModals from "./PublishRecipeModals";
 import { authSlice } from "@/auth/authSlice";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import {
-  authStateFactory,
-  recipeFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
+import {
+  recipeFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 let blueprint: RecipeDefinition;
 let auth: AuthState;

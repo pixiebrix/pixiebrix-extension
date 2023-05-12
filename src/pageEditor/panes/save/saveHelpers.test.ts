@@ -22,15 +22,6 @@ import {
   replaceRecipeExtension,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
-import {
-  extensionPointDefinitionFactory,
-  innerExtensionPointRecipeFactory,
-  versionedExtensionPointRecipeFactory,
-  extensionPointConfigFactory,
-  recipeFactory,
-  versionedRecipeWithResolvedExtensions,
-  extensionFactory,
-} from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
@@ -61,6 +52,15 @@ import {
 } from "@/types/recipeTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type EditablePackage } from "@/types/contract";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  extensionPointConfigFactory,
+  extensionPointDefinitionFactory,
+  innerExtensionPointRecipeFactory,
+  recipeFactory,
+  versionedExtensionPointRecipeFactory,
+  versionedRecipeWithResolvedExtensions,
+} from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/background/contextMenus");
 

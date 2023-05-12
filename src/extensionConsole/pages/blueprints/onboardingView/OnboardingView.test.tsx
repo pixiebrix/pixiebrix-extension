@@ -24,8 +24,9 @@ import DeploymentsContext, {
   type DeploymentsState,
 } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
-import { organizationFactory } from "@/testUtils/factories";
 import { renderHook } from "@/extensionConsole/testHelpers";
+
+import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/recipes/recipesHooks", () => ({
@@ -43,7 +44,7 @@ const mockOnboarding = ({
 } = {}) => {
   appApiMock
     .onGet("/api/organizations/")
-    .reply(200, [hasOrganization ? [organizationFactory()] : []]);
+    .reply(200, [hasOrganization ? [organizationStateFactory()] : []]);
 
   mockAllApiEndpoints();
 

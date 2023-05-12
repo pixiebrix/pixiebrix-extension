@@ -20,9 +20,12 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/runtime/mapArgs";
-import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { getPipelineMap } from "./editHelpers";
+import {
+  blockConfigFactory,
+  pipelineFactory,
+} from "@/testUtils/factories/blockFactories";
 
 describe("getPipelineMap", () => {
   test("should map plain pipeline", () => {

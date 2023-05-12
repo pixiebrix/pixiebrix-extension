@@ -16,13 +16,6 @@
  */
 
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
-import {
-  deploymentFactory,
-  extensionFactory,
-  extensionPointDefinitionFactory,
-  installedRecipeMetadataFactory,
-  sharingDefinitionFactory,
-} from "@/testUtils/factories";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -47,6 +40,14 @@ import { type Timestamp } from "@/types/stringTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { setContext } from "@/testUtils/detectPageMock";
+import {
+  extensionFactory,
+  installedRecipeMetadataFactory,
+} from "@/testUtils/factories/extensionFactories";
+import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+
+import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 
 setContext("background");
 const axiosMock = new MockAdapter(axios);

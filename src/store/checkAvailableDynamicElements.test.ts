@@ -18,7 +18,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
@@ -30,6 +29,7 @@ import { type PageTarget } from "webext-messenger";
 import { type Availability } from "@/blocks/types";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   checkAvailable: jest.fn(),

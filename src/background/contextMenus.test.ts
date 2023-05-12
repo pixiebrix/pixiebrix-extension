@@ -19,10 +19,6 @@ import {
   preloadContextMenus,
   ensureContextMenu,
 } from "@/background/contextMenus";
-import {
-  extensionFactory,
-  extensionPointDefinitionFactory,
-} from "@/testUtils/factories";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
   type ContextMenuConfig,
@@ -34,6 +30,8 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type IExtension } from "@/types/extensionTypes";
 import chromeP from "webext-polyfill-kinda";
 import { setContext } from "@/testUtils/detectPageMock";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 setContext("background");
 

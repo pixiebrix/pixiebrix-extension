@@ -19,15 +19,15 @@ import React from "react";
 import ConnectedSidebar from "@/sidebar/ConnectedSidebar";
 import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
-import {
-  authStateFactory,
-  partnerUserFactory,
-  userFactory,
-} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import useLinkState from "@/auth/useLinkState";
+import {
+  authStateFactory,
+  partnerUserFactory,
+  userFactory,
+} from "@/testUtils/factories/authFactories";
 
 jest.mock("@/auth/useLinkState", () => ({
   __esModule: true,

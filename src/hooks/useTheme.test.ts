@@ -18,16 +18,16 @@
 import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
+import settingsSlice from "@/store/settingsSlice";
+import { uuidv4 } from "@/types/helpers";
+import { authSlice } from "@/auth/authSlice";
 import {
   authStateFactory,
   partnerUserFactory,
   userFactory,
   userOrganizationFactory,
-} from "@/testUtils/factories";
-import { renderHook } from "@/testUtils/renderWithCommonStore";
-import settingsSlice from "@/store/settingsSlice";
-import { uuidv4 } from "@/types/helpers";
-import { authSlice } from "@/auth/authSlice";
+} from "@/testUtils/factories/authFactories";
 
 describe("useGetTheme", () => {
   test("has no partner", () => {

@@ -17,13 +17,6 @@
 
 import React from "react";
 import { useRequiredRecipe } from "@/recipes/recipesHooks";
-import {
-  getRecipeWithBuiltInServiceAuths,
-  marketplaceListingFactory,
-  recipeDefinitionFactory,
-  recipeToMarketplacePackage,
-  sidebarEntryFactory,
-} from "@/testUtils/factories";
 import { render } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -37,6 +30,15 @@ import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
+import {
+  getRecipeWithBuiltInServiceAuths,
+  recipeDefinitionFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import {
+  marketplaceListingFactory,
+  recipeToMarketplacePackage,
+} from "@/testUtils/factories/marketplaceFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRequiredRecipe: jest.fn(),

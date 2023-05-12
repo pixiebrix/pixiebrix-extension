@@ -16,16 +16,14 @@
  */
 
 import React from "react";
-import {
-  authStateFactory,
-  extensionFactory,
-  formStateFactory,
-} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/pageEditor/extensionPoints/adapter", () => {
   const actual = jest.requireActual("@/pageEditor/extensionPoints/adapter");

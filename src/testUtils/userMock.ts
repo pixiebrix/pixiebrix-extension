@@ -21,7 +21,8 @@ import {
   queryLoadingFactory,
   querySuccessFactory,
 } from "@/testUtils/rtkQueryFactories";
-import { userFactory } from "@/testUtils/factories";
+
+import { userFactory } from "@/testUtils/factories/authFactories";
 
 // Instead of monkey-patching RTK Query's Redux State, we might want to instead encourage using setupRedux
 // in the render helper?

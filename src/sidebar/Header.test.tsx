@@ -20,7 +20,11 @@ import { screen } from "@testing-library/react";
 import { render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
 import { mockCachedUser } from "@/testUtils/userMock";
-import { userFactory, userOrganizationFactory } from "@/testUtils/factories";
+
+import {
+  userFactory,
+  userOrganizationFactory,
+} from "@/testUtils/factories/authFactories";
 
 beforeEach(() => {
   jest.clearAllMocks();

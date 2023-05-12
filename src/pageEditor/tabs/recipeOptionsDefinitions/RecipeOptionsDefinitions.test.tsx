@@ -22,9 +22,9 @@ import RecipeOptionsDefinition from "@/pageEditor/tabs/recipeOptionsDefinitions/
 import { waitForEffect } from "@/testUtils/testHelpers";
 import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
-import { recipeDefinitionFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({
