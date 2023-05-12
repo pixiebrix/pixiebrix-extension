@@ -464,9 +464,9 @@ function findTemplate(element: HTMLElement, templates: SelectorTemplate[]) {
       };
     }
 
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
     const closestAncestorElement = $(element)
       .closest(`:has(${extractRule})`)
+      // eslint-disable-next-line -- jQuery false positive
       .find(extractRule);
 
     return {
