@@ -20,8 +20,8 @@ import { renderHook } from "@/testUtils/renderWithCommonStore";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { userFactory } from "@/testUtils/factories";
 import { selectExtensionAuthState } from "@/auth/authUtils";
+import { userFactory } from "@/testUtils/factories/apiFactories";
 
 const renderUseMilestones = (milestones: AuthState["milestones"]) => {
   const user = userFactory({

@@ -21,7 +21,6 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";
@@ -31,6 +30,7 @@ import { type Availability } from "@/blocks/types";
 import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { produce } from "immer";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   checkAvailable: jest.fn(),

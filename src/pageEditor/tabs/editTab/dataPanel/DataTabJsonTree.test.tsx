@@ -17,7 +17,6 @@
 
 import React from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { formStateFactory } from "@/testUtils/factories";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
@@ -26,6 +25,7 @@ import { type RenderCountField } from "@/vendors/reactPerformanceTesting/perfTyp
 import { act } from "@testing-library/react";
 import { render } from "@/pageEditor/testHelpers";
 import * as sinonTimers from "@sinonjs/fake-timers";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 const data = {
   name: "test",

@@ -17,9 +17,10 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories";
 import { type BlockOptions } from "@/types/runtimeTypes";
 import { DetectElement } from "@/blocks/transformers/detect";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const brick = new DetectElement();
 

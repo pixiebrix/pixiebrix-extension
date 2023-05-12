@@ -18,11 +18,6 @@
 import { readReduxStorage, setReduxStorage } from "@/chrome";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { initialState } from "@/pageEditor/slices/editorSlice";
-import {
-  formStateFactory,
-  installedRecipeMetadataFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { type UUID } from "@/types/stringTypes";
 import { type NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
@@ -33,6 +28,10 @@ import {
   saveEditorState,
 } from "@/store/dynamicElementStorage";
 import { validateRegistryId } from "@/types/helpers";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/chrome", () => ({
   readReduxStorage: jest.fn(),

@@ -16,11 +16,6 @@
  */
 
 import {
-  extensionFactory,
-  recipeDefinitionFactory,
-  sharingDefinitionFactory,
-} from "@/testUtils/factories";
-import {
   getSharingType,
   isExtension,
   isUnavailableRecipe,
@@ -32,6 +27,9 @@ import {
   type UnavailableRecipe,
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("getSharingType", () => {
   test("personal extension", () => {

@@ -27,15 +27,6 @@ import {
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  marketplaceListingFactory,
-  marketplaceTagFactory,
-  partnerUserFactory,
-  triggerFormStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import {
@@ -69,6 +60,18 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { array } from "cooky-cutter";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { mockCachedUser } from "@/testUtils/userMock";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { partnerUserFactory } from "@/testUtils/factories/apiFactories";
+import {
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import {
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+} from "@/testUtils/factories/marketplaceFactories";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 

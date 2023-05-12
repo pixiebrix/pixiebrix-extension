@@ -16,13 +16,13 @@
  */
 
 import { getCurrentURL } from "@/pageEditor/utils";
-import { formStateFactory } from "@/testUtils/factories";
 import { render, screen } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
   collectExtensionPermissions: jest.fn().mockResolvedValue({}),

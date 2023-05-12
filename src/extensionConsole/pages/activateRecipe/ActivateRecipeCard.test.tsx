@@ -18,11 +18,6 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import ActivateRecipeCard from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard";
-import {
-  extensionPointConfigFactory,
-  recipeDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -35,6 +30,11 @@ import { useGetRecipeQuery } from "@/services/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
 import { type RecipeResponse } from "@/types/contract";
+import {
+  extensionPointConfigFactory,
+  recipeDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
 
 registerDefaultWidgets();
 

@@ -20,9 +20,9 @@ import { type BlockPosition, type BlockPipeline } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { blockConfigFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 function getTestBlock() {
   return blockConfigFactory({

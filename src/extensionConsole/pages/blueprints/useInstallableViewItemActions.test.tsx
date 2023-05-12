@@ -18,11 +18,6 @@
 
 /// <reference types="jest-extended" />
 
-import {
-  cloudExtensionFactory,
-  extensionFactory,
-  recipeFactory,
-} from "@/testUtils/factories";
 import useInstallableViewItemActions, {
   type InstallableViewItemActions,
 } from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
@@ -40,6 +35,11 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type IExtension } from "@/types/extensionTypes";
+import {
+  cloudExtensionFactory,
+  extensionFactory,
+} from "@/testUtils/factories/extensionFactories";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/extensionConsole/pages/blueprints/useInstallablePermissions", () =>

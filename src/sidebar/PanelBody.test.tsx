@@ -24,8 +24,9 @@ import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { registryIdFactory } from "@/testUtils/factories";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 const extensionId = uuidv4();
 const blueprintId = registryIdFactory();

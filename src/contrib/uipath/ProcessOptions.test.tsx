@@ -19,7 +19,6 @@ import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
@@ -33,6 +32,7 @@ import { type IService } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 setContext("devToolsPage");
 

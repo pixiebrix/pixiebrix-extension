@@ -20,10 +20,10 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "./base";
-import { extensionPointDefinitionFactory } from "@/testUtils/factories";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { validateRegistryId } from "@/types/helpers";
+import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {

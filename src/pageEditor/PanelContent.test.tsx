@@ -24,7 +24,8 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { formStateFactory } from "@/testUtils/factories";
+
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // This mock is required because of coupling between useTheme and Options store, which is problematic to mock
 // EditorLayout -> Modals -> AddBlockModal -> useGetTheme -> persistor -> @/store/optionsStore

@@ -23,7 +23,10 @@ import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
-import { authStateFactory, organizationFactory } from "@/testUtils/factories";
+import {
+  authStateFactory,
+  organizationFactory,
+} from "@/testUtils/factories/authFactories";
 
 const editorRoles = new Set<number>([
   UserRole.admin,

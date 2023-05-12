@@ -24,7 +24,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { uuidSequence } from "@/testUtils/factories";
 import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/blocks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
@@ -37,6 +36,8 @@ import { type BlockPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/runtime/reducePipeline", () => ({
   reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),

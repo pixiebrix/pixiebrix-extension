@@ -25,14 +25,6 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
-import {
-  extensionFactory,
-  extensionPointConfigFactory,
-  getRecipeWithBuiltInServiceAuths,
-  organizationFactory,
-  recipeFactory,
-  sanitizedAuthFactory,
-} from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type IExtension,
@@ -41,6 +33,14 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
+import { sanitizedAuthFactory } from "@/testUtils/factories/apiFactories";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  extensionPointConfigFactory,
+  getRecipeWithBuiltInServiceAuths,
+  recipeFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { organizationFactory } from "@/testUtils/factories/authFactories";
 
 const axiosMock = new MockAdapter(axios);
 

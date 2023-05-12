@@ -24,9 +24,9 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
 import * as localRegistry from "@/registry/localRegistry";
 import pDefer from "p-defer";
-import { recipeDefinitionFactory } from "@/testUtils/factories";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),

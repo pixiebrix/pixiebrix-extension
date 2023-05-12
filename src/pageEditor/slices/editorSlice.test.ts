@@ -22,11 +22,6 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
-  blockConfigFactory,
-  formStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
-import {
   type EditorRootState,
   type EditorState,
 } from "@/pageEditor/pageEditorTypes";
@@ -40,6 +35,10 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBlockConfig } from "@/blocks/util";
 import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 function getTabState(
   state: EditorState,

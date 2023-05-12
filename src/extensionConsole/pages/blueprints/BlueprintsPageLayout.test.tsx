@@ -21,16 +21,16 @@ import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/Blueprints
 import { type Installable } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
-import {
-  authStateFactory,
-  userFactory,
-  userOrganizationFactory,
-} from "@/testUtils/factories";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
 import userEvent from "@testing-library/user-event";
 import { authSlice } from "@/auth/authSlice";
 import { mockCachedUser, mockLoadingUser } from "@/testUtils/userMock";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
+import {
+  userFactory,
+  userOrganizationFactory,
+} from "@/testUtils/factories/apiFactories";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest

@@ -20,7 +20,6 @@ import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { uuidSequence } from "@/testUtils/factories";
 import { type BlockPipeline } from "@/blocks/types";
 import {
   type TourConfig,
@@ -34,6 +33,8 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import defaultActions from "@/components/quickBar/defaultActions";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const rootReader = new RootReader();
 

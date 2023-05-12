@@ -21,10 +21,10 @@ import {
   syncPackages,
   find,
 } from "@/registry/localRegistry";
-import { recipeDefinitionFactory } from "@/testUtils/factories";
 import { produce } from "immer";
 import { type SemVerString } from "@/types/registryTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("localRegistry", () => {
   beforeEach(() => {

@@ -22,12 +22,6 @@ import { type DocumentElement } from "@/components/documentBuilder/documentBuild
 import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  uuidSequence,
-  baseExtensionStateFactory,
-} from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -35,6 +29,13 @@ import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  baseExtensionStateFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();

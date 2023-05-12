@@ -24,7 +24,8 @@ import {
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { uuidv4 } from "@/types/helpers";
 import { CancelError } from "@/errors/businessErrors";
-import { sidebarEntryFactory } from "@/testUtils/factories";
+
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 describe("temporaryPanelProtocol", () => {
   it("getPanelDefinition if panel is not defined", async () => {

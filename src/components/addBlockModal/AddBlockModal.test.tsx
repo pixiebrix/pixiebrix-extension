@@ -16,11 +16,6 @@
  */
 
 import React from "react";
-import {
-  formStateFactory,
-  marketplaceListingFactory,
-  marketplaceTagFactory,
-} from "@/testUtils/factories";
 import { render, screen } from "@/pageEditor/testHelpers";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -32,6 +27,12 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import blocksRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+
+import {
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+} from "@/testUtils/factories/marketplaceFactories";
 
 // Need at least one item so callers see the registry as initialized
 blocksRegistry.register([echoBlock]);

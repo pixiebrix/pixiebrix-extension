@@ -16,12 +16,10 @@
  */
 
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
-import {
-  blockConfigFactory,
-  triggerFormStateFactory,
-} from "@/testUtils/factories";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 const containsMock = browser.permissions.contains as jest.MockedFunction<

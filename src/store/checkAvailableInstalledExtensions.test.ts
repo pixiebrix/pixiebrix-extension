@@ -18,11 +18,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import {
-  cloudExtensionFactory,
-  extensionPointDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
@@ -39,6 +34,11 @@ import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
 } from "@/extensionPoints/quickBarExtension";
+import {
+  extensionPointDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getInstalledExtensionPoints: jest.fn(),

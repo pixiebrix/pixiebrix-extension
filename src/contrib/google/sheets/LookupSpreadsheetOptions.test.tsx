@@ -27,15 +27,14 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import {
-  sanitizedServiceConfigurationFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { services, sheets } from "@/background/messenger/api";
 import {
   isGoogleInitialized,
   isGoogleSupported,
 } from "@/contrib/google/initGoogle";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");

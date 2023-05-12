@@ -18,16 +18,18 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import extensionsSlice from "@/store/extensionsSlice";
-import {
-  cloudExtensionFactory,
-  persistedExtensionFactory,
-  recipeDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { validateTimestamp } from "@/types/helpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
+import {
+  cloudExtensionFactory,
+  persistedExtensionFactory,
+} from "@/testUtils/factories/extensionFactories";
+import {
+  recipeDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
