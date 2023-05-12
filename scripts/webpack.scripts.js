@@ -34,6 +34,8 @@ module.exports = mergeWithShared({
     "webextension-polyfill": "{}",
     rollbar: "{init(){}}",
     "@/vendors/hoverintent/hoverintent": "{}",
+    // Nunjucks is not needed for headers generation, but causes errors when imported
+    nunjucks: "{}",
   },
   resolve: {
     // Mock any modules that appear in __mocks__
