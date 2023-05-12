@@ -970,6 +970,7 @@ export const siteSelectorHintFactory = define<SiteSelectorHint>({
   siteValidator: () => false,
   badPatterns: [],
   uniqueAttributes: [],
+  selectorTemplates: [],
   stableAnchors: [],
   requiredSelectors: [],
 });

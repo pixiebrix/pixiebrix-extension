@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, identity, intersection, sortBy, uniq } from "lodash";
+import {
+  compact,
+  identity,
+  intersection,
+  mapValues,
+  sortBy,
+  uniq,
+} from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { type CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
@@ -27,12 +34,14 @@ import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 import {
   getSiteSelectorHint,
   SELECTOR_HINTS,
+  type SelectorTemplate,
   type SiteSelectorHint,
 } from "@/utils/inference/siteSelectorHints";
 import { type ElementInfo } from "@/pageScript/frameworks";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { type Framework } from "@/pageScript/messenger/constants";
 import * as pageScript from "@/pageScript/messenger/api";
+import { renderString } from "nunjucks";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -428,19 +437,67 @@ function findAncestorsWithIdLikeSelectors(
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
 }
 
-export function getRequiredSelectors(element: HTMLElement) {
-  const siteSelectorHint = getSiteSelectorHint(element);
+function getElementAttributes(element: HTMLElement) {
+  const attributes: Record<string, string> = {};
+
+  $.each(element.attributes, function () {
+    attributes[this.name] = this.value;
+  });
+
+  return attributes;
+}
+
+function findTemplate(element: HTMLElement, templates: SelectorTemplate[]) {
+  const template = templates.find((template) =>
+    element.matches(template.selector)
+  );
+
+  if (!template) {
+    return;
+  }
+
+  const extractedValues = mapValues(template.extract, (extractRule) => {
+    const closestParent = $(element).closest(extractRule);
+    if (closestParent.length > 0) {
+      return {
+        text: closestParent.text(),
+      };
+    }
+
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
+    const closestAncestorElement = $(element)
+      .closest(`:has(${extractRule})`)
+      .find(extractRule);
+
+    return {
+      text: closestAncestorElement.text(),
+      attr: getElementAttributes(closestAncestorElement[0]),
+    };
+  });
+
+  return renderString(template.template, extractedValues);
+}
+
+function getMatchingRequiredSelectors(
+  element: HTMLElement,
+  requiredSelectors: string[]
+) {
+  return requiredSelectors.find((selector) => element.matches(selector));
+}
+
+function mapSelectorOverrideToAncestors(element: HTMLElement) {
+  const { requiredSelectors, selectorTemplates } = getSiteSelectorHint(element);
 
   const ancestors = $(element).parents().get();
 
   return ancestors
     .map((ancestor) => ({
-      selector: siteSelectorHint.requiredSelectors.find((selector) =>
-        ancestor.matches(selector)
-      ),
       element: ancestor,
+      selectorOverride:
+        findTemplate(ancestor, selectorTemplates) ??
+        getMatchingRequiredSelectors(ancestor, requiredSelectors),
     }))
-    .filter(({ selector }) => selector != null);
+    .filter(({ selectorOverride }) => selectorOverride != null);
 }
 
 export function inferSelectorsIncludingStableAncestors(
@@ -528,7 +585,6 @@ export async function inferElementSelector({
   framework?: Framework;
   traverseUp: number;
 }): Promise<ElementInfo> {
-  console.log({ elements });
   const selector = safeCssSelector(elements, {
     excludeRandomClasses,
   });
@@ -548,32 +604,26 @@ export async function inferElementSelector({
 
   const element = findSingleElement(selector);
 
-  // Get array selectors that match the element's parents mapped with the element
-  const requiredElementSelectors = getRequiredSelectors(element);
+  const selectorOverrideMap = mapSelectorOverrideToAncestors(element);
 
-  // Pull the selectors from the array
-  const requiredSelectors = requiredElementSelectors.map(
-    ({ selector }) => selector
-  );
+  const rootOverride =
+    selectorOverrideMap.length > 0 ? selectorOverrideMap[0].element : root;
 
-  // If any required selectors exist, get the closest parent from them to use
-  // as the new root
-  const requiredSelectorRoot =
-    requiredElementSelectors.length > 0
-      ? requiredElementSelectors[0].element
-      : root;
-
-  const selectorWithRequiredRoot = safeCssSelector(elements, {
-    root: requiredSelectorRoot,
+  const selectorWithRootOverride = safeCssSelector(elements, {
+    root: rootOverride,
     excludeRandomClasses,
   });
+
+  const overrideSelectorStrings = selectorOverrideMap
+    .map(({ selectorOverride }) => selectorOverride)
+    .reverse();
 
   // Prepend all the selectors with the required selectors
   const inferredSelectors = uniq(
     [
-      selectorWithRequiredRoot,
-      ...inferSelectorsIncludingStableAncestors(element, requiredSelectorRoot),
-    ].map((selector) => [...requiredSelectors, selector].join(" "))
+      selectorWithRootOverride,
+      ...inferSelectorsIncludingStableAncestors(element, rootOverride),
+    ].map((selector) => [...overrideSelectorStrings, selector].join(" "))
   );
 
   return {

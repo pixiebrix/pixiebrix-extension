@@ -18,6 +18,12 @@
 import { type CssSelectorMatch } from "css-selector-generator/types/types";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInference";
 
+export interface SelectorTemplate {
+  template: string;
+  selector: string;
+  extract: Record<string, string>;
+}
+
 export type SiteSelectorHint = {
   /**
    * Name for the rule hint-set.
@@ -33,6 +39,7 @@ export type SiteSelectorHint = {
    * tabs/workspaces, e.g., Salesforce and Zendesk.
    */
   requiredSelectors: string[];
+  selectorTemplates: SelectorTemplate[];
   stableAnchors: CssSelectorMatch[];
   uniqueAttributes: string[];
 };
@@ -60,6 +67,16 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
       /^\[name='leftsidebar'] */,
     ],
     requiredSelectors: ['[role="main"]>.active'],
+    selectorTemplates: [
+      {
+        template:
+          ".slds-form-element:has(.test-id__field-label:contains({{ label.text }}))",
+        selector: ".slds-form-element:has(.test-id__field-label)",
+        extract: {
+          label: ".test-id__field-label",
+        },
+      },
+    ],
     stableAnchors: [
       ".active",
       ".consoleRelatedRecord",
@@ -79,6 +96,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
       $(element).closest("[data-test-hint]").length > 0,
     badPatterns: [],
     requiredSelectors: [".grandparent>.parent"],
+    selectorTemplates: [],
     stableAnchors: [],
     uniqueAttributes: [],
   },
@@ -95,6 +113,7 @@ export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
       siteValidator: () => false,
       badPatterns: [],
       uniqueAttributes: [],
+      selectorTemplates: [],
       stableAnchors: [],
       requiredSelectors: [],
     }
