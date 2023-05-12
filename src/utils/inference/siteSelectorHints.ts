@@ -70,7 +70,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     selectorTemplates: [
       {
         template:
-          ".slds-form-element:has(.test-id__field-label:contains({{ label.text }}))",
+          '.slds-form-element:has(.test-id__field-label:contains("{{ label.text }}"))',
         selector: ".slds-form-element:has(.test-id__field-label)",
         extract: {
           label: ".test-id__field-label",
