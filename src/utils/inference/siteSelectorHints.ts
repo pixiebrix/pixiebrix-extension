@@ -96,7 +96,15 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
       $(element).closest("[data-test-hint]").length > 0,
     badPatterns: [],
     requiredSelectors: [".grandparent>.parent"],
-    selectorTemplates: [],
+    selectorTemplates: [
+      {
+        template: '.customSelectorWithLabel("{{ label.text }}")',
+        selector: ".container",
+        extract: {
+          label: ".testLabel",
+        },
+      },
+    ],
     stableAnchors: [],
     uniqueAttributes: [],
   },

@@ -617,10 +617,11 @@ describe("inferElementSelector", () => {
       tagName: "DIV",
     });
   });
+
   test("requiredSelector should override other inferred selectors", async () => {
     // The siteSelectorHints include a special test if the [data-test-hint] attribute is visible
     const body = html`
-      <div id="grandparent" class="grandparent" data-test-hint="1">
+      <div id="grandparent" class="grandparent" data-test-hint="true">
         <div class="parent" role="main">
           <div id="test"></div>
         </div>
@@ -641,6 +642,38 @@ describe("inferElementSelector", () => {
       hasData: false,
       parent: null,
       selectors: [".grandparent>.parent #test", ".grandparent>.parent div"],
+      tagName: "DIV",
+    });
+  });
+
+  test("selector template", async () => {
+    // The siteSelectorHints include a special test if the [data-test-hint] attribute is visible
+    const body = html`
+      <div data-test-hint="true">
+        <div class="container">
+          <span class="testLabel">test label</span>
+          <div id="test"></div>
+        </div>
+      </div>
+    `;
+    document.body.innerHTML = body;
+
+    const element = document.body.querySelector<HTMLElement>("#test");
+    expect(
+      await inferElementSelector({
+        elements: [element],
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      selectors: [
+        '.customSelectorWithLabel("test label") #test',
+        '.customSelectorWithLabel("test label") div',
+      ],
       tagName: "DIV",
     });
   });
