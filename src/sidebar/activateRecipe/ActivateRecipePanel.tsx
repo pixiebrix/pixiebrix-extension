@@ -37,12 +37,15 @@ import { Button } from "react-bootstrap";
 import useActivateRecipe from "@/activation/useActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import useWizard from "@/activation/useWizard";
+import useActivateRecipeWizard, {
+  type UseActivateRecipeWizardResult,
+} from "@/activation/useActivateRecipeWizard";
 import RequireRecipe, {
   type RecipeState,
 } from "@/sidebar/activateRecipe/RequireRecipe";
 import { persistor } from "@/sidebar/store";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 const { actions } = sidebarSlice;
 
@@ -172,12 +175,16 @@ const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
   return <div>Go try it out now, or activate another mod.</div>;
 };
 
-const ActivateRecipePanelContent: React.FC<RecipeState> = ({
+const ActivateRecipePanelContent: React.FC<
+  RecipeState & UseActivateRecipeWizardResult
+> = ({
   recipe,
   recipeNameNode,
   includesQuickBar,
   requiresConfiguration,
-  defaultAuthOptions,
+  wizardSteps,
+  initialValues,
+  validationSchema,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useActivateRecipe("marketplace");
@@ -192,11 +199,6 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     const topFrame = await getTopLevelFrame();
     void hideSidebar(topFrame);
   }
-
-  const [wizardSteps, initialValues, validationSchema] = useWizard(
-    recipe,
-    defaultAuthOptions
-  );
 
   const formValuesRef = useRef<WizardValues>(initialValues);
 
@@ -251,12 +253,14 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);
 
-  // Trigger auto-activation if the recipe does not require permissions
+  // Trigger auto-activation if the recipe does not require permissions or user
+  // configuration, and there's no error
   useEffect(() => {
     if (
       state.needsPermissions != null &&
       !state.needsPermissions &&
-      !requiresConfiguration
+      !requiresConfiguration &&
+      !state.activationError
     ) {
       // State is checked inside activateRecipe to prevent double-activation
       void activateRecipe();
@@ -266,6 +270,7 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
     activateRecipe,
     requiresConfiguration,
     state.needsPermissions,
+    state.activationError,
   ]);
 
   // Show loader if panel is determining if it can auto-activate, or if it's activating.
@@ -323,11 +328,25 @@ const ActivateRecipePanelContent: React.FC<RecipeState> = ({
   );
 };
 
+const ActivateRecipeWizardPanel: React.FC<RecipeState> = (recipeState) => {
+  const wizardState = useActivateRecipeWizard(
+    recipeState.recipe,
+    recipeState.defaultAuthOptions
+  );
+  return (
+    <AsyncStateGate state={wizardState}>
+      {({ data: wizardResult }) => (
+        <ActivateRecipePanelContent {...recipeState} {...wizardResult} />
+      )}
+    </AsyncStateGate>
+  );
+};
+
 const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
   recipeId,
 }) => (
   <RequireRecipe recipeId={recipeId}>
-    {(recipeState) => <ActivateRecipePanelContent {...recipeState} />}
+    {(recipeState) => <ActivateRecipeWizardPanel {...recipeState} />}
   </RequireRecipe>
 );
 

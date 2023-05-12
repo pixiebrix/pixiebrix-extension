@@ -31,6 +31,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { useGetRecipeQuery } from "@/services/api";
 import { type RecipeDefinition } from "@/types/recipeTypes";
+import { querySuccessFactory } from "@/testUtils/rtkQueryFactories";
 
 registerDefaultWidgets();
 
@@ -48,25 +49,16 @@ jest.mock("@/activation/useActivateRecipe.ts", () => ({
 }));
 
 jest.mock("@/services/api", () => ({
-  useGetDatabasesQuery: jest.fn(() => ({
-    data: [],
-  })),
-  useGetOrganizationsQuery: jest.fn(() => ({
-    data: [],
-  })),
+  useGetDatabasesQuery: jest.fn(() => querySuccessFactory([])),
+  useGetOrganizationsQuery: jest.fn(() => querySuccessFactory([])),
   useCreateDatabaseMutation: jest.fn(() => [jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn(() => [jest.fn()]),
-  useGetRecipeQuery: jest.fn(() => ({
-    data: null,
-  })),
+  useGetRecipeQuery: jest.fn(() => querySuccessFactory([])),
   useCreateMilestoneMutation: jest.fn(() => [jest.fn()]),
   appApi: {
     useLazyGetMeQuery: jest.fn(() => [
       jest.fn(),
-      {
-        data: Object.freeze({}),
-        isLoading: false,
-      },
+      querySuccessFactory(Object.freeze({})),
     ]),
   },
 }));
@@ -79,9 +71,7 @@ jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
 global.chrome.commands.getAll = jest.fn();
 
 function setupRecipe(recipe: RecipeDefinition) {
-  jest
-    .mocked(useGetRecipeQuery)
-    .mockReturnValue({ data: recipe, refetch: jest.fn() });
+  jest.mocked(useGetRecipeQuery).mockReturnValue(querySuccessFactory(recipe));
 }
 
 beforeEach(() => {

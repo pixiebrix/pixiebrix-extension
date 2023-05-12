@@ -20,17 +20,17 @@ import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import useFetch from "@/hooks/useFetch";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { useGetZapierKeyQuery } from "@/services/api";
 
 interface OwnProps {
   onClose: () => void;
 }
 
 const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
-  const { data } = useFetch<{ api_key: string }>("/api/webhooks/key/");
+  const { data } = useGetZapierKeyQuery();
 
   const handleCopy = useCallback(async () => {
     await writeTextToClipboard(String(data?.api_key));

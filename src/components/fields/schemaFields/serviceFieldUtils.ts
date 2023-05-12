@@ -17,6 +17,7 @@
 
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
+  isDeferExpression,
   isExpression,
   isPipelineExpression,
   isVarExpression,
@@ -35,6 +36,7 @@ export type ServiceSlice = Pick<FormState, "services" | "extension">;
  */
 const SERVICE_VAR_REGEX = /^@\w+$/;
 
+// TODO: rewrite using PipelineExpressionVisitor
 function deepFindServiceVariables(obj: unknown, variables: Set<string>) {
   if (typeof obj !== "object" || obj == null) {
     return;
@@ -48,6 +50,7 @@ function deepFindServiceVariables(obj: unknown, variables: Set<string>) {
     return;
   }
 
+  // Don't need to handle Nunjucks/Text Template expressions, because they should never reference services
   if (isVarExpression(obj)) {
     if (SERVICE_VAR_REGEX.test(obj.__value__)) {
       variables.add(obj.__value__);
@@ -56,7 +59,7 @@ function deepFindServiceVariables(obj: unknown, variables: Set<string>) {
     return;
   }
 
-  if (isPipelineExpression(obj)) {
+  if (isPipelineExpression(obj) || isDeferExpression(obj)) {
     deepFindServiceVariables(obj.__value__, variables);
   }
 }

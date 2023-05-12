@@ -55,25 +55,12 @@ const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: jest.fn(),
-  useGetDatabasesQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoadingDatabases: false,
-  }),
-  useGetOrganizationsQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoadingOrganizations: false,
-  }),
+  useGetDatabasesQuery: jest.fn(() => querySuccessFactory([])),
+  useGetOrganizationsQuery: jest.fn(() => querySuccessFactory([])),
   useCreateDatabaseMutation: jest.fn().mockReturnValue([jest.fn()]),
   useAddDatabaseToGroupMutation: jest.fn().mockReturnValue([jest.fn()]),
-  useGetServiceAuthsQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoading: false,
-    isFetching: false,
-  }),
-  useGetServicesQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoading: false,
-  }),
+  useGetServiceAuthsQuery: jest.fn(() => querySuccessFactory([])),
+  useGetServicesQuery: jest.fn(() => querySuccessFactory([])),
   appApi: {
     reducerPath: "appApi",
     endpoints: {
@@ -208,6 +195,18 @@ describe("ActivateRecipePanel", () => {
 
   it("activates basic recipe automatically and renders well-done page", async () => {
     const rendered = setupMocksAndRender();
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("activates basic recipe with empty options structure automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: {},
+      },
+    });
 
     await waitForEffect();
 

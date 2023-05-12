@@ -71,8 +71,11 @@ const RecipeOptionsValuesContent: React.FC = () => {
     return recipe?.options ?? EMPTY_RECIPE_OPTIONS_DEFINITION;
   }, [dirtyRecipeOptions, recipe?.options]);
 
-  const [validationSchema, isLoadingSchema, schemaError] =
-    useAsyncRecipeOptionsValidationSchema(optionsDefinition?.schema);
+  const {
+    data: validationSchema,
+    isLoading: isLoadingSchema,
+    error: schemaError,
+  } = useAsyncRecipeOptionsValidationSchema(optionsDefinition?.schema);
 
   const OptionsFieldGroup = useMemo(
     () =>

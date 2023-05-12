@@ -119,21 +119,3 @@ export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
 };
-
-/**
- * A reference to a package in the registry that the user has edit permissions for.
- */
-export type EditablePackage = {
-  /**
-   * The surrogate key of the package on the backend.
-   */
-  id: UUID;
-
-  /**
-   * The registry id of the package
-   */
-  name: RegistryId;
-
-  // Nominal typing to help distinguish from registry Metadata
-  _editablePackageBrand: never;
-};

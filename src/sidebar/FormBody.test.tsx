@@ -15,14 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditablePackage } from "@/types/contract";
+import React from "react";
+import { render } from "@/sidebar/testHelpers";
+import { formEntryFactory } from "@/testUtils/factories";
+import FormBody from "@/sidebar/FormBody";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
-export type EnrichedBrick = EditablePackage & {
-  scope: string;
-  collection: string;
-  timestamp: number | null;
-};
+jest.mock("@/blocks/transformers/ephemeralForm/formTransformer", () => ({
+  createFrameSource: jest.fn(() => new URL("https://www.testUrl.com")),
+}));
 
-export type NavigateProps = {
-  navigate: (url: string) => void;
-};
+describe("FormBody", () => {
+  it("renders successfully", async () => {
+    const form = formEntryFactory();
+    const rendered = render(<FormBody form={form} />);
+    await waitForEffect();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+});
