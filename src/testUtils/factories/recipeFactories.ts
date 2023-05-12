@@ -23,7 +23,7 @@ import {
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
-  Metadata,
+  type Metadata,
   type RegistryId,
   type Sharing,
 } from "@/types/registryTypes";
