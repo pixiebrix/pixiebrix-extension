@@ -26,7 +26,13 @@ export type SiteSelectorHint = {
   /**
    * Return true if the these hints apply to the current site.
    */
-  siteValidator: (element?: HTMLElement) => boolean;
+  siteValidator: ({
+    element,
+    location,
+  }: {
+    element: HTMLElement;
+    location: Location;
+  }) => boolean;
   badPatterns: CssSelectorMatch[];
   /**
    * If any of these selectors apply, they will be included in the generated selector. Useful for SPA sites that have
@@ -42,7 +48,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     // Matches all sites using Salesforce's Lightning framework
     // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
     siteName: "Salesforce",
-    siteValidator: (element) =>
+    siteValidator: ({ element }) =>
       $(element).closest("[data-aura-rendered-by]").length > 0,
     badPatterns: [
       getAttributeSelectorRegex(
@@ -72,6 +78,19 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     uniqueAttributes: ["data-component-id"],
   },
   {
+    siteName: "Zendesk",
+    siteValidator: ({ location }) => location.host.endsWith(".zendesk.com"),
+    badPatterns: [],
+    requiredSelectors: ["#main_panes>.workspace:not([visibility='hidden'])"],
+    stableAnchors: [
+      ".workspace",
+      "#wrapper",
+      "#main_navigation",
+      "#main_panes",
+    ],
+    uniqueAttributes: ["data-component-id"],
+  },
+  {
     // We need a selector hint to use in tests because and they're currently hardcoded.
     // TODO: Delete the test hint(s) once we have them in an API
     siteName: "TestHint",
@@ -86,7 +105,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
 
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator(element)
+    hint.siteValidator({ element, location: window.location })
   );
 
   return (
