@@ -23,11 +23,11 @@ import settingsSlice from "@/store/settingsSlice";
 import { uuidv4 } from "@/types/helpers";
 import { authSlice } from "@/auth/authSlice";
 import {
+  authStateFactory,
   partnerUserFactory,
   userFactory,
   userOrganizationFactory,
-} from "@/testUtils/factories/apiFactories";
-import { authStateFactory } from "@/testUtils/factories/authFactories";
+} from "@/testUtils/factories/authFactories";
 
 describe("useGetTheme", () => {
   test("has no partner", () => {

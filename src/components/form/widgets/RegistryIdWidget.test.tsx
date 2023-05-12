@@ -25,7 +25,7 @@ import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
 import {
   authStateFactory,
-  organizationFactory,
+  organizationStateFactory,
 } from "@/testUtils/factories/authFactories";
 
 const editorRoles = new Set<number>([
@@ -138,7 +138,7 @@ describe("RegistryIdWidget", () => {
     const authState = authStateFactory({
       scope: testUserScope,
       organizations: [
-        organizationFactory({
+        organizationStateFactory({
           scope: null,
         }),
       ],

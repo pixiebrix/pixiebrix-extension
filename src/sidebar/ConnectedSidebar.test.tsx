@@ -24,10 +24,10 @@ import { MemoryRouter } from "react-router";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import useLinkState from "@/auth/useLinkState";
 import {
+  authStateFactory,
   partnerUserFactory,
   userFactory,
-} from "@/testUtils/factories/apiFactories";
-import { authStateFactory } from "@/testUtils/factories/authFactories";
+} from "@/testUtils/factories/authFactories";
 
 jest.mock("@/auth/useLinkState", () => ({
   __esModule: true,

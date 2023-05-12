@@ -36,7 +36,8 @@ import {
   recipeDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { databaseFactory } from "@/testUtils/factories/apiFactories";
+
+import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
 const checkPermissionsMock = jest.mocked(checkRecipePermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);

@@ -27,10 +27,10 @@ import { authSlice } from "@/auth/authSlice";
 import { mockCachedUser, mockLoadingUser } from "@/testUtils/userMock";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
+  authStateFactory,
   userFactory,
   userOrganizationFactory,
-} from "@/testUtils/factories/apiFactories";
-import { authStateFactory } from "@/testUtils/factories/authFactories";
+} from "@/testUtils/factories/authFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest

@@ -22,6 +22,10 @@ import {
 } from "@/types/serviceTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
+import {
+  type SanitizedAuth,
+  type SanitizedAuthService,
+} from "@/types/contract";
 
 export const sanitizedServiceConfigurationFactory =
   define<SanitizedServiceConfiguration>({
@@ -30,3 +34,21 @@ export const sanitizedServiceConfigurationFactory =
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedServiceConfiguration);
+export const sanitizedAuthServiceFactory = define<SanitizedAuthService>({
+  config: (n: number) => ({
+    metadata: {
+      id: validateRegistryId(`@test/service-${n}`),
+      name: `Test Service ${n}`,
+    },
+  }),
+  name: (n: number) => `Test Service ${n}`,
+});
+export const sanitizedAuthFactory = define<SanitizedAuth>({
+  id: uuidSequence,
+  organization: null,
+  label: (n: number) => `Auth ${n}`,
+  config: {
+    _sanitizedConfigBrand: null,
+  },
+  service: sanitizedAuthServiceFactory,
+});

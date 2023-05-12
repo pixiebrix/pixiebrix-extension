@@ -45,10 +45,11 @@ import {
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { type SafeString } from "@/types/stringTypes";
+
 import {
   sanitizedAuthFactory,
   sanitizedAuthServiceFactory,
-} from "@/testUtils/factories/apiFactories";
+} from "@/testUtils/factories/serviceFactories";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),

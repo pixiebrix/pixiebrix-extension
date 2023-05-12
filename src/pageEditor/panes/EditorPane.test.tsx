@@ -62,7 +62,6 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { mockCachedUser } from "@/testUtils/userMock";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { partnerUserFactory } from "@/testUtils/factories/apiFactories";
 import {
   formStateFactory,
   triggerFormStateFactory,
@@ -72,6 +71,7 @@ import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
+import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 

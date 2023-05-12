@@ -15,16 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, derive } from "cooky-cutter";
+import { define, derive, extend } from "cooky-cutter";
 import {
   type AuthState,
   type AuthUserOrganization,
   type OrganizationAuthState,
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type Milestone, UserRole } from "@/types/contract";
+import { type Me, type Milestone, UserRole } from "@/types/contract";
 
-export const organizationFactory = define<AuthUserOrganization>({
+/**
+ * @see userOrganizationFactory
+ */
+export const organizationStateFactory = define<AuthUserOrganization>({
   id: uuidSequence,
   name(n: number): string {
     return `Test Organization ${n}`;
@@ -36,6 +39,10 @@ export const organizationFactory = define<AuthUserOrganization>({
   isDeploymentManager: false,
   hasComplianceAuthToken: false,
 });
+
+/**
+ * @see userFactory
+ */
 export const authStateFactory = define<AuthState>({
   userId: uuidSequence,
   email: (n: number) => `user${n}@test.com`,
@@ -47,28 +54,28 @@ export const authStateFactory = define<AuthState>({
   enforceUpdateMillis: null,
   organizations() {
     return [
-      organizationFactory({
+      organizationStateFactory({
         role: UserRole.developer,
       }),
-      organizationFactory({
+      organizationStateFactory({
         name(n: number): string {
           return `Test Admin Organization ${n}`;
         },
         role: UserRole.admin,
       }),
-      organizationFactory({
+      organizationStateFactory({
         name(n: number): string {
           return `Test Member Organization ${n}`;
         },
         role: UserRole.member,
       }),
-      organizationFactory({
+      organizationStateFactory({
         name(n: number): string {
           return `Test Restricted Organization ${n}`;
         },
         role: UserRole.restricted,
       }),
-      organizationFactory({
+      organizationStateFactory({
         name(n: number): string {
           return `Test Manager Organization ${n}`;
         },
@@ -90,5 +97,36 @@ export const authStateFactory = define<AuthState>({
   },
   milestones(): Milestone[] {
     return [];
+  },
+});
+
+export const userOrganizationFactory = define<Me["organization"]>({
+  id: uuidSequence,
+  name(n: number): string {
+    return `Test Organization ${n}`;
+  },
+  scope(n: number): string {
+    return `@organization-${n}`;
+  },
+  control_room: null,
+  theme: null,
+});
+export const userFactory = define<Me>({
+  id: uuidSequence,
+  email: (n: number) => `user${n}@test.com`,
+  scope: (n: number) => `@user${n}`,
+  flags: () => [] as Me["flags"],
+  is_onboarded: true,
+  organization: null,
+  telemetry_organization: null,
+  organization_memberships: () => [] as Me["organization_memberships"],
+  group_memberships: () => [] as Me["group_memberships"],
+  milestones: () => [] as Me["milestones"],
+});
+
+export const partnerUserFactory = extend<Me, Me>(userFactory, {
+  partner: {
+    name: "Automation Anywhere",
+    theme: "automation-anywhere",
   },
 });

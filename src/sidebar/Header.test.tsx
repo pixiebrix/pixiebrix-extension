@@ -24,7 +24,7 @@ import { mockCachedUser } from "@/testUtils/userMock";
 import {
   userFactory,
   userOrganizationFactory,
-} from "@/testUtils/factories/apiFactories";
+} from "@/testUtils/factories/authFactories";
 
 beforeEach(() => {
   jest.clearAllMocks();

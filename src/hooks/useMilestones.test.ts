@@ -21,7 +21,8 @@ import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { selectExtensionAuthState } from "@/auth/authUtils";
-import { userFactory } from "@/testUtils/factories/apiFactories";
+
+import { userFactory } from "@/testUtils/factories/authFactories";
 
 const renderUseMilestones = (milestones: AuthState["milestones"]) => {
   const user = userFactory({
