@@ -470,8 +470,8 @@ function findTemplate(element: HTMLElement, templates: SelectorTemplate[]) {
       .find(extractRule);
 
     return {
+      attr: { ...getElementAttributes(closestAncestorElement[0]) },
       text: closestAncestorElement.text(),
-      attr: getElementAttributes(closestAncestorElement[0]),
     };
   });
 
