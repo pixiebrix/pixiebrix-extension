@@ -24,10 +24,6 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
 } from "@/extensionPoints/quickBarProviderExtension";
-import {
-  extensionPointDefinitionFactory as genericExtensionPointFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { type BlockPipeline } from "@/blocks/types";
 import {
   getDocument,
@@ -42,6 +38,9 @@ import defaultActions from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { extensionPointDefinitionFactory as genericExtensionPointFactory } from "@/testUtils/factories/recipeFactories";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 

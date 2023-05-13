@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidSequence } from "@/testUtils/factories";
-
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
@@ -33,6 +31,8 @@ import { type BlockPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 let extensionPointRegistry: any;
 let loadOptionsMock: jest.Mock;

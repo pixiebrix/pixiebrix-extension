@@ -16,13 +16,11 @@
  */
 
 import blocksRegistry from "@/blocks/registry";
-import {
-  blockFactory,
-  extensionPointDefinitionFactory,
-} from "@/testUtils/factories";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { parsePackage } from "@/registry/localRegistry";
+import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { blockFactory } from "@/testUtils/factories/blockFactories";
 
 const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<
   typeof backgroundRegistry.getByKinds

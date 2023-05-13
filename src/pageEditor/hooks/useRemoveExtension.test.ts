@@ -17,11 +17,12 @@
 
 import { renderHook } from "@/pageEditor/testHelpers";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
-import { uuidSequence } from "@/testUtils/factories";
 import useRemoveExtension from "./useRemoveExtension";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 beforeEach(() => {
   jest.resetAllMocks();

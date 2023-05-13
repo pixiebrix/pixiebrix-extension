@@ -21,9 +21,12 @@ import { type BlockPosition, type BlockConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/runtime/mapArgs";
-import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
+import {
+  blockConfigFactory,
+  pipelineFactory,
+} from "@/testUtils/factories/blockFactories";
 
 test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();

@@ -25,7 +25,6 @@ import { fireEvent } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import userEvent from "@testing-library/user-event";
 import { render } from "@/pageEditor/testHelpers";
-import { formStateFactory, uuidSequence } from "@/testUtils/factories";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
@@ -37,6 +36,9 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import blockRegistry from "@/blocks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type PipelineExpression } from "@/runtime/mapArgs";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [

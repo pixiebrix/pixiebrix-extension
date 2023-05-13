@@ -72,8 +72,8 @@ exports[`AddBlockModal it renders 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -81,7 +81,7 @@ exports[`AddBlockModal it renders 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -93,8 +93,8 @@ exports[`AddBlockModal it renders 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -102,7 +102,7 @@ exports[`AddBlockModal it renders 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -114,8 +114,8 @@ exports[`AddBlockModal it renders 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -123,7 +123,7 @@ exports[`AddBlockModal it renders 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -135,8 +135,8 @@ exports[`AddBlockModal it renders 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -144,7 +144,7 @@ exports[`AddBlockModal it renders 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -331,8 +331,8 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -340,7 +340,7 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -352,8 +352,8 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -361,7 +361,7 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -373,8 +373,8 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -382,7 +382,7 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>
@@ -394,8 +394,8 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="svg-inline--fa fa-cube fa-w-16 fa-fw "
-                  data-icon="cube"
+                  class="svg-inline--fa fa-tag fa-w-16 fa-fw "
+                  data-icon="tag"
                   data-prefix="fas"
                   focusable="false"
                   role="img"
@@ -403,7 +403,7 @@ exports[`AddBlockModal it renders with tag selected and search query 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 68.4l192 72v1.1l-192 78-192-78v-1.1l192-72zm32 356V275.5l160-65v133.9l-160 80z"
+                    d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"
                     fill="currentColor"
                   />
                 </svg>

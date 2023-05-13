@@ -29,7 +29,14 @@ import { getAdditionalPermissions } from "webext-additional-permissions";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
-jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+// Unmock because this test is testing injection
+jest.unmock("webext-dynamic-content-scripts/distribution/active-tab");
+
+// Can't use setContext("background") because webext-dynamic-content-scripts/distribution/active-tab needs the
+// values at module initialization time
+jest.mock("webext-detect-page", () => ({
+  isBackground: () => true,
+}));
 
 jest.mock("@/contentScript/ready", () => {
   const actual = jest.requireActual("@/contentScript/ready");
@@ -49,23 +56,12 @@ jest.mock("webext-additional-permissions", () => ({
   getAdditionalPermissions: jest.fn().mockResolvedValue({ origins: [] }),
 }));
 
-jest.mock("webext-detect-page", () => ({
-  isBackground: () => true,
-}));
-
 let messageListener: any;
 
 const addListenerMock = browser.runtime.onMessage.addListener as jest.Mock;
-const getAdditionalPermissionsMock =
-  getAdditionalPermissions as jest.MockedFunction<
-    typeof getAdditionalPermissions
-  >;
-const getTargetStateMock = getTargetState as jest.MockedFunction<
-  typeof getTargetState
->;
-const injectContentScriptMock = injectContentScript as jest.MockedFunction<
-  typeof injectContentScript
->;
+const getAdditionalPermissionsMock = jest.mocked(getAdditionalPermissions);
+const getTargetStateMock = jest.mocked(getTargetState);
+const injectContentScriptMock = jest.mocked(injectContentScript);
 
 const RUNTIME_ID = "abc123";
 

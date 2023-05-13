@@ -19,7 +19,6 @@ import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 import { render } from "@/extensionConsole/testHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
-import { authStateFactory, cloudExtensionFactory } from "@/testUtils/factories";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
@@ -30,6 +29,8 @@ import {
   selectShowShareContext,
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSelectors";
 import { type RootState } from "@/store/optionsStore";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
+import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ refetch: jest.fn() }),

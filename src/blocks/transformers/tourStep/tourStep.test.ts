@@ -39,16 +39,6 @@ beforeEach(() => {
 });
 
 Element.prototype.scrollIntoView = jest.fn();
-browser.runtime.getURL = jest
-  .fn()
-  .mockImplementation((path) => `chrome-extension://abc/${path}`);
-
-jest.mock("@/utils/injectStylesheet", () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue({
-    remove: jest.fn(),
-  }),
-}));
 
 jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
   showModal: jest.fn().mockResolvedValue(undefined),

@@ -17,9 +17,9 @@
 
 import React from "react";
 import { render } from "@/sidebar/testHelpers";
-import { formEntryFactory } from "@/testUtils/factories";
 import FormBody from "@/sidebar/FormBody";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { formEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 jest.mock("@/blocks/transformers/ephemeralForm/formTransformer", () => ({
   createFrameSource: jest.fn(() => new URL("https://www.testUrl.com")),

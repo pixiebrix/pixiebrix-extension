@@ -86,12 +86,6 @@ jest.mock("@/services/baseService", () => ({
   getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
 function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
   (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
 }

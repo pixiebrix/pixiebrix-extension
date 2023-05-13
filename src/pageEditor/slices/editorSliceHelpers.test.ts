@@ -22,10 +22,6 @@ import {
   makeInitialElementUIState,
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
-import {
-  formStateFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureElementUIState,
@@ -52,6 +48,8 @@ import {
   selectElements,
   selectExpandedRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
+import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("ensureElementUIState", () => {
   test("does not affect existing ui state", () => {

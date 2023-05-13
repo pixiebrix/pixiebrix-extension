@@ -27,14 +27,6 @@ import {
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  marketplaceListingFactory,
-  marketplaceTagFactory,
-  triggerFormStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import {
@@ -54,26 +46,32 @@ import {
 } from "@/runtime/expressionCreators";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
-import * as api from "@/services/api";
-import {
-  type EditablePackage,
-  type MarketplaceListing,
-} from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
-import { useAsyncIcon } from "@/components/asyncIcon";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
-import { useGetTheme } from "@/hooks/useTheme";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
+import { array } from "cooky-cutter";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { mockCachedUser } from "@/testUtils/userMock";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import {
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+} from "@/testUtils/factories/marketplaceFactories";
+import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -84,43 +82,8 @@ async function tickAsyncEffects() {
   });
 }
 
-jest.mock("@/services/api", () => {
-  const originalModule = jest.requireActual("@/services/api");
-
-  return {
-    appApi: {
-      ...originalModule.appApi,
-      endpoints: {
-        ...originalModule.appApi.endpoints,
-        getMarketplaceListings: {
-          useQueryState: jest.fn(),
-        },
-      },
-    },
-    useGetMarketplaceTagsQuery: jest.fn(),
-    useGetMarketplaceListingsQuery: jest.fn(),
-    useGetEditablePackagesQuery: jest.fn(),
-    useCreateRecipeMutation: jest.fn(),
-    useUpdateRecipeMutation: jest.fn(),
-  };
-});
-jest.mock("@/components/asyncIcon", () => ({
-  useAsyncIcon: jest.fn(),
-}));
-jest.mock("@/telemetry/events", () => ({
-  reportEvent: jest.fn(),
-}));
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn().mockResolvedValue(true),
-  registry: {
-    getByKinds: jest.fn().mockResolvedValue([]),
-  },
-}));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
-jest.mock("@/hooks/useTheme", () => ({
-  useGetTheme: jest.fn(),
-}));
 
 const jqBlock = new JQTransformer();
 const alertBlock = new AlertEffect();
@@ -154,41 +117,20 @@ beforeAll(async () => {
     marketplaceTagFactory({ subtype: "role" }),
     marketplaceTagFactory({ subtype: "role" }),
   ];
-  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
-    data: tags,
-    isLoading: false,
-  });
 
-  const listings: Record<RegistryId, MarketplaceListing> = {};
-  const packages: EditablePackage[] = [];
-  for (let i = 0; i < 10; i++) {
-    const listing = marketplaceListingFactory({ tags });
-    const registryId = listing.id as RegistryId;
-    listings[registryId] = listing;
-    packages.push({
-      id: uuidSequence(i),
-      name: registryId,
-    } as EditablePackage);
-  }
+  const listings = array(marketplaceListingFactory, 10)({ tags });
 
-  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
-    data: listings,
-    isLoading: false,
-  });
-  (
-    api.appApi.endpoints.getMarketplaceListings.useQueryState as jest.Mock
-  ).mockReturnValue({
-    data: listings,
-    isLoading: false,
-  });
-  (api.useGetEditablePackagesQuery as jest.Mock).mockReturnValue({
-    data: packages,
-    isLoading: false,
-  });
-  (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
-  (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+  const packages = listings.map(
+    (listing, index) =>
+      ({
+        id: uuidSequence(index),
+        name: listing.id,
+      } as EditablePackage)
+  );
 
-  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
+  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
+  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
+  appApiMock.onGet("/api/bricks/").reply(200, packages);
 
   clock = sinonTimers.install();
 });
@@ -984,7 +926,7 @@ describe("block validation in Add Block Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    (useGetTheme as jest.Mock).mockReturnValue(AUTOMATION_ANYWHERE_PARTNER_KEY);
+    mockCachedUser(partnerUserFactory());
     const formState = formStateFactory();
     render(
       <>

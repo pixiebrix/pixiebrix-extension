@@ -24,14 +24,14 @@ import {
 import { loadOptions } from "@/store/extensionsStorage";
 import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  extensionFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
 import { type PersistedExtension } from "@/types/extensionTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
+import {
+  extensionFactory,
+  installedRecipeMetadataFactory,
+} from "@/testUtils/factories/extensionFactories";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),

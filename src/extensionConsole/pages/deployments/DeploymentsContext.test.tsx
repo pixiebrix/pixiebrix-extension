@@ -26,13 +26,14 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
 import { act } from "@testing-library/react";
-import { deploymentFactory } from "@/testUtils/factories";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";
+
+import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 
 const axiosMock = new MockAdapter(axios);
 

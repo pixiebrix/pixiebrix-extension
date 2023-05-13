@@ -19,7 +19,8 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { type BlockOptions } from "@/types/runtimeTypes";
 import { HighlightEffect } from "@/blocks/effects/highlight";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const logger = new ConsoleLogger({
   extensionId: uuidSequence(0),

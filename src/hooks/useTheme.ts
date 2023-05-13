@@ -32,6 +32,7 @@ import {
 import { appApi } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { isEmpty } from "lodash";
 
 async function activateBackgroundTheme(): Promise<void> {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
@@ -46,7 +47,7 @@ export function useGetTheme(): Theme {
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
-    if (me) {
+    if (!isEmpty(me)) {
       const meTheme = me.partner?.theme;
       return isValidTheme(meTheme) ? meTheme : null;
     }

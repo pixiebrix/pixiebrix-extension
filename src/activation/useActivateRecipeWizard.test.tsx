@@ -16,7 +16,6 @@
  */
 
 import * as redux from "react-redux";
-import { recipeDefinitionFactory, uuidSequence } from "@/testUtils/factories";
 import useActivateRecipeWizard, {
   makeDatabasePreviewName,
 } from "@/activation/useActivateRecipeWizard";
@@ -24,6 +23,9 @@ import { renderHook } from "@testing-library/react-hooks";
 import { propertiesToSchema } from "@/validators/generic";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/components/auth/AuthWidget", () => {});
 jest.mock("react-redux");

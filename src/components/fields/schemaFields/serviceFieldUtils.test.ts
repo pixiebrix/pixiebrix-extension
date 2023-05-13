@@ -18,17 +18,16 @@
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {

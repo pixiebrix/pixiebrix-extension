@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  databaseFactory,
-  extensionPointConfigFactory,
-  extensionPointDefinitionFactory,
-  recipeDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateRecipe from "./useActivateRecipe";
@@ -37,6 +30,14 @@ import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
+import {
+  extensionPointConfigFactory,
+  extensionPointDefinitionFactory,
+  recipeDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
+
+import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
 const checkPermissionsMock = jest.mocked(checkRecipePermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);

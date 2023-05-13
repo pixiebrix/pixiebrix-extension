@@ -18,14 +18,12 @@
 import serviceRegistry from "@/services/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { isBackground, isExtensionContext } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { proxyService } from "./requests";
 import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
@@ -33,17 +31,14 @@ import {
   type RawServiceConfiguration,
   type SecretsConfig,
 } from "@/types/serviceTypes";
+import { setContext } from "@/testUtils/detectPageMock";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+
+jest.unmock("@/services/apiClient");
+setContext("background");
 
 const axiosMock = new MockAdapter(axios);
-const mockIsBackground = isBackground as jest.MockedFunction<
-  typeof isBackground
->;
-const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
-  typeof isExtensionContext
->;
 const mockGetToken = getToken as jest.Mock;
-mockIsBackground.mockImplementation(() => true);
-mockIsExtensionContext.mockImplementation(() => true);
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
@@ -53,7 +48,6 @@ jest.mock("@/background/auth", () => ({
   deleteCachedAuthData: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock("@/auth/token");
-jest.mock("webext-detect-page");
 jest.mock("@/services/locator");
 
 enrichAxiosErrors();

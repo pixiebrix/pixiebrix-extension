@@ -16,10 +16,6 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import {
-  cloudExtensionFactory,
-  recipeDefinitionFactory,
-} from "@/testUtils/factories";
 import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { uninstallRecipe } from "@/store/uninstallUtils";
@@ -27,6 +23,8 @@ import {
   type ExtensionOptionsState,
   type ExtensionsRootState,
 } from "@/store/extensionsTypes";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
 
 beforeEach(() => {
   jest.resetAllMocks();

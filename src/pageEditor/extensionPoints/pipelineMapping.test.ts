@@ -27,13 +27,14 @@ import {
   echoBlock,
   teapotBlock,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { uuidSequence } from "@/testUtils/factories";
 import { EMPTY_PIPELINE, toExpression } from "@/testUtils/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,
 } from "./pipelineMapping";
 import blockRegistry from "@/blocks/registry";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 describe("normalizePipeline", () => {
   let echoBlockConfig: BlockConfig;

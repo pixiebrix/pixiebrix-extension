@@ -25,6 +25,9 @@ import crypto from "node:crypto";
 import "jest-location-mock";
 // eslint-disable-next-line import/no-unassigned-import -- mocking permissions API
 import "./permissionsMock";
+import * as apiClientMock from "./apiClientMock";
+import * as storePersistorMock from "./storePersistorMock";
+import * as detectPageMock from "./detectPageMock";
 
 global.$ = $;
 global.jQuery = $;
@@ -36,7 +39,15 @@ browser.runtime.getManifest = jest.fn().mockReturnValue({
   version: "1.5.2",
 });
 
+browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
+
 // https://stackoverflow.com/q/52612122/288906
 globalThis.crypto = {
   getRandomValues: (array) => crypto.randomBytes(array.length),
 };
+
+jest.setMock("webext-dynamic-content-scripts/distribution/active-tab", {});
+
+jest.setMock("webext-detect-page", detectPageMock);
+jest.setMock("@/services/apiClient", apiClientMock);
+jest.setMock("@/store/optionsStore", storePersistorMock);

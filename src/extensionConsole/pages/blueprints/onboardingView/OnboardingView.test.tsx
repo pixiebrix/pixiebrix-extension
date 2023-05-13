@@ -16,23 +16,17 @@
  */
 
 import React from "react";
-import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
 import { type Organization } from "@/types/contract";
 import useOnboarding from "@/extensionConsole/pages/blueprints/onboardingView/useOnboarding";
-import { renderHook } from "@testing-library/react-hooks";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import DeploymentsContext, {
   type DeploymentsState,
 } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
+import { renderHook } from "@/extensionConsole/testHelpers";
 
-jest.mock("react-redux", () => ({
-  useSelector: jest.fn(),
-}));
-
-jest.mock("@/services/api", () => ({
-  useGetOrganizationsQuery: jest.fn(),
-}));
+import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/recipes/recipesHooks", () => ({
@@ -48,9 +42,11 @@ const mockOnboarding = ({
   hasTeamBlueprints?: boolean;
   hasRestrictedFlag?: boolean;
 } = {}) => {
-  (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-    data: hasOrganization ? [{} as Organization] : [],
-  }));
+  appApiMock
+    .onGet("/api/organizations/")
+    .reply(200, [hasOrganization ? [organizationStateFactory()] : []]);
+
+  mockAllApiEndpoints();
 
   (useAllRecipes as jest.Mock).mockImplementation(() => ({
     data: hasTeamBlueprints
@@ -70,31 +66,39 @@ const mockOnboarding = ({
 };
 
 describe("useOnboarding", () => {
-  test("default user", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+  });
+
+  test("default user", async () => {
     mockOnboarding();
-    const { result } = renderHook(() => useOnboarding());
+    const { result, waitForEffect } = renderHook(() => useOnboarding());
+    await waitForEffect();
     expect(result.current.onboardingType).toBe("default");
   });
 
-  test("restricted enterprise user", () => {
+  test("restricted enterprise user", async () => {
     mockOnboarding({ hasOrganization: true, hasRestrictedFlag: true });
-    const { result } = renderHook(() => useOnboarding());
+    const { result, waitForEffect } = renderHook(() => useOnboarding());
+    await waitForEffect();
     expect(result.current.onboardingType).toBe("restricted");
   });
 
-  test("unrestricted enterprise user", () => {
+  test("unrestricted enterprise user", async () => {
     mockOnboarding({ hasOrganization: true });
-    const { result } = renderHook(() => useOnboarding());
+    const { result, waitForEffect } = renderHook(() => useOnboarding());
+    await waitForEffect();
     expect(result.current.onboardingType).toBe("default");
   });
 
-  test("unrestricted enterprise user with teams", () => {
+  test("unrestricted enterprise user with teams", async () => {
     mockOnboarding({ hasOrganization: true, hasTeamBlueprints: true });
-    const { result } = renderHook(() => useOnboarding());
+    const { result, waitForEffect } = renderHook(() => useOnboarding());
+    await waitForEffect();
     expect(result.current.onboardingType).toBe("hasTeamBlueprints");
   });
 
-  test("enterprise user with deployments", () => {
+  test("enterprise user with deployments", async () => {
     const deployments: DeploymentsState = {
       hasUpdate: true,
       extensionUpdateRequired: false,
@@ -105,13 +109,15 @@ describe("useOnboarding", () => {
     };
 
     mockOnboarding({ hasOrganization: true });
-    const { result } = renderHook(() => useOnboarding(), {
+    const { result, waitForEffect } = renderHook(() => useOnboarding(), {
       wrapper: ({ children }) => (
         <DeploymentsContext.Provider value={deployments}>
           {children}
         </DeploymentsContext.Provider>
       ),
     });
+
+    await waitForEffect();
     expect(result.current.onboardingType).toBe("hasDeployments");
   });
 });

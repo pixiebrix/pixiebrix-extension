@@ -24,14 +24,6 @@ import {
   mergeDeploymentServiceConfigurations,
 } from "./deploymentUtils";
 import {
-  deploymentFactory,
-  deploymentPackageFactory,
-  extensionFactory,
-  extensionPointConfigFactory,
-  recipeDefinitionFactory,
-  sanitizedServiceConfigurationFactory,
-} from "@/testUtils/factories";
-import {
   uuidv4,
   validateRegistryId,
   validateSemVerString,
@@ -43,6 +35,16 @@ import {
 } from "@/services/constants";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  extensionPointConfigFactory,
+  recipeDefinitionFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import {
+  deploymentFactory,
+  deploymentPackageFactory,
+} from "@/testUtils/factories/deploymentFactories";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
