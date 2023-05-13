@@ -139,7 +139,7 @@
     "reselect": "^4.1.8",
     "rollbar": "^2.26.1",
     "schema-to-yup": "1.12.11",
-    "semver": "^7.5.0",
+    "semver": "^7.5.1",
     "serialize-error": "^11.0.0",
     "simple-icons": "^5.8.0",
     "slugify": "^1.6.6",
