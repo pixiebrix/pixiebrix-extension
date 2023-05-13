@@ -31,7 +31,7 @@
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
     "@atlaskit/tree": "^8.7.0",
     "@cfworker/json-schema": "^1.8.1",
-    "@datadog/browser-rum": "^4.42.0",
+    "@datadog/browser-rum": "^4.42.1",
     "@floating-ui/dom": "^1.2.7",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
