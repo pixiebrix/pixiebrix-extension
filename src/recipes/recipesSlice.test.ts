@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recipeFactory } from "@/testUtils/factories";
 import { serializeError } from "serialize-error";
 import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
 import { type RecipesRootState } from "./recipesTypes";
 import recipesRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("./registry", () => ({
   __esModule: true,

@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MockAdapter from "axios-mock-adapter";
-import axios, { type AxiosError } from "axios";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { type AxiosError } from "axios";
 import { configureStore } from "@reduxjs/toolkit";
 import {
   appApi,
-  useUpdatePackageMutation,
   useGetPackageQuery,
+  useUpdatePackageMutation,
 } from "@/services/api";
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
@@ -32,16 +30,7 @@ import { uuidv4 } from "@/types/helpers";
 import { act } from "react-dom/test-utils";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { isPlainObject } from "lodash";
-
-const axiosMock = new MockAdapter(axios);
-
-jest.mock("@/services/apiClient", () => ({
-  getLinkedApiClient: jest.fn(),
-}));
-
-const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
-
-getLinkedApiClientMock.mockResolvedValue(axios.create());
+import { appApiMock } from "@/testUtils/appApiMock";
 
 function testStore() {
   return configureStore({
@@ -57,8 +46,12 @@ function testStore() {
 }
 
 describe("appBaseQuery", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+  });
+
   test("RTK preserves AxiosError information", async () => {
-    axiosMock.onPut().reply(400, { config: ["Field error."] });
+    appApiMock.onPut().reply(400, { config: ["Field error."] });
 
     const store = testStore();
 
@@ -82,7 +75,7 @@ describe("appBaseQuery", () => {
   });
 
   test("RTK preserves response on 404", async () => {
-    axiosMock.onGet().reply(404);
+    appApiMock.onGet().reply(404);
 
     const store = testStore();
 

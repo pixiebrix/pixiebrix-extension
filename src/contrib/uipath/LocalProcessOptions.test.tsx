@@ -21,7 +21,6 @@ import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import * as contentScriptApi from "@/contentScript/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -34,13 +33,10 @@ import {
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { setContext } from "@/testUtils/detectPageMock";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
+setContext("devToolsPage");
 
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({

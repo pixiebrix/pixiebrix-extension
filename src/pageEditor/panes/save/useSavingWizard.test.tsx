@@ -24,13 +24,6 @@ import { Provider } from "react-redux";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
-import {
-  formStateFactory,
-  menuItemFormStateFactory,
-  recipeMetadataFactory,
-  recipeFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
 import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertFormElement";
 import useResetExtensionMock from "@/pageEditor/hooks/useResetExtension";
 import {
@@ -47,6 +40,15 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type OptionsDefinition } from "@/types/recipeTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
+import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  formStateFactory,
+  menuItemFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import {
+  recipeFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");

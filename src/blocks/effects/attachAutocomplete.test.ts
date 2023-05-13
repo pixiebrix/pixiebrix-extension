@@ -17,20 +17,16 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories";
 import { type BlockOptions } from "@/types/runtimeTypes";
 import { AttachAutocomplete } from "@/blocks/effects/attachAutocomplete";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const brick = new AttachAutocomplete();
 
 const logger = new ConsoleLogger({
   extensionId: uuidSequence(0),
 });
-
-jest.mock("@/utils/injectStylesheet", () => ({
-  default: jest.fn(),
-  __esModule: true,
-}));
 
 describe("AttachAutocomplete", () => {
   beforeEach(() => {

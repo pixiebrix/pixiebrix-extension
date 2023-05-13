@@ -19,7 +19,6 @@ import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
-import { uuidSequence } from "@/testUtils/factories";
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_SERVICE_ID,
@@ -32,6 +31,8 @@ import {
 import { type BlockOptions } from "@/types/runtimeTypes";
 import { type AuthData } from "@/types/serviceTypes";
 
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn().mockResolvedValue({
     status: 201,
@@ -42,13 +43,9 @@ jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
-const proxyServiceMock = proxyService as jest.MockedFunction<
-  typeof proxyService
->;
-const getCachedAuthDataMock = getCachedAuthData as jest.MockedFunction<
-  typeof getCachedAuthData
->;
-const getUserDataMock = getUserData as jest.MockedFunction<typeof getUserData>;
+const proxyServiceMock = jest.mocked(proxyService);
+const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
+const getUserDataMock = jest.mocked(getUserData);
 
 const brick = new RunBot();
 

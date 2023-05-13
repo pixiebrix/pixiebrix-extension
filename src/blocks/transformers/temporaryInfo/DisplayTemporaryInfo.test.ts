@@ -46,7 +46,8 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import pDefer from "p-defer";
-import { registryIdFactory } from "@/testUtils/factories";
+
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`

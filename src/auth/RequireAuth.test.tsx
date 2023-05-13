@@ -102,6 +102,8 @@ describe("RequireAuth", () => {
   });
 
   test("loading state does not flash content", () => {
+    // FIXME: this is not a real internal state the app can be in. In order for the meQuery to be loading,
+    //  they must have a token, which implies there is a cached user in the auth state.
     mockMeQuery({
       isLoading: true,
     });

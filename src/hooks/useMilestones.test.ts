@@ -15,70 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import useMilestones from "@/hooks/useMilestones";
-import { renderHook } from "@testing-library/react-hooks";
-import { Provider } from "react-redux";
-import React from "react";
-import { appApi } from "@/services/api";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
+import { authSlice } from "@/auth/authSlice";
+import { type AuthState } from "@/auth/authTypes";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { selectExtensionAuthState } from "@/auth/authUtils";
 
-function optionsStore(initialState?: any) {
-  return configureStore({
-    reducer: {
-      auth: persistReducer(persistAuthConfig, authSlice.reducer),
-    },
-    preloadedState: initialState,
+import { userFactory } from "@/testUtils/factories/authFactories";
+
+const renderUseMilestones = (milestones: AuthState["milestones"]) => {
+  const user = userFactory({
+    milestones,
   });
-}
 
-jest.mock("@/services/api", () => ({
-  appApi: {
-    useLazyGetMeQuery: jest.fn(() => [
-      jest.fn(),
-      {
-        data: Object.freeze({}),
-        isLoading: false,
-      },
-    ]),
-  },
-}));
-
-const renderUseMilestones = (initialState?: any) => {
-  (appApi.useLazyGetMeQuery as jest.Mock).mockReturnValue([
-    jest.fn(),
-    {
-      data: {
-        milestones: initialState?.auth?.milestones ?? [],
-      },
-      isFetching: false,
-      isLoading: false,
-    },
-  ]);
+  appApiMock.onGet("/api/me/").reply(200, user);
 
   return renderHook(() => useMilestones(), {
-    wrapper: ({ children }) => (
-      <Provider store={optionsStore(initialState)}>{children}</Provider>
-    ),
+    setupRedux(dispatch) {
+      dispatch(authSlice.actions.setAuth(selectExtensionAuthState(user)));
+    },
   });
 };
 
 describe("useMilestones", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+  });
+
   test("has milestone", () => {
     const {
       result: {
         current: { hasMilestone },
       },
-    } = renderUseMilestones({
-      auth: {
-        milestones: [
-          {
-            key: "test_milestone",
-          },
-        ],
+    } = renderUseMilestones([
+      {
+        key: "test_milestone",
       },
-    });
+    ]);
 
     expect(hasMilestone("test_milestone")).toBe(true);
     expect(hasMilestone("does_not_exist")).toBe(false);
@@ -89,18 +63,14 @@ describe("useMilestones", () => {
       result: {
         current: { hasEveryMilestone },
       },
-    } = renderUseMilestones({
-      auth: {
-        milestones: [
-          {
-            key: "test_milestone_1",
-          },
-          {
-            key: "test_milestone_2",
-          },
-        ],
+    } = renderUseMilestones([
+      {
+        key: "test_milestone_1",
       },
-    });
+      {
+        key: "test_milestone_2",
+      },
+    ]);
 
     expect(hasEveryMilestone(["test_milestone_1"])).toBe(true);
     expect(hasEveryMilestone(["test_milestone_1", "test_milestone_2"])).toBe(
@@ -125,17 +95,13 @@ describe("useMilestones", () => {
       result: {
         current: { getMilestone },
       },
-    } = renderUseMilestones({
-      auth: {
-        milestones: [
-          test_milestone,
-          {
-            key: "test_milestone_2",
-            value: "bar",
-          },
-        ],
+    } = renderUseMilestones([
+      test_milestone,
+      {
+        key: "test_milestone_2",
+        value: "bar",
       },
-    });
+    ]);
 
     expect(getMilestone("test_milestone_1")).toBe(test_milestone);
     expect(getMilestone("does_not_exist")).toBe(undefined);

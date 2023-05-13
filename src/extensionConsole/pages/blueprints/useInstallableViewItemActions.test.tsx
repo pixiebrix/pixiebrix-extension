@@ -18,11 +18,6 @@
 
 /// <reference types="jest-extended" />
 
-import {
-  cloudExtensionFactory,
-  extensionFactory,
-  recipeFactory,
-} from "@/testUtils/factories";
 import useInstallableViewItemActions, {
   type InstallableViewItemActions,
 } from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
@@ -33,7 +28,6 @@ import {
   type SharingType,
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import useInstallablePermissions from "@/extensionConsole/pages/blueprints/useInstallablePermissions";
-import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -41,14 +35,16 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { type IExtension } from "@/types/extensionTypes";
+import {
+  cloudExtensionFactory,
+  extensionFactory,
+} from "@/testUtils/factories/extensionFactories";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/extensionConsole/pages/blueprints/useInstallablePermissions", () =>
   jest.fn()
 );
-jest.mock("@/services/api", () => ({
-  useDeleteCloudExtensionMutation: jest.fn(),
-}));
 
 const expectActions = (
   expectedActions: string[],
@@ -80,10 +76,6 @@ const mockHooks = ({
     hasPermissions,
     requestPermissions() {},
   }));
-
-  (useDeleteCloudExtensionMutation as jest.Mock).mockImplementation(() => [
-    jest.fn(),
-  ]);
 };
 
 const installableItemFactory = ({

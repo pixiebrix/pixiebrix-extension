@@ -18,42 +18,29 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useGetAllCloudExtensionsQuery } from "@/services/api";
-import {
-  cloudExtensionFactory,
-  persistedExtensionFactory,
-  recipeDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { validateTimestamp } from "@/types/helpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { range } from "lodash";
-
-jest.mock("@/services/api", () => ({
-  useGetAllCloudExtensionsQuery: jest.fn(),
-}));
+import { appApiMock } from "@/testUtils/appApiMock";
+import {
+  cloudExtensionFactory,
+  persistedExtensionFactory,
+} from "@/testUtils/factories/extensionFactories";
+import {
+  recipeDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));
 
-const useGetAllCloudExtensionsQueryMock =
-  useGetAllCloudExtensionsQuery as jest.MockedFunction<
-    typeof useGetAllCloudExtensionsQuery
-  >;
-const useAllRecipesMock = useAllRecipes as jest.MockedFunction<
-  typeof useAllRecipes
->;
+const useAllRecipesMock = jest.mocked(useAllRecipes);
 
 describe("useInstallables", () => {
   beforeEach(() => {
-    useGetAllCloudExtensionsQueryMock.mockReset();
-    useGetAllCloudExtensionsQueryMock.mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: false,
-      refetch: jest.fn(),
-    });
+    appApiMock.reset();
+    appApiMock.onGet("/api/extensions/").reply(200, []);
 
     useAllRecipesMock.mockReset();
     useAllRecipesMock.mockReturnValue({ data: undefined } as any);
@@ -174,12 +161,7 @@ describe("useInstallables", () => {
   });
 
   it("handles inactive cloud extension", async () => {
-    useGetAllCloudExtensionsQueryMock.mockReturnValue({
-      data: [cloudExtensionFactory()],
-      isLoading: false,
-      error: false,
-      refetch: jest.fn(),
-    });
+    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtensionFactory()]);
 
     const wrapper = renderHook(() => useInstallables());
 
@@ -197,13 +179,10 @@ describe("useInstallables", () => {
   });
 
   it("handles active cloud extension", async () => {
-    const cloudExtension = cloudExtensionFactory();
+    appApiMock.reset();
 
-    useGetAllCloudExtensionsQueryMock.mockReturnValue({
-      data: [cloudExtension],
-      error: false,
-      refetch: jest.fn(),
-    });
+    const cloudExtension = cloudExtensionFactory();
+    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtension]);
 
     const wrapper = renderHook(() => useInstallables(), {
       setupRedux(dispatch) {

@@ -24,25 +24,16 @@ import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import blocksRegistry from "@/blocks/registry";
-import { HtmlRenderer } from "@/blocks/renderers/html";
-import { registryIdFactory } from "@/testUtils/factories";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 
-jest.mock("@/blocks/registry", () => ({
-  __esModule: true,
-  default: {
-    lookup: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  },
-}));
-
-const lookupMock = blocksRegistry.lookup as jest.Mock;
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 const extensionId = uuidv4();
 const blueprintId = registryIdFactory();
 
 describe("PanelBody", () => {
-  beforeEach(() => {
-    lookupMock.mockReset();
+  beforeAll(() => {
+    registerBuiltinBlocks();
   });
 
   it("renders application error", () => {
@@ -116,8 +107,6 @@ describe("PanelBody", () => {
       },
       ctxt: {},
     };
-
-    lookupMock.mockResolvedValue(new HtmlRenderer());
 
     const result = render(
       <PanelBody

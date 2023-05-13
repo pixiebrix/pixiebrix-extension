@@ -16,13 +16,13 @@
  */
 
 import sidebarSlice, { type SidebarState } from "@/sidebar/sidebarSlice";
-import { sidebarEntryFactory } from "@/testUtils/factories";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories

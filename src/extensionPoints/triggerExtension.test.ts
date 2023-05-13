@@ -20,7 +20,6 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/types/registryTypes";
-import { uuidSequence } from "@/testUtils/factories";
 import { type BlockPipeline } from "@/blocks/types";
 import {
   getDocument,
@@ -39,6 +38,8 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 beforeAll(() => {
   requestIdleCallback.mock();

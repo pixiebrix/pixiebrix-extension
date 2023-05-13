@@ -17,37 +17,27 @@
 
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
-import {
-  blockConfigFactory,
-  blockFactory,
-  formStateFactory,
-  triggerFormStateFactory,
-  quickbarFormStateFactory,
-  menuItemFormStateFactory,
-  contextMenuFormStateFactory,
-  sidebarPanelFormStateFactory,
-} from "@/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type RegistryId } from "@/types/registryTypes";
-import { type MarketplaceListing } from "@/types/contract";
 import { render } from "@/pageEditor/testHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-
-jest.mock("@/services/api", () => {
-  const actual = jest.requireActual("@/services/api");
-  return {
-    ...actual,
-    useGetMarketplaceListingsQuery: () => ({
-      data: {} as Record<RegistryId, MarketplaceListing>,
-    }),
-  };
-});
+import {
+  contextMenuFormStateFactory,
+  formStateFactory,
+  menuItemFormStateFactory,
+  quickbarFormStateFactory,
+  sidebarPanelFormStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import {
+  blockConfigFactory,
+  blockFactory,
+} from "@/testUtils/factories/blockFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();

@@ -15,18 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  extensionFactory,
-  installedRecipeMetadataFactory,
-  menuItemFormStateFactory,
-  recipeDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type IExtension } from "@/types/extensionTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  extensionFactory,
+  installedRecipeMetadataFactory,
+} from "@/testUtils/factories/extensionFactories";
+import {
+  recipeDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Recipes
 const ID_FOO = validateRegistryId("test/recipe-foo");

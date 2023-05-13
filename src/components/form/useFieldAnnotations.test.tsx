@@ -37,13 +37,13 @@ import {
   type AnalysisAnnotation,
   type AnalysisRootState,
 } from "@/analysis/analysisTypes";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  pipelineFactory,
-} from "@/testUtils/factories";
 import { uuidv4 } from "@/types/helpers";
 import { Provider } from "react-redux";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  blockConfigFactory,
+  pipelineFactory,
+} from "@/testUtils/factories/blockFactories";
 
 jest.mock("@/components/form/FormErrorContext", () => ({
   useFormErrorSettings: jest.fn(),

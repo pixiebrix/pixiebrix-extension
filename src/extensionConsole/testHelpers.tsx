@@ -26,6 +26,8 @@ import {
 } from "@/testUtils/testHelpers";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
+import { appApi } from "@/services/api";
+import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -36,6 +38,14 @@ const configureStoreForTests = () =>
       blueprintModals: blueprintModalsSlice.reducer,
       blueprints: blueprintsSlice.reducer,
       recipes: recipesSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(recipesMiddleware);
+      /* eslint-enable unicorn/prefer-spread */
     },
   });
 

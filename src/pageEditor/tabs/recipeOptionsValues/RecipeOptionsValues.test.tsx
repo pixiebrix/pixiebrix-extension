@@ -19,7 +19,6 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
-import { recipeFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
@@ -28,6 +27,7 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useOptionalRecipe: jest.fn(),

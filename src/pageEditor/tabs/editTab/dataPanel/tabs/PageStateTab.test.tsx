@@ -20,14 +20,12 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import PageStateTab from "./PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  formStateFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
 import { getPageState } from "@/contentScript/messenger/api";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("PageStateTab", () => {
   beforeAll(() => {

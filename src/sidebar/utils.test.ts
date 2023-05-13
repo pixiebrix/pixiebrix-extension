@@ -18,7 +18,8 @@
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type FormEntry, type TemporaryPanelEntry } from "@/sidebar/types";
-import { sidebarEntryFactory } from "@/testUtils/factories";
+
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {

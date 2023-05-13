@@ -22,13 +22,12 @@ import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { type OutputKey } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 
 jest.mock("@/background/messenger/api", () => ({
   sheets: {
