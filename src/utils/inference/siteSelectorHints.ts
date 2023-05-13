@@ -26,10 +26,7 @@ export type SiteSelectorHint = {
   /**
    * Return true if the these hints apply to the current site.
    */
-  siteValidator: ({
-    element,
-    location,
-  }: {
+  siteValidator: (validatorProps: {
     element: HTMLElement;
     location: Location;
   }) => boolean;
@@ -79,7 +76,8 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
   },
   {
     siteName: "Zendesk",
-    siteValidator: ({ location }) => location.host.endsWith(".zendesk.com"),
+    siteValidator: ({ element, location }) =>
+      location.host.endsWith(".zendesk.com"),
     badPatterns: [],
     requiredSelectors: ["#main_panes>.workspace:not([visibility='hidden'])"],
     stableAnchors: [
@@ -94,7 +92,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     // We need a selector hint to use in tests because and they're currently hardcoded.
     // TODO: Delete the test hint(s) once we have them in an API
     siteName: "TestHint",
-    siteValidator: (element) =>
+    siteValidator: ({ element }) =>
       $(element).closest("[data-test-hint]").length > 0,
     badPatterns: [],
     requiredSelectors: [".grandparent>.parent"],
