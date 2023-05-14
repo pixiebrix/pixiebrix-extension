@@ -48,7 +48,11 @@ export type SiteSelectorHint = {
   /**
    * Return true if the these hints apply to the current site.
    */
-  siteValidator: (element?: HTMLElement) => boolean;
+  siteValidator: (validatorProps: {
+    element: HTMLElement;
+    location?: Location;
+  }) => boolean;
+
   /**
    * Patterns to exclude from generated selectors.
    * @see safeCssSelector
@@ -78,7 +82,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     // Matches all sites using Salesforce's Lightning framework
     // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
     siteName: "Salesforce",
-    siteValidator: (element) =>
+    siteValidator: ({ element }) =>
       $(element).closest("[data-aura-rendered-by]").length > 0,
     badPatterns: [
       getAttributeSelectorRegex(
@@ -118,6 +122,24 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     ],
     uniqueAttributes: ["data-component-id"],
   },
+  {
+    siteName: "Zendesk",
+    siteValidator: ({ location }) => location.host.endsWith(".zendesk.com"),
+    badPatterns: [getAttributeSelectorRegex("data-garden-version")],
+    selectorTemplates: [],
+    requiredSelectors: [
+      // Require visible workspace panel. Can't use `visibility: hidden` because whitespace between style name and
+      // value varies by cached vs. non-cached panes: `visibility: hidden` vs. `visibility:hidden`.
+      "#main_panes>.workspace:not([style*='visibility:'])",
+    ],
+    stableAnchors: [
+      ".workspace",
+      "#wrapper",
+      "#main_navigation",
+      "#main_panes",
+    ],
+    uniqueAttributes: ["data-test-id", "data-component-id"],
+  },
 ];
 
 /**
@@ -126,7 +148,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
  */
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator(element)
+    hint.siteValidator({ element, location: window.location })
   );
 
   return (

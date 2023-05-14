@@ -118,7 +118,9 @@ function getSelectorFromClass(className: string): string {
   return "." + [...classHelper.classList].join(".");
 }
 
-/** ID selectors and certain other attributes can uniquely identify items */
+/**
+ * Return true if a selector is likely to uniquely identify an element.
+ */
 function isSelectorUsuallyUnique(selector: string): boolean {
   return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
@@ -126,7 +128,7 @@ function isSelectorUsuallyUnique(selector: string): boolean {
 /**
  * Return selectors sorted by quality
  * - getSelectorPreference
- * - length (lower is better)
+ * - textual length (lower is better)
  * @param selectors an array of selectors, or items with selector properties to sort
  * @param iteratee a method to select the selector field for an item
  *
@@ -159,7 +161,7 @@ export function sortBySelector<Item = string>(
  * -3  "[data-cy='b4da55']"
  * -2  '.iAmAUniqueGreatClassSelector' // it's rare case but happens when classname is unique
  * -1  '#parentId a' // tag name followed by parent unique Selector
- * -1  '[data-test-id='b4da55'] input' // tag name followed by parent unique Selector
+ * -1  '[data-test-id='b4da55'] input' // tag name preceded by parent unique Selector
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
@@ -715,6 +717,10 @@ export async function inferSingleElementSelector({
       return false;
     }
   });
+
+  if (validatedSelectors.length === 0) {
+    throw new Error("Automatic selector generation failed");
+  }
 
   return {
     selectors: validatedSelectors,
