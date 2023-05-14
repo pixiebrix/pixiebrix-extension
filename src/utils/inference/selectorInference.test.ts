@@ -21,7 +21,7 @@ import {
   getAttributeSelector,
   getAttributeSelectorRegex,
   getSelectorPreference,
-  inferElementSelector,
+  inferSingleElementSelector,
   inferSelectors,
   inferSelectorsIncludingStableAncestors,
   safeCssSelector,
@@ -30,7 +30,9 @@ import {
 import { JSDOM } from "jsdom";
 import { html } from "@/utils";
 import { uniq } from "lodash";
+import { SELECTOR_HINTS } from "@/utils/inference/siteSelectorHints";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
+import { $safeFind } from "@/helpers";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
@@ -583,8 +585,30 @@ describe("inferSelectorsIncludingStableAncestors", () => {
 });
 
 describe("inferElementSelector", () => {
-  test("default", async () => {
-    const body = html`
+  beforeEach(() => {
+    SELECTOR_HINTS.splice(0, SELECTOR_HINTS.length);
+    SELECTOR_HINTS.push({
+      siteName: "TestHint",
+      siteValidator: ({ element }: { element: HTMLElement }) =>
+        $(element).closest("[data-test-hint]").length > 0,
+      badPatterns: [],
+      requiredSelectors: [".grandparent>.parent", ".active"],
+      selectorTemplates: [
+        {
+          template: '.container:has(.testLabel:contains("{{ label.text }}"))',
+          selector: ".container",
+          extract: {
+            label: ".testLabel",
+          },
+        },
+      ],
+      stableAnchors: [],
+      uniqueAttributes: [],
+    });
+  });
+
+  it("ignores site hint if siteValidator doesn't match", async () => {
+    document.body.innerHTML = html`
       <div id="grandparent" class="grandparent">
         <div class="parent" role="main">
           <div id="test"></div>
@@ -592,12 +616,10 @@ describe("inferElementSelector", () => {
       </div>
     `;
 
-    document.body.innerHTML = body;
-
     const element = document.body.querySelector<HTMLElement>("#test");
     expect(
-      await inferElementSelector({
-        elements: [element],
+      await inferSingleElementSelector({
+        element,
         root: document.body,
         excludeRandomClasses: true,
         traverseUp: 0,
@@ -606,6 +628,7 @@ describe("inferElementSelector", () => {
       framework: null,
       hasData: false,
       parent: null,
+      // Site hint doesn't match, so requiredSelectors has not effect
       selectors: [
         "#test",
         "[role='main'] div",
@@ -617,21 +640,20 @@ describe("inferElementSelector", () => {
       tagName: "DIV",
     });
   });
-  test("requiredSelector should override other inferred selectors", async () => {
-    // The siteSelectorHints include a special test if the [data-test-hint] attribute is visible
-    const body = html`
-      <div id="grandparent" class="grandparent" data-test-hint="1">
+
+  it("requiredSelector should override other inferred selectors", async () => {
+    document.body.innerHTML = html`
+      <div id="grandparent" class="grandparent" data-test-hint="true">
         <div class="parent" role="main">
           <div id="test"></div>
         </div>
       </div>
     `;
-    document.body.innerHTML = body;
 
     const element = document.body.querySelector<HTMLElement>("#test");
     expect(
-      await inferElementSelector({
-        elements: [element],
+      await inferSingleElementSelector({
+        element,
         root: document.body,
         excludeRandomClasses: true,
         traverseUp: 0,
@@ -641,6 +663,121 @@ describe("inferElementSelector", () => {
       hasData: false,
       parent: null,
       selectors: [".grandparent>.parent #test", ".grandparent>.parent div"],
+      tagName: "DIV",
+    });
+  });
+
+  it("selector template", async () => {
+    document.body.innerHTML = html`
+      <div data-test-hint="true">
+        <div class="container">
+          <span class="testLabel">test label</span>
+          <div class="testValue">Test Label Value</div>
+        </div>
+      </div>
+    `;
+
+    const element = document.body.querySelector<HTMLElement>(".testValue");
+    expect(
+      await inferSingleElementSelector({
+        element,
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      selectors: [
+        '.container:has(.testLabel:contains("test label")) div',
+        '.container:has(.testLabel:contains("test label")) .testValue',
+      ],
+      tagName: "DIV",
+    });
+  });
+
+  it("excludes selector hint with multiple matches", async () => {
+    // "label" is a substring of "test label". If generating with the stencil, both would match because `contains` in
+    // the stencil match substrings, not exact matches.
+    document.body.innerHTML = html`
+      <div data-test-hint="true">
+        <div class="container">
+          <span class="testLabel">test label</span>
+          <div class="testValue">Test Label Value</div>
+        </div>
+        <div class="container">
+          <span class="testLabel">label</span>
+          <div class="testValue">Label Value</div>
+        </div>
+      </div>
+    `;
+
+    const element = $safeFind(".testValue:last").get(0);
+
+    expect(element.textContent).toBe("Label Value");
+
+    expect(
+      await inferSingleElementSelector({
+        element,
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      // Doesn't return the instantiated template, because it would match both field.
+      // These selectors are not very robust. We'll fix those in future improvements to general selector generation.
+      selectors: [
+        "div:nth-of-type(2) div",
+        ".container:nth-child(2) div",
+        ".container:nth-child(2) .testValue",
+        "[data-test-hint] > :nth-child(2) div",
+      ],
+      tagName: "DIV",
+    });
+  });
+
+  it("handles template within required root", async () => {
+    // "label" is a substring of "test label". It's unique within .active so it should be used
+    document.body.innerHTML = html`
+      <div data-test-hint="true">
+        <div>
+          <div class="container">
+            <span class="testLabel">test label</span>
+            <div class="testValue">Test Label Value</div>
+          </div>
+        </div>
+        <div class="active">
+          <div class="container">
+            <span class="testLabel">label</span>
+            <div class="testValue">Label Value</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const element = $safeFind(".active .testValue").get(0);
+
+    expect(element.textContent).toBe("Label Value");
+
+    expect(
+      await inferSingleElementSelector({
+        element,
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      selectors: [
+        '.active .container:has(.testLabel:contains("label")) div',
+        '.active .container:has(.testLabel:contains("label")) .testValue',
+      ],
       tagName: "DIV",
     });
   });

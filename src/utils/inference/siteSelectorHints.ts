@@ -18,6 +18,28 @@
 import { type CssSelectorMatch } from "css-selector-generator/types/types";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInference";
 
+/**
+ * A template/stencil for generating selectors on an application.
+ */
+export interface SelectorTemplate {
+  /**
+   * The selector template/stencil. Will be filled in with the extract values.
+   */
+  template: string;
+  /**
+   * The ancestor selector to use to match if the template/stencil can be used to generate a selector.
+   */
+  selector: string;
+  /**
+   * Extraction rules, executed relative to the element found with `selector`. The keys are names of properties
+   * that can be referenced in the template. The values are JQuery/CSS Selectors.
+   */
+  extract: Record<string, string>;
+}
+
+/**
+ * A site-specific hint for generating selectors.
+ */
 export type SiteSelectorHint = {
   /**
    * Name for the rule hint-set.
@@ -28,15 +50,30 @@ export type SiteSelectorHint = {
    */
   siteValidator: (validatorProps: {
     element: HTMLElement;
-    location: Location;
+    location?: Location;
   }) => boolean;
+
+  /**
+   * Patterns to exclude from generated selectors.
+   * @see safeCssSelector
+   */
   badPatterns: CssSelectorMatch[];
   /**
    * If any of these selectors apply, they will be included in the generated selector. Useful for SPA sites that have
    * tabs/workspaces, e.g., Salesforce and Zendesk.
    */
   requiredSelectors: string[];
+  /**
+   * Selector templates/stencils to generate more complex selector patterns from.
+   */
+  selectorTemplates: SelectorTemplate[];
+  /**
+   * Robust ancestor selectors to scope generated selectors.
+   */
   stableAnchors: CssSelectorMatch[];
+  /**
+   * Attributes that are known to indicate a unique element on the site.
+   */
   uniqueAttributes: string[];
 };
 
@@ -63,6 +100,17 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
       /^\[name='leftsidebar'] */,
     ],
     requiredSelectors: ['[role="main"]>.active'],
+    selectorTemplates: [
+      {
+        template:
+          '.slds-form-element:has(.test-id__field-label:contains("{{ label.text }}"))',
+        // Check if element is a labelled form detail element
+        selector: ".slds-form-element:has(.test-id__field-label)",
+        extract: {
+          label: ".test-id__field-label",
+        },
+      },
+    ],
     stableAnchors: [
       ".active",
       ".consoleRelatedRecord",
@@ -76,34 +124,31 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
   },
   {
     siteName: "Zendesk",
-    siteValidator: ({ element, location }) =>
-      location.host.endsWith(".zendesk.com"),
-    badPatterns: [],
-    requiredSelectors: ["#main_panes>.workspace:not([visibility='hidden'])"],
+    siteValidator: ({ location }) => location.host.endsWith(".zendesk.com"),
+    badPatterns: [getAttributeSelectorRegex("data-garden-version")],
+    selectorTemplates: [],
+    requiredSelectors: [
+      // Require visible workspace panel. Can't use visibility: hidden because whitespace between style name and
+      // value varies by cached vs. non-cached panes
+      "#main_panes>.workspace:not([style*='visibility:'])",
+    ],
     stableAnchors: [
       ".workspace",
       "#wrapper",
       "#main_navigation",
       "#main_panes",
     ],
-    uniqueAttributes: ["data-component-id"],
-  },
-  {
-    // We need a selector hint to use in tests because and they're currently hardcoded.
-    // TODO: Delete the test hint(s) once we have them in an API
-    siteName: "TestHint",
-    siteValidator: ({ element }) =>
-      $(element).closest("[data-test-hint]").length > 0,
-    badPatterns: [],
-    requiredSelectors: [".grandparent>.parent"],
-    stableAnchors: [],
-    uniqueAttributes: [],
+    uniqueAttributes: ["data-test-id", "data-component-id"],
   },
 ];
 
+/**
+ * Returns the site selector hint that applies for the given element.
+ * @param element the element to generate a selector for
+ */
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator({ element, location: window.location })
+    hint.siteValidator({ element, location: document.location })
   );
 
   return (
@@ -112,6 +157,7 @@ export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
       siteValidator: () => false,
       badPatterns: [],
       uniqueAttributes: [],
+      selectorTemplates: [],
       stableAnchors: [],
       requiredSelectors: [],
     }

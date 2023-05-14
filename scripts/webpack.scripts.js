@@ -34,6 +34,7 @@ module.exports = mergeWithShared({
     "webextension-polyfill": "{}",
     rollbar: "{init(){}}",
     "@/vendors/hoverintent/hoverintent": "{}",
+    nunjucks: "{}",
   },
   resolve: {
     // Mock any modules that appear in __mocks__
