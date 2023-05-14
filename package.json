@@ -32,7 +32,7 @@
     "@atlaskit/tree": "^8.8.2",
     "@cfworker/json-schema": "^1.8.1",
     "@datadog/browser-rum": "^4.42.1",
-    "@floating-ui/dom": "^1.2.7",
+    "@floating-ui/dom": "^1.2.8",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
