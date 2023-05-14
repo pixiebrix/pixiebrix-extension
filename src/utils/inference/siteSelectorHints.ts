@@ -18,12 +18,28 @@
 import { type CssSelectorMatch } from "css-selector-generator/types/types";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInference";
 
+/**
+ * A template/stencil for generating selectors on an application.
+ */
 export interface SelectorTemplate {
+  /**
+   * The selector template/stencil. Will be filled in with the extract values.
+   */
   template: string;
+  /**
+   * The ancestor selector to use to match if the template/stencil can be used to generate a selector.
+   */
   selector: string;
+  /**
+   * Extraction rules, executed relative to the element found with `selector`. The keys are names of properties
+   * that can be referenced in the template. The values are JQuery/CSS Selectors.
+   */
   extract: Record<string, string>;
 }
 
+/**
+ * A site-specific hint for generating selectors.
+ */
 export type SiteSelectorHint = {
   /**
    * Name for the rule hint-set.
@@ -33,14 +49,27 @@ export type SiteSelectorHint = {
    * Return true if the these hints apply to the current site.
    */
   siteValidator: (element?: HTMLElement) => boolean;
+  /**
+   * Patterns to exclude from generated selectors.
+   * @see safeCssSelector
+   */
   badPatterns: CssSelectorMatch[];
   /**
    * If any of these selectors apply, they will be included in the generated selector. Useful for SPA sites that have
    * tabs/workspaces, e.g., Salesforce and Zendesk.
    */
   requiredSelectors: string[];
+  /**
+   * Selector templates/stencils to generate more complex selector patterns from.
+   */
   selectorTemplates: SelectorTemplate[];
+  /**
+   * Robust ancestor selectors to scope generated selectors.
+   */
   stableAnchors: CssSelectorMatch[];
+  /**
+   * Attributes that are known to indicate a unique element on the site.
+   */
   uniqueAttributes: string[];
 };
 
@@ -71,6 +100,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
       {
         template:
           '.slds-form-element:has(.test-id__field-label:contains("{{ label.text }}"))',
+        // Check if element is a labelled form detail element
         selector: ".slds-form-element:has(.test-id__field-label)",
         extract: {
           label: ".test-id__field-label",
@@ -88,28 +118,12 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     ],
     uniqueAttributes: ["data-component-id"],
   },
-  {
-    // We need a selector hint to use in tests because and they're currently hardcoded.
-    // TODO: Delete the test hint(s) once we have them in an API
-    siteName: "TestHint",
-    siteValidator: (element) =>
-      $(element).closest("[data-test-hint]").length > 0,
-    badPatterns: [],
-    requiredSelectors: [".grandparent>.parent"],
-    selectorTemplates: [
-      {
-        template: '.customSelectorWithLabel("{{ label.text }}")',
-        selector: ".container",
-        extract: {
-          label: ".testLabel",
-        },
-      },
-    ],
-    stableAnchors: [],
-    uniqueAttributes: [],
-  },
 ];
 
+/**
+ * Returns the site selector hint that applies for the given element.
+ * @param element the element to generate a selector for
+ */
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
     hint.siteValidator(element)

@@ -38,7 +38,6 @@ import {
   type SiteSelectorHint,
 } from "@/utils/inference/siteSelectorHints";
 import { type ElementInfo } from "@/pageScript/frameworks";
-import { findSingleElement } from "@/utils/requireSingleElement";
 import { type Framework } from "@/pageScript/messenger/constants";
 import * as pageScript from "@/pageScript/messenger/api";
 import { renderString } from "nunjucks";
@@ -292,7 +291,7 @@ export function safeCssSelector(
 }
 
 /**
- * Returns true if selectors match any of the same elements
+ * Returns true if selectors match any of the same elements.
  */
 function selectorsOverlap(
   lhs: string,
@@ -447,35 +446,58 @@ function getElementAttributes(element: HTMLElement) {
   return attributes;
 }
 
-function findTemplate(element: HTMLElement, templates: SelectorTemplate[]) {
-  const template = templates.find((template) =>
-    element.matches(template.selector)
-  );
-
-  if (!template) {
-    return;
+function maybeInstantiateSelectorTemplate(
+  ancestorElement: HTMLElement,
+  template: SelectorTemplate
+): string | null {
+  if (!ancestorElement.matches(template.selector)) {
+    return null;
   }
 
-  const extractedValues = mapValues(template.extract, (extractRule) => {
-    const closestParent = $(element).closest(extractRule);
-    if (closestParent.length > 0) {
-      return {
-        text: closestParent.text(),
-      };
+  const extractedValues = mapValues(template.extract, (extractRule: string) => {
+    const element = $safeFind(extractRule, ancestorElement);
+
+    if (!element) {
+      return null;
     }
 
-    const closestAncestorElement = $(element)
-      .closest(`:has(${extractRule})`)
-      // eslint-disable-next-line -- jQuery false positive
-      .find(extractRule);
-
     return {
-      attr: { ...getElementAttributes(closestAncestorElement[0]) },
-      text: closestAncestorElement.text(),
+      ...getElementAttributes(element[0]),
+      text: element.text(),
     };
   });
 
+  // All extraction rules must match, otherwise return no match
+  if (Object.values(extractedValues).some((value) => value == null)) {
+    return null;
+  }
+
   return renderString(template.template, extractedValues);
+}
+
+/**
+ * Return a selector matching one of the provided templates, or null if none of the templates match
+ * @param ancestorElement an ancestor of the element to generate the selector for
+ * @param templates the selector templates/stencils to try
+ * @param root the root element to generate selectors relative to. Used to ensure the generated selector is unique
+ */
+function getAncestorSelectorTemplate({
+  ancestorElement,
+  root,
+  templates,
+}: {
+  ancestorElement: HTMLElement;
+  templates: SelectorTemplate[];
+  root?: HTMLElement | Document | JQuery<HTMLElement | Document>;
+}): string | null {
+  // Find first template that matches and uniquely selects the ancestor
+  return templates
+    .map((template) =>
+      maybeInstantiateSelectorTemplate(ancestorElement, template)
+    )
+    .find(
+      (selector) => selector != null && doesSelectOneElement(selector, root)
+    );
 }
 
 function getMatchingRequiredSelectors(
@@ -485,19 +507,45 @@ function getMatchingRequiredSelectors(
   return requiredSelectors.find((selector) => element.matches(selector));
 }
 
-function mapSelectorOverrideToAncestors(element: HTMLElement) {
+/**
+ * Return selectors for ancestors of the element based on the matching selector hint, if any hint matches.
+ * @param element The element to generate selectors for
+ * @param root the root to generate selectors against, either a DOM element or the document
+ */
+function mapSelectorOverrideToAncestors(
+  element: HTMLElement,
+  root: HTMLElement | Document
+): Array<{ element: HTMLElement; selectorOverride: string }> {
   const { requiredSelectors, selectorTemplates } = getSiteSelectorHint(element);
 
-  const ancestors = $(element).parents().get();
+  const ancestors =
+    root === document
+      ? $(element).parents().get()
+      : $(element)
+          .parentsUntil(root as HTMLElement)
+          .get();
 
-  return ancestors
-    .map((ancestor) => ({
-      element: ancestor,
-      selectorOverride:
-        findTemplate(ancestor, selectorTemplates) ??
-        getMatchingRequiredSelectors(ancestor, requiredSelectors),
-    }))
-    .filter(({ selectorOverride }) => selectorOverride != null);
+  // Ancestors from root to element
+  ancestors.reverse();
+
+  let currentRoot = root;
+  const result = [];
+
+  for (const ancestor of ancestors) {
+    const selectorOverride =
+      getAncestorSelectorTemplate({
+        ancestorElement: ancestor,
+        root: currentRoot,
+        templates: selectorTemplates,
+      }) ?? getMatchingRequiredSelectors(ancestor, requiredSelectors);
+
+    if (selectorOverride) {
+      currentRoot = ancestor;
+      result.push({ element: ancestor, selectorOverride });
+    }
+  }
+
+  return result;
 }
 
 export function inferSelectorsIncludingStableAncestors(
@@ -569,32 +617,57 @@ export function inferSelectors(
   );
 }
 
-type InferSelector = {
-  elements: HTMLElement[];
-  root: HTMLElement;
+type InferSelectorArgs = {
+  /**
+   * The root to generate the selector with respect to. Provide null to use the document.
+   */
+  root: HTMLElement | null;
+  /**
+   * True to exclude class names that appear to be randomly generated.
+   */
   excludeRandomClasses: boolean;
 };
 
-export async function inferElementSelector({
-  elements,
+/**
+ * @deprecated framework-based (e.g., React/Vue/etc.) traversal is deprecated
+ */
+type FrameworkSelectorArgs = {
+  /**
+   * The front-end framework to assume for component traversal.
+   */
+  framework?: Framework;
+  /**
+   * Number of non-DOM components to traverse up.
+   */
+  traverseUp: number;
+};
+
+/**
+ * Infers valids selectors for a single element.
+ * @see inferMultiElementSelector
+ */
+export async function inferSingleElementSelector({
+  element,
   root,
   excludeRandomClasses,
   framework,
   traverseUp,
-}: InferSelector & {
-  framework?: Framework;
-  traverseUp: number;
-}): Promise<ElementInfo> {
-  const selector = safeCssSelector(elements, {
-    excludeRandomClasses,
-  });
-
-  // We're using pageScript getElementInfo only when specific framework is used.
-  // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
-  // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
-  // In any case, the pageScript is not necessary if framework is not specified, because selectElement
-  // only needs to return the selector alternatives.
+}: InferSelectorArgs &
+  FrameworkSelectorArgs & {
+    element: HTMLElement;
+  }): Promise<ElementInfo> {
   if (framework) {
+    // We're using pageScript getElementInfo only when specific framework is used.
+    // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+    // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+    // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+    // only needs to return the selector alternatives.
+    const selector = safeCssSelector([element], {
+      excludeRandomClasses,
+    });
+
+    // XXX: pageScript.getElementInfo doesn't support `root` because we can't pass an element across the pageScript
+    // boundary.
     return pageScript.getElementInfo({
       selector,
       framework,
@@ -602,32 +675,49 @@ export async function inferElementSelector({
     });
   }
 
-  const element = findSingleElement(selector);
+  // Ancestors in order from root to element
+  const ancestorSelectorOverrides = mapSelectorOverrideToAncestors(
+    element,
+    root
+  );
 
-  const selectorOverrideMap = mapSelectorOverrideToAncestors(element);
+  const ancestorSelectors = ancestorSelectorOverrides.map(
+    ({ selectorOverride }) => selectorOverride
+  );
 
   const rootOverride =
-    selectorOverrideMap.length > 0 ? selectorOverrideMap[0].element : root;
+    // Scope the element generation to the innermost ancestor with a selector override
+    ancestorSelectorOverrides.length > 0
+      ? ancestorSelectorOverrides.at(-1).element
+      : root;
 
-  const selectorWithRootOverride = safeCssSelector(elements, {
+  const selectorWithRootOverride = safeCssSelector([element], {
     root: rootOverride,
     excludeRandomClasses,
   });
-
-  const overrideSelectorStrings = selectorOverrideMap
-    .map(({ selectorOverride }) => selectorOverride)
-    .reverse();
 
   // Prepend all the selectors with the required selectors
   const inferredSelectors = uniq(
     [
       selectorWithRootOverride,
       ...inferSelectorsIncludingStableAncestors(element, rootOverride),
-    ].map((selector) => [...overrideSelectorStrings, selector].join(" "))
+    ].map((selector) => [...ancestorSelectors, selector].join(" "))
   );
 
+  // Filter out any malformed selectors and/or selectors that don't exactly match the element
+  const validatedSelectors = inferredSelectors.filter((selector) => {
+    try {
+      const match = $safeFind(selector, root);
+      return match.length === 1 && match.get(0) === element;
+    } catch {
+      console.warn("Invalid selector", selector);
+      // Catch invalid selectors
+      return false;
+    }
+  });
+
   return {
-    selectors: inferredSelectors,
+    selectors: validatedSelectors,
     framework: null,
     hasData: false,
     tagName: element.tagName,
@@ -635,12 +725,21 @@ export async function inferElementSelector({
   };
 }
 
+/**
+ * Infer a selector that matches multiple elements.
+ * @param elements the example elements
+ * @param root the root element, or null to generate with respect to the document
+ * @param excludeRandomClasses true to attempt to exclude random classes, e.g. CSS module hashes
+ * @param shouldSelectSimilar true to expand the selector to match similar elements
+ * @see inferSingleElementSelector
+ */
 export function inferMultiElementSelector({
   elements,
   root,
   excludeRandomClasses,
   shouldSelectSimilar,
-}: InferSelector & {
+}: InferSelectorArgs & {
+  elements: HTMLElement[];
   shouldSelectSimilar?: boolean;
 }): ElementInfo {
   const selector = shouldSelectSimilar
@@ -663,17 +762,20 @@ export function inferMultiElementSelector({
     selectors: inferredSelectors,
     framework: null,
     hasData: false,
-    tagName: elements[0].tagName, // Will first element tag be enough/same for all elemtns?
+    tagName: elements[0].tagName, // Will first element tag be enough/same for all elements?
     parent: null,
     isMulti: true,
   };
 }
 
 /**
- * Returns true if selector uniquely identifies an element on the page
+ * Returns true if selector uniquely identifies a single element on the page.
  */
-function doesSelectOneElement(selector: string): boolean {
-  return $safeFind(selector).length === 1;
+function doesSelectOneElement(
+  selector: string,
+  parent?: HTMLElement | Document | JQuery<HTMLElement | Document>
+): boolean {
+  return $safeFind(selector, parent).length === 1;
 }
 
 export function getCommonAncestor(...args: HTMLElement[]): HTMLElement {
