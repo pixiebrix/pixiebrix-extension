@@ -128,8 +128,8 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
     badPatterns: [getAttributeSelectorRegex("data-garden-version")],
     selectorTemplates: [],
     requiredSelectors: [
-      // Require visible workspace panel. Can't use visibility: hidden because whitespace between style name and
-      // value varies by cached vs. non-cached panes
+      // Require visible workspace panel. Can't use `visibility: hidden` because whitespace between style name and
+      // value varies by cached vs. non-cached panes: `visibility: hidden` vs. `visibility:hidden`.
       "#main_panes>.workspace:not([style*='visibility:'])",
     ],
     stableAnchors: [
@@ -148,7 +148,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
  */
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator({ element, location: document.location })
+    hint.siteValidator({ element, location: window.location })
   );
 
   return (

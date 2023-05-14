@@ -33,6 +33,7 @@ import { uniq } from "lodash";
 import { SELECTOR_HINTS } from "@/utils/inference/siteSelectorHints";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { $safeFind } from "@/helpers";
+import { siteSelectorHintFactory } from "@/testUtils/factories/selectorFactories";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
@@ -778,6 +779,49 @@ describe("inferElementSelector", () => {
         '.active .container:has(.testLabel:contains("label")) div',
         '.active .container:has(.testLabel:contains("label")) .testValue',
       ],
+      tagName: "DIV",
+    });
+  });
+
+  it("handles hostname-based site hint", async () => {
+    window.location.assign("https://www.example.com/");
+
+    SELECTOR_HINTS.push(
+      siteSelectorHintFactory({
+        // Need an extra layer because it's a factory override
+        siteValidator:
+          () =>
+          ({ location }: { element: HTMLElement; location: Location }) =>
+            location.hostname === "www.example.com",
+        requiredSelectors: [".container"],
+      })
+    );
+
+    document.body.innerHTML = html`
+      <div>
+        <div>
+          <div class="container">
+            <span class="testLabel">test label</span>
+            <div class="testValue">Test Label Value</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const element = $safeFind(".testValue").get(0);
+
+    expect(
+      await inferSingleElementSelector({
+        element,
+        root: document.body,
+        excludeRandomClasses: true,
+        traverseUp: 0,
+      })
+    ).toStrictEqual({
+      framework: null,
+      hasData: false,
+      parent: null,
+      selectors: [".container div", ".container .testValue"],
       tagName: "DIV",
     });
   });

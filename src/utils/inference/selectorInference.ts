@@ -718,6 +718,10 @@ export async function inferSingleElementSelector({
     }
   });
 
+  if (validatedSelectors.length === 0) {
+    throw new Error("Automatic selector generation failed");
+  }
+
   return {
     selectors: validatedSelectors,
     framework: null,
