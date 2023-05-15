@@ -31,16 +31,15 @@ export function reactivateEveryTab(): void {
 /**
  * Log details about a navigation to the console for debugging.
  */
-async function traceNavigation({ tabId, frameId }: Target): Promise<void> {
-  const url = await getTabUrl({ tabId, frameId });
+async function traceNavigation(target: Target): Promise<void> {
+  const url = await getTabUrl(target);
 
   console.debug("onNavigation", url, {
-    tabId,
-    frameId,
+    ...target,
     isScriptableUrl: isScriptableUrl(url),
-    canInject: await canInjectTab({ tabId, frameId }),
+    canInject: await canInjectTab(target),
     // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
-    canAccessTab: await canAccessTab({ tabId, frameId }),
+    canAccessTab: await canAccessTab(target),
   });
 }
 
