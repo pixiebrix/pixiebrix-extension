@@ -27,6 +27,9 @@ import {
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 
+// Track module load so we hear something from content script
+console.debug("contentScript: module load");
+
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
   const context = top === self ? "" : `in frame ${location.href}`;
@@ -44,14 +47,14 @@ async function initContentScript() {
   setInstalledInThisSession();
 
   // Keeping the import separate ensures that no side effects are run until this point
-  const contentScript = import(
+  const contentScriptPromise = import(
     /* webpackChunkName: "contentScriptCore" */ "./contentScriptCore"
   );
 
   // "imported" timing includes the parsing of the file, which can take 500-1000ms
-  void logPromiseDuration("contentScript: imported", contentScript);
+  void logPromiseDuration("contentScript: imported", contentScriptPromise);
 
-  const { init } = await contentScript;
+  const { init } = await contentScriptPromise;
   await logPromiseDuration("contentScript: ready", init());
   setReadyInThisDocument(uuid);
 

@@ -18,15 +18,37 @@
 import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
 import { type Target } from "@/types/messengerTypes";
-import { canAccessTab } from "@/permissions/permissionsUtils";
+import { canAccessTab, isScriptableUrl } from "@/permissions/permissionsUtils";
 import { debounce } from "lodash";
+import { syncFlagOn } from "@/store/syncFlags";
+import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
   void forEachTab(reactivateTab);
 }
 
+/**
+ * Log details about a navigation to the console for debugging.
+ */
+async function traceNavigation({ tabId, frameId }: Target): Promise<void> {
+  const url = await getTabUrl({ tabId, frameId });
+
+  console.debug("onNavigation", url, {
+    tabId,
+    frameId,
+    isScriptableUrl: isScriptableUrl(url),
+    canInject: await canInjectTab({ tabId, frameId }),
+    // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
+    canAccessTab: await canAccessTab({ tabId, frameId }),
+  });
+}
+
 async function onNavigation({ tabId, frameId }: Target): Promise<void> {
+  if (syncFlagOn("navigation-trace")) {
+    void traceNavigation({ tabId, frameId });
+  }
+
   if (await canAccessTab({ tabId, frameId })) {
     handleNavigate({ tabId, frameId });
   }

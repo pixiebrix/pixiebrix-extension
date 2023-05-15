@@ -60,11 +60,18 @@ interface TargetState {
   ready: boolean;
 }
 
+/**
+ * Returns true iff the content script has been injected in the content script Javascript VM for the window.
+ */
 export function isInstalledInThisSession(): boolean {
   return CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis;
 }
 
+/**
+ * Mark that the content script has been injected in content script Javascript VM for the window.
+ */
 export function setInstalledInThisSession(): void {
+  // eslint-disable-next-line security/detect-object-injection -- symbol
   window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
 }
 
