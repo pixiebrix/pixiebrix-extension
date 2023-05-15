@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 
 const { reducer, actions } = extensionsSlice;
 
-const PLAYGROUND_URL = "https://www.pixiebrix.com/playground";
+const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
 const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
 const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
 
