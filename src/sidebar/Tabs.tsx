@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
-import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
+import React, { useEffect } from "react";
+import { type PanelEntry } from "@/sidebar/types";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
@@ -31,39 +31,40 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
-
-type SidebarTabsProps = SidebarEntries & {
-  activeKey: string;
-  onSelectTab: (eventKey: string) => void;
-  onCloseTemporaryTab: (nonce: UUID) => void;
-  onResolveTemporaryPanel: (nonce: UUID, action: SubmitPanelAction) => void;
-};
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectSidebarActiveTabKey,
+  selectSidebarTabsContent,
+} from "@/sidebar/sidebarSelectors";
+import sidebarSlice from "@/sidebar/sidebarSlice";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
-const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
-  activeKey,
-  panels,
-  forms,
-  temporaryPanels,
-  recipeToActivate,
-  onSelectTab,
-  onCloseTemporaryTab,
-  onResolveTemporaryPanel,
-}) => {
-  const onSelect = useCallback(
-    (eventKey: string) => {
-      reportEvent("ViewSidePanelPanel", {
-        // FIXME: this was wrong, eventKey is not an extensionId
-        // ...selectEventData(lookup.get(extensionId)),
-        initialLoad: false,
-      });
-      onSelectTab(eventKey);
-    },
-    [onSelectTab]
+const Tabs: React.FC = () => {
+  const dispatch = useDispatch();
+  const activeKey = useSelector(selectSidebarActiveTabKey);
+  const { panels, forms, temporaryPanels, recipeToActivate } = useSelector(
+    selectSidebarTabsContent
   );
+
+  const onSelect = (eventKey: string) => {
+    reportEvent("ViewSidePanelPanel", {
+      // FIXME: this was wrong, eventKey is not an extensionId
+      // ...selectEventData(lookup.get(extensionId)),
+      initialLoad: false,
+    });
+    dispatch(sidebarSlice.actions.selectTab(eventKey));
+  };
+
+  const onCloseTemporaryTab = (nonce: UUID) => {
+    dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+  };
+
+  const onResolveTemporaryPanel = (nonce: UUID, action: SubmitPanelAction) => {
+    dispatch(sidebarSlice.actions.resolveTemporaryPanel({ nonce, action }));
+  };
 
   useEffect(
     () => {

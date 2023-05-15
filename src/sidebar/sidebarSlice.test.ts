@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, { type SidebarState } from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import {
   cancelTemporaryPanel,
@@ -23,6 +23,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import { type SidebarState } from "@/sidebar/types";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories

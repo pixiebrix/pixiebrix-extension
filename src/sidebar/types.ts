@@ -261,3 +261,17 @@ export type PanelRunMeta = {
   runId: UUID;
   extensionId: UUID;
 };
+
+export type SidebarState = SidebarEntries & {
+  activeKey: string;
+
+  /**
+   * Pending panel activation request.
+   *
+   * Because there's a race condition between activatePanel and setPanels, etc. we need to keep track of the activation
+   * request in order to fulfill it once the panel is registered.
+   */
+  pendingActivePanel: ActivatePanelOptions | null;
+};
+
+export type SidebarRootState = { sidebar: SidebarState };
