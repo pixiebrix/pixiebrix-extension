@@ -21,8 +21,9 @@ import { type SiteSelectorHint } from "@/utils/inference/siteSelectorHints";
 export const siteSelectorHintFactory = define<SiteSelectorHint>({
   siteName: "testSite",
   siteValidator: () => false,
-  badPatterns: [],
-  uniqueAttributes: [],
-  stableAnchors: [],
-  requiredSelectors: [],
+  badPatterns: [] as SiteSelectorHint["badPatterns"],
+  uniqueAttributes: [] as SiteSelectorHint["uniqueAttributes"],
+  stableAnchors: [] as SiteSelectorHint["stableAnchors"],
+  selectorTemplates: () => [] as SiteSelectorHint["selectorTemplates"],
+  requiredSelectors: () => [] as SiteSelectorHint["requiredSelectors"],
 });

@@ -20,7 +20,7 @@ import Overlay from "@/vendors/Overlay";
 import {
   expandedCssSelector,
   findContainer,
-  inferElementSelector,
+  inferSingleElementSelector,
   inferMultiElementSelector,
 } from "@/utils/inference/selectorInference";
 import { type Framework } from "@/pageScript/messenger/constants";
@@ -435,10 +435,16 @@ export async function selectElement({
         });
       }
 
-      return inferElementSelector({
+      if (elements.length !== 1) {
+        console.warn(
+          "Expected exactly one element to for single element selector generation"
+        );
+      }
+
+      return inferSingleElementSelector({
         traverseUp,
         root: rootElement,
-        elements,
+        element: elements[0],
         excludeRandomClasses,
         framework,
       });
