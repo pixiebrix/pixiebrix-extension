@@ -21,7 +21,7 @@ import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
-import { compact, pick } from "lodash";
+import { compact, pick, uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { count as registrySize } from "@/registry/localRegistry";
 import { count as logSize } from "@/telemetry/logging";
@@ -51,7 +51,10 @@ async function collectDiagnostics({
       eventCount: await eventsSize(),
     },
     extensions: {
-      blueprints: compact(extensions.map((x) => x._recipe)),
+      blueprints: uniqBy(
+        compact(extensions.map((x) => x._recipe)),
+        (x) => x.id
+      ),
       extensions: extensions.filter((x) => !x._recipe),
     },
   };
