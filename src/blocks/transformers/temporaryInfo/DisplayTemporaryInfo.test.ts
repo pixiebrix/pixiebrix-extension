@@ -30,8 +30,6 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {
   isRendererErrorPayload,
-  isRendererLoadingPayload,
-  isRendererRunPayload,
   type PanelPayload,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
@@ -52,7 +50,6 @@ import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import pDefer from "p-defer";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import { Except } from "type-fest";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
