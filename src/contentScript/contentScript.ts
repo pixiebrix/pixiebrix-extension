@@ -16,7 +16,7 @@
  */
 
 import "./contentScript.scss";
-import "@/development/visualInjection";
+import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import {
   isInstalledInThisSession,
@@ -26,6 +26,7 @@ import {
 } from "@/contentScript/ready";
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { syncFlagOn } from "@/store/syncFlags";
 
 // Track module load so we hear something from content script
 console.debug("contentScript: module load");
@@ -63,6 +64,13 @@ async function initContentScript() {
     unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });
+
+  if (
+    process.env.ENVIRONMENT === "development" ||
+    syncFlagOn("navigation-trace")
+  ) {
+    addContentScriptIndicator();
+  }
 }
 
 if (location.protocol === "https:") {

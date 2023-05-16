@@ -22,6 +22,8 @@ import { canAccessTab, isScriptableUrl } from "@/permissions/permissionsUtils";
 import { debounce } from "lodash";
 import { syncFlagOn } from "@/store/syncFlags";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
+import { isContentScriptRegistered } from "webext-dynamic-content-scripts/utils";
+import { ensureContentScript } from "@/background/contentScript";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -37,6 +39,7 @@ async function traceNavigation(target: Target): Promise<void> {
   console.debug("onNavigation", url, {
     ...target,
     isScriptableUrl: isScriptableUrl(url),
+    isContentScriptRegistered: await isContentScriptRegistered(url),
     canInject: await canInjectTab(target),
     // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
     canAccessTab: await canAccessTab(target),
@@ -45,11 +48,21 @@ async function traceNavigation(target: Target): Promise<void> {
 
 async function onNavigation({ tabId, frameId }: Target): Promise<void> {
   if (syncFlagOn("navigation-trace")) {
-    void traceNavigation({ tabId, frameId });
+    await traceNavigation({ tabId, frameId });
   }
 
   if (await canAccessTab({ tabId, frameId })) {
-    handleNavigate({ tabId, frameId });
+    try {
+      // We're seeing some cases, e.g., LinkedIn, where the content script doesn't appear to be injected in the
+      // top-level frame but is injected in the sub-frames. Current theory is that document_idle runs unreliably
+      // on certain SPAs when they update history quickly.
+      // https://stackoverflow.com/questions/33248629/when-does-a-run-at-document-idle-content-script-run
+      // https://stackoverflow.com/questions/43233115/chrome-content-scripts-arent-working-domcontentloaded-listener-does-not-execut
+      await ensureContentScript({ tabId, frameId });
+      handleNavigate({ tabId, frameId });
+    } catch {
+      // Best-effort to inject content script if it's not already injected
+    }
   }
 }
 

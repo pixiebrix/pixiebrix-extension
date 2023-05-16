@@ -142,6 +142,7 @@ export const ensureContentScript = memoizeUntilSettled(
       await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
         signal,
         milliseconds: timeoutMillis,
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- known to be a number
         message: `contentScript not ready in ${timeoutMillis}ms`,
       });
 
@@ -150,7 +151,7 @@ export const ensureContentScript = memoizeUntilSettled(
       controller.abort();
     }
   },
-  // Stringify since Target is an object
+  // Stringify because Target is an object
   { cacheKey: JSON.stringify }
 );
 
