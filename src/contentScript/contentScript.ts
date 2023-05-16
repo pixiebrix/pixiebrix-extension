@@ -37,8 +37,8 @@ async function initContentScript() {
   const uuid = uuidv4();
 
   if (isInstalledInThisSession()) {
-    console.error(
-      `contentScript: was requested twice in the same context, aborting injection ${context}`
+    console.warn(
+      `contentScript: was requested twice in the same context, skipping content script initialization ${context}`
     );
     return;
   }

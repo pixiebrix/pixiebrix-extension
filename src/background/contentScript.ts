@@ -178,7 +178,7 @@ async function ensureContentScriptWithoutTimeout(
   }
 
   if (isContentScriptStaticallyRegistered(state.url)) {
-    // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
+    // TODO: Potentially inject anyway on pixiebrix.com: https://github.com/pixiebrix/pixiebrix-extension/issues/4189
     debug("handled by the browser, due to the manifest", target);
   } else if (await isContentScriptDynamicallyRegistered(state.url)) {
     debug(
