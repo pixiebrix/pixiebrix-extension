@@ -22,16 +22,16 @@ export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
     return null;
   }
 
-  if (entry.type === "home") {
-    return "home-panel";
-  }
-
   if (entry.type === "activateRecipe") {
     return `activate-${entry.recipeId}`;
   }
 
   if (entry.type === "panel") {
     return `panel-${entry.extensionId}`;
+  }
+
+  if (entry.type === "staticPanel") {
+    return `static-${entry.key}-panel`;
   }
 
   // Use nonce to keep eventKeys unique for forms and temporary panels from the same extension

@@ -58,7 +58,7 @@ export type EntryType =
   | "form"
   | "temporaryPanel"
   | "activateRecipe"
-  | "home";
+  | "staticPanel";
 
 /**
  * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
@@ -200,8 +200,10 @@ export type ActivateRecipeEntry = BasePanelEntry & {
   heading: string;
 };
 
-export type HomePanelEntry = BasePanelEntry & {
-  type: "home";
+export type StaticPanelEntry = BasePanelEntry & {
+  heading: string;
+  type: "staticPanel";
+  key: string;
 };
 
 export type SidebarEntry =
@@ -209,7 +211,7 @@ export type SidebarEntry =
   | FormEntry
   | TemporaryPanelEntry
   | ActivateRecipeEntry
-  | HomePanelEntry;
+  | StaticPanelEntry;
 
 /**
  * The entries currently added to the sidebar

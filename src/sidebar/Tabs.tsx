@@ -31,7 +31,7 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
-import HomePanel from "@/sidebar/HomePanel";
+import HomePanel, { HOME_PANEL, useHomePanel } from "@/sidebar/HomePanel";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
@@ -61,6 +61,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
         // ...selectEventData(lookup.get(extensionId)),
         initialLoad: false,
       });
+      console.log("evnet key:", eventKey, eventKeyForEntry(HOME_PANEL));
       onSelectTab(eventKey);
     },
     [onSelectTab]
@@ -78,7 +79,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     []
   );
 
-  console.log("Default active key", activeKey);
+  console.log("Active key:", activeKey);
 
   return (
     <Tab.Container
@@ -92,7 +93,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           <Nav.Link
             key="home-panel"
             className={styles.tabHeader}
-            eventKey={eventKeyForEntry({ type: "home" })}
+            eventKey={eventKeyForEntry(HOME_PANEL)}
           >
             <span className={styles.tabTitle}>Home</span>
           </Nav.Link>
@@ -148,7 +149,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           <Tab.Pane
             className={cx("h-100", styles.paneOverrides)}
             key="home-panel"
-            eventKey={eventKeyForEntry({ type: "home" })}
+            eventKey={eventKeyForEntry(HOME_PANEL)}
           >
             <ErrorBoundary>
               <HomePanel />

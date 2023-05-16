@@ -13,12 +13,12 @@ exports[`SidebarApp renders 1`] = `
         role="tablist"
       >
         <a
-          aria-controls="panel-container-tabpane-home-panel"
+          aria-controls="panel-container-tabpane-static-home-panel"
           aria-selected="true"
           class="tabHeader nav-link active"
-          data-rb-event-key="home-panel"
+          data-rb-event-key="static-home-panel"
           href="#"
-          id="panel-container-tab-home-panel"
+          id="panel-container-tab-static-home-panel"
           role="tab"
         >
           <span
@@ -33,9 +33,9 @@ exports[`SidebarApp renders 1`] = `
       >
         <div
           aria-hidden="false"
-          aria-labelledby="panel-container-tab-home-panel"
+          aria-labelledby="panel-container-tab-static-home-panel"
           class="fade h-100 paneOverrides tab-pane active show"
-          id="panel-container-tabpane-home-panel"
+          id="panel-container-tabpane-static-home-panel"
           role="tabpanel"
         >
           <div>

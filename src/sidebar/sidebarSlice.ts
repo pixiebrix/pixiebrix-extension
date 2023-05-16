@@ -37,6 +37,7 @@ import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
+import { HOME_PANEL } from "@/sidebar/HomePanel";
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;
@@ -55,7 +56,7 @@ const emptySidebarState: SidebarState = {
   forms: [],
   temporaryPanels: [],
   recipeToActivate: null,
-  activeKey: eventKeyForEntry({ type: "home" }),
+  activeKey: eventKeyForEntry(HOME_PANEL),
   pendingActivePanel: null,
 };
 
@@ -68,7 +69,8 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
     state.forms.some((x) => eventKeyForEntry(x) === query) ||
     state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
     state.panels.some((x) => eventKeyForEntry(x) === query) ||
-    eventKeyForEntry(state.recipeToActivate) === query
+    eventKeyForEntry(state.recipeToActivate) === query ||
+    eventKeyForEntry(HOME_PANEL) === query
   );
 }
 
@@ -121,8 +123,7 @@ function findNextActiveKey(
     }
   }
 
-  // TODO: default is the home tab
-  return eventKeyForEntry({ type: "home" });
+  return eventKeyForEntry(HOME_PANEL);
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
@@ -172,6 +173,8 @@ const sidebarSlice = createSlice({
   name: "sidebar",
   reducers: {
     selectTab(state, action: PayloadAction<string>) {
+      console.log("selectTab payload", action.payload);
+      console.log("eventKeyExists", eventKeyExists(state, action.payload));
       // We were seeing some automatic calls to selectTab with a stale event key...
       state.activeKey = eventKeyExists(state, action.payload)
         ? action.payload

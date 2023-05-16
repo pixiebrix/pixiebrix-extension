@@ -37,7 +37,6 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import DelayedRender from "@/components/DelayedRender";
-import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**

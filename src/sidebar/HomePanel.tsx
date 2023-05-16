@@ -16,6 +16,20 @@
  */
 
 import React from "react";
+import { type StaticPanelEntry } from "@/sidebar/types";
+
+export const HOME_PANEL: StaticPanelEntry = {
+  type: "staticPanel",
+  heading: "Home",
+  key: "home",
+};
+export const useHomePanel = (): {
+  tabContent: React.ReactNode;
+  panel: StaticPanelEntry;
+} => ({
+  panel: { type: "staticPanel", heading: "Home", key: "home" },
+  tabContent: <></>,
+});
 
 const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
 
