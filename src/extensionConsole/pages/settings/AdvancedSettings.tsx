@@ -36,6 +36,8 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
 import { reloadIfNewVersionIsReady } from "@/chrome";
+import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
+import AsyncButton from "@/components/AsyncButton";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -44,6 +46,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { restrict, permit } = useFlags();
   const { partnerId, authServiceId, authMethod } = useSelector(selectSettings);
+  const { exportDiagnostics } = useDiagnostics();
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
@@ -231,6 +234,10 @@ const AdvancedSettings: React.FunctionComponent = () => {
         <Button variant="info" onClick={requestExtensionUpdate}>
           Check Updates
         </Button>
+
+        <AsyncButton variant="info" onClick={exportDiagnostics}>
+          Export Diagnostics
+        </AsyncButton>
 
         {permit("clear-token") && (
           <Button variant="warning" onClick={clear}>

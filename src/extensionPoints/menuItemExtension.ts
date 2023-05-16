@@ -262,9 +262,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     console.debug(
       `Cancelling ${this.cancelPending.size} menuItemExtension observers`
     );
+
     for (const cancelObserver of this.cancelPending) {
       try {
-        // `cancelObserver` should always be defined given it's type. But check just in case since we don't have
+        // `cancelObserver` should always be defined given its type. But check just in case since we don't have
         // strictNullChecks on
         if (cancelObserver) {
           cancelObserver();
@@ -426,7 +427,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const [menuPromise, cancelWait] = awaitElementOnce(selector);
     this.cancelPending.add(cancelWait);
 
-    const $menuContainers = (await cancelOnNavigation(menuPromise)) as JQuery;
+    let $menuContainers;
+
+    try {
+      $menuContainers = (await cancelOnNavigation(menuPromise)) as JQuery;
+    } catch (error) {
+      console.debug(
+        `${this.instanceNonce}: stopped awaiting menu container for ${this.id}`,
+        { error }
+      );
+      throw error;
+    }
 
     const menuContainers = [...this.menus.values()];
 

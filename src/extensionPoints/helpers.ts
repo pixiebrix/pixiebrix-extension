@@ -133,8 +133,6 @@ export function awaitElementOnce(
     return [Promise.resolve($root), noop];
   }
 
-  // Console.debug("Awaiting selectors", selectors);
-
   const [nextSelector, ...rest] = selectors;
 
   // Find immediately, or wait for it to be initialized
@@ -145,7 +143,7 @@ export function awaitElementOnce(
 
   if ($elements.length === 0) {
     console.debug(
-      `Selector not immediately found; awaiting selector: ${nextSelector}`
+      `awaitElementOnce: selector not immediately found; awaiting selector: ${nextSelector}`
     );
 
     const [nextElementPromise, cancel] = mutationSelector(
@@ -158,9 +156,15 @@ export function awaitElementOnce(
       nextElementPromise.then(async ($nextElement) => {
         const [innerPromise, inner] = awaitElementOnce(rest, $nextElement);
         innerCancel = inner;
+
+        console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
+
         return innerPromise;
       }),
       () => {
+        console.debug(
+          `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`
+        );
         cancel();
         innerCancel();
       },

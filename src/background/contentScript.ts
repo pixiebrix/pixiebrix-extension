@@ -142,6 +142,7 @@ export const ensureContentScript = memoizeUntilSettled(
       await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
         signal,
         milliseconds: timeoutMillis,
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- known to be a number
         message: `contentScript not ready in ${timeoutMillis}ms`,
       });
 
@@ -150,7 +151,7 @@ export const ensureContentScript = memoizeUntilSettled(
       controller.abort();
     }
   },
-  // Stringify since Target is an object
+  // Stringify because Target is an object
   { cacheKey: JSON.stringify }
 );
 
@@ -177,7 +178,7 @@ async function ensureContentScriptWithoutTimeout(
   }
 
   if (isContentScriptStaticallyRegistered(state.url)) {
-    // TODO: Potentially inject anyway on pixiebrix.com https://github.com/pixiebrix/pixiebrix-extension/issues/4189
+    // TODO: Potentially inject anyway on pixiebrix.com: https://github.com/pixiebrix/pixiebrix-extension/issues/4189
     debug("handled by the browser, due to the manifest", target);
   } else if (await isContentScriptDynamicallyRegistered(state.url)) {
     debug(
