@@ -21,7 +21,6 @@ import {
   removeListener,
   type SidebarListener,
 } from "@/sidebar/protocol";
-import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
@@ -36,7 +35,6 @@ import { type AnyAction } from "redux";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
-import DelayedRender from "@/components/DelayedRender";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
@@ -95,14 +93,6 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
-  // const showTabs =
-  //   !isEmpty(sidebarState.panels) ||
-  //   !isEmpty(sidebarState.forms) ||
-  //   !isEmpty(sidebarState.temporaryPanels) ||
-  //   sidebarState.recipeToActivate != null;
-
-  const showTabs = true;
-
   return (
     <div className="full-height">
       <ErrorBoundary>
@@ -111,26 +101,20 @@ const ConnectedSidebar: React.VFC = () => {
           // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
           ignoreApiError
         >
-          {showTabs ? (
-            <Tabs
-              {...sidebarState}
-              onSelectTab={(eventKey: string) => {
-                dispatch(sidebarSlice.actions.selectTab(eventKey));
-              }}
-              onCloseTemporaryTab={(nonce) => {
-                dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-              }}
-              onResolveTemporaryPanel={(nonce, action) => {
-                dispatch(
-                  sidebarSlice.actions.resolveTemporaryPanel({ nonce, action })
-                );
-              }}
-            />
-          ) : (
-            <DelayedRender millis={300}>
-              <DefaultPanel />
-            </DelayedRender>
-          )}
+          <Tabs
+            {...sidebarState}
+            onSelectTab={(eventKey: string) => {
+              dispatch(sidebarSlice.actions.selectTab(eventKey));
+            }}
+            onCloseTemporaryTab={(nonce) => {
+              dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+            }}
+            onResolveTemporaryPanel={(nonce, action) => {
+              dispatch(
+                sidebarSlice.actions.resolveTemporaryPanel({ nonce, action })
+              );
+            }}
+          />
         </RequireAuth>
       </ErrorBoundary>
     </div>
