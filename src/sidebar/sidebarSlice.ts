@@ -121,6 +121,7 @@ function findNextActiveKey(
     }
   }
 
+  // TODO: default is the home tab
   return null;
 }
 
