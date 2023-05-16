@@ -69,9 +69,7 @@ const Header: React.FunctionComponent = () => {
           theme === "default" ? styles.themeColorOverride : styles.themeColor
         )}
       >
-        <span>
-          Options <FontAwesomeIcon icon={faCog} />
-        </span>
+        <FontAwesomeIcon icon={faCog} />
       </Button>
     </div>
   );
