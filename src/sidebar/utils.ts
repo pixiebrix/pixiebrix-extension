@@ -16,6 +16,7 @@
  */
 
 import { type SidebarEntries, type SidebarEntry } from "@/sidebar/types";
+import { HOME_PANEL } from "@/sidebar/HomePanel";
 
 export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {
@@ -64,5 +65,9 @@ export function defaultEventKey({
     return eventKeyForEntry(panels.at(0));
   }
 
-  return recipeToActivate && eventKeyForEntry(recipeToActivate);
+  if (recipeToActivate) {
+    return eventKeyForEntry(recipeToActivate);
+  }
+
+  return eventKeyForEntry(HOME_PANEL);
 }
