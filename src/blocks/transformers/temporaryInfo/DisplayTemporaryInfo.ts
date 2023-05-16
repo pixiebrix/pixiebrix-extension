@@ -32,6 +32,7 @@ import {
 import {
   cancelTemporaryPanels,
   cancelTemporaryPanelsForExtension,
+  registerEmptyTemporaryPanel,
   stopWaitingForTemporaryPanels,
   updatePanelDefinition,
   waitForTemporaryPanel,
@@ -126,7 +127,8 @@ export type TemporaryDisplayInputs = {
 
 /**
  * Display a brick in a temporary panel: sidebar, modal, or popover.
- * @param getPanelEntry factory to generate the panel entry
+ * @param panelEntryMetadata the panel entry without a payload
+ * @param getPayload factory to generate the panel entry payload
  * @param location the location to show the panel
  * @param signal abort signal
  * @param target target element, if location is popover
@@ -194,13 +196,20 @@ export async function displayTemporaryInfo({
       void stopWaitingForTemporaryPanels([nonce]);
     });
   } else {
+    // Popover/modal location
+    // Clear existing to remove stale modals/popovers
+    await cancelTemporaryPanelsForExtension(panelEntryMetadata.extensionId);
+
+    // Register empty panel for "loading" state
+    registerEmptyTemporaryPanel(nonce, panelEntryMetadata.extensionId);
+
+    // Create a source URL for content that will be loaded in the panel iframe
     const frameSource = await createFrameSource(nonce, location);
+
     if (location === "popover") {
       if (target === document) {
         throw new BusinessError("Target must be an element for popover");
       }
-
-      await cancelTemporaryPanelsForExtension(panelEntryMetadata.extensionId);
 
       const popover = showPopover({
         url: frameSource,
