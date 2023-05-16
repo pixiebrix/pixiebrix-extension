@@ -53,4 +53,30 @@ describe("awaitElementOnce", () => {
 
     await expect(promise).resolves.toHaveLength(1);
   });
+
+  it("finds button within modal content", async () => {
+    // Mimics targeting the LinkedIn modal
+
+    document.body.innerHTML = getDocument(
+      '<div id="root"></div>'
+    ).body.innerHTML;
+
+    const [promise] = awaitElementOnce(
+      'div[data-test-modal-id="send-invite-modal"] div:has(>button[aria-label="Cancel adding a note"])'
+    );
+
+    $("#root").append(
+      '<div data-test-modal-id="send-invite-modal"><div></div></div>'
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await tick();
+
+    $("[data-test-modal-id] div").append(
+      '<button aria-label="Cancel adding a note"></button>'
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await tick();
+
+    await expect(promise).resolves.toHaveLength(1);
+  });
 });

@@ -22,6 +22,8 @@ import { canAccessTab, isScriptableUrl } from "@/permissions/permissionsUtils";
 import { debounce } from "lodash";
 import { syncFlagOn } from "@/store/syncFlags";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
+import { isContentScriptRegistered } from "webext-dynamic-content-scripts/utils";
+import { getTargetState } from "@/contentScript/ready";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -29,14 +31,17 @@ export function reactivateEveryTab(): void {
 }
 
 /**
- * Log details about a navigation to the console for debugging.
+ * Log details about a navigation to the console for debugging content script/navigation bugs.
  */
 async function traceNavigation(target: Target): Promise<void> {
-  const url = await getTabUrl(target);
+  const tabUrl = await getTabUrl(target);
 
-  console.debug("onNavigation", url, {
+  console.debug("onNavigation: tab: %s, frame: %s", tabUrl, target.frameId, {
     ...target,
-    isScriptableUrl: isScriptableUrl(url),
+    tabUrl,
+    isScriptableUrl: isScriptableUrl(tabUrl),
+    contentScriptState: await getTargetState(target),
+    isContentScriptRegistered: await isContentScriptRegistered(tabUrl),
     canInject: await canInjectTab(target),
     // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
     canAccessTab: await canAccessTab(target),
@@ -45,10 +50,13 @@ async function traceNavigation(target: Target): Promise<void> {
 
 async function onNavigation({ tabId, frameId }: Target): Promise<void> {
   if (syncFlagOn("navigation-trace")) {
-    void traceNavigation({ tabId, frameId });
+    await traceNavigation({ tabId, frameId });
   }
 
   if (await canAccessTab({ tabId, frameId })) {
+    // The content script will already be injected on webNavigation.onCommitted via webext-dynamic-content-scripts and
+    // content-scripts-register-polyfill, so we don't have to call ensureContentScript before messaging the
+    // content script with handleNavigate.
     handleNavigate({ tabId, frameId });
   }
 }
