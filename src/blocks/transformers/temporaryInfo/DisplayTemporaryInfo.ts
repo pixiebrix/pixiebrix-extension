@@ -25,7 +25,10 @@ import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
-import { type PanelPayload, type TemporaryPanelEntry } from "@/sidebar/types";
+import {
+  type PanelPayload,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import {
   cancelTemporaryPanels,
   cancelTemporaryPanelsForExtension,
@@ -68,15 +71,20 @@ export async function createFrameSource(
   return frameSource;
 }
 
-export type GetPanelEntry = () => Promise<
-  Except<TemporaryPanelEntry, "type" | "nonce">
+export type TemporaryPanelEntryMetadata = Except<
+  TemporaryPanelEntry,
+  "type" | "nonce" | "payload"
 >;
 
 export type TemporaryDisplayInputs = {
   /**
-   * Factory method to generate the temporary panel entry.
+   * The temporary panel entry.
    */
-  getPanelEntry: GetPanelEntry;
+  panelEntryMetadata: TemporaryPanelEntryMetadata;
+  /**
+   * Factory function to generate the panel payload
+   */
+  getPayload: () => Promise<PanelPayload>;
   /**
    * The location to display the panel.
    */
@@ -128,7 +136,8 @@ export type TemporaryDisplayInputs = {
  * @param onCloseClick optional callback to invoke when the user clicks the close button on the popover/modal
  */
 export async function displayTemporaryInfo({
-  getPanelEntry,
+  panelEntryMetadata,
+  getPayload,
   location,
   signal,
   target,
@@ -138,7 +147,6 @@ export async function displayTemporaryInfo({
   onCloseClick,
 }: TemporaryDisplayInputs): Promise<JsonObject> {
   const nonce = uuidv4();
-  const entry = await getPanelEntry();
   let onReady: () => void;
 
   const controller = new AbortController();
@@ -147,52 +155,52 @@ export async function displayTemporaryInfo({
     void cancelTemporaryPanels([nonce]);
   });
 
-  switch (location) {
-    case "panel": {
-      await ensureSidebar();
+  function updateEntry(newEntry: Except<TemporaryPanelEntry, "type">) {
+    updatePanelDefinition(newEntry);
 
-      showTemporarySidebarPanel({ ...entry, nonce });
-
-      window.addEventListener(
-        PANEL_HIDING_EVENT,
-        () => {
-          controller.abort();
-        },
-        {
-          signal: controller.signal,
-        }
-      );
-
-      controller.signal.addEventListener("abort", () => {
-        hideTemporarySidebarPanel(nonce);
-        void stopWaitingForTemporaryPanels([nonce]);
-      });
-
-      break;
+    if (location === "panel") {
+      updateTemporarySidebarPanel(newEntry);
+    } else {
+      updateTemporaryOverlayPanel(newEntry);
     }
+  }
 
-    case "modal": {
-      const frameSource = await createFrameSource(nonce, location);
-      showModal({
-        url: frameSource,
-        controller,
-        onOutsideClick() {
-          // Unlike popover, the default behavior for modal is to force interaction
-          if (onOutsideClick) {
-            onOutsideClick(nonce);
-          }
-        },
-      });
-      break;
-    }
+  if (location === "panel") {
+    await ensureSidebar();
 
-    case "popover": {
-      const frameSource = await createFrameSource(nonce, location);
+    // Show loading
+    showTemporarySidebarPanel({
+      ...panelEntryMetadata,
+      nonce,
+      payload: {
+        key: uuidv4(),
+        extensionId: panelEntryMetadata.extensionId,
+        loadingMessage: "Loading",
+      },
+    });
+
+    window.addEventListener(
+      PANEL_HIDING_EVENT,
+      () => {
+        controller.abort();
+      },
+      {
+        signal: controller.signal,
+      }
+    );
+
+    controller.signal.addEventListener("abort", () => {
+      hideTemporarySidebarPanel(nonce);
+      void stopWaitingForTemporaryPanels([nonce]);
+    });
+  } else {
+    const frameSource = await createFrameSource(nonce, location);
+    if (location === "popover") {
       if (target === document) {
         throw new BusinessError("Target must be an element for popover");
       }
 
-      await cancelTemporaryPanelsForExtension(entry.extensionId);
+      await cancelTemporaryPanelsForExtension(panelEntryMetadata.extensionId);
 
       const popover = showPopover({
         url: frameSource,
@@ -213,29 +221,42 @@ export async function displayTemporaryInfo({
       onReady = once(() => {
         popover.onReady();
       });
-
-      break;
-    }
-
-    default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-      throw new BusinessError(`Invalid location: ${location}`);
+    } else {
+      showModal({
+        url: frameSource,
+        controller,
+        onOutsideClick() {
+          // Unlike popover, the default behavior for modal is to force interaction
+          if (onOutsideClick) {
+            onOutsideClick(nonce);
+          }
+        },
+      });
     }
   }
 
+  // Load the real payload
+  const payload = await getPayload();
+
+  const entry: Except<TemporaryPanelEntry, "type"> = {
+    ...panelEntryMetadata,
+    nonce,
+    payload,
+  };
+
+  // Show the real payload
+  updateEntry(entry);
+
   const rerender = async () => {
     try {
-      const newEntry = { ...(await getPanelEntry()), nonce };
+      const newEntry = {
+        ...panelEntryMetadata,
+        nonce,
+        payload: await getPayload(),
+      };
       // Force a re-render by changing the key
       newEntry.payload.key = uuidv4();
-
-      updatePanelDefinition(newEntry);
-
-      if (location === "panel") {
-        updateTemporarySidebarPanel(newEntry);
-      } else {
-        updateTemporaryOverlayPanel(newEntry);
-      }
+      updateEntry(newEntry);
     } catch (error) {
       // XXX: in the future, we may want to updatePanelDefinition with the error
       console.warn("Ignoring error re-rendering temporary panel", error);
@@ -246,14 +267,8 @@ export async function displayTemporaryInfo({
     $(document).on("statechange", rerender);
   }
 
-  let result = null;
-
   try {
-    result = await waitForTemporaryPanel(
-      nonce,
-      { ...entry, nonce },
-      { onRegister: onReady }
-    );
+    return await waitForTemporaryPanel(nonce, entry, { onRegister: onReady });
   } catch (error) {
     if (isSpecificError(error, ClosePanelAction)) {
       onCloseClick?.(nonce);
@@ -274,7 +289,7 @@ export async function displayTemporaryInfo({
     $(document).off("statechange", rerender);
   }
 
-  return result ?? {};
+  return {};
 }
 
 class DisplayTemporaryInfo extends Transformer {
@@ -353,8 +368,14 @@ class DisplayTemporaryInfo extends Transformer {
     // Counter for tracking branch execution
     let counter = 0;
 
-    const getPanelEntry: GetPanelEntry = async () => {
-      const payload = (await runRendererPipeline(
+    const panelEntryMetadata: TemporaryPanelEntryMetadata = {
+      heading: title,
+      extensionId,
+      blueprintId,
+    };
+
+    const getPayload = async () => {
+      const result = await runRendererPipeline(
         bodyPipeline?.__value__ ?? [],
         {
           key: "body",
@@ -362,20 +383,16 @@ class DisplayTemporaryInfo extends Transformer {
         },
         {},
         target
-      )) as PanelPayload;
+      );
 
       counter++;
 
-      return {
-        heading: title,
-        payload,
-        extensionId,
-        blueprintId,
-      };
+      return result as PanelPayload;
     };
 
     return displayTemporaryInfo({
-      getPanelEntry,
+      panelEntryMetadata,
+      getPayload,
       location,
       signal: abortSignal,
       target,

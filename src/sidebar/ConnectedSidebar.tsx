@@ -29,7 +29,7 @@ import {
   type FormEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
 import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";

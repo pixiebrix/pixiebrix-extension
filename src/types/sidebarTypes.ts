@@ -18,30 +18,13 @@
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { type JsonObject } from "type-fest";
-
-export type RendererError = {
-  /**
-   * A unique id for the content, used control re-rendering (similar to `key` in React)
-   */
-  key: string;
-  /**
-   * The error message to show in the panel
-   */
-  // TypeScript was having problems handling the type SerializedError here
-  error: unknown;
-  /**
-   * The extension run id.
-   * @since 1.7.0
-   */
-  runId: UUID;
-  /**
-   * The extension id that produced the error
-   * @since 1.7.0
-   */
-  extensionId: UUID;
-};
+import {
+  type RendererErrorPayload,
+  type RendererLoadingPayload,
+  type RendererRunPayload,
+} from "@/types/rendererTypes";
+import { type MessageContext } from "@/types/loggerTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -58,7 +41,37 @@ export type EntryType = "panel" | "form" | "temporaryPanel" | "activateRecipe";
 /**
  * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
  */
-export type PanelPayload = RendererPayload | RendererError | null;
+export type PanelPayload =
+  | RendererRunPayload
+  | RendererLoadingPayload
+  | RendererErrorPayload
+  | null;
+
+export function isRendererRunPayload(
+  payload: PanelPayload
+): payload is RendererRunPayload {
+  return "blockId" in payload && "args" in payload && "ctxt" in payload;
+}
+
+export function isRendererLoadingPayload(
+  payload: PanelPayload
+): payload is RendererLoadingPayload {
+  return "loadingMessage" in payload;
+}
+
+export function isRendererErrorPayload(
+  payload: PanelPayload
+): payload is RendererErrorPayload {
+  return "error" in payload;
+}
+
+/**
+ * Context for panel, with fields required for functionality marked as required.
+ */
+export type PanelContext = MessageContext & {
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
+};
 
 /**
  * An action to resolve a panel with a type and detail.

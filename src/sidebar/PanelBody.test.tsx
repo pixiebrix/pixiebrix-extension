@@ -18,15 +18,16 @@
 import React from "react";
 import { render } from "@/sidebar/testHelpers";
 import PanelBody from "@/sidebar/PanelBody";
-import { type RendererError } from "@/sidebar/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import {
+  type RendererErrorPayload,
+  type RendererRunPayload,
+} from "@/types/rendererTypes";
 
 const extensionId = uuidv4();
 const blueprintId = registryIdFactory();
@@ -37,7 +38,7 @@ describe("PanelBody", () => {
   });
 
   it("renders application error", () => {
-    const payload: RendererError = {
+    const payload: RendererErrorPayload = {
       key: uuidv4(),
       error: serializeError(new Error("test error")),
       runId: uuidv4(),
@@ -57,7 +58,7 @@ describe("PanelBody", () => {
   });
 
   it("renders business error", () => {
-    const payload: RendererError = {
+    const payload: RendererErrorPayload = {
       key: uuidv4(),
       error: serializeError(new BusinessError("test error")),
       runId: uuidv4(),
@@ -77,7 +78,7 @@ describe("PanelBody", () => {
   });
 
   it("renders cancellation", () => {
-    const payload: RendererError = {
+    const payload: RendererErrorPayload = {
       key: uuidv4(),
       error: serializeError(new CancelError("test error")),
       runId: uuidv4(),
@@ -97,7 +98,7 @@ describe("PanelBody", () => {
   });
 
   it("renders html brick", async () => {
-    const payload: RendererPayload = {
+    const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
       extensionId,

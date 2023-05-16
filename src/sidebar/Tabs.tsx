@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import { type PanelEntry } from "@/sidebar/types";
+import { type PanelEntry } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";

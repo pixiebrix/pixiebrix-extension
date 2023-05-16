@@ -22,7 +22,7 @@ import {
   type FormEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";

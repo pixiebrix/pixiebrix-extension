@@ -23,7 +23,7 @@ import {
   type ActivateRecipeEntry,
   type SidebarEntry,
   type SidebarState,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";

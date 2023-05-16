@@ -18,7 +18,10 @@
 import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
-import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";
+import {
+  type PanelAction,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/blocks/errors";
 import { CancelError } from "@/errors/businessErrors";
 import { type Except } from "type-fest";

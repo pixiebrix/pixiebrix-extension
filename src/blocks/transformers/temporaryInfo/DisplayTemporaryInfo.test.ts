@@ -29,10 +29,11 @@ import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {
+  isRendererErrorPayload,
+  isRendererRunPayload,
   type PanelPayload,
-  type RendererError,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
@@ -46,8 +47,8 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import pDefer from "p-defer";
-
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { type RendererErrorPayload } from "@/types/rendererTypes";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
@@ -142,15 +143,7 @@ describe("DisplayTemporaryInfo", () => {
       payload: expect.toBeObject(),
     });
 
-    // Check structure for RendererPayload
-    expect(payload).toStrictEqual({
-      extensionId: expect.toBeString(),
-      key: expect.toBeString(),
-      runId: expect.toBeString(),
-      blockId: renderer.id,
-      args: expect.toBeObject(),
-      ctxt: expect.toBeObject(),
-    });
+    expect(isRendererRunPayload(payload)).toBe(true);
   });
 
   test("it returns error", async () => {
@@ -176,9 +169,8 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
 
-    // Check structure for RendererError
-    expect(payload).toHaveProperty("error");
-    const error = payload as RendererError;
+    expect(isRendererErrorPayload(payload)).toBe(true);
+    const error = payload as RendererErrorPayload;
     const errorMessage = (error.error as BusinessError).message;
     expect(errorMessage).toStrictEqual(message);
   });

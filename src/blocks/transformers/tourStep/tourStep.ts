@@ -30,11 +30,11 @@ import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
-  type GetPanelEntry,
   type RefreshTrigger,
   type TemporaryDisplayInputs,
+  type TemporaryPanelEntryMetadata,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type PanelButton, type PanelPayload } from "@/sidebar/types";
+import { type PanelButton, type PanelPayload } from "@/types/sidebarTypes";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 import { $safeFind } from "@/helpers";
 import { addOverlay } from "@/blocks/transformers/tourStep/overlay";
@@ -330,8 +330,24 @@ export class TourStepTransformer extends Transformer {
       removeOverlay = addOverlay(element as HTMLElement);
     }
 
-    const getPanelEntry: GetPanelEntry = async () => {
-      const payload = (await runRendererPipeline(
+    const actions: PanelButton[] = appearance?.controls?.actions ?? [
+      {
+        caption: isLastStep ? "Done" : "Next",
+        type: "submit",
+        variant: "light",
+      },
+    ];
+
+    const panelEntryMetadata: TemporaryPanelEntryMetadata = {
+      extensionId,
+      blueprintId,
+      heading: title,
+      actions,
+      showCloseButton: appearance?.controls?.closeButton !== "none",
+    };
+
+    const getPayload = async () => {
+      const result = await runRendererPipeline(
         (body as PipelineExpression)?.__value__ ?? [],
         {
           key: "body",
@@ -339,26 +355,11 @@ export class TourStepTransformer extends Transformer {
         },
         {},
         element
-      )) as PanelPayload;
+      );
 
       counter++;
 
-      const actions: PanelButton[] = appearance?.controls?.actions ?? [
-        {
-          caption: isLastStep ? "Done" : "Next",
-          type: "submit",
-          variant: "light",
-        },
-      ];
-
-      return {
-        extensionId,
-        blueprintId,
-        heading: title,
-        payload,
-        actions,
-        showCloseButton: appearance?.controls?.closeButton !== "none",
-      };
+      return result as PanelPayload;
     };
 
     // Outside click handler
@@ -386,7 +387,8 @@ export class TourStepTransformer extends Transformer {
 
     try {
       return await displayTemporaryInfo({
-        getPanelEntry,
+        panelEntryMetadata,
+        getPayload,
         target: element,
         location,
         signal: abortSignal,
