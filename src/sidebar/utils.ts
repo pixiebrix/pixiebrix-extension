@@ -19,7 +19,8 @@ import { type SidebarEntries, type SidebarEntry } from "@/sidebar/types";
 
 export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {
-    return null;
+    // TODO: fixme
+    return "home-panel";
   }
 
   if (entry.type === "activateRecipe") {

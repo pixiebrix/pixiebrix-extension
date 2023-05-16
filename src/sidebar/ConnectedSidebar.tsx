@@ -96,11 +96,13 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
-  const showTabs =
-    !isEmpty(sidebarState.panels) ||
-    !isEmpty(sidebarState.forms) ||
-    !isEmpty(sidebarState.temporaryPanels) ||
-    sidebarState.recipeToActivate != null;
+  // const showTabs =
+  //   !isEmpty(sidebarState.panels) ||
+  //   !isEmpty(sidebarState.forms) ||
+  //   !isEmpty(sidebarState.temporaryPanels) ||
+  //   sidebarState.recipeToActivate != null;
+
+  const showTabs = true;
 
   return (
     <div className="full-height">

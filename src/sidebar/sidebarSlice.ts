@@ -122,7 +122,7 @@ function findNextActiveKey(
   }
 
   // TODO: default is the home tab
-  return null;
+  return "home-panel";
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {

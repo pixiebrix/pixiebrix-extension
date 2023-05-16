@@ -31,6 +31,7 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
+import HomePanel from "@/sidebar/HomePanel";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
@@ -85,6 +86,14 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     >
       <div className="full-height bg-white">
         <Nav fill variant="tabs" onSelect={onSelect}>
+          {/*TODO: extract home panel key into a constant*/}
+          <Nav.Link
+            key="home-panel"
+            className={styles.tabHeader}
+            eventKey={eventKeyForEntry(null)}
+          >
+            <span className={styles.tabTitle}>Home</span>
+          </Nav.Link>
           {panels.map((panel) => (
             <Nav.Link
               key={panel.extensionId}
@@ -134,6 +143,15 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height">
+          <Tab.Pane
+            className={cx("h-100", styles.paneOverrides)}
+            key="home-panel"
+            eventKey={eventKeyForEntry(null)}
+          >
+            <ErrorBoundary>
+              <HomePanel />
+            </ErrorBoundary>
+          </Tab.Pane>
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}
