@@ -47,6 +47,8 @@ onUncaughtError((error) => {
 });
 
 export async function init(): Promise<void> {
+  console.debug("contentScriptCore: init");
+
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBlocks();

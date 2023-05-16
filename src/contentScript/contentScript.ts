@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// WARNING: this file MUST NOT directly or transitively import webext-messenger because it does not support being
+// imported multiple times in the same contentScript. It's only save to import webext-messenger in contentScriptCore.ts
+// which is behind a guarded dynamic import.
 import "./contentScript.scss";
 import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
@@ -26,9 +29,8 @@ import {
 } from "@/contentScript/ready";
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
-import { syncFlagOn } from "@/store/syncFlags";
 
-// Track module load so we hear something from content script
+// Track module load so we hear something from content script in the console if Chrome attempted to import the module.
 console.debug("contentScript: module load");
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
@@ -37,6 +39,10 @@ async function initContentScript() {
   const uuid = uuidv4();
 
   if (isInstalledInThisSession()) {
+    // `webext-dynamic-content-scripts` to 10.0.0-1 can inject the same content script multiple times
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/5743
+    // Must prevent multiple injection because repeat messenger registration causes message handling errors:
+    // https://github.com/pixiebrix/webext-messenger/issues/88
     console.warn(
       `contentScript: was requested twice in the same context, skipping content script initialization ${context}`
     );
@@ -65,10 +71,7 @@ async function initContentScript() {
     console.debug("contentScript: invalidated", uuid);
   });
 
-  if (
-    process.env.ENVIRONMENT === "development" ||
-    syncFlagOn("navigation-trace")
-  ) {
+  if (process.env.ENVIRONMENT === "development") {
     addContentScriptIndicator();
   }
 }
