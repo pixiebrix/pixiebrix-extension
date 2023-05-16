@@ -53,7 +53,12 @@ export type RendererError = {
  * @see TemporaryPanelEntry
  * @see ActivateRecipeEntry
  */
-export type EntryType = "panel" | "form" | "temporaryPanel" | "activateRecipe";
+export type EntryType =
+  | "panel"
+  | "form"
+  | "temporaryPanel"
+  | "activateRecipe"
+  | "home";
 
 /**
  * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
@@ -195,11 +200,16 @@ export type ActivateRecipeEntry = BasePanelEntry & {
   heading: string;
 };
 
+export type HomePanelEntry = BasePanelEntry & {
+  type: "home";
+};
+
 export type SidebarEntry =
   | PanelEntry
   | FormEntry
   | TemporaryPanelEntry
-  | ActivateRecipeEntry;
+  | ActivateRecipeEntry
+  | HomePanelEntry;
 
 /**
  * The entries currently added to the sidebar

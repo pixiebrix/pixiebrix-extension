@@ -55,7 +55,7 @@ const emptySidebarState: SidebarState = {
   forms: [],
   temporaryPanels: [],
   recipeToActivate: null,
-  activeKey: null,
+  activeKey: eventKeyForEntry({ type: "home" }),
   pendingActivePanel: null,
 };
 
@@ -122,7 +122,7 @@ function findNextActiveKey(
   }
 
   // TODO: default is the home tab
-  return "home-panel";
+  return eventKeyForEntry({ type: "home" });
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {

@@ -78,6 +78,8 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     []
   );
 
+  console.log("Default active key", activeKey);
+
   return (
     <Tab.Container
       id="panel-container"
@@ -90,7 +92,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           <Nav.Link
             key="home-panel"
             className={styles.tabHeader}
-            eventKey={eventKeyForEntry(null)}
+            eventKey={eventKeyForEntry({ type: "home" })}
           >
             <span className={styles.tabTitle}>Home</span>
           </Nav.Link>
@@ -146,7 +148,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           <Tab.Pane
             className={cx("h-100", styles.paneOverrides)}
             key="home-panel"
-            eventKey={eventKeyForEntry(null)}
+            eventKey={eventKeyForEntry({ type: "home" })}
           >
             <ErrorBoundary>
               <HomePanel />

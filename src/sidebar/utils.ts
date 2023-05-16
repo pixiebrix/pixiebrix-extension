@@ -19,7 +19,10 @@ import { type SidebarEntries, type SidebarEntry } from "@/sidebar/types";
 
 export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {
-    // TODO: fixme
+    return null;
+  }
+
+  if (entry.type === "home") {
     return "home-panel";
   }
 

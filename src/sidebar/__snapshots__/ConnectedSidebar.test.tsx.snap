@@ -6,95 +6,40 @@ exports[`SidebarApp renders 1`] = `
     class="full-height"
   >
     <div
-      data-testid="DelayedRender"
+      class="full-height bg-white"
     >
-      <div>
-        <div
-          class="root container"
+      <div
+        class="nav nav-tabs nav-fill"
+        role="tablist"
+      >
+        <a
+          aria-controls="panel-container-tabpane-home-panel"
+          aria-selected="true"
+          class="tabHeader nav-link active"
+          data-rb-event-key="home-panel"
+          href="#"
+          id="panel-container-tab-home-panel"
+          role="tab"
         >
-          <div
-            class="sidebarRow row"
+          <span
+            class="tabTitle"
           >
-            <div
-              class="col"
-            >
-              <img
-                alt=""
-                src="test-file-stub"
-                width="300"
-              />
-            </div>
-          </div>
-          <div
-            class="sidebarRow row"
-          >
-            <div
-              class="col"
-            >
-              <h4
-                class="callout"
-              >
-                Get started with PixieBrix
-              </h4>
-              <p>
-                Go to the PixieBrix tab via the 
-                <strong>
-                  Chrome Dev Tools
-                </strong>
-              </p>
-              <p>
-                <kbd>
-                  Ctrl + Shift + C
-                </kbd>
-                or
-                <kbd>
-                  F12
-                </kbd>
-              </p>
-            </div>
-          </div>
-          <div
-            class="sidebarRowWithDivider row"
-          >
-            <div
-              class="col"
-            >
-              <h4
-                class="tinyCallout"
-              >
-                Need more help?
-              </h4>
-              <p>
-                Visit the 
-                <a
-                  href="https://docs.pixiebrix.com/quick-start-guide"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Quick Start Guide
-                </a>
-                 or ask questions in the 
-                <a
-                  href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Slack Community
-                </a>
-                . 
-              </p>
-              <p>
-                Visit the 
-                <a
-                  href="https://www.pixiebrix.com/marketplace/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  PixieBrix Marketplace
-                </a>
-                 for ideas.
-              </p>
-            </div>
+            Home
+          </span>
+        </a>
+      </div>
+      <div
+        class="p-0 border-0 full-height tab-content"
+      >
+        <div
+          aria-hidden="false"
+          aria-labelledby="panel-container-tab-home-panel"
+          class="fade h-100 paneOverrides tab-pane active show"
+          id="panel-container-tabpane-home-panel"
+          role="tabpanel"
+        >
+          <div>
+            Hello home panel! 🖼
           </div>
         </div>
       </div>
