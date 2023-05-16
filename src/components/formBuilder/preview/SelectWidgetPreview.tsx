@@ -14,61 +14,62 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { type WidgetProps } from "@rjsf/core";
-import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
-import { type Schema } from "@/types/schemaTypes";
+import { type WidgetProps } from "@rjsf/core";
+import Select from "react-select";
+import { FormLabel, FormGroup } from "react-bootstrap";
 
-const RjsfSelectWidget = RjsfTheme.widgets.SelectWidget;
+type OptionType = { label: string; value: string };
 
-const SelectWidgetPreview: React.VFC<WidgetProps> = (props) => {
-  // If Select Options is a variable, then `props.schema.enum` holds the name of the variable (i.e. string).
-  const { enum: enumValues, oneOf } = props.schema;
-  if (typeof enumValues === "string" || typeof oneOf === "string") {
-    // @ts-expect-error enumValues || oneOf is always a string here
-    const varValue: string =
-      typeof enumValues === "string" ? enumValues : oneOf;
-    const enumOptions = [
-      {
-        value: varValue,
-        label: varValue,
-      },
-    ];
+const SelectWidgetPreview: React.FC<WidgetProps> = ({
+  schema,
+  id,
+  options,
+  value,
+  required,
+  disabled,
+  readonly,
+  onChange,
+  onBlur,
+  onFocus,
+  rawErrors,
+  label,
+}) => {
+  const _onChange = (option: OptionType | null) => {
+    onChange(option ? option.value : "");
+  };
 
-    const schema: Schema = {
-      ...props.schema,
-      enum: typeof enumValues === "string" ? [varValue] : undefined,
-      oneOf:
-        typeof oneOf === "string"
-          ? [
-              {
-                const: varValue,
-              },
-            ]
-          : undefined,
-    };
+  const _onBlur = () => {
+    onBlur(id, value);
+  };
 
-    return (
-      <RjsfSelectWidget
-        {...props}
-        disabled
-        options={{ enumOptions }}
-        schema={schema}
-        value={enumValues}
-      />
-    );
-  }
+  const _onFocus = () => {
+    onFocus(id, value);
+  };
 
-  if (!Array.isArray(props.options.enumOptions)) {
-    return <div>Please fill the values for each option.</div>;
-  }
+  const enumOptions = options.enumOptions as OptionType[];
+
+  const selectOptions = enumOptions.map(({ value, label }) => ({
+    value,
+    label,
+  }));
 
   return (
-    <RjsfSelectWidget
-      {...props}
-      value={props.value ?? props.schema.default ?? ""}
-    />
+    <FormGroup>
+      <FormLabel className={rawErrors?.length > 0 ? "text-danger" : ""}>
+        {label || schema.title}
+        {(label || schema.title) && required ? "*" : null}
+      </FormLabel>
+      <Select
+        id={id}
+        options={selectOptions}
+        isDisabled={disabled || readonly}
+        value={selectOptions.find((option) => option.value === value)}
+        onChange={_onChange}
+        onBlur={_onBlur}
+        onFocus={_onFocus}
+      />
+    </FormGroup>
   );
 };
 
