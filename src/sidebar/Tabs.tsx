@@ -31,7 +31,7 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
-import HomePanel, { HOME_PANEL, useHomePanel } from "@/sidebar/HomePanel";
+import HomePanel, { HOME_PANEL } from "@/sidebar/HomePanel";
 
 type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
@@ -89,13 +89,12 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     >
       <div className="full-height bg-white">
         <Nav fill variant="tabs" onSelect={onSelect}>
-          {/*TODO: extract home panel key into a constant*/}
           <Nav.Link
             key="home-panel"
             className={styles.tabHeader}
             eventKey={eventKeyForEntry(HOME_PANEL)}
           >
-            <span className={styles.tabTitle}>Home</span>
+            <span className={styles.tabTitle}>{HOME_PANEL.heading}</span>
           </Nav.Link>
           {panels.map((panel) => (
             <Nav.Link

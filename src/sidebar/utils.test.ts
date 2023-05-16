@@ -22,7 +22,7 @@ import { type FormEntry, type TemporaryPanelEntry } from "@/sidebar/types";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 describe("defaultEventKey", () => {
-  it("returns null no content", () => {
+  it("returns home panel if no other panels available", () => {
     expect(
       defaultEventKey({
         forms: [],
@@ -30,7 +30,7 @@ describe("defaultEventKey", () => {
         temporaryPanels: [],
         recipeToActivate: null,
       })
-    ).toBe(null);
+    ).toBe("static-home-panel");
   });
 
   it("prefers latest form", () => {
@@ -107,5 +107,11 @@ describe("eventKeyForEntry", () => {
     expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
       `temporaryPanel-${nonce}`
     );
+  });
+
+  it("uses key for static panels", () => {
+    const key = "test";
+    const entry = sidebarEntryFactory("staticPanel", { key });
+    expect(eventKeyForEntry(entry)).toBe(`static-${key}-panel`);
   });
 });
