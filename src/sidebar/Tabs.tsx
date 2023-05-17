@@ -37,7 +37,6 @@ import {
   selectSidebarTabsContent,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import HomePanel, { HOME_PANEL } from "@/sidebar/HomePanel";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -46,9 +45,8 @@ const permanentSidebarPanelAction = () => {
 const Tabs: React.FC = () => {
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
-  const { panels, forms, temporaryPanels, recipeToActivate } = useSelector(
-    selectSidebarTabsContent
-  );
+  const { panels, forms, temporaryPanels, recipeToActivate, staticPanels } =
+    useSelector(selectSidebarTabsContent);
 
   const onSelect = (eventKey: string) => {
     reportEvent("ViewSidePanelPanel", {
@@ -87,13 +85,15 @@ const Tabs: React.FC = () => {
     >
       <div className="full-height bg-white">
         <Nav fill variant="tabs" onSelect={onSelect}>
-          <Nav.Link
-            key="home-panel"
-            className={styles.tabHeader}
-            eventKey={eventKeyForEntry(HOME_PANEL)}
-          >
-            <span className={styles.tabTitle}>{HOME_PANEL.heading}</span>
-          </Nav.Link>
+          {staticPanels.map((staticPanel) => (
+            <Nav.Link
+              key={`static-${staticPanel.key}-panel`}
+              className={styles.tabHeader}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <span className={styles.tabTitle}>{staticPanel.heading}</span>
+            </Nav.Link>
+          ))}
           {panels.map((panel) => (
             <Nav.Link
               key={panel.extensionId}
@@ -143,15 +143,15 @@ const Tabs: React.FC = () => {
           )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height">
-          <Tab.Pane
-            className={cx("h-100", styles.paneOverrides)}
-            key="home-panel"
-            eventKey={eventKeyForEntry(HOME_PANEL)}
-          >
-            <ErrorBoundary>
-              <HomePanel />
-            </ErrorBoundary>
-          </Tab.Pane>
+          {staticPanels.map((staticPanel) => (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={`static-${staticPanel.key}-panel`}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <ErrorBoundary>{staticPanel.body}</ErrorBoundary>
+            </Tab.Pane>
+          ))}
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}

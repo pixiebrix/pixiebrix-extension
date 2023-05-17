@@ -23,6 +23,7 @@ export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
   isEmpty(sidebar.forms) &&
   isEmpty(sidebar.temporaryPanels) &&
+  isEmpty(sidebar.staticPanels) &&
   sidebar.recipeToActivate == null;
 
 export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
@@ -32,5 +33,6 @@ export const selectSidebarTabsContent = ({ sidebar }: SidebarRootState) => ({
   panels: sidebar.panels,
   forms: sidebar.forms,
   temporaryPanels: sidebar.temporaryPanels,
+  staticPanels: sidebar.staticPanels,
   recipeToActivate: sidebar.recipeToActivate,
 });

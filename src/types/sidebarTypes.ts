@@ -234,6 +234,7 @@ export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
   temporaryPanels: TemporaryPanelEntry[];
+  staticPanels: StaticPanelEntry[];
   recipeToActivate: ActivateRecipeEntry | null;
 };
 

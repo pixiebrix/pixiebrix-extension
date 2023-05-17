@@ -23,6 +23,7 @@ import {
   type ActivateRecipeEntry,
   type SidebarEntry,
   type SidebarState,
+  StaticPanelEntry,
 } from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
@@ -43,6 +44,7 @@ const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],
+  staticPanels: [],
   recipeToActivate: null,
   activeKey: eventKeyForEntry(HOME_PANEL),
   pendingActivePanel: null,
@@ -272,6 +274,13 @@ const sidebarSlice = createSlice({
         state.activeKey = next;
       } else {
         state.pendingActivePanel = payload;
+      }
+    },
+    addStaticPanel(state, action: PayloadAction<{ panel: StaticPanelEntry }>) {
+      state.staticPanels = [...state.staticPanels, action.payload.panel];
+
+      if (!state.activeKey || !eventKeyExists(state, state.activeKey)) {
+        state.activeKey = defaultEventKey(state);
       }
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
