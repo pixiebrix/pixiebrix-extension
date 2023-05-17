@@ -22,13 +22,14 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import PanelBody, { type PanelContext } from "@/sidebar/PanelBody";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
+import PanelBody from "@/sidebar/PanelBody";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 import { getTopLevelFrame } from "webext-messenger";
+import { type PanelContext } from "@/types/sidebarTypes";
+import { type RendererRunPayload } from "@/types/rendererTypes";
 
 type BlockElementProps = {
   pipeline: BlockPipeline;
@@ -49,7 +50,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   const panelContext = logger.context as PanelContext;
 
   const [payload, isLoading, error] =
-    useAsyncState<RendererPayload>(async () => {
+    useAsyncState<RendererRunPayload>(async () => {
       // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
       const topLevelFrame = await getTopLevelFrame();
 

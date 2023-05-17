@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type Dispatch, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -29,62 +29,58 @@ import {
   type FormEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice, { type SidebarState } from "./sidebarSlice";
-import { type AnyAction } from "redux";
+import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import DelayedRender from "@/components/DelayedRender";
-import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
+import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
  */
-function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
-  return {
-    onRenderPanels(panels: PanelEntry[]) {
-      dispatch(sidebarSlice.actions.setPanels({ panels }));
-    },
-    onShowForm(form: FormEntry) {
-      dispatch(sidebarSlice.actions.addForm({ form }));
-    },
-    onHideForm({ nonce }: Partial<FormEntry>) {
-      dispatch(sidebarSlice.actions.removeForm(nonce));
-    },
-    onActivatePanel(options: ActivatePanelOptions) {
-      dispatch(sidebarSlice.actions.activatePanel(options));
-    },
-    onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
-      dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
-    },
-    onShowTemporaryPanel(panel: TemporaryPanelEntry) {
-      dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
-    },
-    onHideTemporaryPanel({ nonce }) {
-      dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-    },
-    onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
-      dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
-    },
-    onHideActivateRecipe(recipeId: RegistryId) {
-      dispatch(sidebarSlice.actions.hideActivateRecipe());
-    },
-  };
-}
-
-const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
-
-const ConnectedSidebar: React.VFC = () => {
+function useConnectedListener(): SidebarListener {
   const dispatch = useDispatch();
-  const sidebarState = useSelector(selectState);
-
-  const listener: SidebarListener = useMemo(
-    () => getConnectedListener(dispatch),
+  return useMemo(
+    () => ({
+      onRenderPanels(panels: PanelEntry[]) {
+        dispatch(sidebarSlice.actions.setPanels({ panels }));
+      },
+      onShowForm(form: FormEntry) {
+        dispatch(sidebarSlice.actions.addForm({ form }));
+      },
+      onHideForm({ nonce }: Partial<FormEntry>) {
+        dispatch(sidebarSlice.actions.removeForm(nonce));
+      },
+      onActivatePanel(options: ActivatePanelOptions) {
+        dispatch(sidebarSlice.actions.activatePanel(options));
+      },
+      onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
+        dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
+      },
+      onShowTemporaryPanel(panel: TemporaryPanelEntry) {
+        dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
+      },
+      onHideTemporaryPanel({ nonce }) {
+        dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+      },
+      onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
+        dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
+      },
+      onHideActivateRecipe(recipeId: RegistryId) {
+        dispatch(sidebarSlice.actions.hideActivateRecipe());
+      },
+    }),
     [dispatch]
   );
+}
+
+const ConnectedSidebar: React.VFC = () => {
+  const listener = useConnectedListener();
+  const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
 
   // `effect` will run once on component mount since listener and formsRef don't change on renders
   useEffect(() => {
@@ -96,12 +92,6 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
-  const showTabs =
-    !isEmpty(sidebarState.panels) ||
-    !isEmpty(sidebarState.forms) ||
-    !isEmpty(sidebarState.temporaryPanels) ||
-    sidebarState.recipeToActivate != null;
-
   return (
     <div className="full-height">
       <ErrorBoundary>
@@ -110,25 +100,12 @@ const ConnectedSidebar: React.VFC = () => {
           // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
           ignoreApiError
         >
-          {showTabs ? (
-            <Tabs
-              {...sidebarState}
-              onSelectTab={(eventKey: string) => {
-                dispatch(sidebarSlice.actions.selectTab(eventKey));
-              }}
-              onCloseTemporaryTab={(nonce) => {
-                dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-              }}
-              onResolveTemporaryPanel={(nonce, action) => {
-                dispatch(
-                  sidebarSlice.actions.resolveTemporaryPanel({ nonce, action })
-                );
-              }}
-            />
-          ) : (
+          {sidebarIsEmpty ? (
             <DelayedRender millis={300}>
               <DefaultPanel />
             </DelayedRender>
+          ) : (
+            <Tabs />
           )}
         </RequireAuth>
       </ErrorBoundary>

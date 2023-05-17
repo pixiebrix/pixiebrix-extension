@@ -35,7 +35,7 @@ import {
   NoRendererError,
 } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
-import { type PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/types/sidebarTypes";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";

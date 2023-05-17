@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-right: 17px;
+.loadingMessage {
+  margin-top: 1rem;
+  margin-left: 2rem;
 
-  :global(.container) {
-    margin-left: 3px;
-    margin-right: 3px;
+  &:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(6, end) 900ms infinite;
+    animation: ellipsis steps(6, end) 900ms infinite;
+    /* ascii code for the ellipsis character */
+    content: "\2026";
+    width: 0;
   }
 }
 
-.empty {
-  padding-left: 15px;
+@keyframes ellipsis {
+  to {
+    width: 40px;
+  }
 }
 
-.alert {
-  margin-top: 1rem;
+@-webkit-keyframes ellipsis {
+  to {
+    width: 40px;
+  }
 }

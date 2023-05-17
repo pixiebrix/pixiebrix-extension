@@ -21,12 +21,11 @@ import { expectContext } from "@/utils/expectContext";
 import type {
   FormEntry,
   PanelEntry,
-  RendererError,
   ActivatePanelOptions,
   TemporaryPanelEntry,
   ActivateRecipeEntry,
-} from "@/sidebar/types";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
+  PanelPayload,
+} from "@/types/sidebarTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
@@ -347,7 +346,7 @@ export function updateHeading(extensionId: UUID, heading: string): void {
 export function upsertPanel(
   { extensionId, extensionPointId, blueprintId }: ExtensionRef,
   heading: string,
-  payload: RendererPayload | RendererError
+  payload: PanelPayload
 ): void {
   const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {
