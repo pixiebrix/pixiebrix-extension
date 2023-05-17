@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -44,35 +44,38 @@ import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
  */
 function useConnectedListener(): SidebarListener {
   const dispatch = useDispatch();
-  return {
-    onRenderPanels(panels: PanelEntry[]) {
-      dispatch(sidebarSlice.actions.setPanels({ panels }));
-    },
-    onShowForm(form: FormEntry) {
-      dispatch(sidebarSlice.actions.addForm({ form }));
-    },
-    onHideForm({ nonce }: Partial<FormEntry>) {
-      dispatch(sidebarSlice.actions.removeForm(nonce));
-    },
-    onActivatePanel(options: ActivatePanelOptions) {
-      dispatch(sidebarSlice.actions.activatePanel(options));
-    },
-    onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
-      dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
-    },
-    onShowTemporaryPanel(panel: TemporaryPanelEntry) {
-      dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
-    },
-    onHideTemporaryPanel({ nonce }) {
-      dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-    },
-    onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
-      dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
-    },
-    onHideActivateRecipe(recipeId: RegistryId) {
-      dispatch(sidebarSlice.actions.hideActivateRecipe());
-    },
-  };
+  return useMemo(
+    () => ({
+      onRenderPanels(panels: PanelEntry[]) {
+        dispatch(sidebarSlice.actions.setPanels({ panels }));
+      },
+      onShowForm(form: FormEntry) {
+        dispatch(sidebarSlice.actions.addForm({ form }));
+      },
+      onHideForm({ nonce }: Partial<FormEntry>) {
+        dispatch(sidebarSlice.actions.removeForm(nonce));
+      },
+      onActivatePanel(options: ActivatePanelOptions) {
+        dispatch(sidebarSlice.actions.activatePanel(options));
+      },
+      onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
+        dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
+      },
+      onShowTemporaryPanel(panel: TemporaryPanelEntry) {
+        dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
+      },
+      onHideTemporaryPanel({ nonce }) {
+        dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+      },
+      onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
+        dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
+      },
+      onHideActivateRecipe(recipeId: RegistryId) {
+        dispatch(sidebarSlice.actions.hideActivateRecipe());
+      },
+    }),
+    [dispatch]
+  );
 }
 
 const ConnectedSidebar: React.VFC = () => {
