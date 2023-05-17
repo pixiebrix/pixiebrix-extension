@@ -36,6 +36,9 @@ import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
+import useFlags from "@/hooks/useFlags";
+import DelayedRender from "@/components/DelayedRender";
+import DefaultPanel from "@/sidebar/DefaultPanel";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -77,7 +80,9 @@ function useConnectedListener(): SidebarListener {
 }
 
 const ConnectedSidebar: React.VFC = () => {
+  const { flagOn } = useFlags();
   const listener = useConnectedListener();
+  const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
 
   // `effect` will run once on component mount since listener and formsRef don't change on renders
   useEffect(() => {
@@ -89,6 +94,10 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
+  // If the Home tab feature is enabled, Tabs should always be shown because there will always be
+  // at least the Home tab. Otherwise, Tabs should only be shown if there are panels to show.
+  const showTabs = flagOn("sidebar-home-tab") || !sidebarIsEmpty;
+
   return (
     <div className="full-height">
       <ErrorBoundary>
@@ -97,7 +106,13 @@ const ConnectedSidebar: React.VFC = () => {
           // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
           ignoreApiError
         >
-          <Tabs />
+          {sidebarIsEmpty ? (
+            <DelayedRender millis={300}>
+              <DefaultPanel />
+            </DelayedRender>
+          ) : (
+            <Tabs />
+          )}
         </RequireAuth>
       </ErrorBoundary>
     </div>

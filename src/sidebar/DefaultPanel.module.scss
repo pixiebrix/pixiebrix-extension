@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarRootState } from "@/types/sidebarTypes";
-import { isEmpty } from "lodash";
+.root {
+  p {
+    font-size: 16px;
+    color: #41335b;
+    font-weight: 400;
+  }
 
-// TODO: rename me
-export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
-  isEmpty(sidebar.panels) &&
-  isEmpty(sidebar.forms) &&
-  isEmpty(sidebar.temporaryPanels) &&
-  sidebar.recipeToActivate == null;
+  a {
+    color: #170637;
+    font-weight: 500;
+    font-size: 16px;
+    padding-bottom: 1px;
+    border-bottom: 2px solid #5a19da;
+    text-decoration: none;
+  }
 
-export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
-  sidebar.activeKey;
+  kbd {
+    color: #170637;
+    font-weight: 500;
+    font-size: 16px;
+    background: white;
+    border-radius: 4px;
+    padding: 4.5px 6px;
+    margin: 0 12px;
+  }
+}
 
-export const selectSidebarTabsContent = ({ sidebar }: SidebarRootState) => ({
-  panels: sidebar.panels,
-  forms: sidebar.forms,
-  temporaryPanels: sidebar.temporaryPanels,
-  recipeToActivate: sidebar.recipeToActivate,
-});
+.sidebarRow {
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 28px;
+}
+
+.callout {
+  color: #170637;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.sidebarRowWithDivider {
+  @extend .sidebarRow;
+  border-top: 1px solid #e1dfe5;
+}
+
+.tinyCallout {
+  @extend .callout;
+  font-size: 16px;
+}
