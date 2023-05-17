@@ -22,7 +22,7 @@ import {
 import { type AsyncState } from "@/types/sliceTypes";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
-type DetailedPermissions = Array<{
+export type DetailedPermissions = Array<{
   name: string;
   isOrigin: boolean;
   isAdditional: boolean;
