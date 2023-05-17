@@ -51,6 +51,7 @@ export function defaultEventKey({
   forms = [],
   panels = [],
   temporaryPanels = [],
+  staticPanels = [],
   recipeToActivate = null,
 }: SidebarEntries): string | null {
   if (forms.length > 0) {
@@ -69,5 +70,9 @@ export function defaultEventKey({
     return eventKeyForEntry(recipeToActivate);
   }
 
-  return eventKeyForEntry(HOME_PANEL);
+  if (staticPanels.length > 0) {
+    return eventKeyForEntry(staticPanels.at(0));
+  }
+
+  return null;
 }

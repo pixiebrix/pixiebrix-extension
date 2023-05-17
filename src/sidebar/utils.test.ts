@@ -20,17 +20,19 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type FormEntry, type TemporaryPanelEntry } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import { HOME_PANEL } from "@/sidebar/HomePanel";
 
 describe("defaultEventKey", () => {
-  it("returns home panel if no other panels available", () => {
+  it("returns null no content", () => {
     expect(
       defaultEventKey({
         forms: [],
         panels: [],
         temporaryPanels: [],
+        staticPanels: [],
         recipeToActivate: null,
       })
-    ).toBe("static-home-panel");
+    ).toBe(null);
   });
 
   it("prefers latest form", () => {
@@ -68,6 +70,18 @@ describe("defaultEventKey", () => {
     } as any;
 
     expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.panels[0]));
+    expect(defaultEventKey(args)).not.toBe("panel-undefined");
+  });
+
+  it("returns static panel as last resort before returning null", () => {
+    const args = {
+      forms: [] as FormEntry[],
+      temporaryPanels: [] as TemporaryPanelEntry[],
+      panels: [] as TemporaryPanelEntry[],
+      staticPanels: [HOME_PANEL],
+    } as any;
+
+    expect(defaultEventKey(args)).toBe(eventKeyForEntry(HOME_PANEL));
     expect(defaultEventKey(args)).not.toBe("panel-undefined");
   });
 });

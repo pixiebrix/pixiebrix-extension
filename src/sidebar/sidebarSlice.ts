@@ -59,8 +59,8 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
     state.forms.some((x) => eventKeyForEntry(x) === query) ||
     state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
     state.panels.some((x) => eventKeyForEntry(x) === query) ||
-    eventKeyForEntry(state.recipeToActivate) === query ||
-    eventKeyForEntry(HOME_PANEL) === query
+    state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
+    eventKeyForEntry(state.recipeToActivate) === query
   );
 }
 
@@ -113,7 +113,12 @@ function findNextActiveKey(
     }
   }
 
-  return eventKeyForEntry(HOME_PANEL);
+  // Return the first static panel, if it exists
+  if (state.staticPanels.length > 0) {
+    return eventKeyForEntry(state.staticPanels[0]);
+  }
+
+  return null;
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
@@ -300,10 +305,13 @@ const sidebarSlice = createSlice({
         }
       }
 
-      // If a panel is no longer available, reset the current tab to a valid tab
+      // If a panel is no longer available, reset the current tab to a valid tab.
+      // Prefer switching over to other panel types before static panels.
       if (
         !eventKeyExists(state, state.activeKey) ||
-        state.activeKey === eventKeyForEntry(HOME_PANEL)
+        state.staticPanels.some(
+          (staticPanel) => state.activeKey === eventKeyForEntry(staticPanel)
+        )
       ) {
         state.activeKey = defaultEventKey(state);
       }

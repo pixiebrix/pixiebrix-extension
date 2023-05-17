@@ -58,8 +58,7 @@ describe("sidebarSlice.selectTab", () => {
       state,
       sidebarSlice.actions.selectTab("unknown")
     );
-    // TODO: should this be null?
-    expect(newState.activeKey).toBe("static-home-panel");
+    expect(newState.activeKey).toBe(null);
   });
 
   it("selects temporary panel", () => {
