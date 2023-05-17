@@ -16,14 +16,15 @@
  */
 
 import React from "react";
-import { type StaticPanelEntry } from "@/sidebar/types";
+import { type StaticPanelEntry } from "@/types/sidebarTypes";
+
+const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
 
 export const HOME_PANEL: StaticPanelEntry = {
   type: "staticPanel",
   heading: "Home",
   key: "home",
+  body: <HomePanel />,
 };
-
-const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
 
 export default HomePanel;

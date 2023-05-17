@@ -16,14 +16,14 @@
  */
 
 import {
-  type SidebarEntries,
   type FormEntry,
   type PanelEntry,
   type ActivatePanelOptions,
   type TemporaryPanelEntry,
   type ActivateRecipeEntry,
   type SidebarEntry,
-} from "@/sidebar/types";
+  type SidebarState,
+} from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
@@ -38,18 +38,6 @@ import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { HOME_PANEL } from "@/sidebar/HomePanel";
-
-export type SidebarState = SidebarEntries & {
-  activeKey: string;
-
-  /**
-   * Pending panel activation request.
-   *
-   * Because there's a race condition between activatePanel and setPanels, etc. we need to keep track of the activation
-   * request in order to fulfill it once the panel is registered.
-   */
-  pendingActivePanel: ActivatePanelOptions | null;
-};
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -306,7 +294,10 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab
-      if (!eventKeyExists(state, state.activeKey)) {
+      if (
+        !eventKeyExists(state, state.activeKey) ||
+        state.activeKey === eventKeyForEntry(HOME_PANEL)
+      ) {
         state.activeKey = defaultEventKey(state);
       }
     },

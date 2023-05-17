@@ -53,7 +53,7 @@ import {
   NoRendererError,
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { type PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/types/sidebarTypes";
 import { getLoggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {

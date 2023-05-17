@@ -24,7 +24,7 @@ import {
   type SidebarEntry,
   type StaticPanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";

@@ -2,7 +2,6 @@ import { type BlockPipeline, type Branch } from "@/blocks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -15,6 +14,7 @@ import {
   type ServiceContext,
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
+import { type RendererRunPayload } from "@/types/rendererTypes";
 
 type RunMetadata = {
   /**
@@ -58,7 +58,7 @@ export async function runRendererPipeline({
   options,
   meta,
   messageContext,
-}: RunPipelineParams): Promise<RendererPayload> {
+}: RunPipelineParams): Promise<RendererRunPayload> {
   expectContext("contentScript");
 
   try {

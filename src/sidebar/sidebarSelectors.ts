@@ -15,19 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-right: 17px;
+import { type SidebarRootState } from "@/types/sidebarTypes";
+import { isEmpty } from "lodash";
 
-  :global(.container) {
-    margin-left: 3px;
-    margin-right: 3px;
-  }
-}
+export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
+  isEmpty(sidebar.panels) &&
+  isEmpty(sidebar.forms) &&
+  isEmpty(sidebar.temporaryPanels) &&
+  sidebar.recipeToActivate == null;
 
-.empty {
-  padding-left: 15px;
-}
+export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
+  sidebar.activeKey;
 
-.alert {
-  margin-top: 1rem;
-}
+export const selectSidebarTabsContent = ({ sidebar }: SidebarRootState) => ({
+  panels: sidebar.panels,
+  forms: sidebar.forms,
+  temporaryPanels: sidebar.temporaryPanels,
+  recipeToActivate: sidebar.recipeToActivate,
+});

@@ -18,14 +18,17 @@
 import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
-import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";
+import {
+  type PanelAction,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/blocks/errors";
 import { CancelError } from "@/errors/businessErrors";
 import { type Except } from "type-fest";
 
 type RegisteredPanel = {
-  entry: Except<TemporaryPanelEntry, "type">;
   registration: DeferredPromise<PanelAction | null>;
+  entry?: Except<TemporaryPanelEntry, "type">;
 };
 
 const panels = new Map<UUID, RegisteredPanel>();
@@ -67,7 +70,8 @@ export function updatePanelDefinition(
     return;
   }
 
-  if (panel.entry.extensionId !== entry.extensionId) {
+  // Panel entry may be undefined if the panel was registered with registerEmptyTemporaryPanel
+  if (panel.entry && panel.entry.extensionId !== entry.extensionId) {
     throw new Error("extensionId mismatch");
   }
 
@@ -75,7 +79,35 @@ export function updatePanelDefinition(
 }
 
 /**
- * Register a temporary display panel
+ * Register an empty panel for a given nonce and extensionId. Useful for pre-allocating a "loading" panel.
+ * @param nonce
+ * @param extensionId
+ */
+export function registerEmptyTemporaryPanel(nonce: UUID, extensionId: UUID) {
+  expectContext("contentScript");
+
+  if (panels.has(nonce)) {
+    console.error(
+      `A temporary panel was already registered with nonce ${nonce}`
+    );
+    return;
+  }
+
+  const registration = pDefer<PanelAction | null>();
+
+  panels.set(nonce, {
+    registration,
+  });
+
+  if (!extensionNonces.has(extensionId)) {
+    extensionNonces.set(extensionId, new Set());
+  }
+
+  extensionNonces.get(extensionId).add(nonce);
+}
+
+/**
+ * Register a temporary display panel and wait fot its deferred promise
  * @param nonce The instance nonce for the panel to register
  * @param entry the panel definition
  * @param onRegister callback to run after the panel is registered
@@ -87,13 +119,14 @@ export async function waitForTemporaryPanel(
 ): Promise<PanelAction | null> {
   expectContext("contentScript");
 
-  const registration = pDefer<PanelAction | null>();
-
   if (panels.has(nonce)) {
     console.warn(
       `A temporary panel was already registered with nonce ${nonce}`
     );
   }
+
+  const registration =
+    panels.get(nonce)?.registration ?? pDefer<PanelAction | null>();
 
   panels.set(nonce, {
     entry,
