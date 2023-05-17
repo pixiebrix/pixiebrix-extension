@@ -39,6 +39,7 @@ const staticPanelEntryFactory = define<StaticPanelEntry>({
   type: "staticPanel",
   heading: (n: number) => `Static Panel ${n}`,
   key: (n: number) => `static-panel-${n}`,
+  body: null,
 });
 const formDefinitionFactory = define<FormDefinition>({
   schema: () => ({}),

@@ -18,14 +18,6 @@
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import type {
-  FormEntry,
-  PanelEntry,
-  ActivatePanelOptions,
-  TemporaryPanelEntry,
-  ActivateRecipeEntry,
-  PanelPayload,
-} from "@/types/sidebarTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
@@ -40,6 +32,14 @@ import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ExtensionRef } from "@/types/extensionTypes";
+import type {
+  ActivatePanelOptions,
+  ActivateRecipeEntry,
+  FormEntry,
+  PanelEntry,
+  PanelPayload,
+  TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 

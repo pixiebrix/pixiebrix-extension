@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarEntries, type SidebarEntry } from "@/sidebar/types";
-import { HOME_PANEL } from "@/sidebar/HomePanel";
+import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 
 export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {
