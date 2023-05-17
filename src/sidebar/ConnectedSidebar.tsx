@@ -106,12 +106,12 @@ const ConnectedSidebar: React.VFC = () => {
           // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
           ignoreApiError
         >
-          {sidebarIsEmpty ? (
+          {showTabs ? (
+            <Tabs />
+          ) : (
             <DelayedRender millis={300}>
               <DefaultPanel />
             </DelayedRender>
-          ) : (
-            <Tabs />
           )}
         </RequireAuth>
       </ErrorBoundary>
