@@ -18,7 +18,6 @@
 import { type SidebarRootState } from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
 
-// TODO: rename me
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
   isEmpty(sidebar.forms) &&

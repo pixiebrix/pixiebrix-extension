@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type FormEntry,
-  type PanelEntry,
-  type ActivatePanelOptions,
-  type TemporaryPanelEntry,
-  type ActivateRecipeEntry,
-  type SidebarEntry,
-  type SidebarState,
+import type {
+  FormEntry,
+  PanelEntry,
+  ActivatePanelOptions,
+  TemporaryPanelEntry,
+  ActivateRecipeEntry,
+  SidebarEntry,
+  SidebarState,
   StaticPanelEntry,
 } from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
@@ -38,7 +38,6 @@ import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
-import { HOME_PANEL } from "@/sidebar/HomePanel";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -46,7 +45,7 @@ const emptySidebarState: SidebarState = {
   temporaryPanels: [],
   staticPanels: [],
   recipeToActivate: null,
-  activeKey: eventKeyForEntry(HOME_PANEL),
+  activeKey: null,
   pendingActivePanel: null,
 };
 
