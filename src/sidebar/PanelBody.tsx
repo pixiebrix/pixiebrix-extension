@@ -39,8 +39,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type RendererOutput } from "@/types/runtimeTypes";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { isEmpty } from "lodash";
-import cx from "classnames";
-import styles from "./PanelBody.module.scss";
+
+// Used for the loading message
+// import cx from "classnames";
+// import styles from "./PanelBody.module.scss";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -209,13 +211,14 @@ const PanelBody: React.FunctionComponent<{
   // avoid remounting the whole generated component. Some components maybe have long initialization times. E.g., our
   // Document Builder loads Bootstrap into the Shadow DOM
   if (state.isLoading) {
-    if (state.loadingMessage) {
-      return (
-        <div className={cx("text-muted", styles.loadingMessage)}>
-          {state.loadingMessage}
-        </div>
-      );
-    }
+    // TODO: wire up loading message to be configured somewhere
+    // if (state.loadingMessage) {
+    //   return (
+    //     <div className={cx("text-muted", styles.loadingMessage)}>
+    //       {state.loadingMessage}
+    //     </div>
+    //   );
+    // }
 
     return <Loader />;
   }
