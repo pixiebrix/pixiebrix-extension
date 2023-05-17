@@ -161,8 +161,6 @@ const sidebarSlice = createSlice({
   name: "sidebar",
   reducers: {
     selectTab(state, action: PayloadAction<string>) {
-      console.log("selectTab payload", action.payload);
-      console.log("eventKeyExists", eventKeyExists(state, action.payload));
       // We were seeing some automatic calls to selectTab with a stale event key...
       state.activeKey = eventKeyExists(state, action.payload)
         ? action.payload
