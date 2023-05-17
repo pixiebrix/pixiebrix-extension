@@ -21,7 +21,7 @@ import { FormLabel, FormGroup } from "react-bootstrap";
 
 type OptionType = { label: string; value: string };
 
-const SelectWidgetPreview: React.FC<WidgetProps> = ({
+const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
   schema,
   id,
   options,
@@ -73,4 +73,4 @@ const SelectWidgetPreview: React.FC<WidgetProps> = ({
   );
 };
 
-export default SelectWidgetPreview;
+export default FormBuilderSelectWidget;
