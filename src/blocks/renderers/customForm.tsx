@@ -45,12 +45,14 @@ import {
   type ComponentRef,
 } from "@/types/runtimeTypes";
 import { Renderer } from "@/types/blocks/rendererTypes";
+import SelectWidgetPreview from "@/components/formBuilder/preview/SelectWidgetPreview";
 
 const fields = {
   DescriptionField,
 };
 const uiWidgets = {
   imageCrop: ImageCropWidget,
+  SelectWidget: SelectWidgetPreview,
 };
 
 interface DatabaseResult {
