@@ -37,6 +37,7 @@ import {
   selectSidebarTabsContent,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
+import { staticPanelMap } from "@/sidebar/HomePanel";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -149,7 +150,7 @@ const Tabs: React.FC = () => {
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary>{staticPanel.body}</ErrorBoundary>
+              <ErrorBoundary>{staticPanelMap[staticPanel.key]}</ErrorBoundary>
             </Tab.Pane>
           ))}
           {panels.map((panel: PanelEntry) => (

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
 import type { Column } from "react-table";
@@ -26,6 +26,7 @@ import type {
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
+import Loader from "@/components/Loader";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -45,7 +46,7 @@ const InstalledInstallablesList: React.FunctionComponent<{
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);
 
-  return <div>{isLoading ? "loading..." : "loaded"}</div>;
+  return <div>{isLoading ? <Loader /> : "loaded"}</div>;
 };
 
 const HomePanel: React.FunctionComponent = () => {
@@ -72,7 +73,6 @@ export const HOME_PANEL: StaticPanelEntry = {
   type: "staticPanel",
   heading: "Home",
   key: "home",
-  body: <HomePanel />,
 };
 
 export default HomePanel;
