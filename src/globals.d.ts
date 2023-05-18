@@ -86,9 +86,6 @@ declare module "generate-schema" {
 declare module "marked";
 
 // No types available
-declare module "marked-linkify-it";
-
-// No types available
 declare module "jq-web";
 declare module "canvas-confetti";
 

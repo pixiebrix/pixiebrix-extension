@@ -19,7 +19,6 @@ import React, { useMemo } from "react";
 import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
 import type DOMPurify from "dompurify";
-import markedLinkifyIt from "marked-linkify-it";
 
 export type MarkdownProps = {
   markdown: string | null;
@@ -34,22 +33,13 @@ const MarkdownInline: React.FunctionComponent<MarkdownProps> = ({
   className,
   sanitizeConfig,
 }) => {
-  const content = useMemo(() => {
-    marked.use(
-      markedLinkifyIt(
-        {},
-        {
-          // https://github.com/markdown-it/linkify-it#api
-          fuzzyLink: false,
-          fuzzyEmail: false,
-        }
-      )
-    );
-
-    return typeof markdown === "string"
-      ? sanitize(marked.parseInline(markdown), sanitizeConfig)
-      : null;
-  }, [markdown, sanitizeConfig]);
+  const content = useMemo(
+    () =>
+      typeof markdown === "string"
+        ? sanitize(marked.parseInline(markdown), sanitizeConfig)
+        : null,
+    [markdown, sanitizeConfig]
+  );
 
   return (
     <As dangerouslySetInnerHTML={{ __html: content }} className={className} />

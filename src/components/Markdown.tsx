@@ -30,11 +30,10 @@ const Markdown: React.FunctionComponent<MarkdownProps> = ({
   as: As = "div",
   className,
 }) => {
-  const content = useMemo(() => {
-    // Clear out any existing plugins. There's a singleton instance of marked
-    marked.use();
-    return typeof markdown === "string" ? sanitize(marked(markdown)) : null;
-  }, [markdown]);
+  const content = useMemo(
+    () => (typeof markdown === "string" ? sanitize(marked(markdown)) : null),
+    [markdown]
+  );
 
   return (
     <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
