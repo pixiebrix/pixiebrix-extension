@@ -18,9 +18,45 @@
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
+import type { Column } from "react-table";
+import type {
+  Installable,
+  InstallableViewItem,
+} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
+
+const columns: Array<Column<InstallableViewItem>> = [
+  {
+    Header: "Name",
+    accessor: "name",
+  },
+  {
+    Header: "Last updated",
+    accessor: "updatedAt",
+    sortInverted: true,
+  },
+];
+
+const InstalledInstallablesList: React.FunctionComponent<{
+  installables: Installable[];
+}> = ({ installables }) => {
+  return <div>TBD</div>;
+};
 
 const HomePanel: React.FunctionComponent = () => {
-  return <Container>Active mods</Container>;
+  // TODO: skip useGetAllCloudExtensionsQuery
+  const { installables, error } = useInstallables();
+  return (
+    <Container>
+      Active mods
+      {error ? (
+        <ErrorDisplay error={error} />
+      ) : (
+        <InstalledInstallablesList installables={installables} />
+      )}
+    </Container>
+  );
 };
 
 export const HOME_PANEL: StaticPanelEntry = {
