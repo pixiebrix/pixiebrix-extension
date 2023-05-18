@@ -43,6 +43,8 @@ import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { useCallback } from "react";
+import { useLocation } from "react-router";
+import { isBrowserSidebar } from "@/utils/expectContext";
 
 type ActionCallback = () => void;
 
@@ -62,6 +64,7 @@ export type InstallableViewItemActions = {
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
+  const inSidebarContext = isBrowserSidebar();
   const { installable, status, sharing, unavailable } = installableViewItem;
 
   const dispatch = useDispatch();
@@ -252,6 +255,8 @@ function useInstallableViewItemActions(
   };
 
   const showPublishAction =
+    // TODO: Add support for navigating to mod page with publish modal open
+    !inSidebarContext &&
     !unavailable &&
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&

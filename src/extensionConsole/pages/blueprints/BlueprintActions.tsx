@@ -55,7 +55,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon fixedWidth icon={faStore} /> View in Marketplace
+            <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod Details
           </>
         ),
         href: actions.viewInMarketplaceHref,
