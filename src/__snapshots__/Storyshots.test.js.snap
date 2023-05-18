@@ -871,7 +871,13 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                The department to search
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The department to search",
+                    }
+                  }
+                />
               </td>
             </tr>
             <tr
@@ -933,7 +939,13 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                The search query
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The search query",
+                    }
+                  }
+                />
               </td>
             </tr>
           </tbody>
@@ -1183,7 +1195,13 @@ exports[`Storyshots Components/BrickDetail Built In 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                Column labels and values to show
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "Column labels and values to show",
+                    }
+                  }
+                />
               </td>
             </tr>
             <tr
@@ -1227,7 +1245,13 @@ exports[`Storyshots Components/BrickDetail Built In 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                The values to show in the table
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The values to show in the table",
+                    }
+                  }
+                />
               </td>
             </tr>
           </tbody>
@@ -2287,7 +2311,7 @@ exports[`Storyshots Components/SchemaTree Arrays 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
     <tr
@@ -2331,7 +2355,7 @@ exports[`Storyshots Components/SchemaTree Arrays 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
   </tbody>
@@ -2415,7 +2439,13 @@ exports[`Storyshots Components/SchemaTree Enum Type 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        Your favorite color in the rainbow
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Your favorite color in the rainbow",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2499,7 +2529,13 @@ exports[`Storyshots Components/SchemaTree Mixed Type Enum Type 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        Your favorite color in the rainbow
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Your favorite color in the rainbow",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2583,7 +2619,13 @@ exports[`Storyshots Components/SchemaTree Multiple Type Type 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        Body text description
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Body text description",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2684,7 +2726,7 @@ exports[`Storyshots Components/SchemaTree Nested Object 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
   </tbody>
@@ -2784,7 +2826,13 @@ exports[`Storyshots Components/SchemaTree One Of 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        A conveyance designed to carry an operator, passengers and/or cargo, over land.
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A conveyance designed to carry an operator, passengers and/or cargo, over land.",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2868,7 +2916,13 @@ exports[`Storyshots Components/SchemaTree Primitives 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        The person's age
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "The person&#39;s age",
+            }
+          }
+        />
       </td>
     </tr>
     <tr
@@ -2912,7 +2966,13 @@ exports[`Storyshots Components/SchemaTree Primitives 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        The first name of the person
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "The first name of the person",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2996,7 +3056,13 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        The person's email
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "The person&#39;s email",
+            }
+          }
+        />
       </td>
     </tr>
     <tr
@@ -3040,7 +3106,13 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        A valid url
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A valid url",
+            }
+          }
+        />
       </td>
     </tr>
     <tr
@@ -3084,7 +3156,7 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
   </tbody>
@@ -6415,7 +6487,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           <div
             className="field-description"
             id="root-description"
-          />
+          >
+            <div
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "<p>A form example with <em>(you can use markdown)</em></p>
+",
+                }
+              }
+            />
+          </div>
           <div
             className="p-0 container-fluid"
           >
@@ -6466,7 +6547,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   <div
                     className="field-description text-muted"
                     id="root_firstName"
-                  />
+                  >
+                    <div
+                      dangerouslySetInnerHTML={
+                        {
+                          "__html": "<p>Your first name</p>
+",
+                        }
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -6517,7 +6607,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   <div
                     className="field-description text-muted"
                     id="root_age"
-                  />
+                  >
+                    <div
+                      dangerouslySetInnerHTML={
+                        {
+                          "__html": "<p><strong>integer number</strong>, please</p>
+",
+                        }
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>

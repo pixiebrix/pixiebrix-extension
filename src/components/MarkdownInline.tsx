@@ -18,27 +18,42 @@
 import React, { useMemo } from "react";
 import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
+import type DOMPurify from "dompurify";
+import markedLinkifyIt from "marked-linkify-it";
 
 export type MarkdownProps = {
   markdown: string | null;
   as?: React.ElementType;
   className?: string;
+  sanitizeConfig?: DOMPurify.Config;
 };
 
-const Markdown: React.FunctionComponent<MarkdownProps> = ({
+const MarkdownInline: React.FunctionComponent<MarkdownProps> = ({
   markdown,
-  as: As = "div",
+  as: As = "span",
   className,
+  sanitizeConfig,
 }) => {
   const content = useMemo(() => {
-    // Clear out any existing plugins. There's a singleton instance of marked
-    marked.use();
-    return typeof markdown === "string" ? sanitize(marked(markdown)) : null;
-  }, [markdown]);
+    marked.use(
+      markedLinkifyIt(
+        {},
+        {
+          // https://github.com/markdown-it/linkify-it#api
+          fuzzyLink: false,
+          fuzzyEmail: false,
+        }
+      )
+    );
+
+    return typeof markdown === "string"
+      ? sanitize(marked.parseInline(markdown), sanitizeConfig)
+      : null;
+  }, [markdown, sanitizeConfig]);
 
   return (
     <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
   );
 };
 
-export default Markdown;
+export default MarkdownInline;

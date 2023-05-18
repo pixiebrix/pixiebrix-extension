@@ -14,31 +14,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { render } from "@testing-library/react";
+import React from "react";
+import MarkdownInline from "@/components/MarkdownInline";
 
-import React, { useMemo } from "react";
-import sanitize from "@/utils/sanitize";
-import { marked } from "marked";
+describe("MarkdownInline", () => {
+  it("renders without p tag", () => {
+    const wrapper = render(
+      <MarkdownInline
+        markdown="**Hello** World"
+        sanitizeConfig={{
+          ALLOWED_TAGS: ["strong"],
+        }}
+      />
+    );
+    expect(wrapper).toMatchSnapshot();
+  });
 
-export type MarkdownProps = {
-  markdown: string | null;
-  as?: React.ElementType;
-  className?: string;
-};
-
-const Markdown: React.FunctionComponent<MarkdownProps> = ({
-  markdown,
-  as: As = "div",
-  className,
-}) => {
-  const content = useMemo(() => {
-    // Clear out any existing plugins. There's a singleton instance of marked
-    marked.use();
-    return typeof markdown === "string" ? sanitize(marked(markdown)) : null;
-  }, [markdown]);
-
-  return (
-    <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
-  );
-};
-
-export default Markdown;
+  it("linkifies text", () => {
+    const wrapper = render(
+      <MarkdownInline
+        markdown="**Hello** https://www.example.com"
+        sanitizeConfig={{
+          ALLOWED_TAGS: ["strong", "a"],
+        }}
+      />
+    );
+    expect(wrapper).toMatchSnapshot();
+  });
+});

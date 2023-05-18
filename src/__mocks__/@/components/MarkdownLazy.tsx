@@ -15,30 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
-import sanitize from "@/utils/sanitize";
-import { marked } from "marked";
-
-export type MarkdownProps = {
-  markdown: string | null;
-  as?: React.ElementType;
-  className?: string;
-};
-
-const Markdown: React.FunctionComponent<MarkdownProps> = ({
-  markdown,
-  as: As = "div",
-  className,
-}) => {
-  const content = useMemo(() => {
-    // Clear out any existing plugins. There's a singleton instance of marked
-    marked.use();
-    return typeof markdown === "string" ? sanitize(marked(markdown)) : null;
-  }, [markdown]);
-
-  return (
-    <As dangerouslySetInnerHTML={{ __html: content }} className={className} />
-  );
-};
+import Markdown from "@/components/Markdown";
 
 export default Markdown;
