@@ -43,8 +43,6 @@ import { CancelError } from "@/errors/businessErrors";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { useCallback } from "react";
-import { useLocation } from "react-router";
-import { isBrowserSidebar } from "@/utils/expectContext";
 
 type ActionCallback = () => void;
 
@@ -64,7 +62,7 @@ export type InstallableViewItemActions = {
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
-  const inSidebarContext = isBrowserSidebar();
+  const inSidebarContext = location.pathname === "/sidebar.html";
   const { installable, status, sharing, unavailable } = installableViewItem;
 
   const dispatch = useDispatch();
@@ -265,6 +263,8 @@ function useInstallableViewItemActions(
       // In case of blueprint, skip if it is already published
       sharing.listingId == null);
 
+  const showViewLogsAction = !(status === "Inactive") && !inSidebarContext;
+
   const viewInMarketplaceHref =
     isDeployment || showPublishAction || unavailable
       ? null
@@ -284,7 +284,7 @@ function useInstallableViewItemActions(
       hasBlueprint && isInstalled && !isRestricted && !unavailable
         ? reinstall
         : null,
-    viewLogs: status === "Inactive" ? null : viewLogs,
+    viewLogs: showViewLogsAction ? viewLogs : null,
     activate: status === "Inactive" ? activate : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };
