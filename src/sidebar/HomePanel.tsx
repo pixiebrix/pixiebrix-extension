@@ -14,10 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React, { type ReactNode } from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { Container, ListGroup } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import type { Column } from "react-table";
 import type {
   Installable,
@@ -28,6 +27,7 @@ import Loader from "@/components/Loader";
 import { useTable } from "react-table";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -41,7 +41,29 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
-const InstalledInstallablesList: React.FunctionComponent<{
+const ListItem: React.FunctionComponent<{
+  installableItem: InstallableViewItem;
+}> = ({ installableItem }) => {
+  const { name, icon } = installableItem;
+
+  return (
+    <ListGroup.Item>
+      <div className="d-flex align-items-center">
+        <div className="flex-shrink-0">{icon}</div>
+        <div className="flex-grow-1">
+          <div className="d-flex align-items-center">
+            <h5 className="flex-grow-1">{name}</h5>
+          </div>
+        </div>
+        <div className="flex-shrink-0">
+          <BlueprintActions installableViewItem={installableItem} />
+        </div>
+      </div>
+    </ListGroup.Item>
+  );
+};
+
+const InstalledBlueprintsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
@@ -49,7 +71,9 @@ const InstalledInstallablesList: React.FunctionComponent<{
 
   const tableInstance = useTable<InstallableViewItem>({
     columns,
-    data: installableViewItems,
+    data: installableViewItems.filter(
+      (installableViewItem) => installableViewItem.status === "Active"
+    ),
   });
 
   return (
@@ -61,9 +85,10 @@ const InstalledInstallablesList: React.FunctionComponent<{
           {tableInstance.rows.map((row) => {
             tableInstance.prepareRow(row);
             return (
-              <ListGroup.Item key={row.original.sharing.packageId}>
-                {row.original.name}
-              </ListGroup.Item>
+              <ListItem
+                key={row.original.sharing.packageId}
+                installableItem={row.original}
+              />
             );
           })}
         </ListGroup>
@@ -76,14 +101,14 @@ const HomePanel: React.FunctionComponent = () => {
   // TODO: skip useGetAllCloudExtensionsQuery
   const { installables, error } = useInstallables();
   return (
-    <Container>
+    <div>
       Active mods
       {error ? (
         <ErrorDisplay error={error} />
       ) : (
-        <InstalledInstallablesList installables={installables} />
+        <InstalledBlueprintsList installables={installables} />
       )}
-    </Container>
+    </div>
   );
 };
 
