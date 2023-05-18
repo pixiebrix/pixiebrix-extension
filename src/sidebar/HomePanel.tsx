@@ -17,8 +17,11 @@
 
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
+import { Container } from "react-bootstrap";
 
-const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
+const HomePanel: React.FunctionComponent = () => {
+  return <Container>Active mods</Container>;
+};
 
 export const HOME_PANEL: StaticPanelEntry = {
   type: "staticPanel",
