@@ -87,7 +87,7 @@ const Tabs: React.FC = () => {
         <Nav fill variant="tabs" onSelect={onSelect}>
           {staticPanels.map((staticPanel) => (
             <Nav.Link
-              key={`static-${staticPanel.key}-panel`}
+              key={staticPanel.key}
               className={styles.tabHeader}
               eventKey={eventKeyForEntry(staticPanel)}
             >
@@ -146,7 +146,7 @@ const Tabs: React.FC = () => {
           {staticPanels.map((staticPanel) => (
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
-              key={`static-${staticPanel.key}-panel`}
+              key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
               <ErrorBoundary>{staticPanel.body}</ErrorBoundary>

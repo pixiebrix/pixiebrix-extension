@@ -305,9 +305,11 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab.
-      // Prefer switching over to other panel types before static panels.
+      // Prefer switching over to other panel types before showing static panels.
       if (
         !eventKeyExists(state, state.activeKey) ||
+        // Without this clause, we will always default to the first static panel when the
+        // Sidebar is opened (e.g. the Home panel), instead of a panel for an installed mod.
         state.staticPanels.some(
           (staticPanel) => state.activeKey === eventKeyForEntry(staticPanel)
         )
