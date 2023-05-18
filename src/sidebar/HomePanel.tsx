@@ -17,17 +17,17 @@
 
 import React, { type ReactNode } from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { Container } from "react-bootstrap";
+import { Container, ListGroup } from "react-bootstrap";
 import type { Column } from "react-table";
 import type {
   Installable,
   InstallableViewItem,
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
-import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 import Loader from "@/components/Loader";
 import { useTable } from "react-table";
+import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -52,7 +52,24 @@ const InstalledInstallablesList: React.FunctionComponent<{
     data: installableViewItems,
   });
 
-  return <div>{isLoading ? <Loader /> : "loaded"}</div>;
+  return (
+    <div>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <ListGroup {...tableInstance.getTableProps()}>
+          {tableInstance.rows.map((row) => {
+            tableInstance.prepareRow(row);
+            return (
+              <ListGroup.Item key={row.original.sharing.packageId}>
+                {row.original.name}
+              </ListGroup.Item>
+            );
+          })}
+        </ListGroup>
+      )}
+    </div>
+  );
 };
 
 const HomePanel: React.FunctionComponent = () => {
@@ -70,7 +87,7 @@ const HomePanel: React.FunctionComponent = () => {
   );
 };
 
-// TODO: move me
+// TODO: move/fix me
 export const staticPanelMap: Record<string, ReactNode> = {
   home: <HomePanel />,
 };
