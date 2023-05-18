@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import type React from "react";
+import type React, { ReactNode } from "react";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
@@ -25,6 +25,7 @@ import {
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
+import HomePanel from "@/sidebar/HomePanel";
 
 /**
  * Entry types supported by the sidebar.

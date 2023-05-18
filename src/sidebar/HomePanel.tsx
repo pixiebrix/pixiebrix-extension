@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
 import type { Column } from "react-table";
@@ -25,6 +25,7 @@ import type {
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -41,7 +42,10 @@ const columns: Array<Column<InstallableViewItem>> = [
 const InstalledInstallablesList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  return <div>TBD</div>;
+  const { installableViewItems, isLoading } =
+    useInstallableViewItems(installables);
+
+  return <div>{isLoading ? "loading..." : "loaded"}</div>;
 };
 
 const HomePanel: React.FunctionComponent = () => {
@@ -57,6 +61,11 @@ const HomePanel: React.FunctionComponent = () => {
       )}
     </Container>
   );
+};
+
+// TODO: move me
+export const staticPanelMap: Record<string, ReactNode> = {
+  home: <HomePanel />,
 };
 
 export const HOME_PANEL: StaticPanelEntry = {
