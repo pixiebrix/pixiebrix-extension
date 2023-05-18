@@ -15,23 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarRootState } from "@/types/sidebarTypes";
-import { isEmpty } from "lodash";
+import React from "react";
+import { type StaticPanelEntry } from "@/types/sidebarTypes";
 
-export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
-  isEmpty(sidebar.panels) &&
-  isEmpty(sidebar.forms) &&
-  isEmpty(sidebar.temporaryPanels) &&
-  isEmpty(sidebar.staticPanels) &&
-  sidebar.recipeToActivate == null;
+const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
 
-export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
-  sidebar.activeKey;
+export const HOME_PANEL: StaticPanelEntry = {
+  type: "staticPanel",
+  heading: "Home",
+  key: "home",
+  body: <HomePanel />,
+};
 
-export const selectSidebarTabsContent = ({ sidebar }: SidebarRootState) => ({
-  panels: sidebar.panels,
-  forms: sidebar.forms,
-  temporaryPanels: sidebar.temporaryPanels,
-  staticPanels: sidebar.staticPanels,
-  recipeToActivate: sidebar.recipeToActivate,
-});
+export default HomePanel;

@@ -21,7 +21,6 @@ import {
   removeListener,
   type SidebarListener,
 } from "@/sidebar/protocol";
-import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
@@ -35,9 +34,12 @@ import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
-import DelayedRender from "@/components/DelayedRender";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
+import useFlags from "@/hooks/useFlags";
+import DelayedRender from "@/components/DelayedRender";
+import DefaultPanel from "@/sidebar/DefaultPanel";
+import { HOME_PANEL } from "@/sidebar/HomePanel";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -79,6 +81,8 @@ function useConnectedListener(): SidebarListener {
 }
 
 const ConnectedSidebar: React.VFC = () => {
+  const { flagOn } = useFlags();
+  const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
 
@@ -91,6 +95,12 @@ const ConnectedSidebar: React.VFC = () => {
       removeListener(listener);
     };
   }, [listener]);
+
+  useEffect(() => {
+    if (flagOn("sidebar-home-tab")) {
+      dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
+    }
+  }, []);
 
   return (
     <div className="full-height">

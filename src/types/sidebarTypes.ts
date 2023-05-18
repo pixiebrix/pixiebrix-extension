@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+import type React from "react";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
@@ -36,7 +36,12 @@ import { type MessageContext } from "@/types/loggerTypes";
  * @see TemporaryPanelEntry
  * @see ActivateRecipeEntry
  */
-export type EntryType = "panel" | "form" | "temporaryPanel" | "activateRecipe";
+export type EntryType =
+  | "panel"
+  | "form"
+  | "temporaryPanel"
+  | "activateRecipe"
+  | "staticPanel";
 
 /**
  * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
@@ -208,11 +213,19 @@ export type ActivateRecipeEntry = BasePanelEntry & {
   heading: string;
 };
 
+export type StaticPanelEntry = BasePanelEntry & {
+  heading: string;
+  type: "staticPanel";
+  key: string;
+  body: React.ReactNode;
+};
+
 export type SidebarEntry =
   | PanelEntry
   | FormEntry
   | TemporaryPanelEntry
-  | ActivateRecipeEntry;
+  | ActivateRecipeEntry
+  | StaticPanelEntry;
 
 /**
  * The entries currently added to the sidebar
@@ -221,6 +234,7 @@ export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
   temporaryPanels: TemporaryPanelEntry[];
+  staticPanels: StaticPanelEntry[];
   recipeToActivate: ActivateRecipeEntry | null;
 };
 

@@ -20,6 +20,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type FormEntry, type TemporaryPanelEntry } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import { HOME_PANEL } from "@/sidebar/HomePanel";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {
@@ -28,6 +29,7 @@ describe("defaultEventKey", () => {
         forms: [],
         panels: [],
         temporaryPanels: [],
+        staticPanels: [],
         recipeToActivate: null,
       })
     ).toBe(null);
@@ -70,6 +72,18 @@ describe("defaultEventKey", () => {
     expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.panels[0]));
     expect(defaultEventKey(args)).not.toBe("panel-undefined");
   });
+
+  it("returns static panel as last resort before returning null", () => {
+    const args = {
+      forms: [] as FormEntry[],
+      temporaryPanels: [] as TemporaryPanelEntry[],
+      panels: [] as TemporaryPanelEntry[],
+      staticPanels: [HOME_PANEL],
+    } as any;
+
+    expect(defaultEventKey(args)).toBe(eventKeyForEntry(HOME_PANEL));
+    expect(defaultEventKey(args)).not.toBe("panel-undefined");
+  });
 });
 
 describe("eventKeyForEntry", () => {
@@ -107,5 +121,11 @@ describe("eventKeyForEntry", () => {
     expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
       `temporaryPanel-${nonce}`
     );
+  });
+
+  it("uses key for static panels", () => {
+    const key = "test";
+    const entry = sidebarEntryFactory("staticPanel", { key });
+    expect(eventKeyForEntry(entry)).toBe(`static-${key}-panel`);
   });
 });

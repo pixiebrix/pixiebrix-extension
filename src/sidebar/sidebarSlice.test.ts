@@ -23,7 +23,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { type SidebarState } from "@/types/sidebarTypes";
+import type { SidebarState } from "@/types/sidebarTypes";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories

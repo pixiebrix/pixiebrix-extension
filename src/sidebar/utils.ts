@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarEntries, type SidebarEntry } from "@/types/sidebarTypes";
+import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 
 export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {
@@ -28,6 +28,10 @@ export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
 
   if (entry.type === "panel") {
     return `panel-${entry.extensionId}`;
+  }
+
+  if (entry.type === "staticPanel") {
+    return `static-${entry.key}-panel`;
   }
 
   // Use nonce to keep eventKeys unique for forms and temporary panels from the same extension
@@ -46,6 +50,7 @@ export function defaultEventKey({
   forms = [],
   panels = [],
   temporaryPanels = [],
+  staticPanels = [],
   recipeToActivate = null,
 }: SidebarEntries): string | null {
   if (forms.length > 0) {
@@ -60,5 +65,13 @@ export function defaultEventKey({
     return eventKeyForEntry(panels.at(0));
   }
 
-  return recipeToActivate && eventKeyForEntry(recipeToActivate);
+  if (recipeToActivate) {
+    return eventKeyForEntry(recipeToActivate);
+  }
+
+  if (staticPanels.length > 0) {
+    return eventKeyForEntry(staticPanels.at(0));
+  }
+
+  return null;
 }

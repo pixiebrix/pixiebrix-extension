@@ -45,9 +45,8 @@ const permanentSidebarPanelAction = () => {
 const Tabs: React.FC = () => {
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
-  const { panels, forms, temporaryPanels, recipeToActivate } = useSelector(
-    selectSidebarTabsContent
-  );
+  const { panels, forms, temporaryPanels, recipeToActivate, staticPanels } =
+    useSelector(selectSidebarTabsContent);
 
   const onSelect = (eventKey: string) => {
     reportEvent("ViewSidePanelPanel", {
@@ -86,6 +85,15 @@ const Tabs: React.FC = () => {
     >
       <div className="full-height bg-white">
         <Nav fill variant="tabs" onSelect={onSelect}>
+          {staticPanels.map((staticPanel) => (
+            <Nav.Link
+              key={staticPanel.key}
+              className={styles.tabHeader}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <span className={styles.tabTitle}>{staticPanel.heading}</span>
+            </Nav.Link>
+          ))}
           {panels.map((panel) => (
             <Nav.Link
               key={panel.extensionId}
@@ -135,6 +143,15 @@ const Tabs: React.FC = () => {
           )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height">
+          {staticPanels.map((staticPanel) => (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={staticPanel.key}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <ErrorBoundary>{staticPanel.body}</ErrorBoundary>
+            </Tab.Pane>
+          ))}
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}
