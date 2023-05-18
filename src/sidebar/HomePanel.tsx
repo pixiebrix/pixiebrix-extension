@@ -27,6 +27,7 @@ import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 import Loader from "@/components/Loader";
+import { useTable } from "react-table";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -45,6 +46,11 @@ const InstalledInstallablesList: React.FunctionComponent<{
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);
+
+  const tableInstance = useTable<InstallableViewItem>({
+    columns,
+    data: installableViewItems,
+  });
 
   return <div>{isLoading ? <Loader /> : "loaded"}</div>;
 };
