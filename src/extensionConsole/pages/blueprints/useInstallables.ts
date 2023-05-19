@@ -63,8 +63,6 @@ function useInstallables(): InstallablesState {
   const { data: knownRecipes, ...recipesState } = useAllRecipes();
   const cloudExtensions = useGetAllCloudExtensionsQuery();
 
-  console.log("*** cloudExtensions", cloudExtensions);
-
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
       installedExtensionIds: new Set<UUID>(
