@@ -67,6 +67,7 @@ const MenuItemConfiguration: React.FC<{
         name="extensionPoint.definition.isAvailable.matchPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
+
       <ConnectedCollapsibleFieldSection title="Advanced: Item Options">
         <ConnectedFieldTemplate
           name="extension.icon"
@@ -91,6 +92,23 @@ const MenuItemConfiguration: React.FC<{
           snippets={menuSnippets}
           {...makeLockableFieldProps("Template", isLocked)}
         />
+
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.attachMode"
+          as="select"
+          title="Attach Mode"
+          description={
+            <p>
+              Use&nbsp;<code>once</code> to add the buttons once the menu
+              becomes available. Use&nbsp;
+              <code>watch</code> to continue to watch the page for new menus.
+            </p>
+          }
+          {...makeLockableFieldProps("Attach Mode", isLocked)}
+        >
+          <option value="once">once</option>
+          <option value="watch">watch</option>
+        </ConnectedFieldTemplate>
 
         <ConnectedFieldTemplate
           name="extensionPoint.definition.targetMode"

@@ -28,6 +28,7 @@ import { boolean } from "@/utils";
 import {
   acquireElement,
   awaitElementOnce,
+  onNodeRemoved,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { type Metadata } from "@/types/registryTypes";
@@ -238,24 +239,24 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       return false;
     }
 
-    const cancelWatchRemote = acquireElement(
-      this.$container.get(0),
-      this.id,
-      () => {
-        console.debug(
-          `Container removed from DOM for ${this.id}: ${JSON.stringify(
-            selector
-          )}`
-        );
-        this.$container = undefined;
-      }
-    );
+    const container = this.$container.get(0);
 
-    if (cancelWatchRemote) {
-      this.cancelPending.add(cancelWatchRemote);
+    const acquired = acquireElement(container, this.id);
+
+    if (acquired) {
+      this.cancelPending.add(
+        onNodeRemoved(container, () => {
+          console.debug(
+            `Container removed from DOM for ${this.id}: ${JSON.stringify(
+              selector
+            )}`
+          );
+          this.$container = undefined;
+        })
+      );
     }
 
-    return Boolean(cancelWatchRemote);
+    return acquired;
   }
 
   addPanel($panel: JQuery): void {
