@@ -15,19 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-right: 17px;
+import React from "react";
+import { type StaticPanelEntry } from "@/types/sidebarTypes";
 
-  :global(.container) {
-    margin-left: 3px;
-    margin-right: 3px;
-  }
-}
+const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
 
-.empty {
-  padding-left: 15px;
-}
+export const HOME_PANEL: StaticPanelEntry = {
+  type: "staticPanel",
+  heading: "Home",
+  key: "home",
+  body: <HomePanel />,
+};
 
-.alert {
-  margin-top: 1rem;
-}
+export default HomePanel;

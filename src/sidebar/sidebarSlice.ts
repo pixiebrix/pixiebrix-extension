@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type SidebarEntries,
-  type FormEntry,
-  type PanelEntry,
-  type ActivatePanelOptions,
-  type TemporaryPanelEntry,
-  type ActivateRecipeEntry,
-  type SidebarEntry,
-} from "@/sidebar/types";
+import type {
+  FormEntry,
+  PanelEntry,
+  ActivatePanelOptions,
+  TemporaryPanelEntry,
+  ActivateRecipeEntry,
+  SidebarEntry,
+  SidebarState,
+  StaticPanelEntry,
+} from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
@@ -38,22 +39,11 @@ import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
 
-export type SidebarState = SidebarEntries & {
-  activeKey: string;
-
-  /**
-   * Pending panel activation request.
-   *
-   * Because there's a race condition between activatePanel and setPanels, etc. we need to keep track of the activation
-   * request in order to fulfill it once the panel is registered.
-   */
-  pendingActivePanel: ActivatePanelOptions | null;
-};
-
 const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],
+  staticPanels: [],
   recipeToActivate: null,
   activeKey: null,
   pendingActivePanel: null,
@@ -68,6 +58,7 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
     state.forms.some((x) => eventKeyForEntry(x) === query) ||
     state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
     state.panels.some((x) => eventKeyForEntry(x) === query) ||
+    state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
     eventKeyForEntry(state.recipeToActivate) === query
   );
 }
@@ -119,6 +110,11 @@ function findNextActiveKey(
     if (blueprintPanel) {
       return eventKeyForEntry(blueprintPanel);
     }
+  }
+
+  // Return the first static panel, if it exists
+  if (state.staticPanels.length > 0) {
+    return eventKeyForEntry(state.staticPanels[0]);
   }
 
   return null;
@@ -284,6 +280,13 @@ const sidebarSlice = createSlice({
         state.pendingActivePanel = payload;
       }
     },
+    addStaticPanel(state, action: PayloadAction<{ panel: StaticPanelEntry }>) {
+      state.staticPanels = [...state.staticPanels, action.payload.panel];
+
+      if (!state.activeKey || !eventKeyExists(state, state.activeKey)) {
+        state.activeKey = defaultEventKey(state);
+      }
+    },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
       state.panels = sortBy(
@@ -301,8 +304,16 @@ const sidebarSlice = createSlice({
         }
       }
 
-      // If a panel is no longer available, reset the current tab to a valid tab
-      if (!eventKeyExists(state, state.activeKey)) {
+      // If a panel is no longer available, reset the current tab to a valid tab.
+      // Prefer switching over to other panel types before showing static panels.
+      if (
+        !eventKeyExists(state, state.activeKey) ||
+        // Without this clause, we will always default to the first static panel when the
+        // Sidebar is opened (e.g. the Home panel), instead of a panel for an installed mod.
+        state.staticPanels.some(
+          (staticPanel) => state.activeKey === eventKeyForEntry(staticPanel)
+        )
+      ) {
         state.activeKey = defaultEventKey(state);
       }
     },

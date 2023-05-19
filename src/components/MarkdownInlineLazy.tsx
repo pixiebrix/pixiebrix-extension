@@ -15,19 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-right: 17px;
+import React, { Suspense } from "react";
+import { type MarkdownProps } from "./MarkdownInline";
 
-  :global(.container) {
-    margin-left: 3px;
-    margin-right: 3px;
-  }
-}
+const MarkdownInlineLoader = React.lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "components-lazy" */
+      "./MarkdownInline"
+    )
+);
 
-.empty {
-  padding-left: 15px;
-}
+const MarkdownInlineLazy: React.FC<MarkdownProps> = (props) => (
+  <Suspense fallback={null}>
+    <MarkdownInlineLoader {...props} />
+  </Suspense>
+);
 
-.alert {
-  margin-top: 1rem;
-}
+export default MarkdownInlineLazy;

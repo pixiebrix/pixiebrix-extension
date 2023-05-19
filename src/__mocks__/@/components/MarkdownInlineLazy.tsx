@@ -15,25 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import linkifyUrls from "linkify-urls";
-import React from "react";
+import MarkdownInline from "@/components/MarkdownInline";
 
-const LinkifiedString: React.FC = ({ children }) => {
-  if (typeof children !== "string") {
-    return <>{children}</>;
-  }
-
-  return (
-    <span
-      dangerouslySetInnerHTML={{
-        __html: linkifyUrls(children, {
-          attributes: {
-            target: "_blank",
-          },
-        }),
-      }}
-    />
-  );
-};
-
-export default LinkifiedString;
+export default MarkdownInline;

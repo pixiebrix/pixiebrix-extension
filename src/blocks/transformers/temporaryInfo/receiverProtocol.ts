@@ -16,7 +16,7 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { remove } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 

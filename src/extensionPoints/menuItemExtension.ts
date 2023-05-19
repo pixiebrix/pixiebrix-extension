@@ -76,13 +76,29 @@ import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type IBlock } from "@/types/blockTypes";
 import { type JsonObject } from "type-fest";
-import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import {
+  type RunArgs,
+  RunReason,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type IReader } from "@/types/blocks/readerTypes";
+import initialize from "@/vendors/initialize";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
   tag?: string;
 }
+
+/**
+ * @since 1.7.8
+ */
+export type AttachMode =
+  // Add menu items once. If a menu item is removed, PixieBrix will still attempt to re-add it.
+  | "once"
+  // Watch for new menus on the screen and add menu items to them
+  | "watch";
 
 const DATA_ATTR = "data-pb-uuid";
 
@@ -161,30 +177,45 @@ async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
 
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   /**
-   * Mapping of menu container UUID to the DOM element for the menu container
+   * Mapping of menu container nonce UUID to the DOM element for the menu container
    * @protected
    */
-  protected readonly menus: Map<string, HTMLElement>;
+  protected readonly menus: Map<UUID, HTMLElement>;
 
   /**
    * Set of menu container UUID that have been removed from the DOM. Track so we we know which ones we've already
    * taken action on to attempt to reacquire a menu container for
    * @private
    */
-  private readonly removed: Set<string>;
+  private readonly removed: Set<UUID>;
 
   /**
    * Set of methods to call to cancel any DOM watchers associated with this extension point
    * @private
    */
-  private readonly cancelPending: Set<() => void>;
+  private readonly cancelListeners: Set<() => void>;
 
-  private readonly cancelDependencyObservers: Map<string, () => void>;
+  /**
+   * Map from extension id to callback to cancel observers for its dependencies.
+   *
+   * @see MenuItemExtensionConfig.dependencies
+   * @private
+   */
+  private readonly cancelDependencyObservers: Map<UUID, () => void>;
 
+  /**
+   * True if the extension point has been uninstalled
+   * @private
+   */
   private uninstalled = false;
 
+  /**
+   * Mapping from extension id to the set of menu items that have been clicked and still running.
+   * @see MenuItemExtensionConfig.synchronous
+   * @private
+   */
   private readonly runningExtensionElements = new Map<
-    string,
+    UUID,
     WeakSet<HTMLElement>
   >();
 
@@ -201,9 +232,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return "menuItem";
   }
 
-  public get targetMode(): MenuTargetMode {
-    return "document";
-  }
+  public abstract get targetMode(): MenuTargetMode;
+
+  public abstract get attachMode(): AttachMode;
 
   public override get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
@@ -211,10 +242,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   protected constructor(metadata: Metadata, logger: Logger) {
     super(metadata, logger);
-    this.menus = new Map<string, HTMLElement>();
-    this.removed = new Set<string>();
-    this.cancelPending = new Set();
-    this.cancelDependencyObservers = new Map<string, () => void>();
+    this.menus = new Map<UUID, HTMLElement>();
+    this.removed = new Set<UUID>();
+    this.cancelListeners = new Set();
+    this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -260,10 +291,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private cancelAllPending(): void {
     console.debug(
-      `Cancelling ${this.cancelPending.size} menuItemExtension observers`
+      `Cancelling ${this.cancelListeners.size} menuItemExtension observers`
     );
 
-    for (const cancelObserver of this.cancelPending) {
+    for (const cancelObserver of this.cancelListeners) {
       try {
         // `cancelObserver` should always be defined given its type. But check just in case since we don't have
         // strictNullChecks on
@@ -276,10 +307,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     }
 
-    this.cancelPending.clear();
+    this.cancelListeners.clear();
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: string[]): void {
+  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug(
       "Remove extensionIds for menuItem extension point: %s",
       this.id,
@@ -341,30 +372,28 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  getPipelineRoot($buttonElement: JQuery): HTMLElement | Document {
-    return document;
-  }
+  /**
+   * Returns the selector root for bricks attached to the menuItem.
+   * @param $buttonElement the element that triggered the menu
+   */
+  abstract getPipelineRoot($buttonElement: JQuery): SelectorRoot;
 
-  getReaderRoot({
+  /**
+   * Returns the selector root provided to the reader.
+   * @param $containerElement
+   * @param $buttonElement
+   */
+  abstract getReaderRoot({
     $containerElement,
     $buttonElement,
   }: {
     $containerElement: JQuery;
     $buttonElement: JQuery;
-  }): HTMLElement | Document {
-    return document;
-  }
+  }): SelectorRoot;
 
-  getTemplate(): string {
-    if (this.template) return this.template;
-    throw new Error("MenuItemExtensionPoint.getTemplate not implemented");
-  }
+  abstract getTemplate(): string;
 
-  getContainerSelector(): string | string[] {
-    throw new Error(
-      "MenuItemExtensionPoint.getContainerSelector not implemented"
-    );
-  }
+  abstract getContainerSelector(): string | string[];
 
   addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     $menu.append($menuItem);
@@ -376,7 +405,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return selectAllBlocks(extension.config.action);
   }
 
-  private async reacquire(uuid: string): Promise<void> {
+  /**
+   * Callback when a menu is removed from the page to wait to re-install the menu if the container is re-added.
+   * Used to handle SPA page transitions that don't navigate (e.g., modals, tabs, etc.)
+   * @param menuNonce the menu nonce generated in attachMenus
+   * @private
+   */
+  private async reacquire(menuNonce: UUID): Promise<void> {
+    if (this.attachMode === "watch") {
+      throw new Error("reacquire should not be called in watch mode");
+    }
+
     if (this.uninstalled) {
       console.warn(
         `${this.instanceNonce}: cannot reacquire because extension ${this.id} is destroyed`
@@ -384,28 +423,94 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       return;
     }
 
-    const alreadyRemoved = this.removed.has(uuid);
-    this.removed.add(uuid);
+    const alreadyRemoved = this.removed.has(menuNonce);
+    this.removed.add(menuNonce);
     if (alreadyRemoved) {
       console.warn(
-        `${this.instanceNonce}: menu ${uuid} removed from DOM multiple times for ${this.id}`
+        `${this.instanceNonce}: menu ${menuNonce} removed from DOM multiple times for ${this.id}`
       );
     } else {
       console.debug(
-        `${this.instanceNonce}: menu ${uuid} removed from DOM for ${this.id}`
+        `${this.instanceNonce}: menu ${menuNonce} removed from DOM for ${this.id}`
       );
-      this.menus.delete(uuid);
-      // Re-install the menus (will wait for the menu selector to re-appear)
-      await this.installMenus();
+      this.menus.delete(menuNonce);
+      // Re-install the menus (will wait for the menu selector to re-appear if there's no copies of it on the page)
+      // The behavior for multiple buttons is quirky here for "once" attachMode. There's a corner case where
+      // 1) if one button is removed, 2) the menus are re-added immediately, 3) PixieBrix stops watching for new buttons
+      await this.waitAttachMenus();
       await this.run({ reason: RunReason.MUTATION });
     }
   }
 
   /**
+   * Attach extension point to the provided menu containers.
+   * @param $menuContainers
+   * @private
+   */
+  private attachMenus($menuContainers: JQuery): void {
+    const existingMenuContainers = new Set(this.menus.values());
+
+    const cleanupCallbacks = [];
+    for (const element of $menuContainers) {
+      // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
+      // repeat evaluation of menus in this.run
+      if (!existingMenuContainers.has(element)) {
+        const menuNonce = uuidv4();
+        this.menus.set(menuNonce, element);
+
+        const acquired = acquireElement(element, this.id);
+
+        if (acquired && this.attachMode === "once") {
+          // Only re-acquire in "once" attachMode. In "watch" the menu will automatically be re-acquired when the
+          // element is re-initialized on the page
+          cleanupCallbacks.push(
+            onNodeRemoved(element, async () => this.reacquire(menuNonce))
+          );
+        }
+      }
+    }
+
+    for (const cleanupCallback of cleanupCallbacks) {
+      this.cancelListeners.add(cleanupCallback);
+    }
+  }
+
+  /**
+   * Watch for new menus to appear on the screen, e.g., due to SPA page transition, infinite scroll, etc.
+   * @private
+   */
+  private watchMenus(): void {
+    const containerSelector = this.getContainerSelector();
+
+    if (typeof containerSelector !== "string") {
+      throw new BusinessError(
+        "Array of container selectors not supported for attachMode: 'watch'"
+      );
+    }
+
+    // Watch for new containers on the page on the page
+    const mutationObserver = initialize(
+      containerSelector,
+      (index, element) => {
+        this.attachMenus($(element as HTMLElement));
+        void this.run({ reason: RunReason.MUTATION });
+      },
+      // `target` is a required option. Would it be possible to scope if the selector is nested? Would have to consider
+      // commas in the selector. E.g., revert back to document if there's a comma
+      { target: document }
+    );
+
+    this.cancelListeners.add(() => {
+      mutationObserver.disconnect();
+    });
+  }
+
+  /**
    * Find and claim the new menu containers currently on the page for the extension point.
    * @return true iff one or more menu containers were found
+   * @private
    */
-  private async installMenus(): Promise<boolean> {
+  private async waitAttachMenus(): Promise<boolean> {
     if (this.uninstalled) {
       console.error("Menu item extension point is uninstalled", {
         extensionPointNonce: this.instanceNonce,
@@ -415,17 +520,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       );
     }
 
-    const selector = this.getContainerSelector();
+    const containerSelector = this.getContainerSelector();
 
     console.debug(
       `${this.instanceNonce}: awaiting menu container for ${this.id}`,
       {
-        selector,
+        selector: containerSelector,
       }
     );
 
-    const [menuPromise, cancelWait] = awaitElementOnce(selector);
-    this.cancelPending.add(cancelWait);
+    const [menuPromise, cancelWait] = awaitElementOnce(containerSelector);
+    this.cancelListeners.add(cancelWait);
 
     let $menuContainers;
 
@@ -439,30 +544,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       throw error;
     }
 
-    const menuContainers = [...this.menus.values()];
+    this.attachMenus($menuContainers);
 
-    let existingCount = 0;
-
-    const cancelObservers = [];
-    for (const element of $menuContainers) {
-      // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
-      // repeat evaluation of menus in this.run
-      if (menuContainers.includes(element)) {
-        existingCount++;
-      } else {
-        const menuUUID = uuidv4();
-        this.menus.set(menuUUID, element);
-        cancelObservers.push(
-          acquireElement(element, this.id, async () => this.reacquire(menuUUID))
-        );
-      }
+    if (this.attachMode === "watch") {
+      this.watchMenus();
     }
 
-    for (const cancelObserver of cancelObservers) {
-      this.cancelPending.add(cancelObserver);
-    }
-
-    return cancelObservers.length + existingCount > 0;
+    return this.menus.size > 0;
   }
 
   async install(): Promise<boolean> {
@@ -471,7 +559,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       return false;
     }
 
-    return this.installMenus();
+    return this.waitAttachMenus();
   }
 
   protected abstract makeItem(
@@ -677,7 +765,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // Don't re-install here. We're reinstalling the entire menu
         console.debug(`Menu item for ${extension.id} was removed from the DOM`);
       });
-      this.cancelPending.add(cancelObserver);
+      this.cancelListeners.add(cancelObserver);
     }
   }
 
@@ -859,8 +947,17 @@ type MenuTargetMode = "document" | "eventTarget";
 
 export interface MenuDefinition extends ExtensionPointDefinition {
   type: "menuItem";
+  /**
+   * The HTML template to render the button/menu item.
+   */
   template: string;
+  /**
+   * Position in the menu to insert the item.
+   */
   position?: MenuPosition;
+  /**
+   * Selector targeting the menu location
+   */
   containerSelector: string;
   /**
    * Selector passed to `.parents()` to determine the reader context. Must match exactly one element.
@@ -874,9 +971,20 @@ export interface MenuDefinition extends ExtensionPointDefinition {
    * @see readerSelector
    */
   targetMode?: MenuTargetMode;
-
-  defaultOptions?: MenuDefaultOptions;
+  /**
+   * Wrap menu item in a shadow DOM
+   * @deprecated do we still want to support this? Is it used anywhere?
+   */
   shadowDOM?: ShadowDOM;
+  /**
+   * Default options for IExtensions attached to the extension point
+   */
+  defaultOptions?: MenuDefaultOptions;
+  /**
+   * Mode for attaching the menu to the page. Defaults to "once"
+   * @since 1.7.28
+   */
+  attachMode?: AttachMode;
 }
 
 export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
@@ -955,7 +1063,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   }: {
     $containerElement: JQuery;
     $buttonElement: JQuery | null;
-  }): HTMLElement | Document {
+  }): SelectorRoot {
     if (this._definition.readerSelector && this.targetMode !== "document") {
       throw new BusinessError(
         "Cannot provide both readerSelector and targetMode"
@@ -999,7 +1107,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     return document;
   }
 
-  override getPipelineRoot($buttonElement: JQuery): HTMLElement | Document {
+  override getPipelineRoot($buttonElement: JQuery): SelectorRoot {
     if (this.targetMode === "eventTarget") {
       return $buttonElement.get()[0];
     }
@@ -1007,16 +1115,20 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     return document;
   }
 
-  override async defaultReader() {
+  override async defaultReader(): Promise<IReader> {
     return mergeReaders(this._definition.reader);
   }
 
-  override getContainerSelector() {
+  override getContainerSelector(): string {
     return this._definition.containerSelector;
   }
 
   override getTemplate(): string {
     return this._definition.template;
+  }
+
+  override get attachMode(): AttachMode {
+    return this._definition.attachMode ?? "once";
   }
 
   override get targetMode(): MenuTargetMode {

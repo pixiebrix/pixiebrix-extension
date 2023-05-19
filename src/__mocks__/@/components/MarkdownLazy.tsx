@@ -15,19 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-right: 17px;
+import Markdown from "@/components/Markdown";
 
-  :global(.container) {
-    margin-left: 3px;
-    margin-right: 3px;
-  }
-}
-
-.empty {
-  padding-left: 15px;
-}
-
-.alert {
-  margin-top: 1rem;
-}
+export default Markdown;

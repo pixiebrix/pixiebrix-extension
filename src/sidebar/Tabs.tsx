@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
-import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
+import React, { useEffect } from "react";
+import { type PanelEntry } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
@@ -31,39 +31,39 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
-
-type SidebarTabsProps = SidebarEntries & {
-  activeKey: string;
-  onSelectTab: (eventKey: string) => void;
-  onCloseTemporaryTab: (nonce: UUID) => void;
-  onResolveTemporaryPanel: (nonce: UUID, action: SubmitPanelAction) => void;
-};
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectSidebarActiveTabKey,
+  selectSidebarTabsContent,
+} from "@/sidebar/sidebarSelectors";
+import sidebarSlice from "@/sidebar/sidebarSlice";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
-const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
-  activeKey,
-  panels,
-  forms,
-  temporaryPanels,
-  recipeToActivate,
-  onSelectTab,
-  onCloseTemporaryTab,
-  onResolveTemporaryPanel,
-}) => {
-  const onSelect = useCallback(
-    (eventKey: string) => {
-      reportEvent("ViewSidePanelPanel", {
-        // FIXME: this was wrong, eventKey is not an extensionId
-        // ...selectEventData(lookup.get(extensionId)),
-        initialLoad: false,
-      });
-      onSelectTab(eventKey);
-    },
-    [onSelectTab]
-  );
+const Tabs: React.FC = () => {
+  const dispatch = useDispatch();
+  const activeKey = useSelector(selectSidebarActiveTabKey);
+  const { panels, forms, temporaryPanels, recipeToActivate, staticPanels } =
+    useSelector(selectSidebarTabsContent);
+
+  const onSelect = (eventKey: string) => {
+    reportEvent("ViewSidePanelPanel", {
+      // FIXME: this was wrong, eventKey is not an extensionId
+      // ...selectEventData(lookup.get(extensionId)),
+      initialLoad: false,
+    });
+    dispatch(sidebarSlice.actions.selectTab(eventKey));
+  };
+
+  const onCloseTemporaryTab = (nonce: UUID) => {
+    dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+  };
+
+  const onResolveTemporaryPanel = (nonce: UUID, action: SubmitPanelAction) => {
+    dispatch(sidebarSlice.actions.resolveTemporaryPanel({ nonce, action }));
+  };
 
   useEffect(
     () => {
@@ -85,6 +85,15 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     >
       <div className="full-height bg-white">
         <Nav fill variant="tabs" onSelect={onSelect}>
+          {staticPanels.map((staticPanel) => (
+            <Nav.Link
+              key={staticPanel.key}
+              className={styles.tabHeader}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <span className={styles.tabTitle}>{staticPanel.heading}</span>
+            </Nav.Link>
+          ))}
           {panels.map((panel) => (
             <Nav.Link
               key={panel.extensionId}
@@ -134,6 +143,15 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height">
+          {staticPanels.map((staticPanel) => (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={staticPanel.key}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <ErrorBoundary>{staticPanel.body}</ErrorBoundary>
+            </Tab.Pane>
+          ))}
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}

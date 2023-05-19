@@ -18,15 +18,6 @@
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import type {
-  FormEntry,
-  PanelEntry,
-  RendererError,
-  ActivatePanelOptions,
-  TemporaryPanelEntry,
-  ActivateRecipeEntry,
-} from "@/sidebar/types";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
 import { logPromiseDuration } from "@/utils";
@@ -41,6 +32,14 @@ import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ExtensionRef } from "@/types/extensionTypes";
+import type {
+  ActivatePanelOptions,
+  ActivateRecipeEntry,
+  FormEntry,
+  PanelEntry,
+  PanelPayload,
+  TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
@@ -347,7 +346,7 @@ export function updateHeading(extensionId: UUID, heading: string): void {
 export function upsertPanel(
   { extensionId, extensionPointId, blueprintId }: ExtensionRef,
   heading: string,
-  payload: RendererPayload | RendererError
+  payload: PanelPayload
 ): void {
   const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {

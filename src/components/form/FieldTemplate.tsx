@@ -28,9 +28,10 @@ import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
 import { isEmpty, isPlainObject } from "lodash";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import LinkifiedString from "@/components/LinkifiedString";
 import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
+import MarkdownInline from "@/components/MarkdownInline";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
@@ -207,7 +208,15 @@ const FieldTemplate: React.FC<FieldProps> = ({
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
-            <LinkifiedString>{description}</LinkifiedString>
+            {typeof description === "string" ? (
+              <MarkdownInline
+                markdown={description}
+                sanitizeConfig={DESCRIPTION_ALLOWED_TAGS}
+                as="span"
+              />
+            ) : (
+              description
+            )}
           </BootstrapForm.Text>
         )}
       </Col>

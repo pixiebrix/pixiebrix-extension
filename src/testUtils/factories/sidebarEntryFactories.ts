@@ -22,8 +22,9 @@ import {
   type FormEntry,
   type PanelEntry,
   type SidebarEntry,
+  type StaticPanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
@@ -33,6 +34,12 @@ const activateRecipeEntryFactory = define<ActivateRecipeEntry>({
   recipeId: (n: number) =>
     validateRegistryId(`@test/activate-recipe-test-${n}`),
   heading: (n: number) => `Activate Recipe Test ${n}`,
+});
+const staticPanelEntryFactory = define<StaticPanelEntry>({
+  type: "staticPanel",
+  heading: (n: number) => `Static Panel ${n}`,
+  key: (n: number) => `static-panel-${n}`,
+  body: null,
 });
 const formDefinitionFactory = define<FormDefinition>({
   schema: () => ({}),
@@ -81,6 +88,11 @@ export function sidebarEntryFactory(
   type: "activateRecipe",
   override?: FactoryConfig<ActivateRecipeEntry>
 ): ActivateRecipeEntry;
+
+export function sidebarEntryFactory(
+  type: "staticPanel",
+  override?: FactoryConfig<StaticPanelEntry>
+): StaticPanelEntry;
 export function sidebarEntryFactory(
   type: EntryType,
   override?: FactoryConfig<SidebarEntry>
@@ -103,6 +115,10 @@ export function sidebarEntryFactory(
 
   if (type === "panel") {
     return panelEntryFactory(override as FactoryConfig<PanelEntry>);
+  }
+
+  if (type === "staticPanel") {
+    return staticPanelEntryFactory(override as FactoryConfig<StaticPanelEntry>);
   }
 
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- allow never, future-proof for new types
