@@ -28,7 +28,7 @@ describe("MarkdownInline", () => {
         }}
       />
     );
-    expect(wrapper).toMatchSnapshot();
+    expect(wrapper.asFragment()).toMatchSnapshot();
   });
 
   it("linkifies text", () => {
@@ -40,6 +40,6 @@ describe("MarkdownInline", () => {
         }}
       />
     );
-    expect(wrapper).toMatchSnapshot();
+    expect(wrapper.asFragment()).toMatchSnapshot();
   });
 });
