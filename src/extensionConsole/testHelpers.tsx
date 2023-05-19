@@ -28,6 +28,7 @@ import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { appApi } from "@/services/api";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import servicesSlice from "@/store/servicesSlice";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -38,6 +39,7 @@ const configureStoreForTests = () =>
       blueprintModals: blueprintModalsSlice.reducer,
       blueprints: blueprintsSlice.reducer,
       recipes: recipesSlice.reducer,
+      services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

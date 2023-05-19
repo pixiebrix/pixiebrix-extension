@@ -26,7 +26,7 @@ import serviceRegistry from "@/services/registry";
 
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
+  CONTROL_ROOM_TOKEN_SERVICE_ID,
 } from "@/services/constants";
 import axios from "axios";
 
@@ -51,7 +51,10 @@ type PartnerPrincipal = {
 export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
   expectContext("background");
 
-  const partnerIds = [CONTROL_ROOM_OAUTH_SERVICE_ID, CONTROL_ROOM_SERVICE_ID];
+  const partnerIds = [
+    CONTROL_ROOM_OAUTH_SERVICE_ID,
+    CONTROL_ROOM_TOKEN_SERVICE_ID,
+  ];
 
   const auths = flatten(
     await Promise.all(
