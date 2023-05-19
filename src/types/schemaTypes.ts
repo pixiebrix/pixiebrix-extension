@@ -22,6 +22,7 @@ import {
   type JSONSchema7TypeName,
 } from "json-schema";
 import { type UiSchema as StandardUiSchema } from "@rjsf/core";
+import type DOMPurify from "dompurify";
 
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
@@ -44,3 +45,14 @@ export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
 
 export type SchemaPropertyType = JSONSchema7TypeName;
+
+/**
+ * HTML allowed in input descriptions. Either directly or when rendered via markdown.
+ *
+ * Supporting a subset of the Phrasing Content tags: https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content
+ *
+ * @since 1.7.28
+ */
+export const DESCRIPTION_ALLOWED_TAGS: DOMPurify.Config = {
+  ALLOWED_TAGS: ["a", "b", "em", "i", "strong", "u", "s", "code", "span"],
+};

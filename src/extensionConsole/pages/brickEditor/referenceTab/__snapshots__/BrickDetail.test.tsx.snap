@@ -187,7 +187,9 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   class="SchemaTree__table_cell"
                   role="cell"
                 >
-                  Column labels and values to show
+                  <span>
+                    Column labels and values to show
+                  </span>
                 </td>
               </tr>
               <tr
@@ -225,7 +227,9 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   class="SchemaTree__table_cell"
                   role="cell"
                 >
-                  The values to show in the table
+                  <span>
+                    The values to show in the table
+                  </span>
                 </td>
               </tr>
             </tbody>
@@ -460,7 +464,9 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   class="SchemaTree__table_cell"
                   role="cell"
                 >
-                  Column labels and values to show
+                  <span>
+                    Column labels and values to show
+                  </span>
                 </td>
               </tr>
               <tr
@@ -498,7 +504,9 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   class="SchemaTree__table_cell"
                   role="cell"
                 >
-                  The values to show in the table
+                  <span>
+                    The values to show in the table
+                  </span>
                 </td>
               </tr>
             </tbody>
