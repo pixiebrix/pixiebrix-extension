@@ -46,6 +46,7 @@ const Layout: React.FunctionComponent = ({ children }) => (
  */
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
+  // Must use useLocation because we're checking the path in the hash route.
   const location = useLocation();
   const isStartUrl = location.pathname.startsWith("/start");
 
@@ -58,9 +59,9 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
-  // Fetch service definitions which are required for partner JWT login.
+  // Fetch service definitions which are required for partner JWT login in parallel with useRequiredPartnerAuth
   // useAsyncState with ignored output to track loading state
-  const { isLoading: isServiceDefinitionsLoading } = useAsyncState(async () => {
+  const { data: baseURL, isLoading } = useAsyncState(async () => {
     try {
       await syncRemotePackages();
       // Must happen after the call to fetch service definitions
@@ -73,14 +74,11 @@ const SetupPage: React.FunctionComponent = () => {
         reportError: true,
       });
     }
+
+    return getBaseURL();
   }, []);
 
-  const { data: baseURL, isLoading: isBaseUrlLoading } = useAsyncState(
-    getBaseURL,
-    []
-  );
-
-  if (isBaseUrlLoading || isPartnerLoading || isServiceDefinitionsLoading) {
+  if (isLoading || isPartnerLoading) {
     return (
       <Layout>
         <Loader />
@@ -91,8 +89,9 @@ const SetupPage: React.FunctionComponent = () => {
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
   if (authMethod === "pixiebrix-token") {
-    // NOP -- user has overridden to use PixieBrix token even though they might be connected to an organization
-    // that uses a Control Room
+    // User has overridden settings to use PixieBrix token even though they might be connected to an organization
+    // that has a linked Control Room
+    setupCard = <DefaultSetupCard installURL={baseURL} />;
   } else if (
     isStartUrl ||
     (hasPartner && !hasConfiguredIntegration) ||
