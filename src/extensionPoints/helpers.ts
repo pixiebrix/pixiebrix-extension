@@ -36,6 +36,13 @@ function getAncestors(node: Node): Node[] {
   return ancestors;
 }
 
+/**
+ * Attach a callback to be called when a node is removed from the DOM
+ * @param node the DOM node to observe
+ * @param callback callback to call when the node is removed
+ * @return method to disconnect stop observing for node removal
+ */
+// TODO: replace callback with having caller pass AbortSignal
 export function onNodeRemoved(node: Node, callback: () => void): () => void {
   const ancestors = getAncestors(node);
 
@@ -179,23 +186,23 @@ export function awaitElementOnce(
 }
 
 /**
- * Marks extensionPointId as owning a DOM element.
+ * Marks extensionPointId as owning a DOM element and returns a callback that notifies if the element is removed
+ * from the DOM
  * @param element the element to acquire
  * @param extensionPointId the owner extension ID
- * @param onRemove callback to call when the element is removed from the DOM
+ * @return true if the element was successfully acquired, false if it was already acquired by another extension point
  */
 export function acquireElement(
   element: HTMLElement,
-  extensionPointId: string,
-  onRemove: () => void
-): () => void | null {
+  extensionPointId: string
+): boolean {
   const existing = element.getAttribute(EXTENSION_POINT_DATA_ATTR);
   if (existing) {
     if (extensionPointId !== existing) {
       console.warn(
         `acquireElement: cannot acquire for ${extensionPointId} because it has extension point ${existing} attached to it`
       );
-      return null;
+      return false;
     }
 
     console.debug(
@@ -204,7 +211,7 @@ export function acquireElement(
   }
 
   element.setAttribute(EXTENSION_POINT_DATA_ATTR, extensionPointId);
-  return onNodeRemoved(element, onRemove);
+  return true;
 }
 
 /**
