@@ -47,7 +47,7 @@ import { useCallback } from "react";
 type ActionCallback = () => void;
 
 export type InstallableViewItemActions = {
-  reinstall: ActionCallback | null;
+  reactivate: ActionCallback | null;
   activate: ActionCallback | null;
   viewPublish: ActionCallback | null;
   viewInMarketplaceHref: string | null;
@@ -87,7 +87,7 @@ function useInstallableViewItemActions(
 
   const isDeployment = sharing.source.type === "Deployment";
 
-  // Restricted users aren't allowed to uninstall/reinstall deployments. They are controlled by the admin from the
+  // Restricted users aren't allowed to uninstall/reactivate deployments. They are controlled by the admin from the
   // Admin Console. See restricted flag logic here:
   // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
   const isRestricted = isDeployment && restrict("uninstall");
@@ -106,7 +106,7 @@ function useInstallableViewItemActions(
     extensionsFromInstallable
   );
 
-  const reinstall = () => {
+  const reactivate = () => {
     if (hasBlueprint) {
       const blueprintId = isInstallableBlueprint
         ? installable.metadata.id
@@ -124,10 +124,10 @@ function useInstallableViewItemActions(
         )
       );
     } else {
-      // This should never happen, because the hook will return `reinstall: null` for installables with no
+      // This should never happen, because the hook will return `reactivate: null` for installables with no
       // associated blueprint
       notify.error({
-        error: new Error("Cannot reinstall item with no associated mod"),
+        error: new Error("Cannot reactivate item with no associated mod"),
       });
     }
   };
@@ -279,16 +279,16 @@ function useInstallableViewItemActions(
       isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isRestricted ? uninstall : null,
-    // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
+    // Only blueprints/deployments can be reinstalled. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
-    reinstall:
+    reactivate:
       // TODO: implement me
       hasBlueprint &&
       isInstalled &&
       !isRestricted &&
       !unavailable &&
       !inSidebarContext
-        ? reinstall
+        ? reactivate
         : null,
     viewLogs: showViewLogsAction ? viewLogs : null,
     activate: status === "Inactive" ? activate : null,

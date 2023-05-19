@@ -93,8 +93,8 @@ const BlueprintActions: React.FunctionComponent<{
             )}
           </>
         ),
-        action: actions.reinstall,
-        hide: !actions.reinstall,
+        action: actions.reactivate,
+        hide: !actions.reactivate,
       },
       {
         title: (
