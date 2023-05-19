@@ -253,8 +253,6 @@ function useInstallableViewItemActions(
   };
 
   const showPublishAction =
-    // TODO: Add support for navigating to mod page with publish modal open
-    !inSidebarContext &&
     !unavailable &&
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
@@ -272,16 +270,24 @@ function useInstallableViewItemActions(
         `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
-    viewPublish: showPublishAction ? viewPublish : null,
+    // TODO: support me
+    viewPublish: showPublishAction && !inSidebarContext ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
-    viewShare: isDeployment || unavailable ? null : viewShare,
+    // TODO: implement me?
+    viewShare:
+      isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     uninstall: isInstalled && !isRestricted ? uninstall : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
     // no activation-time integrations/options associated with them.)
     reinstall:
-      hasBlueprint && isInstalled && !isRestricted && !unavailable
+      // TODO: implement me
+      hasBlueprint &&
+      isInstalled &&
+      !isRestricted &&
+      !unavailable &&
+      !inSidebarContext
         ? reinstall
         : null,
     viewLogs: showViewLogsAction ? viewLogs : null,

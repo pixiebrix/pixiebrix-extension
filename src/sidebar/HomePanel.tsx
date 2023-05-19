@@ -16,7 +16,7 @@
  */
 import React, { type ReactNode } from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Row, Container } from "react-bootstrap";
 import type { Column } from "react-table";
 import type {
   Installable,
@@ -63,7 +63,7 @@ const ListItem: React.FunctionComponent<{
   );
 };
 
-const InstalledBlueprintsList: React.FunctionComponent<{
+const ActiveBlueprintsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
@@ -77,11 +77,11 @@ const InstalledBlueprintsList: React.FunctionComponent<{
   });
 
   return (
-    <div>
+    <>
       {isLoading ? (
         <Loader />
       ) : (
-        <ListGroup {...tableInstance.getTableProps()}>
+        <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
           {tableInstance.rows.map((row) => {
             tableInstance.prepareRow(row);
             return (
@@ -93,7 +93,7 @@ const InstalledBlueprintsList: React.FunctionComponent<{
           })}
         </ListGroup>
       )}
-    </div>
+    </>
   );
 };
 
@@ -101,14 +101,16 @@ const HomePanel: React.FunctionComponent = () => {
   // TODO: skip useGetAllCloudExtensionsQuery
   const { installables, error } = useInstallables();
   return (
-    <div>
+    <Container>
       Active mods
-      {error ? (
-        <ErrorDisplay error={error} />
-      ) : (
-        <InstalledBlueprintsList installables={installables} />
-      )}
-    </div>
+      <Row>
+        {error ? (
+          <ErrorDisplay error={error} />
+        ) : (
+          <ActiveBlueprintsList installables={installables} />
+        )}
+      </Row>
+    </Container>
   );
 };
 
