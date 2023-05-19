@@ -105,6 +105,10 @@ afterEach(() => {
 });
 
 describe("useInstallableViewItemActions", () => {
+  beforeEach(() => {
+    window.location.pathname = "/options.html";
+  });
+
   test("cloud extension", () => {
     mockHooks();
     const cloudExtensionItem = installableItemFactory({
@@ -137,6 +141,13 @@ describe("useInstallableViewItemActions", () => {
       ["viewPublish", "viewShare", "uninstall", "viewLogs"],
       actions
     );
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(personalExtensionItem));
+
+    expectActions(["uninstall"], sidebarActions);
   });
 
   test("active personal blueprint", () => {
@@ -154,6 +165,13 @@ describe("useInstallableViewItemActions", () => {
       ["viewPublish", "viewShare", "uninstall", "viewLogs", "reactivate"],
       actions
     );
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
+
+    expectActions(["uninstall"], sidebarActions);
   });
 
   test("inactive personal blueprint", () => {
@@ -185,6 +203,13 @@ describe("useInstallableViewItemActions", () => {
       ["viewPublish", "viewShare", "uninstall", "viewLogs", "reactivate"],
       actions
     );
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
+
+    expectActions(["uninstall"], sidebarActions);
   });
 
   test("inactive team blueprint", () => {
@@ -216,6 +241,13 @@ describe("useInstallableViewItemActions", () => {
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "uninstall"],
       actions
     );
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
+
+    expectActions(["uninstall"], sidebarActions);
   });
 
   test("team deployment for unrestricted user", () => {
@@ -230,6 +262,13 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
     expectActions(["reactivate", "uninstall", "viewLogs"], actions);
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+
+    expectActions(["uninstall"], sidebarActions);
   });
 
   test("restricted team deployment", () => {
@@ -268,6 +307,13 @@ describe("useInstallableViewItemActions", () => {
       ],
       actions
     );
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+
+    expectActions(["uninstall", "requestPermissions"], sidebarActions);
   });
 
   test("blueprint with access revoked", () => {
@@ -283,6 +329,13 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(blueprintItem));
     expectActions(["uninstall", "viewLogs"], actions);
+
+    window.location.pathname = "/sidebar.html";
+    const {
+      result: { current: sidebarActions },
+    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+
+    expectActions(["uninstall"], sidebarActions);
   });
 
   test("paused deployment with unrestricted user", () => {
@@ -343,6 +396,13 @@ describe("useInstallableViewItemActions", () => {
         ["viewPublish", "viewShare", "uninstall", "viewLogs", "reactivate"],
         actions
       );
+
+      window.location.pathname = "/sidebar.html";
+      const {
+        result: { current: sidebarActions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+
+      expectActions(["uninstall"], sidebarActions);
     });
 
     test("published", () => {
@@ -361,6 +421,13 @@ describe("useInstallableViewItemActions", () => {
         ],
         actions
       );
+
+      window.location.pathname = "/sidebar.html";
+      const {
+        result: { current: sidebarActions },
+      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+
+      expectActions(["viewInMarketplaceHref", "uninstall"], sidebarActions);
     });
   });
 });
