@@ -26,7 +26,7 @@ import {
   useKBar,
   VisualState,
 } from "kbar";
-import ReactShadowRoot from "react-shadow-root";
+import EmotionShadowRoot from "react-shadow/emotion";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
@@ -113,21 +113,19 @@ const KBarComponent: React.FC = () => {
     <KBarPortal>
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
-          <div
+          <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
             contentEditable
             suppressContentEditableWarning
           >
-            <ReactShadowRoot mode="closed">
-              <Stylesheets href={faStyleSheet} mountOnLoad>
-                <FocusLock>
-                  <KBarSearch style={searchStyle} />
-                  <QuickBarResults />
-                </FocusLock>
-              </Stylesheets>
-            </ReactShadowRoot>
-          </div>
+            <Stylesheets href={faStyleSheet} mountOnLoad>
+              <FocusLock>
+                <KBarSearch style={searchStyle} />
+                <QuickBarResults />
+              </FocusLock>
+            </Stylesheets>
+          </EmotionShadowRoot.div>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
