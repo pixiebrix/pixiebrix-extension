@@ -17,7 +17,7 @@
 
 import React from "react";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
 import { HashRouter } from "react-router-dom";
@@ -29,6 +29,18 @@ import { render } from "@/extensionConsole/testHelpers";
 import settingsSlice from "@/store/settingsSlice";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
+import notify from "@/utils/notify";
+
+// Mock notify to assert success/failure because I was having issues writing assertions over the history.
+jest.mock("@/utils/notify", () => ({
+  __esModule: true,
+  default: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
+
+const notifySuccessMock = jest.mocked(notify.success);
 
 jest.mock("lodash", () => {
   const lodash = jest.requireActual("lodash");
@@ -168,7 +180,7 @@ describe("SetupPage", () => {
     });
 
     expect(screen.getByTestId("link-account-btn")).not.toBeNull();
-    expect(screen.queryByTestId("connect-aari-btn")).toBeNull();
+    expect(screen.queryByTestId("connect-aari-token-btn")).toBeNull();
   });
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
@@ -193,6 +205,7 @@ describe("SetupPage", () => {
     });
 
     expect(screen.queryByTestId("link-account-btn")).toBeNull();
+    expect(screen.queryByTestId("connect-aari-token-btn")).toBeVisible();
 
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
@@ -200,10 +213,17 @@ describe("SetupPage", () => {
       // Schema get pre-pended automatically
     ).toStrictEqual("https://community2.cloud-2.automationanywhere.digital");
 
-    expect(
-      screen.getByLabelText("Username")
-      // Schema get pre-pended automatically
-    ).not.toBeNull();
+    expect(screen.getByLabelText("Username")).not.toBeNull();
+
+    const user = userEvent.setup();
+
+    await act(async () => {
+      await user.type(screen.getByLabelText("Username"), "test");
+      await user.type(screen.getByLabelText("Password"), "test");
+      await user.click(screen.getByTestId("connect-aari-token-btn"));
+    });
+
+    expect(notifySuccessMock).toHaveBeenCalledTimes(1);
   });
 
   test("Managed Storage OAuth2 partner user", async () => {

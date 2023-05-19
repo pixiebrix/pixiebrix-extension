@@ -20,7 +20,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_TOKEN_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import useDependency from "@/services/useDependency";
@@ -52,7 +52,7 @@ function makeBaseState() {
   const baseFormState = menuItemFormStateFactory();
   baseFormState.services = [
     {
-      id: CONTROL_ROOM_SERVICE_ID,
+      id: CONTROL_ROOM_TOKEN_SERVICE_ID,
       outputKey: "automationAnywhere" as OutputKey,
     },
   ];
