@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { type PanelEntry } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "@/sidebar/utils";
+import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
@@ -37,7 +37,6 @@ import {
   selectSidebarTabsContent,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { staticPanelMap } from "@/sidebar/HomePanel";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -150,7 +149,9 @@ const Tabs: React.FC = () => {
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary>{staticPanelMap[staticPanel.key]}</ErrorBoundary>
+              <ErrorBoundary>
+                {getBodyForStaticPanel(staticPanel.key)}
+              </ErrorBoundary>
             </Tab.Pane>
           ))}
           {panels.map((panel: PanelEntry) => (

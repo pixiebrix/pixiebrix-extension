@@ -98,8 +98,8 @@ const ActiveBlueprintsList: React.FunctionComponent<{
 };
 
 const HomePanel: React.FunctionComponent = () => {
-  // TODO: skip useGetAllCloudExtensionsQuery
   const { installables, error } = useInstallables();
+
   return (
     <Container>
       Active mods
@@ -112,11 +112,6 @@ const HomePanel: React.FunctionComponent = () => {
       </Row>
     </Container>
   );
-};
-
-// TODO: move/fix me
-export const staticPanelMap: Record<string, ReactNode> = {
-  home: <HomePanel />,
 };
 
 export const HOME_PANEL: StaticPanelEntry = {
