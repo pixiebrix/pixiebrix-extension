@@ -27,7 +27,6 @@ import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type IExtension } from "@/types/extensionTypes";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 type InstallablesState = {
   /**

@@ -270,11 +270,9 @@ function useInstallableViewItemActions(
         `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
-    // TODO: support me
     viewPublish: showPublishAction && !inSidebarContext ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
-    // TODO: implement me?
     viewShare:
       isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
@@ -282,7 +280,6 @@ function useInstallableViewItemActions(
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
     reactivate:
-      // TODO: implement me
       hasBlueprint &&
       isInstalled &&
       !isRestricted &&

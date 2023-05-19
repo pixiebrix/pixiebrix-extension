@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { type ReactNode } from "react";
+import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { ListGroup, Row, Container } from "react-bootstrap";
 import type { Column } from "react-table";
