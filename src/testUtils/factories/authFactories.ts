@@ -125,8 +125,8 @@ export const userFactory = define<Me>({
 });
 
 export const partnerUserFactory = extend<Me, Me>(userFactory, {
-  partner: {
+  partner: () => ({
     name: "Automation Anywhere",
     theme: "automation-anywhere",
-  },
+  }),
 });

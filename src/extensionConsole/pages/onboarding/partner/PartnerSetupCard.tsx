@@ -28,7 +28,6 @@ import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import settingsSlice from "@/store/settingsSlice";
 import { useLocation } from "react-router";
@@ -36,15 +35,20 @@ import {
   hostnameToUrl,
   isCommunityControlRoom,
 } from "@/contrib/automationanywhere/aaUtils";
-import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
+import useAsyncState from "@/hooks/useAsyncState";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
 
-function useInstallUrl() {
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
-
-  const controlRoomUrl = me?.organization?.control_room?.url;
-
-  const [installURL, isPending] = useAsyncState(async () => {
+/**
+ * Create the app URL for the partner start page. It shows content based on whether or not the hostname corresponds
+ * to a linked Control Room.
+ */
+function usePartnerAppStartUrl(
+  controlRoomUrl: string
+): FetchableAsyncState<string> {
+  return useAsyncState(async () => {
     const baseUrl = await getBaseURL();
+    // Special login/base screen for partner users
     const startUrl = new URL("/start", baseUrl);
 
     if (controlRoomUrl) {
@@ -52,14 +56,10 @@ function useInstallUrl() {
       startUrl.searchParams.set("hostname", parsedControlRoomUrl.hostname);
     }
 
+    // Include the partner to ensure branding is applied
     startUrl.searchParams.set("partner", "automation-anywhere");
     return startUrl.href;
   }, [controlRoomUrl]);
-
-  return {
-    installURL,
-    isPending,
-  };
 }
 
 /**
@@ -116,30 +116,27 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const location = useLocation();
   const mode = usePartnerLoginMode();
   const { data: me } = appApi.endpoints.getMe.useQueryState();
-  const { installURL } = useInstallUrl();
+  const managedStorage = useManagedStorageState();
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link
   const hostname = new URLSearchParams(location.search).get("hostname");
 
-  // Prefer controlRoomUrl set by IT for force-installed extensions
-  const fallbackControlRoomUrl =
-    hostnameToUrl(hostname) ?? me?.organization?.control_room?.url ?? "";
+  // Prefer control room url set by IT for force-installed extensions
+  // In order of preference
+  // 1. Value set by IT department in the registry
+  // 2. Hostname from URL (when using /start URL from Admin Console)
+  // 3. Cached control room url
+  const controlRoomUrl =
+    managedStorage.data?.controlRoomUrl ??
+    hostnameToUrl(hostname) ??
+    me?.organization?.control_room?.url ??
+    "";
 
-  const [controlRoomUrl] = useAsyncState(
-    async () => {
-      try {
-        // Use readManagedStorageByKey instead of useSyncManagedStorage to fallback to fallbackControlRoomUrl
-        return await readManagedStorageByKey("controlRoomUrl");
-      } catch {
-        return fallbackControlRoomUrl;
-      }
-    },
-    [fallbackControlRoomUrl],
-    fallbackControlRoomUrl
-  );
+  const { data: installUrl } = usePartnerAppStartUrl(controlRoomUrl);
 
-  const initialValues = {
+  const initialFormValues = {
     controlRoomUrl,
+    // Username/password ignored for OAuth2 flow
     username: "",
     password: "",
   };
@@ -164,7 +161,8 @@ const PartnerSetupCard: React.FunctionComponent = () => {
         />
         <OnboardingStep number={2} title="Connect your AARI account" active>
           <ControlRoomOAuthForm
-            initialValues={initialValues}
+            initialValues={initialFormValues}
+            // Force re-render when control room URL changes, so that the control room URL will be pre-filled
             key={controlRoomUrl}
           />
         </OnboardingStep>
@@ -187,7 +185,8 @@ const PartnerSetupCard: React.FunctionComponent = () => {
         >
           <Button
             className="btn btn-primary mt-2"
-            href={installURL}
+            // The async state for installUrl will be ready by the time the button is rendered/clicked
+            href={installUrl}
             data-testid="link-account-btn"
           >
             <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
@@ -212,7 +211,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
       />
       <OnboardingStep number={3} title="Connect your AARI account" active>
         <ControlRoomTokenForm
-          initialValues={initialValues}
+          initialValues={initialFormValues}
           key={controlRoomUrl}
         />
       </OnboardingStep>

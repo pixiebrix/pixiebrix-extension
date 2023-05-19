@@ -127,7 +127,7 @@ export async function readManagedStorage(): Promise<ManagedStorageState> {
 
 /**
  * Get a _synchronous_ snapshot of the managed storage state.
- * @see useSyncManagedStorage
+ * @see useManagedStorageState
  * @see readManagedStorage
  */
 export function getSnapshot(): ManagedStorageState | undefined {
@@ -140,7 +140,7 @@ export function getSnapshot(): ManagedStorageState | undefined {
  * Subscribe to changes in the managed storage state. In practice, this should only fire once because managed
  * storage is not mutable.
  * @param callback to receive the updated state.
- * @see useSyncManagedStorage
+ * @see useManagedStorageState
  */
 export function subscribe(
   callback: (state: ManagedStorageState) => void
