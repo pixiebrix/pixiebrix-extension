@@ -29,6 +29,9 @@ import {
   CONTROL_ROOM_SERVICE_ID,
 } from "@/services/constants";
 import axios from "axios";
+import { getBaseURL } from "@/services/baseService";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import chromeP from "webext-polyfill-kinda";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -116,10 +119,39 @@ export async function launchAuthIntegration({
       throw new Error("controlRoomUrl is missing on configuration");
     }
 
+    // Make a single call to the PixieBrix server with the JWT in order verify the JWT is valid for the Control Room and
+    // to set up the ControlRoomPrincipal. If the token is rejected by the Control Room, the PixieBrix server will
+    // return a 401.
+    // Once the value is set on setPartnerAuth, a cascade of network requests will happen which causes a race condition
+    // in just-in-time user initialization.
+    const baseURL = await getBaseURL();
+    try {
+      await axios.get("/api/me/", {
+        baseURL,
+        headers: {
+          Authorization: `Bearer ${data.access_token as string}`,
+          "X-Control-Room": config.config.controlRoomUrl,
+        },
+      });
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 401) {
+        // Clear the token to allow the user re-login with the SAML/SSO provider
+        // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+        await chromeP.identity.clearAllCachedAuthTokens();
+
+        throw new Error(
+          "Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration."
+        );
+      }
+
+      throw error;
+    }
+
     console.info(
       "Setting partner auth for Control Room %s",
       config.config.controlRoomUrl
     );
+
     await setPartnerAuth({
       authId: config.id,
       token: data.access_token as string,
