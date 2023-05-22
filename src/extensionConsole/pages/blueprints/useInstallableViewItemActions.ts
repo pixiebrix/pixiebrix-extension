@@ -124,6 +124,7 @@ function useInstallableViewItemActions(
 
       if (inSidebarContext) {
         window.open(`/options.html#/${reactivatePath}`, "_blank");
+        return;
       }
 
       dispatch(

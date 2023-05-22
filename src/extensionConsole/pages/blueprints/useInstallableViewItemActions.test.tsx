@@ -171,7 +171,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: sidebarActions },
     } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
 
-    expectActions(["deactivate", "viewPublish"], sidebarActions);
+    expectActions(["deactivate", "viewPublish", "reactivate"], sidebarActions);
   });
 
   test("inactive personal blueprint", () => {
@@ -209,7 +209,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: sidebarActions },
     } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
 
-    expectActions(["deactivate", "viewPublish"], sidebarActions);
+    expectActions(["deactivate", "viewPublish", "reactivate"], sidebarActions);
   });
 
   test("inactive team blueprint", () => {
@@ -247,7 +247,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: sidebarActions },
     } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
 
-    expectActions(["deactivate", "viewPublish"], sidebarActions);
+    expectActions(["deactivate", "viewPublish", "reactivate"], sidebarActions);
   });
 
   test("team deployment for unrestricted user", () => {
@@ -268,7 +268,7 @@ describe("useInstallableViewItemActions", () => {
       result: { current: sidebarActions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
 
-    expectActions(["deactivate"], sidebarActions);
+    expectActions(["deactivate", "reactivate"], sidebarActions);
   });
 
   test("restricted team deployment", () => {
@@ -314,7 +314,7 @@ describe("useInstallableViewItemActions", () => {
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
 
     expectActions(
-      ["deactivate", "requestPermissions", "viewPublish"],
+      ["deactivate", "requestPermissions", "viewPublish", "reactivate"],
       sidebarActions
     );
   });
@@ -405,7 +405,10 @@ describe("useInstallableViewItemActions", () => {
         result: { current: sidebarActions },
       } = renderHook(() => useInstallableViewItemActions(blueprintItem));
 
-      expectActions(["deactivate", "viewPublish"], sidebarActions);
+      expectActions(
+        ["deactivate", "viewPublish", "reactivate"],
+        sidebarActions
+      );
     });
 
     test("published", () => {
@@ -430,7 +433,10 @@ describe("useInstallableViewItemActions", () => {
         result: { current: sidebarActions },
       } = renderHook(() => useInstallableViewItemActions(blueprintItem));
 
-      expectActions(["viewInMarketplaceHref", "deactivate"], sidebarActions);
+      expectActions(
+        ["viewInMarketplaceHref", "deactivate", "reactivate"],
+        sidebarActions
+      );
     });
   });
 });
