@@ -118,6 +118,14 @@ function useInstallableViewItemActions(
         reinstall: true,
       });
 
+      const reactivatePath = `marketplace/activate/${encodeURIComponent(
+        blueprintId
+      )}?reinstall=1`;
+
+      if (inSidebarContext) {
+        window.open(`/options.html#/${reactivatePath}`, "_blank");
+      }
+
       dispatch(
         push(
           `marketplace/activate/${encodeURIComponent(blueprintId)}?reinstall=1`
@@ -289,11 +297,7 @@ function useInstallableViewItemActions(
     // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
     reactivate:
-      hasBlueprint &&
-      isActive &&
-      !isRestricted &&
-      !unavailable &&
-      !inSidebarContext
+      hasBlueprint && isActive && !isRestricted && !unavailable
         ? reactivate
         : null,
     viewLogs: showViewLogsAction ? viewLogs : null,
