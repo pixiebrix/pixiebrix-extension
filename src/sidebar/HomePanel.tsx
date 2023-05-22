@@ -16,7 +16,7 @@
  */
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { ListGroup, Row, Container } from "react-bootstrap";
+import { ListGroup, Row, Container, Button } from "react-bootstrap";
 import type { Column } from "react-table";
 import type {
   Installable,
@@ -28,6 +28,9 @@ import { useTable } from "react-table";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
+import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -45,6 +48,7 @@ const ListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
   const { name, icon } = installableItem;
+  const { requestPermissions } = useInstallableViewItemActions(installableItem);
 
   return (
     <ListGroup.Item>
@@ -54,6 +58,18 @@ const ListItem: React.FunctionComponent<{
           <div className="d-flex align-items-center">
             <h5 className="flex-grow-1">{name}</h5>
           </div>
+          {requestPermissions && (
+            <Button
+              variant="link"
+              size="sm"
+              className="p-0"
+              onClick={() => {
+                requestPermissions();
+              }}
+            >
+              <FontAwesomeIcon icon={faExclamationCircle} /> Grant Permissions
+            </Button>
+          )}
         </div>
         <div className="flex-shrink-0">
           <BlueprintActions installableViewItem={installableItem} />
