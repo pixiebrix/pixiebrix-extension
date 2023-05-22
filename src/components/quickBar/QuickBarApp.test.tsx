@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, act } from "@testing-library/react";
-import { screen } from "shadow-dom-testing-library";
+import { render, act, screen } from "@testing-library/react";
 
 import {
   QUICKBAR_EVENT_NAME,
@@ -54,6 +53,16 @@ jest.mock("@/utils/selectionController", () => ({
     save: jest.fn(),
     restore: jest.fn(),
     get: jest.fn(),
+  },
+}));
+
+// TODO: fix tests so they properly handle shadow dom events
+jest.mock("react-shadow/emotion", () => ({
+  __esModule: true,
+  default: {
+    div({ children }: any) {
+      return <>{children}</>;
+    },
   },
 }));
 
@@ -118,11 +127,11 @@ describe("QuickBarApp", () => {
     });
 
     expect(screen.getByTestId("quickBar")).toBeVisible();
-    expect(screen.getByShadowRole("combobox")).toBeVisible();
+    expect(screen.getByRole("combobox")).toBeVisible();
     expect(saveSelectionMock).toHaveBeenCalledOnce();
 
     await act(async () => {
-      await user.type(screen.getByShadowRole("combobox"), "test");
+      await user.type(screen.getByRole("combobox"), "test");
 
       // Fast-forward until all timers have been executed
       jest.advanceTimersByTime(2000);
@@ -148,7 +157,7 @@ describe("QuickBarApp", () => {
     expect(generatorMock).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      await user.type(screen.getByShadowRole("combobox"), "test");
+      await user.type(screen.getByRole("combobox"), "test");
 
       // Fast-forward until all timers have been executed
       jest.advanceTimersByTime(100);
