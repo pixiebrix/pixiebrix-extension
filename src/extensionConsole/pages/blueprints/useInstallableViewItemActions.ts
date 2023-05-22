@@ -53,7 +53,7 @@ export type InstallableViewItemActions = {
   viewInMarketplaceHref: string | null;
   viewShare: ActionCallback | null;
   deleteExtension: ActionCallback | null;
-  uninstall: ActionCallback | null;
+  deactivate: ActionCallback | null;
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
 };
@@ -87,7 +87,7 @@ function useInstallableViewItemActions(
 
   const isDeployment = sharing.source.type === "Deployment";
 
-  // Restricted users aren't allowed to uninstall/reactivate deployments. They are controlled by the admin from the
+  // Restricted users aren't allowed to deactivate/reactivate deployments. They are controlled by the admin from the
   // Admin Console. See restricted flag logic here:
   // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
   const isRestricted = isDeployment && restrict("uninstall");
@@ -209,7 +209,7 @@ function useInstallableViewItemActions(
     [modals]
   );
 
-  const uninstall = useUserAction(
+  const deactivate = useUserAction(
     async () => {
       if (isInstallableBlueprint) {
         const blueprintId = installable.metadata.id;
@@ -276,7 +276,7 @@ function useInstallableViewItemActions(
     viewShare:
       isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
-    uninstall: isInstalled && !isRestricted ? uninstall : null,
+    deactivate: isInstalled && !isRestricted ? deactivate : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
     reactivate:
