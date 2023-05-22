@@ -23,11 +23,35 @@ import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { reportEvent } from "@/telemetry/events";
 import Modals from "./modals/Modals";
 import { useLocation } from "react-router";
+import {
+  blueprintModalsSlice,
+  type PublishContext,
+} from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
+import { useDispatch } from "react-redux";
 
 const useShowPublishUrlEffect = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const params = new URLSearchParams(location.search);
+  const showPublish = params.get("publish") === "1";
+  const blueprintId = params.get("blueprintId");
+  const extensionId = params.get("extensionId");
 
-  console.log("*** location", location);
+  useEffect(() => {
+    if (blueprintId && extensionId) {
+      // Should never happen
+      return;
+    }
+
+    if (showPublish && (blueprintId || extensionId)) {
+      dispatch(
+        blueprintModalsSlice.actions.setShareContext({
+          ...(blueprintId ? { blueprintId } : {}),
+          ...(extensionId ? { extensionId } : {}),
+        } as PublishContext)
+      );
+    }
+  }, []);
 };
 
 const BlueprintsPage: React.FunctionComponent = () => {
