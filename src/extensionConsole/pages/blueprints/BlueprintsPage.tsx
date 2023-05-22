@@ -29,22 +29,24 @@ import {
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { useDispatch } from "react-redux";
 
+// Supports showing the publish modal via URL, e.g. to be used by the sidebar
 const useShowPublishUrlEffect = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
   const params = new URLSearchParams(location.search);
+
   const showPublish = params.get("publish") === "1";
   const blueprintId = params.get("blueprintId");
   const extensionId = params.get("extensionId");
 
   useEffect(() => {
-    if (blueprintId && extensionId) {
-      // Should never happen
-      return;
-    }
+    // Both blueprintId & extensionId being set should never happen in practice, but
+    // at least one of them needs to be present
+    const validShareContext =
+      (blueprintId || extensionId) && !(blueprintId && extensionId);
 
-    if (showPublish && (blueprintId || extensionId)) {
+    if (showPublish && validShareContext) {
       dispatch(
         blueprintModalsSlice.actions.setShareContext({
           ...(blueprintId ? { blueprintId } : {}),
