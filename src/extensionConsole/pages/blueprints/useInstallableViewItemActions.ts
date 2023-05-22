@@ -71,7 +71,7 @@ function useInstallableViewItemActions(
   const { restrict } = useFlags();
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
-  const isInstalled = status === "Active" || status === "Paused";
+  const isActive = status === "Active" || status === "Paused";
   const isInstallableExtension = isExtension(installable);
   const isInstallableBlueprint = !isInstallableExtension;
 
@@ -80,7 +80,7 @@ function useInstallableViewItemActions(
     sharing.source.type === "Personal" &&
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally
-    !isInstalled;
+    !isActive;
 
   const hasBlueprint =
     isExtensionFromRecipe(installable) || isInstallableBlueprint;
@@ -276,12 +276,12 @@ function useInstallableViewItemActions(
     viewShare:
       isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
-    deactivate: isInstalled && !isRestricted ? deactivate : null,
+    deactivate: isActive && !isRestricted ? deactivate : null,
     // Only blueprints/deployments can be reinstalled. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
     reactivate:
       hasBlueprint &&
-      isInstalled &&
+      isActive &&
       !isRestricted &&
       !unavailable &&
       !inSidebarContext
