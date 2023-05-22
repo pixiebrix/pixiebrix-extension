@@ -60,15 +60,17 @@ const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
         {label || schema.title}
         {(label || schema.title) && required ? "*" : null}
       </FormLabel>
-      <Select
-        id={id}
-        options={selectOptions}
-        isDisabled={disabled || readonly}
-        value={selectOptions.find((option) => option.value === value)}
-        onChange={_onChange}
-        onBlur={_onBlur}
-        onFocus={_onFocus}
-      />
+      <div data-testid="formbuilder-select-wrapper">
+        <Select
+          id={id}
+          options={selectOptions}
+          isDisabled={disabled || readonly}
+          value={selectOptions.find((option) => option.value === value)}
+          onChange={_onChange}
+          onBlur={_onBlur}
+          onFocus={_onFocus}
+        />
+      </div>
     </FormGroup>
   );
 };
