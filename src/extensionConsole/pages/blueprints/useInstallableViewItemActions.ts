@@ -277,7 +277,7 @@ function useInstallableViewItemActions(
       isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     deactivate: isActive && !isRestricted ? deactivate : null,
-    // Only blueprints/deployments can be reinstalled. (Because there's no reason to reactivate an extension... there's
+    // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
     reactivate:
       hasBlueprint &&
