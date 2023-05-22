@@ -229,7 +229,7 @@
     "cooky-cutter": "^1.5.4",
     "copy-webpack-plugin": "^10.2.1",
     "csp-parse": "0.0.2",
-    "css-loader": "^6.7.1",
+    "css-loader": "^6.7.4",
     "css-minimizer-webpack-plugin": "^3.4.1",
     "dotenv": "^15.0.0",
     "eslint": "^8.41.0",
