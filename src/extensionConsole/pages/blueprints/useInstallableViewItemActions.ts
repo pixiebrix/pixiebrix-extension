@@ -165,6 +165,15 @@ function useInstallableViewItemActions(
           extensionId: installable.id,
         };
 
+    if (inSidebarContext) {
+      const publishParams = new URLSearchParams({
+        publish: "1",
+        ...(publishContext as ShareContext),
+      });
+      window.open(`/options.html#/?${publishParams.toString()}`, "_blank");
+      return;
+    }
+
     dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
   };
 
@@ -270,7 +279,7 @@ function useInstallableViewItemActions(
         `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
-    viewPublish: showPublishAction && !inSidebarContext ? viewPublish : null,
+    viewPublish: showPublishAction ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
     viewShare:
