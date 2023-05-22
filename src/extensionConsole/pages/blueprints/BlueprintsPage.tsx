@@ -22,7 +22,7 @@ import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { reportEvent } from "@/telemetry/events";
 import Modals from "./modals/Modals";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import {
   blueprintModalsSlice,
   type PublishContext,
@@ -32,6 +32,7 @@ import { useDispatch } from "react-redux";
 const useShowPublishUrlEffect = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const history = useHistory();
   const params = new URLSearchParams(location.search);
   const showPublish = params.get("publish") === "1";
   const blueprintId = params.get("blueprintId");
@@ -50,6 +51,9 @@ const useShowPublishUrlEffect = () => {
           ...(extensionId ? { extensionId } : {}),
         } as PublishContext)
       );
+
+      // Remove the search params after showing the modal
+      history.push("/");
     }
   }, []);
 };
