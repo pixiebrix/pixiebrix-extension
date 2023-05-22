@@ -55,7 +55,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon fixedWidth icon={faStore} /> View in Marketplace
+            <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod Details
           </>
         ),
         href: actions.viewInMarketplaceHref,
@@ -93,8 +93,8 @@ const BlueprintActions: React.FunctionComponent<{
             )}
           </>
         ),
-        action: actions.reinstall,
-        hide: !actions.reinstall,
+        action: actions.reactivate,
+        hide: !actions.reactivate,
       },
       {
         title: (
@@ -102,8 +102,8 @@ const BlueprintActions: React.FunctionComponent<{
             <FontAwesomeIcon fixedWidth icon={faTimes} /> Deactivate
           </>
         ),
-        action: actions.uninstall,
-        hide: !actions.uninstall,
+        action: actions.deactivate,
+        hide: !actions.deactivate,
         className: "text-danger",
       },
       {

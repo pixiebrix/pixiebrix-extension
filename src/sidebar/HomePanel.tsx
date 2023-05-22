@@ -14,17 +14,110 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
+import { ListGroup, Row, Container } from "react-bootstrap";
+import type { Column } from "react-table";
+import type {
+  Installable,
+  InstallableViewItem,
+} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
+import Loader from "@/components/Loader";
+import { useTable } from "react-table";
+import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
 
-const HomePanel: React.FunctionComponent = () => <div>Hello home panel! 🖼</div>;
+const columns: Array<Column<InstallableViewItem>> = [
+  {
+    Header: "Name",
+    accessor: "name",
+  },
+  {
+    Header: "Last updated",
+    accessor: "updatedAt",
+    sortInverted: true,
+  },
+];
+
+const ListItem: React.FunctionComponent<{
+  installableItem: InstallableViewItem;
+}> = ({ installableItem }) => {
+  const { name, icon } = installableItem;
+
+  return (
+    <ListGroup.Item>
+      <div className="d-flex align-items-center">
+        <div className="flex-shrink-0">{icon}</div>
+        <div className="flex-grow-1">
+          <div className="d-flex align-items-center">
+            <h5 className="flex-grow-1">{name}</h5>
+          </div>
+        </div>
+        <div className="flex-shrink-0">
+          <BlueprintActions installableViewItem={installableItem} />
+        </div>
+      </div>
+    </ListGroup.Item>
+  );
+};
+
+const ActiveBlueprintsList: React.FunctionComponent<{
+  installables: Installable[];
+}> = ({ installables }) => {
+  const { installableViewItems, isLoading } =
+    useInstallableViewItems(installables);
+
+  const tableInstance = useTable<InstallableViewItem>({
+    columns,
+    data: installableViewItems.filter(
+      (installableViewItem) => installableViewItem.status === "Active"
+    ),
+  });
+
+  return (
+    <>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
+          {tableInstance.rows.map((row) => {
+            tableInstance.prepareRow(row);
+            return (
+              <ListItem
+                key={row.original.sharing.packageId}
+                installableItem={row.original}
+              />
+            );
+          })}
+        </ListGroup>
+      )}
+    </>
+  );
+};
+
+const HomePanel: React.FunctionComponent = () => {
+  const { installables, error } = useInstallables();
+
+  return (
+    <Container>
+      Active mods
+      <Row>
+        {error ? (
+          <ErrorDisplay error={error} />
+        ) : (
+          <ActiveBlueprintsList installables={installables} />
+        )}
+      </Row>
+    </Container>
+  );
+};
 
 export const HOME_PANEL: StaticPanelEntry = {
   type: "staticPanel",
   heading: "Home",
   key: "home",
-  body: <HomePanel />,
 };
 
 export default HomePanel;

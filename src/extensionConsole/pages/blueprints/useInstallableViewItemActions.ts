@@ -47,13 +47,13 @@ import { useCallback } from "react";
 type ActionCallback = () => void;
 
 export type InstallableViewItemActions = {
-  reinstall: ActionCallback | null;
+  reactivate: ActionCallback | null;
   activate: ActionCallback | null;
   viewPublish: ActionCallback | null;
   viewInMarketplaceHref: string | null;
   viewShare: ActionCallback | null;
   deleteExtension: ActionCallback | null;
-  uninstall: ActionCallback | null;
+  deactivate: ActionCallback | null;
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
 };
@@ -62,6 +62,7 @@ export type InstallableViewItemActions = {
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
+  const inSidebarContext = location.pathname === "/sidebar.html";
   const { installable, status, sharing, unavailable } = installableViewItem;
 
   const dispatch = useDispatch();
@@ -70,7 +71,7 @@ function useInstallableViewItemActions(
   const { restrict } = useFlags();
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
-  const isInstalled = status === "Active" || status === "Paused";
+  const isActive = status === "Active" || status === "Paused";
   const isInstallableExtension = isExtension(installable);
   const isInstallableBlueprint = !isInstallableExtension;
 
@@ -79,14 +80,14 @@ function useInstallableViewItemActions(
     sharing.source.type === "Personal" &&
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally
-    !isInstalled;
+    !isActive;
 
   const hasBlueprint =
     isExtensionFromRecipe(installable) || isInstallableBlueprint;
 
   const isDeployment = sharing.source.type === "Deployment";
 
-  // Restricted users aren't allowed to uninstall/reinstall deployments. They are controlled by the admin from the
+  // Restricted users aren't allowed to deactivate/reactivate deployments. They are controlled by the admin from the
   // Admin Console. See restricted flag logic here:
   // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
   const isRestricted = isDeployment && restrict("uninstall");
@@ -105,7 +106,7 @@ function useInstallableViewItemActions(
     extensionsFromInstallable
   );
 
-  const reinstall = () => {
+  const reactivate = () => {
     if (hasBlueprint) {
       const blueprintId = isInstallableBlueprint
         ? installable.metadata.id
@@ -123,10 +124,10 @@ function useInstallableViewItemActions(
         )
       );
     } else {
-      // This should never happen, because the hook will return `reinstall: null` for installables with no
+      // This should never happen, because the hook will return `reactivate: null` for installables with no
       // associated blueprint
       notify.error({
-        error: new Error("Cannot reinstall item with no associated mod"),
+        error: new Error("Cannot reactivate item with no associated mod"),
       });
     }
   };
@@ -208,7 +209,7 @@ function useInstallableViewItemActions(
     [modals]
   );
 
-  const uninstall = useUserAction(
+  const deactivate = useUserAction(
     async () => {
       if (isInstallableBlueprint) {
         const blueprintId = installable.metadata.id;
@@ -260,6 +261,8 @@ function useInstallableViewItemActions(
       // In case of blueprint, skip if it is already published
       sharing.listingId == null);
 
+  const showViewLogsAction = !(status === "Inactive") && !inSidebarContext;
+
   const viewInMarketplaceHref =
     isDeployment || showPublishAction || unavailable
       ? null
@@ -267,19 +270,24 @@ function useInstallableViewItemActions(
         `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
-    viewPublish: showPublishAction ? viewPublish : null,
+    viewPublish: showPublishAction && !inSidebarContext ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
-    viewShare: isDeployment || unavailable ? null : viewShare,
+    viewShare:
+      isDeployment || unavailable || inSidebarContext ? null : viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
-    uninstall: isInstalled && !isRestricted ? uninstall : null,
-    // Only blueprints/deployments can be reinstalled. (Because there's no reason to reinstall an extension... there's
+    deactivate: isActive && !isRestricted ? deactivate : null,
+    // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
-    reinstall:
-      hasBlueprint && isInstalled && !isRestricted && !unavailable
-        ? reinstall
+    reactivate:
+      hasBlueprint &&
+      isActive &&
+      !isRestricted &&
+      !unavailable &&
+      !inSidebarContext
+        ? reactivate
         : null,
-    viewLogs: status === "Inactive" ? null : viewLogs,
+    viewLogs: showViewLogsAction ? viewLogs : null,
     activate: status === "Inactive" ? activate : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };
