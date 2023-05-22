@@ -4422,18 +4422,18 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
               className="css-1f43avz-a11yText-A11yText"
             />
             <div
-              className=" css-1s2u09g-control"
+              className=" css-13cymwt-control"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
               <div
-                className=" css-319lph-ValueContainer"
+                className=" css-1fdsijx-ValueContainer"
               >
                 <div
-                  className=" css-qc6sy-singleValue"
+                  className=" css-1dimb5e-singleValue"
                 />
                 <div
-                  className=" css-6j8wv5-Input"
+                  className=" css-qbdosj-Input"
                   data-value=""
                 >
                   <input
@@ -4478,7 +4478,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
               >
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -4496,11 +4496,11 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
                   </svg>
                 </div>
                 <span
-                  className=" css-1okebmr-indicatorSeparator"
+                  className=" css-1u9des2-indicatorSeparator"
                 />
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -5408,18 +5408,18 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
               className="css-1f43avz-a11yText-A11yText"
             />
             <div
-              className=" css-1s2u09g-control"
+              className=" css-13cymwt-control"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
               <div
-                className=" css-319lph-ValueContainer"
+                className=" css-1fdsijx-ValueContainer"
               >
                 <div
-                  className=" css-qc6sy-singleValue"
+                  className=" css-1dimb5e-singleValue"
                 />
                 <div
-                  className=" css-6j8wv5-Input"
+                  className=" css-qbdosj-Input"
                   data-value=""
                 >
                   <input
@@ -5464,7 +5464,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
               >
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -5482,11 +5482,11 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
                   </svg>
                 </div>
                 <span
-                  className=" css-1okebmr-indicatorSeparator"
+                  className=" css-1u9des2-indicatorSeparator"
                 />
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -6201,20 +6201,20 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 className="css-1f43avz-a11yText-A11yText"
               />
               <div
-                className=" css-1s2u09g-control"
+                className=" css-13cymwt-control"
                 onMouseDown={[Function]}
                 onTouchEnd={[Function]}
               >
                 <div
-                  className=" css-319lph-ValueContainer"
+                  className=" css-1fdsijx-ValueContainer"
                 >
                   <div
-                    className=" css-qc6sy-singleValue"
+                    className=" css-1dimb5e-singleValue"
                   >
                     Single line text
                   </div>
                   <div
-                    className=" css-6j8wv5-Input"
+                    className=" css-qbdosj-Input"
                     data-value=""
                   >
                     <input
@@ -6258,11 +6258,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   className=" css-1hb7zxy-IndicatorsContainer"
                 >
                   <span
-                    className=" css-1okebmr-indicatorSeparator"
+                    className=" css-1u9des2-indicatorSeparator"
                   />
                   <div
                     aria-hidden="true"
-                    className=" css-tlfecz-indicatorContainer"
+                    className=" css-1xc3v61-indicatorContainer"
                     onMouseDown={[Function]}
                     onTouchEnd={[Function]}
                   >
@@ -6972,21 +6972,21 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           className="css-1f43avz-a11yText-A11yText"
         />
         <div
-          className=" css-1s2u09g-control"
+          className=" css-13cymwt-control"
           onMouseDown={[Function]}
           onTouchEnd={[Function]}
         >
           <div
-            className=" css-319lph-ValueContainer"
+            className=" css-1fdsijx-ValueContainer"
           >
             <div
-              className=" css-14el2xx-placeholder"
+              className=" css-1jqq78o-placeholder"
               id="react-select-6-placeholder"
             >
               Select...
             </div>
             <div
-              className=" css-6j8wv5-Input"
+              className=" css-qbdosj-Input"
               data-value=""
             >
               <input
@@ -7031,11 +7031,11 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
             className=" css-1hb7zxy-IndicatorsContainer"
           >
             <span
-              className=" css-1okebmr-indicatorSeparator"
+              className=" css-1u9des2-indicatorSeparator"
             />
             <div
               aria-hidden="true"
-              className=" css-tlfecz-indicatorContainer"
+              className=" css-1xc3v61-indicatorContainer"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
@@ -7100,21 +7100,21 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           className="css-1f43avz-a11yText-A11yText"
         />
         <div
-          className=" css-1s2u09g-control"
+          className=" css-13cymwt-control"
           onMouseDown={[Function]}
           onTouchEnd={[Function]}
         >
           <div
-            className=" css-319lph-ValueContainer"
+            className=" css-1fdsijx-ValueContainer"
           >
             <div
-              className=" css-14el2xx-placeholder"
+              className=" css-1jqq78o-placeholder"
               id="react-select-7-placeholder"
             >
               Select...
             </div>
             <div
-              className=" css-6j8wv5-Input"
+              className=" css-qbdosj-Input"
               data-value=""
             >
               <input
@@ -7159,11 +7159,11 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
             className=" css-1hb7zxy-IndicatorsContainer"
           >
             <span
-              className=" css-1okebmr-indicatorSeparator"
+              className=" css-1u9des2-indicatorSeparator"
             />
             <div
               aria-hidden="true"
-              className=" css-tlfecz-indicatorContainer"
+              className=" css-1xc3v61-indicatorContainer"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
@@ -11556,21 +11556,21 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
         className="css-1f43avz-a11yText-A11yText"
       />
       <div
-        className=" css-1s2u09g-control"
+        className=" css-13cymwt-control"
         onMouseDown={[Function]}
         onTouchEnd={[Function]}
       >
         <div
-          className=" css-319lph-ValueContainer"
+          className=" css-1fdsijx-ValueContainer"
         >
           <div
-            className=" css-14el2xx-placeholder"
+            className=" css-1jqq78o-placeholder"
             id="react-select-4-placeholder"
           >
             Select...
           </div>
           <div
-            className=" css-6j8wv5-Input"
+            className=" css-qbdosj-Input"
             data-value=""
           >
             <input
@@ -11615,11 +11615,11 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
           className=" css-1hb7zxy-IndicatorsContainer"
         >
           <span
-            className=" css-1okebmr-indicatorSeparator"
+            className=" css-1u9des2-indicatorSeparator"
           />
           <div
             aria-hidden="true"
-            className=" css-tlfecz-indicatorContainer"
+            className=" css-1xc3v61-indicatorContainer"
             onMouseDown={[Function]}
             onTouchEnd={[Function]}
           >
@@ -11698,21 +11698,21 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
         className="css-1f43avz-a11yText-A11yText"
       />
       <div
-        className=" css-1s2u09g-control"
+        className=" css-13cymwt-control"
         onMouseDown={[Function]}
         onTouchEnd={[Function]}
       >
         <div
-          className=" css-319lph-ValueContainer"
+          className=" css-1fdsijx-ValueContainer"
         >
           <div
-            className=" css-14el2xx-placeholder"
+            className=" css-1jqq78o-placeholder"
             id="react-select-5-placeholder"
           >
             Select...
           </div>
           <div
-            className=" css-6j8wv5-Input"
+            className=" css-qbdosj-Input"
             data-value=""
           >
             <input
@@ -11757,11 +11757,11 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
           className=" css-1hb7zxy-IndicatorsContainer"
         >
           <span
-            className=" css-1okebmr-indicatorSeparator"
+            className=" css-1u9des2-indicatorSeparator"
           />
           <div
             aria-hidden="true"
-            className=" css-tlfecz-indicatorContainer"
+            className=" css-1xc3v61-indicatorContainer"
             onMouseDown={[Function]}
             onTouchEnd={[Function]}
           >
