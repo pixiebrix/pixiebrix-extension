@@ -34,7 +34,7 @@ import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import FormBuilderSelectWidget from "@/components/formBuilder/FormBuilderSelectWidget";
+import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
@@ -177,9 +177,9 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
-    database: FormBuilderSelectWidget,
-    SelectWidget: FormBuilderSelectWidget,
-    googleSheet: FormBuilderSelectWidget,
+    database: RjsfSelectWidget,
+    SelectWidget: RjsfSelectWidget,
+    googleSheet: RjsfSelectWidget,
   };
 
   return (

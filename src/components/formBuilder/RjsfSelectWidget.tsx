@@ -21,7 +21,9 @@ import { FormLabel, FormGroup } from "react-bootstrap";
 
 type OptionType = { label: string; value: string };
 
-const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
+const defaultOption: OptionType[] = [];
+
+const RjsfSelectWidget: React.FC<WidgetProps> = ({
   schema,
   id,
   options,
@@ -48,10 +50,13 @@ const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
     onFocus(id, value);
   };
 
-  const enumOptions = options.enumOptions as OptionType[];
+  // Check to ensure enumOptions is an array
+  // RJSF seems to occasionally set enumOptions as FALSE. Maybe related to async options:
+  // https://github.com/rjsf-team/react-jsonschema-form/issues/415
+  const enumOptions = (options.enumOptions || defaultOption) as OptionType[];
 
   const selectOptions =
-    enumOptions.map?.(({ value, label }) => ({
+    enumOptions.map(({ value, label }) => ({
       value,
       label,
     })) ?? [];
@@ -78,4 +83,4 @@ const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
   );
 };
 
-export default FormBuilderSelectWidget;
+export default RjsfSelectWidget;

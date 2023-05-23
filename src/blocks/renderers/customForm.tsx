@@ -45,14 +45,14 @@ import {
   type ComponentRef,
 } from "@/types/runtimeTypes";
 import { Renderer } from "@/types/blocks/rendererTypes";
-import FormBuilderSelectWidget from "@/components/formBuilder/FormBuilderSelectWidget";
+import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 
 const fields = {
   DescriptionField,
 };
 const uiWidgets = {
   imageCrop: ImageCropWidget,
-  SelectWidget: FormBuilderSelectWidget,
+  SelectWidget: RjsfSelectWidget,
 };
 
 interface DatabaseResult {

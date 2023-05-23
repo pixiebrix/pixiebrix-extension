@@ -78,7 +78,9 @@ async function renameField(newName: string) {
 /**
  * Utility function to get react-select option labels
  */
-function getAllReactSelectOptionLabels(reactSelectContainer: HTMLElement) {
+function getAllReactSelectOptionLabels(
+  reactSelectContainer: HTMLElement
+): string[] {
   const reactSelectOptionQueryString = '[id^="react-select-"][id*="-option-"]';
 
   const options = [];
@@ -97,7 +99,7 @@ function getAllReactSelectOptionLabels(reactSelectContainer: HTMLElement) {
  * and the id is duplicate at the time of writing this, so we use
  * a wrapper with the testid and get the first div as the container.
  */
-const getReactSelectContainer = () =>
+const getReactSelectContainer = (): HTMLElement =>
   screen.getByTestId("formbuilder-select-wrapper").querySelector("div");
 
 describe("Dropdown field", () => {
@@ -139,13 +141,15 @@ describe("Dropdown field", () => {
     selectEvent.openMenu(selectContainer);
 
     // Ensure no existing options first
-    expect(getAllReactSelectOptionLabels(selectContainer)).toHaveLength(0);
+    expect(getAllReactSelectOptionLabels(selectContainer)).toBeArrayOfSize(0);
 
     // Add option
     await addOption();
 
     // Ensure new option's added
-    expect(getAllReactSelectOptionLabels(selectContainer)).toHaveLength(1);
+    expect(getAllReactSelectOptionLabels(selectContainer)).toContain(
+      "Test option"
+    );
   });
 
   test("can use @var", async () => {
