@@ -60,8 +60,8 @@ jest.mock("@/utils/selectionController", () => ({
 jest.mock("react-shadow/emotion", () => ({
   __esModule: true,
   default: {
-    div({ children }: any) {
-      return <>{children}</>;
+    div(props: any) {
+      return <div {...props}></div>;
     },
   },
 }));
