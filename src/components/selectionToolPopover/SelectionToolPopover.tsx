@@ -17,10 +17,9 @@
 
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import Draggable from "react-draggable";
-
+import EmotionShadowRoot from "react-shadow/emotion";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -65,7 +64,10 @@ const SelectionToolPopover: React.FC<{
   }, [setSelectionHandler]);
 
   return (
-    <ReactShadowRoot mode="closed">
+    // To support react-select and any future potential emotion components we used the
+    // emotion variant of the react-shadow library.
+
+    <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>
           <div className="popover-wrapper">
@@ -125,7 +127,7 @@ const SelectionToolPopover: React.FC<{
           </div>
         </Draggable>
       </Stylesheets>
-    </ReactShadowRoot>
+    </EmotionShadowRoot.div>
   );
 };
 

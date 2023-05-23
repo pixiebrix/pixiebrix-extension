@@ -18,7 +18,7 @@
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
-import ReactShadowRoot from "react-shadow-root";
+import EmotionShadowRoot from "react-shadow/emotion";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
   isRendererErrorPayload,
@@ -54,16 +54,15 @@ const BodyContainer: React.FC<
   // In the future, may want to support providing isFetching to show a loading indicator/badge over the previous content
   BodyProps & { onAction: (action: SubmitPanelAction) => void }
 > = ({ blockId, body, onAction, meta }) => (
-  <div className="full-height" data-block-id={blockId}>
-    <ReactShadowRoot>
-      <RendererComponent
-        blockId={blockId}
-        body={body}
-        meta={meta}
-        onAction={onAction}
-      />
-    </ReactShadowRoot>
-  </div>
+  // Use a shadow dom to prevent the webpage styles from affecting the sidebar
+  <EmotionShadowRoot.div className="full-height" data-block-id={blockId}>
+    <RendererComponent
+      blockId={blockId}
+      body={body}
+      meta={meta}
+      onAction={onAction}
+    />
+  </EmotionShadowRoot.div>
 );
 
 type State = {

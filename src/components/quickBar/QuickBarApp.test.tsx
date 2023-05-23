@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, render, screen } from "@testing-library/react";
+import { render, act, screen } from "@testing-library/react";
+
 import {
   QUICKBAR_EVENT_NAME,
   QuickBarApp,
@@ -46,20 +47,22 @@ jest.mock("kbar", () => {
   };
 });
 
-// :shrug: I couldn't get "shadow-dom-testing-library" to play nice
-jest.mock("react-shadow-root", () => ({
-  __esModule: true,
-  default({ children }: any) {
-    return <>{children}</>;
-  },
-}));
-
 jest.mock("@/utils/selectionController", () => ({
   __esModule: true,
   default: {
     save: jest.fn(),
     restore: jest.fn(),
     get: jest.fn(),
+  },
+}));
+
+// TODO: fix tests so they properly handle shadow dom events
+jest.mock("react-shadow/emotion", () => ({
+  __esModule: true,
+  default: {
+    div(props: any) {
+      return <div {...props}></div>;
+    },
   },
 }));
 
