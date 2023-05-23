@@ -118,11 +118,16 @@ function useInstallableViewItemActions(
         reinstall: true,
       });
 
-      dispatch(
-        push(
-          `marketplace/activate/${encodeURIComponent(blueprintId)}?reinstall=1`
-        )
-      );
+      const reactivatePath = `marketplace/activate/${encodeURIComponent(
+        blueprintId
+      )}?reinstall=1`;
+
+      if (inSidebarContext) {
+        window.open(`/options.html#/${reactivatePath}`, "_blank");
+        return;
+      }
+
+      dispatch(push(reactivatePath));
     } else {
       // This should never happen, because the hook will return `reactivate: null` for installables with no
       // associated blueprint
@@ -164,6 +169,15 @@ function useInstallableViewItemActions(
       : {
           extensionId: installable.id,
         };
+
+    if (inSidebarContext) {
+      const publishParams = new URLSearchParams({
+        publish: "1",
+        ...(publishContext as ShareContext),
+      });
+      window.open(`/options.html#/?${publishParams.toString()}`, "_blank");
+      return;
+    }
 
     dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
   };
@@ -270,7 +284,7 @@ function useInstallableViewItemActions(
         `${MARKETPLACE_URL}${sharing.listingId}/`;
 
   return {
-    viewPublish: showPublishAction && !inSidebarContext ? viewPublish : null,
+    viewPublish: showPublishAction ? viewPublish : null,
     viewInMarketplaceHref,
     // Deployment sharing is controlled via the Admin Console
     viewShare:
@@ -280,11 +294,7 @@ function useInstallableViewItemActions(
     // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
     // no activation-time integrations/options associated with them.)
     reactivate:
-      hasBlueprint &&
-      isActive &&
-      !isRestricted &&
-      !unavailable &&
-      !inSidebarContext
+      hasBlueprint && isActive && !isRestricted && !unavailable
         ? reactivate
         : null,
     viewLogs: showViewLogsAction ? viewLogs : null,
