@@ -16,100 +16,10 @@
  */
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { ListGroup, Row, Container, Button } from "react-bootstrap";
-import type { Column } from "react-table";
-import type {
-  Installable,
-  InstallableViewItem,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
-import Loader from "@/components/Loader";
-import { useTable } from "react-table";
+import { Container, Row } from "react-bootstrap";
 import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
-import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-
-const columns: Array<Column<InstallableViewItem>> = [
-  {
-    Header: "Name",
-    accessor: "name",
-  },
-  {
-    Header: "Last updated",
-    accessor: "updatedAt",
-    sortInverted: true,
-  },
-];
-
-const ActiveModListItem: React.FunctionComponent<{
-  installableItem: InstallableViewItem;
-}> = ({ installableItem }) => {
-  const { name, icon } = installableItem;
-  const { requestPermissions } = useInstallableViewItemActions(installableItem);
-
-  return (
-    <ListGroup.Item>
-      <div className="d-flex align-items-center">
-        <div className="flex-shrink-0">{icon}</div>
-        <div className="flex-grow-1">
-          <div className="d-flex align-items-center">
-            <h5 className="flex-grow-1">{name}</h5>
-          </div>
-          {requestPermissions && (
-            <Button
-              variant="link"
-              size="sm"
-              className="p-0"
-              onClick={requestPermissions}
-            >
-              <FontAwesomeIcon icon={faExclamationCircle} /> Grant Permissions
-            </Button>
-          )}
-        </div>
-        <div className="flex-shrink-0">
-          <BlueprintActions installableViewItem={installableItem} />
-        </div>
-      </div>
-    </ListGroup.Item>
-  );
-};
-
-const ActiveModsList: React.FunctionComponent<{
-  installables: Installable[];
-}> = ({ installables }) => {
-  const { installableViewItems, isLoading } =
-    useInstallableViewItems(installables);
-
-  const tableInstance = useTable<InstallableViewItem>({
-    columns,
-    data: installableViewItems.filter(
-      (installableViewItem) => installableViewItem.status === "Active"
-    ),
-  });
-
-  return (
-    <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
-          {tableInstance.rows.map((row) => {
-            tableInstance.prepareRow(row);
-            return (
-              <ActiveModListItem
-                key={row.original.sharing.packageId}
-                installableItem={row.original}
-              />
-            );
-          })}
-        </ListGroup>
-      )}
-    </>
-  );
-};
+import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
 const HomePanel: React.FunctionComponent = () => {
   const { installables, error } = useInstallables();
