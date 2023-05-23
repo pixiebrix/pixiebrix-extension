@@ -17,8 +17,8 @@
 
 import React from "react";
 import {
-  Installable,
-  InstallableViewItem,
+  type Installable,
+  type InstallableViewItem,
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
 import { Button, ListGroup } from "react-bootstrap";
@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
-import { Column, useTable } from "react-table";
+import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 
 const columns: Array<Column<InstallableViewItem>> = [
@@ -40,6 +40,8 @@ const columns: Array<Column<InstallableViewItem>> = [
     sortInverted: true,
   },
 ];
+
+// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
 const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
@@ -72,6 +74,7 @@ const ActiveModListItem: React.FunctionComponent<{
     </ListGroup.Item>
   );
 };
+
 export const ActiveModsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
