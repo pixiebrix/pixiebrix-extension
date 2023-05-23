@@ -178,7 +178,7 @@ export async function userSelectElement({
       }
 
       // Do not prevent mouse event in order to drag feature working.
-      if (multiSelectionToolElement.contains(target)) {
+      if (multiSelectionToolElement?.contains(target)) {
         return;
       }
 
@@ -193,7 +193,7 @@ export async function userSelectElement({
       }
 
       // Do not allow the user to select the multi-element selection popup.
-      if (multiSelectionToolElement.contains(target)) {
+      if (multiSelectionToolElement?.contains(target)) {
         return;
       }
 
@@ -234,7 +234,7 @@ export async function userSelectElement({
       }
 
       // Do not allow the user to select the multi-element selection popup.
-      if (multiSelectionToolElement.contains(target)) {
+      if (multiSelectionToolElement?.contains(target)) {
         return;
       }
 
