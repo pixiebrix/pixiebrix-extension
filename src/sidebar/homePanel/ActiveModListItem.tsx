@@ -39,13 +39,13 @@ export const ActiveModListItem: React.FunctionComponent<{
         <div className={styles.icon}>{icon}</div>
         <div>
           <div>
-            <h5>{name}</h5>
+            <h5 className={styles.modName}>{name}</h5>
           </div>
           {requestPermissions && (
             <Button
               variant="link"
               size="sm"
-              className="p-0"
+              className={styles.warningLink}
               onClick={requestPermissions}
             >
               <FontAwesomeIcon icon={faExclamationCircle} /> Grant Permissions
