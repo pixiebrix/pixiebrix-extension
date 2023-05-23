@@ -64,6 +64,9 @@ const SelectionToolPopover: React.FC<{
   }, [setSelectionHandler]);
 
   return (
+    // To support react-select and any future potential emotion components we used the
+    // emotion variant of the react-shadow library.
+
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>

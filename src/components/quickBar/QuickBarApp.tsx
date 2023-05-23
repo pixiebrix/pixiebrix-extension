@@ -113,6 +113,12 @@ const KBarComponent: React.FC = () => {
     <KBarPortal>
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
+          {/*
+            Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
+            whichever website it's rendering on.
+            To support react-select and any future potential emotion components we used the
+            emotion variant of the react-shadow library.
+          */}
           <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
