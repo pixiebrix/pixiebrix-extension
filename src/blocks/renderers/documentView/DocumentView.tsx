@@ -42,7 +42,6 @@ const DocumentView: React.FC<DocumentViewProps> = ({
 
   return (
     // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
-    // ReactShadowRoot needs to be inside an HTMLElement to attach to something
     <DocumentContext.Provider value={{ options, meta, onAction }}>
       <EmotionShadowRoot.div className="h-100">
         <Stylesheets href={bootstrap}>
