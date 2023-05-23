@@ -34,6 +34,7 @@ const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
   onFocus,
   rawErrors,
   label,
+  multiple,
 }) => {
   const _onChange = (option: OptionType | null) => {
     onChange(option ? option.value : "");
@@ -66,6 +67,7 @@ const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
           id={id}
           options={selectOptions}
           isDisabled={disabled || readonly}
+          isMulti={multiple}
           value={selectOptions.find((option) => option.value === value)}
           onChange={_onChange}
           onBlur={_onBlur}
