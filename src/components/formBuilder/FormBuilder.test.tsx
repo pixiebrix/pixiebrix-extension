@@ -137,17 +137,21 @@ describe("Dropdown field", () => {
   test("can add an option", async () => {
     const selectContainer = getReactSelectContainer();
     selectEvent.openMenu(selectContainer);
-    // Ensure no existing options
+
+    // Ensure no existing options first
     expect(getAllReactSelectOptionLabels(selectContainer)).toHaveLength(0);
 
+    // Add option
     await addOption();
-    selectEvent.openMenu(selectContainer);
+
+    // Ensure new option's added
     expect(getAllReactSelectOptionLabels(selectContainer)).toHaveLength(1);
   });
 
   test("can use @var", async () => {
     const container = getReactSelectContainer();
     selectEvent.openMenu(container);
+
     await setVarValue();
     expect(getAllReactSelectOptionLabels(container)).toContain("@data");
   });
@@ -156,6 +160,7 @@ describe("Dropdown field", () => {
     test("with items", async () => {
       const selectContainer = getReactSelectContainer();
       selectEvent.openMenu(selectContainer);
+
       await addOption();
 
       // Switch to Dropdown widget
