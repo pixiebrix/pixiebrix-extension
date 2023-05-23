@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
 .root {
   display: flex;
   align-items: center;
   justify-content: space-between;
   border: none;
-  border-bottom: #f2edf3 1px solid;
+  border-bottom: $S1 1px solid;
   transition: background-color 0.15s ease-in-out;
 
   &:hover {

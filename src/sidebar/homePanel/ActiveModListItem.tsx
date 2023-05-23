@@ -16,6 +16,8 @@
  */
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
+import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
+
 import React from "react";
 import { type InstallableViewItem } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
@@ -32,12 +34,12 @@ export const ActiveModListItem: React.FunctionComponent<{
   const { requestPermissions } = useInstallableViewItemActions(installableItem);
 
   return (
-    <ListGroup.Item>
-      <div className="d-flex align-items-center">
-        <div className="flex-shrink-0">{icon}</div>
-        <div className="flex-grow-1">
-          <div className="d-flex align-items-center">
-            <h5 className="flex-grow-1">{name}</h5>
+    <ListGroup.Item className={styles.root}>
+      <div className={styles.mainContent}>
+        <div>{icon}</div>
+        <div>
+          <div>
+            <h5>{name}</h5>
           </div>
           {requestPermissions && (
             <Button
@@ -50,9 +52,9 @@ export const ActiveModListItem: React.FunctionComponent<{
             </Button>
           )}
         </div>
-        <div className="flex-shrink-0">
-          <BlueprintActions installableViewItem={installableItem} />
-        </div>
+      </div>
+      <div className="flex-shrink-1">
+        <BlueprintActions installableViewItem={installableItem} />
       </div>
     </ListGroup.Item>
   );
