@@ -44,7 +44,7 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
-const ListItem: React.FunctionComponent<{
+const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
   const { name, icon } = installableItem;
@@ -77,7 +77,7 @@ const ListItem: React.FunctionComponent<{
   );
 };
 
-const ActiveBlueprintsList: React.FunctionComponent<{
+const ActiveModsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
@@ -99,7 +99,7 @@ const ActiveBlueprintsList: React.FunctionComponent<{
           {tableInstance.rows.map((row) => {
             tableInstance.prepareRow(row);
             return (
-              <ListItem
+              <ActiveModListItem
                 key={row.original.sharing.packageId}
                 installableItem={row.original}
               />
@@ -122,7 +122,7 @@ const HomePanel: React.FunctionComponent = () => {
           {error ? (
             <ErrorDisplay error={error} />
           ) : (
-            <ActiveBlueprintsList installables={installables} />
+            <ActiveModsList installables={installables} />
           )}
         </Row>
       </Container>
