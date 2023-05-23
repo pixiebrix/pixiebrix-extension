@@ -48,7 +48,7 @@ const useShowPublishUrlEffect = () => {
 
     if (showPublish && validShareContext) {
       dispatch(
-        blueprintModalsSlice.actions.setShareContext({
+        blueprintModalsSlice.actions.setPublishContext({
           ...(blueprintId ? { blueprintId } : {}),
           ...(extensionId ? { extensionId } : {}),
         } as PublishContext)
