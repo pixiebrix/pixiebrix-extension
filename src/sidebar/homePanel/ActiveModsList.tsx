@@ -20,14 +20,11 @@ import {
   type Installable,
   type InstallableViewItem,
 } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
-import { Button, ListGroup } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
+import { ListGroup } from "react-bootstrap";
 import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
+import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -40,40 +37,6 @@ const columns: Array<Column<InstallableViewItem>> = [
     sortInverted: true,
   },
 ];
-
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
-const ActiveModListItem: React.FunctionComponent<{
-  installableItem: InstallableViewItem;
-}> = ({ installableItem }) => {
-  const { name, icon } = installableItem;
-  const { requestPermissions } = useInstallableViewItemActions(installableItem);
-
-  return (
-    <ListGroup.Item>
-      <div className="d-flex align-items-center">
-        <div className="flex-shrink-0">{icon}</div>
-        <div className="flex-grow-1">
-          <div className="d-flex align-items-center">
-            <h5 className="flex-grow-1">{name}</h5>
-          </div>
-          {requestPermissions && (
-            <Button
-              variant="link"
-              size="sm"
-              className="p-0"
-              onClick={requestPermissions}
-            >
-              <FontAwesomeIcon icon={faExclamationCircle} /> Grant Permissions
-            </Button>
-          )}
-        </div>
-        <div className="flex-shrink-0">
-          <BlueprintActions installableViewItem={installableItem} />
-        </div>
-      </div>
-    </ListGroup.Item>
-  );
-};
 
 export const ActiveModsList: React.FunctionComponent<{
   installables: Installable[];
