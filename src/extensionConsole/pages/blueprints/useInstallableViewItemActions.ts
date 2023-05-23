@@ -127,11 +127,7 @@ function useInstallableViewItemActions(
         return;
       }
 
-      dispatch(
-        push(
-          `marketplace/activate/${encodeURIComponent(blueprintId)}?reinstall=1`
-        )
-      );
+      dispatch(push(reactivatePath));
     } else {
       // This should never happen, because the hook will return `reactivate: null` for installables with no
       // associated blueprint
