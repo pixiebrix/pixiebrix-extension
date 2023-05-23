@@ -63,9 +63,7 @@ const ListItem: React.FunctionComponent<{
               variant="link"
               size="sm"
               className="p-0"
-              onClick={() => {
-                requestPermissions();
-              }}
+              onClick={requestPermissions}
             >
               <FontAwesomeIcon icon={faExclamationCircle} /> Grant Permissions
             </Button>
