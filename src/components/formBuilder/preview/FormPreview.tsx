@@ -88,12 +88,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
             if (property.format === "preview") {
               // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
-              // @ts-expect-error -- intentionally assigning to a string
-              property.enum = `[Mod Name] - ${activeField} database`;
+              property.enum = [`[Mod Name] - ${activeField} database`];
             } else {
               // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
-              // @ts-expect-error -- intentionally assigning to a string
-              property.enum = "Select...";
+              property.enum = ["Select..."];
             }
 
             delete property.$ref;

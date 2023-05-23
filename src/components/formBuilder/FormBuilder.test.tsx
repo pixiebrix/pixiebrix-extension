@@ -80,7 +80,6 @@ async function renameField(newName: string) {
  */
 function getAllReactSelectOptionLabels(reactSelectContainer: HTMLElement) {
   const reactSelectOptionQueryString = '[id^="react-select-"][id*="-option-"]';
-  selectEvent.openMenu(reactSelectContainer);
 
   const options = [];
 
@@ -98,7 +97,7 @@ function getAllReactSelectOptionLabels(reactSelectContainer: HTMLElement) {
  * and the id is duplicate at the time of writing this, so we use
  * a wrapper with the testid and get the first div as the container.
  */
-const getReactSelectWrapper = () =>
+const getReactSelectContainer = () =>
   screen.getByTestId("formbuilder-select-wrapper").querySelector("div");
 
 describe("Dropdown field", () => {
@@ -132,34 +131,31 @@ describe("Dropdown field", () => {
 
   test("doesn't fail when field type changed to Dropdown", async () => {
     // Expect the dropdown rendered in the preview
-    expect(
-      rendered.container.querySelector("#react-select-3-placeholder")
-    ).not.toBeNull();
+    expect(getReactSelectContainer()).not.toBeNull();
   });
 
   test("can add an option", async () => {
+    const selectContainer = getReactSelectContainer();
+    selectEvent.openMenu(selectContainer);
     // Ensure no existing options
-    expect(getAllReactSelectOptionLabels(getReactSelectWrapper())).toHaveLength(
-      0
-    );
+    expect(getAllReactSelectOptionLabels(selectContainer)).toHaveLength(0);
 
     await addOption();
-
-    expect(getAllReactSelectOptionLabels(getReactSelectWrapper())).toHaveLength(
-      1
-    );
+    selectEvent.openMenu(selectContainer);
+    expect(getAllReactSelectOptionLabels(selectContainer)).toHaveLength(1);
   });
 
   test("can use @var", async () => {
+    const container = getReactSelectContainer();
+    selectEvent.openMenu(container);
     await setVarValue();
-
-    expect(getAllReactSelectOptionLabels(getReactSelectWrapper())).toInclude(
-      "@data"
-    );
+    expect(getAllReactSelectOptionLabels(container)).toContain("@data");
   });
 
-  describe.skip("can be switched to Dropdown with labels", () => {
+  describe("can be switched to Dropdown with labels", () => {
     test("with items", async () => {
+      const selectContainer = getReactSelectContainer();
+      selectEvent.openMenu(selectContainer);
       await addOption();
 
       // Switch to Dropdown widget
@@ -184,9 +180,9 @@ describe("Dropdown field", () => {
       expect(firstOptionTitleInput).toHaveValue("");
 
       // Expect the dropdown option rendered in the preview
-      expect(
-        screen.queryByRole("option", { name: "Test option" })
-      ).not.toBeNull();
+      expect(getAllReactSelectOptionLabels(selectContainer)).toContain(
+        "Test option"
+      );
     });
 
     test("with @var", async () => {
@@ -214,7 +210,7 @@ describe("Dropdown field", () => {
   });
 });
 
-describe.skip("Dropdown with labels field", () => {
+describe("Dropdown with labels field", () => {
   async function addOption() {
     // Add a text option
     screen.getByText("Add Item").click();
@@ -253,29 +249,35 @@ describe.skip("Dropdown with labels field", () => {
   });
   test("doesn't fail when field type changed to Dropdown with labels", async () => {
     // Expect the dropdown rendered in the preview
-    expect(
-      rendered.container.querySelector(`select#root_${defaultFieldName}`)
-    ).not.toBeNull();
+    expect(getReactSelectContainer()).not.toBeNull();
   });
 
   test("can add an option", async () => {
+    const selectContainer = getReactSelectContainer();
+    selectEvent.openMenu(selectContainer);
     await addOption();
 
     // Validate the rendered option
-    const optionElement = screen.queryByRole("option", { name: "Test option" });
-    expect(optionElement).not.toBeNull();
-    expect(optionElement).toHaveValue("1");
+    expect(getAllReactSelectOptionLabels(selectContainer)).toContain(
+      "Test option"
+    );
   });
 
   test("can use @var in Dropdown", async () => {
+    const selectContainer = getReactSelectContainer();
+    selectEvent.openMenu(selectContainer);
+
     await setVarValue();
 
     // Expect the dropdown option rendered in the preview
-    expect(screen.queryByRole("option", { name: "@data" })).not.toBeNull();
+    expect(getAllReactSelectOptionLabels(selectContainer)).toContain("@data");
   });
 
-  describe.skip("can be switched to regular Dropdown", () => {
+  describe("can be switched to regular Dropdown", () => {
     test("with items", async () => {
+      const selectContainer = getReactSelectContainer();
+      selectEvent.openMenu(selectContainer);
+
       await addOption();
 
       // Switch to Dropdown widget
@@ -293,7 +295,7 @@ describe.skip("Dropdown with labels field", () => {
       expect(firstOptionInput).toHaveValue("1");
 
       // Expect the dropdown option rendered in the preview
-      expect(screen.queryByRole("option", { name: "1" })).not.toBeNull();
+      expect(getAllReactSelectOptionLabels(selectContainer)).toContain("1");
     });
 
     test("with @var", async () => {

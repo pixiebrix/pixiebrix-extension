@@ -49,10 +49,11 @@ const FormBuilderSelectWidget: React.FC<WidgetProps> = ({
 
   const enumOptions = options.enumOptions as OptionType[];
 
-  const selectOptions = enumOptions.map(({ value, label }) => ({
-    value,
-    label,
-  }));
+  const selectOptions =
+    enumOptions.map?.(({ value, label }) => ({
+      value,
+      label,
+    })) ?? [];
 
   return (
     <FormGroup>
