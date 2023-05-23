@@ -17,7 +17,7 @@
 
 import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 import React, { type ReactNode } from "react";
-import HomePanel from "@/sidebar/HomePanel";
+import HomePanel from "@/sidebar/homePanel/HomePanel";
 
 export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
   home: <HomePanel />,

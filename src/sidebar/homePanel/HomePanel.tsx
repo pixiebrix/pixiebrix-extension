@@ -116,7 +116,7 @@ const HomePanel: React.FunctionComponent = () => {
 
   return (
     <div className="full-height h-100">
-      <div className="scrollable-area">
+      <Container className="scrollable-area">
         Active mods
         <Row>
           {error ? (
@@ -125,7 +125,7 @@ const HomePanel: React.FunctionComponent = () => {
             <ActiveBlueprintsList installables={installables} />
           )}
         </Row>
-      </div>
+      </Container>
     </div>
   );
 };
