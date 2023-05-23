@@ -38,6 +38,7 @@ import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
+import { castDraft } from "immer";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -158,6 +159,9 @@ function fixActiveTabOnRemove(
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
+    // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
+    // See: https://github.com/immerjs/immer/issues/839
+    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
     state.activeKey = defaultEventKey(state);
   }
 }
@@ -210,7 +214,8 @@ const sidebarSlice = createSlice({
         (x) => x.nonce === panel.nonce
       );
       if (index >= 0) {
-        state.temporaryPanels[index] = panel;
+        // eslint-disable-next-line security/detect-object-injection -- index from findIndex
+        state.temporaryPanels[index] = castDraft(panel);
       }
     },
     addTemporaryPanel(
@@ -229,7 +234,7 @@ const sidebarSlice = createSlice({
         existingExtensionTemporaryPanels.map((panel) => panel.nonce)
       );
 
-      state.temporaryPanels = [...otherTemporaryPanels, panel];
+      state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
       state.activeKey = eventKeyForEntry(panel);
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
@@ -289,9 +294,8 @@ const sidebarSlice = createSlice({
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
-      state.panels = sortBy(
-        action.payload.panels,
-        (panel) => panel.extensionId
+      state.panels = castDraft(
+        sortBy(action.payload.panels, (panel) => panel.extensionId)
       );
 
       // Try fulfilling the pendingActivePanel request
