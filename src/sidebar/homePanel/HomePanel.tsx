@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "@/sidebar/homePanel/HomePanel.module.scss";
+
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container, Row } from "react-bootstrap";
@@ -27,7 +29,7 @@ const HomePanel: React.FunctionComponent = () => {
   return (
     <div className="full-height h-100">
       <Container className="scrollable-area">
-        Active mods
+        <h3 className={styles.activeModsHeading}>Active mods</h3>
         <Row>
           {error ? (
             <ErrorDisplay error={error} />

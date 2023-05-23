@@ -14,19 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@import "@/themes/colors.scss";
 
-.root {
-  display: flex;
-  border: none;
-  border-bottom: $S1 1px solid;
-}
-
-.icon {
-  padding-right: 1rem;
-}
-
-.mainContent {
-  display: flex;
-  flex-grow: 1;
+.activeModsHeading {
+  font-size: 14px;
+  font-weight: 500;
 }

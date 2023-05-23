@@ -36,7 +36,7 @@ export const ActiveModListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
-        <div>{icon}</div>
+        <div className={styles.icon}>{icon}</div>
         <div>
           <div>
             <h5>{name}</h5>
