@@ -115,16 +115,18 @@ const HomePanel: React.FunctionComponent = () => {
   const { installables, error } = useInstallables();
 
   return (
-    <Container>
-      Active mods
-      <Row>
-        {error ? (
-          <ErrorDisplay error={error} />
-        ) : (
-          <ActiveBlueprintsList installables={installables} />
-        )}
-      </Row>
-    </Container>
+    <div className="full-height h-100">
+      <div className="scrollable-area">
+        Active mods
+        <Row>
+          {error ? (
+            <ErrorDisplay error={error} />
+          ) : (
+            <ActiveBlueprintsList installables={installables} />
+          )}
+        </Row>
+      </div>
+    </div>
   );
 };
 
