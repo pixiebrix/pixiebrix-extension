@@ -34,7 +34,7 @@ import AsyncButton from "@/components/AsyncButton";
 const Status: React.VoidFunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { activate, reinstall, requestPermissions } =
+  const { activate, reactivate, requestPermissions } =
     useInstallableViewItemActions(installableViewItem);
 
   const { hasUpdate, status, installedVersionNumber, unavailable } =
@@ -62,9 +62,9 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
-  if (hasUpdate && reinstall) {
+  if (hasUpdate && reactivate) {
     return (
-      <Button size="sm" variant="info" onClick={reinstall}>
+      <Button size="sm" variant="info" onClick={reactivate}>
         <FontAwesomeIcon icon={faSync} /> Update
       </Button>
     );

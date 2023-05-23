@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { type PanelEntry } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "@/sidebar/utils";
+import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
@@ -149,7 +149,9 @@ const Tabs: React.FC = () => {
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary>{staticPanel.body}</ErrorBoundary>
+              <ErrorBoundary>
+                {getBodyForStaticPanel(staticPanel.key)}
+              </ErrorBoundary>
             </Tab.Pane>
           ))}
           {panels.map((panel: PanelEntry) => (
