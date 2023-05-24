@@ -28,11 +28,11 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
+import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
 import { type InstallableViewItem } from "./blueprintsTypes";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 
-const BlueprintActions: React.FunctionComponent<{
+const InstallableActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
   const actions = useInstallableViewItemActions(installableViewItem);
@@ -123,4 +123,4 @@ const BlueprintActions: React.FunctionComponent<{
   return <EllipsisMenu items={actionItems} />;
 };
 
-export default BlueprintActions;
+export default InstallableActions;

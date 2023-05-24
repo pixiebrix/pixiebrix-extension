@@ -20,10 +20,11 @@ import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Installable,
+  InstallableViewItem,
   type SharingSource,
   type SharingType,
   type UnavailableRecipe,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+} from "@/installables/blueprintsTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
@@ -33,6 +34,11 @@ import {
 } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import {
+  ExtensionPointDefinition,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 /**
  * Returns true if installable is an UnavailableRecipe
@@ -331,3 +337,40 @@ export const selectExtensionsFromInstallable = createSelector(
         )
       : installedExtensions.filter((x) => x.id === installable.id)
 );
+
+// TODO: test me
+export const getStarterBricksContained = async (
+  installableItem: InstallableViewItem
+): Promise<ExtensionPointType[]> => {
+  const starterBricksContained = new Set<ExtensionPointType>();
+  if (isUnavailableRecipe(installableItem.installable)) {
+    // TODO: Figure out what to display here
+    return [...starterBricksContained];
+  }
+
+  if (isBlueprint(installableItem.installable)) {
+    for (const definition of Object.values(
+      installableItem.installable.definitions
+    )) {
+      if (definition.kind !== "extensionPoint") {
+        continue;
+      }
+
+      const extensionPointDefinition =
+        definition.definition as ExtensionPointDefinition;
+      const starterBrickType = extensionPointDefinition?.type;
+
+      if (starterBrickType) {
+        starterBricksContained.add(extensionPointDefinition?.type);
+      }
+    }
+
+    return [...starterBricksContained];
+  }
+
+  const starterBrickType = await extensionPointRegistry.lookup(
+    installableItem.installable.extensionPointId
+  );
+  starterBricksContained.add(starterBrickType._definition.type);
+  return [...starterBricksContained];
+};

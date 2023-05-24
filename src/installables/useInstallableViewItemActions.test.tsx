@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -16,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /// <reference types="jest-extended" />
 
 import useInstallableViewItemActions, {
   type InstallableViewItemActions,
-} from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
+} from "@/installables/useInstallableViewItemActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type InstallableStatus,
   type InstallableViewItem,
   type SharingType,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import useInstallablePermissions from "@/extensionConsole/pages/blueprints/useInstallablePermissions";
+} from "@/installables/blueprintsTypes";
+import useInstallablePermissions from "@/installables/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -42,9 +42,7 @@ import {
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/extensionConsole/pages/blueprints/useInstallablePermissions", () =>
-  jest.fn()
-);
+jest.mock("@/installables/useInstallablePermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],

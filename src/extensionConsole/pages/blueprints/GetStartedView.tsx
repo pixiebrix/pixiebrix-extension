@@ -26,7 +26,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
-import InstallableIcon from "@/extensionConsole/pages/blueprints/InstallableIcon";
+import InstallableIcon from "@/installables/InstallableIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const ExternalLink: React.VoidFunctionComponent<{

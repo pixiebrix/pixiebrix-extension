@@ -21,7 +21,7 @@ import {
   isExtension,
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
-} from "@/extensionConsole/pages/blueprints/utils/installableUtils";
+} from "@/installables/installableUtils";
 import { type InstallableViewItem } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
@@ -35,7 +35,7 @@ import { push } from "connected-react-router";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
-import useInstallablePermissions from "@/extensionConsole/pages/blueprints/useInstallablePermissions";
+import useInstallablePermissions from "@/installables/useInstallablePermissions";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";

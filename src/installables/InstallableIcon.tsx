@@ -24,11 +24,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
-import { type Installable } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import { type Installable } from "@/installables/blueprintsTypes";
 import {
   isBlueprint,
   isUnavailableRecipe,
-} from "@/extensionConsole/pages/blueprints/utils/installableUtils";
+} from "@/installables/installableUtils";
 import cx from "classnames";
 import styles from "./InstallableIcon.module.scss";
 

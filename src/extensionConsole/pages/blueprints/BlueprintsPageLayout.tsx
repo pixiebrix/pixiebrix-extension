@@ -28,7 +28,10 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import { type Installable, type InstallableViewItem } from "./blueprintsTypes";
+import {
+  type Installable,
+  type InstallableViewItem,
+} from "../../../installables/blueprintsTypes";
 import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
 import {
   selectActiveTab,
@@ -38,7 +41,7 @@ import {
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
-import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
+import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";

@@ -19,7 +19,7 @@ import {
   type Installable,
   type InstallableStatus,
   type InstallableViewItem,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+} from "@/installables/blueprintsTypes";
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -36,10 +36,10 @@ import {
   isExtension,
   isUnavailableRecipe,
   updateAvailable,
-} from "@/extensionConsole/pages/blueprints/utils/installableUtils";
+} from "@/installables/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type MarketplaceListing } from "@/types/contract";
-import InstallableIcon from "@/extensionConsole/pages/blueprints/InstallableIcon";
+import InstallableIcon from "@/installables/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllRecipes } from "@/recipes/recipesHooks";

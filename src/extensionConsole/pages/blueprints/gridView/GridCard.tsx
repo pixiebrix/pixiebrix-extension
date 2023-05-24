@@ -18,11 +18,11 @@
 import styles from "./GridCard.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/blueprintsTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/blueprints/Status";
-import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
+import InstallableActions from "@/installables/InstallableActions";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
 
 type GridCardProps = {
@@ -51,7 +51,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           <div>
             <div className={styles.actions}>
               <Status installableViewItem={installableItem} />
-              <BlueprintActions installableViewItem={installableItem} />
+              <InstallableActions installableViewItem={installableItem} />
             </div>
           </div>
         </Card.Body>

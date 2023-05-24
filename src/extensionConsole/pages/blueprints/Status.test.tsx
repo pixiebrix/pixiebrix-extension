@@ -18,10 +18,9 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/blueprints/Status";
+import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
 
-import useInstallableViewItemActions from "./useInstallableViewItemActions";
-
-jest.mock("./useInstallableViewItemActions", () => ({
+jest.mock("@/installables/useInstallableViewItemActions", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({}),
 }));

@@ -19,17 +19,13 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import useInstallableViewItemActions from "@/extensionConsole/pages/blueprints/useInstallableViewItemActions";
+import { type InstallableViewItem } from "@/installables/blueprintsTypes";
+import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
-import {
-  isBlueprint,
-  isUnavailableRecipe,
-} from "@/extensionConsole/pages/blueprints/utils/installableUtils";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import InstallableActions from "@/installables/InstallableActions";
+import { getStarterBricksContained } from "@/installables/installableUtils";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import useAsyncState from "@/hooks/useAsyncState";
 
@@ -42,37 +38,6 @@ const ExtensionPointTypeMap: Record<ExtensionPointType, string> = {
   quickBar: "Quick Bar Action",
   quickBarProvider: "Dynamic Quick Bar",
   tour: "Tour",
-};
-
-const getStarterBricksContained = async (
-  installableItem: InstallableViewItem
-): Promise<ExtensionPointType[]> => {
-  const starterBricksContained = new Set<ExtensionPointType>();
-  if (isUnavailableRecipe(installableItem.installable)) {
-    // TODO: Figure out what to display here
-    return [...starterBricksContained];
-  }
-
-  if (isBlueprint(installableItem.installable)) {
-    for (const extensionPoint of Object.values(
-      installableItem.installable.definitions
-    )) {
-      starterBricksContained.add(extensionPoint.definition.type);
-    }
-
-    console.log(
-      "*** returning blueprint starter bricks",
-      starterBricksContained
-    );
-    return [...starterBricksContained];
-  }
-
-  const starterBrickType = await extensionPointRegistry.lookup(
-    installableItem.installable.extensionPointId
-  );
-  starterBricksContained.add(starterBrickType._definition.type);
-  console.log("*** returning extension starter bricks", starterBricksContained);
-  return [...starterBricksContained];
 };
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
@@ -89,8 +54,6 @@ export const ActiveModListItem: React.FunctionComponent<{
     [],
     { initialValue: [] }
   );
-
-  console.log("*** starterBricksCotnained", starterBricksContained);
 
   return (
     <ListGroup.Item className={styles.root}>
@@ -122,7 +85,7 @@ export const ActiveModListItem: React.FunctionComponent<{
         </div>
       </div>
       <div className="flex-shrink-1">
-        <BlueprintActions installableViewItem={installableItem} />
+        <InstallableActions installableViewItem={installableItem} />
       </div>
     </ListGroup.Item>
   );

@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
+import useInstallables from "@/installables/useInstallables";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";

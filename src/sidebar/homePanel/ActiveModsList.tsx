@@ -19,9 +19,9 @@ import React from "react";
 import {
   type Installable,
   type InstallableViewItem,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+} from "@/installables/blueprintsTypes";
 import { ListGroup } from "react-bootstrap";
-import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
+import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
@@ -47,7 +47,9 @@ export const ActiveModsList: React.FunctionComponent<{
   const tableInstance = useTable<InstallableViewItem>({
     columns,
     data: installableViewItems.filter(
-      (installableViewItem) => installableViewItem.status === "Active"
+      (installableViewItem) =>
+        installableViewItem.status === "Active" &&
+        !installableViewItem.unavailable
     ),
   });
 

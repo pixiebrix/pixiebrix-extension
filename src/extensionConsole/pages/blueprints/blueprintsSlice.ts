@@ -18,7 +18,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Filters, type SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
-import { type InstallableViewItem } from "./blueprintsTypes";
+import { type InstallableViewItem } from "../../../installables/blueprintsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
 

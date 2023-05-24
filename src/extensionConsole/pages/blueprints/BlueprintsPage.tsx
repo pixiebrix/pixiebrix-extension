@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/BlueprintsPageLayout";
-import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
+import useInstallables from "@/installables/useInstallables";
 import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { reportEvent } from "@/telemetry/events";

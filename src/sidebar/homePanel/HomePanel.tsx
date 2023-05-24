@@ -19,7 +19,7 @@ import styles from "@/sidebar/homePanel/HomePanel.module.scss";
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container, Row } from "react-bootstrap";
-import useInstallables from "@/extensionConsole/pages/blueprints/useInstallables";
+import useInstallables from "@/installables/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
