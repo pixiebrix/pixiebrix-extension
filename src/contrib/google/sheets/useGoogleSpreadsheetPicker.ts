@@ -91,7 +91,7 @@ function useGoogleSpreadsheetPicker(): {
             );
           }
 
-          reportEvent("SelectGoogleSpreadsheetFinish");
+          reportEvent("SelectGoogleSpreadsheetPicked");
           deferredPromise.resolve(doc);
         }
       })
