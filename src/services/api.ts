@@ -75,6 +75,11 @@ type QueryArgs = {
    * Optional additional metadata to pass through to the result.
    */
   meta?: unknown;
+
+  /**
+   * Optional URL parameters to b sent with the request
+   */
+  params?: AxiosRequestConfig["params"];
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
@@ -84,12 +89,13 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
   data,
   requireLinked = true,
   meta,
+  params,
 }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
       : getApiClient());
-    const result = await client({ url, method, data });
+    const result = await client({ url, method, data, params });
 
     return { data: result.data, meta };
   } catch (error) {
