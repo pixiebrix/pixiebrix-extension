@@ -60,7 +60,7 @@ const GetStartedView: React.VoidFunctionComponent<{
     onboardingBlueprintId
   );
 
-  const { data: listings, isLoading } = useGetMarketplaceListingsQuery(
+  const { data: listings } = useGetMarketplaceListingsQuery(
     { package__name: onboardingBlueprintId },
     { skip: !onboardingBlueprintId }
   );
@@ -81,11 +81,11 @@ const GetStartedView: React.VoidFunctionComponent<{
           <Col>
             <h4>
               Success!{" "}
-              <InstallableIcon
-                installable={recipe}
-                listing={onboardingBlueprintListing}
-                isLoading={isLoading && isFetchingRecipe}
-              />{" "}
+              {!isFetchingRecipe && (
+                <>
+                  <InstallableIcon installable={recipe} />{" "}
+                </>
+              )}
               <ExternalLink
                 linkText={onboardingBlueprintListing.package.verbose_name}
                 url={marketplaceUrl}
