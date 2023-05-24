@@ -75,8 +75,6 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
-  console.log("*** unresolvedExtensions", unresolvedExtensions);
-
   const knownPersonalOrTeamRecipes = useMemo(
     () =>
       (knownRecipes ?? []).filter(

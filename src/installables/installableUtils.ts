@@ -20,7 +20,7 @@ import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Installable,
-  InstallableViewItem,
+  type InstallableViewItem,
   type SharingSource,
   type SharingType,
   type UnavailableRecipe,
@@ -35,8 +35,8 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
-  ExtensionPointDefinition,
-  ExtensionPointType,
+  type ExtensionPointDefinition,
+  type ExtensionPointType,
 } from "@/extensionPoints/types";
 import extensionPointRegistry from "@/extensionPoints/registry";
 
@@ -349,13 +349,11 @@ export const StarterBrickMap: Record<ExtensionPointType, string> = {
   tour: "Tour",
 };
 
-// TODO: test me
 const getExtensionPointTypesContained = async (
   installableItem: InstallableViewItem
 ): Promise<ExtensionPointType[]> => {
   const starterBricksContained = new Set<ExtensionPointType>();
   if (isUnavailableRecipe(installableItem.installable)) {
-    // TODO: Figure out what to display here
     return [];
   }
 
@@ -382,7 +380,7 @@ const getExtensionPointTypesContained = async (
   const extensionPoint = await extensionPointRegistry.lookup(
     installableItem.installable.extensionPointId
   );
-  // TODO: Not sure if this is the right type assumption to make
+
   starterBricksContained.add(extensionPoint.kind as ExtensionPointType);
   return [...starterBricksContained];
 };
