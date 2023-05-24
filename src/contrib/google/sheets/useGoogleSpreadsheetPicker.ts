@@ -5,6 +5,7 @@ import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
 import { isNullOrBlank } from "@/utils";
 import { type Data, type Doc } from "@/contrib/google/sheets/types";
 import pDefer from "p-defer";
+import { reportEvent } from "@/telemetry/events";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -49,6 +50,8 @@ function useGoogleSpreadsheetPicker(): {
   }, [setHasRejectedPermissions]);
 
   const showPicker = useCallback(async (): Promise<Doc> => {
+    reportEvent("SelectGoogleSpreadsheetStart");
+
     if (pickerOrigin == null) {
       throw new Error("Unable to determine URL for File Picker origin");
     }
@@ -88,6 +91,7 @@ function useGoogleSpreadsheetPicker(): {
             );
           }
 
+          reportEvent("SelectGoogleSpreadsheetFinish");
           deferredPromise.resolve(doc);
         }
       })
