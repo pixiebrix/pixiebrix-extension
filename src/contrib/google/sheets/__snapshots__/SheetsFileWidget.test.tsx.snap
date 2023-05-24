@@ -71,6 +71,35 @@ exports[`SheetsFileWidget renders valid sheet on load 1`] = `
 </DocumentFragment>
 `;
 
+exports[`SheetsFileWidget required gapi 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div>
+      <div>
+        The Google API is not initialized. Please click the button to initialize it.
+      </div>
+      <div
+        class="mt-2"
+      >
+        <button
+          class="btn btn-primary"
+          type="button"
+        >
+          Connect
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
 exports[`SheetsFileWidget smoke test 1`] = `
 <DocumentFragment>
   <form

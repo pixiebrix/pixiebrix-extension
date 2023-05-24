@@ -36,15 +36,16 @@ import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
     string | Expression
   >(props);
-  const [sheetError, setSheetError] = useState(null);
-  const [doc, setDoc] = useState<SheetMeta | null>(null);
-
   const { values: formState, setValues: setFormState } = useFormikContext();
+  const [sheetError, setSheetError] = useState<unknown>(null);
+  const [sheet, setSheet] = useState<SheetMeta | null>(null);
+
   const { ensureSheetsToken, showPicker, hasRejectedPermissions } =
     useGoogleSpreadsheetPicker();
 
@@ -67,9 +68,10 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     []
   );
 
+  // Set sheet lookup error on Formik
   useEffect(
     () => {
-      if (sheetError?.toString().includes("not found")) {
+      if (getErrorMessage(sheetError).includes("not found")) {
         spreadsheetIdFieldHelpers.setError(
           "The sheet does not exist, or you do not have access to it"
         );
@@ -90,34 +92,34 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 
       const spreadsheetId = spreadsheetIdField.value;
 
-      if (doc?.id === spreadsheetId) {
+      if (sheet?.id === spreadsheetId) {
         // Already up to date
         return;
       }
 
       try {
+        setSheetError(null);
+
         if (
           !isNullOrBlank(spreadsheetIdField.value) &&
-          doc?.id !== spreadsheetId
+          sheet?.id !== spreadsheetId
         ) {
-          setSheetError(null);
-
           const properties = await sheets.getSheetProperties(
             spreadsheetIdField.value
           );
           if (!isMounted()) return;
-          setDoc({ id: spreadsheetId, name: properties.title });
+          setSheet({ id: spreadsheetId, name: properties.title });
         } else {
-          setDoc(null);
+          setSheet(null);
         }
       } catch (error) {
         if (!isMounted()) return;
-        setDoc(null);
+        setSheet(null);
         setSheetError(error);
         notify.error({ message: "Error retrieving sheet information", error });
       }
     },
-    [doc?.id, spreadsheetIdField.value, setDoc, setSheetError]
+    [sheet?.id, spreadsheetIdField.value, setSheet, setSheetError]
   );
 
   if (hasRejectedPermissions) {
@@ -139,13 +141,13 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     <WorkshopMessageWidget />
   ) : (
     <InputGroup>
-      {doc ? (
-        // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
+      {sheet ? (
+        // There's a render when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
         <Form.Control
           id={spreadsheetIdField.name}
           type="text"
           disabled
-          value={doc.name ?? spreadsheetIdField.value ?? ""}
+          value={sheet.name ?? spreadsheetIdField.value ?? ""}
         />
       ) : (
         <Form.Control
@@ -163,7 +165,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
             try {
               const doc = await showPicker();
               spreadsheetIdFieldHelpers.setValue(doc.id);
-              setDoc(doc);
+              setSheet(doc);
             } catch (error) {
               notify.error({
                 message: "Error loading file picker",

@@ -34,6 +34,13 @@ jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
 }));
 
+jest.mock("@/contrib/google/initGoogle", () => ({
+  __esModule: true,
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn(),
+}));
+
 function mockRecipe(recipe: RecipeDefinition) {
   (useAllRecipes as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([recipe])
@@ -189,7 +196,7 @@ describe("ActivationOptions", () => {
     expect(allInputs).toStrictEqual([numInput, boolInput, strInput]);
   });
 
-  it("renders google sheets field type option", async () => {
+  it("renders google sheets field type option if gapi is loaded", async () => {
     const recipe = recipeFactory({
       options: {
         schema: {

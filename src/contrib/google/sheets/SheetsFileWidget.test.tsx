@@ -24,10 +24,17 @@ import { sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { validateRegistryId } from "@/types/helpers";
 import { type OutputKey } from "@/types/runtimeTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { isGoogleInitialized } from "@/contrib/google/initGoogle";
+
+jest.mock("@/contrib/google/initGoogle", () => ({
+  __esModule: true,
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGoogleSupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn(() => () => {}),
+}));
 
 jest.mock("@/background/messenger/api", () => ({
   sheets: {
@@ -37,11 +44,15 @@ jest.mock("@/background/messenger/api", () => ({
   },
 }));
 
-const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
-  typeof sheets.getSheetProperties
->;
+const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
+const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
 
 describe("SheetsFileWidget", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    isGoogleInitializedMock.mockReturnValue(true);
+  });
+
   it("smoke test", async () => {
     const wrapper = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
@@ -51,6 +62,27 @@ describe("SheetsFileWidget", () => {
     );
 
     await waitForEffect();
+
+    expect(wrapper.asFragment()).toMatchSnapshot();
+  });
+
+  it("required gapi", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+
+    const wrapper = render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(
+      wrapper.findAllByText(
+        "The Google API is not initialized. Please click the button to initialize it."
+      )
+    ).not.toBeNull();
 
     expect(wrapper.asFragment()).toMatchSnapshot();
   });
@@ -70,6 +102,8 @@ describe("SheetsFileWidget", () => {
     await waitForEffect();
 
     expect(wrapper.asFragment()).toMatchSnapshot();
+
+    // Verify it's showing the sheet title and not the sheet unique id
     expect(wrapper.container.querySelector("input")).toHaveValue("Test Sheet");
   });
 

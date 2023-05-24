@@ -49,6 +49,10 @@ function useGoogleSpreadsheetPicker(): {
   }, [setHasRejectedPermissions]);
 
   const showPicker = useCallback(async (): Promise<Doc> => {
+    if (pickerOrigin == null) {
+      throw new Error("Unable to determine URL for File Picker origin");
+    }
+
     const token = await ensureSheetsToken();
 
     await new Promise((resolve) => {
