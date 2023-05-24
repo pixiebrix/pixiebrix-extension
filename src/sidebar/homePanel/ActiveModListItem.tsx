@@ -26,19 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import InstallableActions from "@/installables/InstallableActions";
 import { getStarterBricksContained } from "@/installables/installableUtils";
-import { type ExtensionPointType } from "@/extensionPoints/types";
 import useAsyncState from "@/hooks/useAsyncState";
-
-const ExtensionPointTypeMap: Record<ExtensionPointType, string> = {
-  panel: "Sidebar Panel",
-  menuItem: "Button",
-  trigger: "Trigger",
-  contextMenu: "Context Menu",
-  actionPanel: "Sidebar",
-  quickBar: "Quick Bar Action",
-  quickBarProvider: "Dynamic Quick Bar",
-  tour: "Tour",
-};
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
 export const ActiveModListItem: React.FunctionComponent<{
@@ -48,9 +36,7 @@ export const ActiveModListItem: React.FunctionComponent<{
   const { requestPermissions } = useInstallableViewItemActions(installableItem);
 
   const { data: starterBricksContained } = useAsyncState(
-    async () => {
-      return getStarterBricksContained(installableItem);
-    },
+    async () => getStarterBricksContained(installableItem),
     [],
     { initialValue: [] }
   );
@@ -63,13 +49,7 @@ export const ActiveModListItem: React.FunctionComponent<{
           <div>
             <h5 className={styles.modName}>{name}</h5>
             <span className={styles.starterBricksList}>
-              {starterBricksContained
-                .map(
-                  (starterBrickType) =>
-                    // eslint-disable-next-line security/detect-object-injection -- starterBrickType is an ExtensionPointType
-                    ExtensionPointTypeMap[starterBrickType]
-                )
-                .join(" • ")}
+              {starterBricksContained.join(" • ")}
             </span>
           </div>
           {requestPermissions && (

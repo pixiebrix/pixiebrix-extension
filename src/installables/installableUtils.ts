@@ -338,14 +338,25 @@ export const selectExtensionsFromInstallable = createSelector(
       : installedExtensions.filter((x) => x.id === installable.id)
 );
 
+export const StarterBrickMap: Record<ExtensionPointType, string> = {
+  panel: "Sidebar Panel",
+  menuItem: "Button",
+  trigger: "Trigger",
+  contextMenu: "Context Menu",
+  actionPanel: "Sidebar",
+  quickBar: "Quick Bar Action",
+  quickBarProvider: "Dynamic Quick Bar",
+  tour: "Tour",
+};
+
 // TODO: test me
-export const getStarterBricksContained = async (
+const getExtensionPointTypesContained = async (
   installableItem: InstallableViewItem
 ): Promise<ExtensionPointType[]> => {
   const starterBricksContained = new Set<ExtensionPointType>();
   if (isUnavailableRecipe(installableItem.installable)) {
     // TODO: Figure out what to display here
-    return [...starterBricksContained];
+    return [];
   }
 
   if (isBlueprint(installableItem.installable)) {
@@ -368,9 +379,28 @@ export const getStarterBricksContained = async (
     return [...starterBricksContained];
   }
 
-  const starterBrickType = await extensionPointRegistry.lookup(
+  const extensionPoint = await extensionPointRegistry.lookup(
     installableItem.installable.extensionPointId
   );
-  starterBricksContained.add(starterBrickType._definition.type);
+  // TODO: Not sure if this is the right type assumption to make
+  starterBricksContained.add(extensionPoint.kind as ExtensionPointType);
   return [...starterBricksContained];
+};
+
+export const getStarterBricksContained = async (
+  installableItem: InstallableViewItem
+): Promise<string[]> => {
+  const extensionPointTypes = await getExtensionPointTypesContained(
+    installableItem
+  );
+  const starterBricksContained = [];
+  for (const extensionPointType of extensionPointTypes) {
+    // eslint-disable-next-line security/detect-object-injection -- extensionPointType is type ExtensionPointType
+    const starterBrick = StarterBrickMap[extensionPointType];
+    if (starterBrick) {
+      starterBricksContained.push(starterBrick);
+    }
+  }
+
+  return starterBricksContained;
 };
