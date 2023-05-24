@@ -74,18 +74,18 @@ exports[`it renders default state 1`] = `
                     class="css-1f43avz-a11yText-A11yText"
                   />
                   <div
-                    class=" css-10lovj7-control"
+                    class=" css-1201cn-control"
                   >
                     <div
-                      class=" css-12yna7l-ValueContainer"
+                      class=" css-1ixzqwx-ValueContainer"
                     >
                       <div
-                        class=" css-j966x-singleValue"
+                        class=" css-1dm8z5-singleValue"
                       >
                         @user1
                       </div>
                       <div
-                        class=" css-eefzcu-Input"
+                        class=" css-1mrhv0-Input"
                         data-value=""
                       >
                         <input
@@ -110,11 +110,11 @@ exports[`it renders default state 1`] = `
                       class=" css-1hb7zxy-IndicatorsContainer"
                     >
                       <span
-                        class=" css-1okebmr-indicatorSeparator"
+                        class=" css-1u9des2-indicatorSeparator"
                       />
                       <div
                         aria-hidden="true"
-                        class=" css-tlfecz-indicatorContainer"
+                        class=" css-1xc3v61-indicatorContainer"
                       >
                         <svg
                           aria-hidden="true"

@@ -33,12 +33,14 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 
 const fields = {
   DescriptionField,
 };
 const uiWidgets = {
   imageCrop: ImageCropWidget,
+  SelectWidget: RjsfSelectWidget,
 };
 
 const ModalLayout: React.FC = ({ children }) => (

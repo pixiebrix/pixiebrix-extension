@@ -17,7 +17,7 @@
 
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
-import ReactShadowRoot from "react-shadow-root";
+import EmotionShadowRoot from "react-shadow/emotion";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
@@ -42,21 +42,18 @@ const DocumentView: React.FC<DocumentViewProps> = ({
 
   return (
     // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
-    // ReactShadowRoot needs to be inside an HTMLElement to attach to something
     <DocumentContext.Provider value={{ options, meta, onAction }}>
-      <div className="h-100">
-        <ReactShadowRoot>
-          <Stylesheets href={bootstrap}>
-            {body.map((documentElement, index) => {
-              const { Component, props } = buildDocumentBranch(
-                documentElement,
-                { staticId: joinPathParts("body", "children"), branches: [] }
-              );
-              return <Component key={index} {...props} />;
-            })}
-          </Stylesheets>
-        </ReactShadowRoot>
-      </div>
+      <EmotionShadowRoot.div className="h-100">
+        <Stylesheets href={bootstrap}>
+          {body.map((documentElement, index) => {
+            const { Component, props } = buildDocumentBranch(documentElement, {
+              staticId: joinPathParts("body", "children"),
+              branches: [],
+            });
+            return <Component key={index} {...props} />;
+          })}
+        </Stylesheets>
+      </EmotionShadowRoot.div>
     </DocumentContext.Provider>
   );
 };

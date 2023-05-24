@@ -25,7 +25,7 @@ import {
 import { noop } from "lodash";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { serializeError } from "serialize-error";
-import { type Draft } from "immer";
+import { castDraft } from "immer";
 
 /**
  * Merge multiple async states into a single async state using a synchronous merge function.
@@ -293,10 +293,8 @@ export function setValueOnState<T>(
   state: WritableDraft<AsyncState<T>>,
   value: T
 ): WritableDraft<AsyncState<T>> {
-  // eslint-disable-next-line @typescript-eslint/ban-types -- match types from immer
-  state.data = value as T extends object ? Draft<T> : T;
-  // eslint-disable-next-line @typescript-eslint/ban-types -- match types from immer
-  state.currentData = value as T extends object ? Draft<T> : T;
+  state.data = castDraft(value);
+  state.currentData = castDraft(value);
   state.isUninitialized = false;
   state.isLoading = false;
   state.isFetching = false;

@@ -19,16 +19,16 @@ exports[`SchemaSelectWidget renders creatable widget 1`] = `
         class="css-1f43avz-a11yText-A11yText"
       />
       <div
-        class=" css-1s2u09g-control"
+        class=" css-13cymwt-control"
       >
         <div
-          class=" css-319lph-ValueContainer"
+          class=" css-1fdsijx-ValueContainer"
         >
           <div
-            class=" css-qc6sy-singleValue"
+            class=" css-1dimb5e-singleValue"
           />
           <div
-            class=" css-6j8wv5-Input"
+            class=" css-qbdosj-Input"
             data-value=""
           >
             <input
@@ -53,11 +53,11 @@ exports[`SchemaSelectWidget renders creatable widget 1`] = `
           class=" css-1hb7zxy-IndicatorsContainer"
         >
           <span
-            class=" css-1okebmr-indicatorSeparator"
+            class=" css-1u9des2-indicatorSeparator"
           />
           <div
             aria-hidden="true"
-            class=" css-tlfecz-indicatorContainer"
+            class=" css-1xc3v61-indicatorContainer"
           >
             <svg
               aria-hidden="true"
@@ -103,16 +103,16 @@ exports[`SchemaSelectWidget renders select widget 1`] = `
         class="css-1f43avz-a11yText-A11yText"
       />
       <div
-        class=" css-1s2u09g-control"
+        class=" css-13cymwt-control"
       >
         <div
-          class=" css-319lph-ValueContainer"
+          class=" css-1fdsijx-ValueContainer"
         >
           <div
-            class=" css-qc6sy-singleValue"
+            class=" css-1dimb5e-singleValue"
           />
           <div
-            class=" css-6j8wv5-Input"
+            class=" css-qbdosj-Input"
             data-value=""
           >
             <input
@@ -137,11 +137,11 @@ exports[`SchemaSelectWidget renders select widget 1`] = `
           class=" css-1hb7zxy-IndicatorsContainer"
         >
           <span
-            class=" css-1okebmr-indicatorSeparator"
+            class=" css-1u9des2-indicatorSeparator"
           />
           <div
             aria-hidden="true"
-            class=" css-tlfecz-indicatorContainer"
+            class=" css-1xc3v61-indicatorContainer"
           >
             <svg
               aria-hidden="true"

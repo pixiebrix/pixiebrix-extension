@@ -34,7 +34,7 @@ import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import SelectWidgetPreview from "./SelectWidgetPreview";
+import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
@@ -88,12 +88,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
             if (property.format === "preview") {
               // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
-              // @ts-expect-error -- intentionally assigning to a string
-              property.enum = `[Mod Name] - ${activeField} database`;
+              property.enum = [`[Mod Name] - ${activeField} database`];
             } else {
               // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
-              // @ts-expect-error -- intentionally assigning to a string
-              property.enum = "Select...";
+              property.enum = ["Select..."];
             }
 
             delete property.$ref;
@@ -179,9 +177,9 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
-    database: SelectWidgetPreview,
-    SelectWidget: SelectWidgetPreview,
-    googleSheet: SelectWidgetPreview,
+    database: RjsfSelectWidget,
+    SelectWidget: RjsfSelectWidget,
+    googleSheet: RjsfSelectWidget,
   };
 
   return (
