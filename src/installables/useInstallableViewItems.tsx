@@ -20,7 +20,7 @@ import {
   type InstallableStatus,
   type InstallableViewItem,
 } from "@/installables/blueprintsTypes";
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { type UUID } from "@/types/stringTypes";
@@ -38,8 +38,6 @@ import {
   updateAvailable,
 } from "@/installables/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import { type MarketplaceListing } from "@/types/contract";
-import InstallableIcon from "@/installables/InstallableIcon";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllRecipes } from "@/recipes/recipesHooks";
@@ -100,24 +98,6 @@ function useInstallableViewItems(installables: Installable[]): {
     [installedExtensions, isActive]
   );
 
-  const installableIcon = useCallback(
-    (installable: Installable) => {
-      const listing: MarketplaceListing | null = listingsQuery.isSuccess
-        ? listingsQuery.data[getPackageId(installable)]
-        : null;
-
-      return (
-        <InstallableIcon
-          listing={listing}
-          installable={installable}
-          isLoading={listingsQuery.isLoading}
-          size="2x"
-        />
-      );
-    },
-    [listingsQuery]
-  );
-
   const installableViewItems = useMemo(() => {
     // Load to map for fast lookup if you have a lot of recipes. Could put in its own memo
     const recipeMap = new Map(
@@ -155,14 +135,12 @@ function useInstallableViewItems(installables: Installable[]): {
           installedExtensions,
           installable
         ),
-        icon: installableIcon(installable),
         unavailable: isUnavailableRecipe(installable),
         installable,
       } satisfies InstallableViewItem;
     });
   }, [
     getStatus,
-    installableIcon,
     installables,
     installedExtensions,
     listingsQuery,

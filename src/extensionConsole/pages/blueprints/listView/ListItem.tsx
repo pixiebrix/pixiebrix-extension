@@ -25,16 +25,20 @@ import { type InstallableViewItem } from "@/installables/blueprintsTypes";
 import Status from "@/extensionConsole/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
+import InstallableIcon from "@/installables/InstallableIcon";
 
 const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, icon, description } = installableItem;
+  const { name, sharing, updatedAt, installable, description } =
+    installableItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
-      <div className={styles.icon}>{icon}</div>
+      <div className={styles.icon}>
+        <InstallableIcon size="2x" installable={installable} />
+      </div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>
         <p className={styles.description}>{description}</p>

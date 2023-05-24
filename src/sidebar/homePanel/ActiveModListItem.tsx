@@ -27,12 +27,13 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import InstallableActions from "@/installables/InstallableActions";
 import { getStarterBricksContained } from "@/installables/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
+import InstallableIcon from "@/installables/InstallableIcon";
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
 export const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
-  const { name, icon } = installableItem;
+  const { name, installable } = installableItem;
   const { requestPermissions } = useInstallableViewItemActions(installableItem);
 
   const { data: starterBricksContained } = useAsyncState(
@@ -44,7 +45,9 @@ export const ActiveModListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
-        <div className={styles.icon}>{icon}</div>
+        <div className={styles.icon}>
+          <InstallableIcon installable={installable} />
+        </div>
         <div>
           <div>
             <h5 className={styles.modName}>{name}</h5>

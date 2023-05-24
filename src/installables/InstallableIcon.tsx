@@ -26,11 +26,13 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import { type Installable } from "@/installables/blueprintsTypes";
 import {
+  getPackageId,
   isBlueprint,
   isUnavailableRecipe,
 } from "@/installables/installableUtils";
 import cx from "classnames";
 import styles from "./InstallableIcon.module.scss";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
 
 function getDefaultInstallableIcon(installable: Installable) {
   if (isUnavailableRecipe(installable)) {
@@ -47,15 +49,23 @@ function getDefaultInstallableIcon(installable: Installable) {
 export const DEFAULT_TEXT_ICON_COLOR = "#241C32";
 
 const InstallableIcon: React.FunctionComponent<{
-  listing: MarketplaceListing;
   installable: Installable;
-  isLoading: boolean;
   size?: "1x" | "2x";
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
    */
   faIconClass?: string;
-}> = ({ listing, installable, isLoading, size = "1x", faIconClass = "" }) => {
+}> = ({ installable, size = "1x", faIconClass = "" }) => {
+  const {
+    data: listings,
+    isLoading,
+    isSuccess,
+  } = useGetMarketplaceListingsQuery();
+
+  const listing: MarketplaceListing | null = isSuccess
+    ? listings[getPackageId(installable)]
+    : null;
+
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only load default icon once
   const defaultIcon = useMemo(() => getDefaultInstallableIcon(installable), []);
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);

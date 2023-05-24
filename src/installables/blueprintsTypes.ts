@@ -16,7 +16,6 @@
  */
 
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import { type ReactNode } from "react";
 import { type Organization } from "@/types/contract";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -64,7 +63,6 @@ export type InstallableViewItem = {
   status: InstallableStatus;
   hasUpdate: boolean;
   installedVersionNumber: string;
-  icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
   installable: Installable;
   /**
