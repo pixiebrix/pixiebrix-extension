@@ -77,7 +77,7 @@ type QueryArgs = {
   meta?: unknown;
 
   /**
-   * Optional URL parameters to b sent with the request
+   * Optional URL parameters to be sent with the request
    */
   params?: AxiosRequestConfig["params"];
 };
