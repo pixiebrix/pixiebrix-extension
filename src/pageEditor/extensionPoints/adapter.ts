@@ -56,6 +56,7 @@ export async function selectType(
     ).definition.type;
   }
 
+  console.log("*** extgension point id", extension.extensionPointId);
   const brick = await registry.find(extension.extensionPointId);
   if (!brick) {
     console.error("Cannot find starter brick", {

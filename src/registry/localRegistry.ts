@@ -235,6 +235,9 @@ export async function find(id: string): Promise<Package | null> {
   }
 
   const db = await getBrickDB();
+  console.log("*** id", id);
+  console.log("*** registry", await db.getAll(BRICK_STORE));
   const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+  console.log("*** versions found", versions);
   return latestVersion(versions);
 }
