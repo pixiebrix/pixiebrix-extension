@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApi } from "@/services/api";
+import { useGetMeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
@@ -116,8 +116,14 @@ function decidePartnerServiceIds({
  * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
-  // Prefer the most recent /api/me/ data from the server
-  const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
+  const {
+    data: me,
+    isLoading,
+    error,
+  } = useGetMeQuery(undefined, {
+    // Prefer the most recent /api/me/ data from the server
+    refetchOnMountOrArgChange: true,
+  });
   const localAuth = useSelector(selectAuth);
   const {
     authServiceId: authServiceIdOverride,
