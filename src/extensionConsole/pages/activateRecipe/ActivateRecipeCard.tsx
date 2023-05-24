@@ -96,8 +96,6 @@ const ActivateRecipeCard: React.FC = () => {
     },
   };
 
-  const recipeListing = listings[recipeId] ?? null;
-
   const renderBody: RenderBody = ({ values, isSubmitting }) => (
     <>
       <BlockFormSubmissionViaEnterIfFirstChild />
@@ -110,7 +108,7 @@ const ActivateRecipeCard: React.FC = () => {
                   <span className={styles.blueprintIcon}>
                     <InstallableIcon
                       installable={recipe}
-                      listing={recipeListing}
+                      listing={listings[recipeId]}
                       isLoading={isLoadingListing}
                     />
                   </span>
