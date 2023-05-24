@@ -16,7 +16,10 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { type PanelEntry, TemporaryPanelEntry } from "@/types/sidebarTypes";
+import {
+  type PanelEntry,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
