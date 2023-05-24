@@ -99,7 +99,7 @@ export const ActiveModListItem: React.FunctionComponent<{
         <div>
           <div>
             <h5 className={styles.modName}>{name}</h5>
-            <span className="text-small test-muted">
+            <span className={styles.starterBricksList}>
               {starterBricksContained
                 .map(
                   (starterBrickType) =>
