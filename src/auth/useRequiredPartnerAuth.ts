@@ -116,6 +116,7 @@ function decidePartnerServiceIds({
  * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
+  // Prefer the most recent /api/me/ data from the server
   const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
   const localAuth = useSelector(selectAuth);
   const {
