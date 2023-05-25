@@ -29,7 +29,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
-import { type InstallableViewItem } from "./blueprintsTypes";
+import { type InstallableViewItem } from "./installableTypes";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 
 const InstallableActions: React.FunctionComponent<{

@@ -19,8 +19,6 @@ import styles from "./Status.module.scss";
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { type InstallableViewItem } from "../../../installables/blueprintsTypes";
-import useInstallableViewItemActions from "../../../installables/useInstallableViewItemActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -30,6 +28,8 @@ import {
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
+import { type InstallableViewItem } from "@/installables/installableTypes";
+import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
 
 const Status: React.VoidFunctionComponent<{
   installableViewItem: InstallableViewItem;

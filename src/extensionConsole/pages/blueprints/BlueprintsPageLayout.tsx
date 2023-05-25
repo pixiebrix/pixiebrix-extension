@@ -28,10 +28,6 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import {
-  type Installable,
-  type InstallableViewItem,
-} from "../../../installables/blueprintsTypes";
 import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
 import {
   selectActiveTab,
@@ -46,6 +42,10 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
+import type {
+  Installable,
+  InstallableViewItem,
+} from "@/installables/installableTypes";
 
 const statusFilter = (
   rows: Array<Row<InstallableViewItem>>,

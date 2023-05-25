@@ -19,7 +19,7 @@ import {
   type Installable,
   type InstallableStatus,
   type InstallableViewItem,
-} from "@/installables/blueprintsTypes";
+} from "@/installables/installableTypes";
 import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";

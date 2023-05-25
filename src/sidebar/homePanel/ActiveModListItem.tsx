@@ -19,7 +19,7 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/installables/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

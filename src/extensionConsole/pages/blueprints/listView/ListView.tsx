@@ -22,7 +22,7 @@ import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/extensionConsole/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 import ListItemErrorBoundary from "@/extensionConsole/pages/blueprints/listView/ListItemErrorBoundary";
-import { BlueprintsPageContentProps } from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
+import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;

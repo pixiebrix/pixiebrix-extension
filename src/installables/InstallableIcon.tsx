@@ -24,7 +24,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
-import { type Installable } from "@/installables/blueprintsTypes";
+import { type Installable } from "@/installables/installableTypes";
 import {
   getPackageId,
   isBlueprint,

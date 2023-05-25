@@ -25,7 +25,7 @@ import { UserRole } from "@/types/contract";
 import {
   type Installable,
   type UnavailableRecipe,
-} from "@/installables/blueprintsTypes";
+} from "@/installables/installableTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";

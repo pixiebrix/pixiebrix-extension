@@ -24,7 +24,7 @@ import {
   type SharingSource,
   type SharingType,
   type UnavailableRecipe,
-} from "@/installables/blueprintsTypes";
+} from "@/installables/installableTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {

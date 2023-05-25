@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Card } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type InstallableViewItem } from "@/installables/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";

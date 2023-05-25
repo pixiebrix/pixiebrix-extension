@@ -19,7 +19,7 @@ import React from "react";
 import {
   type Installable,
   type InstallableViewItem,
-} from "@/installables/blueprintsTypes";
+} from "@/installables/installableTypes";
 import { ListGroup } from "react-bootstrap";
 import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import { type Column, useTable } from "react-table";

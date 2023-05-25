@@ -22,7 +22,7 @@ import {
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
 } from "@/installables/installableUtils";
-import { type InstallableViewItem } from "./blueprintsTypes";
+import { type InstallableViewItem } from "./installableTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {

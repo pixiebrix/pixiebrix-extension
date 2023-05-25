@@ -26,7 +26,7 @@ import {
   type InstallableStatus,
   type InstallableViewItem,
   type SharingType,
-} from "@/installables/blueprintsTypes";
+} from "@/installables/installableTypes";
 import useInstallablePermissions from "@/installables/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";

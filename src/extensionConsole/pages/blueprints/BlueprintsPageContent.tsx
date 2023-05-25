@@ -28,8 +28,8 @@ import EmptyView from "@/extensionConsole/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/blueprints/GetStartedView";
 import useOnboarding from "@/extensionConsole/pages/blueprints/onboardingView/useOnboarding";
 import BotGamesView from "@/extensionConsole/pages/blueprints/BotGamesView";
-import { TableInstance } from "react-table";
-import { InstallableViewItem } from "@/installables/blueprintsTypes";
+import { type TableInstance } from "react-table";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 
 export type BlueprintsPageContentProps = {
   tableInstance: TableInstance<InstallableViewItem>;

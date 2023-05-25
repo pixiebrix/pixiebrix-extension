@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type InstallableViewItem } from "@/installables/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 
 import styles from "./ListItem.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

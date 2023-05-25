@@ -18,7 +18,7 @@
 import styles from "./GridCard.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/installables/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/blueprints/Status";
