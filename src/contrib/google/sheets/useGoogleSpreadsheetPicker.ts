@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
 import { useCallback, useState } from "react";
 import { ensureGoogleToken, isAuthRejectedError } from "@/contrib/google/auth";
@@ -6,6 +22,7 @@ import { isNullOrBlank } from "@/utils";
 import { type Data, type Doc } from "@/contrib/google/sheets/types";
 import pDefer from "p-defer";
 import { reportEvent } from "@/telemetry/events";
+import useUserAction from "@/hooks/useUserAction";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -23,7 +40,7 @@ function useGoogleSpreadsheetPicker(): {
    * Ensure/request permissions, but don't show the picker. Tracks whether the user rejected permissions.
    * @see hasRejectedPermissions
    */
-  ensureSheetsToken: () => Promise<string>;
+  ensureSheetsTokenAction: () => Promise<string>;
   /**
    * True if the user reject permissions from the prompt, or permissions were rejected via Google account policy.
    */
@@ -49,6 +66,16 @@ function useGoogleSpreadsheetPicker(): {
     }
   }, [setHasRejectedPermissions]);
 
+  // Version of ensureSheetsToken wrapped with success/error message handlers
+  const ensureSheetsTokenAction = useUserAction(
+    ensureSheetsToken,
+    {
+      successMessage: "Connected to Google Sheets",
+      errorMessage: "Error connecting to Google Sheets",
+    },
+    [ensureSheetsToken]
+  );
+
   const showPicker = useCallback(async (): Promise<Doc> => {
     reportEvent("SelectGoogleSpreadsheetStart");
 
@@ -70,6 +97,7 @@ function useGoogleSpreadsheetPicker(): {
       throw new Error("Internal error: Google API key is not configured");
     }
 
+    // https://developers.google.com/drive/picker/reference#docs-view
     const view = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS);
 
     const deferredPromise = pDefer<Doc>();
@@ -79,6 +107,8 @@ function useGoogleSpreadsheetPicker(): {
       .setTitle("Select Spreadsheet")
       .setOAuthToken(token)
       .addView(view)
+      // Why do we have both DocsView and DocsUploadView
+      // https://developers.google.com/drive/picker/reference#docs-upload-view
       .addView(new google.picker.DocsUploadView())
       .setDeveloperKey(API_KEY)
       .setAppId(APP_ID)
@@ -105,7 +135,7 @@ function useGoogleSpreadsheetPicker(): {
 
   return {
     showPicker,
-    ensureSheetsToken,
+    ensureSheetsTokenAction,
     hasRejectedPermissions,
   };
 }

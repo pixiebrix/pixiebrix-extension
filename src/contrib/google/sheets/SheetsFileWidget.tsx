@@ -44,9 +44,9 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   >(props);
   const { values: formState, setValues: setFormState } = useFormikContext();
   const [sheetError, setSheetError] = useState<unknown>(null);
-  const [sheet, setSheet] = useState<SheetMeta | null>(null);
+  const [sheetMetadata, setSheetMetadata] = useState<SheetMeta | null>(null);
 
-  const { ensureSheetsToken, showPicker, hasRejectedPermissions } =
+  const { ensureSheetsTokenAction, showPicker, hasRejectedPermissions } =
     useGoogleSpreadsheetPicker();
 
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
@@ -92,7 +92,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 
       const spreadsheetId = spreadsheetIdField.value;
 
-      if (sheet?.id === spreadsheetId) {
+      if (sheetMetadata?.id === spreadsheetId) {
         // Already up to date
         return;
       }
@@ -102,52 +102,60 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 
         if (
           !isNullOrBlank(spreadsheetIdField.value) &&
-          sheet?.id !== spreadsheetId
+          sheetMetadata?.id !== spreadsheetId
         ) {
           const properties = await sheets.getSheetProperties(
             spreadsheetIdField.value
           );
           if (!isMounted()) return;
-          setSheet({ id: spreadsheetId, name: properties.title });
+          setSheetMetadata({ id: spreadsheetId, name: properties.title });
         } else {
-          setSheet(null);
+          setSheetMetadata(null);
         }
       } catch (error) {
         if (!isMounted()) return;
-        setSheet(null);
+        setSheetMetadata(null);
         setSheetError(error);
         notify.error({ message: "Error retrieving sheet information", error });
       }
     },
-    [sheet?.id, spreadsheetIdField.value, setSheet, setSheetError]
+    [
+      sheetMetadata?.id,
+      spreadsheetIdField.value,
+      setSheetMetadata,
+      setSheetError,
+    ]
   );
 
   if (hasRejectedPermissions) {
     return (
       <div>
-        PixieBrix cannot access your Google Account.
-        <AsyncButton
-          onClick={async () => {
-            await ensureSheetsToken();
-          }}
+        PixieBrix cannot access your Google Account. See{" "}
+        <a
+          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
+          target="_blank"
+          rel="noreferrer"
         >
-          Try Again
-        </AsyncButton>
+          troubleshooting information.
+        </a>
+        <AsyncButton onClick={ensureSheetsTokenAction}>Try Again</AsyncButton>
       </div>
     );
   }
 
-  return isExpression(spreadsheetIdField.value) ? (
-    <WorkshopMessageWidget />
-  ) : (
+  if (isExpression(spreadsheetIdField.value)) {
+    return <WorkshopMessageWidget />;
+  }
+
+  return (
     <InputGroup>
-      {sheet ? (
+      {sheetMetadata ? (
         // There's a render when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
         <Form.Control
           id={spreadsheetIdField.name}
           type="text"
           disabled
-          value={sheet.name ?? spreadsheetIdField.value ?? ""}
+          value={sheetMetadata.name ?? spreadsheetIdField.value ?? ""}
         />
       ) : (
         <Form.Control
@@ -165,11 +173,13 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
             try {
               const doc = await showPicker();
               spreadsheetIdFieldHelpers.setValue(doc.id);
-              setSheet(doc);
+              setSheetMetadata(doc);
             } catch (error) {
+              // Ensure we're notifying Rollbar
               notify.error({
                 message: "Error loading file picker",
                 error,
+                includeErrorDetails: true,
               });
             }
           }}

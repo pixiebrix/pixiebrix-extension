@@ -28,6 +28,18 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 import { isGoogleInitialized } from "@/contrib/google/initGoogle";
+import userEvent from "@testing-library/user-event";
+import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
+import { act } from "@testing-library/react";
+
+jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    showPicker: jest.fn(),
+    ensureSheetsTokenAction: jest.fn(),
+    hasRejectedPermissions: false,
+  })),
+}));
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   __esModule: true,
@@ -44,6 +56,7 @@ jest.mock("@/background/messenger/api", () => ({
   },
 }));
 
+const useGoogleSpreadsheetPickerMock = jest.mocked(useGoogleSpreadsheetPicker);
 const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
 const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
 
@@ -84,6 +97,35 @@ describe("SheetsFileWidget", () => {
       )
     ).not.toBeNull();
 
+    expect(wrapper.asFragment()).toMatchSnapshot();
+  });
+
+  it("selects from file picker", async () => {
+    const showPickerMock = jest.fn().mockResolvedValue({
+      id: "abc123",
+      name: "Test Sheet",
+    });
+
+    useGoogleSpreadsheetPickerMock.mockReturnValue({
+      showPicker: showPickerMock,
+      hasRejectedPermissions: false,
+      ensureSheetsTokenAction: jest.fn(),
+    });
+
+    const wrapper = render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    await act(async () => {
+      await userEvent.click(wrapper.getByText("Select"));
+    });
+
+    // FIXME: the component is not updating to show the sheet
     expect(wrapper.asFragment()).toMatchSnapshot();
   });
 
