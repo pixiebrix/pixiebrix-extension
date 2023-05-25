@@ -16,10 +16,9 @@
  */
 
 import { type ServicesState } from "@/store/servicesSlice";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { createSelector } from "reselect";
 
-export const selectConfiguredServices = ({
-  services,
-}: {
-  services: ServicesState;
-}): RawServiceConfiguration[] => Object.values(services.configured);
+export const selectConfiguredServices = createSelector(
+  ({ services }: { services: ServicesState }) => services.configured,
+  (configured) => Object.values(configured)
+);

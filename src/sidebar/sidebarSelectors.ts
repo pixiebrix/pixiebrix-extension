@@ -28,10 +28,17 @@ export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
 export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
   sidebar.activeKey;
 
-export const selectSidebarTabsContent = ({ sidebar }: SidebarRootState) => ({
-  panels: sidebar.panels,
-  forms: sidebar.forms,
-  temporaryPanels: sidebar.temporaryPanels,
-  staticPanels: sidebar.staticPanels,
-  recipeToActivate: sidebar.recipeToActivate,
-});
+export const selectSidebarPanels = ({ sidebar }: SidebarRootState) =>
+  sidebar.panels;
+
+export const selectSidebarForms = ({ sidebar }: SidebarRootState) =>
+  sidebar.forms;
+
+export const selectSidebarTemporaryPanels = ({ sidebar }: SidebarRootState) =>
+  sidebar.temporaryPanels;
+
+export const selectSidebarStaticPanels = ({ sidebar }: SidebarRootState) =>
+  sidebar.staticPanels;
+
+export const selectSidebarRecipeToActivate = ({ sidebar }: SidebarRootState) =>
+  sidebar.recipeToActivate;
