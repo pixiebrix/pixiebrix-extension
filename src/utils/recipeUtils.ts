@@ -21,7 +21,7 @@ import slugify from "slugify";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import {
+import type {
   ExtensionPointDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
