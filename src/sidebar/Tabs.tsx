@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
-import { type PanelEntry } from "@/types/sidebarTypes";
+import React, { useCallback, useEffect } from "react";
+import {
+  type PanelEntry,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
@@ -34,7 +37,11 @@ import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectSidebarActiveTabKey,
-  selectSidebarTabsContent,
+  selectSidebarForms,
+  selectSidebarPanels,
+  selectSidebarRecipeToActivate,
+  selectSidebarStaticPanels,
+  selectSidebarTemporaryPanels,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 
@@ -42,11 +49,53 @@ const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
+// Need to memoize this to make sure it doesn't rerender unless its entry actually changes
+// This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
+const TemporaryPanelTabPane: React.FC<{
+  panel: TemporaryPanelEntry;
+}> = React.memo(({ panel }) => {
+  const dispatch = useDispatch();
+  const onAction = useCallback(
+    (action: SubmitPanelAction) => {
+      dispatch(
+        sidebarSlice.actions.resolveTemporaryPanel({
+          nonce: panel.nonce,
+          action,
+        })
+      );
+    },
+    [dispatch, panel.nonce]
+  );
+
+  return (
+    <Tab.Pane
+      className={cx("full-height flex-grow", styles.paneOverrides)}
+      eventKey={eventKeyForEntry(panel)}
+    >
+      <ErrorBoundary>
+        <PanelBody
+          isRootPanel={false}
+          payload={panel.payload}
+          context={{
+            extensionId: panel.extensionId,
+            blueprintId: panel.blueprintId,
+          }}
+          onAction={onAction}
+        />
+      </ErrorBoundary>
+    </Tab.Pane>
+  );
+});
+TemporaryPanelTabPane.displayName = "TemporaryPanelTabPane";
+
 const Tabs: React.FC = () => {
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
-  const { panels, forms, temporaryPanels, recipeToActivate, staticPanels } =
-    useSelector(selectSidebarTabsContent);
+  const panels = useSelector(selectSidebarPanels);
+  const forms = useSelector(selectSidebarForms);
+  const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
+  const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
+  const staticPanels = useSelector(selectSidebarStaticPanels);
 
   const onSelect = (eventKey: string) => {
     reportEvent("ViewSidePanelPanel", {
@@ -59,10 +108,6 @@ const Tabs: React.FC = () => {
 
   const onCloseTemporaryTab = (nonce: UUID) => {
     dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-  };
-
-  const onResolveTemporaryPanel = (nonce: UUID, action: SubmitPanelAction) => {
-    dispatch(sidebarSlice.actions.resolveTemporaryPanel({ nonce, action }));
   };
 
   useEffect(
@@ -186,25 +231,7 @@ const Tabs: React.FC = () => {
             </Tab.Pane>
           ))}
           {temporaryPanels.map((panel) => (
-            <Tab.Pane
-              className={cx("full-height flex-grow", styles.paneOverrides)}
-              key={panel.nonce}
-              eventKey={eventKeyForEntry(panel)}
-            >
-              <ErrorBoundary>
-                <PanelBody
-                  isRootPanel={false}
-                  payload={panel.payload}
-                  context={{
-                    extensionId: panel.extensionId,
-                    blueprintId: panel.blueprintId,
-                  }}
-                  onAction={(action: SubmitPanelAction) => {
-                    onResolveTemporaryPanel(panel.nonce, action);
-                  }}
-                />
-              </ErrorBoundary>
-            </Tab.Pane>
+            <TemporaryPanelTabPane panel={panel} key={panel.nonce} />
           ))}
           {recipeToActivate && (
             <Tab.Pane
