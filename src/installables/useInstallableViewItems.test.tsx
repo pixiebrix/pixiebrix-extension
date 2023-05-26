@@ -1,4 +1,3 @@
-/* eslint-disable new-cap -- test methods */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -16,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useInstallableViewItems from "@/extensionConsole/pages/blueprints/useInstallableViewItems";
+/* eslint-disable new-cap -- test methods */
+import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import {
   type PersistedExtension,
   type ResolvedExtension,
@@ -25,8 +25,8 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { type UnavailableRecipe } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
-import { selectUnavailableRecipe } from "@/extensionConsole/pages/blueprints/useInstallables";
+import { type UnavailableRecipe } from "@/installables/installableTypes";
+import { selectUnavailableRecipe } from "@/installables/useInstallables";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   extensionFactory,

@@ -23,13 +23,19 @@ import {
   selectActiveTab,
   selectView,
 } from "@/extensionConsole/pages/blueprints/blueprintsSelectors";
-import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
 import OnboardingView from "@/extensionConsole/pages/blueprints/onboardingView/OnboardingView";
 import EmptyView from "@/extensionConsole/pages/blueprints/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/blueprints/GetStartedView";
 import useOnboarding from "@/extensionConsole/pages/blueprints/onboardingView/useOnboarding";
 import BotGamesView from "@/extensionConsole/pages/blueprints/BotGamesView";
+import { type TableInstance } from "react-table";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 
+export type BlueprintsPageContentProps = {
+  tableInstance: TableInstance<InstallableViewItem>;
+  width: number;
+  height: number;
+};
 const BlueprintsPageContent: React.VoidFunctionComponent<
   BlueprintsPageContentProps
 > = ({ tableInstance, width, height }) => {

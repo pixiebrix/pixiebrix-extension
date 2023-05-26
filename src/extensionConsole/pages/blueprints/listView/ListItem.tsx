@@ -19,22 +19,26 @@ import styles from "./ListItem.module.scss";
 
 import React from "react";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
-import BlueprintActions from "@/extensionConsole/pages/blueprints/BlueprintActions";
+import InstallableActions from "@/installables/InstallableActions";
 
-import { type InstallableViewItem } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 import Status from "@/extensionConsole/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
+import InstallableIcon from "@/installables/InstallableIcon";
 
 const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, icon, description } = installableItem;
+  const { name, sharing, updatedAt, installable, description } =
+    installableItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
-      <div className={styles.icon}>{icon}</div>
+      <div className={styles.icon}>
+        <InstallableIcon size="2x" installable={installable} />
+      </div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>
         <p className={styles.description}>{description}</p>
@@ -55,7 +59,7 @@ const ListItem: React.VoidFunctionComponent<{
         <Status installableViewItem={installableItem} />
       </div>
       <div className="flex-shrink-0">
-        <BlueprintActions installableViewItem={installableItem} />
+        <InstallableActions installableViewItem={installableItem} />
       </div>
     </ListGroup.Item>
   );

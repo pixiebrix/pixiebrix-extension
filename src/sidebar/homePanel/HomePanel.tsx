@@ -14,35 +14,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "@/sidebar/homePanel/HomePanel.module.scss";
 
-import React, { useEffect } from "react";
-import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/BlueprintsPageLayout";
+import React from "react";
+import { type StaticPanelEntry } from "@/types/sidebarTypes";
+import { Container, Row } from "react-bootstrap";
 import useInstallables from "@/installables/useInstallables";
-import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { reportEvent } from "@/telemetry/events";
-import Modals from "./modals/Modals";
-import useShowPublishUrlEffect from "@/extensionConsole/pages/blueprints/useShowPublishUrlEffect";
+import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
-const BlueprintsPage: React.FunctionComponent = () => {
-  useTitle("Mods");
+const HomePanel: React.FunctionComponent = () => {
   const { installables, error } = useInstallables();
-  useShowPublishUrlEffect();
-
-  useEffect(() => {
-    reportEvent("BlueprintsPageView");
-  }, []);
 
   return (
-    <div className="h-100">
-      {error ? (
-        <ErrorDisplay error={error} />
-      ) : (
-        <BlueprintsPageLayout installables={installables} />
-      )}
-      <Modals />
+    <div className="full-height h-100">
+      <Container className="scrollable-area">
+        <h3 className={styles.activeModsHeading}>Active mods</h3>
+        <Row>
+          {error ? (
+            <ErrorDisplay error={error} />
+          ) : (
+            <ActiveModsList installables={installables} />
+          )}
+        </Row>
+      </Container>
     </div>
   );
 };
 
-export default BlueprintsPage;
+export const HOME_PANEL: StaticPanelEntry = {
+  type: "staticPanel",
+  heading: "Home",
+  key: "home",
+};
+
+export default HomePanel;
