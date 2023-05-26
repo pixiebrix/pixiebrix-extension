@@ -16,7 +16,7 @@
  */
 
 import { Card } from "react-bootstrap";
-import React from "react";
+import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
 import { clearPackages } from "@/baseRegistry";
@@ -28,8 +28,8 @@ import { useModals } from "@/components/ConfirmationModal";
 import { type Permissions } from "webextension-polyfill";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { persistor } from "@/store/optionsStore";
 import { revertAll } from "@/store/commonActions";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
@@ -43,6 +43,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { showConfirmation } = useModals();
   const sessionId = useSelector(selectSessionId);
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   return (
     <Card border="danger">
@@ -83,7 +84,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
               await Promise.allSettled([
                 // Clear persisted editor state directly because it's not attached to the options page store.
                 browser.storage.local.remove("persist:editor"),
-                persistor.flush(),
+                flushReduxPersistence(),
                 revokeAllAdditionalPermissions(),
                 clearLogs(),
                 browser.contextMenus.removeAll(),

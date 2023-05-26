@@ -37,6 +37,9 @@ import {
 import { selectActiveElement } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./extensionPoints/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
+import ReduxPersistenceContext, {
+  type ReduxPersistenceContextType,
+} from "@/store/ReduxPersistenceContext";
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -66,16 +69,24 @@ const PanelContent: React.FC = () => {
     }
   }, [activeElement]);
 
+  const authPersistenceContext: ReduxPersistenceContextType = {
+    async flush() {
+      await persistor.flush();
+    },
+  };
+
   return (
     <PersistGate persistor={persistor}>
-      <ModalProvider>
-        <ErrorBoundary>
-          <ErrorBanner />
-          <RequireAuth LoginPage={LoginCard}>
-            <EditorLayout />
-          </RequireAuth>
-        </ErrorBoundary>
-      </ModalProvider>
+      <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+        <ModalProvider>
+          <ErrorBoundary>
+            <ErrorBanner />
+            <RequireAuth LoginPage={LoginCard}>
+              <EditorLayout />
+            </RequireAuth>
+          </ErrorBoundary>
+        </ModalProvider>
+      </ReduxPersistenceContext.Provider>
     </PersistGate>
   );
 };
