@@ -349,40 +349,48 @@ export const StarterBrickMap: Record<ExtensionPointType, string> = {
   tour: "Tour",
 };
 
+const getExtensionPointTypesFromRecipe = (
+  recipe: RecipeDefinition
+): ExtensionPointType[] => {
+  const extensionPointTypes = new Set<ExtensionPointType>();
+
+  for (const definition of Object.values(recipe.definitions)) {
+    if (definition.kind !== "extensionPoint") {
+      continue;
+    }
+
+    const extensionPointDefinition =
+      definition.definition as ExtensionPointDefinition;
+    const starterBrickType = extensionPointDefinition?.type;
+
+    if (starterBrickType) {
+      extensionPointTypes.add(starterBrickType);
+    }
+  }
+
+  return [...extensionPointTypes];
+};
+
+const getExtensionPointTypeFromExtension = async (
+  extension: ResolvedExtension
+): Promise<ExtensionPointType> => {
+  const extensionPoint = await extensionPointRegistry.lookup(
+    extension.extensionPointId
+  );
+
+  return extensionPoint.kind as ExtensionPointType;
+};
+
 const getExtensionPointTypesContained = async (
   installableItem: InstallableViewItem
 ): Promise<ExtensionPointType[]> => {
-  const starterBricksContained = new Set<ExtensionPointType>();
   if (isUnavailableRecipe(installableItem.installable)) {
     return [];
   }
 
-  if (isBlueprint(installableItem.installable)) {
-    for (const definition of Object.values(
-      installableItem.installable.definitions
-    )) {
-      if (definition.kind !== "extensionPoint") {
-        continue;
-      }
-
-      const extensionPointDefinition =
-        definition.definition as ExtensionPointDefinition;
-      const starterBrickType = extensionPointDefinition?.type;
-
-      if (starterBrickType) {
-        starterBricksContained.add(extensionPointDefinition?.type);
-      }
-    }
-
-    return [...starterBricksContained];
-  }
-
-  const extensionPoint = await extensionPointRegistry.lookup(
-    installableItem.installable.extensionPointId
-  );
-
-  starterBricksContained.add(extensionPoint.kind as ExtensionPointType);
-  return [...starterBricksContained];
+  return isBlueprint(installableItem.installable)
+    ? getExtensionPointTypesFromRecipe(installableItem.installable)
+    : [await getExtensionPointTypeFromExtension(installableItem.installable)];
 };
 
 export const getStarterBricksContained = async (
