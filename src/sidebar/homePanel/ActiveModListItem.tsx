@@ -25,7 +25,7 @@ import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import InstallableActions from "@/installables/InstallableActions";
-import { getStarterBricksContained } from "@/installables/installableUtils";
+import { getContainedStarterBrickNames } from "@/installables/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import InstallableIcon from "@/installables/InstallableIcon";
 
@@ -37,7 +37,7 @@ export const ActiveModListItem: React.FunctionComponent<{
   const { requestPermissions } = useInstallableViewItemActions(installableItem);
 
   const { data: starterBricksContained } = useAsyncState(
-    async () => getStarterBricksContained(installableItem),
+    async () => getContainedStarterBrickNames(installableItem),
     [],
     { initialValue: [] }
   );

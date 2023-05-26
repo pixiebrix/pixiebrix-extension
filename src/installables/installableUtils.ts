@@ -361,10 +361,10 @@ const getExtensionPointTypesFromRecipe = (
 
     const extensionPointDefinition =
       definition.definition as ExtensionPointDefinition;
-    const starterBrickType = extensionPointDefinition?.type;
+    const extensionPointType = extensionPointDefinition?.type;
 
-    if (starterBrickType) {
-      extensionPointTypes.add(starterBrickType);
+    if (extensionPointType) {
+      extensionPointTypes.add(extensionPointType);
     }
   }
 
@@ -393,7 +393,7 @@ const getExtensionPointTypesContained = async (
     : [await getExtensionPointTypeFromExtension(installableItem.installable)];
 };
 
-export const getStarterBricksContained = async (
+export const getContainedStarterBrickNames = async (
   installableItem: InstallableViewItem
 ): Promise<string[]> => {
   const extensionPointTypes = await getExtensionPointTypesContained(
