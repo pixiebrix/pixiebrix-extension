@@ -36,7 +36,7 @@ import {
   isExtension,
   isUnavailableRecipe,
   updateAvailable,
-} from "@/installables/installableUtils";
+} from "@/utils/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";

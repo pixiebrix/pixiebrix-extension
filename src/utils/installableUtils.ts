@@ -34,11 +34,9 @@ import {
 } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import {
-  type ExtensionPointDefinition,
-  type ExtensionPointType,
-} from "@/extensionPoints/types";
+import { type ExtensionPointType } from "@/extensionPoints/types";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
 
 /**
  * Returns true if installable is an UnavailableRecipe
@@ -349,29 +347,7 @@ export const StarterBrickMap: Record<ExtensionPointType, string> = {
   tour: "Tour",
 };
 
-const getExtensionPointTypesFromRecipe = (
-  recipe: RecipeDefinition
-): ExtensionPointType[] => {
-  const extensionPointTypes = new Set<ExtensionPointType>();
-
-  for (const definition of Object.values(recipe.definitions)) {
-    if (definition.kind !== "extensionPoint") {
-      continue;
-    }
-
-    const extensionPointDefinition =
-      definition.definition as ExtensionPointDefinition;
-    const extensionPointType = extensionPointDefinition?.type;
-
-    if (extensionPointType) {
-      extensionPointTypes.add(extensionPointType);
-    }
-  }
-
-  return [...extensionPointTypes];
-};
-
-const getExtensionPointTypeFromExtension = async (
+const getExtensionPointType = async (
   extension: ResolvedExtension
 ): Promise<ExtensionPointType> => {
   const extensionPoint = await extensionPointRegistry.lookup(
@@ -389,8 +365,8 @@ const getExtensionPointTypesContained = async (
   }
 
   return isBlueprint(installableItem.installable)
-    ? getExtensionPointTypesFromRecipe(installableItem.installable)
-    : [await getExtensionPointTypeFromExtension(installableItem.installable)];
+    ? getContainedExtensionPointTypes(installableItem.installable)
+    : [await getExtensionPointType(installableItem.installable)];
 };
 
 export const getContainedStarterBrickNames = async (

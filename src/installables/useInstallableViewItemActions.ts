@@ -21,7 +21,7 @@ import {
   isExtension,
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
-} from "@/installables/installableUtils";
+} from "@/utils/installableUtils";
 import { type InstallableViewItem } from "./installableTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";

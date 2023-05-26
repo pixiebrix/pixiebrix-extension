@@ -29,7 +29,7 @@ import {
   getPackageId,
   isBlueprint,
   isUnavailableRecipe,
-} from "@/installables/installableUtils";
+} from "@/utils/installableUtils";
 import cx from "classnames";
 import styles from "./InstallableIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";

@@ -25,7 +25,7 @@ import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import InstallableActions from "@/installables/InstallableActions";
-import { getContainedStarterBrickNames } from "@/installables/installableUtils";
+import { getContainedStarterBrickNames } from "@/utils/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import InstallableIcon from "@/installables/InstallableIcon";
 

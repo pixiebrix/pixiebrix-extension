@@ -24,7 +24,7 @@ import GridCard from "./GridCard";
 import { type Row } from "react-table";
 import ListGroupHeader from "@/extensionConsole/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
-import { getUniqueId } from "@/installables/installableUtils";
+import { getUniqueId } from "@/utils/installableUtils";
 import GridCardErrorBoundary from "@/extensionConsole/pages/blueprints/gridView/GridCardErrorBoundary";
 import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 
