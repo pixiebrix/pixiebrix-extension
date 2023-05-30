@@ -20,11 +20,10 @@ import { useDispatch } from "react-redux";
 import { getLabel, isExtension } from "@/utils/installableUtils";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 function useViewLogsAction(
   installableViewItem: InstallableViewItem
-): ActionCallback | null {
+): () => void | null {
   const dispatch = useDispatch();
   const { installable, status } = installableViewItem;
   const isInstallableBlueprint = !isExtension(installable);
