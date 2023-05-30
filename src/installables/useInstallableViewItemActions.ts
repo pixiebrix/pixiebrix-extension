@@ -58,6 +58,29 @@ export type InstallableViewItemActions = {
   requestPermissions: ActionCallback | null;
 };
 
+function useMarketplaceUrl(
+  installableViewItem: InstallableViewItem
+): string | null {
+  const { sharing, unavailable, installable } = installableViewItem;
+  const isInstallableExtension = isExtension(installable);
+  const isDeployment = sharing.source.type === "Deployment";
+
+  // TODO: refactor me
+  const showPublishAction =
+    !unavailable &&
+    // Deployment sharing is controlled via the Admin Console
+    !isDeployment &&
+    // Extensions can be published
+    (isInstallableExtension ||
+      // In case of blueprint, skip if it is already published
+      sharing.listingId == null);
+
+  return isDeployment || showPublishAction || unavailable
+    ? null
+    : // If showPublishAction is false, then the listing for the recipe is defined
+      `${MARKETPLACE_URL}${sharing.listingId}/`;
+}
+
 // eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
@@ -69,6 +92,7 @@ function useInstallableViewItemActions(
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const { restrict } = useFlags();
+  const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -277,15 +301,9 @@ function useInstallableViewItemActions(
 
   const showViewLogsAction = !(status === "Inactive") && !inSidebarContext;
 
-  const viewInMarketplaceHref =
-    isDeployment || showPublishAction || unavailable
-      ? null
-      : // If showPublishAction is false, then the listing for the recipe is defined
-        `${MARKETPLACE_URL}${sharing.listingId}/`;
-
   return {
     viewPublish: showPublishAction ? viewPublish : null,
-    viewInMarketplaceHref,
+    viewInMarketplaceHref: marketplaceListingUrl,
     // Deployment sharing is controlled via the Admin Console
     viewShare:
       isDeployment || unavailable || inSidebarContext ? null : viewShare,
