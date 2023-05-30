@@ -28,6 +28,7 @@ import {
   type RendererErrorPayload,
   type RendererRunPayload,
 } from "@/types/rendererTypes";
+import { screen } from "shadow-dom-testing-library";
 
 const extensionId = uuidv4();
 const blueprintId = registryIdFactory();
@@ -122,5 +123,33 @@ describe("PanelBody", () => {
 
     // There's a shadow root in BodyContainer, so the snapshot cuts off at the div
     expect(result.asFragment()).toMatchSnapshot();
+  });
+
+  it("delays loading indicator render", async () => {
+    const payload: RendererRunPayload = {
+      key: uuidv4(),
+      runId: uuidv4(),
+      extensionId,
+      blockId: validateRegistryId("@pixiebrix/html"),
+      args: {
+        html: "<h1>Test</h1>",
+      },
+      ctxt: {},
+    };
+
+    render(
+      <PanelBody
+        isRootPanel
+        onAction={jest.fn()}
+        context={{ extensionId, blueprintId }}
+        payload={payload}
+      />
+    );
+
+    expect(screen.queryByShadowText("Test")).not.toBeInTheDocument();
+
+    await waitForEffect();
+
+    expect(screen.getByShadowText("Test")).toBeVisible();
   });
 });
