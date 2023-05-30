@@ -28,6 +28,7 @@ import { type OptionsState } from "@/store/extensionsTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { reportEvent } from "@/telemetry/events";
+
 function useDeactivateAction(
   installableViewItem: InstallableViewItem
 ): () => void | null {

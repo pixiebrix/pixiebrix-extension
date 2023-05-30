@@ -20,11 +20,10 @@ import { useDispatch } from "react-redux";
 import { isExtension } from "@/utils/installableUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 function useActivateAction(
   installableViewItem: InstallableViewItem
-): ActionCallback | null {
+): () => void | null {
   const dispatch = useDispatch();
   const { installable, status } = installableViewItem;
   const isInstallableBlueprint = !isExtension(installable);

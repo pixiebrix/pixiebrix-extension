@@ -22,11 +22,10 @@ import {
   blueprintModalsSlice,
   type PublishContext,
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 function useViewPublishAction(
   installableViewItem: InstallableViewItem
-): ActionCallback | null {
+): () => void | null {
   const { installable, unavailable, sharing } = installableViewItem;
   const isDeployment = sharing.source.type === "Deployment";
 
