@@ -27,6 +27,7 @@ import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
 import { isEmpty } from "lodash";
+import workshopIllustration from "@img/workshop.svg";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -45,6 +46,7 @@ const NoActiveModsView: React.FunctionComponent = () => {
     <>
       <p>You don&apos;t have any mods activated</p>
       <h3>But we have a solution for that</h3>
+      <img src={workshopIllustration} alt="Workshop" width={300} />
     </>
   );
 };
