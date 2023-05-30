@@ -29,13 +29,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { type InstallableViewItem } from "@/installables/installableTypes";
-import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
 
 const Status: React.VoidFunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
   const { activate, reactivate, requestPermissions } =
-    useInstallableViewItemActions(installableViewItem);
+    useBlueprintsPageActions(installableViewItem);
 
   const { hasUpdate, status, installedVersionNumber, unavailable } =
     installableViewItem;

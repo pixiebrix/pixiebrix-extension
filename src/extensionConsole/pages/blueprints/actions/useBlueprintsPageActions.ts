@@ -22,12 +22,11 @@ import {
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
 } from "@/utils/installableUtils";
-import { type InstallableViewItem } from "./installableTypes";
+import { type InstallableViewItem } from "../../../../installables/installableTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
   blueprintModalsSlice,
-  type PublishContext,
   type ShareContext,
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
@@ -35,16 +34,18 @@ import { push } from "connected-react-router";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
-import useInstallablePermissions from "@/installables/useInstallablePermissions";
+import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
 import { CancelError } from "@/errors/businessErrors";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { useCallback } from "react";
+import useActivateAction from "@/extensionConsole/pages/blueprints/actions/useActivateAction";
+import useViewPublishAction from "@/extensionConsole/pages/blueprints/actions/useViewPublishAction";
+import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 
-type ActionCallback = () => void;
+export type ActionCallback = () => void;
 
 export type InstallableViewItemActions = {
   reactivate: ActionCallback | null;
@@ -57,48 +58,6 @@ export type InstallableViewItemActions = {
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
 };
-
-function useViewPublishAction(
-  installableViewItem: InstallableViewItem
-): ActionCallback | null {
-  const { installable, unavailable, sharing } = installableViewItem;
-  const isDeployment = sharing.source.type === "Deployment";
-
-  const dispatch = useDispatch();
-  const isInstallableExtension = isExtension(installable);
-  const isInstallableBlueprint = !isInstallableExtension;
-  const viewPublish = () => {
-    const publishContext: PublishContext = isInstallableBlueprint
-      ? {
-          blueprintId: getPackageId(installable),
-        }
-      : {
-          extensionId: installable.id,
-        };
-
-    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
-  };
-
-  const showPublishAction =
-    !unavailable &&
-    // Deployment sharing is controlled via the Admin Console
-    !isDeployment &&
-    // Extensions can be published
-    (isInstallableExtension ||
-      // In case of blueprint, skip if it is already published
-      sharing.listingId == null);
-
-  return showPublishAction ? viewPublish : null;
-}
-
-export function useMarketplaceUrl(
-  installableViewItem: InstallableViewItem
-): string | null {
-  const { sharing } = installableViewItem;
-  const isPublished = sharing.listingId;
-
-  return isPublished ? `${MARKETPLACE_URL}${sharing.listingId}/` : null;
-}
 
 function useViewShareAction(
   installableViewItem: InstallableViewItem
@@ -192,40 +151,6 @@ function useViewLogsAction(
   };
 
   return status === "Inactive" ? null : viewLogs;
-}
-
-function useActivateAction(
-  installableViewItem: InstallableViewItem
-): ActionCallback | null {
-  const dispatch = useDispatch();
-  const { installable, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
-
-  const activate = () => {
-    if (isInstallableBlueprint) {
-      reportEvent("StartInstallBlueprint", {
-        blueprintId: installable.metadata.id,
-        screen: "extensionConsole",
-        reinstall: false,
-      });
-
-      dispatch(
-        push(
-          `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
-        )
-      );
-    } else {
-      reportEvent("StartInstallBlueprint", {
-        blueprintId: null,
-        screen: "extensionConsole",
-        reinstall: false,
-      });
-
-      dispatch(push(`/extensions/install/${installable.id}`));
-    }
-  };
-
-  return status === "Inactive" ? activate : null;
 }
 
 function useDeactivateAction(
@@ -356,7 +281,7 @@ function useRequestPermissionsAction(
   return hasPermissions ? null : requestPermissions;
 }
 
-function useInstallableViewItemActions(
+function useBlueprintsPageActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
@@ -382,4 +307,4 @@ function useInstallableViewItemActions(
   };
 }
 
-export default useInstallableViewItemActions;
+export default useBlueprintsPageActions;

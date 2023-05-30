@@ -28,14 +28,14 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
 import { type InstallableViewItem } from "./installableTypes";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 
 const InstallableActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const actions = useInstallableViewItemActions(installableViewItem);
+  const actions = useBlueprintsPageActions(installableViewItem);
 
   const { hasUpdate } = installableViewItem;
 

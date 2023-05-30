@@ -18,16 +18,19 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/blueprints/Status";
-import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
 
-jest.mock("@/installables/useInstallableViewItemActions", () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue({}),
-}));
+jest.mock(
+  "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockReturnValue({}),
+  })
+);
 
 const useInstallableViewItemActionsMock =
-  useInstallableViewItemActions as jest.MockedFunction<
-    typeof useInstallableViewItemActions
+  useBlueprintsPageActions as jest.MockedFunction<
+    typeof useBlueprintsPageActions
   >;
 
 describe("Status", () => {

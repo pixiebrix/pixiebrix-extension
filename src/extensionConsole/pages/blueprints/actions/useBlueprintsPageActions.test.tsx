@@ -18,16 +18,16 @@
 /* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /// <reference types="jest-extended" />
 
-import useInstallableViewItemActions, {
+import useBlueprintsPageActions, {
   type InstallableViewItemActions,
-} from "@/installables/useInstallableViewItemActions";
+} from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type InstallableStatus,
   type InstallableViewItem,
   type SharingType,
 } from "@/installables/installableTypes";
-import useInstallablePermissions from "@/installables/useInstallablePermissions";
+import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -42,7 +42,7 @@ import {
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/installables/useInstallablePermissions", () => jest.fn());
+jest.mock("@/installables/hooks/useInstallablePermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
@@ -102,7 +102,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe("useInstallableViewItemActions", () => {
+describe("useBlueprintsPageActions", () => {
   test("cloud extension", () => {
     mockHooks();
     const cloudExtensionItem = installableItemFactory({
@@ -113,7 +113,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(cloudExtensionItem));
+    } = renderHook(() => useBlueprintsPageActions(cloudExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
@@ -130,7 +130,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(personalExtensionItem));
+    } = renderHook(() => useBlueprintsPageActions(personalExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
       actions
@@ -147,7 +147,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -164,7 +164,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -178,7 +178,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -195,7 +195,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -209,7 +209,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(publicBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
       actions
@@ -226,7 +226,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
     expectActions(["reactivate", "deactivate", "viewLogs"], actions);
   });
 
@@ -240,7 +240,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
     expectActions(["viewLogs"], actions);
   });
 
@@ -254,7 +254,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
     expectActions(
       [
         "viewPublish",
@@ -279,7 +279,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(blueprintItem));
     expectActions(["deactivate", "viewLogs"], actions);
   });
 
@@ -293,7 +293,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
 
     // Unrestricted users (e.g., developers) need to be able to deactivate/reactivate a deployment to use a later
     // version of the blueprint for development/testing.
@@ -310,7 +310,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
 
     expectActions(["viewLogs"], actions);
   });
@@ -336,7 +336,7 @@ describe("useInstallableViewItemActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions
@@ -348,7 +348,7 @@ describe("useInstallableViewItemActions", () => {
 
       const {
         result: { current: actions },
-      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -381,7 +381,7 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useInstallableViewItemActions(blueprintInstallable));
+      } = renderHook(() => useBlueprintsPageActions(blueprintInstallable));
 
       deactivate();
 
@@ -409,19 +409,16 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(
-        () => useInstallableViewItemActions(extensionInstallable),
-        {
-          setupRedux(dispatch) {
-            dispatch(extensionActions.installCloudExtension({ extension }));
-            dispatch(
-              extensionActions.installCloudExtension({
-                extension: cloudExtensionFactory(),
-              })
-            );
-          },
-        }
-      );
+      } = renderHook(() => useBlueprintsPageActions(extensionInstallable), {
+        setupRedux(dispatch) {
+          dispatch(extensionActions.installCloudExtension({ extension }));
+          dispatch(
+            extensionActions.installCloudExtension({
+              extension: cloudExtensionFactory(),
+            })
+          );
+        },
+      });
 
       deactivate();
 

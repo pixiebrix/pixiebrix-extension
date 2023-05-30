@@ -20,9 +20,7 @@ import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
 import { type InstallableViewItem } from "@/installables/installableTypes";
-import useInstallableViewItemActions, {
-  useMarketplaceUrl,
-} from "@/installables/useInstallableViewItemActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,6 +31,7 @@ import { getContainedStarterBrickNames } from "@/utils/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import InstallableIcon from "@/installables/InstallableIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
 export const ActiveModListItem: React.FunctionComponent<{
@@ -40,7 +39,7 @@ export const ActiveModListItem: React.FunctionComponent<{
 }> = ({ installableItem }) => {
   const { name, installable } = installableItem;
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
-  const { requestPermissions } = useInstallableViewItemActions(installableItem);
+  const { requestPermissions } = useBlueprintsPageActions(installableItem);
 
   const { data: starterBricksContained } = useAsyncState(
     async () => getContainedStarterBrickNames(installableItem),
