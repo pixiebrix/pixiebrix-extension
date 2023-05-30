@@ -31,15 +31,15 @@ const DebounceFieldSet: React.FC<{
         description="Group trigger events to limit the number of runs and increase performance"
         name="debounce"
         value={!isEmpty(debounce)}
-        onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+        onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
           if (target.value) {
-            setFieldValue(fieldName("debounce"), {
+            await setFieldValue(fieldName("debounce"), {
               waitMillis: 250,
               leading: false,
               trailing: true,
             });
           } else {
-            setFieldValue(fieldName("debounce"), null);
+            await setFieldValue(fieldName("debounce"), null);
           }
         }}
         {...makeLockableFieldProps("Debounce", isLocked)}
