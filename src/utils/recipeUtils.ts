@@ -21,6 +21,10 @@ import slugify from "slugify";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import type {
+  ExtensionPointDefinition,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 
 /**
  * Return a valid recipe id, or empty string in case of error.
@@ -52,3 +56,25 @@ export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
       // The PixieBrix service gets automatically configured, so no need to include it
       .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
   );
+
+export const getContainedExtensionPointTypes = (
+  recipe: RecipeDefinition
+): ExtensionPointType[] => {
+  const extensionPointTypes = new Set<ExtensionPointType>();
+
+  for (const definition of Object.values(recipe.definitions)) {
+    if (definition.kind !== "extensionPoint") {
+      continue;
+    }
+
+    const extensionPointDefinition =
+      definition.definition as ExtensionPointDefinition;
+    const extensionPointType = extensionPointDefinition?.type;
+
+    if (extensionPointType) {
+      extensionPointTypes.add(extensionPointType);
+    }
+  }
+
+  return [...extensionPointTypes];
+};

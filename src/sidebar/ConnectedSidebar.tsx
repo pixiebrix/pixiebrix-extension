@@ -39,7 +39,7 @@ import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
-import { HOME_PANEL } from "@/sidebar/HomePanel";
+import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.

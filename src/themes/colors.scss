@@ -43,7 +43,12 @@ $P900: #260b5c;
 
 // Surface
 $S0: #ffffff;
-$S30: #f0eff2;
+$S1: #f0eff2;
+
+// Warning
+$W30: #ffc754;
+$W60: #e89c00;
+$W70: #b57900;
 
 /*
 * Misc Tokens
@@ -57,3 +62,4 @@ $neutral-surface-color-hover: #e9e6ed;
 $popover-header: #ddd;
 $field-section-header: #f8f9fa;
 $panel-divider: #d3d3d3;
+$mod-page-list-item-hover: #f6f5f7;
