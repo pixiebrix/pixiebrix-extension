@@ -29,10 +29,10 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
-import { type InstallableViewItem } from "./installableTypes";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 
-const InstallableActions: React.FunctionComponent<{
+const BlueprintsPageActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
   const actions = useBlueprintsPageActions(installableViewItem);
@@ -123,4 +123,4 @@ const InstallableActions: React.FunctionComponent<{
   return <EllipsisMenu items={actionItems} />;
 };
 
-export default InstallableActions;
+export default BlueprintsPageActions;

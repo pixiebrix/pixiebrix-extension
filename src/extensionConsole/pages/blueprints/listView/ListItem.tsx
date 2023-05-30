@@ -19,7 +19,7 @@ import styles from "./ListItem.module.scss";
 
 import React from "react";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
-import InstallableActions from "@/installables/InstallableActions";
+import BlueprintsPageActions from "@/extensionConsole/pages/blueprints/BlueprintsPageActions";
 
 import { type InstallableViewItem } from "@/installables/installableTypes";
 import Status from "@/extensionConsole/pages/blueprints/Status";
@@ -59,7 +59,7 @@ const ListItem: React.VoidFunctionComponent<{
         <Status installableViewItem={installableItem} />
       </div>
       <div className="flex-shrink-0">
-        <InstallableActions installableViewItem={installableItem} />
+        <BlueprintsPageActions installableViewItem={installableItem} />
       </div>
     </ListGroup.Item>
   );
