@@ -39,6 +39,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type RendererOutput } from "@/types/runtimeTypes";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { isEmpty } from "lodash";
+import DelayedRender from "@/components/DelayedRender";
 
 // Used for the loading message
 // import cx from "classnames";
@@ -219,7 +220,11 @@ const PanelBody: React.FunctionComponent<{
     //   );
     // }
 
-    return <Loader />;
+    return (
+      <DelayedRender millis={600}>
+        <Loader />
+      </DelayedRender>
+    );
   }
 
   if (state.error) {
