@@ -207,6 +207,40 @@ function useViewLogsAction(
   return status === "Inactive" ? null : viewLogs;
 }
 
+function useActivateAction(
+  installableViewItem: InstallableViewItem
+): ActionCallback | null {
+  const dispatch = useDispatch();
+  const { installable, status } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(installable);
+
+  const activate = () => {
+    if (isInstallableBlueprint) {
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: installable.metadata.id,
+        screen: "extensionConsole",
+        reinstall: false,
+      });
+
+      dispatch(
+        push(
+          `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
+        )
+      );
+    } else {
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: null,
+        screen: "extensionConsole",
+        reinstall: false,
+      });
+
+      dispatch(push(`/extensions/install/${installable.id}`));
+    }
+  };
+
+  return status === "Inactive" ? activate : null;
+}
+
 // eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
@@ -223,6 +257,7 @@ function useInstallableViewItemActions(
   const viewShare = useShareAction(installableViewItem);
   const reactivate = useReactivateAction(installableViewItem);
   const viewLogs = useViewLogsAction(installableViewItem);
+  const activate = useActivateAction(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -256,30 +291,6 @@ function useInstallableViewItemActions(
   const { hasPermissions, requestPermissions } = useInstallablePermissions(
     extensionsFromInstallable
   );
-
-  const activate = () => {
-    if (isInstallableBlueprint) {
-      reportEvent("StartInstallBlueprint", {
-        blueprintId: installable.metadata.id,
-        screen: "extensionConsole",
-        reinstall: false,
-      });
-
-      dispatch(
-        push(
-          `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
-        )
-      );
-    } else {
-      reportEvent("StartInstallBlueprint", {
-        blueprintId: null,
-        screen: "extensionConsole",
-        reinstall: false,
-      });
-
-      dispatch(push(`/extensions/install/${installable.id}`));
-    }
-  };
 
   const deleteExtension = useUserAction(
     async () => {
@@ -348,7 +359,7 @@ function useInstallableViewItemActions(
     deactivate: isActive && !isRestricted ? deactivate : null,
     reactivate,
     viewLogs,
-    activate: status === "Inactive" ? activate : null,
+    activate,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };
 }
