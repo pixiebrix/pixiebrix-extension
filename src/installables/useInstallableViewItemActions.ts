@@ -137,20 +137,66 @@ function useShareAction(
   return isDeployment || unavailable ? null : viewShare;
 }
 
+const useReactivateAction = (installableViewItem: InstallableViewItem) => {
+  const dispatch = useDispatch();
+  const { restrict } = useFlags();
+  const { installable, unavailable, status, sharing } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(installable);
+  const hasBlueprint =
+    isExtensionFromRecipe(installable) || isInstallableBlueprint;
+  const isActive = status === "Active" || status === "Paused";
+  const isDeployment = sharing.source.type === "Deployment";
+  const isRestricted = isDeployment && restrict("uninstall");
+
+  const reactivate = () => {
+    if (hasBlueprint) {
+      const blueprintId = isInstallableBlueprint
+        ? installable.metadata.id
+        : installable._recipe.id;
+
+      reportEvent("StartInstallBlueprint", {
+        blueprintId,
+        screen: "extensionConsole",
+        reinstall: true,
+      });
+
+      const reactivatePath = `marketplace/activate/${encodeURIComponent(
+        blueprintId
+      )}?reinstall=1`;
+
+      dispatch(push(reactivatePath));
+    } else {
+      // This should never happen, because the hook will return `reactivate: null` for installables with no
+      // associated blueprint
+      notify.error({
+        error: new Error("Cannot reactivate item with no associated mod"),
+      });
+    }
+  };
+
+  // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
+  // no activation-time integrations/options associated with them.)
+  return hasBlueprint && isActive && !isRestricted && !unavailable
+    ? reactivate
+    : null;
+};
+
 // eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
   const inSidebarContext = location.pathname === "/sidebar.html";
-  const { installable, status, sharing, unavailable } = installableViewItem;
+  const { installable, status, sharing } = installableViewItem;
 
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const { restrict } = useFlags();
+
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
   const viewPublish = usePublishAction(installableViewItem);
   const viewShare = useShareAction(installableViewItem);
+  const reactivate = useReactivateAction(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -163,9 +209,6 @@ function useInstallableViewItemActions(
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally
     !isActive;
-
-  const hasBlueprint =
-    isExtensionFromRecipe(installable) || isInstallableBlueprint;
 
   const isDeployment = sharing.source.type === "Deployment";
 
@@ -187,37 +230,6 @@ function useInstallableViewItemActions(
   const { hasPermissions, requestPermissions } = useInstallablePermissions(
     extensionsFromInstallable
   );
-
-  const reactivate = () => {
-    if (hasBlueprint) {
-      const blueprintId = isInstallableBlueprint
-        ? installable.metadata.id
-        : installable._recipe.id;
-
-      reportEvent("StartInstallBlueprint", {
-        blueprintId,
-        screen: "extensionConsole",
-        reinstall: true,
-      });
-
-      const reactivatePath = `marketplace/activate/${encodeURIComponent(
-        blueprintId
-      )}?reinstall=1`;
-
-      if (inSidebarContext) {
-        window.open(`/options.html#/${reactivatePath}`, "_blank");
-        return;
-      }
-
-      dispatch(push(reactivatePath));
-    } else {
-      // This should never happen, because the hook will return `reactivate: null` for installables with no
-      // associated blueprint
-      notify.error({
-        error: new Error("Cannot reactivate item with no associated mod"),
-      });
-    }
-  };
 
   const activate = () => {
     if (isInstallableBlueprint) {
@@ -324,12 +336,7 @@ function useInstallableViewItemActions(
     viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     deactivate: isActive && !isRestricted ? deactivate : null,
-    // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
-    // no activation-time integrations/options associated with them.)
-    reactivate:
-      hasBlueprint && isActive && !isRestricted && !unavailable
-        ? reactivate
-        : null,
+    reactivate,
     viewLogs: showViewLogsAction ? viewLogs : null,
     activate: status === "Inactive" ? activate : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
