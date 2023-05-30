@@ -94,15 +94,10 @@ function useViewPublishAction(
 export function useMarketplaceUrl(
   installableViewItem: InstallableViewItem
 ): string | null {
-  const { sharing, unavailable, installable } = installableViewItem;
-  const isDeployment = sharing.source.type === "Deployment";
-
+  const { sharing } = installableViewItem;
   const isPublished = sharing.listingId;
 
-  return isDeployment || !isPublished || unavailable
-    ? null
-    : // If showPublishAction is false, then the listing for the recipe is defined
-      `${MARKETPLACE_URL}${sharing.listingId}/`;
+  return isPublished ? `${MARKETPLACE_URL}${sharing.listingId}/` : null;
 }
 
 function useViewShareAction(
