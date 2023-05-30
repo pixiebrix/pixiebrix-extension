@@ -58,6 +58,39 @@ export type InstallableViewItemActions = {
   requestPermissions: ActionCallback | null;
 };
 
+function usePublishAction(
+  installableViewItem: InstallableViewItem
+): ActionCallback | null {
+  const { installable, unavailable, sharing } = installableViewItem;
+  const isDeployment = sharing.source.type === "Deployment";
+
+  const dispatch = useDispatch();
+  const isInstallableExtension = isExtension(installable);
+  const isInstallableBlueprint = !isInstallableExtension;
+  const viewPublish = () => {
+    const publishContext: PublishContext = isInstallableBlueprint
+      ? {
+          blueprintId: getPackageId(installable),
+        }
+      : {
+          extensionId: installable.id,
+        };
+
+    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
+  };
+
+  const showPublishAction =
+    !unavailable &&
+    // Deployment sharing is controlled via the Admin Console
+    !isDeployment &&
+    // Extensions can be published
+    (isInstallableExtension ||
+      // In case of blueprint, skip if it is already published
+      sharing.listingId == null);
+
+  return showPublishAction ? viewPublish : null;
+}
+
 function useMarketplaceUrl(
   installableViewItem: InstallableViewItem
 ): string | null {
@@ -93,6 +126,7 @@ function useInstallableViewItemActions(
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const { restrict } = useFlags();
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
+  const viewPublish = usePublishAction(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -185,27 +219,6 @@ function useInstallableViewItemActions(
     }
   };
 
-  const viewPublish = () => {
-    const publishContext: PublishContext = isInstallableBlueprint
-      ? {
-          blueprintId: getPackageId(installable),
-        }
-      : {
-          extensionId: installable.id,
-        };
-
-    if (inSidebarContext) {
-      const publishParams = new URLSearchParams({
-        publish: "1",
-        ...(publishContext as ShareContext),
-      });
-      window.open(`/options.html#/?${publishParams.toString()}`, "_blank");
-      return;
-    }
-
-    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
-  };
-
   const viewShare = () => {
     const shareContext: ShareContext = isInstallableBlueprint
       ? {
@@ -290,19 +303,10 @@ function useInstallableViewItemActions(
     );
   };
 
-  const showPublishAction =
-    !unavailable &&
-    // Deployment sharing is controlled via the Admin Console
-    !isDeployment &&
-    // Extensions can be published
-    (isInstallableExtension ||
-      // In case of blueprint, skip if it is already published
-      sharing.listingId == null);
-
   const showViewLogsAction = !(status === "Inactive") && !inSidebarContext;
 
   return {
-    viewPublish: showPublishAction ? viewPublish : null,
+    viewPublish,
     viewInMarketplaceHref: marketplaceListingUrl,
     // Deployment sharing is controlled via the Admin Console
     viewShare:
