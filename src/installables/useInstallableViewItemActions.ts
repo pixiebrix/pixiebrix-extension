@@ -91,24 +91,15 @@ function useViewPublishAction(
   return showPublishAction ? viewPublish : null;
 }
 
-function useMarketplaceUrl(
+export function useMarketplaceUrl(
   installableViewItem: InstallableViewItem
 ): string | null {
   const { sharing, unavailable, installable } = installableViewItem;
-  const isInstallableExtension = isExtension(installable);
   const isDeployment = sharing.source.type === "Deployment";
 
-  // TODO: refactor me
-  const showPublishAction =
-    !unavailable &&
-    // Deployment sharing is controlled via the Admin Console
-    !isDeployment &&
-    // Extensions can be published
-    (isInstallableExtension ||
-      // In case of blueprint, skip if it is already published
-      sharing.listingId == null);
+  const isPublished = sharing.listingId;
 
-  return isDeployment || showPublishAction || unavailable
+  return isDeployment || !isPublished || unavailable
     ? null
     : // If showPublishAction is false, then the listing for the recipe is defined
       `${MARKETPLACE_URL}${sharing.listingId}/`;
