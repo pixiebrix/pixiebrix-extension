@@ -25,6 +25,7 @@ import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
+import { isEmpty } from "lodash";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -55,7 +56,7 @@ export const ActiveModsList: React.FunctionComponent<{
     data: activeMods,
   });
 
-  const renderBody = activeMods ? (
+  const renderBody = isEmpty(activeMods) ? (
     <div>empty state</div>
   ) : (
     <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
