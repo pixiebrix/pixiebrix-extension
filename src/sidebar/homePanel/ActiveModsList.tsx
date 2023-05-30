@@ -46,7 +46,7 @@ const NoActiveModsView: React.FunctionComponent = () => {
   return (
     <div className={styles.emptyViewRoot}>
       <p>You don&apos;t have any mods activated</p>
-      <h3>But we have a solution for that</h3>
+      <h4>But we have a solution for that</h4>
       <img
         src={workshopIllustration}
         className={styles.illustration}
