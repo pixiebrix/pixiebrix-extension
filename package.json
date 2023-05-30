@@ -260,7 +260,7 @@
     "style-loader": "^3.3.3",
     "svg-inline-loader": "^0.8.2",
     "terser-webpack-plugin": "^5.3.9",
-    "ts-loader": "^9.4.1",
+    "ts-loader": "^9.4.3",
     "type-fest": "^3.11.0",
     "typescript": "^5.0.2",
     "typescript-plugin-css-modules": "^5.0.1",
