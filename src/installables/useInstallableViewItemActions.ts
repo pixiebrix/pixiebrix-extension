@@ -114,6 +114,29 @@ function useMarketplaceUrl(
       `${MARKETPLACE_URL}${sharing.listingId}/`;
 }
 
+function useShareAction(
+  installableViewItem: InstallableViewItem
+): ActionCallback | null {
+  const { installable, unavailable, sharing } = installableViewItem;
+  const dispatch = useDispatch();
+  const isInstallableBlueprint = !isExtension(installable);
+  const isDeployment = sharing.source.type === "Deployment";
+
+  const viewShare = () => {
+    const shareContext: ShareContext = isInstallableBlueprint
+      ? {
+          blueprintId: getPackageId(installable),
+        }
+      : {
+          extensionId: installable.id,
+        };
+
+    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
+  };
+
+  return isDeployment || unavailable ? null : viewShare;
+}
+
 // eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
@@ -127,6 +150,7 @@ function useInstallableViewItemActions(
   const { restrict } = useFlags();
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
   const viewPublish = usePublishAction(installableViewItem);
+  const viewShare = useShareAction(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -219,18 +243,6 @@ function useInstallableViewItemActions(
     }
   };
 
-  const viewShare = () => {
-    const shareContext: ShareContext = isInstallableBlueprint
-      ? {
-          blueprintId: getPackageId(installable),
-        }
-      : {
-          extensionId: installable.id,
-        };
-
-    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
-  };
-
   const deleteExtension = useUserAction(
     async () => {
       if (isInstallableBlueprint) {
@@ -309,8 +321,7 @@ function useInstallableViewItemActions(
     viewPublish,
     viewInMarketplaceHref: marketplaceListingUrl,
     // Deployment sharing is controlled via the Admin Console
-    viewShare:
-      isDeployment || unavailable || inSidebarContext ? null : viewShare,
+    viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
     deactivate: isActive && !isRestricted ? deactivate : null,
     // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
