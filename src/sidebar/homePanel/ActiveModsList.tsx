@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "@/sidebar/homePanel/HomePanel.module.scss";
+import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
 
 import React from "react";
 import {
@@ -41,7 +41,12 @@ const columns: Array<Column<InstallableViewItem>> = [
 ];
 
 const NoActiveModsView: React.FunctionComponent = () => {
-  return <div>No active mods</div>;
+  return (
+    <>
+      <p>You don&apos;t have any mods activated</p>
+      <h3>But we have a solution for that</h3>
+    </>
+  );
 };
 
 export const ActiveModsList: React.FunctionComponent<{
