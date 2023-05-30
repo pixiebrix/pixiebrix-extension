@@ -17,7 +17,6 @@
 
 import {
   getLabel,
-  getPackageId,
   isExtension,
   isExtensionFromRecipe,
   selectExtensionsFromInstallable,
@@ -25,25 +24,21 @@ import {
 import { type InstallableViewItem } from "../../../../installables/installableTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
-import {
-  blueprintModalsSlice,
-  type ShareContext,
-} from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
+import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
-import { useDeleteCloudExtensionMutation } from "@/services/api";
 import useUserAction from "@/hooks/useUserAction";
-import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import notify from "@/utils/notify";
-import { CancelError } from "@/errors/businessErrors";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { useCallback } from "react";
 import useActivateAction from "@/extensionConsole/pages/blueprints/actions/useActivateAction";
 import useViewPublishAction from "@/extensionConsole/pages/blueprints/actions/useViewPublishAction";
 import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
+import useViewShareAction from "@/extensionConsole/pages/blueprints/actions/useViewShareAction";
+import useDeleteExtensionAction from "@/installables/hooks/useDeleteExtensionAction";
 
 export type ActionCallback = () => void;
 
@@ -58,30 +53,6 @@ export type InstallableViewItemActions = {
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
 };
-
-function useViewShareAction(
-  installableViewItem: InstallableViewItem
-): ActionCallback | null {
-  const { installable, unavailable, sharing } = installableViewItem;
-  const dispatch = useDispatch();
-  const isInstallableBlueprint = !isExtension(installable);
-  const isDeployment = sharing.source.type === "Deployment";
-
-  const viewShare = () => {
-    const shareContext: ShareContext = isInstallableBlueprint
-      ? {
-          blueprintId: getPackageId(installable),
-        }
-      : {
-          extensionId: installable.id,
-        };
-
-    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
-  };
-
-  // Deployment sharing is controlled via the Admin Console
-  return isDeployment || unavailable ? null : viewShare;
-}
 
 const useReactivateAction = (
   installableViewItem: InstallableViewItem
@@ -208,55 +179,6 @@ function useDeactivateAction(
   );
 
   return isActive && !isRestricted ? deactivate : null;
-}
-
-function useDeleteExtensionAction(
-  installableViewItem: InstallableViewItem
-): ActionCallback | null {
-  const { installable, sharing, status } = installableViewItem;
-  const modals = useModals();
-  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const isInstallableExtension = isExtension(installable);
-  const isInstallableBlueprint = !isExtension(installable);
-  const isActive = status === "Active" || status === "Paused";
-
-  const isCloudExtension =
-    isInstallableExtension &&
-    sharing.source.type === "Personal" &&
-    // If the status is active, there is still likely a copy of the extension saved on our server. But the point
-    // this check is for extensions that aren't also installed locally
-    !isActive;
-
-  const deleteExtension = useUserAction(
-    async () => {
-      if (isInstallableBlueprint) {
-        return;
-      }
-
-      const confirmed = await modals.showConfirmation({
-        title: "Permanently Delete?",
-        message: "Permanently delete the brick from your account?",
-        submitCaption: "Delete",
-        cancelCaption: "Back to Safety",
-      });
-
-      if (!confirmed) {
-        throw new CancelError();
-      }
-
-      await deleteCloudExtension({ extensionId: installable.id }).unwrap();
-    },
-    {
-      successMessage: `Deleted mod ${getLabel(installable)} from your account`,
-      errorMessage: `Error deleting mod ${getLabel(
-        installable
-      )} from your account`,
-      event: "ExtensionCloudDelete",
-    },
-    [modals]
-  );
-
-  return isCloudExtension ? deleteExtension : null;
 }
 
 function useRequestPermissionsAction(
