@@ -252,7 +252,9 @@ describe("SheetsFileWidget", () => {
 
   it("displays rejected permissions message", async () => {
     useGoogleSpreadsheetPickerMock.mockReturnValue({
+      showPicker: jest.fn(),
       hasRejectedPermissions: true,
+      ensureSheetsTokenAction: jest.fn(),
     });
 
     render(
