@@ -18,20 +18,16 @@
 import {
   getLabel,
   isExtension,
-  isExtensionFromRecipe,
   selectExtensionsFromInstallable,
 } from "@/utils/installableUtils";
-import { type InstallableViewItem } from "../../../../installables/installableTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { push } from "connected-react-router";
 import useUserAction from "@/hooks/useUserAction";
 import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
-import notify from "@/utils/notify";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { useCallback } from "react";
 import useActivateAction from "@/extensionConsole/pages/blueprints/actions/useActivateAction";
@@ -39,6 +35,8 @@ import useViewPublishAction from "@/extensionConsole/pages/blueprints/actions/us
 import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/blueprints/actions/useViewShareAction";
 import useDeleteExtensionAction from "@/installables/hooks/useDeleteExtensionAction";
+import useReactivateAction from "@/extensionConsole/pages/blueprints/actions/useReactivateAction";
+import { InstallableViewItem } from "@/installables/installableTypes";
 
 export type ActionCallback = () => void;
 
@@ -52,52 +50,6 @@ export type InstallableViewItemActions = {
   deactivate: ActionCallback | null;
   viewLogs: ActionCallback | null;
   requestPermissions: ActionCallback | null;
-};
-
-const useReactivateAction = (
-  installableViewItem: InstallableViewItem
-): ActionCallback | null => {
-  const dispatch = useDispatch();
-  const { restrict } = useFlags();
-  const { installable, unavailable, status, sharing } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
-  const hasBlueprint =
-    isExtensionFromRecipe(installable) || isInstallableBlueprint;
-  const isActive = status === "Active" || status === "Paused";
-  const isDeployment = sharing.source.type === "Deployment";
-  const isRestricted = isDeployment && restrict("uninstall");
-
-  const reactivate = () => {
-    if (hasBlueprint) {
-      const blueprintId = isInstallableBlueprint
-        ? installable.metadata.id
-        : installable._recipe.id;
-
-      reportEvent("StartInstallBlueprint", {
-        blueprintId,
-        screen: "extensionConsole",
-        reinstall: true,
-      });
-
-      const reactivatePath = `marketplace/activate/${encodeURIComponent(
-        blueprintId
-      )}?reinstall=1`;
-
-      dispatch(push(reactivatePath));
-    } else {
-      // This should never happen, because the hook will return `reactivate: null` for installables with no
-      // associated blueprint
-      notify.error({
-        error: new Error("Cannot reactivate item with no associated mod"),
-      });
-    }
-  };
-
-  // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
-  // no activation-time integrations/options associated with them.)
-  return hasBlueprint && isActive && !isRestricted && !unavailable
-    ? reactivate
-    : null;
 };
 
 function useViewLogsAction(
