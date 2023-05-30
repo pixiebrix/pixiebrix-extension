@@ -42,25 +42,23 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
-const NoActiveModsView: React.FunctionComponent = () => {
-  return (
-    <div className={styles.emptyViewRoot}>
-      <p>You don&apos;t have any mods activated</p>
-      <h4>But we have a solution for that</h4>
-      <img
-        src={workshopIllustration}
-        className={styles.illustration}
-        alt="Workshop"
-      />
-      <p>
-        There are hundreds of mods to use on the{" "}
-        <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
-          PixieBrix Marketplace
-        </a>
-      </p>
-    </div>
-  );
-};
+const NoActiveModsView: React.FunctionComponent = () => (
+  <div className={styles.emptyViewRoot}>
+    <p>You don&apos;t have any mods activated</p>
+    <h4>But we have a solution for that</h4>
+    <img
+      src={workshopIllustration}
+      className={styles.illustration}
+      alt="Workshop"
+    />
+    <p>
+      There are hundreds of mods to use on the{" "}
+      <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
+        PixieBrix Marketplace
+      </a>
+    </p>
+  </div>
+);
 
 export const ActiveModsList: React.FunctionComponent<{
   installables: Installable[];
