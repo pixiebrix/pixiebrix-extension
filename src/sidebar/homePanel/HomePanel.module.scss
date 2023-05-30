@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  text-align: center;
-  padding: 10px;
-  width: 100%;
-  flex: none;
-}
-
-.success {
-  background-color: #bfd7bf;
-}
-
-.info {
-  background-color: #8bcaff;
-}
-
-.warning {
-  background-color: #ffd9b1;
-}
-
-.danger {
-  background-color: #b4183f;
+.activeModsHeading {
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 500;
 }

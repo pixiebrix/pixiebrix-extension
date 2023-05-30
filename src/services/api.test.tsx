@@ -19,6 +19,7 @@ import { type AxiosError } from "axios";
 import { configureStore } from "@reduxjs/toolkit";
 import {
   appApi,
+  useGetMarketplaceListingsQuery,
   useGetPackageQuery,
   useUpdatePackageMutation,
 } from "@/services/api";
@@ -31,6 +32,7 @@ import { act } from "react-dom/test-utils";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { isPlainObject } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { type RegistryId } from "@/types/registryTypes";
 
 function testStore() {
   return configureStore({
@@ -101,5 +103,27 @@ describe("appBaseQuery", () => {
     expect(axiosError.response.status).toBe(404);
     // The type definition is incorrect: https://github.com/axios/axios/pull/5331
     expect(axiosError.status).toBeUndefined();
+  });
+
+  test("RTK forwards params to axios", async () => {
+    appApiMock.onGet("/test", { params: { package__name: "bar" } }).reply(200);
+
+    const store = testStore();
+
+    renderHook(
+      () =>
+        useGetMarketplaceListingsQuery({ package__name: "bar" as RegistryId }),
+      {
+        wrapper: ({ children }) => (
+          <Provider store={store}>{children}</Provider>
+        ),
+      }
+    );
+
+    await waitForEffect();
+
+    expect(appApiMock.history.get[0].params).toStrictEqual({
+      package__name: "bar",
+    });
   });
 });
