@@ -20,10 +20,11 @@ import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Installable,
+  type InstallableViewItem,
   type SharingSource,
   type SharingType,
   type UnavailableRecipe,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+} from "@/installables/installableTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
@@ -33,6 +34,9 @@ import {
 } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type ExtensionPointType } from "@/extensionPoints/types";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
 
 /**
  * Returns true if installable is an UnavailableRecipe
@@ -331,3 +335,54 @@ export const selectExtensionsFromInstallable = createSelector(
         )
       : installedExtensions.filter((x) => x.id === installable.id)
 );
+
+export const StarterBrickMap: Record<ExtensionPointType, string> = {
+  panel: "Sidebar Panel",
+  menuItem: "Button",
+  trigger: "Trigger",
+  contextMenu: "Context Menu",
+  actionPanel: "Sidebar",
+  quickBar: "Quick Bar Action",
+  quickBarProvider: "Dynamic Quick Bar",
+  tour: "Tour",
+};
+
+const getExtensionPointType = async (
+  extension: ResolvedExtension
+): Promise<ExtensionPointType> => {
+  const extensionPoint = await extensionPointRegistry.lookup(
+    extension.extensionPointId
+  );
+
+  return extensionPoint.kind as ExtensionPointType;
+};
+
+const getExtensionPointTypesContained = async (
+  installableItem: InstallableViewItem
+): Promise<ExtensionPointType[]> => {
+  if (isUnavailableRecipe(installableItem.installable)) {
+    return [];
+  }
+
+  return isBlueprint(installableItem.installable)
+    ? getContainedExtensionPointTypes(installableItem.installable)
+    : [await getExtensionPointType(installableItem.installable)];
+};
+
+export const getContainedStarterBrickNames = async (
+  installableItem: InstallableViewItem
+): Promise<string[]> => {
+  const extensionPointTypes = await getExtensionPointTypesContained(
+    installableItem
+  );
+  const starterBricksContained = [];
+  for (const extensionPointType of extensionPointTypes) {
+    // eslint-disable-next-line security/detect-object-injection -- extensionPointType is type ExtensionPointType
+    const starterBrick = StarterBrickMap[extensionPointType];
+    if (starterBrick) {
+      starterBricksContained.push(starterBrick);
+    }
+  }
+
+  return starterBricksContained;
+};
