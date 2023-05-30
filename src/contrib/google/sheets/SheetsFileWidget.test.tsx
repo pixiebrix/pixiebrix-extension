@@ -125,7 +125,6 @@ describe("SheetsFileWidget", () => {
       await userEvent.click(wrapper.getByText("Select"));
     });
 
-    // FIXME: the component is not updating to show the sheet
     expect(wrapper.asFragment()).toMatchSnapshot();
   });
 

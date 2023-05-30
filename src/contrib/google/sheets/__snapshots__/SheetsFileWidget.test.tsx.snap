@@ -114,7 +114,7 @@ exports[`SheetsFileWidget selects from file picker 1`] = `
         id="spreadsheetId"
         name="spreadsheetId"
         type="text"
-        value=""
+        value="abc123"
       />
       <div
         class="input-group-append"
