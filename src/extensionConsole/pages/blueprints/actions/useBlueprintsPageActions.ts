@@ -25,7 +25,6 @@ import { reportEvent } from "@/telemetry/events";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import useUserAction from "@/hooks/useUserAction";
-import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useFlags from "@/hooks/useFlags";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -36,7 +35,8 @@ import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/blueprints/actions/useViewShareAction";
 import useDeleteExtensionAction from "@/installables/hooks/useDeleteExtensionAction";
 import useReactivateAction from "@/extensionConsole/pages/blueprints/actions/useReactivateAction";
-import { InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
+import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
 
 export type ActionCallback = () => void;
 
@@ -131,28 +131,6 @@ function useDeactivateAction(
   );
 
   return isActive && !isRestricted ? deactivate : null;
-}
-
-function useRequestPermissionsAction(
-  installableViewItem: InstallableViewItem
-): ActionCallback | null {
-  const { installable } = installableViewItem;
-
-  // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
-  // to recompute, spamming the background worker with service locator requests
-  const memoizedExtensionsSelector = useCallback(
-    (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, installable),
-    [installable]
-  );
-
-  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
-
-  const { hasPermissions, requestPermissions } = useInstallablePermissions(
-    extensionsFromInstallable
-  );
-
-  return hasPermissions ? null : requestPermissions;
 }
 
 function useBlueprintsPageActions(
