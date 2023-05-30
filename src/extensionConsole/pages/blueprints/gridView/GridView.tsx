@@ -18,17 +18,15 @@
 import styles from "./GridView.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  type BlueprintsPageContentProps,
-  type InstallableViewItem,
-} from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { type Row } from "react-table";
 import ListGroupHeader from "@/extensionConsole/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
-import { getUniqueId } from "@/extensionConsole/pages/blueprints/utils/installableUtils";
+import { getUniqueId } from "@/utils/installableUtils";
 import GridCardErrorBoundary from "@/extensionConsole/pages/blueprints/gridView/GridCardErrorBoundary";
+import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 
 /**
  *  Expands `react-table` rows recursively in chunks of

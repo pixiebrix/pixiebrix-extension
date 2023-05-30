@@ -18,13 +18,13 @@
 import React, { Component } from "react";
 import { Card } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type InstallableViewItem } from "@/extensionConsole/pages/blueprints/blueprintsTypes";
+import { type InstallableViewItem } from "@/installables/installableTypes";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { DEFAULT_TEXT_ICON_COLOR } from "@/extensionConsole/pages/blueprints/InstallableIcon";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/installables/InstallableIcon";
 
 type Props = {
   /**

@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { type Installable, type UnavailableRecipe } from "./blueprintsTypes";
+import { type Installable, type UnavailableRecipe } from "./installableTypes";
 import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
