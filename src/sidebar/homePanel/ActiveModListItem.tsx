@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
+// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
 import { type InstallableViewItem } from "@/installables/installableTypes";
-import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,14 +31,15 @@ import useAsyncState from "@/hooks/useAsyncState";
 import InstallableIcon from "@/installables/InstallableIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
+import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
+// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 export const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
   const { name, installable } = installableItem;
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
-  const { requestPermissions } = useBlueprintsPageActions(installableItem);
+  const requestPermissions = useRequestPermissionsAction(installableItem);
 
   const { data: starterBricksContained } = useAsyncState(
     async () => getContainedStarterBrickNames(installableItem),
@@ -72,23 +72,21 @@ export const ActiveModListItem: React.FunctionComponent<{
           )}
         </div>
       </div>
-      {marketplaceListingUrl && (
-        <div className="flex-shrink-1">
-          <EllipsisMenu
-            items={[
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod
-                    Details
-                  </>
-                ),
-                href: marketplaceListingUrl,
-              },
-            ]}
-          />
-        </div>
-      )}
+      <div className="flex-shrink-1">
+        <EllipsisMenu
+          items={[
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod Details
+                </>
+              ),
+              href: marketplaceListingUrl,
+              disabled: !marketplaceListingUrl,
+            },
+          ]}
+        />
+      </div>
     </ListGroup.Item>
   );
 };
