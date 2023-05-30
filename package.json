@@ -33,7 +33,7 @@
     "@cfworker/json-schema": "^1.8.1",
     "@datadog/browser-rum": "^4.42.2",
     "@emotion/react": "^11.11.0",
-    "@floating-ui/dom": "^1.2.8",
+    "@floating-ui/dom": "^1.2.9",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
