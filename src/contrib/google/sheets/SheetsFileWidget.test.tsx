@@ -92,10 +92,10 @@ describe("SheetsFileWidget", () => {
     await waitForEffect();
 
     expect(
-      wrapper.findAllByText(
+      wrapper.getByText(
         "The Google API is not initialized. Please click the button to initialize it."
       )
-    ).not.toBeNull();
+    ).toBeVisible();
 
     expect(wrapper.asFragment()).toMatchSnapshot();
   });
