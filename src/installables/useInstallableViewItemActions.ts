@@ -137,7 +137,9 @@ function useShareAction(
   return isDeployment || unavailable ? null : viewShare;
 }
 
-const useReactivateAction = (installableViewItem: InstallableViewItem) => {
+const useReactivateAction = (
+  installableViewItem: InstallableViewItem
+): ActionCallback | null => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
   const { installable, unavailable, status, sharing } = installableViewItem;
@@ -181,11 +183,34 @@ const useReactivateAction = (installableViewItem: InstallableViewItem) => {
     : null;
 };
 
+function useViewLogsAction(
+  installableViewItem: InstallableViewItem
+): ActionCallback | null {
+  const dispatch = useDispatch();
+  const { installable, status } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(installable);
+
+  const viewLogs = () => {
+    dispatch(
+      blueprintModalsSlice.actions.setLogsContext({
+        title: getLabel(installable),
+        messageContext: isInstallableBlueprint
+          ? {
+              label: getLabel(installable),
+              blueprintId: installable.metadata.id,
+            }
+          : selectExtensionContext(installable),
+      })
+    );
+  };
+
+  return status === "Inactive" ? null : viewLogs;
+}
+
 // eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
-  const inSidebarContext = location.pathname === "/sidebar.html";
   const { installable, status, sharing } = installableViewItem;
 
   const dispatch = useDispatch();
@@ -197,6 +222,7 @@ function useInstallableViewItemActions(
   const viewPublish = usePublishAction(installableViewItem);
   const viewShare = useShareAction(installableViewItem);
   const reactivate = useReactivateAction(installableViewItem);
+  const viewLogs = useViewLogsAction(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -313,22 +339,6 @@ function useInstallableViewItemActions(
     [installable, extensionsFromInstallable]
   );
 
-  const viewLogs = () => {
-    dispatch(
-      blueprintModalsSlice.actions.setLogsContext({
-        title: getLabel(installable),
-        messageContext: isInstallableBlueprint
-          ? {
-              label: getLabel(installable),
-              blueprintId: installable.metadata.id,
-            }
-          : selectExtensionContext(installable),
-      })
-    );
-  };
-
-  const showViewLogsAction = !(status === "Inactive") && !inSidebarContext;
-
   return {
     viewPublish,
     viewInMarketplaceHref: marketplaceListingUrl,
@@ -337,7 +347,7 @@ function useInstallableViewItemActions(
     deleteExtension: isCloudExtension ? deleteExtension : null,
     deactivate: isActive && !isRestricted ? deactivate : null,
     reactivate,
-    viewLogs: showViewLogsAction ? viewLogs : null,
+    viewLogs,
     activate: status === "Inactive" ? activate : null,
     requestPermissions: hasPermissions ? null : requestPermissions,
   };

@@ -228,13 +228,6 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(deploymentItem));
     expectActions(["reactivate", "deactivate", "viewLogs"], actions);
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-
-    expectActions(["deactivate", "reactivate"], sidebarActions);
   });
 
   test("restricted team deployment", () => {
@@ -288,13 +281,6 @@ describe("useInstallableViewItemActions", () => {
       result: { current: actions },
     } = renderHook(() => useInstallableViewItemActions(blueprintItem));
     expectActions(["deactivate", "viewLogs"], actions);
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-
-    expectActions(["deactivate"], sidebarActions);
   });
 
   test("paused deployment with unrestricted user", () => {
