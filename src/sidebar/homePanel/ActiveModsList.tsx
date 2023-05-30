@@ -40,6 +40,10 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
+const NoActiveModsView: React.FunctionComponent = () => {
+  return <div>No active mods</div>;
+};
+
 export const ActiveModsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
@@ -58,7 +62,7 @@ export const ActiveModsList: React.FunctionComponent<{
   });
 
   const renderBody = isEmpty(activeMods) ? (
-    <div>empty state</div>
+    <NoActiveModsView />
   ) : (
     <>
       <h3 className={styles.activeModsHeading}>Active mods</h3>
