@@ -58,7 +58,7 @@ export type InstallableViewItemActions = {
   requestPermissions: ActionCallback | null;
 };
 
-function usePublishAction(
+function useViewPublishAction(
   installableViewItem: InstallableViewItem
 ): ActionCallback | null {
   const { installable, unavailable, sharing } = installableViewItem;
@@ -114,7 +114,7 @@ function useMarketplaceUrl(
       `${MARKETPLACE_URL}${sharing.listingId}/`;
 }
 
-function useShareAction(
+function useViewShareAction(
   installableViewItem: InstallableViewItem
 ): ActionCallback | null {
   const { installable, unavailable, sharing } = installableViewItem;
@@ -374,8 +374,8 @@ function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
-  const viewPublish = usePublishAction(installableViewItem);
-  const viewShare = useShareAction(installableViewItem);
+  const viewPublish = useViewPublishAction(installableViewItem);
+  const viewShare = useViewShareAction(installableViewItem);
   const reactivate = useReactivateAction(installableViewItem);
   const viewLogs = useViewLogsAction(installableViewItem);
   const activate = useActivateAction(installableViewItem);
