@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "@/sidebar/homePanel/HomePanel.module.scss";
 
 import React from "react";
 import {
   type Installable,
   type InstallableViewItem,
 } from "@/installables/installableTypes";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Row } from "react-bootstrap";
 import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
@@ -59,17 +60,22 @@ export const ActiveModsList: React.FunctionComponent<{
   const renderBody = isEmpty(activeMods) ? (
     <div>empty state</div>
   ) : (
-    <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
-      {tableInstance.rows.map((row) => {
-        tableInstance.prepareRow(row);
-        return (
-          <ActiveModListItem
-            key={row.original.sharing.packageId}
-            installableItem={row.original}
-          />
-        );
-      })}
-    </ListGroup>
+    <>
+      <h3 className={styles.activeModsHeading}>Active mods</h3>
+      <Row>
+        <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
+          {tableInstance.rows.map((row) => {
+            tableInstance.prepareRow(row);
+            return (
+              <ActiveModListItem
+                key={row.original.sharing.packageId}
+                installableItem={row.original}
+              />
+            );
+          })}
+        </ListGroup>
+      </Row>
+    </>
   );
 
   return <>{isLoading ? <Loader /> : renderBody}</>;
