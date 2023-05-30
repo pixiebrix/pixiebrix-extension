@@ -28,6 +28,7 @@ import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
 import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -47,6 +48,12 @@ const NoActiveModsView: React.FunctionComponent = () => {
       <p>You don&apos;t have any mods activated</p>
       <h3>But we have a solution for that</h3>
       <img src={workshopIllustration} alt="Workshop" width={300} />
+      <p>
+        There are hundreds of mods to use on the{" "}
+        <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
+          PixieBrix Marketplace
+        </a>
+      </p>
     </>
   );
 };
