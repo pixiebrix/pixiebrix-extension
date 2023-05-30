@@ -38,7 +38,7 @@ import {
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/installables/useInstallableViewItems";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
@@ -176,7 +176,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
             </Card>
           ) : (
             <AutoSizer defaultHeight={500}>
-              {({ height, width }) => (
+              {({ height, width }: Size) => (
                 <BlueprintsPageContent
                   tableInstance={tableInstance}
                   width={width}
