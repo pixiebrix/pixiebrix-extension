@@ -241,16 +241,71 @@ function useActivateAction(
   return status === "Inactive" ? activate : null;
 }
 
+function useDeactivateAction(
+  installableViewItem: InstallableViewItem
+): ActionCallback | null {
+  const dispatch = useDispatch();
+  const { restrict } = useFlags();
+  const { installable, status, sharing } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(installable);
+  const isActive = status === "Active" || status === "Paused";
+  const isDeployment = sharing.source.type === "Deployment";
+
+  // Restricted users aren't allowed to deactivate/reactivate deployments. They are controlled by the admin from the
+  // Admin Console. See restricted flag logic here:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
+  const isRestricted = isDeployment && restrict("uninstall");
+
+  // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
+  // to recompute, spamming the background worker with service locator requests
+  const memoizedExtensionsSelector = useCallback(
+    (state: { options: OptionsState }) =>
+      selectExtensionsFromInstallable(state, installable),
+    [installable]
+  );
+
+  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
+
+  const deactivate = useUserAction(
+    async () => {
+      if (isInstallableBlueprint) {
+        const blueprintId = installable.metadata.id;
+        await uninstallRecipe(blueprintId, extensionsFromInstallable, dispatch);
+
+        reportEvent("BlueprintRemove", {
+          blueprintId,
+        });
+      } else {
+        await uninstallExtensions(
+          extensionsFromInstallable.map(({ id }) => id),
+          dispatch
+        );
+
+        for (const extension of extensionsFromInstallable) {
+          reportEvent("ExtensionRemove", {
+            extensionId: extension.id,
+          });
+        }
+      }
+    },
+    {
+      successMessage: `Deactivated mod: ${getLabel(installable)}`,
+      errorMessage: `Error deactivating mod: ${getLabel(installable)}`,
+    },
+    [installable, extensionsFromInstallable]
+  );
+
+  return isActive && !isRestricted ? deactivate : null;
+}
+
 // eslint-disable-next-line complexity
 function useInstallableViewItemActions(
   installableViewItem: InstallableViewItem
 ): InstallableViewItemActions {
   const { installable, status, sharing } = installableViewItem;
 
-  const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const { restrict } = useFlags();
 
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
   const viewPublish = usePublishAction(installableViewItem);
@@ -258,6 +313,7 @@ function useInstallableViewItemActions(
   const reactivate = useReactivateAction(installableViewItem);
   const viewLogs = useViewLogsAction(installableViewItem);
   const activate = useActivateAction(installableViewItem);
+  const deactivate = useDeactivateAction(installableViewItem);
 
   // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
   const isActive = status === "Active" || status === "Paused";
@@ -270,13 +326,6 @@ function useInstallableViewItemActions(
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally
     !isActive;
-
-  const isDeployment = sharing.source.type === "Deployment";
-
-  // Restricted users aren't allowed to deactivate/reactivate deployments. They are controlled by the admin from the
-  // Admin Console. See restricted flag logic here:
-  // https://github.com/pixiebrix/pixiebrix-app/blob/5b30c50d7f9ca7def79fd53ba8f78e0f800a0dcb/api/serializers/account.py#L198-L198
-  const isRestricted = isDeployment && restrict("uninstall");
 
   // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
   // to recompute, spamming the background worker with service locator requests
@@ -321,42 +370,13 @@ function useInstallableViewItemActions(
     [modals]
   );
 
-  const deactivate = useUserAction(
-    async () => {
-      if (isInstallableBlueprint) {
-        const blueprintId = installable.metadata.id;
-        await uninstallRecipe(blueprintId, extensionsFromInstallable, dispatch);
-
-        reportEvent("BlueprintRemove", {
-          blueprintId,
-        });
-      } else {
-        await uninstallExtensions(
-          extensionsFromInstallable.map(({ id }) => id),
-          dispatch
-        );
-
-        for (const extension of extensionsFromInstallable) {
-          reportEvent("ExtensionRemove", {
-            extensionId: extension.id,
-          });
-        }
-      }
-    },
-    {
-      successMessage: `Deactivated mod: ${getLabel(installable)}`,
-      errorMessage: `Error deactivating mod: ${getLabel(installable)}`,
-    },
-    [installable, extensionsFromInstallable]
-  );
-
   return {
     viewPublish,
     viewInMarketplaceHref: marketplaceListingUrl,
     // Deployment sharing is controlled via the Admin Console
     viewShare,
     deleteExtension: isCloudExtension ? deleteExtension : null,
-    deactivate: isActive && !isRestricted ? deactivate : null,
+    deactivate,
     reactivate,
     viewLogs,
     activate,
