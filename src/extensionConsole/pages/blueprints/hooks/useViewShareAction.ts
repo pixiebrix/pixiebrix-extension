@@ -20,21 +20,20 @@ import { useDispatch } from "react-redux";
 import { getPackageId, isExtension } from "@/utils/installableUtils";
 import {
   blueprintModalsSlice,
-  type PublishContext,
+  type ShareContext,
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
-function useViewPublishAction(
+function useViewShareAction(
   installableViewItem: InstallableViewItem
 ): ActionCallback | null {
   const { installable, unavailable, sharing } = installableViewItem;
+  const dispatch = useDispatch();
+  const isInstallableBlueprint = !isExtension(installable);
   const isDeployment = sharing.source.type === "Deployment";
 
-  const dispatch = useDispatch();
-  const isInstallableExtension = isExtension(installable);
-  const isInstallableBlueprint = !isInstallableExtension;
-  const viewPublish = () => {
-    const publishContext: PublishContext = isInstallableBlueprint
+  const viewShare = () => {
+    const shareContext: ShareContext = isInstallableBlueprint
       ? {
           blueprintId: getPackageId(installable),
         }
@@ -42,19 +41,11 @@ function useViewPublishAction(
           extensionId: installable.id,
         };
 
-    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
+    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };
 
-  const showPublishAction =
-    !unavailable &&
-    // Deployment sharing is controlled via the Admin Console
-    !isDeployment &&
-    // Extensions can be published
-    (isInstallableExtension ||
-      // In case of blueprint, skip if it is already published
-      sharing.listingId == null);
-
-  return showPublishAction ? viewPublish : null;
+  // Deployment sharing is controlled via the Admin Console
+  return isDeployment || unavailable ? null : viewShare;
 }
 
-export default useViewPublishAction;
+export default useViewShareAction;

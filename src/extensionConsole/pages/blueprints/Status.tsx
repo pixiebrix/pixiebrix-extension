@@ -29,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { type InstallableViewItem } from "@/installables/installableTypes";
-import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 const Status: React.VoidFunctionComponent<{
   installableViewItem: InstallableViewItem;

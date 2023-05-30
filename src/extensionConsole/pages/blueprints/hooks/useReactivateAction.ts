@@ -22,7 +22,7 @@ import { isExtension, isExtensionFromRecipe } from "@/utils/installableUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 const useReactivateAction = (
   installableViewItem: InstallableViewItem

@@ -20,7 +20,7 @@ import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
 import { type InstallableViewItem } from "@/installables/installableTypes";
-import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

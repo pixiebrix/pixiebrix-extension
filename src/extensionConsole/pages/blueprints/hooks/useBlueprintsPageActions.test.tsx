@@ -19,8 +19,8 @@
 /// <reference types="jest-extended" />
 
 import useBlueprintsPageActions, {
-  type InstallableViewItemActions,
-} from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+  type BlueprintsPageActions,
+} from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type InstallableStatus,
@@ -46,7 +46,7 @@ jest.mock("@/installables/hooks/useInstallablePermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
-  actualActions: InstallableViewItemActions
+  actualActions: BlueprintsPageActions
 ) => {
   // Union both set of keys to ensure all possible keys are covered
   const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);

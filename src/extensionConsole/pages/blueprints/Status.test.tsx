@@ -18,10 +18,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/blueprints/Status";
-import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 jest.mock(
-  "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions",
+  "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions",
   () => ({
     __esModule: true,
     default: jest.fn().mockReturnValue({}),

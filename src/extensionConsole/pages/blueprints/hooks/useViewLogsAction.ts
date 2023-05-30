@@ -17,35 +17,33 @@
 
 import { type InstallableViewItem } from "@/installables/installableTypes";
 import { useDispatch } from "react-redux";
-import { getPackageId, isExtension } from "@/utils/installableUtils";
-import {
-  blueprintModalsSlice,
-  type ShareContext,
-} from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import { getLabel, isExtension } from "@/utils/installableUtils";
+import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
-function useViewShareAction(
+function useViewLogsAction(
   installableViewItem: InstallableViewItem
 ): ActionCallback | null {
-  const { installable, unavailable, sharing } = installableViewItem;
   const dispatch = useDispatch();
+  const { installable, status } = installableViewItem;
   const isInstallableBlueprint = !isExtension(installable);
-  const isDeployment = sharing.source.type === "Deployment";
 
-  const viewShare = () => {
-    const shareContext: ShareContext = isInstallableBlueprint
-      ? {
-          blueprintId: getPackageId(installable),
-        }
-      : {
-          extensionId: installable.id,
-        };
-
-    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
+  const viewLogs = () => {
+    dispatch(
+      blueprintModalsSlice.actions.setLogsContext({
+        title: getLabel(installable),
+        messageContext: isInstallableBlueprint
+          ? {
+              label: getLabel(installable),
+              blueprintId: installable.metadata.id,
+            }
+          : selectExtensionContext(installable),
+      })
+    );
   };
 
-  // Deployment sharing is controlled via the Admin Console
-  return isDeployment || unavailable ? null : viewShare;
+  return status === "Inactive" ? null : viewLogs;
 }
 
-export default useViewShareAction;
+export default useViewLogsAction;

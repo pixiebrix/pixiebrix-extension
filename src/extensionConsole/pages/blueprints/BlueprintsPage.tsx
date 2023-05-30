@@ -22,7 +22,7 @@ import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { reportEvent } from "@/telemetry/events";
 import Modals from "./modals/Modals";
-import useShowPublishUrlEffect from "@/extensionConsole/pages/blueprints/useShowPublishUrlEffect";
+import useShowPublishUrlEffect from "@/extensionConsole/pages/blueprints/hooks/useShowPublishUrlEffect";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Mods");

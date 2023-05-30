@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { isExtension } from "@/utils/installableUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
-import { type ActionCallback } from "@/extensionConsole/pages/blueprints/actions/useBlueprintsPageActions";
+import { type ActionCallback } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 function useActivateAction(
   installableViewItem: InstallableViewItem
