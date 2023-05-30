@@ -44,34 +44,34 @@ export const ActiveModsList: React.FunctionComponent<{
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);
 
+  const activeMods = installableViewItems.filter(
+    (installableViewItem) =>
+      installableViewItem.status === "Active" &&
+      !installableViewItem.unavailable
+  );
+
   const tableInstance = useTable<InstallableViewItem>({
     columns,
-    data: installableViewItems.filter(
-      (installableViewItem) =>
-        installableViewItem.status === "Active" &&
-        !installableViewItem.unavailable
-    ),
+    data: activeMods,
   });
 
-  return (
-    <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
-          {tableInstance.rows.map((row) => {
-            tableInstance.prepareRow(row);
-            return (
-              <ActiveModListItem
-                key={row.original.sharing.packageId}
-                installableItem={row.original}
-              />
-            );
-          })}
-        </ListGroup>
-      )}
-    </>
+  const renderBody = activeMods ? (
+    <div>empty state</div>
+  ) : (
+    <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
+      {tableInstance.rows.map((row) => {
+        tableInstance.prepareRow(row);
+        return (
+          <ActiveModListItem
+            key={row.original.sharing.packageId}
+            installableItem={row.original}
+          />
+        );
+      })}
+    </ListGroup>
   );
+
+  return <>{isLoading ? <Loader /> : renderBody}</>;
 };
 
 export default ActiveModsList;
