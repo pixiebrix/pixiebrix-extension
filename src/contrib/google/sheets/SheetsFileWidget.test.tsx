@@ -30,7 +30,7 @@ import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
 import { isGoogleInitialized } from "@/contrib/google/initGoogle";
 import userEvent from "@testing-library/user-event";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
-import { act } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 
 jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({
   __esModule: true,
@@ -249,5 +249,26 @@ describe("SheetsFileWidget", () => {
 
     expect(formState.services).toHaveLength(1);
     expect(formState.services[0]).toEqual(service);
+  });
+
+  it("displays rejected permissions message", async () => {
+    useGoogleSpreadsheetPickerMock.mockReturnValue({
+      hasRejectedPermissions: true,
+    });
+
+    render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(
+      screen.getByText("PixieBrix cannot access your Google Account.", {
+        exact: false,
+      })
+    ).toBeVisible();
   });
 });
