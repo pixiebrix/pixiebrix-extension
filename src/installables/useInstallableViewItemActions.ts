@@ -134,6 +134,7 @@ function useShareAction(
     dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };
 
+  // Deployment sharing is controlled via the Admin Console
   return isDeployment || unavailable ? null : viewShare;
 }
 
@@ -298,27 +299,15 @@ function useDeactivateAction(
   return isActive && !isRestricted ? deactivate : null;
 }
 
-// eslint-disable-next-line complexity
-function useInstallableViewItemActions(
+function useDeleteExtensionAction(
   installableViewItem: InstallableViewItem
-): InstallableViewItemActions {
-  const { installable, status, sharing } = installableViewItem;
-
+): ActionCallback | null {
+  const { installable, sharing, status } = installableViewItem;
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-
-  const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
-  const viewPublish = usePublishAction(installableViewItem);
-  const viewShare = useShareAction(installableViewItem);
-  const reactivate = useReactivateAction(installableViewItem);
-  const viewLogs = useViewLogsAction(installableViewItem);
-  const activate = useActivateAction(installableViewItem);
-  const deactivate = useDeactivateAction(installableViewItem);
-
-  // NOTE: paused deployments are installed, but they are not executed. See deployments.ts:isDeploymentActive
-  const isActive = status === "Active" || status === "Paused";
   const isInstallableExtension = isExtension(installable);
-  const isInstallableBlueprint = !isInstallableExtension;
+  const isInstallableBlueprint = !isExtension(installable);
+  const isActive = status === "Active" || status === "Paused";
 
   const isCloudExtension =
     isInstallableExtension &&
@@ -326,20 +315,6 @@ function useInstallableViewItemActions(
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally
     !isActive;
-
-  // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
-  // to recompute, spamming the background worker with service locator requests
-  const memoizedExtensionsSelector = useCallback(
-    (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, installable),
-    [installable]
-  );
-
-  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
-
-  const { hasPermissions, requestPermissions } = useInstallablePermissions(
-    extensionsFromInstallable
-  );
 
   const deleteExtension = useUserAction(
     async () => {
@@ -370,17 +345,54 @@ function useInstallableViewItemActions(
     [modals]
   );
 
+  return isCloudExtension ? deleteExtension : null;
+}
+
+function useRequestPermissionsAction(
+  installableViewItem: InstallableViewItem
+): ActionCallback | null {
+  const { installable } = installableViewItem;
+
+  // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
+  // to recompute, spamming the background worker with service locator requests
+  const memoizedExtensionsSelector = useCallback(
+    (state: { options: OptionsState }) =>
+      selectExtensionsFromInstallable(state, installable),
+    [installable]
+  );
+
+  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
+
+  const { hasPermissions, requestPermissions } = useInstallablePermissions(
+    extensionsFromInstallable
+  );
+
+  return hasPermissions ? null : requestPermissions;
+}
+
+function useInstallableViewItemActions(
+  installableViewItem: InstallableViewItem
+): InstallableViewItemActions {
+  const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
+  const viewPublish = usePublishAction(installableViewItem);
+  const viewShare = useShareAction(installableViewItem);
+  const reactivate = useReactivateAction(installableViewItem);
+  const viewLogs = useViewLogsAction(installableViewItem);
+  const activate = useActivateAction(installableViewItem);
+  const deactivate = useDeactivateAction(installableViewItem);
+  const deleteExtension = useDeleteExtensionAction(installableViewItem);
+  const requestPermissions = useRequestPermissionsAction(installableViewItem);
+
   return {
     viewPublish,
     viewInMarketplaceHref: marketplaceListingUrl,
-    // Deployment sharing is controlled via the Admin Console
     viewShare,
-    deleteExtension: isCloudExtension ? deleteExtension : null,
+    deleteExtension,
     deactivate,
     reactivate,
     viewLogs,
     activate,
-    requestPermissions: hasPermissions ? null : requestPermissions,
+    requestPermissions,
   };
 }
 
