@@ -27,7 +27,7 @@ import React, {
 import { Button, Modal } from "react-bootstrap";
 import { compact, isEmpty } from "lodash";
 import { FixedSizeGrid as LazyGrid } from "react-window";
-import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import { BLOCK_ITEM_FIXED_HEIGHT_PX } from "./BlockGridItem";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
