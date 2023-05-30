@@ -30,11 +30,7 @@ import { persistor } from "@/store/optionsStore";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
 import useRecipeIdParam from "@/extensionConsole/pages/useRecipeIdParam";
-import {
-  useCreateMilestoneMutation,
-  useGetMarketplaceListingsQuery,
-  useGetRecipeQuery,
-} from "@/services/api";
+import { useCreateMilestoneMutation, useGetRecipeQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import useActivateRecipe from "@/activation/useActivateRecipe";
@@ -47,7 +43,7 @@ import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice
 import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/blueprints/BlueprintsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
-import InstallableIcon from "@/extensionConsole/pages/blueprints/InstallableIcon";
+import InstallableIcon from "@/installables/InstallableIcon";
 
 const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();
@@ -64,9 +60,6 @@ const ActivateRecipeCard: React.FC = () => {
     isLoading: isLoadingWizard,
     error: wizardError,
   } = useActivateRecipeWizard(recipe);
-
-  const { data: listings = {}, isLoading: isLoadingListing } =
-    useGetMarketplaceListingsQuery({ package__name: recipeId });
 
   const activateRecipe = useActivateRecipe("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();
@@ -106,11 +99,7 @@ const ActivateRecipeCard: React.FC = () => {
               <div className={styles.wizardHeaderLayout}>
                 <div className={styles.wizardMainInfo}>
                   <span className={styles.blueprintIcon}>
-                    <InstallableIcon
-                      installable={recipe}
-                      listing={listings[recipeId]}
-                      isLoading={isLoadingListing}
-                    />
+                    <InstallableIcon installable={recipe} />
                   </span>
                   <span>
                     <Card.Title>{recipe.metadata.name}</Card.Title>
