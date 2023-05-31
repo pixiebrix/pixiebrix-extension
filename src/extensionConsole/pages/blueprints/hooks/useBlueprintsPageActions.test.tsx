@@ -27,7 +27,7 @@ import {
   type ModViewItem,
   type SharingType,
 } from "@/mods/modTypes";
-import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
+import useModPermissions from "@/mods/hooks/useModPermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -42,7 +42,7 @@ import {
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/mods/hooks/useInstallablePermissions", () => jest.fn());
+jest.mock("@/mods/hooks/useModPermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
@@ -70,7 +70,7 @@ const mockHooks = ({
     restrict: () => restricted,
   }));
 
-  (useInstallablePermissions as jest.Mock).mockImplementation(() => ({
+  (useModPermissions as jest.Mock).mockImplementation(() => ({
     hasPermissions,
     requestPermissions() {},
   }));
