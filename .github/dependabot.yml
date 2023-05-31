@@ -16,7 +16,7 @@ updates:
     versioning-strategy: increase # Update package.json too https://stackoverflow.com/a/66819358/288906
     open-pull-requests-limit: 30
     assignees:
-      - BLoe
+      - grahamlangford
     ignore:
       # Update it manually instead https://github.com/pixiebrix/pixiebrix-extension/issues/4436
       - dependency-name: "@storybook/*"
@@ -29,4 +29,4 @@ updates:
       timezone: Etc/UTC
     open-pull-requests-limit: 30
     assignees:
-      - BLoe
+      - grahamlangford

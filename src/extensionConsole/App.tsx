@@ -158,7 +158,7 @@ const Layout = () => {
   );
 };
 
-const authPersistenceContext: ReduxPersistenceContextType = {
+const persistorContext: ReduxPersistenceContextType = {
   async flush() {
     await persistor.flush();
   },
@@ -167,7 +167,7 @@ const authPersistenceContext: ReduxPersistenceContextType = {
 const App: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+      <ReduxPersistenceContext.Provider value={persistorContext}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
             <Layout />
