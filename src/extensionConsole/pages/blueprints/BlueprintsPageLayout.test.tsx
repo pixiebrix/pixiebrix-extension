@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/BlueprintsPageLayout";
-import { type Installable } from "@/mods/installableTypes";
+import { type Mod } from "@/mods/installableTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
@@ -41,7 +41,7 @@ jest.mock("@/recipes/recipesHooks", () => ({
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));
 
-const installables: Installable[] = [];
+const installables: Mod[] = [];
 
 describe("BlueprintsPageLayout", () => {
   const { env } = process;

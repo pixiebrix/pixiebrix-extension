@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { type Installable, type UnavailableRecipe } from "./installableTypes";
+import { type Mod, type UnavailableRecipe } from "./installableTypes";
 import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
@@ -33,7 +33,7 @@ type InstallablesState = {
    * The installables fetched/generated so far. There's no loading/fetching state. `useInstallables` just adds entries
    * as they become available.
    */
-  installables: Installable[];
+  installables: Mod[];
   /**
    * An error that occurred while fetching/generating installables, or undefined.
    */
@@ -54,7 +54,7 @@ export function selectUnavailableRecipe(
 
 /**
  * React Hook returning `Installable`s, a common abstraction for recipes and un-packaged IExtensions.
- * @see Installable
+ * @see Mod
  */
 function useInstallables(): InstallablesState {
   const scope = useSelector(selectScope);

@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,7 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
-import { type Installable } from "@/mods/installableTypes";
+import { type Mod } from "@/mods/installableTypes";
 import {
   getPackageId,
   isBlueprint,
@@ -34,7 +33,7 @@ import cx from "classnames";
 import styles from "./InstallableIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 
-function getDefaultInstallableIcon(installable: Installable) {
+function getDefaultInstallableIcon(installable: Mod) {
   if (isUnavailableRecipe(installable)) {
     return faExclamationCircle;
   }
@@ -48,8 +47,8 @@ function getDefaultInstallableIcon(installable: Installable) {
 
 export const DEFAULT_TEXT_ICON_COLOR = "#241C32";
 
-const InstallableIcon: React.FunctionComponent<{
-  installable: Installable;
+const ModIcon: React.FunctionComponent<{
+  installable: Mod;
   size?: "1x" | "2x";
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
@@ -101,4 +100,4 @@ const InstallableIcon: React.FunctionComponent<{
   );
 };
 
-export default InstallableIcon;
+export default ModIcon;

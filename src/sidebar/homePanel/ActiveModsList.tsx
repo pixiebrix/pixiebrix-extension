@@ -17,10 +17,7 @@
 import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
 
 import React from "react";
-import {
-  type Installable,
-  type InstallableViewItem,
-} from "@/mods/installableTypes";
+import { type Mod, type InstallableViewItem } from "@/mods/installableTypes";
 import { ListGroup, Row } from "react-bootstrap";
 import useInstallableViewItems from "@/mods/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
@@ -61,7 +58,7 @@ const NoActiveModsView: React.FunctionComponent = () => (
 );
 
 export const ActiveModsList: React.FunctionComponent<{
-  installables: Installable[];
+  installables: Mod[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);

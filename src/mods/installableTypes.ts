@@ -32,10 +32,7 @@ export type UnavailableRecipe = Pick<
 };
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Installable =
-  | RecipeDefinition
-  | ResolvedExtension
-  | UnavailableRecipe;
+export type Mod = RecipeDefinition | ResolvedExtension | UnavailableRecipe;
 
 export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
 export type SharingSource = {
@@ -64,7 +61,7 @@ export type InstallableViewItem = {
   hasUpdate: boolean;
   installedVersionNumber: string;
   // Used to get Installable actions from useInstallableActions
-  installable: Installable;
+  installable: Mod;
   /**
    * True if the source package is no longer available
    */

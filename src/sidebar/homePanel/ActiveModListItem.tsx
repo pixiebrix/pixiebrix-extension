@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
@@ -28,12 +27,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { getContainedStarterBrickNames } from "@/utils/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import InstallableIcon from "@/mods/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 export const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
@@ -51,7 +49,7 @@ export const ActiveModListItem: React.FunctionComponent<{
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
         <div className={styles.icon}>
-          <InstallableIcon installable={installable} />
+          <ModIcon installable={installable} />
         </div>
         <div>
           <div>

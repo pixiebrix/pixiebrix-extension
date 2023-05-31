@@ -42,7 +42,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
-import type { Installable, InstallableViewItem } from "@/mods/installableTypes";
+import type { Mod, InstallableViewItem } from "@/mods/installableTypes";
 
 const statusFilter = (
   rows: Array<Row<InstallableViewItem>>,
@@ -106,7 +106,7 @@ const columns: Array<Column<InstallableViewItem>> = [
 ];
 
 const BlueprintsPageLayout: React.FunctionComponent<{
-  installables: Installable[];
+  installables: Mod[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);

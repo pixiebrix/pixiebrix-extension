@@ -96,6 +96,11 @@ module.exports = {
       extends: ["pixiebrix/server"],
       rules: {
         "import/no-restricted-paths": "off",
+        "unicorn/prevent-abbreviations": {
+          allowList: {
+            mod: true,
+          },
+        },
       },
     },
   ],

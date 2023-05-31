@@ -24,7 +24,7 @@ import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabe
 import Status from "@/extensionConsole/pages/blueprints/Status";
 import BlueprintsPageActions from "@/extensionConsole/pages/blueprints/BlueprintsPageActions";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
-import InstallableIcon from "@/mods/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -48,7 +48,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
                 <div className={styles.packageId}>{sharing.packageId}</div>
               </div>
               <span className="mb-2">
-                <InstallableIcon size="2x" installable={installable} />
+                <ModIcon size="2x" installable={installable} />
               </span>
             </div>
           </div>
