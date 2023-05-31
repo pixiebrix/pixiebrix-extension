@@ -22,7 +22,7 @@ import {
   getLabel,
   isExtension,
   selectExtensionsFromMod,
-} from "@/utils/installableUtils";
+} from "@/utils/modUtils";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useUserAction from "@/hooks/useUserAction";

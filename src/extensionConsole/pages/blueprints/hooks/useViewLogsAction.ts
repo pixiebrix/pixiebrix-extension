@@ -17,7 +17,7 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import { getLabel, isExtension } from "@/utils/installableUtils";
+import { getLabel, isExtension } from "@/utils/modUtils";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 

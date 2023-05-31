@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import useFlags from "@/hooks/useFlags";
-import { isExtension, isExtensionFromRecipe } from "@/utils/installableUtils";
+import { isExtension, isExtensionFromRecipe } from "@/utils/modUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";

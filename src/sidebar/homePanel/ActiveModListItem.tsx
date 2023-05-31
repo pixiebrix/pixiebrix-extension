@@ -25,7 +25,7 @@ import {
   faExclamationCircle,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
-import { getContainedStarterBrickNames } from "@/utils/installableUtils";
+import { getContainedStarterBrickNames } from "@/utils/modUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import ModIcon from "@/mods/ModIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";

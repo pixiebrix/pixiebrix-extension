@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/mods/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
-import { getLabel, isExtension } from "@/utils/installableUtils";
+import { getLabel, isExtension } from "@/utils/modUtils";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 

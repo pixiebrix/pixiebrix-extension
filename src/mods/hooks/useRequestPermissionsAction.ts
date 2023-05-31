@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/mods/modTypes";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
-import { selectExtensionsFromMod } from "@/utils/installableUtils";
+import { selectExtensionsFromMod } from "@/utils/modUtils";
 import { useSelector } from "react-redux";
 import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 

@@ -26,7 +26,7 @@ import Loader from "@/components/Loader";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
-import { isRecipePendingPublish } from "@/utils/installableUtils";
+import { isRecipePendingPublish } from "@/utils/modUtils";
 import PublishedContent from "./PublishedContent";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
