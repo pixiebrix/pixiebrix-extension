@@ -23,10 +23,10 @@ import useBlueprintsPageActions, {
 } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
-  type InstallableStatus,
-  type InstallableViewItem,
+  type ModStatus,
+  type ModViewItem,
   type SharingType,
-} from "@/mods/installableTypes";
+} from "@/mods/modTypes";
 import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
@@ -84,11 +84,11 @@ const installableItemFactory = ({
 }: {
   isExtension: boolean;
   sharingType: SharingType;
-  status: InstallableStatus;
+  status: ModStatus;
   unavailable?: boolean;
 }) =>
   ({
-    installable: isExtension ? extensionFactory() : recipeFactory(),
+    mod: isExtension ? extensionFactory() : recipeFactory(),
     sharing: {
       source: {
         type: sharingType,
@@ -96,7 +96,7 @@ const installableItemFactory = ({
     },
     status,
     unavailable,
-  } as InstallableViewItem);
+  } as ModViewItem);
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -316,12 +316,12 @@ describe("useBlueprintsPageActions", () => {
   });
 
   describe("public blueprint", () => {
-    let blueprintItem: InstallableViewItem;
+    let blueprintItem: ModViewItem;
     beforeEach(() => {
       mockHooks();
 
       blueprintItem = {
-        installable: recipeFactory({
+        mod: recipeFactory({
           sharing: { public: true, organizations: [] },
         }),
         sharing: {
@@ -330,7 +330,7 @@ describe("useBlueprintsPageActions", () => {
           },
         },
         status: "Active",
-      } as InstallableViewItem;
+      } as ModViewItem;
     });
 
     test("pending publish", () => {
@@ -386,7 +386,7 @@ describe("actions", () => {
       deactivate();
 
       expect(uninstallRecipe).toHaveBeenCalledWith(
-        (blueprintInstallable.installable as RecipeDefinition).metadata.id,
+        (blueprintInstallable.mod as RecipeDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function)
       );
@@ -403,7 +403,7 @@ describe("actions", () => {
         sharingType: "Personal",
         status: "Active",
       });
-      (extensionInstallable.installable as IExtension).id = extension.id;
+      (extensionInstallable.mod as IExtension).id = extension.id;
 
       const {
         result: {

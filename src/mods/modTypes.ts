@@ -41,14 +41,14 @@ export type SharingSource = {
   organization: Organization;
 };
 
-export type InstallableStatus =
+export type ModStatus =
   | "Active"
   | "Inactive"
-  // The installable is a deployment that has been paused
+  // The mod is a deployment that has been paused
   | "Paused";
 
-// Reshaped Installable to easily filter, sort, and group Installables
-export type InstallableViewItem = {
+// Reshaped Mod to easily filter, sort, and group Mods
+export type ModViewItem = {
   name: string;
   description: string;
   sharing: {
@@ -57,11 +57,11 @@ export type InstallableViewItem = {
     listingId: string | null;
   };
   updatedAt: string;
-  status: InstallableStatus;
+  status: ModStatus;
   hasUpdate: boolean;
   installedVersionNumber: string;
-  // Used to get Installable actions from useInstallableActions
-  installable: Mod;
+  // Used to get Mod actions from various action hooks, see `mods/hooks/`
+  mod: Mod;
   /**
    * True if the source package is no longer available
    */

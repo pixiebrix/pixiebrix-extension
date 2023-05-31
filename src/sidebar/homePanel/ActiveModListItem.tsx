@@ -18,7 +18,7 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,9 +33,9 @@ import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 
 export const ActiveModListItem: React.FunctionComponent<{
-  installableItem: InstallableViewItem;
+  installableItem: ModViewItem;
 }> = ({ installableItem }) => {
-  const { name, installable } = installableItem;
+  const { name, mod } = installableItem;
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
   const requestPermissions = useRequestPermissionsAction(installableItem);
 
@@ -49,7 +49,7 @@ export const ActiveModListItem: React.FunctionComponent<{
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
         <div className={styles.icon}>
-          <ModIcon installable={installable} />
+          <ModIcon installable={mod} />
         </div>
         <div>
           <div>

@@ -23,7 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
-import { type Mod } from "@/mods/installableTypes";
+import { type Mod } from "@/mods/modTypes";
 import {
   getPackageId,
   isBlueprint,

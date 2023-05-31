@@ -21,7 +21,7 @@ import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/blueprints/hooks/useViewShareAction";
 import useDeleteExtensionAction from "@/mods/hooks/useDeleteExtensionAction";
 import useReactivateAction from "@/extensionConsole/pages/blueprints/hooks/useReactivateAction";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import useViewLogsAction from "@/extensionConsole/pages/blueprints/hooks/useViewLogsAction";
 import useDeactivateAction from "@/mods/hooks/useDeactivateAction";
@@ -41,7 +41,7 @@ export type BlueprintsPageActions = {
 };
 
 function useBlueprintsPageActions(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): BlueprintsPageActions {
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
   const viewPublish = useViewPublishAction(installableViewItem);

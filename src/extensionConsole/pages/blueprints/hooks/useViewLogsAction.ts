@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getLabel, isExtension } from "@/utils/installableUtils";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 function useViewLogsAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
   const dispatch = useDispatch();
-  const { installable, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
+  const { mod, status } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(mod);
 
   const viewLogs = () => {
     dispatch(
       blueprintModalsSlice.actions.setLogsContext({
-        title: getLabel(installable),
+        title: getLabel(mod),
         messageContext: isInstallableBlueprint
           ? {
-              label: getLabel(installable),
-              blueprintId: installable.metadata.id,
+              label: getLabel(mod),
+              blueprintId: mod.metadata.id,
             }
-          : selectExtensionContext(installable),
+          : selectExtensionContext(mod),
       })
     );
   };

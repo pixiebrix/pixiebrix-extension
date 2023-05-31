@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import { isExtension, isExtensionFromRecipe } from "@/utils/installableUtils";
@@ -24,14 +24,13 @@ import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 
 const useReactivateAction = (
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): (() => void | null) => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
-  const { installable, unavailable, status, sharing } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
-  const hasBlueprint =
-    isExtensionFromRecipe(installable) || isInstallableBlueprint;
+  const { mod, unavailable, status, sharing } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(mod);
+  const hasBlueprint = isExtensionFromRecipe(mod) || isInstallableBlueprint;
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
   const isRestricted = isDeployment && restrict("uninstall");
@@ -39,8 +38,8 @@ const useReactivateAction = (
   const reactivate = () => {
     if (hasBlueprint) {
       const blueprintId = isInstallableBlueprint
-        ? installable.metadata.id
-        : installable._recipe.id;
+        ? mod.metadata.id
+        : mod._recipe.id;
 
       reportEvent("StartInstallBlueprint", {
         blueprintId,

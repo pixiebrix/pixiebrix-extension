@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isExtension } from "@/utils/installableUtils";
 import {
@@ -24,20 +24,20 @@ import {
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 
 function useViewShareAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable, unavailable, sharing } = installableViewItem;
+  const { mod, unavailable, sharing } = installableViewItem;
   const dispatch = useDispatch();
-  const isInstallableBlueprint = !isExtension(installable);
+  const isInstallableBlueprint = !isExtension(mod);
   const isDeployment = sharing.source.type === "Deployment";
 
   const viewShare = () => {
     const shareContext: ShareContext = isInstallableBlueprint
       ? {
-          blueprintId: getPackageId(installable),
+          blueprintId: getPackageId(mod),
         }
       : {
-          extensionId: installable.id,
+          extensionId: mod.id,
         };
 
     dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));

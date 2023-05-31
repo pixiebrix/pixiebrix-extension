@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Card } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";
@@ -32,7 +32,7 @@ type Props = {
    */
   errorContext?: string;
 
-  installableItem: InstallableViewItem;
+  installableItem: ModViewItem;
 };
 
 type State = {

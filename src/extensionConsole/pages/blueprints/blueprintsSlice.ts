@@ -20,21 +20,21 @@ import { type Filters, type SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 
 type View = "list" | "grid";
 
 export type ActiveTab = {
   key: string;
   tabTitle: string;
-  filters: Filters<InstallableViewItem>;
+  filters: Filters<ModViewItem>;
   hideToolbar?: boolean;
 };
 
 export type BlueprintsState = {
   view: View;
   groupBy: string[];
-  sortBy: Array<SortingRule<InstallableViewItem>>;
+  sortBy: Array<SortingRule<ModViewItem>>;
   activeTab: ActiveTab;
   searchQuery: string;
 };
@@ -63,9 +63,7 @@ const blueprintsSlice = createSlice({
     },
     setSortBy(
       state,
-      {
-        payload: sortBy,
-      }: PayloadAction<Array<SortingRule<InstallableViewItem>>>
+      { payload: sortBy }: PayloadAction<Array<SortingRule<ModViewItem>>>
     ) {
       state.sortBy = sortBy;
     },

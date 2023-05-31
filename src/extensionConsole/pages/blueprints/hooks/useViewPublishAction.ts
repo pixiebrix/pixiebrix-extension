@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isExtension } from "@/utils/installableUtils";
 import {
@@ -24,21 +24,21 @@ import {
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 
 function useViewPublishAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable, unavailable, sharing } = installableViewItem;
+  const { mod, unavailable, sharing } = installableViewItem;
   const isDeployment = sharing.source.type === "Deployment";
 
   const dispatch = useDispatch();
-  const isInstallableExtension = isExtension(installable);
+  const isInstallableExtension = isExtension(mod);
   const isInstallableBlueprint = !isInstallableExtension;
   const viewPublish = () => {
     const publishContext: PublishContext = isInstallableBlueprint
       ? {
-          blueprintId: getPackageId(installable),
+          blueprintId: getPackageId(mod),
         }
       : {
-          extensionId: installable.id,
+          extensionId: mod.id,
         };
 
     dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));

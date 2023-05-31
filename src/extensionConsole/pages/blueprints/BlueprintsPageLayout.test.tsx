@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/BlueprintsPageLayout";
-import { type Mod } from "@/mods/installableTypes";
+import { type Mod } from "@/mods/modTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";

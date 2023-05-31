@@ -25,7 +25,7 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { type UnavailableRecipe } from "@/mods/installableTypes";
+import { type UnavailableRecipe } from "@/mods/modTypes";
 import { selectUnavailableRecipe } from "@/mods/useInstallables";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {

@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Mod,
-  type InstallableStatus,
-  type InstallableViewItem,
-} from "@/mods/installableTypes";
+import { type Mod, type ModStatus, type ModViewItem } from "@/mods/modTypes";
 import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -43,7 +39,7 @@ import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
 function useInstallableViewItems(installables: Mod[]): {
-  installableViewItems: readonly InstallableViewItem[];
+  installableViewItems: readonly ModViewItem[];
   isLoading: boolean;
 } {
   const scope = useSelector(selectScope);
@@ -78,7 +74,7 @@ function useInstallableViewItems(installables: Mod[]): {
   );
 
   const getStatus = useCallback(
-    (installable: Mod): InstallableStatus => {
+    (installable: Mod): ModStatus => {
       if (isDeployment(installable, installedExtensions)) {
         if (isExtension(installable)) {
           return isDeploymentActive(installable) ? "Active" : "Paused";
@@ -136,8 +132,8 @@ function useInstallableViewItems(installables: Mod[]): {
           installable
         ),
         unavailable: isUnavailableRecipe(installable),
-        installable,
-      } satisfies InstallableViewItem;
+        mod: installable,
+      } satisfies ModViewItem;
     });
   }, [
     getStatus,

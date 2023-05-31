@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { getLabel, isExtension } from "@/utils/installableUtils";
@@ -23,13 +23,13 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 
 function useDeleteExtensionAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable, sharing, status } = installableViewItem;
+  const { mod, sharing, status } = installableViewItem;
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const isInstallableExtension = isExtension(installable);
-  const isInstallableBlueprint = !isExtension(installable);
+  const isInstallableExtension = isExtension(mod);
+  const isInstallableBlueprint = !isExtension(mod);
   const isActive = status === "Active" || status === "Paused";
 
   const isCloudExtension =
@@ -56,13 +56,11 @@ function useDeleteExtensionAction(
         throw new CancelError();
       }
 
-      await deleteCloudExtension({ extensionId: installable.id }).unwrap();
+      await deleteCloudExtension({ extensionId: mod.id }).unwrap();
     },
     {
-      successMessage: `Deleted mod ${getLabel(installable)} from your account`,
-      errorMessage: `Error deleting mod ${getLabel(
-        installable
-      )} from your account`,
+      successMessage: `Deleted mod ${getLabel(mod)} from your account`,
+      errorMessage: `Error deleting mod ${getLabel(mod)} from your account`,
       event: "ExtensionCloudDelete",
     },
     [modals]
