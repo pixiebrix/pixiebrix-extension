@@ -52,7 +52,7 @@ import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type RecipeDefinition } from "@/types/recipeTypes";
 import { selectSourceRecipeMetadata } from "@/types/extensionTypes";
 
-type ConvertInstallableFormState = {
+type ConvertModFormState = {
   blueprintId: RegistryId;
   name: string;
   version: SemVerString;
@@ -129,7 +129,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
   const scope = useSelector(selectScope);
 
-  const initialValues: ConvertInstallableFormState = useMemo(
+  const initialValues: ConvertModFormState = useMemo(
     () => ({
       blueprintId: generateRecipeId(scope, extension.label),
       name: extension.label,
@@ -147,8 +147,8 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   const { refetch: refetchRecipes } = useAllRecipes();
 
   const convertToRecipe = async (
-    formValues: ConvertInstallableFormState,
-    helpers: FormikHelpers<ConvertInstallableFormState>
+    formValues: ConvertModFormState,
+    helpers: FormikHelpers<ConvertModFormState>
   ) => {
     try {
       const unsavedRecipe = makeBlueprint(extension, {

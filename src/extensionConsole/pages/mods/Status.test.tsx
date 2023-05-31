@@ -18,20 +18,20 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/mods/Status";
-import useModActions from "@/extensionConsole/pages/mods/hooks/useModActions";
+import useModViewItemActions from "@/extensionConsole/pages/mods/hooks/useModViewItemActions";
 
-jest.mock("@/extensionConsole/pages/mods/hooks/useModActions", () => ({
+jest.mock("@/extensionConsole/pages/mods/hooks/useModViewItemActions", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({}),
 }));
 
-const useInstallableViewItemActionsMock = useModActions as jest.MockedFunction<
-  typeof useModActions
+const useModViewItemActionsMock = useModViewItemActions as jest.MockedFunction<
+  typeof useModViewItemActions
 >;
 
 describe("Status", () => {
   beforeEach(() => {
-    useInstallableViewItemActionsMock.mockReturnValue({} as any);
+    useModViewItemActionsMock.mockReturnValue({} as any);
   });
 
   it("shows active", async () => {
@@ -50,7 +50,7 @@ describe("Status", () => {
   });
 
   it("shows activate", async () => {
-    useInstallableViewItemActionsMock.mockReturnValue({
+    useModViewItemActionsMock.mockReturnValue({
       activate: jest.fn(),
     } as any);
 

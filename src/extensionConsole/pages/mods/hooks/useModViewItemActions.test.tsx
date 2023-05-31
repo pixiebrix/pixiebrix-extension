@@ -18,9 +18,9 @@
 /* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /// <reference types="jest-extended" />
 
-import useModActions, {
+import useModViewItemActions, {
   type ModActions,
-} from "@/extensionConsole/pages/mods/hooks/useModActions";
+} from "@/extensionConsole/pages/mods/hooks/useModViewItemActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type ModStatus,
@@ -102,7 +102,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe("useModActions", () => {
+describe("useModViewItemActions", () => {
   test("cloud extension", () => {
     mockHooks();
     const cloudExtensionItem = modViewItemFactory({
@@ -113,7 +113,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(cloudExtensionItem));
+    } = renderHook(() => useModViewItemActions(cloudExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
@@ -130,7 +130,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(personalExtensionItem));
+    } = renderHook(() => useModViewItemActions(personalExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
       actions
@@ -147,7 +147,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(personalBlueprintItem));
+    } = renderHook(() => useModViewItemActions(personalBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -164,7 +164,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(personalBlueprintItem));
+    } = renderHook(() => useModViewItemActions(personalBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -178,7 +178,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(teamBlueprintItem));
+    } = renderHook(() => useModViewItemActions(teamBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -195,7 +195,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(teamBlueprintItem));
+    } = renderHook(() => useModViewItemActions(teamBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -209,7 +209,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(publicBlueprintItem));
+    } = renderHook(() => useModViewItemActions(publicBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
       actions
@@ -226,7 +226,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(deploymentItem));
+    } = renderHook(() => useModViewItemActions(deploymentItem));
     expectActions(["reactivate", "deactivate", "viewLogs"], actions);
   });
 
@@ -240,7 +240,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(deploymentItem));
+    } = renderHook(() => useModViewItemActions(deploymentItem));
     expectActions(["viewLogs"], actions);
   });
 
@@ -254,7 +254,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(deploymentItem));
+    } = renderHook(() => useModViewItemActions(deploymentItem));
     expectActions(
       [
         "viewPublish",
@@ -279,7 +279,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(blueprintItem));
+    } = renderHook(() => useModViewItemActions(blueprintItem));
     expectActions(["deactivate", "viewLogs"], actions);
   });
 
@@ -293,7 +293,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(deploymentItem));
+    } = renderHook(() => useModViewItemActions(deploymentItem));
 
     // Unrestricted users (e.g., developers) need to be able to deactivate/reactivate a deployment to use a later
     // version of the blueprint for development/testing.
@@ -310,7 +310,7 @@ describe("useModActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModActions(deploymentItem));
+    } = renderHook(() => useModViewItemActions(deploymentItem));
 
     expectActions(["viewLogs"], actions);
   });
@@ -336,7 +336,7 @@ describe("useModActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useModActions(blueprintItem));
+      } = renderHook(() => useModViewItemActions(blueprintItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions
@@ -348,7 +348,7 @@ describe("useModActions", () => {
 
       const {
         result: { current: actions },
-      } = renderHook(() => useModActions(blueprintItem));
+      } = renderHook(() => useModViewItemActions(blueprintItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -381,7 +381,7 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useModActions(blueprintMod));
+      } = renderHook(() => useModViewItemActions(blueprintMod));
 
       deactivate();
 
@@ -409,7 +409,7 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useModActions(extensionMod), {
+      } = renderHook(() => useModViewItemActions(extensionMod), {
         setupRedux(dispatch) {
           dispatch(extensionActions.installCloudExtension({ extension }));
           dispatch(

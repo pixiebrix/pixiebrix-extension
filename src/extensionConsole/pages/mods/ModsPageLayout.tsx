@@ -60,7 +60,7 @@ const statusFilter = (
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
-// searching utilities on InstallableRows
+// searching utilities on Rows of ModViewItems
 const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Name",
@@ -112,9 +112,9 @@ const ModsPageLayout: React.FunctionComponent<{
 
   const teamFilters = useMemo(
     () =>
-      uniq(
-        modViewItems.map((installable) => installable.sharing.source.label)
-      ).filter((label) => label !== "Public" && label !== "Personal"),
+      uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
+        (label) => label !== "Public" && label !== "Personal"
+      ),
     [modViewItems]
   );
 

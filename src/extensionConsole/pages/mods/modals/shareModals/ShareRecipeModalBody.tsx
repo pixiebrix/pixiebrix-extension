@@ -51,7 +51,7 @@ import createMenuListWithAddButton from "@/components/form/widgets/createMenuLis
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import Loader from "@/components/Loader";
 
-type ShareInstallableFormState = {
+type ShareModFormState = {
   organizations: UUID[];
 };
 
@@ -95,13 +95,13 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     );
   }
 
-  const initialValues: ShareInstallableFormState = {
+  const initialValues: ShareModFormState = {
     organizations: recipe.sharing.organizations,
   };
 
   const saveSharing = async (
-    formValues: ShareInstallableFormState,
-    helpers: FormikHelpers<ShareInstallableFormState>
+    formValues: ShareModFormState,
+    helpers: FormikHelpers<ShareModFormState>
   ) => {
     try {
       const newRecipe = produce(recipe, (draft) => {

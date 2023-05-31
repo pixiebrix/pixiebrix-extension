@@ -24,13 +24,13 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
   const { mod, status } = modViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
+  const isModBlueprint = !isExtension(mod);
 
   const viewLogs = () => {
     dispatch(
       modModalsSlice.actions.setLogsContext({
         title: getLabel(mod),
-        messageContext: isInstallableBlueprint
+        messageContext: isModBlueprint
           ? {
               label: getLabel(mod),
               blueprintId: mod.metadata.id,

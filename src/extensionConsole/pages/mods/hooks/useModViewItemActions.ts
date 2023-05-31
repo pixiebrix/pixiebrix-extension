@@ -40,16 +40,16 @@ export type ModActions = {
   requestPermissions: ActionCallback | null;
 };
 
-function useModActions(installableViewItem: ModViewItem): ModActions {
-  const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
-  const viewPublish = useViewPublishAction(installableViewItem);
-  const viewShare = useViewShareAction(installableViewItem);
-  const reactivate = useReactivateAction(installableViewItem);
-  const viewLogs = useViewLogsAction(installableViewItem);
-  const activate = useActivateAction(installableViewItem);
-  const deactivate = useDeactivateAction(installableViewItem);
-  const deleteExtension = useDeleteExtensionAction(installableViewItem);
-  const requestPermissions = useRequestPermissionsAction(installableViewItem);
+function useModViewItemActions(modViewItem: ModViewItem): ModActions {
+  const marketplaceListingUrl = useMarketplaceUrl(modViewItem);
+  const viewPublish = useViewPublishAction(modViewItem);
+  const viewShare = useViewShareAction(modViewItem);
+  const reactivate = useReactivateAction(modViewItem);
+  const viewLogs = useViewLogsAction(modViewItem);
+  const activate = useActivateAction(modViewItem);
+  const deactivate = useDeactivateAction(modViewItem);
+  const deleteExtension = useDeleteExtensionAction(modViewItem);
+  const requestPermissions = useRequestPermissionsAction(modViewItem);
 
   return {
     viewPublish,
@@ -64,4 +64,4 @@ function useModActions(installableViewItem: ModViewItem): ModActions {
   };
 }
 
-export default useModActions;
+export default useModViewItemActions;

@@ -29,13 +29,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { type ModViewItem } from "@/mods/modTypes";
-import useModActions from "@/extensionConsole/pages/mods/hooks/useModActions";
+import useModViewItemActions from "@/extensionConsole/pages/mods/hooks/useModViewItemActions";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
   const { activate, reactivate, requestPermissions } =
-    useModActions(modViewItem);
+    useModViewItemActions(modViewItem);
 
   const { hasUpdate, status, installedVersionNumber, unavailable } =
     modViewItem;
