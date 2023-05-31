@@ -264,7 +264,7 @@
     "type-fest": "^3.11.1",
     "typescript": "^5.0.2",
     "typescript-plugin-css-modules": "^5.0.1",
-    "webpack": "^5.84.1",
+    "webpack": "^5.85.0",
     "webpack-build-notifier": "^2.3.0",
     "webpack-bundle-analyzer": "^4.8.0",
     "webpack-cli": "^5.1.1",
