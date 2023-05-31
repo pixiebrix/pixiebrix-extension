@@ -18,17 +18,35 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
 import chromeP from "webext-polyfill-kinda";
+import { isGoogleInitialized } from "@/contrib/google/initGoogle";
 
-export async function ensureAuth(
+/**
+ * The user or account policy explicitly denied the permission.
+ * See: https://chromium.googlesource.com/chromium/src/+/ee37f1b7c6da834dec9056283cf83d88b0f2f53c/chrome/browser/extensions/api/identity/identity_api.cc#59
+ */
+const AUTH_ERROR_USER_REJECTED = "The user did not approve access.";
+
+export function isAuthRejectedError(error: unknown): boolean {
+  return getErrorMessage(error).includes(AUTH_ERROR_USER_REJECTED);
+}
+
+/**
+ * Wrapper around https://developer.chrome.com/docs/extensions/reference/identity/#method-getAuthToken
+ * @param scopes A list of OAuth2 scopes to request.
+ * @param interactive Fetching a token may require the user to sign-in to Chrome, or approve the application's requested
+ * scopes. If the interactive flag is true, getAuthToken will prompt the user as necessary. When the flag is false or
+ * omitted, getAuthToken will return failure any time a prompt would be required.
+ */
+export async function ensureGoogleToken(
   scopes: string[],
   { interactive = true } = {}
 ): Promise<string> {
   forbidContext(
     "contentScript",
-    "The Google API is not available in content scripts"
+    "The Google API is not available in content script context"
   );
 
-  if (!globalThis.gapi) {
+  if (!isGoogleInitialized()) {
     throw new TypeError("Google API not loaded");
   }
 
@@ -36,6 +54,7 @@ export async function ensureAuth(
     // Chrome-only API, do not use browser.*
     const token = (await chromeP.identity.getAuthToken({
       interactive,
+      // Overrides the blank list of scopes specified in manifest.json.
       scopes,
     })) as string; // `webext-polyfill-kinda` resolves with the first parameter of the callback, but in MV3 it resolves with an object
     if (token) {
@@ -63,7 +82,7 @@ class PermissionsError extends Error {
   }
 }
 
-export async function handleRejection(
+export async function handleGoogleRequestRejection(
   token: string,
   error: any
 ): Promise<Error> {

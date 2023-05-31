@@ -16,11 +16,11 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { isChrome } from "webext-detect-page";
 import pMemoize from "p-memoize";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { isMV3 } from "@/mv3/api";
+import { DISCOVERY_DOCS as SHEETS_DOCS } from "@/contrib/google/sheets/sheetsConstants";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 
@@ -44,6 +44,10 @@ async function onGAPILoad(): Promise<void> {
       apiKey: API_KEY,
       discoveryDocs: [...SHEETS_DOCS],
     });
+
+    if (!globalThis.gapi) {
+      throw new Error("gapi global variable was not set by gapi.client.init");
+    }
 
     initialized = true;
     console.info("gapi initialized");
