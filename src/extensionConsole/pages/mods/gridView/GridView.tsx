@@ -125,12 +125,12 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
             tableInstance.prepareRow(row);
             return (
               <GridCardErrorBoundary
-                installableItem={row.original}
+                modViewItem={row.original}
                 key={getUniqueId(row.original.mod)}
               >
                 <GridCard
                   key={getUniqueId(row.original.mod)}
-                  installableItem={row.original}
+                  modViewItem={row.original}
                 />
               </GridCardErrorBoundary>
             );

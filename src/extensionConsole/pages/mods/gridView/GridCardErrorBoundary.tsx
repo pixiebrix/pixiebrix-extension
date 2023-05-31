@@ -32,7 +32,7 @@ type Props = {
    */
   errorContext?: string;
 
-  installableItem: ModViewItem;
+  modViewItem: ModViewItem;
 };
 
 type State = {
@@ -66,13 +66,13 @@ class GridCardErrorBoundary extends Component<Props, State> {
                 <div className="d-flex justify-content-between">
                   <div>
                     <h5 className={styles.name}>
-                      {this.props.installableItem.name}
+                      {this.props.modViewItem.name}
                     </h5>
                     <span className={cx(styles.description, "text-muted")}>
                       An error occurred retrieving mod
                     </span>
                     <div className={styles.packageId}>
-                      {this.props.installableItem.sharing.packageId}
+                      {this.props.modViewItem.sharing.packageId}
                     </div>
                   </div>
                   <span className="mb-2">

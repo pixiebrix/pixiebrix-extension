@@ -71,7 +71,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
           return row.isGrouped ? (
             <ListGroupHeader groupName={row.groupByVal} style={style} />
           ) : (
-            <ListItemErrorBoundary installableItem={row.original} style={style}>
+            <ListItemErrorBoundary modViewItem={row.original} style={style}>
               <ListItem modViewItem={row.original} style={style} />
             </ListItemErrorBoundary>
           );
