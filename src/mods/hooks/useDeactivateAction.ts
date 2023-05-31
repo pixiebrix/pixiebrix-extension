@@ -21,7 +21,7 @@ import useFlags from "@/hooks/useFlags";
 import {
   getLabel,
   isExtension,
-  selectExtensionsFromInstallable,
+  selectExtensionsFromMod,
 } from "@/utils/installableUtils";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
@@ -47,8 +47,7 @@ function useDeactivateAction(
   // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
-    (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, mod),
+    (state: { options: OptionsState }) => selectExtensionsFromMod(state, mod),
     [mod]
   );
 

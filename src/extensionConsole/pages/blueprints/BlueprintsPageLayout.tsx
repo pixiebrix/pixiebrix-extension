@@ -37,7 +37,7 @@ import {
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
-import useInstallableViewItems from "@/mods/useInstallableViewItems";
+import useModViewItems from "@/mods/useModViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
@@ -108,17 +108,14 @@ const columns: Array<Column<ModViewItem>> = [
 const BlueprintsPageLayout: React.FunctionComponent<{
   installables: Mod[];
 }> = ({ installables }) => {
-  const { installableViewItems, isLoading } =
-    useInstallableViewItems(installables);
+  const { modViewItems, isLoading } = useModViewItems(installables);
 
   const teamFilters = useMemo(
     () =>
       uniq(
-        installableViewItems.map(
-          (installable) => installable.sharing.source.label
-        )
+        modViewItems.map((installable) => installable.sharing.source.label)
       ).filter((label) => label !== "Public" && label !== "Personal"),
-    [installableViewItems]
+    [modViewItems]
   );
 
   const groupBy = useSelector(selectGroupBy);
@@ -129,7 +126,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
   const tableInstance = useTable<ModViewItem>(
     {
       columns,
-      data: installableViewItems,
+      data: modViewItems,
       initialState: {
         groupBy,
         sortBy,

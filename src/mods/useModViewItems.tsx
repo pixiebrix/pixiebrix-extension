@@ -38,8 +38,8 @@ import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
-function useInstallableViewItems(installables: Mod[]): {
-  installableViewItems: readonly ModViewItem[];
+function useModViewItems(mods: Mod[]): {
+  modViewItems: readonly ModViewItem[];
   isLoading: boolean;
 } {
   const scope = useSelector(selectScope);
@@ -63,38 +63,38 @@ function useInstallableViewItems(installables: Mod[]): {
   );
 
   const isActive = useCallback(
-    (installable: Mod) => {
-      if (isExtension(installable)) {
-        return installedExtensionIds.has(installable.id);
+    (mod: Mod) => {
+      if (isExtension(mod)) {
+        return installedExtensionIds.has(mod.id);
       }
 
-      return installedRecipeIds.has(installable.metadata.id);
+      return installedRecipeIds.has(mod.metadata.id);
     },
     [installedExtensionIds, installedRecipeIds]
   );
 
   const getStatus = useCallback(
-    (installable: Mod): ModStatus => {
-      if (isDeployment(installable, installedExtensions)) {
-        if (isExtension(installable)) {
-          return isDeploymentActive(installable) ? "Active" : "Paused";
+    (mod: Mod): ModStatus => {
+      if (isDeployment(mod, installedExtensions)) {
+        if (isExtension(mod)) {
+          return isDeploymentActive(mod) ? "Active" : "Paused";
         }
 
         const deploymentExtension = installedExtensions.find(
           (installedExtension) =>
-            installedExtension._recipe?.id === getPackageId(installable) &&
+            installedExtension._recipe?.id === getPackageId(mod) &&
             installedExtension._deployment
         );
 
         return isDeploymentActive(deploymentExtension) ? "Active" : "Paused";
       }
 
-      return isActive(installable) ? "Active" : "Inactive";
+      return isActive(mod) ? "Active" : "Inactive";
     },
     [installedExtensions, isActive]
   );
 
-  const installableViewItems = useMemo(() => {
+  const modViewItems = useMemo(() => {
     // Load to map for fast lookup if you have a lot of recipes. Could put in its own memo
     const recipeMap = new Map(
       (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
@@ -107,16 +107,16 @@ function useInstallableViewItems(installables: Mod[]): {
         .map((extension) => [extension._recipe.id, extension])
     );
 
-    return installables.map((installable) => {
-      const packageId = getPackageId(installable);
+    return mods.map((mod) => {
+      const packageId = getPackageId(mod);
 
       return {
-        name: getLabel(installable),
-        description: getDescription(installable),
+        name: getLabel(mod),
+        description: getDescription(mod),
         sharing: {
           packageId,
           source: getSharingType({
-            installable,
+            mod: mod,
             organizations,
             scope,
             installedExtensions,
@@ -124,20 +124,20 @@ function useInstallableViewItems(installables: Mod[]): {
           // eslint-disable-next-line security/detect-object-injection -- packageId is a registry id
           listingId: listingsQuery.data?.[packageId]?.id,
         },
-        updatedAt: getUpdatedAt(installable),
-        status: getStatus(installable),
-        hasUpdate: updateAvailable(recipeMap, extensionsMap, installable),
+        updatedAt: getUpdatedAt(mod),
+        status: getStatus(mod),
+        hasUpdate: updateAvailable(recipeMap, extensionsMap, mod),
         installedVersionNumber: getInstalledVersionNumber(
           installedExtensions,
-          installable
+          mod
         ),
-        unavailable: isUnavailableRecipe(installable),
-        mod: installable,
+        unavailable: isUnavailableRecipe(mod),
+        mod: mod,
       } satisfies ModViewItem;
     });
   }, [
     getStatus,
-    installables,
+    mods,
     installedExtensions,
     listingsQuery,
     organizations,
@@ -146,12 +146,12 @@ function useInstallableViewItems(installables: Mod[]): {
   ]);
 
   return {
-    installableViewItems,
+    modViewItems,
     // Don't wait for the marketplace listings to load. They're only used to determine the icon and sharing options.
     // FIXME: when the marketplace data loads, it causes a re-render because the data is passed to React Table. So if
-    //  the user had a 3-dot menu open for one of the installables, it will close. This is a bit jarring.
+    //  the user had a 3-dot menu open for one of the mods, it will close. This is a bit jarring.
     isLoading: isRecipesLoading,
   };
 }
 
-export default useInstallableViewItems;
+export default useModViewItems;
