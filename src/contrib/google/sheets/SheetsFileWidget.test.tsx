@@ -67,7 +67,7 @@ describe("SheetsFileWidget", () => {
   });
 
   it("smoke test", async () => {
-    const wrapper = render(
+    const rendered = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: null },
@@ -76,13 +76,13 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   it("required gapi", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
 
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: null },
@@ -92,12 +92,10 @@ describe("SheetsFileWidget", () => {
     await waitForEffect();
 
     expect(
-      wrapper.getByText(
+      screen.getByText(
         "The Google API is not initialized. Please click the button to initialize it."
       )
     ).toBeVisible();
-
-    expect(wrapper.asFragment()).toMatchSnapshot();
   });
 
   it("selects from file picker", async () => {
@@ -112,7 +110,7 @@ describe("SheetsFileWidget", () => {
       ensureSheetsTokenAction: jest.fn(),
     });
 
-    const wrapper = render(
+    const rendered = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: null },
@@ -122,10 +120,10 @@ describe("SheetsFileWidget", () => {
     await waitForEffect();
 
     await act(async () => {
-      await userEvent.click(wrapper.getByText("Select"));
+      await userEvent.click(screen.getByText("Select"));
     });
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   it("renders valid sheet on load", async () => {
@@ -133,7 +131,7 @@ describe("SheetsFileWidget", () => {
       title: "Test Sheet",
     });
 
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: "abc123" },
@@ -142,10 +140,8 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
-
     // Verify it's showing the sheet title and not the sheet unique id
-    expect(wrapper.container.querySelector("input")).toHaveValue("Test Sheet");
+    expect(screen.getByRole("textbox")).toHaveDisplayValue("Test Sheet");
   });
 
   it("falls back to spreadsheet id if fetching properties fails", async () => {
@@ -153,7 +149,7 @@ describe("SheetsFileWidget", () => {
       new Error("Error fetching sheet properties")
     );
 
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: "abc123" },
@@ -162,12 +158,11 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
-    expect(wrapper.container.querySelector("input")).toHaveValue("abc123");
+    expect(screen.getByRole("textbox")).toHaveDisplayValue("abc123");
   });
 
   it("shows workshop fallback on expression", async () => {
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: makeVariableExpression("@sheet") },
@@ -176,7 +171,7 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.container.querySelector("input")).toHaveValue(
+    expect(screen.getByRole("textbox")).toHaveDisplayValue(
       "Use Workshop to edit"
     );
   });

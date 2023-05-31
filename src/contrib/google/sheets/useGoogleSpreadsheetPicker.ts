@@ -83,12 +83,6 @@ function useGoogleSpreadsheetPicker(): {
       throw new Error("Unable to determine URL for File Picker origin");
     }
 
-    const token = await ensureSheetsToken();
-
-    await new Promise((resolve) => {
-      gapi.load("picker", { callback: resolve });
-    });
-
     if (isNullOrBlank(APP_ID)) {
       throw new Error("Internal error: Google app ID is not configured");
     }
@@ -96,6 +90,12 @@ function useGoogleSpreadsheetPicker(): {
     if (isNullOrBlank(API_KEY)) {
       throw new Error("Internal error: Google API key is not configured");
     }
+
+    const token = await ensureSheetsToken();
+
+    await new Promise((resolve) => {
+      gapi.load("picker", { callback: resolve });
+    });
 
     // https://developers.google.com/drive/picker/reference#docs-view
     const view = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS);
