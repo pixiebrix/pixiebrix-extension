@@ -62,7 +62,7 @@ export const getContainedExtensionPointTypes = (
 ): ExtensionPointType[] => {
   const extensionPointTypes = new Set<ExtensionPointType>();
 
-  for (const definition of Object.values(recipe.definitions)) {
+  for (const definition of Object.values(recipe.definitions ?? [])) {
     if (definition.kind !== "extensionPoint") {
       continue;
     }
