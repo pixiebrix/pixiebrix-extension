@@ -19,7 +19,7 @@ import React, { type ReactElement } from "react";
 import { type UUID } from "@/types/stringTypes";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { sortBy } from "lodash";
 import { getScopeAndId } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

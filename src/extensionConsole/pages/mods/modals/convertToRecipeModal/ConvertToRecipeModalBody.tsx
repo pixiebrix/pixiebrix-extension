@@ -21,8 +21,8 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { generateRecipeId } from "@/utils/recipeUtils";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModalsContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectModalsContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import * as Yup from "yup";
 import {
   PACKAGE_REGEX,
@@ -141,7 +141,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   );
 
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   const { refetch: refetchRecipes } = useAllRecipes();
@@ -192,13 +192,13 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
       if (showPublishContext == null) {
         dispatch(
-          blueprintModalsSlice.actions.setShareContext({
+          modModalsSlice.actions.setShareContext({
             blueprintId: recipe.metadata.id,
           })
         );
       } else {
         dispatch(
-          blueprintModalsSlice.actions.setPublishContext({
+          modModalsSlice.actions.setPublishContext({
             blueprintId: recipe.metadata.id,
           })
         );

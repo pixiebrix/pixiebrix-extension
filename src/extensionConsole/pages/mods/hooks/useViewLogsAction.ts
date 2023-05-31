@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getLabel, isExtension } from "@/utils/modUtils";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 function useViewLogsAction(
@@ -30,7 +30,7 @@ function useViewLogsAction(
 
   const viewLogs = () => {
     dispatch(
-      blueprintModalsSlice.actions.setLogsContext({
+      modModalsSlice.actions.setLogsContext({
         title: getLabel(mod),
         messageContext: isInstallableBlueprint
           ? {

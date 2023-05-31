@@ -17,8 +17,8 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { RequireScope } from "@/auth/RequireScope";
 import ModalLayout from "@/components/ModalLayout";
 import ShareRecipeModalBody from "./ShareRecipeModalBody";
@@ -26,7 +26,7 @@ import ShareRecipeModalBody from "./ShareRecipeModalBody";
 const ShareRecipeModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   const showShareContext = useSelector(selectShowShareContext);

@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import ModPageLayout from "@/extensionConsole/pages/mods/ModPageLayout";
+import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
 import useMods from "@/mods/useMods";
 import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
@@ -24,7 +24,7 @@ import { reportEvent } from "@/telemetry/events";
 import Modals from "./modals/Modals";
 import useShowPublishUrlEffect from "@/extensionConsole/pages/mods/hooks/useShowPublishUrlEffect";
 
-const ModPage: React.FunctionComponent = () => {
+const ModsPage: React.FunctionComponent = () => {
   useTitle("Mods");
   const { mods, error } = useMods();
   useShowPublishUrlEffect();
@@ -35,10 +35,10 @@ const ModPage: React.FunctionComponent = () => {
 
   return (
     <div className="h-100">
-      {error ? <ErrorDisplay error={error} /> : <ModPageLayout mods={mods} />}
+      {error ? <ErrorDisplay error={error} /> : <ModsPageLayout mods={mods} />}
       <Modals />
     </div>
   );
 };
 
-export default ModPage;
+export default ModsPage;

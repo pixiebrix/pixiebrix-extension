@@ -27,9 +27,9 @@ import servicesSlice, {
   type ServicesRootState,
 } from "@/store/servicesSlice";
 import {
-  type BlueprintModalsRootState,
-  blueprintModalsSlice,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+  type ModModalsRootState,
+  modModalsSlice,
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -48,7 +48,7 @@ import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type BlueprintsRootState } from "@/extensionConsole/pages/mods/blueprintsSelectors";
+import { type ModsRootState } from "@/extensionConsole/pages/mods/modsSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
@@ -68,12 +68,12 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export type RootState = AuthRootState &
   LogRootState &
-  BlueprintsRootState &
+  ModsRootState &
   ExtensionsRootState &
   ServicesRootState &
   SettingsRootState &
   WorkshopRootState &
-  BlueprintModalsRootState &
+  ModModalsRootState &
   SessionRootState &
   SessionChangesRootState;
 
@@ -102,7 +102,7 @@ const store = configureStore({
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    blueprintModals: blueprintModalsSlice.reducer,
+    modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
     recipes: recipesSlice.reducer,
     session: sessionSlice.reducer,

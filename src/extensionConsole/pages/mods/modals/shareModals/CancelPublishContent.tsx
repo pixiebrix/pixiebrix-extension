@@ -19,8 +19,8 @@ import React from "react";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import PublishContentLayout from "./PublishContentLayout";
 import { produce } from "immer";
 import {
@@ -45,7 +45,7 @@ const CancelPublishContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   const confirmCancelPublish = async () => {

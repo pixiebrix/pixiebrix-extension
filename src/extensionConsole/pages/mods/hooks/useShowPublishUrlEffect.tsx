@@ -19,9 +19,9 @@ import { useHistory, useLocation } from "react-router";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import {
-  blueprintModalsSlice,
+  modModalsSlice,
   type PublishContext,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
 // Supports showing the publish modal via URL, e.g. to link from the Sidebar
 const useShowPublishUrlEffect = () => {
@@ -42,7 +42,7 @@ const useShowPublishUrlEffect = () => {
 
     if (showPublish && validShareContext) {
       dispatch(
-        blueprintModalsSlice.actions.setPublishContext({
+        modModalsSlice.actions.setPublishContext({
           ...(blueprintId ? { blueprintId } : {}),
           ...(extensionId ? { extensionId } : {}),
         } as PublishContext)

@@ -15,16 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RootState } from "@/store/optionsStore";
+import { type ModsState } from "@/extensionConsole/pages/mods/modsSlice";
 
-export const selectShowLogsContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showLogsContext;
+export type ModsRootState = {
+  mods: ModsState;
+};
 
-export const selectShowShareContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showShareContext;
-
-export const selectShowPublishContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showPublishContext;
-
-export const selectModalsContext = ({ blueprintModals }: RootState) =>
-  blueprintModals;
+export const selectView = ({ mods }: ModsRootState) => mods.view;
+export const selectGroupBy = ({ mods }: ModsRootState) => mods.groupBy;
+export const selectSortBy = ({ mods }: ModsRootState) => mods.sortBy;
+export const selectActiveTab = ({ mods }: ModsRootState) => mods.activeTab;
+export const selectSearchQuery = ({ mods }: ModsRootState) => mods.searchQuery;

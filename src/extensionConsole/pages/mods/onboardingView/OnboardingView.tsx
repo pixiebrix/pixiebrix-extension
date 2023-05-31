@@ -26,7 +26,7 @@ import { type OnboardingType } from "@/extensionConsole/pages/mods/onboardingVie
 import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
-import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
+import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (

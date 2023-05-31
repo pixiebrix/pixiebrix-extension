@@ -40,7 +40,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
 import notify from "@/utils/notify";
 import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
-import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
+import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import ModIcon from "@/mods/ModIcon";

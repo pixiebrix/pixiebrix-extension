@@ -19,7 +19,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
@@ -36,8 +36,8 @@ const configureStoreForTests = () =>
       auth: authSlice.reducer,
       settings: settingsSlice.reducer,
       options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: modsSlice.reducer,
+      modModals: modModalsSlice.reducer,
+      mods: modsSlice.reducer,
       recipes: recipesSlice.reducer,
       services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,

@@ -18,8 +18,8 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
@@ -46,7 +46,7 @@ const PublishRecipeContent: React.FunctionComponent = () => {
   const [error, setError] = React.useState<string | null>(null);
 
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   const publish = async () => {

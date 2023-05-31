@@ -19,8 +19,8 @@ import React, { type ReactElement } from "react";
 import { type UUID } from "@/types/stringTypes";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import * as Yup from "yup";
 import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
@@ -83,7 +83,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
   } = useOptionalRecipe(blueprintId);
 
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   // If an extension was just converted to a blueprint, the API request is likely be in progress and recipe will be null

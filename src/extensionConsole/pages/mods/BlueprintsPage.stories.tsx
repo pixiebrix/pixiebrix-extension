@@ -17,20 +17,20 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import ModPage from "@/extensionConsole/pages/mods/ModPage";
+import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
 import { recipesSlice } from "@/recipes/recipesSlice";
 
 export default {
   title: "Blueprints/BlueprintsPage",
-  component: ModPage,
-} as ComponentMeta<typeof ModPage>;
+  component: ModsPage,
+} as ComponentMeta<typeof ModsPage>;
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -38,7 +38,7 @@ function optionsStore(initialState?: any) {
       auth: authSlice.reducer,
       blueprints: modsSlice.reducer,
       options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
+      blueprintModals: modModalsSlice.reducer,
       recipes: recipesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
@@ -51,9 +51,9 @@ function optionsStore(initialState?: any) {
   });
 }
 
-const Template: ComponentStory<typeof ModPage> = (args) => (
+const Template: ComponentStory<typeof ModsPage> = (args) => (
   <Provider store={optionsStore()}>
-    <ModPage {...args} />
+    <ModsPage {...args} />
   </Provider>
 );
 

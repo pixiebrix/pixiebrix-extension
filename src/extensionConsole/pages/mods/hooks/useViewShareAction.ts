@@ -19,9 +19,9 @@ import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isExtension } from "@/utils/modUtils";
 import {
-  blueprintModalsSlice,
+  modModalsSlice,
   type ShareContext,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
 function useViewShareAction(
   installableViewItem: ModViewItem
@@ -40,7 +40,7 @@ function useViewShareAction(
           extensionId: mod.id,
         };
 
-    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
+    dispatch(modModalsSlice.actions.setShareContext(shareContext));
   };
 
   // Deployment sharing is controlled via the Admin Console

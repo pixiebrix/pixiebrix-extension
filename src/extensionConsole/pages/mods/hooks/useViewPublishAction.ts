@@ -19,9 +19,9 @@ import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isExtension } from "@/utils/modUtils";
 import {
-  blueprintModalsSlice,
+  modModalsSlice,
   type PublishContext,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
 function useViewPublishAction(
   installableViewItem: ModViewItem
@@ -41,7 +41,7 @@ function useViewPublishAction(
           extensionId: mod.id,
         };
 
-    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
+    dispatch(modModalsSlice.actions.setPublishContext(publishContext));
   };
 
   const showPublishAction =

@@ -5,7 +5,7 @@ import { Col, Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import modsSlice, { type ActiveTab } from "./modsSlice";
-import { selectActiveTab, selectSearchQuery } from "./blueprintsSelectors";
+import { selectActiveTab, selectSearchQuery } from "./modsSelectors";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -209,7 +209,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   };
 };
 
-const ModPageSidebar: React.FunctionComponent<ModPageSidebarProps> = ({
+const ModsPageSidebar: React.FunctionComponent<ModPageSidebarProps> = ({
   teamFilters,
   tableInstance,
 }) => {
@@ -356,4 +356,4 @@ const ModPageSidebar: React.FunctionComponent<ModPageSidebarProps> = ({
   );
 };
 
-export default ModPageSidebar;
+export default ModsPageSidebar;
