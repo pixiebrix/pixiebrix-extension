@@ -23,10 +23,6 @@ import { truncate } from "lodash";
 import { useTitle } from "@/hooks/title";
 import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
-import ReduxPersistenceContext, {
-  type ReduxPersistenceContextType,
-} from "@/store/ReduxPersistenceContext";
-import { persistor } from "@/store/optionsStore";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
 import useRecipeIdParam from "@/extensionConsole/pages/useRecipeIdParam";
@@ -82,12 +78,6 @@ const ActivateRecipeCard: React.FC = () => {
   }
 
   const { wizardSteps, initialValues, validationSchema } = wizardState;
-
-  const reduxPersistenceContext: ReduxPersistenceContextType = {
-    async flush() {
-      await persistor.flush();
-    },
-  };
 
   const renderBody: RenderBody = ({ values, isSubmitting }) => (
     <>
@@ -166,15 +156,13 @@ const ActivateRecipeCard: React.FC = () => {
   };
 
   return (
-    <ReduxPersistenceContext.Provider value={reduxPersistenceContext}>
-      <Form
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-        renderBody={renderBody}
-        renderSubmit={() => null}
-      />
-    </ReduxPersistenceContext.Provider>
+    <Form
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+      renderBody={renderBody}
+      renderSubmit={() => null}
+    />
   );
 };
 

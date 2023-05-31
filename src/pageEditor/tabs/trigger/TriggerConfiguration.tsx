@@ -62,40 +62,40 @@ const TriggerConfiguration: React.FC<{
     const nextTrigger = currentTarget.value as Trigger;
 
     if (!supportsSelector(nextTrigger)) {
-      setFieldValue(fieldName("rootSelector"), null);
-      setFieldValue(fieldName("attachMode"), null);
+      void setFieldValue(fieldName("rootSelector"), null);
+      void setFieldValue(fieldName("attachMode"), null);
     }
 
     if (!supportsTargetMode(nextTrigger)) {
-      setFieldValue(fieldName("targetMode"), null);
+      void setFieldValue(fieldName("targetMode"), null);
     }
 
     if (nextTrigger !== "interval") {
-      setFieldValue(fieldName("intervalMillis"), null);
-      setFieldValue(fieldName("background"), null);
+      void setFieldValue(fieldName("intervalMillis"), null);
+      void setFieldValue(fieldName("background"), null);
     }
 
     if (nextTrigger === "custom") {
-      setFieldValue(fieldName("customEvent"), { eventName: "" });
+      void setFieldValue(fieldName("customEvent"), { eventName: "" });
     } else {
-      setFieldValue(fieldName("customEvent"), null);
+      void setFieldValue(fieldName("customEvent"), null);
     }
 
-    setFieldValue(
+    void setFieldValue(
       fieldName("reportMode"),
       getDefaultReportModeForTrigger(nextTrigger)
     );
 
     if (nextTrigger === "selectionchange" && debounce == null) {
       // Add debounce by default, because the selection event fires for every event when clicking and dragging
-      setFieldValue(fieldName("debounce"), {
+      void setFieldValue(fieldName("debounce"), {
         waitMillis: 250,
         leading: false,
         trailing: true,
       });
     }
 
-    setFieldValue(fieldName("trigger"), currentTarget.value);
+    void setFieldValue(fieldName("trigger"), currentTarget.value);
   };
 
   return (

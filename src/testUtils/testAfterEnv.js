@@ -26,7 +26,6 @@ import "jest-location-mock";
 // eslint-disable-next-line import/no-unassigned-import -- mocking permissions API
 import "./permissionsMock";
 import * as apiClientMock from "./apiClientMock";
-import * as storePersistorMock from "./storePersistorMock";
 import * as detectPageMock from "./detectPageMock";
 
 global.$ = $;
@@ -50,4 +49,3 @@ jest.setMock("webext-dynamic-content-scripts/distribution/active-tab", {});
 
 jest.setMock("webext-detect-page", detectPageMock);
 jest.setMock("@/services/apiClient", apiClientMock);
-jest.setMock("@/store/optionsStore", storePersistorMock);
