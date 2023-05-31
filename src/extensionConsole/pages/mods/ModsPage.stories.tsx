@@ -28,7 +28,7 @@ import { appApi } from "@/services/api";
 import { recipesSlice } from "@/recipes/recipesSlice";
 
 export default {
-  title: "Blueprints/BlueprintsPage",
+  title: "Mods/ModsPage",
   component: ModsPage,
 } as ComponentMeta<typeof ModsPage>;
 
@@ -36,9 +36,9 @@ function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      blueprints: modsSlice.reducer,
+      mods: modsSlice.reducer,
       options: extensionsSlice.reducer,
-      blueprintModals: modModalsSlice.reducer,
+      modModals: modModalsSlice.reducer,
       recipes: recipesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },

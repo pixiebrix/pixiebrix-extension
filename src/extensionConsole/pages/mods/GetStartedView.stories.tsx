@@ -32,14 +32,14 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 export default {
-  title: "Blueprints/GetStartedView",
+  title: "Mods/GetStartedView",
   component: GetStartedView,
 } as ComponentMeta<typeof GetStartedView>;
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      blueprints: persistReducer(persistModsConfig, modsSlice.reducer),
+      mods: persistReducer(persistModsConfig, modsSlice.reducer),
       recipes: recipesSlice.reducer,
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
