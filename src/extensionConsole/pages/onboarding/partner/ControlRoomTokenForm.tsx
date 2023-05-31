@@ -16,12 +16,11 @@
  */
 
 import * as Yup from "yup";
-import React from "react";
+import React, { useContext } from "react";
 import servicesSlice from "@/store/servicesSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
-import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
@@ -35,6 +34,7 @@ import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/par
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { selectSettings } from "@/store/settingsSelectors";
 import { isEmpty } from "lodash";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -58,6 +58,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
   const dispatch = useDispatch();
   const history = useHistory();
   const configuredServices = useSelector(selectConfiguredServices);
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
 
@@ -92,7 +93,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
 
     notify.success("Successfully connected Automation Anywhere!");
 
-    await persistor.flush();
+    await flushReduxPersistence();
 
     try {
       await services.refresh();
