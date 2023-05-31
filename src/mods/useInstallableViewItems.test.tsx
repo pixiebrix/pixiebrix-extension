@@ -16,7 +16,7 @@
  */
 
 /* eslint-disable new-cap -- test methods */
-import useInstallableViewItems from "@/installables/useInstallableViewItems";
+import useInstallableViewItems from "@/mods/useInstallableViewItems";
 import {
   type PersistedExtension,
   type ResolvedExtension,
@@ -25,8 +25,8 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { type UnavailableRecipe } from "@/installables/installableTypes";
-import { selectUnavailableRecipe } from "@/installables/useInstallables";
+import { type UnavailableRecipe } from "@/mods/installableTypes";
+import { selectUnavailableRecipe } from "@/mods/useInstallables";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   extensionFactory,

@@ -17,14 +17,14 @@
 
 import useActivateAction from "@/extensionConsole/pages/blueprints/hooks/useActivateAction";
 import useViewPublishAction from "@/extensionConsole/pages/blueprints/hooks/useViewPublishAction";
-import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
+import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/blueprints/hooks/useViewShareAction";
-import useDeleteExtensionAction from "@/installables/hooks/useDeleteExtensionAction";
+import useDeleteExtensionAction from "@/mods/hooks/useDeleteExtensionAction";
 import useReactivateAction from "@/extensionConsole/pages/blueprints/hooks/useReactivateAction";
-import { type InstallableViewItem } from "@/installables/installableTypes";
-import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
+import { type InstallableViewItem } from "@/mods/installableTypes";
+import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import useViewLogsAction from "@/extensionConsole/pages/blueprints/hooks/useViewLogsAction";
-import useDeactivateAction from "@/installables/hooks/useDeactivateAction";
+import useDeactivateAction from "@/mods/hooks/useDeactivateAction";
 
 type ActionCallback = () => void;
 

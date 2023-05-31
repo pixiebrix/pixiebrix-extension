@@ -26,7 +26,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
-import { type SharingSource } from "@/installables/installableTypes";
+import { type SharingSource } from "@/mods/installableTypes";
 
 const sharingIcons = {
   Personal: faEyeSlash,

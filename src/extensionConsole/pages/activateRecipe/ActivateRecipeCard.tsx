@@ -43,7 +43,7 @@ import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice
 import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/blueprints/BlueprintsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
-import InstallableIcon from "@/installables/InstallableIcon";
+import InstallableIcon from "@/mods/InstallableIcon";
 
 const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();

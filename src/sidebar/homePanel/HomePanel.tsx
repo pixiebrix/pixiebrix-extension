@@ -17,7 +17,7 @@
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
-import useInstallables from "@/installables/useInstallables";
+import useInstallables from "@/mods/useInstallables";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 

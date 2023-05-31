@@ -20,9 +20,9 @@ import React from "react";
 import {
   type Installable,
   type InstallableViewItem,
-} from "@/installables/installableTypes";
+} from "@/mods/installableTypes";
 import { ListGroup, Row } from "react-bootstrap";
-import useInstallableViewItems from "@/installables/useInstallableViewItems";
+import useInstallableViewItems from "@/mods/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";

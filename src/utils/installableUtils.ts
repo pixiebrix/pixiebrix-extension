@@ -24,7 +24,7 @@ import {
   type SharingSource,
   type SharingType,
   type UnavailableRecipe,
-} from "@/installables/installableTypes";
+} from "@/mods/installableTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
