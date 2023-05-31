@@ -18,8 +18,8 @@
 import { type ModViewItem } from "@/mods/modTypes";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-function useMarketplaceUrl(installableViewItem: ModViewItem): string | null {
-  const { sharing } = installableViewItem;
+function useMarketplaceUrl(modViewItem: ModViewItem): string | null {
+  const { sharing } = modViewItem;
   const isPublished = Boolean(sharing.listingId);
 
   return isPublished ? `${MARKETPLACE_URL}${sharing.listingId}/` : null;
