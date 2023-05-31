@@ -24,7 +24,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import ServicesEditor from "@/extensionConsole/pages/services/ServicesEditor";
 import BrickCreatePage from "@/extensionConsole/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/extensionConsole/pages/brickEditor/EditPage";
-import BlueprintsPage from "@/extensionConsole/pages/blueprints/BlueprintsPage";
+import BlueprintsPage from "@/extensionConsole/pages/mods/BlueprintsPage";
 import SettingsPage from "@/extensionConsole/pages/settings/SettingsPage";
 import Navbar from "@/extensionConsole/Navbar";
 import Footer from "@/layout/Footer";
