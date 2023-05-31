@@ -65,15 +65,15 @@ const QuickBarProviderConfiguration: React.FC<{
         as={SwitchButtonWidget}
         value={Boolean(rootActionField.value)}
         description="Toggle on to show a parent action that contains child actions when selected"
-        onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+        onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
           if (target.value) {
-            setFieldValue("extension.rootAction", {
+            await setFieldValue("extension.rootAction", {
               title: null,
               icon: null,
               requireActiveRoot: false,
             });
           } else {
-            setFieldValue("extension.rootAction", null);
+            await setFieldValue("extension.rootAction", null);
           }
         }}
       />

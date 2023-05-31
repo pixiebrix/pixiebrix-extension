@@ -94,9 +94,9 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             description="Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel"
             name={configName("body")}
             value={isPipelineExpression(body)}
-            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
-                setFieldValue(configName("body"), {
+                await setFieldValue(configName("body"), {
                   __type__: "pipeline",
                   __value__: [
                     createNewBlock(DocumentRenderer.BLOCK_ID, {
@@ -104,12 +104,12 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                     }),
                   ],
                 });
-                setFieldValue(
+                await setFieldValue(
                   configName("appearance", "refreshTrigger"),
                   "manual"
                 );
               } else {
-                setFieldValue(configName("body"), {
+                await setFieldValue(configName("body"), {
                   __type__: "nunjucks",
                   __value__: "Enter step content, supports **markdown**",
                 });
@@ -146,13 +146,13 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             description="Wait for the target element to be added to the page"
             name={configName("appearance", "wait")}
             value={Boolean(appearance?.wait)}
-            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
-                setFieldValue(configName("appearance", "wait"), {
+                await setFieldValue(configName("appearance", "wait"), {
                   maxWaitMillis: 0,
                 });
               } else {
-                setFieldValue(configName("appearance", "wait"), null);
+                await setFieldValue(configName("appearance", "wait"), null);
               }
             }}
           />
@@ -178,14 +178,14 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
             name={configName("onBeforeShow")}
             value={onBeforeShow != null}
-            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
-                setFieldValue(configName("onBeforeShow"), {
+                await setFieldValue(configName("onBeforeShow"), {
                   __type__: "pipeline",
                   __value__: [],
                 });
               } else {
-                setFieldValue(configName("onBeforeShow"), null);
+                await setFieldValue(configName("onBeforeShow"), null);
               }
             }}
           />
@@ -196,14 +196,14 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             description="Toggle on to run actions after the step is completed. Edit the actions in the Outline Panel"
             name={configName("onAfterShow")}
             value={onAfterShow != null}
-            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
-                setFieldValue(configName("onAfterShow"), {
+                await setFieldValue(configName("onAfterShow"), {
                   __type__: "pipeline",
                   __value__: [],
                 });
               } else {
-                setFieldValue(configName("onAfterShow"), null);
+                await setFieldValue(configName("onAfterShow"), null);
               }
             }}
           />
@@ -235,13 +235,13 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             description="Toggle on to automatically scroll to the element"
             name={configName("appearance", "scroll")}
             value={Boolean(appearance?.scroll)}
-            onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
-                setFieldValue(configName("appearance", "scroll"), {
+                await setFieldValue(configName("appearance", "scroll"), {
                   behavior: "auto",
                 });
               } else {
-                setFieldValue(configName("appearance", "scroll"), null);
+                await setFieldValue(configName("appearance", "scroll"), null);
               }
             }}
           />

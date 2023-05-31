@@ -207,7 +207,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
 
   const onDelete = useCallback(
     (property: string) => {
-      setFieldValue(
+      void setFieldValue(
         name,
         produce(valueRef.current, (draft) => {
           if (draft) {
@@ -230,7 +230,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
           previousValue,
         });
 
-        setFieldValue(
+        void setFieldValue(
           name,
           produce(previousValue, (draft) => {
             draft[newProp] = draft[oldProp] ?? "";
@@ -243,7 +243,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
   );
 
   const addProperty = useCallback(() => {
-    setFieldValue(
+    void setFieldValue(
       name,
       produce(valueRef.current, (draft) => {
         const prop = freshIdentifier(

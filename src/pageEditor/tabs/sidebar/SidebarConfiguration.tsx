@@ -48,23 +48,23 @@ const SidebarConfiguration: React.FC<{
     const nextTrigger = currentTarget.value as Trigger;
 
     if (nextTrigger === "custom") {
-      setFieldValue(fieldName("customEvent"), { eventName: "" });
+      void setFieldValue(fieldName("customEvent"), { eventName: "" });
     } else {
-      setFieldValue(fieldName("customEvent"), null);
+      void setFieldValue(fieldName("customEvent"), null);
     }
 
     if (nextTrigger !== "manual" && debounce == null) {
       // Add debounce by default, because the selection event fires for every event when clicking and dragging
-      setFieldValue(fieldName("debounce"), {
+      void setFieldValue(fieldName("debounce"), {
         waitMillis: 250,
         leading: false,
         trailing: true,
       });
     } else if (nextTrigger === "manual") {
-      setFieldValue(fieldName("debounce"), null);
+      void setFieldValue(fieldName("debounce"), null);
     }
 
-    setFieldValue(fieldName("trigger"), currentTarget.value);
+    void setFieldValue(fieldName("trigger"), currentTarget.value);
   };
 
   return (

@@ -17,7 +17,7 @@
 
 import styles from "@/extensionConsole/pages/services/PrivateServicesCard.module.scss";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { connect } from "react-redux";
 import servicesSlice from "@/store/servicesSlice";
 import Page from "@/layout/Page";
@@ -28,7 +28,6 @@ import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
-import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import ZapierModal from "@/extensionConsole/pages/services/ZapierModal";
 import notify from "@/utils/notify";
@@ -43,6 +42,7 @@ import {
   type RawServiceConfiguration,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -64,6 +64,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     useState<IService>(null);
   const [newConfiguration, setNewConfiguration] =
     useState<RawServiceConfiguration>(null);
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   const {
     activeConfiguration,
@@ -92,7 +93,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       setNewConfiguration(null);
       setNewConfigurationService(null);
       setNewIntegration(config);
-      await persistor.flush();
+      await flushReduxPersistence();
 
       try {
         await services.refresh();
@@ -106,7 +107,13 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       navigate("/services");
     },
-    [updateServiceConfig, activeService, newConfigurationService, navigate]
+    [
+      updateServiceConfig,
+      newConfigurationService,
+      activeService,
+      flushReduxPersistence,
+      navigate,
+    ]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
@@ -149,10 +156,12 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const handleDelete = useCallback(
     async (id) => {
       deleteServiceConfig({ id });
-      notify.success(`Deleted private configuration for ${activeService.name}`);
+      notify.success(
+        `Deleted private configuration for ${activeService?.name}`
+      );
       navigate("/services/");
 
-      await persistor.flush();
+      await flushReduxPersistence();
 
       try {
         await services.refresh();
@@ -164,7 +173,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         });
       }
     },
-    [deleteServiceConfig, navigate, activeService]
+    [deleteServiceConfig, activeService?.name, navigate, flushReduxPersistence]
   );
 
   return (
