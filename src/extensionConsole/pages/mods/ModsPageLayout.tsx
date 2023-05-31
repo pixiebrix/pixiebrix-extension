@@ -39,7 +39,7 @@ import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useModViewItems from "@/mods/useModViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
-import BlueprintsToolbar from "@/extensionConsole/pages/mods/BlueprintsToolbar";
+import ModsPageToolbar from "@/extensionConsole/pages/mods/ModsPageToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/mods/BlueprintsPageContent";
 import Loader from "@/components/Loader";
 import type { Mod, ModViewItem } from "@/mods/modTypes";
@@ -159,7 +159,7 @@ const ModsPageLayout: React.FunctionComponent<{
         tableInstance={tableInstance}
       />
       <Col className={styles.mainContainer} sm={12} md={9} xl={10}>
-        <BlueprintsToolbar tableInstance={tableInstance} />
+        <ModsPageToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
           {isLoading ? (
