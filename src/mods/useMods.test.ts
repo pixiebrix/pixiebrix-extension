@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import useInstallables from "@/mods/useInstallables";
+import useMods from "@/mods/useMods";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
@@ -37,7 +37,7 @@ jest.mock("@/recipes/recipesHooks", () => ({
 
 const useAllRecipesMock = jest.mocked(useAllRecipes);
 
-describe("useInstallables", () => {
+describe("useMods", () => {
   beforeEach(() => {
     appApiMock.reset();
     appApiMock.onGet("/api/extensions/").reply(200, []);
@@ -47,18 +47,18 @@ describe("useInstallables", () => {
   });
 
   it("handles empty state", async () => {
-    const wrapper = renderHook(() => useInstallables());
+    const wrapper = renderHook(() => useMods());
 
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [],
+      mods: [],
       error: false,
     });
   });
 
   it("handles unavailable", async () => {
-    const wrapper = renderHook(() => useInstallables(), {
+    const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
           // eslint-disable-next-line new-cap -- unsave
@@ -78,7 +78,7 @@ describe("useInstallables", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           isStub: true,
         }),
@@ -87,10 +87,10 @@ describe("useInstallables", () => {
     });
   });
 
-  it("multiple unavailable are single installable", async () => {
+  it("multiple unavailable are single mod", async () => {
     const metadata = recipeMetadataFactory();
 
-    const wrapper = renderHook(() => useInstallables(), {
+    const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
           // eslint-disable-next-line new-cap -- unsave
@@ -112,7 +112,7 @@ describe("useInstallables", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           isStub: true,
         }),
@@ -129,7 +129,7 @@ describe("useInstallables", () => {
       error: undefined,
     } as any);
 
-    const wrapper = renderHook(() => useInstallables(), {
+    const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
           // eslint-disable-next-line new-cap -- test setup
@@ -149,7 +149,7 @@ describe("useInstallables", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           kind: "recipe",
         }),
@@ -157,18 +157,18 @@ describe("useInstallables", () => {
       error: false,
     });
 
-    expect(wrapper.result.current.installables[0]).not.toHaveProperty("isStub");
+    expect(wrapper.result.current.mods[0]).not.toHaveProperty("isStub");
   });
 
   it("handles inactive cloud extension", async () => {
     appApiMock.onGet("/api/extensions/").reply(200, [cloudExtensionFactory()]);
 
-    const wrapper = renderHook(() => useInstallables());
+    const wrapper = renderHook(() => useMods());
 
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           active: false,
           extensionPointId: expect.toBeString(),
@@ -184,7 +184,7 @@ describe("useInstallables", () => {
     const cloudExtension = cloudExtensionFactory();
     appApiMock.onGet("/api/extensions/").reply(200, [cloudExtension]);
 
-    const wrapper = renderHook(() => useInstallables(), {
+    const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
           // eslint-disable-next-line new-cap -- test setup
@@ -199,7 +199,7 @@ describe("useInstallables", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           active: true,
           extensionPointId: expect.toBeString(),
