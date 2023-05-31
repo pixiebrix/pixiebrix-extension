@@ -23,16 +23,14 @@ import {
   type ShareContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
-function useViewShareAction(
-  installableViewItem: ModViewItem
-): () => void | null {
-  const { mod, unavailable, sharing } = installableViewItem;
+function useViewShareAction(modViewItem: ModViewItem): () => void | null {
+  const { mod, unavailable, sharing } = modViewItem;
   const dispatch = useDispatch();
-  const isInstallableBlueprint = !isExtension(mod);
+  const isModBlueprint = !isExtension(mod);
   const isDeployment = sharing.source.type === "Deployment";
 
   const viewShare = () => {
-    const shareContext: ShareContext = isInstallableBlueprint
+    const shareContext: ShareContext = isModBlueprint
       ? {
           blueprintId: getPackageId(mod),
         }

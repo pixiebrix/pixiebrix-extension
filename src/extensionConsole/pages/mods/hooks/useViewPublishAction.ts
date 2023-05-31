@@ -23,17 +23,15 @@ import {
   type PublishContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
-function useViewPublishAction(
-  installableViewItem: ModViewItem
-): () => void | null {
-  const { mod, unavailable, sharing } = installableViewItem;
+function useViewPublishAction(modViewItem: ModViewItem): () => void | null {
+  const { mod, unavailable, sharing } = modViewItem;
   const isDeployment = sharing.source.type === "Deployment";
 
   const dispatch = useDispatch();
-  const isInstallableExtension = isExtension(mod);
-  const isInstallableBlueprint = !isInstallableExtension;
+  const isModExtension = isExtension(mod);
+  const isModBlueprint = !isModExtension;
   const viewPublish = () => {
-    const publishContext: PublishContext = isInstallableBlueprint
+    const publishContext: PublishContext = isModBlueprint
       ? {
           blueprintId: getPackageId(mod),
         }
@@ -49,7 +47,7 @@ function useViewPublishAction(
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
     // Extensions can be published
-    (isInstallableExtension ||
+    (isModExtension ||
       // In case of blueprint, skip if it is already published
       sharing.listingId == null);
 

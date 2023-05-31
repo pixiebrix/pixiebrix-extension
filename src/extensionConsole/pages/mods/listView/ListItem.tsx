@@ -19,7 +19,7 @@ import styles from "./ListItem.module.scss";
 
 import React from "react";
 import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
-import BlueprintsPageActions from "@/extensionConsole/pages/mods/BlueprintsPageActions";
+import ModActions from "@/extensionConsole/pages/mods/ModActions";
 
 import { type ModViewItem } from "@/mods/modTypes";
 import Status from "@/extensionConsole/pages/mods/Status";
@@ -28,10 +28,10 @@ import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLa
 import ModIcon from "@/mods/ModIcon";
 
 const ListItem: React.VoidFunctionComponent<{
-  installableItem: ModViewItem;
+  modViewItem: ModViewItem;
   style: React.CSSProperties;
-}> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, mod, description } = installableItem;
+}> = ({ modViewItem, style }) => {
+  const { name, sharing, updatedAt, mod, description } = modViewItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
@@ -55,10 +55,10 @@ const ListItem: React.VoidFunctionComponent<{
         </div>
       </div>
       <div className={styles.status}>
-        <Status installableViewItem={installableItem} />
+        <Status modViewItem={modViewItem} />
       </div>
       <div className="flex-shrink-0">
-        <BlueprintsPageActions installableViewItem={installableItem} />
+        <ModActions modViewItem={modViewItem} />
       </div>
     </ListGroup.Item>
   );

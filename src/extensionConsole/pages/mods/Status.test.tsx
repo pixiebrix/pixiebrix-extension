@@ -18,20 +18,16 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/mods/Status";
-import useBlueprintsPageActions from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+import useModActions from "@/extensionConsole/pages/mods/hooks/useModActions";
 
-jest.mock(
-  "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions",
-  () => ({
-    __esModule: true,
-    default: jest.fn().mockReturnValue({}),
-  })
-);
+jest.mock("@/extensionConsole/pages/mods/hooks/useModActions", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({}),
+}));
 
-const useInstallableViewItemActionsMock =
-  useBlueprintsPageActions as jest.MockedFunction<
-    typeof useBlueprintsPageActions
-  >;
+const useInstallableViewItemActionsMock = useModActions as jest.MockedFunction<
+  typeof useModActions
+>;
 
 describe("Status", () => {
   beforeEach(() => {
@@ -41,7 +37,7 @@ describe("Status", () => {
   it("shows active", async () => {
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             active: true,
           } as any
@@ -60,7 +56,7 @@ describe("Status", () => {
 
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             active: true,
           } as any
@@ -75,7 +71,7 @@ describe("Status", () => {
   it("shows warning for unavailable", async () => {
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             unavailable: true,
           } as any
@@ -90,7 +86,7 @@ describe("Status", () => {
   it("paused", async () => {
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             status: "Paused",
           } as any

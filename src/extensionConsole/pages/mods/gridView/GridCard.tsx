@@ -22,7 +22,7 @@ import { type ModViewItem } from "@/mods/modTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/mods/Status";
-import BlueprintsPageActions from "@/extensionConsole/pages/mods/BlueprintsPageActions";
+import ModActions from "@/extensionConsole/pages/mods/ModActions";
 import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
 import ModIcon from "@/mods/ModIcon";
 
@@ -53,8 +53,8 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
           <div>
             <div className={styles.actions}>
-              <Status installableViewItem={installableItem} />
-              <BlueprintsPageActions installableViewItem={installableItem} />
+              <Status modViewItem={installableItem} />
+              <ModActions modViewItem={installableItem} />
             </div>
           </div>
         </Card.Body>

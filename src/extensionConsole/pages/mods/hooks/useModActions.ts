@@ -28,7 +28,7 @@ import useDeactivateAction from "@/mods/hooks/useDeactivateAction";
 
 type ActionCallback = () => void;
 
-export type BlueprintsPageActions = {
+export type ModActions = {
   reactivate: ActionCallback | null;
   activate: ActionCallback | null;
   viewPublish: ActionCallback | null;
@@ -40,9 +40,7 @@ export type BlueprintsPageActions = {
   requestPermissions: ActionCallback | null;
 };
 
-function useBlueprintsPageActions(
-  installableViewItem: ModViewItem
-): BlueprintsPageActions {
+function useModActions(installableViewItem: ModViewItem): ModActions {
   const marketplaceListingUrl = useMarketplaceUrl(installableViewItem);
   const viewPublish = useViewPublishAction(installableViewItem);
   const viewShare = useViewShareAction(installableViewItem);
@@ -66,4 +64,4 @@ function useBlueprintsPageActions(
   };
 }
 
-export default useBlueprintsPageActions;
+export default useModActions;

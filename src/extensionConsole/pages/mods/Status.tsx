@@ -29,16 +29,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { type ModViewItem } from "@/mods/modTypes";
-import useBlueprintsPageActions from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+import useModActions from "@/extensionConsole/pages/mods/hooks/useModActions";
 
 const Status: React.VoidFunctionComponent<{
-  installableViewItem: ModViewItem;
-}> = ({ installableViewItem }) => {
+  modViewItem: ModViewItem;
+}> = ({ modViewItem }) => {
   const { activate, reactivate, requestPermissions } =
-    useBlueprintsPageActions(installableViewItem);
+    useModActions(modViewItem);
 
   const { hasUpdate, status, installedVersionNumber, unavailable } =
-    installableViewItem;
+    modViewItem;
 
   if (unavailable) {
     return (

@@ -18,9 +18,9 @@
 /* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /// <reference types="jest-extended" />
 
-import useBlueprintsPageActions, {
-  type BlueprintsPageActions,
-} from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+import useModActions, {
+  type ModActions,
+} from "@/extensionConsole/pages/mods/hooks/useModActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type ModStatus,
@@ -46,7 +46,7 @@ jest.mock("@/mods/hooks/useModPermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
-  actualActions: BlueprintsPageActions
+  actualActions: ModActions
 ) => {
   // Union both set of keys to ensure all possible keys are covered
   const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);
@@ -76,7 +76,7 @@ const mockHooks = ({
   }));
 };
 
-const installableItemFactory = ({
+const modViewItemFactory = ({
   isExtension,
   sharingType,
   status,
@@ -102,10 +102,10 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe("useBlueprintsPageActions", () => {
+describe("useModActions", () => {
   test("cloud extension", () => {
     mockHooks();
-    const cloudExtensionItem = installableItemFactory({
+    const cloudExtensionItem = modViewItemFactory({
       isExtension: true,
       sharingType: "Personal",
       status: "Inactive",
@@ -113,7 +113,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(cloudExtensionItem));
+    } = renderHook(() => useModActions(cloudExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
@@ -122,7 +122,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("active personal extension", () => {
     mockHooks();
-    const personalExtensionItem = installableItemFactory({
+    const personalExtensionItem = modViewItemFactory({
       isExtension: true,
       sharingType: "Personal",
       status: "Active",
@@ -130,7 +130,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(personalExtensionItem));
+    } = renderHook(() => useModActions(personalExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
       actions
@@ -139,7 +139,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("active personal blueprint", () => {
     mockHooks();
-    const personalBlueprintItem = installableItemFactory({
+    const personalBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Active",
@@ -147,7 +147,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
+    } = renderHook(() => useModActions(personalBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -156,7 +156,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("inactive personal blueprint", () => {
     mockHooks();
-    const personalBlueprintItem = installableItemFactory({
+    const personalBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Inactive",
@@ -164,13 +164,13 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
+    } = renderHook(() => useModActions(personalBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
   test("active team blueprint", () => {
     mockHooks();
-    const teamBlueprintItem = installableItemFactory({
+    const teamBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -178,7 +178,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
+    } = renderHook(() => useModActions(teamBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -187,7 +187,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("inactive team blueprint", () => {
     mockHooks();
-    const teamBlueprintItem = installableItemFactory({
+    const teamBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Inactive",
@@ -195,13 +195,13 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
+    } = renderHook(() => useModActions(teamBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
   test("public blueprint", () => {
     mockHooks();
-    const publicBlueprintItem = installableItemFactory({
+    const publicBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Active",
@@ -209,7 +209,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(publicBlueprintItem));
+    } = renderHook(() => useModActions(publicBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
       actions
@@ -218,7 +218,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("team deployment for unrestricted user", () => {
     mockHooks({ restricted: false });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Active",
@@ -226,13 +226,13 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModActions(deploymentItem));
     expectActions(["reactivate", "deactivate", "viewLogs"], actions);
   });
 
   test("restricted team deployment", () => {
     mockHooks({ restricted: true });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Active",
@@ -240,13 +240,13 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModActions(deploymentItem));
     expectActions(["viewLogs"], actions);
   });
 
   test("blueprint with missing permissions", () => {
     mockHooks({ hasPermissions: false });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -254,7 +254,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModActions(deploymentItem));
     expectActions(
       [
         "viewPublish",
@@ -270,7 +270,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("blueprint with access revoked", () => {
     mockHooks();
-    const blueprintItem = installableItemFactory({
+    const blueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -279,13 +279,13 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(blueprintItem));
+    } = renderHook(() => useModActions(blueprintItem));
     expectActions(["deactivate", "viewLogs"], actions);
   });
 
   test("paused deployment with unrestricted user", () => {
     mockHooks({ restricted: false });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Paused",
@@ -293,7 +293,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModActions(deploymentItem));
 
     // Unrestricted users (e.g., developers) need to be able to deactivate/reactivate a deployment to use a later
     // version of the blueprint for development/testing.
@@ -302,7 +302,7 @@ describe("useBlueprintsPageActions", () => {
 
   test("paused deployment with restricted user", () => {
     mockHooks({ restricted: true });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Paused",
@@ -310,7 +310,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModActions(deploymentItem));
 
     expectActions(["viewLogs"], actions);
   });
@@ -336,7 +336,7 @@ describe("useBlueprintsPageActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
+      } = renderHook(() => useModActions(blueprintItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions
@@ -348,7 +348,7 @@ describe("useBlueprintsPageActions", () => {
 
       const {
         result: { current: actions },
-      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
+      } = renderHook(() => useModActions(blueprintItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -371,7 +371,7 @@ describe("actions", () => {
 
     test("calls uninstallRecipe for a blueprint", () => {
       mockHooks();
-      const blueprintInstallable = installableItemFactory({
+      const blueprintMod = modViewItemFactory({
         isExtension: false,
         sharingType: "Personal",
         status: "Active",
@@ -381,12 +381,12 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useBlueprintsPageActions(blueprintInstallable));
+      } = renderHook(() => useModActions(blueprintMod));
 
       deactivate();
 
       expect(uninstallRecipe).toHaveBeenCalledWith(
-        (blueprintInstallable.mod as RecipeDefinition).metadata.id,
+        (blueprintMod.mod as RecipeDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function)
       );
@@ -398,18 +398,18 @@ describe("actions", () => {
 
       const extension = cloudExtensionFactory();
 
-      const extensionInstallable = installableItemFactory({
+      const extensionMod = modViewItemFactory({
         isExtension: true,
         sharingType: "Personal",
         status: "Active",
       });
-      (extensionInstallable.mod as IExtension).id = extension.id;
+      (extensionMod.mod as IExtension).id = extension.id;
 
       const {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useBlueprintsPageActions(extensionInstallable), {
+      } = renderHook(() => useModActions(extensionMod), {
         setupRedux(dispatch) {
           dispatch(extensionActions.installCloudExtension({ extension }));
           dispatch(

@@ -21,11 +21,9 @@ import { getLabel, isExtension } from "@/utils/modUtils";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 
-function useViewLogsAction(
-  installableViewItem: ModViewItem
-): () => void | null {
+function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
-  const { mod, status } = installableViewItem;
+  const { mod, status } = modViewItem;
   const isInstallableBlueprint = !isExtension(mod);
 
   const viewLogs = () => {

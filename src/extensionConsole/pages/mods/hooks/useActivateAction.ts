@@ -21,15 +21,13 @@ import { isExtension } from "@/utils/modUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
-function useActivateAction(
-  installableViewItem: ModViewItem
-): () => void | null {
+function useActivateAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
-  const { mod, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
+  const { mod, status } = modViewItem;
+  const isModBlueprint = !isExtension(mod);
 
   const activate = () => {
-    if (isInstallableBlueprint) {
+    if (isModBlueprint) {
       reportEvent("StartInstallBlueprint", {
         blueprintId: mod.metadata.id,
         screen: "extensionConsole",

@@ -28,16 +28,16 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import useBlueprintsPageActions from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+import useModActions from "@/extensionConsole/pages/mods/hooks/useModActions";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 import { type ModViewItem } from "@/mods/modTypes";
 
-const BlueprintsPageActions: React.FunctionComponent<{
-  installableViewItem: ModViewItem;
-}> = ({ installableViewItem }) => {
-  const actions = useBlueprintsPageActions(installableViewItem);
+const ModActions: React.FunctionComponent<{
+  modViewItem: ModViewItem;
+}> = ({ modViewItem }) => {
+  const actions = useModActions(modViewItem);
 
-  const { hasUpdate } = installableViewItem;
+  const { hasUpdate } = modViewItem;
 
   const actionItems = useMemo(
     (): EllipsisMenuItem[] => [
@@ -123,4 +123,4 @@ const BlueprintsPageActions: React.FunctionComponent<{
   return <EllipsisMenu items={actionItems} />;
 };
 
-export default BlueprintsPageActions;
+export default ModActions;

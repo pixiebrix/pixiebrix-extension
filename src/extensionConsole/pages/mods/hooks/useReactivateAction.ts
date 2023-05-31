@@ -23,23 +23,19 @@ import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 
-const useReactivateAction = (
-  installableViewItem: ModViewItem
-): (() => void | null) => {
+const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
-  const { mod, unavailable, status, sharing } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
-  const hasBlueprint = isExtensionFromRecipe(mod) || isInstallableBlueprint;
+  const { mod, unavailable, status, sharing } = modViewItem;
+  const isModBlueprint = !isExtension(mod);
+  const hasBlueprint = isExtensionFromRecipe(mod) || isModBlueprint;
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
   const isRestricted = isDeployment && restrict("uninstall");
 
   const reactivate = () => {
     if (hasBlueprint) {
-      const blueprintId = isInstallableBlueprint
-        ? mod.metadata.id
-        : mod._recipe.id;
+      const blueprintId = isModBlueprint ? mod.metadata.id : mod._recipe.id;
 
       reportEvent("StartInstallBlueprint", {
         blueprintId,
@@ -53,7 +49,7 @@ const useReactivateAction = (
 
       dispatch(push(reactivatePath));
     } else {
-      // This should never happen, because the hook will return `reactivate: null` for installables with no
+      // This should never happen, because the hook will return `reactivate: null` for mods with no
       // associated blueprint
       notify.error({
         error: new Error("Cannot reactivate item with no associated mod"),
