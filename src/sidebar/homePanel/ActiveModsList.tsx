@@ -98,7 +98,7 @@ export const ActiveModsList: React.FunctionComponent<{
     </>
   );
 
-  return <>{isLoading ? <Loader /> : renderBody}</>;
+  return isLoading ? <Loader /> : renderBody;
 };
 
 export default ActiveModsList;
