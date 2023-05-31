@@ -24,7 +24,7 @@ import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
+import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { appApi } from "@/services/api";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
@@ -37,7 +37,7 @@ const configureStoreForTests = () =>
       settings: settingsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
+      blueprints: modsSlice.reducer,
       recipes: recipesSlice.reducer,
       services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,

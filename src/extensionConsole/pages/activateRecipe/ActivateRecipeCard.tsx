@@ -39,7 +39,7 @@ import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
 import { type WizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
 import notify from "@/utils/notify";
-import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
+import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
@@ -99,7 +99,7 @@ const ActivateRecipeCard: React.FC = () => {
               <div className={styles.wizardHeaderLayout}>
                 <div className={styles.wizardMainInfo}>
                   <span className={styles.blueprintIcon}>
-                    <ModIcon installable={recipe} />
+                    <ModIcon mod={recipe} />
                   </span>
                   <span>
                     <Card.Title>{recipe.metadata.name}</Card.Title>
@@ -154,9 +154,7 @@ const ActivateRecipeCard: React.FC = () => {
           },
         });
 
-        dispatch(
-          blueprintsSlice.actions.setActiveTab(MOD_PAGE_TABS.getStarted)
-        );
+        dispatch(modsSlice.actions.setActiveTab(MOD_PAGE_TABS.getStarted));
       }
 
       dispatch(push("/mods"));

@@ -34,7 +34,7 @@ import {
   selectSortBy,
   selectView,
 } from "@/extensionConsole/pages/mods/blueprintsSelectors";
-import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
+import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import { useSelector } from "react-redux";
 
 const BlueprintsToolbar: React.FunctionComponent<{
@@ -47,19 +47,16 @@ const BlueprintsToolbar: React.FunctionComponent<{
     state: { globalFilter },
   } = tableInstance;
 
-  const [view, setView] = useReduxState(
-    selectView,
-    blueprintsSlice.actions.setView
-  );
+  const [view, setView] = useReduxState(selectView, modsSlice.actions.setView);
 
   const [groupBy, setGroupBy] = useReduxState(
     selectGroupBy,
-    blueprintsSlice.actions.setGroupBy
+    modsSlice.actions.setGroupBy
   );
 
   const [sortBy, setSortBy] = useReduxState(
     selectSortBy,
-    blueprintsSlice.actions.setSortBy
+    modsSlice.actions.setSortBy
   );
 
   const activeTab = useSelector(selectActiveTab);

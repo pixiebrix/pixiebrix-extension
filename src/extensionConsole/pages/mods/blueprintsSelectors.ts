@@ -15,19 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlueprintsState } from "@/extensionConsole/pages/mods/blueprintsSlice";
+import { type ModsState } from "@/extensionConsole/pages/mods/modsSlice";
 
 export type BlueprintsRootState = {
-  blueprints: BlueprintsState;
+  mods: ModsState;
 };
 
-export const selectView = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.view;
-export const selectGroupBy = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.groupBy;
-export const selectSortBy = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.sortBy;
-export const selectActiveTab = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.activeTab;
-export const selectSearchQuery = ({ blueprints }: BlueprintsRootState) =>
-  blueprints.searchQuery;
+export const selectView = ({ mods }: BlueprintsRootState) => mods.view;
+export const selectGroupBy = ({ mods }: BlueprintsRootState) => mods.groupBy;
+export const selectSortBy = ({ mods }: BlueprintsRootState) => mods.sortBy;
+export const selectActiveTab = ({ mods }: BlueprintsRootState) =>
+  mods.activeTab;
+export const selectSearchQuery = ({ mods }: BlueprintsRootState) =>
+  mods.searchQuery;

@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
 import { type OnboardingType } from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
-import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
+import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
 import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
@@ -49,7 +49,7 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
 );
 
 const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
-  const { setActiveTab } = blueprintsSlice.actions;
+  const { setActiveTab } = modsSlice.actions;
   const dispatch = useDispatch();
 
   return (

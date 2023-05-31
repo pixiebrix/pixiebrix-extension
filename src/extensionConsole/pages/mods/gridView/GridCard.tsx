@@ -47,7 +47,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
                 <div className={styles.packageId}>{sharing.packageId}</div>
               </div>
               <span className="mb-2">
-                <ModIcon size="2x" installable={mod} />
+                <ModIcon size="2x" mod={mod} />
               </span>
             </div>
           </div>

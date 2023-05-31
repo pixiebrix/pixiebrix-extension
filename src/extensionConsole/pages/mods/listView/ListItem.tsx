@@ -36,7 +36,7 @@ const ListItem: React.VoidFunctionComponent<{
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>
-        <ModIcon size="2x" installable={mod} />
+        <ModIcon size="2x" mod={mod} />
       </div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>

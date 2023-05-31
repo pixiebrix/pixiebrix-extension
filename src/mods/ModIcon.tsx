@@ -33,12 +33,12 @@ import cx from "classnames";
 import styles from "./ModIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 
-function getDefaultInstallableIcon(installable: Mod) {
-  if (isUnavailableRecipe(installable)) {
+function getDefaultModIcon(mod: Mod) {
+  if (isUnavailableRecipe(mod)) {
     return faExclamationCircle;
   }
 
-  if (isBlueprint(installable) && installable.extensionPoints.length > 1) {
+  if (isBlueprint(mod) && mod.extensionPoints.length > 1) {
     return faCubes;
   }
 
@@ -48,13 +48,13 @@ function getDefaultInstallableIcon(installable: Mod) {
 export const DEFAULT_TEXT_ICON_COLOR = "#241C32";
 
 const ModIcon: React.FunctionComponent<{
-  installable: Mod;
+  mod: Mod;
   size?: "1x" | "2x";
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
    */
   faIconClass?: string;
-}> = ({ installable, size = "1x", faIconClass = "" }) => {
+}> = ({ mod, size = "1x", faIconClass = "" }) => {
   const {
     data: listings,
     isLoading,
@@ -62,11 +62,11 @@ const ModIcon: React.FunctionComponent<{
   } = useGetMarketplaceListingsQuery();
 
   const listing: MarketplaceListing | null = isSuccess
-    ? listings[getPackageId(installable)]
+    ? listings[getPackageId(mod)]
     : null;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only load default icon once
-  const defaultIcon = useMemo(() => getDefaultInstallableIcon(installable), []);
+  const defaultIcon = useMemo(() => getDefaultModIcon(mod), []);
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
   if (isLoading) {

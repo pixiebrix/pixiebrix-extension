@@ -30,7 +30,7 @@ const HomePanel: React.FunctionComponent = () => {
         {error ? (
           <ErrorDisplay error={error} />
         ) : (
-          <ActiveModsList installables={mods} />
+          <ActiveModsList mods={mods} />
         )}
       </Container>
     </div>

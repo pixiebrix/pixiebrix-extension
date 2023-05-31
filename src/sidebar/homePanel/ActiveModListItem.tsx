@@ -33,14 +33,14 @@ import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 
 export const ActiveModListItem: React.FunctionComponent<{
-  installableItem: ModViewItem;
-}> = ({ installableItem }) => {
-  const { name, mod } = installableItem;
-  const marketplaceListingUrl = useMarketplaceUrl(installableItem);
-  const requestPermissions = useRequestPermissionsAction(installableItem);
+  modViewItem: ModViewItem;
+}> = ({ modViewItem }) => {
+  const { name, mod } = modViewItem;
+  const marketplaceListingUrl = useMarketplaceUrl(modViewItem);
+  const requestPermissions = useRequestPermissionsAction(modViewItem);
 
   const { data: starterBricksContained } = useAsyncState(
-    async () => getContainedStarterBrickNames(installableItem),
+    async () => getContainedStarterBrickNames(modViewItem),
     [],
     { initialValue: [] }
   );
@@ -49,7 +49,7 @@ export const ActiveModListItem: React.FunctionComponent<{
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
         <div className={styles.icon}>
-          <ModIcon installable={mod} />
+          <ModIcon mod={mod} />
         </div>
         <div>
           <div>

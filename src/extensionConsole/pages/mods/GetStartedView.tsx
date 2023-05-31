@@ -83,7 +83,7 @@ const GetStartedView: React.VoidFunctionComponent<{
               Success!{" "}
               {!isFetchingRecipe && (
                 <>
-                  <ModIcon installable={recipe} />{" "}
+                  <ModIcon mod={recipe} />{" "}
                 </>
               )}
               <ExternalLink
