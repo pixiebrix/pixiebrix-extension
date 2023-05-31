@@ -40,7 +40,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
 import notify from "@/utils/notify";
 import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
-import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/mods/BlueprintsPageSidebar";
+import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import ModIcon from "@/mods/ModIcon";

@@ -211,9 +211,10 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   };
 };
 
-const BlueprintsPageSidebar: React.FunctionComponent<
-  BlueprintsPageSidebarProps
-> = ({ teamFilters, tableInstance }) => {
+const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
+  teamFilters,
+  tableInstance,
+}) => {
   const { permit } = useFlags();
   const {
     state: { globalFilter },
@@ -357,4 +358,4 @@ const BlueprintsPageSidebar: React.FunctionComponent<
   );
 };
 
-export default BlueprintsPageSidebar;
+export default ModPageSidebar;

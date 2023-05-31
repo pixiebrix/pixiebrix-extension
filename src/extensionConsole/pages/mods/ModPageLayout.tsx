@@ -28,7 +28,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
+import ModPageSidebar from "./ModPageSidebar";
 import {
   selectActiveTab,
   selectGroupBy,
@@ -105,10 +105,10 @@ const columns: Array<Column<ModViewItem>> = [
   },
 ];
 
-const BlueprintsPageLayout: React.FunctionComponent<{
-  installables: Mod[];
-}> = ({ installables }) => {
-  const { modViewItems, isLoading } = useModViewItems(installables);
+const ModPageLayout: React.FunctionComponent<{
+  mods: Mod[];
+}> = ({ mods }) => {
+  const { modViewItems, isLoading } = useModViewItems(mods);
 
   const teamFilters = useMemo(
     () =>
@@ -154,10 +154,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
 
   return (
     <BootstrapRow className={styles.root}>
-      <BlueprintsPageSidebar
-        teamFilters={teamFilters}
-        tableInstance={tableInstance}
-      />
+      <ModPageSidebar teamFilters={teamFilters} tableInstance={tableInstance} />
       <Col className={styles.mainContainer} sm={12} md={9} xl={10}>
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
@@ -185,4 +182,4 @@ const BlueprintsPageLayout: React.FunctionComponent<{
   );
 };
 
-export default BlueprintsPageLayout;
+export default ModPageLayout;

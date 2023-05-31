@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import BlueprintsPage from "@/extensionConsole/pages/mods/BlueprintsPage";
+import ModPage from "@/extensionConsole/pages/mods/ModPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
@@ -29,8 +29,8 @@ import { recipesSlice } from "@/recipes/recipesSlice";
 
 export default {
   title: "Blueprints/BlueprintsPage",
-  component: BlueprintsPage,
-} as ComponentMeta<typeof BlueprintsPage>;
+  component: ModPage,
+} as ComponentMeta<typeof ModPage>;
 
 function optionsStore(initialState?: any) {
   return configureStore({
@@ -51,9 +51,9 @@ function optionsStore(initialState?: any) {
   });
 }
 
-const Template: ComponentStory<typeof BlueprintsPage> = (args) => (
+const Template: ComponentStory<typeof ModPage> = (args) => (
   <Provider store={optionsStore()}>
-    <BlueprintsPage {...args} />
+    <ModPage {...args} />
   </Provider>
 );
 
