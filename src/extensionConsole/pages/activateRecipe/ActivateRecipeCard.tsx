@@ -40,7 +40,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
 import notify from "@/utils/notify";
 import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
-import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
+import { MOD_PAGE_TABS } from "@/extensionConsole/pages/mods/ModPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import ModIcon from "@/mods/ModIcon";
@@ -155,7 +155,7 @@ const ActivateRecipeCard: React.FC = () => {
         });
 
         dispatch(
-          blueprintsSlice.actions.setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted)
+          blueprintsSlice.actions.setActiveTab(MOD_PAGE_TABS.getStarted)
         );
       }
 

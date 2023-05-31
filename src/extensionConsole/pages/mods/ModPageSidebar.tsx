@@ -31,12 +31,12 @@ import { useInstallBotGamesBlueprint } from "@/extensionConsole/pages/mods/BotGa
 import { type RegistryId } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-type BlueprintsPageSidebarProps = {
+type ModPageSidebarProps = {
   teamFilters: string[];
   tableInstance: TableInstance<ModViewItem>;
 };
 
-const BLUEPRINT_TAB_KEYS = [
+const MOD_TAB_KEYS = [
   "active",
   "all",
   "personal",
@@ -44,12 +44,12 @@ const BLUEPRINT_TAB_KEYS = [
   "getStarted",
   "botGames",
 ] as const;
-type BlueprintTabKey = typeof BLUEPRINT_TAB_KEYS[number];
-type BlueprintTabMap = {
-  [key in BlueprintTabKey]: ActiveTab;
+type ModTabKey = typeof MOD_TAB_KEYS[number];
+type ModTabMap = {
+  [key in ModTabKey]: ActiveTab;
 };
 
-export const BLUEPRINTS_PAGE_TABS: BlueprintTabMap = {
+export const MOD_PAGE_TABS: ModTabMap = {
   active: {
     key: "Active",
     tabTitle: "Active Mods",
@@ -106,7 +106,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     selectActiveTab,
     blueprintsSlice.actions.setActiveTab
   );
-  const { data: installableViewItems } = tableInstance;
+  const { data: modViewItems } = tableInstance;
 
   const {
     data: me,
@@ -124,24 +124,22 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
 
   const isFreemiumUser = !me?.organization;
 
-  const hasSomeBlueprintEngagement = installableViewItems?.some(
-    (installableViewItem) => {
-      if (installableViewItem.sharing.source.type === "Personal") {
-        return true;
-      }
-
-      if (onboardingBlueprintId === installableViewItem.sharing.packageId) {
-        return false;
-      }
-
-      const isStarterBlueprint = starterBlueprints?.some(
-        (starterBlueprint) =>
-          installableViewItem.sharing.packageId === starterBlueprint.metadata.id
-      );
-
-      return installableViewItem.status === "Active" && !isStarterBlueprint;
+  const hasSomeModEngagement = modViewItems?.some((modViewItem) => {
+    if (modViewItem.sharing.source.type === "Personal") {
+      return true;
     }
-  );
+
+    if (onboardingBlueprintId === modViewItem.sharing.packageId) {
+      return false;
+    }
+
+    const isStarterBlueprint = starterBlueprints?.some(
+      (starterBlueprint) =>
+        modViewItem.sharing.packageId === starterBlueprint.metadata.id
+    );
+
+    return modViewItem.status === "Active" && !isStarterBlueprint;
+  });
 
   const showBotGamesTab =
     hasMilestone("bot_games_2022_register") &&
@@ -149,13 +147,13 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
 
   const showGetStartedTab =
     !isStarterBlueprintsLoading && !isMeLoading && !isMeFetching
-      ? isFreemiumUser && !hasSomeBlueprintEngagement && !showBotGamesTab
+      ? isFreemiumUser && !hasSomeModEngagement && !showBotGamesTab
       : false;
 
   useEffect(() => {
     // We want to nudge Bot Games users who may gotten lost back to the challenge page
     if (showBotGamesTab && !isBotGamesBlueprintInstalled) {
-      setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+      setActiveTab(MOD_PAGE_TABS.botGames);
     }
   }, []);
 
@@ -167,16 +165,16 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     if (activeTab.key === null) {
       // Bot Games page takes precedence over the Get Started welcome page
       if (showBotGamesTab) {
-        setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+        setActiveTab(MOD_PAGE_TABS.botGames);
         return;
       }
 
       if (showGetStartedTab) {
-        setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
+        setActiveTab(MOD_PAGE_TABS.getStarted);
         return;
       }
 
-      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+      setActiveTab(MOD_PAGE_TABS.active);
       return;
     }
 
@@ -184,16 +182,16 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     // shown to new Freemium users that haven't engaged with the product yet.
     // If the "Get Started" tab is hidden due to e.g. onboarding completion,
     // but still selected as an ActiveTab, we want to reset the default to
-    // the "Active Blueprints" tab.
+    // the "Active Mods" tab.
     if (!showGetStartedTab && activeTab.key === "Get Started") {
-      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+      setActiveTab(MOD_PAGE_TABS.active);
     }
 
     // Similar to the above situation, if the Bot Games tab is selected
     // but no longer shown due to the event ending, make sure that we reset
     // the default
     if (!showBotGamesTab && activeTab.key === "Bot Games") {
-      setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+      setActiveTab(MOD_PAGE_TABS.active);
     }
   }, [
     isMeLoading,
@@ -211,7 +209,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   };
 };
 
-const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
+const ModPageSidebar: React.FunctionComponent<ModPageSidebarProps> = ({
   teamFilters,
   tableInstance,
 }) => {
@@ -244,7 +242,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
     }
 
     if (debouncedSearchInput) {
-      setActiveTab(BLUEPRINTS_PAGE_TABS.all);
+      setActiveTab(MOD_PAGE_TABS.all);
     }
   }, [globalFilter, debouncedSearchInput, setActiveTab, setGlobalFilter]);
 
@@ -275,7 +273,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
             label="Get Started"
             eventKey="Get Started"
             onClick={() => {
-              setActiveTab(BLUEPRINTS_PAGE_TABS.getStarted);
+              setActiveTab(MOD_PAGE_TABS.getStarted);
             }}
           />
         )}
@@ -286,7 +284,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
             label="Bot Games"
             eventKey="Bot Games"
             onClick={() => {
-              setActiveTab(BLUEPRINTS_PAGE_TABS.botGames);
+              setActiveTab(MOD_PAGE_TABS.botGames);
             }}
           />
         )}
@@ -296,7 +294,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
           label="Active"
           eventKey="Active"
           onClick={() => {
-            setActiveTab(BLUEPRINTS_PAGE_TABS.active);
+            setActiveTab(MOD_PAGE_TABS.active);
           }}
         />
         <ListItem
@@ -304,7 +302,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
           label="All Mods"
           eventKey="All"
           onClick={() => {
-            setActiveTab(BLUEPRINTS_PAGE_TABS.all);
+            setActiveTab(MOD_PAGE_TABS.all);
           }}
         />
         {permit("marketplace") && (
@@ -314,7 +312,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
               label="Personal"
               eventKey="Personal"
               onClick={() => {
-                setActiveTab(BLUEPRINTS_PAGE_TABS.personal);
+                setActiveTab(MOD_PAGE_TABS.personal);
               }}
             />
             <ListItem
@@ -322,7 +320,7 @@ const ModPageSidebar: React.FunctionComponent<BlueprintsPageSidebarProps> = ({
               label="Public Marketplace"
               eventKey="Public"
               onClick={() => {
-                setActiveTab(BLUEPRINTS_PAGE_TABS.public);
+                setActiveTab(MOD_PAGE_TABS.public);
               }}
             />
           </>
