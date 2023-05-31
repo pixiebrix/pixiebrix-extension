@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./BlueprintsCard.module.scss";
+import styles from "@/extensionConsole/pages/mods/ModsPageLayout.module.scss";
 
 import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
