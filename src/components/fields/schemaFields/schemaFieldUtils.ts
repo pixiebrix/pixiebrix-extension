@@ -47,10 +47,21 @@ type FieldConfig = {
   propUiSchema: unknown;
 };
 
+/**
+ * Return an array of fields
+ * @param schema the inputSchema, e.g., IBlock.inputSchema
+ * @param uiSchema an optional uiSchema
+ * @param preserveSchemaOrder if true, use the inputSchema order if no explicit uiSchema is specified. Otherwise, apply
+ * a default sorting based on type and optional fields
+ * @param includePipelines if true, include pipeline fields in the output. Otherwise, exclude them
+ */
 export function sortedFields(
   schema: Schema,
   uiSchema: UiSchema | null,
-  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {}
+  {
+    preserveSchemaOrder = false,
+    includePipelines = false,
+  }: { preserveSchemaOrder?: boolean; includePipelines?: boolean } = {}
 ): FieldConfig[] {
   const optionSchema = inputProperties(schema);
 
@@ -91,8 +102,9 @@ export function sortedFields(
   const fields: FieldConfig[] = Object.entries(optionSchema)
     .filter(
       ([, fieldSchema]) =>
-        typeof fieldSchema === "object" &&
-        fieldSchema.$ref !== pipelineSchema.$id
+        includePipelines ||
+        (typeof fieldSchema === "object" &&
+          fieldSchema.$ref !== pipelineSchema.$id)
     )
     .map(([prop, fieldSchema]) => {
       // Fine because coming from Object.entries for the schema

@@ -125,9 +125,9 @@ export function getPipelinePropNames(
           typeof value === "object" &&
           value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
       );
-      return sortedFields(pipelineProperties, block.uiSchema).map(
-        (x) => x.prop
-      );
+      return sortedFields(pipelineProperties, block.uiSchema, {
+        includePipelines: true,
+      }).map((x) => x.prop);
     }
   }
 }
