@@ -15,7 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { generateRecipeId } from "./recipeUtils";
+import {
+  generateRecipeId,
+  getContainedExtensionPointTypes,
+} from "./recipeUtils";
+import {
+  extensionPointConfigFactory,
+  recipeFactory,
+} from "@/testUtils/factories/recipeFactories";
+import extensionPointRegistry from "@/extensionPoints/registry";
+
+extensionPointRegistry.lookup = jest.fn();
 
 describe("generateRecipeId", () => {
   test("no special chars", () => {
@@ -38,5 +48,52 @@ describe("generateRecipeId", () => {
 
   test("return empty on invalid", () => {
     expect(generateRecipeId("", "This   Is a Test")).toBe("");
+  });
+});
+
+describe("getContainedExtensionPointTypes", () => {
+  test("gets types with inner definitions", async () => {
+    const result = await getContainedExtensionPointTypes(recipeFactory());
+    expect(result).toStrictEqual(["menuItem"]);
+  });
+
+  test("returns only unique types", async () => {
+    const result = await getContainedExtensionPointTypes(
+      recipeFactory({
+        extensionPoints: [
+          extensionPointConfigFactory(),
+          extensionPointConfigFactory(),
+        ],
+      })
+    );
+    expect(result).toStrictEqual(["menuItem"]);
+  });
+
+  test("gets types without inner definitions", async () => {
+    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => ({
+      kind: "menuItem",
+    }));
+
+    const result = await getContainedExtensionPointTypes(
+      recipeFactory({
+        extensionPoints: [extensionPointConfigFactory()],
+        definitions: undefined,
+      })
+    );
+
+    expect(result).toStrictEqual(["menuItem"]);
+  });
+
+  test("returns non-null values", async () => {
+    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
+
+    const result = await getContainedExtensionPointTypes(
+      recipeFactory({
+        extensionPoints: [extensionPointConfigFactory()],
+        definitions: undefined,
+      })
+    );
+
+    expect(result).toStrictEqual([]);
   });
 });

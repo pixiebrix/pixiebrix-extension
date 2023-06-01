@@ -33,11 +33,19 @@
   flex-grow: 1;
 }
 
-.modName {
+.lineClampOneLine {
   margin: 0;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.lineClampTwoLines {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
