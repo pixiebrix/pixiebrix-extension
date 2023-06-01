@@ -17,7 +17,6 @@
 
 const path = require("node:path");
 const webpack = require("webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const mergeWithShared = require("../webpack.sharedConfig.js");
 
 module.exports = mergeWithShared({
@@ -73,34 +72,8 @@ module.exports = mergeWithShared({
     // Don't fail on import of styles.
     // Using an identity object instead of actual style sheet because styles are not needed for headers generations
     new webpack.NormalModuleReplacementPlugin(
-      /\.module\.(css|scss)$/,
+      /.(css|scss)$/,
       "identity-obj-proxy"
     ),
-    new MiniCssExtractPlugin({
-      chunkFilename: "css/[id].css",
-    }),
   ],
-  module: {
-    rules: [
-      {
-        test: /\.s?css$/,
-        resourceQuery: { not: [/loadAsUrl/] },
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          {
-            loader: "sass-loader",
-            options: {
-              sassOptions: {
-                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-                quietDeps: true,
-              },
-            },
-          },
-        ],
-      },
-    ],
-  },
 });
