@@ -91,14 +91,9 @@ export const getContainedExtensionPointTypes = async (
   const extensionPointTypes = new Set<ExtensionPointType>();
 
   for (const extensionPoint of recipe.extensionPoints) {
-    const extensionPointType = await getExtensionPointType(
-      extensionPoint,
-      recipe
+    extensionPointTypes.add(
+      await getExtensionPointType(extensionPoint, recipe)
     );
-
-    if (extensionPointType) {
-      extensionPointTypes.add(extensionPointType);
-    }
   }
 
   return [...extensionPointTypes];
