@@ -19,7 +19,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import {
-  ExtensionDefinition,
+  type ExtensionDefinition,
   type RecipeDefinition,
 } from "@/types/recipeTypes";
 import { uniq } from "lodash";
@@ -89,9 +89,9 @@ export const getContainedExtensionPointTypes = async (
   recipe: RecipeDefinition
 ): Promise<ExtensionPointType[]> => {
   const extensionPointTypes = await Promise.all(
-    recipe.extensionPoints.map(async (extensionPoint) => {
-      return getExtensionPointType(extensionPoint, recipe);
-    })
+    recipe.extensionPoints.map(async (extensionPoint) =>
+      getExtensionPointType(extensionPoint, recipe)
+    )
   );
 
   return uniq(extensionPointTypes);
