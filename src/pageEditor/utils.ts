@@ -19,7 +19,6 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type BlockConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import {
   type DocumentElement,
@@ -29,20 +28,20 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { joinPathParts } from "@/utils";
 import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
-import Retry from "@/blocks/transformers/controlFlow/Retry";
-import { castArray } from "lodash";
+import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RecipeDefinition } from "@/types/recipeTypes";
-import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { type IBlock } from "@/types/blockTypes";
+import { inputProperties } from "@/helpers";
+import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -85,53 +84,30 @@ export function getRecipeById(
  *
  * Returns prop names in the order they should be displayed in the layout.
  *
- * @param block the configured block
+ * @param block the block, or null if resolved block not available yet
+ * @param blockConfig the block configuration
  */
-export function getPipelinePropNames(block: BlockConfig): string[] {
-  switch (block.id) {
-    case ForEach.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case Retry.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case ForEachElement.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case DisplayTemporaryInfo.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case IfElse.BLOCK_ID: {
-      return ["if", "else"];
-    }
-
-    case TryExcept.BLOCK_ID: {
-      return ["try", "except"];
-    }
-
-    case AddQuickBarAction.BLOCK_ID: {
-      return ["action"];
-    }
-
+export function getPipelinePropNames(
+  block: IBlock | null,
+  blockConfig: BlockConfig
+): string[] {
+  switch (blockConfig.id) {
+    // Special handling for tour step to avoid clutter and input type alternatives
     case TourStepTransformer.BLOCK_ID: {
       const propNames = [];
 
       // Only show onBeforeShow if it's provided, to avoid cluttering the UI
-      if (block.config.onBeforeShow != null) {
+      if (blockConfig.config.onBeforeShow != null) {
         propNames.push("onBeforeShow");
       }
 
       // `body` can be a markdown value, or a pipeline
-      if (isPipelineExpression(block.config.body)) {
+      if (isPipelineExpression(blockConfig.config.body)) {
         propNames.push("body");
       }
 
       // Only show onAfterShow if it's provided, to avoid cluttering the UI
-      if (block.config.onAfterShow != null) {
+      if (blockConfig.config.onAfterShow != null) {
         propNames.push("onAfterShow");
       }
 
@@ -139,7 +115,19 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
     }
 
     default: {
-      return [];
+      if (block == null) {
+        return [];
+      }
+
+      const pipelineProperties = pickBy(
+        inputProperties(block.inputSchema),
+        (value) =>
+          typeof value === "object" &&
+          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
+      );
+      return sortedFields(pipelineProperties, block.uiSchema).map(
+        (x) => x.prop
+      );
     }
   }
 }
