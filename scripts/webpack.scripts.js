@@ -17,6 +17,7 @@
 
 const path = require("node:path");
 const webpack = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const mergeWithShared = require("../webpack.sharedConfig.js");
 
 module.exports = mergeWithShared({
@@ -75,5 +76,31 @@ module.exports = mergeWithShared({
       /\.module\.(css|scss)$/,
       "identity-obj-proxy"
     ),
+    new MiniCssExtractPlugin({
+      chunkFilename: "css/[id].css",
+    }),
   ],
+  module: {
+    rules: [
+      {
+        test: /\.s?css$/,
+        resourceQuery: { not: [/loadAsUrl/] },
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          {
+            loader: "sass-loader",
+            options: {
+              sassOptions: {
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                quietDeps: true,
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
 });
