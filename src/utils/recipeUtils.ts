@@ -18,7 +18,10 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import {
+  ExtensionDefinition,
+  type RecipeDefinition,
+} from "@/types/recipeTypes";
 import { uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {
@@ -58,40 +61,40 @@ export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
       .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
   );
 
-// export const getContainedExtensionPointTypes = async (
-//   recipe: RecipeDefinition
-// ): Promise<ExtensionPointType[]> => {
-//   const extensionPointTypes = new Set<ExtensionPointType>();
-//
-//   for (const extensionPoint of Object.values(recipe.extensionPoints)) {
-//     // ExtensionDefinition.id can be either a RegistryId or an InnerDefinitionRef
-//     const extensionPointFromRegistry = await extensionPointRegistry.lookup(
-//       extensionPoint.id
-//     );
-//
-//     if (extensionPointFromRegistry) {
-//       extensionPointTypes.add(extensionPointFromRegistry.kind as ExtensionPointType);
-//     }
-//   }
-//
-//   return [...extensionPointTypes];
-// };
+const getExtensionPointType = async (
+  extensionPoint: ExtensionDefinition,
+  recipe?: RecipeDefinition
+) => {
+  // Look up the extension point in recipe definitions first
+  if (recipe.definitions) {
+    const definition: ExtensionPointDefinition = recipe.definitions[
+      extensionPoint.id
+    ].definition as ExtensionPointDefinition;
+    const extensionPointType = definition?.type;
 
-export const getContainedExtensionPointTypes = (
+    if (extensionPointType) {
+      return extensionPointType;
+    }
+  }
+
+  // If no internal definitions, look up the extension point in the registry
+  const extensionPointFromRegistry = await extensionPointRegistry.lookup(
+    extensionPoint.id as RegistryId
+  );
+
+  return (extensionPointFromRegistry?.kind as ExtensionPointType) ?? null;
+};
+
+export const getContainedExtensionPointTypes = async (
   recipe: RecipeDefinition
-): ExtensionPointType[] => {
+): Promise<ExtensionPointType[]> => {
   const extensionPointTypes = new Set<ExtensionPointType>();
 
-  console.log("*** recipe", recipe);
-
-  for (const definition of Object.values(recipe.definitions ?? [])) {
-    if (definition.kind !== "extensionPoint") {
-      continue;
-    }
-
-    const extensionPointDefinition =
-      definition.definition as ExtensionPointDefinition;
-    const extensionPointType = extensionPointDefinition?.type;
+  for (const extensionPoint of recipe.extensionPoints) {
+    const extensionPointType = await getExtensionPointType(
+      extensionPoint,
+      recipe
+    );
 
     if (extensionPointType) {
       extensionPointTypes.add(extensionPointType);
