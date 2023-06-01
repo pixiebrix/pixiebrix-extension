@@ -32,6 +32,7 @@ import InstallableIcon from "@/installables/InstallableIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
+import cx from "classnames";
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 export const ActiveModListItem: React.FunctionComponent<{
@@ -55,8 +56,15 @@ export const ActiveModListItem: React.FunctionComponent<{
         </div>
         <div>
           <div>
-            <h5 className={styles.modName}>{name}</h5>
-            <span className={styles.starterBricksList}>
+            <h5 className={styles.lineClampOneLine}>{name}</h5>
+            <span
+              className={cx(
+                styles.starterBricksList,
+                requestPermissions
+                  ? styles.lineClampOneLine
+                  : styles.lineClampTwoLines
+              )}
+            >
               {starterBricksContained.join(" • ")}
             </span>
           </div>
