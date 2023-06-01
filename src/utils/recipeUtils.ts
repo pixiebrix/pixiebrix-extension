@@ -88,13 +88,11 @@ const getExtensionPointType = async (
 export const getContainedExtensionPointTypes = async (
   recipe: RecipeDefinition
 ): Promise<ExtensionPointType[]> => {
-  const extensionPointTypes = new Set<ExtensionPointType>();
+  const extensionPointTypes = await Promise.all(
+    recipe.extensionPoints.map(async (extensionPoint) => {
+      return getExtensionPointType(extensionPoint, recipe);
+    })
+  );
 
-  for (const extensionPoint of recipe.extensionPoints) {
-    extensionPointTypes.add(
-      await getExtensionPointType(extensionPoint, recipe)
-    );
-  }
-
-  return [...extensionPointTypes];
+  return uniq(extensionPointTypes);
 };
