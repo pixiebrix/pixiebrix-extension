@@ -22,7 +22,7 @@ import {
   type ExtensionDefinition,
   type RecipeDefinition,
 } from "@/types/recipeTypes";
-import { uniq } from "lodash";
+import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {
   ExtensionPointDefinition,
@@ -94,5 +94,5 @@ export const getContainedExtensionPointTypes = async (
     )
   );
 
-  return uniq(extensionPointTypes.filter((type) => type !== null));
+  return uniq(compact(extensionPointTypes));
 };
