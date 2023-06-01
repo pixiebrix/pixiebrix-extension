@@ -347,7 +347,7 @@ export const StarterBrickMap: Record<ExtensionPointType, string> = {
   tour: "Tour",
 };
 
-const getExtensionPointType = async (
+export const getExtensionPointType = async (
   extension: ResolvedExtension
 ): Promise<ExtensionPointType> => {
   const extensionPoint = await extensionPointRegistry.lookup(

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { generateRecipeId } from "./recipeUtils";
+import {
+  generateRecipeId,
+  getContainedExtensionPointTypes,
+} from "./recipeUtils";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("generateRecipeId", () => {
   test("no special chars", () => {
@@ -38,5 +42,12 @@ describe("generateRecipeId", () => {
 
   test("return empty on invalid", () => {
     expect(generateRecipeId("", "This   Is a Test")).toBe("");
+  });
+
+  test("getContainedExtensionPointTypes", () => {
+    console.log(recipeFactory());
+    expect(getContainedExtensionPointTypes(recipeFactory())).toStrictEqual([
+      "menuItem",
+    ]);
   });
 });

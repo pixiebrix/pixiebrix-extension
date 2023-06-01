@@ -25,6 +25,7 @@ import type {
   ExtensionPointDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 /**
  * Return a valid recipe id, or empty string in case of error.
@@ -57,10 +58,31 @@ export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
       .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
   );
 
+// export const getContainedExtensionPointTypes = async (
+//   recipe: RecipeDefinition
+// ): Promise<ExtensionPointType[]> => {
+//   const extensionPointTypes = new Set<ExtensionPointType>();
+//
+//   for (const extensionPoint of Object.values(recipe.extensionPoints)) {
+//     // ExtensionDefinition.id can be either a RegistryId or an InnerDefinitionRef
+//     const extensionPointFromRegistry = await extensionPointRegistry.lookup(
+//       extensionPoint.id
+//     );
+//
+//     if (extensionPointFromRegistry) {
+//       extensionPointTypes.add(extensionPointFromRegistry.kind as ExtensionPointType);
+//     }
+//   }
+//
+//   return [...extensionPointTypes];
+// };
+
 export const getContainedExtensionPointTypes = (
   recipe: RecipeDefinition
 ): ExtensionPointType[] => {
   const extensionPointTypes = new Set<ExtensionPointType>();
+
+  console.log("*** recipe", recipe);
 
   for (const definition of Object.values(recipe.definitions ?? [])) {
     if (definition.kind !== "extensionPoint") {
