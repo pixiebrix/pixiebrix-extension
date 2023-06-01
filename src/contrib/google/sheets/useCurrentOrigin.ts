@@ -16,9 +16,9 @@
  */
 
 import { isDevToolsPage, isOptionsPage } from "webext-detect-page";
-import { useAsyncState } from "@/hooks/common";
 import { useEffect } from "react";
 import notify from "@/utils/notify";
+import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * Get the current origin for where code is running. Used to set the origin on the
@@ -27,10 +27,14 @@ import notify from "@/utils/notify";
  *    "The origin should be set to the window.location.protocol + '//' + window.location.host
  *    of the top-most page, if your application is running in an iframe."
  *
- * @returns The current origin, or empty string if the origin is being fetched
+ * @returns The current origin, or undefined on initial load/error.
  */
-function useCurrentOrigin(): string {
-  const [origin, loading, error] = useAsyncState(async () => {
+function useCurrentOrigin(): string | null {
+  const {
+    data: origin,
+    isFetching,
+    error,
+  } = useAsyncState(async () => {
     // Checks location.pathname against the 'options_ui' value in manifest.json
     if (isOptionsPage()) {
       return browser.runtime.getURL("");
@@ -70,13 +74,13 @@ function useCurrentOrigin(): string {
   }, []);
 
   useEffect(() => {
-    if (!loading && error) {
+    if (error && !isFetching) {
       notify.error({
         message: "Error occurred loading the current tab URL",
         error,
       });
     }
-  }, [error, loading, origin]);
+  }, [error, isFetching]);
 
   return origin;
 }

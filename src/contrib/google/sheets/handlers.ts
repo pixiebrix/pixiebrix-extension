@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ensureAuth, handleRejection } from "@/contrib/google/auth";
+import {
+  ensureGoogleToken,
+  handleGoogleRequestRejection,
+} from "@/contrib/google/auth";
 import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
+import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
 
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
@@ -25,17 +29,10 @@ type BatchUpdateSpreadsheetResponse =
 type Spreadsheet = gapi.client.sheets.Spreadsheet;
 type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 
-// https://developers.google.com/sheets/api/guides/authorizing
-export const GOOGLE_SHEETS_SCOPES = [
-  "https://www.googleapis.com/auth/drive.file",
-];
-
-export const DISCOVERY_DOCS = [
-  "https://sheets.googleapis.com/$discovery/rest?version=v4",
-];
-
 export async function createTab(spreadsheetId: string, tabName: string) {
-  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+    interactive: false,
+  });
   try {
     return (await gapi.client.sheets.spreadsheets.batchUpdate({
       spreadsheetId,
@@ -52,7 +49,7 @@ export async function createTab(spreadsheetId: string, tabName: string) {
       },
     })) as BatchUpdateSpreadsheetResponse;
   } catch (error) {
-    throw await handleRejection(token, error);
+    throw await handleGoogleRequestRejection(token, error);
   }
 }
 
@@ -61,7 +58,9 @@ export async function appendRows(
   tabName: string,
   values: any[]
 ) {
-  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+    interactive: false,
+  });
   try {
     return (await gapi.client.sheets.spreadsheets.values.append({
       spreadsheetId,
@@ -73,12 +72,14 @@ export async function appendRows(
       },
     })) as AppendValuesResponse;
   } catch (error) {
-    throw await handleRejection(token, error);
+    throw await handleGoogleRequestRejection(token, error);
   }
 }
 
 export async function batchUpdate(spreadsheetId: string, requests: any[]) {
-  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+    interactive: false,
+  });
   try {
     return (await gapi.client.sheets.spreadsheets.batchUpdate({
       spreadsheetId,
@@ -87,7 +88,7 @@ export async function batchUpdate(spreadsheetId: string, requests: any[]) {
       },
     })) as BatchUpdateSpreadsheetResponse;
   } catch (error) {
-    throw await handleRejection(token, error);
+    throw await handleGoogleRequestRejection(token, error);
   }
 }
 
@@ -95,7 +96,9 @@ export async function batchGet(
   spreadsheetId: string,
   ranges: string | string[]
 ) {
-  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+    interactive: false,
+  });
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
       spreadsheetId,
@@ -111,14 +114,16 @@ export async function batchGet(
       });
     });
   } catch (error) {
-    throw await handleRejection(token, error);
+    throw await handleGoogleRequestRejection(token, error);
   }
 }
 
 export async function getSheetProperties(
   spreadsheetId: string
 ): Promise<SpreadsheetProperties> {
-  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+    interactive: false,
+  });
 
   if (!gapi.client.sheets) {
     throw new Error("gapi sheets module not loaded");
@@ -150,12 +155,14 @@ export async function getSheetProperties(
 
     return spreadsheet.properties;
   } catch (error) {
-    throw await handleRejection(token, error);
+    throw await handleGoogleRequestRejection(token, error);
   }
 }
 
 export async function getTabNames(spreadsheetId: string): Promise<string[]> {
-  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+    interactive: false,
+  });
 
   if (!gapi.client.sheets) {
     throw new Error("gapi sheets module not loaded");
@@ -187,7 +194,7 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
 
     return spreadsheet.sheets.map((x) => x.properties.title);
   } catch (error) {
-    throw await handleRejection(token, error);
+    throw await handleGoogleRequestRejection(token, error);
   }
 }
 

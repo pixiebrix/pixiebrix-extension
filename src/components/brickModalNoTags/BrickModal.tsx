@@ -41,7 +41,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeList as LazyList } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BrickResult from "./BrickResult";
 import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModalNoTags/QuickAdd";
@@ -254,7 +254,7 @@ function ActualModal<T extends IBrick>({
               </Form>
               <div>
                 <AutoSizer>
-                  {({ height, width }) => (
+                  {({ height, width }: Size) => (
                     <LazyList
                       height={height}
                       width={width}

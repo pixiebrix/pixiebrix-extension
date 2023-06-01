@@ -17,14 +17,12 @@
 
 import "./SheetsFileWidget.module.scss";
 
-import React, { useCallback, useEffect, useState } from "react";
-import { type Data, type SheetMeta } from "@/contrib/google/sheets/types";
+import React, { useEffect, useState } from "react";
+import { type SheetMeta } from "@/contrib/google/sheets/types";
 import { useField, useFormikContext } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
-import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/handlers";
-import { ensureAuth } from "@/contrib/google/auth";
 // eslint-disable-next-line no-restricted-imports -- Only using Form.Control here
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
@@ -33,22 +31,23 @@ import { type Expression } from "@/types/runtimeTypes";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
 import { isFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
-
-const API_KEY = process.env.GOOGLE_API_KEY;
-const APP_ID = process.env.GOOGLE_APP_ID;
+import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
+import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
     string | Expression
   >(props);
-  const [sheetError, setSheetError] = useState(null);
-  const [doc, setDoc] = useState<SheetMeta | null>(null);
-
   const { values: formState, setValues: setFormState } = useFormikContext();
+  const [sheetError, setSheetError] = useState<unknown>(null);
+  const [sheetMetadata, setSheetMetadata] = useState<SheetMeta | null>(null);
+
+  const { ensureSheetsTokenAction, showPicker, hasRejectedPermissions } =
+    useGoogleSpreadsheetPicker();
 
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
   useEffect(
@@ -69,9 +68,10 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     []
   );
 
+  // Set sheet lookup error on Formik
   useEffect(
     () => {
-      if (sheetError?.toString().includes("not found")) {
+      if (getErrorMessage(sheetError).includes("not found")) {
         spreadsheetIdFieldHelpers.setError(
           "The sheet does not exist, or you do not have access to it"
         );
@@ -92,101 +92,70 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 
       const spreadsheetId = spreadsheetIdField.value;
 
-      if (doc?.id === spreadsheetId) {
+      if (sheetMetadata?.id === spreadsheetId) {
         // Already up to date
         return;
       }
 
       try {
+        setSheetError(null);
+
         if (
           !isNullOrBlank(spreadsheetIdField.value) &&
-          doc?.id !== spreadsheetId
+          sheetMetadata?.id !== spreadsheetId
         ) {
-          setSheetError(null);
-
           const properties = await sheets.getSheetProperties(
             spreadsheetIdField.value
           );
           if (!isMounted()) return;
-          setDoc({ id: spreadsheetId, name: properties.title });
+          setSheetMetadata({ id: spreadsheetId, name: properties.title });
         } else {
-          setDoc(null);
+          setSheetMetadata(null);
         }
       } catch (error) {
         if (!isMounted()) return;
-        setDoc(null);
+        setSheetMetadata(null);
         setSheetError(error);
         notify.error({ message: "Error retrieving sheet information", error });
       }
     },
-    [doc?.id, spreadsheetIdField.value, setDoc, setSheetError]
+    [
+      sheetMetadata?.id,
+      spreadsheetIdField.value,
+      setSheetMetadata,
+      setSheetError,
+    ]
   );
 
-  const pickerOrigin = useCurrentOrigin();
+  if (hasRejectedPermissions) {
+    return (
+      <div>
+        PixieBrix cannot access your Google Account. See{" "}
+        <a
+          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
+          target="_blank"
+          rel="noreferrer"
+        >
+          troubleshooting information.
+        </a>
+        <AsyncButton onClick={ensureSheetsTokenAction}>Try Again</AsyncButton>
+      </div>
+    );
+  }
 
-  const showPicker = useCallback(async () => {
-    try {
-      const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  if (isExpression(spreadsheetIdField.value)) {
+    return <WorkshopMessageWidget />;
+  }
 
-      console.debug(`Using Google token: ${token}`);
-
-      await new Promise((resolve) => {
-        gapi.load("picker", { callback: resolve });
-      });
-
-      if (isNullOrBlank(APP_ID)) {
-        throw new Error("Internal error: Google app ID is not configured");
-      }
-
-      if (isNullOrBlank(API_KEY)) {
-        throw new Error("Internal error: Google API key is not configured");
-      }
-
-      const view = new google.picker.DocsView(
-        google.picker.ViewId.SPREADSHEETS
-      );
-      const picker = new google.picker.PickerBuilder()
-        .enableFeature(google.picker.Feature.NAV_HIDDEN)
-        .setTitle("Select Spreadsheet")
-        .setOAuthToken(token)
-        .addView(view)
-        .addView(new google.picker.DocsUploadView())
-        .setDeveloperKey(API_KEY)
-        .setAppId(APP_ID)
-        .setCallback((data: Data) => {
-          console.debug("Google Picker result", data);
-          if (data.action === google.picker.Action.PICKED) {
-            const doc = data.docs[0];
-            if (doc.mimeType !== "application/vnd.google-apps.spreadsheet") {
-              throw new Error(`${doc.name} is not a spreadsheet`);
-            }
-
-            spreadsheetIdFieldHelpers.setValue(data.docs[0].id);
-            setDoc(doc);
-          }
-        })
-        .setOrigin(pickerOrigin)
-        .build();
-      picker.setVisible(true);
-    } catch (error) {
-      notify.error({
-        message: "Error loading file picker",
-        error,
-      });
-    }
-  }, [spreadsheetIdFieldHelpers, pickerOrigin]);
-
-  return isExpression(spreadsheetIdField.value) ? (
-    <WorkshopMessageWidget />
-  ) : (
+  return (
     <InputGroup>
-      {doc ? (
-        // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
+      {sheetMetadata ? (
+        // There's a render when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
         <Form.Control
           id={spreadsheetIdField.name}
           type="text"
           disabled
-          value={doc.name ?? spreadsheetIdField.value ?? ""}
+          value={sheetMetadata.name ?? spreadsheetIdField.value ?? ""}
         />
       ) : (
         <Form.Control
@@ -198,7 +167,23 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
         />
       )}
       <InputGroup.Append>
-        <AsyncButton variant="info" onClick={showPicker}>
+        <AsyncButton
+          variant="info"
+          onClick={async () => {
+            try {
+              const doc = await showPicker();
+              spreadsheetIdFieldHelpers.setValue(doc.id);
+              setSheetMetadata(doc);
+            } catch (error) {
+              // Ensure we're notifying Rollbar
+              notify.error({
+                message: "Error loading file picker",
+                error,
+                includeErrorDetails: true,
+              });
+            }
+          }}
+        >
           Select
         </AsyncButton>
       </InputGroup.Append>
@@ -206,4 +191,5 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   );
 };
 
-export default SheetsFileWidget;
+// Ensure Google API is loaded before trying to render widget during mod activation, etc.
+export default requireGoogleHOC(SheetsFileWidget);

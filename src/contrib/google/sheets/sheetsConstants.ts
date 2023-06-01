@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.activeModsHeading {
-  margin-top: 16px;
-  font-size: 14px;
-  font-weight: 500;
-}
+// https://developers.google.com/sheets/api/guides/authorizing
+export const GOOGLE_SHEETS_SCOPES = [
+  "https://www.googleapis.com/auth/drive.file",
+];
+export const DISCOVERY_DOCS = [
+  "https://sheets.googleapis.com/$discovery/rest?version=v4",
+];

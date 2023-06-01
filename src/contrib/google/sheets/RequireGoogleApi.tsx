@@ -28,6 +28,7 @@ import useUserAction from "@/hooks/useUserAction";
 /**
  * Wrapper component to require that the Google API is initialized before rendering its children.
  * @constructor
+ * @see initGoogle
  */
 export const RequireGoogleApi: React.FC = ({ children }) => {
   const isInitialized = useSyncExternalStore(subscribe, isGoogleInitialized);
