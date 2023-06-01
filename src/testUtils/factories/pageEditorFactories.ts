@@ -32,6 +32,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import {
+  ExtensionPointConfig,
   type ExtensionPointConfig as ExtensionPointDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -52,11 +53,19 @@ import sidebar from "@/pageEditor/extensionPoints/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
 import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import { pipelineFactory } from "@/testUtils/factories/blockFactories";
+import { type DerivedFunction } from "cooky-cutter/dist/derive";
 
 export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
-const internalFormStateFactory = define<FormState>({
+const internalFormStateFactory = define<
+  FormState & {
+    extensionPoint: DerivedFunction<
+      FormState,
+      ExtensionPointConfig<ExtensionPointDefinition>
+    >;
+  }
+>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
@@ -73,7 +82,7 @@ const internalFormStateFactory = define<FormState>({
     extensionPoint.definition.type = type;
     return extensionPoint;
   }, "type"),
-} as any);
+});
 export const formStateFactory = (
   override?: FactoryConfig<FormState>,
   pipelineOverride?: BlockPipeline

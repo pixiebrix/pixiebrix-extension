@@ -150,8 +150,10 @@ export async function renderExplicit(
   }
 
   if (isPlainObject(config)) {
-    const renderedEntries = await asyncMapValues(config, async (subConfig) =>
-      renderExplicit(subConfig as UnknownObject, ctxt, options)
+    const renderedEntries = await asyncMapValues(
+      config as Record<string, never>,
+      async (subConfig) =>
+        renderExplicit(subConfig as UnknownObject, ctxt, options)
     );
 
     return pickBy(renderedEntries, (x) => x != null);
