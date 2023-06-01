@@ -18,14 +18,9 @@
 import React from "react";
 import { inputProperties } from "@/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { isEmpty, sortBy } from "lodash";
+import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
-import pipelineSchema from "@schemas/pipeline.json";
-import {
-  isDatabaseField,
-  isServiceField,
-} from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 export type BlockOptionProps = {
