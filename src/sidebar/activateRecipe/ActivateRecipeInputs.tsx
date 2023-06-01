@@ -37,6 +37,7 @@ import { isEmpty } from "lodash";
 import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID } from "@/types/helpers";
+import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
@@ -122,7 +123,16 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           <div>
             <h4>{servicesStep.label}</h4>
           </div>
+          {/*
+          Legacy usage of the wizard step Components:
           <servicesStep.Component blueprint={recipe} reinstall={isReinstall} />
+
+          We need to be more specific here for props to work, so we use ServicesBody directly.
+
+          hideBuiltInServiceIntegrations - does what it says, hides a service field if the value is
+          set to a built-in service integration.
+          */}
+          <ServicesBody blueprint={recipe} hideBuiltInServiceIntegrations />
         </div>
       )}
       {needsPermissions && (

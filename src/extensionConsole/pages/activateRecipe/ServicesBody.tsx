@@ -36,11 +36,15 @@ import { type AuthOption } from "@/auth/authTypes";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
+  hideBuiltInServiceIntegrations?: boolean;
 }
 
 const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
 
-const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+const ServicesBody: React.FunctionComponent<OwnProps> = ({
+  blueprint,
+  hideBuiltInServiceIntegrations,
+}) => {
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
     useAuthOptions(),
     emptyAuthOptions
@@ -53,26 +57,40 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     [blueprint]
   );
 
+  function shouldShowField({ id, config }: ServiceAuthPair): boolean {
+    if (!requiredServiceIds.includes(id)) {
+      return false;
+    }
+
+    const authOption = authOptions.find((option) => option.value === config);
+
+    if (hideBuiltInServiceIntegrations && authOption) {
+      return authOption.sharingType !== "built-in";
+    }
+
+    return true;
+  }
+
   return (
     <>
       {typeof error === "string" && (
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
       {field.value.map(
-        ({ id: serviceId }, index) =>
+        (serviceAuthPair, index) =>
           // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
           // consistent with the index in field.value
-          requiredServiceIds.includes(serviceId) && (
-            <div key={serviceId}>
+          shouldShowField(serviceAuthPair) && (
+            <div key={serviceAuthPair.id}>
               <ServiceFieldError servicesError={error} fieldIndex={index} />
               <Card className={styles.serviceCard}>
                 <ServiceDescriptor
-                  serviceId={serviceId}
+                  serviceId={serviceAuthPair.id}
                   serviceConfigs={serviceConfigs}
                 />
                 <AuthWidget
                   authOptions={authOptions}
-                  serviceId={serviceId}
+                  serviceId={serviceAuthPair.id}
                   name={joinName(field.name, String(index), "config")}
                   onRefresh={refreshAuthOptions}
                 />
