@@ -30,7 +30,7 @@ import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedColla
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const [{ value: actionTitle }] = useField("extension.title");
+  const [{ value: actionTitle }] = useField<string>("extension.title");
   const emojiFirstCharacter =
     splitStartingEmoji(actionTitle).startingEmoji !== undefined;
 

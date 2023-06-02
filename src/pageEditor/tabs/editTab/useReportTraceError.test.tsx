@@ -44,6 +44,7 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeElementId = uuidv4();
 
   const store: Store = configureStore({
+    // @ts-expect-error it's just a test
     reducer: {
       session: sessionSlice.reducer,
       editor: editorSlice.reducer,
@@ -60,8 +61,7 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
         },
       },
     },
-    // Was getting "Type instantiation is excessively deep and possibly infinite" during compilation
-  } as any);
+  });
 
   return renderHook(
     () => {
