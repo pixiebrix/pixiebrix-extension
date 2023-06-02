@@ -59,7 +59,6 @@ let renderSequenceNumber = 0;
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
-// TODO: add form entries variable
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
@@ -426,8 +425,9 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
 // TODO: rename me to getReservedPanels
 export function getReservedPanelKeys(): {
   panels: PanelEntry[];
-  temporaryPanels: [UUID, RegisteredPanel][];
-  forms: [UUID, RegisteredForm][];
+  // TODO: reshape these arrays of tuples to be objects
+  temporaryPanels: Array<[UUID, RegisteredPanel]>;
+  forms: Array<[UUID, RegisteredForm]>;
 } {
   const forms = [...getRegisteredForms()];
 
