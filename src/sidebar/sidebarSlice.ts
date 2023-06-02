@@ -113,8 +113,6 @@ function findNextActiveKey(
     }
   }
 
-  console.log("*** default ot the first static panel");
-
   // Return the first static panel, if it exists
   if (state.staticPanels.length > 0) {
     return eventKeyForEntry(state.staticPanels[0]);
@@ -290,8 +288,8 @@ const sidebarSlice = createSlice({
     addStaticPanel(state, action: PayloadAction<{ panel: StaticPanelEntry }>) {
       state.staticPanels = [...state.staticPanels, action.payload.panel];
 
-      console.log("*** addStaticPanel", state.activeKey);
-
+      // TODO: we potentially don't need this clause anymore, depending on how we're initializing
+      //   the initial active key
       if (!state.activeKey || !eventKeyExists(state, state.activeKey)) {
         state.activeKey = defaultEventKey(state);
       }
@@ -314,7 +312,6 @@ const sidebarSlice = createSlice({
 
       // If a panel is no longer available, reset the current tab to a valid tab.
       if (!eventKeyExists(state, state.activeKey)) {
-        console.log("*** setting default key");
         state.activeKey = defaultEventKey(state);
       }
     },
