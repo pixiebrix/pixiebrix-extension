@@ -113,6 +113,8 @@ function findNextActiveKey(
     }
   }
 
+  console.log("*** default ot the first static panel");
+
   // Return the first static panel, if it exists
   if (state.staticPanels.length > 0) {
     return eventKeyForEntry(state.staticPanels[0]);
@@ -288,6 +290,8 @@ const sidebarSlice = createSlice({
     addStaticPanel(state, action: PayloadAction<{ panel: StaticPanelEntry }>) {
       state.staticPanels = [...state.staticPanels, action.payload.panel];
 
+      console.log("*** addStaticPanel", state.activeKey);
+
       if (!state.activeKey || !eventKeyExists(state, state.activeKey)) {
         state.activeKey = defaultEventKey(state);
       }
@@ -309,15 +313,8 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab.
-      // Prefer switching over to other panel types before showing static panels.
-      if (
-        !eventKeyExists(state, state.activeKey) ||
-        // Without this clause, we will always default to the first static panel when the
-        // Sidebar is opened (e.g. the Home panel), instead of a panel for an installed mod.
-        state.staticPanels.some(
-          (staticPanel) => state.activeKey === eventKeyForEntry(staticPanel)
-        )
-      ) {
+      if (!eventKeyExists(state, state.activeKey)) {
+        console.log("*** setting default key");
         state.activeKey = defaultEventKey(state);
       }
     },

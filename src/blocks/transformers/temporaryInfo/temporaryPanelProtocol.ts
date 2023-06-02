@@ -26,7 +26,7 @@ import { ClosePanelAction } from "@/blocks/errors";
 import { CancelError } from "@/errors/businessErrors";
 import { type Except } from "type-fest";
 
-type RegisteredPanel = {
+export type RegisteredPanel = {
   registration: DeferredPromise<PanelAction | null>;
   entry?: Except<TemporaryPanelEntry, "type">;
 };
@@ -93,8 +93,6 @@ export function updatePanelDefinition(
 export function registerEmptyTemporaryPanel(nonce: UUID, extensionId: UUID) {
   expectContext("contentScript");
 
-  console.log("*** registering a temporary panel", nonce, extensionId);
-
   if (panels.has(nonce)) {
     console.error(
       `A temporary panel was already registered with nonce ${nonce}`
@@ -149,8 +147,6 @@ export async function waitForTemporaryPanel(
   extensionNonces.get(entry.extensionId).add(nonce);
 
   onRegister?.();
-
-  console.log("*** panels", panels);
 
   return registration.promise;
 }

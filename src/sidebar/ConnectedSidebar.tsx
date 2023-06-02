@@ -43,6 +43,7 @@ import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
 import { getReservedPanelKeys } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncEffect from "use-async-effect";
+import { isEmpty } from "lodash";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -99,16 +100,48 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
-  useEffect(() => {
-    if (flagOn("sidebar-home-tab") && permit("marketplace")) {
-      dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (flagOn("sidebar-home-tab") && permit("marketplace")) {
+  //     dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
+  //   }
+  // }, []);
 
   useAsyncEffect(async () => {
     const topFrame = await getTopLevelFrame();
-    const panels = await getReservedPanelKeys(topFrame);
-    console.log("*** visiblePanels", panels);
+    const { panels, temporaryPanels, forms } = await getReservedPanelKeys(
+      topFrame
+    );
+
+    console.log("*** panels", panels, temporaryPanels, forms);
+
+    if (!isEmpty(panels)) {
+      // TODO: set state for actual PanelEntry
+      dispatch(sidebarSlice.actions.setPanels({ panels }));
+      console.log("*** visiblePanels", panels);
+    }
+
+    if (!isEmpty(temporaryPanels)) {
+      for (const panel of temporaryPanels) {
+        dispatch(
+          sidebarSlice.actions.addTemporaryPanel({
+            panel: { nonce: panel },
+            type: "temporaryPanel",
+          })
+        );
+      }
+    }
+
+    if (!isEmpty(forms)) {
+      for (const form of forms) {
+        dispatch(
+          sidebarSlice.actions.addForm({ form: { nonce: form, type: "form" } })
+        );
+      }
+    }
+
+    if (flagOn("sidebar-home-tab") && permit("marketplace")) {
+      dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
+    }
   }, []);
 
   return (

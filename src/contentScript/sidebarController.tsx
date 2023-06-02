@@ -40,8 +40,14 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { getTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { getRegisteredForms } from "@/contentScript/ephemeralFormProtocol";
+import {
+  getTemporaryPanels,
+  RegisteredPanel,
+} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import {
+  getRegisteredForms,
+  RegisteredForm,
+} from "@/contentScript/ephemeralFormProtocol";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
@@ -417,22 +423,22 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }
 
-export function getReservedPanelKeys(): UUID[] {
-  const panelExtensionIds = panels.map((panel) => panel.extensionId);
-
-  const temporaryPanelNonces = getTemporaryPanels().keys();
-
+// TODO: rename me to getReservedPanels
+export function getReservedPanelKeys(): {
+  panels: PanelEntry[];
+  temporaryPanels: RegisteredPanel[];
+  forms: [UUID, RegisteredForm][];
+} {
   const forms = [...getRegisteredForms()];
 
-  const sidebarFormNonces = forms
-    .filter((entry) => {
-      const [_, form] = entry;
-      return form.definition.location === "sidebar";
-    })
-    .map((entry) => {
-      const [nonce] = entry;
-      return nonce;
-    });
+  const sidebarForms = forms.filter((entry) => {
+    const [_, form] = entry;
+    return form.definition.location === "sidebar";
+  });
 
-  return [...panelExtensionIds, ...temporaryPanelNonces, ...sidebarFormNonces];
+  return {
+    panels,
+    temporaryPanels: [...getTemporaryPanels().values()],
+    forms: sidebarForms,
+  };
 }

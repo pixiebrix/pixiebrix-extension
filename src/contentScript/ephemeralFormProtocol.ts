@@ -21,7 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
 
-type RegisteredForm = {
+export type RegisteredForm = {
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
 };
