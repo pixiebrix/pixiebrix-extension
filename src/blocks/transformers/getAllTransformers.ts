@@ -49,6 +49,7 @@ import TraverseElements from "@/blocks/transformers/traverseElements";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type IBlock } from "@/types/blockTypes";
 import { SelectElement } from "@/blocks/transformers/selectElement";
+import Run from "@/blocks/transformers/controlFlow/Run";
 
 function getAllTransformers(): IBlock[] {
   return [
@@ -87,6 +88,7 @@ function getAllTransformers(): IBlock[] {
     new TryExcept(),
     new ForEachElement(),
     new Retry(),
+    new Run(),
 
     // Render Pipelines
     new DisplayTemporaryInfo(),

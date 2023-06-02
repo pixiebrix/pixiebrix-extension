@@ -36,7 +36,8 @@ import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
+import { CancelError } from "@/errors/businessErrors";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
@@ -175,12 +176,14 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
               spreadsheetIdFieldHelpers.setValue(doc.id);
               setSheetMetadata(doc);
             } catch (error) {
-              // Ensure we're notifying Rollbar
-              notify.error({
-                message: "Error loading file picker",
-                error,
-                includeErrorDetails: true,
-              });
+              if (!isSpecificError(error, CancelError)) {
+                // Ensure we're notifying Rollbar
+                notify.error({
+                  message: "Error loading file picker",
+                  error,
+                  includeErrorDetails: true,
+                });
+              }
             }
           }}
         >

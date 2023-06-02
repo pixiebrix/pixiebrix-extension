@@ -29,6 +29,7 @@ function getTestBlock() {
     config: {
       text: toExpression("nunjucks", "test"),
     },
+    if: toExpression("var", "@foo"),
   });
 }
 
@@ -48,7 +49,7 @@ test("should invoke the callback for a brick expression", () => {
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline);
 
-  expect(visitExpression).toHaveBeenCalledTimes(pipeline.length);
+  expect(visitExpression).toHaveBeenCalledTimes(2);
   expect(visitExpression).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.text`,
@@ -56,6 +57,15 @@ test("should invoke the callback for a brick expression", () => {
     {
       __type__: "nunjucks",
       __value__: "test",
+    }
+  );
+  expect(visitExpression).toHaveBeenCalledWith(
+    {
+      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.if`,
+    },
+    {
+      __type__: "var",
+      __value__: "@foo",
     }
   );
 });

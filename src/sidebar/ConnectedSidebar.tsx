@@ -81,7 +81,7 @@ function useConnectedListener(): SidebarListener {
 }
 
 const ConnectedSidebar: React.VFC = () => {
-  const { flagOn } = useFlags();
+  const { flagOn, permit } = useFlags();
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
@@ -97,7 +97,7 @@ const ConnectedSidebar: React.VFC = () => {
   }, [listener]);
 
   useEffect(() => {
-    if (flagOn("sidebar-home-tab")) {
+    if (flagOn("sidebar-home-tab") && permit("marketplace")) {
       dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
     }
   }, []);

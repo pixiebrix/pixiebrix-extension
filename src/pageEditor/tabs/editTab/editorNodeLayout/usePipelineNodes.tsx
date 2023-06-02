@@ -70,6 +70,7 @@ import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { type IBlock } from "@/types/blockTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -96,7 +97,15 @@ type SubPipeline = {
   inputKey?: string;
 };
 
-function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
+/**
+ *
+ * @param block the block, or null if the resolved block is not available yet
+ * @param blockConfig the block config
+ */
+function getSubPipelinesForBlock(
+  block: IBlock | null,
+  blockConfig: BlockConfig
+): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
     for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
@@ -122,7 +131,7 @@ function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
       });
     }
   } else {
-    for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
+    for (const pipelinePropName of getPipelinePropNames(block, blockConfig)) {
       const path = joinName("config", pipelinePropName, "__value__");
       const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
 
@@ -285,7 +294,7 @@ const usePipelineNodes = (): {
       extensionHasTraces = true;
     }
 
-    const subPipelines = getSubPipelinesForBlock(blockConfig);
+    const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
     const collapsed = collapsedState[blockConfig.instanceId];
     const expanded = hasSubPipelines && !collapsed;

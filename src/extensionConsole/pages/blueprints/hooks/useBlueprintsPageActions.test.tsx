@@ -18,16 +18,16 @@
 /* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /// <reference types="jest-extended" />
 
-import useInstallableViewItemActions, {
-  type InstallableViewItemActions,
-} from "@/installables/useInstallableViewItemActions";
+import useBlueprintsPageActions, {
+  type BlueprintsPageActions,
+} from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type InstallableStatus,
   type InstallableViewItem,
   type SharingType,
 } from "@/installables/installableTypes";
-import useInstallablePermissions from "@/installables/useInstallablePermissions";
+import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -42,11 +42,11 @@ import {
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/installables/useInstallablePermissions", () => jest.fn());
+jest.mock("@/installables/hooks/useInstallablePermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
-  actualActions: InstallableViewItemActions
+  actualActions: BlueprintsPageActions
 ) => {
   // Union both set of keys to ensure all possible keys are covered
   const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);
@@ -102,11 +102,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe("useInstallableViewItemActions", () => {
-  beforeEach(() => {
-    window.location.pathname = "/options.html";
-  });
-
+describe("useBlueprintsPageActions", () => {
   test("cloud extension", () => {
     mockHooks();
     const cloudExtensionItem = installableItemFactory({
@@ -117,7 +113,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(cloudExtensionItem));
+    } = renderHook(() => useBlueprintsPageActions(cloudExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
@@ -134,18 +130,11 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(personalExtensionItem));
+    } = renderHook(() => useBlueprintsPageActions(personalExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
       actions
     );
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(personalExtensionItem));
-
-    expectActions(["deactivate", "viewPublish"], sidebarActions);
   });
 
   test("active personal blueprint", () => {
@@ -158,18 +147,11 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
     );
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
-
-    expectActions(["deactivate", "viewPublish", "reactivate"], sidebarActions);
   });
 
   test("inactive personal blueprint", () => {
@@ -182,7 +164,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(personalBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -196,18 +178,11 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
     );
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
-
-    expectActions(["deactivate", "viewPublish", "reactivate"], sidebarActions);
   });
 
   test("inactive team blueprint", () => {
@@ -220,7 +195,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(teamBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -234,18 +209,11 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(publicBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
       actions
     );
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(publicBlueprintItem));
-
-    expectActions(["deactivate", "viewPublish", "reactivate"], sidebarActions);
   });
 
   test("team deployment for unrestricted user", () => {
@@ -258,15 +226,8 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
     expectActions(["reactivate", "deactivate", "viewLogs"], actions);
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-
-    expectActions(["deactivate", "reactivate"], sidebarActions);
   });
 
   test("restricted team deployment", () => {
@@ -279,7 +240,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
     expectActions(["viewLogs"], actions);
   });
 
@@ -293,7 +254,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
     expectActions(
       [
         "viewPublish",
@@ -304,16 +265,6 @@ describe("useInstallableViewItemActions", () => {
         "reactivate",
       ],
       actions
-    );
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
-
-    expectActions(
-      ["deactivate", "requestPermissions", "viewPublish", "reactivate"],
-      sidebarActions
     );
   });
 
@@ -328,15 +279,8 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+    } = renderHook(() => useBlueprintsPageActions(blueprintItem));
     expectActions(["deactivate", "viewLogs"], actions);
-
-    window.location.pathname = "/sidebar.html";
-    const {
-      result: { current: sidebarActions },
-    } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-
-    expectActions(["deactivate"], sidebarActions);
   });
 
   test("paused deployment with unrestricted user", () => {
@@ -349,7 +293,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
 
     // Unrestricted users (e.g., developers) need to be able to deactivate/reactivate a deployment to use a later
     // version of the blueprint for development/testing.
@@ -366,7 +310,7 @@ describe("useInstallableViewItemActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useInstallableViewItemActions(deploymentItem));
+    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
 
     expectActions(["viewLogs"], actions);
   });
@@ -392,20 +336,10 @@ describe("useInstallableViewItemActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions
-      );
-
-      window.location.pathname = "/sidebar.html";
-      const {
-        result: { current: sidebarActions },
-      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-
-      expectActions(
-        ["deactivate", "viewPublish", "reactivate"],
-        sidebarActions
       );
     });
 
@@ -414,7 +348,7 @@ describe("useInstallableViewItemActions", () => {
 
       const {
         result: { current: actions },
-      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
+      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -424,16 +358,6 @@ describe("useInstallableViewItemActions", () => {
           "reactivate",
         ],
         actions
-      );
-
-      window.location.pathname = "/sidebar.html";
-      const {
-        result: { current: sidebarActions },
-      } = renderHook(() => useInstallableViewItemActions(blueprintItem));
-
-      expectActions(
-        ["viewInMarketplaceHref", "deactivate", "reactivate"],
-        sidebarActions
       );
     });
   });
@@ -457,7 +381,7 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useInstallableViewItemActions(blueprintInstallable));
+      } = renderHook(() => useBlueprintsPageActions(blueprintInstallable));
 
       deactivate();
 
@@ -485,19 +409,16 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(
-        () => useInstallableViewItemActions(extensionInstallable),
-        {
-          setupRedux(dispatch) {
-            dispatch(extensionActions.installCloudExtension({ extension }));
-            dispatch(
-              extensionActions.installCloudExtension({
-                extension: cloudExtensionFactory(),
-              })
-            );
-          },
-        }
-      );
+      } = renderHook(() => useBlueprintsPageActions(extensionInstallable), {
+        setupRedux(dispatch) {
+          dispatch(extensionActions.installCloudExtension({ extension }));
+          dispatch(
+            extensionActions.installCloudExtension({
+              extension: cloudExtensionFactory(),
+            })
+          );
+        },
+      });
 
       deactivate();
 

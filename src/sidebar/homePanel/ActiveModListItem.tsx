@@ -15,26 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
+// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
 import { type InstallableViewItem } from "@/installables/installableTypes";
-import useInstallableViewItemActions from "@/installables/useInstallableViewItemActions";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import InstallableActions from "@/installables/InstallableActions";
+import {
+  faExclamationCircle,
+  faStore,
+} from "@fortawesome/free-solid-svg-icons";
 import { getContainedStarterBrickNames } from "@/utils/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import InstallableIcon from "@/installables/InstallableIcon";
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
+import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
+import cx from "classnames";
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything (maybe add this word to dictionary?)
+// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 export const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
   const { name, installable } = installableItem;
-  const { requestPermissions } = useInstallableViewItemActions(installableItem);
+  const marketplaceListingUrl = useMarketplaceUrl(installableItem);
+  const requestPermissions = useRequestPermissionsAction(installableItem);
 
   const { data: starterBricksContained } = useAsyncState(
     async () => getContainedStarterBrickNames(installableItem),
@@ -50,8 +56,15 @@ export const ActiveModListItem: React.FunctionComponent<{
         </div>
         <div>
           <div>
-            <h5 className={styles.modName}>{name}</h5>
-            <span className={styles.starterBricksList}>
+            <h5 className={styles.lineClampOneLine}>{name}</h5>
+            <span
+              className={cx(
+                styles.starterBricksList,
+                requestPermissions
+                  ? styles.lineClampOneLine
+                  : styles.lineClampTwoLines
+              )}
+            >
               {starterBricksContained.join(" • ")}
             </span>
           </div>
@@ -68,7 +81,19 @@ export const ActiveModListItem: React.FunctionComponent<{
         </div>
       </div>
       <div className="flex-shrink-1">
-        <InstallableActions installableViewItem={installableItem} />
+        <EllipsisMenu
+          items={[
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod Details
+                </>
+              ),
+              href: marketplaceListingUrl,
+              disabled: !marketplaceListingUrl,
+            },
+          ]}
+        />
       </div>
     </ListGroup.Item>
   );

@@ -14,17 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
 
 import React from "react";
 import {
   type Installable,
   type InstallableViewItem,
 } from "@/installables/installableTypes";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Row } from "react-bootstrap";
 import useInstallableViewItems from "@/installables/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
+import { isEmpty } from "lodash";
+import workshopIllustration from "@img/workshop.svg";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 const columns: Array<Column<InstallableViewItem>> = [
   {
@@ -38,26 +42,47 @@ const columns: Array<Column<InstallableViewItem>> = [
   },
 ];
 
+const NoActiveModsView: React.FunctionComponent = () => (
+  <div className={styles.emptyViewRoot}>
+    <p>You don&apos;t have any mods activated</p>
+    <h4>But we have a solution for that</h4>
+    <img
+      src={workshopIllustration}
+      className={styles.illustration}
+      alt="Workshop"
+    />
+    <p>
+      There are hundreds of mods to use on the{" "}
+      <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
+        PixieBrix Marketplace
+      </a>
+    </p>
+  </div>
+);
+
 export const ActiveModsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { installableViewItems, isLoading } =
     useInstallableViewItems(installables);
 
+  const activeMods = installableViewItems.filter(
+    (installableViewItem) =>
+      installableViewItem.status === "Active" &&
+      !installableViewItem.unavailable
+  );
+
   const tableInstance = useTable<InstallableViewItem>({
     columns,
-    data: installableViewItems.filter(
-      (installableViewItem) =>
-        installableViewItem.status === "Active" &&
-        !installableViewItem.unavailable
-    ),
+    data: activeMods,
   });
 
-  return (
+  const renderBody = isEmpty(activeMods) ? (
+    <NoActiveModsView />
+  ) : (
     <>
-      {isLoading ? (
-        <Loader />
-      ) : (
+      <h3 className={styles.activeModsHeading}>Active mods</h3>
+      <Row>
         <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
           {tableInstance.rows.map((row) => {
             tableInstance.prepareRow(row);
@@ -69,9 +94,11 @@ export const ActiveModsList: React.FunctionComponent<{
             );
           })}
         </ListGroup>
-      )}
+      </Row>
     </>
   );
+
+  return isLoading ? <Loader /> : renderBody;
 };
 
 export default ActiveModsList;
