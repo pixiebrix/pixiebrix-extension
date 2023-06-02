@@ -23,10 +23,11 @@ import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 
 /**
- * A brick that runs one or more bricks synchronously or asynchronously. Used to develop custom control flow using
- * bricks, e.g.:
- * - Run a brick asynchronously, updating page state with the progress
- * - Perform parallel operations, map-reduce, etc.
+ * A brick that runs one or more bricks synchronously or asynchronously. Used to group bricks and/or develop custom
+ * control flow using bricks, e.g.:
+ * - Run a brick asynchronously, updating Page State with the loading state
+ * - Re-usable custom error handling
+ * - Performance tracing
  */
 class Run extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/run");
@@ -35,7 +36,7 @@ class Run extends Transformer {
   constructor() {
     super(
       Run.BLOCK_ID,
-      "Run",
+      "Run Bricks",
       "Run one or more bricks synchronously or asynchronously"
     );
   }
@@ -54,12 +55,13 @@ class Run extends Transformer {
     {
       body: {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
-        description: "The bricks to execute",
+        description: "The brick(s) to execute",
       },
       async: {
         type: "boolean",
+        title: "Asynchronous",
         description:
-          "True to run the bricks asynchronously. If true, will return an empty record immediately",
+          "True to run the brick(s) asynchronously. If true, outputs an empty value immediately",
         default: false,
       },
     },

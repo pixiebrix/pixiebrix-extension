@@ -125,8 +125,11 @@ export function getPipelinePropNames(
           typeof value === "object" &&
           value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
       );
+
       return sortedFields(pipelineProperties, block.uiSchema, {
         includePipelines: true,
+        // JS control flow bricks don't define a uiSchema
+        preserveSchemaOrder: true,
       }).map((x) => x.prop);
     }
   }
