@@ -140,7 +140,7 @@ function getProp(value: any, prop: string | number): unknown {
       return getProp(value.content, prop);
     }
 
-    if (typeof prop === "string" && isGetter(value, prop)) {
+    if (typeof prop === "string" && isGetter(value as UnknownObject, prop)) {
       return value[prop]();
     }
 
@@ -198,7 +198,7 @@ function readEmberValueFromCache(
       return value.content.map((x: any) => traverse(x));
     }
 
-    return mapValues(pickExternalProps(value), recurse);
+    return mapValues(pickExternalProps(value as UnknownObject), recurse);
   }
 
   // ignore functions and symbols

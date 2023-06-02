@@ -51,28 +51,31 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
     callbacks: CallbackMap,
     prop: "result" | "error"
   ) => {
-    document.addEventListener(type, (event: CustomEvent) => {
-      if (!event.detail) {
-        throw new Error(
-          `Handler for ${type} did not provide a detail property`
-        );
+    document.addEventListener(
+      type,
+      (event: CustomEvent<{ id: number } & "result" & "error">) => {
+        if (!event.detail) {
+          throw new Error(
+            `Handler for ${type} did not provide a detail property`
+          );
+        }
+
+        const { id } = event.detail;
+        // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
+        // script. So if you add any logging outside of the if, the logs are confusing.
+        const callback = callbacks.get(id);
+
+        if (callback != null) {
+          // Clean up callbacks
+          fulfillmentCallbacks.delete(id);
+          rejectionCallbacks.delete(id);
+
+          // Only getting called with "result" or "error"
+          // eslint-disable-next-line security/detect-object-injection
+          callback(event.detail[prop]);
+        }
       }
-
-      const { id } = event.detail;
-      // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
-      // script. So if you add any logging outside of the if, the logs are confusing.
-      const callback = callbacks.get(id);
-
-      if (callback != null) {
-        // Clean up callbacks
-        fulfillmentCallbacks.delete(id);
-        rejectionCallbacks.delete(id);
-
-        // Only getting called with "result" or "error"
-        // eslint-disable-next-line security/detect-object-injection
-        callback(event.detail[prop]);
-      }
-    });
+    );
   };
 
   listen(`${messageType}_FULFILLED`, fulfillmentCallbacks, "result");

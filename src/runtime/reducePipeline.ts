@@ -307,7 +307,12 @@ async function executeBlockWithValidatedProps(
         ...commonOptions,
         ...options,
         root,
-        async runPipeline(pipeline, branch, extraContext, rootOverride) {
+        async runPipeline(
+          pipeline: BlockPipeline,
+          branch,
+          extraContext,
+          rootOverride
+        ) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
           }
@@ -337,7 +342,7 @@ async function executeBlockWithValidatedProps(
          *  wrapped in a try-catch
          */
         async runRendererPipeline(
-          pipeline,
+          pipeline: BlockPipeline,
           branch,
           extraContext,
           rootOverride
