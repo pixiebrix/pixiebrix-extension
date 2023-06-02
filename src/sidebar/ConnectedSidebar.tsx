@@ -111,6 +111,8 @@ const ConnectedSidebar: React.VFC = () => {
     }
 
     if (!isEmpty(temporaryPanels)) {
+      // TODO: this isn't right (we're missing info to fully construct the TemporaryPanelEntry),
+      //  is there another way to set initial state?
       for (const panel of temporaryPanels) {
         const [nonce, _] = panel;
         dispatch(
@@ -122,6 +124,8 @@ const ConnectedSidebar: React.VFC = () => {
     }
 
     if (!isEmpty(forms)) {
+      // TODO: this isn't right (we're missing info to fully construct the FormEntry),
+      //  is there another way to set initial state?
       for (const entry of forms) {
         const [nonce, form] = entry;
         dispatch(
