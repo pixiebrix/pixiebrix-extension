@@ -100,41 +100,34 @@ const ConnectedSidebar: React.VFC = () => {
     };
   }, [listener]);
 
-  // useEffect(() => {
-  //   if (flagOn("sidebar-home-tab") && permit("marketplace")) {
-  //     dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
-  //   }
-  // }, []);
-
   useAsyncEffect(async () => {
     const topFrame = await getTopLevelFrame();
     const { panels, temporaryPanels, forms } = await getReservedPanelKeys(
       topFrame
     );
 
-    console.log("*** panels", panels, temporaryPanels, forms);
-
     if (!isEmpty(panels)) {
-      // TODO: set state for actual PanelEntry
       dispatch(sidebarSlice.actions.setPanels({ panels }));
-      console.log("*** visiblePanels", panels);
     }
 
     if (!isEmpty(temporaryPanels)) {
       for (const panel of temporaryPanels) {
+        const [nonce, _] = panel;
         dispatch(
           sidebarSlice.actions.addTemporaryPanel({
-            panel: { nonce: panel },
-            type: "temporaryPanel",
+            panel: { nonce, type: "temporaryPanel" },
           })
         );
       }
     }
 
     if (!isEmpty(forms)) {
-      for (const form of forms) {
+      for (const entry of forms) {
+        const [nonce, form] = entry;
         dispatch(
-          sidebarSlice.actions.addForm({ form: { nonce: form, type: "form" } })
+          sidebarSlice.actions.addForm({
+            form: { nonce, type: "form", form: form.definition },
+          })
         );
       }
     }

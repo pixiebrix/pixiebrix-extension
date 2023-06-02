@@ -426,7 +426,7 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
 // TODO: rename me to getReservedPanels
 export function getReservedPanelKeys(): {
   panels: PanelEntry[];
-  temporaryPanels: RegisteredPanel[];
+  temporaryPanels: [UUID, RegisteredPanel][];
   forms: [UUID, RegisteredForm][];
 } {
   const forms = [...getRegisteredForms()];
@@ -438,7 +438,7 @@ export function getReservedPanelKeys(): {
 
   return {
     panels,
-    temporaryPanels: [...getTemporaryPanels().values()],
+    temporaryPanels: [...getTemporaryPanels()],
     forms: sidebarForms,
   };
 }
