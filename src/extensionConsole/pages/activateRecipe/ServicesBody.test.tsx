@@ -139,8 +139,10 @@ describe("ServicesBody", () => {
     expect(screen.getByRole("button", { name: /configure/i })).toBeVisible();
   });
 
-  it("does not hide field with one service and no options", async () => {
-    useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
+  it("does not hide field with one service, no options for the service, but other options exist", async () => {
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([sharedOption2a, sharedOption2b])
+    );
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody

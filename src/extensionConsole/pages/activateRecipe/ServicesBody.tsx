@@ -64,7 +64,16 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
       return false;
     }
 
-    if (hideBuiltInServiceIntegrations && !isEmpty(authOptions)) {
+    const serviceOptions = authOptions.filter(
+      (option) => option.serviceId === serviceId
+    );
+
+    // Always show field if there are no options available for the service
+    if (isEmpty(serviceOptions)) {
+      return true;
+    }
+
+    if (hideBuiltInServiceIntegrations) {
       // Show the field if there are options for the service that are not built-in
       return authOptions.some(
         (option) =>
