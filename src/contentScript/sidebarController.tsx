@@ -417,7 +417,7 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }
 
-export function getVisiblePanelKeys(): UUID[] {
+export function getReservedPanelKeys(): UUID[] {
   const panelExtensionIds = panels.map((panel) => panel.extensionId);
 
   const temporaryPanelNonces = getTemporaryPanels().keys();

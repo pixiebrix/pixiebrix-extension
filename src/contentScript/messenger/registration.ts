@@ -37,7 +37,7 @@ import {
   rehydrateSidebar,
   removeExtension as removeSidebar,
   reloadSidebar,
-  getVisiblePanelKeys,
+  getReservedPanelKeys,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
@@ -92,7 +92,7 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
 
-    GET_VISIBLE_PANEL_KEYS: typeof getVisiblePanelKeys;
+    GET_RESERVED_PANEL_KEYS: typeof getReservedPanelKeys;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -154,7 +154,7 @@ export default function registerMessenger(): void {
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
-    GET_VISIBLE_PANEL_KEYS: getVisiblePanelKeys,
+    GET_RESERVED_PANEL_KEYS: getReservedPanelKeys,
     RESET_TAB: resetTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
