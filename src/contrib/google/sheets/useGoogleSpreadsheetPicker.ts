@@ -114,6 +114,14 @@ function useGoogleSpreadsheetPicker(): {
       .setDeveloperKey(API_KEY)
       .setAppId(APP_ID)
       .setCallback((data: Data) => {
+        // The File Picker also does a callback for "loaded", but that action doesn't appear in the types and doesn't
+        // appear in the documentation: https://developers.google.com/drive/picker/reference#callback-types
+        // For now, report the event to help diagnose issues users are facing with the picker. In the future,
+        // could consider making this a NOP.
+        reportEvent("GoogleFilePickerEvent", {
+          action: data.action,
+        });
+
         if (data.action === google.picker.Action.PICKED) {
           const doc = data.docs[0];
           if (doc.mimeType !== "application/vnd.google-apps.spreadsheet") {
@@ -126,10 +134,6 @@ function useGoogleSpreadsheetPicker(): {
           deferredPromise.resolve(doc);
         } else if (data.action === google.picker.Action.CANCEL) {
           deferredPromise.reject(new CancelError("No spreadsheet selected"));
-        } else {
-          deferredPromise.reject(
-            new Error(`Unexpected File Picker action: ${data.action}`)
-          );
         }
       })
       .setOrigin(pickerOrigin)
