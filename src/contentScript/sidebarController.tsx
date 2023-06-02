@@ -413,3 +413,8 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   const sequence = renderSequenceNumber++;
   void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }
+
+// TODO: Move me to a different file?
+export function getVisiblePanels() {
+  console.log("*** hello world!");
+}

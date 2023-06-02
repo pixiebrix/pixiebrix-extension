@@ -40,6 +40,9 @@ import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
+import { getVisiblePanels } from "@/contentScript/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
+import useAsyncEffect from "use-async-effect";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -100,6 +103,11 @@ const ConnectedSidebar: React.VFC = () => {
     if (flagOn("sidebar-home-tab") && permit("marketplace")) {
       dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
     }
+  }, []);
+
+  useAsyncEffect(async () => {
+    const topFrame = await getTopLevelFrame();
+    void getVisiblePanels(topFrame);
   }, []);
 
   return (

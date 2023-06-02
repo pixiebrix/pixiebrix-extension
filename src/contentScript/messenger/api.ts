@@ -30,6 +30,7 @@ export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const removeInstalledExtension = getNotifier(
   "REMOVE_INSTALLED_EXTENSION"
 );
+export const getVisiblePanels = getMethod("GET_VISIBLE_PANELS");
 
 export const resetTab = getNotifier("RESET_TAB");
 
