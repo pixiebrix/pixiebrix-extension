@@ -77,7 +77,7 @@ export function useConfiguredHost(): ConfiguredHostResult {
   );
 
   const setUrl = useCallback(
-    async (url) => {
+    async (url: string) => {
       await setBaseURL(url);
       setState(url);
     },

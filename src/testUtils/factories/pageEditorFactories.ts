@@ -32,7 +32,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import {
-  ExtensionPointConfig,
+  type ExtensionPointConfig,
   type ExtensionPointConfig as ExtensionPointDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -83,6 +83,7 @@ const internalFormStateFactory = define<
     return extensionPoint;
   }, "type"),
 });
+
 export const formStateFactory = (
   override?: FactoryConfig<FormState>,
   pipelineOverride?: BlockPipeline
@@ -93,10 +94,10 @@ export const formStateFactory = (
       extension: baseExtensionStateFactory({
         blockPipeline: pipelineOverride,
       }),
-    } as any);
+    } as unknown);
   }
 
-  return internalFormStateFactory(override);
+  return internalFormStateFactory(override as unknown);
 };
 
 export const triggerFormStateFactory = (
@@ -116,7 +117,7 @@ export const triggerFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as any,
+    } as FactoryConfig<FormState>,
     pipelineOverride
   ) as TriggerFormState;
 };
@@ -139,7 +140,7 @@ export const sidebarPanelFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as any,
+    } as FactoryConfig<FormState>,
     pipelineOverride
   ) as SidebarFormState;
 };
@@ -161,7 +162,7 @@ export const contextMenuFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as any,
+    } as FactoryConfig<FormState>,
     pipelineOverride
   ) as ContextMenuFormState;
 };
@@ -183,7 +184,7 @@ export const quickbarFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as any,
+    } as FactoryConfig<FormState>,
     pipelineOverride
   ) as QuickBarFormState;
 };
@@ -209,7 +210,7 @@ export const menuItemFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as any,
+    } as FactoryConfig<FormState>,
     pipelineOverride
   ) as ActionFormState;
 };

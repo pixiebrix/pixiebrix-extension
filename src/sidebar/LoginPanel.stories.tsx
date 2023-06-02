@@ -31,7 +31,7 @@ export default {
   component: LoginPanel,
 } as ComponentMeta<typeof LoginPanel>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: Record<string, unknown>) {
   return configureStore({
     reducer: {
       settings: settingsSlice.reducer,
