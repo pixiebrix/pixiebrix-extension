@@ -23,6 +23,7 @@ import { type Data, type Doc } from "@/contrib/google/sheets/types";
 import pDefer from "p-defer";
 import { reportEvent } from "@/telemetry/events";
 import useUserAction from "@/hooks/useUserAction";
+import { CancelError } from "@/errors/businessErrors";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -123,6 +124,12 @@ function useGoogleSpreadsheetPicker(): {
 
           reportEvent("SelectGoogleSpreadsheetPicked");
           deferredPromise.resolve(doc);
+        } else if (data.action === google.picker.Action.CANCEL) {
+          deferredPromise.reject(new CancelError("No spreadsheet selected"));
+        } else {
+          deferredPromise.reject(
+            new Error(`Unexpected File Picker action: ${data.action}`)
+          );
         }
       })
       .setOrigin(pickerOrigin)
