@@ -198,7 +198,7 @@ export class AddUpdateCompany extends Effect {
 
     const properties = makeProperties(config, "name");
 
-    const hostName = new URL(website).hostname;
+    const hostName = new URL(String(website)).hostname;
 
     // @ts-expect-error come back and define types for the hubspot API
     const { results } = await proxyHubspot({

@@ -126,6 +126,8 @@ export class RunProcess extends Transformer {
     }: BlockArgs,
     { logger }: BlockOptions
   ): Promise<unknown> {
+    // TODO: Find a better solution than disabling
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const responsePromise = proxyService<JobsResponse>(uipath, {
       url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
       method: "post",
@@ -154,6 +156,8 @@ export class RunProcess extends Transformer {
     }
 
     const poll = async () => {
+      // TODO: Find a better solution than disabling
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const { data: resultData } = await proxyService<JobsResponse>(uipath, {
         url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
         method: "get",

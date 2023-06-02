@@ -129,7 +129,7 @@ export class UiPathAppRenderer extends Renderer {
 
     // Use extension iframe to get around the host’s CSP limitations
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const subframeUrl = new URL(url);
+    const subframeUrl = new URL(String(url));
     subframeUrl.searchParams.set("_pb", nonce);
 
     const localFrame = new URL(browser.runtime.getURL("frame.html"));

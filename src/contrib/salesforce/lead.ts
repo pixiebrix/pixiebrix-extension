@@ -70,6 +70,8 @@ export class AddLead extends Effect {
   };
 
   async effect({ salesforce, ...data }: BlockArgs): Promise<void> {
+    // TODO: Find a better solution than disabling
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await proxyService(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",
