@@ -33,6 +33,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
+import { isEmpty } from "lodash";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -62,10 +63,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
       return false;
     }
 
-    const authOption = authOptions.find((option) => option.value === config);
-
-    if (hideBuiltInServiceIntegrations && authOption) {
-      return authOption.sharingType !== "built-in";
+    if (hideBuiltInServiceIntegrations && !isEmpty(authOptions)) {
+      // Show the field if there are options for the service that are not built-in
+      return authOptions.some(
+        (option) => option.serviceId === id && option.sharingType !== "built-in"
+      );
     }
 
     return true;

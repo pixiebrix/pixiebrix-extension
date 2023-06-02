@@ -31,3 +31,7 @@ export const uuidSequence = (n: number) =>
 export const registryIdFactory = () => validateRegistryId(`test/${uuidv4()}`);
 
 export const timestampFactory = () => new Date().toISOString() as Timestamp;
+
+let index = 0;
+
+export const autoUUIDSequence = () => uuidSequence(index++);
