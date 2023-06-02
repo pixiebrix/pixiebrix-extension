@@ -139,6 +139,27 @@ describe("ServicesBody", () => {
     expect(screen.getByRole("button", { name: /configure/i })).toBeVisible();
   });
 
+  it("does not hide field with one service and no options", async () => {
+    useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
+    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    render(
+      <ServicesBody
+        blueprint={recipeDefinitionFactory()}
+        hideBuiltInServiceIntegrations
+      />,
+      {
+        initialValues: {
+          services: [{ id: serviceId1, config: null }],
+        },
+      }
+    );
+    await waitForEffect();
+    expectServiceDescriptorVisible(service1);
+    expectRefreshButton();
+    // Check that "configure" button is also shown when there are no options
+    expect(screen.getByRole("button", { name: /configure/i })).toBeVisible();
+  });
+
   it("renders with one service and two auth options", async () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b])
