@@ -35,7 +35,8 @@ async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
     await browser.permissions.getAll();
   const additional = selectAdditionalPermissionsSync(permissions);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- typings appear to be incorrect
+  // TODO: Find a better solution than casting to any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- typings appear to be incorrect
   await browser.permissions.remove(additional as any);
 }
 
