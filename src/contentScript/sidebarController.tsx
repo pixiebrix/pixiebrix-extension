@@ -40,6 +40,8 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
+import { getTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getRegisteredForms } from "@/contentScript/ephemeralFormProtocol";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
@@ -51,6 +53,7 @@ let renderSequenceNumber = 0;
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
+// TODO: add form entries variable
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
@@ -415,6 +418,13 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
 }
 
 // TODO: Move me to a different file?
-export function getVisiblePanels() {
-  console.log("*** hello world!");
+export async function getVisiblePanels() {
+  const temporaryPanels = getTemporaryPanels().values();
+
+  const forms = getRegisteredForms();
+  const sidebarForms = [...forms.values()].filter(
+    (form) => form.definition.location === "sidebar"
+  );
+
+  return [...panels, ...temporaryPanels, ...sidebarForms];
 }

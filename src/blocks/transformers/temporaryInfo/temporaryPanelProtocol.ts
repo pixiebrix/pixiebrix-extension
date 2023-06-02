@@ -35,6 +35,13 @@ const panels = new Map<UUID, RegisteredPanel>();
 // Mapping from extensionId to active panel nonces
 const extensionNonces = new Map<UUID, Set<UUID>>();
 
+export function getTemporaryPanels(): Map<UUID, RegisteredPanel> {
+  expectContext("contentScript");
+
+  // TODO: consider different return type
+  return panels;
+}
+
 /**
  * Get panel definition, or error if panel is not defined for nonce.
  * @param nonce the panel nonce
@@ -85,6 +92,8 @@ export function updatePanelDefinition(
  */
 export function registerEmptyTemporaryPanel(nonce: UUID, extensionId: UUID) {
   expectContext("contentScript");
+
+  console.log("*** registering a temporary panel", nonce, extensionId);
 
   if (panels.has(nonce)) {
     console.error(
@@ -140,6 +149,8 @@ export async function waitForTemporaryPanel(
   extensionNonces.get(entry.extensionId).add(nonce);
 
   onRegister?.();
+
+  console.log("*** panels", panels);
 
   return registration.promise;
 }

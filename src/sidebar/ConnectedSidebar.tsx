@@ -107,7 +107,8 @@ const ConnectedSidebar: React.VFC = () => {
 
   useAsyncEffect(async () => {
     const topFrame = await getTopLevelFrame();
-    void getVisiblePanels(topFrame);
+    const panels = await getVisiblePanels(topFrame);
+    console.log("*** visiblePanels", panels);
   }, []);
 
   return (

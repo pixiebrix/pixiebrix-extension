@@ -383,6 +383,14 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   };
 
   async install(): Promise<boolean> {
+    reservePanels(
+      this.extensions.map((extension) => ({
+        extensionId: extension.id,
+        extensionPointId: this.id,
+        blueprintId: extension._recipe?.id,
+      }))
+    );
+
     const available = await this.isAvailable();
     if (available) {
       sidebarShowEvents.add(this.run);

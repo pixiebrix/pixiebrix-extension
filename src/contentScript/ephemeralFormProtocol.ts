@@ -28,6 +28,12 @@ type RegisteredForm = {
 
 const forms = new Map<UUID, RegisteredForm>();
 
+export function getRegisteredForms(): Map<UUID, RegisteredForm> {
+  expectContext("contentScript");
+
+  return forms;
+}
+
 /**
  * Register a form with the content script that resolves the the form is either submitted or cancelled
  * @param nonce the form nonce
@@ -39,6 +45,8 @@ export async function registerForm(
 ): Promise<unknown> {
   expectContext("contentScript");
 
+  // TODO: implemention
+
   const registration = pDefer();
 
   if (forms.has(nonce)) {
@@ -49,6 +57,8 @@ export async function registerForm(
     definition,
     registration,
   });
+
+  console.log("*** form registered with nonce %s", nonce);
 
   return registration.promise;
 }

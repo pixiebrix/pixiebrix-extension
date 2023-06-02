@@ -22,4 +22,5 @@ export type FormDefinition = {
   uiSchema: UiSchema;
   cancelable: boolean;
   submitCaption: string;
+  location: "sidebar" | "modal";
 };

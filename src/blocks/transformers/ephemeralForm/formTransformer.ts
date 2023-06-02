@@ -137,6 +137,7 @@ export class FormTransformer extends Transformer {
       uiSchema,
       cancelable,
       submitCaption,
+      location,
     };
 
     abortSignal?.addEventListener("abort", () => {
@@ -147,6 +148,8 @@ export class FormTransformer extends Transformer {
 
     if (location === "sidebar") {
       // Show sidebar (which may also be showing native panels)
+
+      void registerForm(frameNonce, formDefinition);
 
       await ensureSidebar();
 
