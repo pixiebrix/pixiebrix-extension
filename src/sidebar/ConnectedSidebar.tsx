@@ -40,7 +40,7 @@ import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
-import { getVisiblePanels } from "@/contentScript/messenger/api";
+import { getVisiblePanelKeys } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncEffect from "use-async-effect";
 
@@ -107,7 +107,7 @@ const ConnectedSidebar: React.VFC = () => {
 
   useAsyncEffect(async () => {
     const topFrame = await getTopLevelFrame();
-    const panels = await getVisiblePanels(topFrame);
+    const panels = await getVisiblePanelKeys(topFrame);
     console.log("*** visiblePanels", panels);
   }, []);
 

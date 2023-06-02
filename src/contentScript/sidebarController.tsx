@@ -417,14 +417,22 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }
 
-// TODO: Move me to a different file?
-export async function getVisiblePanels() {
-  const temporaryPanels = getTemporaryPanels().values();
+export function getVisiblePanelKeys(): UUID[] {
+  const panelExtensionIds = panels.map((panel) => panel.extensionId);
 
-  const forms = getRegisteredForms();
-  const sidebarForms = [...forms.values()].filter(
-    (form) => form.definition.location === "sidebar"
-  );
+  const temporaryPanelNonces = getTemporaryPanels().keys();
 
-  return [...panels, ...temporaryPanels, ...sidebarForms];
+  const forms = [...getRegisteredForms()];
+
+  const sidebarFormNonces = forms
+    .filter((entry) => {
+      const [_, form] = entry;
+      return form.definition.location === "sidebar";
+    })
+    .map((entry) => {
+      const [nonce] = entry;
+      return nonce;
+    });
+
+  return [...panelExtensionIds, ...temporaryPanelNonces, ...sidebarFormNonces];
 }

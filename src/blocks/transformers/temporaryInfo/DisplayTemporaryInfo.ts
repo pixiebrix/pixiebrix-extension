@@ -168,6 +168,8 @@ export async function displayTemporaryInfo({
   }
 
   if (location === "panel") {
+    registerEmptyTemporaryPanel(nonce, panelEntryMetadata.extensionId);
+
     await ensureSidebar();
 
     // Show loading

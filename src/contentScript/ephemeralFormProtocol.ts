@@ -45,8 +45,6 @@ export async function registerForm(
 ): Promise<unknown> {
   expectContext("contentScript");
 
-  // TODO: implemention
-
   const registration = pDefer();
 
   if (forms.has(nonce)) {
@@ -57,8 +55,6 @@ export async function registerForm(
     definition,
     registration,
   });
-
-  console.log("*** form registered with nonce %s", nonce);
 
   return registration.promise;
 }
