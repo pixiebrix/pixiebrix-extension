@@ -87,10 +87,10 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   );
 
   const submit = useCallback(
-    async (values, { setErrors, resetForm }) => {
+    async (values: EditorValues & { id: UUID }, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
-      const unsavedBrickJson = loadBrickYaml(config) as
+      const unsavedBrickJson = loadBrickYaml(String(config)) as
         | Definition
         | UnsavedRecipeDefinition;
       const { kind, metadata } = unsavedBrickJson;

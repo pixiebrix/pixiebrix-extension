@@ -106,11 +106,13 @@ describe("useSubmitBrick", () => {
       // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
       await result.current.submit(
         {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           config: brickToYaml(pipedriveYaml as any),
           reactivate: false,
           public: true,
           organizations: [],
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
           resetForm,
           setErrors,
@@ -154,11 +156,13 @@ describe("useSubmitBrick", () => {
       // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
       await result.current.submit(
         {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           config: brickToYaml(pipedriveYaml as any),
           reactivate: false,
           public: true,
           organizations: [],
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
           resetForm,
           setErrors,
