@@ -17,9 +17,9 @@
 
 import { define, type FactoryConfig } from "cooky-cutter";
 import {
-  type ActivateRecipeEntry,
+  type ActivateRecipePanelEntry,
   type EntryType,
-  type FormEntry,
+  type FormPanelEntry,
   type PanelEntry,
   type SidebarEntry,
   type StaticPanelEntry,
@@ -29,7 +29,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 
-const activateRecipeEntryFactory = define<ActivateRecipeEntry>({
+const activateRecipeEntryFactory = define<ActivateRecipePanelEntry>({
   type: "activateRecipe",
   recipeId: (n: number) =>
     validateRegistryId(`@test/activate-recipe-test-${n}`),
@@ -45,8 +45,9 @@ const formDefinitionFactory = define<FormDefinition>({
   uiSchema: () => ({}),
   cancelable: true,
   submitCaption: "Submit",
+  location: "modal",
 });
-export const formEntryFactory = define<FormEntry>({
+export const formEntryFactory = define<FormPanelEntry>({
   type: "form",
   extensionId: uuidSequence,
   nonce: uuidSequence,
@@ -81,12 +82,12 @@ export function sidebarEntryFactory(
 ): TemporaryPanelEntry;
 export function sidebarEntryFactory(
   type: "form",
-  override?: FactoryConfig<FormEntry>
-): FormEntry;
+  override?: FactoryConfig<FormPanelEntry>
+): FormPanelEntry;
 export function sidebarEntryFactory(
   type: "activateRecipe",
-  override?: FactoryConfig<ActivateRecipeEntry>
-): ActivateRecipeEntry;
+  override?: FactoryConfig<ActivateRecipePanelEntry>
+): ActivateRecipePanelEntry;
 
 export function sidebarEntryFactory(
   type: "staticPanel",
@@ -98,12 +99,12 @@ export function sidebarEntryFactory(
 ): SidebarEntry {
   if (type === "activateRecipe") {
     return activateRecipeEntryFactory(
-      override as FactoryConfig<ActivateRecipeEntry>
+      override as FactoryConfig<ActivateRecipePanelEntry>
     );
   }
 
   if (type === "form") {
-    return formEntryFactory(override as FactoryConfig<FormEntry>);
+    return formEntryFactory(override as FactoryConfig<FormPanelEntry>);
   }
 
   if (type === "temporaryPanel") {

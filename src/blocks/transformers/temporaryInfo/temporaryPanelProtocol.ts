@@ -35,11 +35,16 @@ const panels = new Map<UUID, RegisteredPanel>();
 // Mapping from extensionId to active panel nonces
 const extensionNonces = new Map<UUID, Set<UUID>>();
 
-export function getTemporaryPanels(): Map<UUID, RegisteredPanel> {
+/**
+ * Return all temporary panel entries.
+ */
+export function getTemporaryPanelEntries(): TemporaryPanelEntry[] {
   expectContext("contentScript");
 
-  // TODO: consider different return type
-  return panels;
+  return [...panels.values()].map((x) => ({
+    type: "temporaryPanel",
+    ...x.entry,
+  }));
 }
 
 /**

@@ -30,13 +30,14 @@ export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const removeInstalledExtension = getNotifier(
   "REMOVE_INSTALLED_EXTENSION"
 );
-export const getReservedPanelKeys = getMethod("GET_RESERVED_PANEL_KEYS");
-
 export const resetTab = getNotifier("RESET_TAB");
 
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");
+export const getReservedSidebarEntries = getMethod(
+  "GET_RESERVED_SIDEBAR_ENTRIES"
+);
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const reloadSidebar = getMethod("RELOAD_SIDEBAR");

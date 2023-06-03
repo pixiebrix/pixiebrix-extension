@@ -168,6 +168,7 @@ export async function displayTemporaryInfo({
   }
 
   if (location === "panel") {
+    // Register before showing the sidebar in order to avoid race conditions in sidebar initialization.
     registerEmptyTemporaryPanel(nonce, panelEntryMetadata.extensionId);
 
     await ensureSidebar();

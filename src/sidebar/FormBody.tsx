@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { type FormEntry } from "@/types/sidebarTypes";
+import { type FormPanelEntry } from "@/types/sidebarTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
 type FormBodyProps = {
-  form: FormEntry;
+  form: FormPanelEntry;
 };
 
 /**

@@ -383,16 +383,20 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   };
 
   async install(): Promise<boolean> {
-    reservePanels(
-      this.extensions.map((extension) => ({
-        extensionId: extension.id,
-        extensionPointId: this.id,
-        blueprintId: extension._recipe?.id,
-      }))
-    );
-
     const available = await this.isAvailable();
     if (available) {
+      // Reserve the panels, so the sidebarController knows about them prior to the sidebar showing.
+      // Previously we were just relying on the sidebarShowEvents event listeners, but that cause race conditions
+      // with how other content is loaded in the sidebar
+      reservePanels(
+        this.extensions.map((extension) => ({
+          extensionId: extension.id,
+          extensionPointId: this.id,
+          blueprintId: extension._recipe?.id,
+        }))
+      );
+
+      // Add event listener so content for the panel is calculated/loaded when the sidebar opens
       sidebarShowEvents.add(this.run);
     } else {
       removeExtensionPoint(this.id);

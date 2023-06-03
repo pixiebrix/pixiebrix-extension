@@ -34,20 +34,14 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ExtensionRef } from "@/types/extensionTypes";
 import type {
   ActivatePanelOptions,
-  ActivateRecipeEntry,
-  FormEntry,
+  ActivateRecipePanelEntry,
+  FormPanelEntry,
   PanelEntry,
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import {
-  getTemporaryPanels,
-  RegisteredPanel,
-} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import {
-  getRegisteredForms,
-  RegisteredForm,
-} from "@/contentScript/ephemeralFormProtocol";
+import { getTemporaryPanelEntries } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getFormPanelEntries } from "@/contentScript/ephemeralFormProtocol";
 
 export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
@@ -188,7 +182,7 @@ function renderPanelsIfVisible(): void {
   }
 }
 
-export function showSidebarForm(entry: Except<FormEntry, "type">): void {
+export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -394,7 +388,7 @@ export function upsertPanel(
 }
 
 export function showActivateRecipeInSidebar(
-  entry: Except<ActivateRecipeEntry, "type">
+  entry: Except<ActivateRecipePanelEntry, "type">
 ): void {
   expectContext("contentScript");
 
@@ -422,23 +416,21 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
 }
 
-// TODO: rename me to getReservedPanels
-export function getReservedPanelKeys(): {
+/**
+ * Return the panels that are "reserved", that will be shown when the sidebar is shown. The content may not be computed
+ * yet. This includes:
+ * - Permanent panels
+ * - Temporary panels
+ * - Temporary form definitions
+ */
+export function getReservedPanelEntries(): {
   panels: PanelEntry[];
-  // TODO: reshape these arrays of tuples to be objects
-  temporaryPanels: Array<[UUID, RegisteredPanel]>;
-  forms: Array<[UUID, RegisteredForm]>;
+  temporaryPanels: TemporaryPanelEntry[];
+  forms: FormPanelEntry[];
 } {
-  const forms = [...getRegisteredForms()];
-
-  const sidebarForms = forms.filter((entry) => {
-    const [_, form] = entry;
-    return form.definition.location === "sidebar";
-  });
-
   return {
     panels,
-    temporaryPanels: [...getTemporaryPanels()],
-    forms: sidebarForms,
+    temporaryPanels: getTemporaryPanelEntries(),
+    forms: getFormPanelEntries(),
   };
 }
