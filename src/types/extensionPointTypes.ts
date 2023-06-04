@@ -29,7 +29,7 @@ import { type UnknownObject } from "@/types/objectTypes";
  * A location where content (e.g., form, temporary panel) can be added to the page.
  */
 export type Location =
-  // Sidebar panel
+  // Sidebar panel. ephemeralForm uses `sidebar` as the location for the sidebar
   "panel" | "modal" | "popover";
 
 export type IExtensionPoint = Metadata & {

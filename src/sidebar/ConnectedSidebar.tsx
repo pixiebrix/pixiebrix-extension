@@ -40,7 +40,10 @@ import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
-import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
+import {
+  ensureExtensionPointsInstalled,
+  getReservedSidebarEntries,
+} from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncEffect from "use-async-effect";
 
@@ -95,16 +98,30 @@ const ConnectedSidebar: React.VFC = () => {
   // initial state to the sidebarSlice reducer.
   useAsyncEffect(async () => {
     const topFrame = await getTopLevelFrame();
+
+    // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
+    await ensureExtensionPointsInstalled(topFrame);
+
     const { panels, temporaryPanels, forms } = await getReservedSidebarEntries(
       topFrame
     );
+
+    const staticPanels = showHomePanel ? [HOME_PANEL] : [];
+
+    // Log to help debug race conditions with lifecycle
+    console.debug("ConnectedSidebar:sidebarSlice.actions.setInitialPanels", {
+      panels,
+      temporaryPanels,
+      forms,
+      staticPanels,
+    });
 
     dispatch(
       sidebarSlice.actions.setInitialPanels({
         panels,
         temporaryPanels,
         forms,
-        staticPanels: showHomePanel ? [HOME_PANEL] : [],
+        staticPanels,
       })
     );
 

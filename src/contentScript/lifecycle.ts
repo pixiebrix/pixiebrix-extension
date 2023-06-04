@@ -40,8 +40,15 @@ import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 /**
  * True if handling the initial page load.
+ * @see loadPersistedExtensionsOnce
  */
 let _initialLoad = true;
+
+/**
+ * Promise to memoize fetching extension points and extensions from storage
+ * @see loadPersistedExtensionsOnce
+ */
+let pendingLoadPromise: Promise<IExtensionPoint[]> | null;
 
 /**
  * Map from persisted extension IDs to their extension points.
@@ -169,6 +176,29 @@ async function runExtensionPoint(
   console.debug(
     `Ran extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
     details
+  );
+}
+
+/**
+ * Ensure all extension points are installed that have IExtensionPoint.syncInstall set to true.
+ *
+ * Currently, includes:
+ * - Sidebar Extension Points
+ * - Context Menu Extension Points
+ *
+ * Used to ensure all sidebar extension points have had a chance to reserve panels before showing the sidebar.
+ *
+ * @see IExtensionPoint.syncInstall
+ */
+export async function ensureInstalled(): Promise<void> {
+  const extensionPoints = await loadPersistedExtensionsOnce();
+  const sidebarExtensionPoints = extensionPoints.filter((x) => x.syncInstall);
+  // Log to help debug race conditions
+  console.debug("lifecycle:ensureInstalled", {
+    sidebarExtensionPoints,
+  });
+  await Promise.allSettled(
+    sidebarExtensionPoints.map(async (x) => x.install())
   );
 }
 
@@ -409,23 +439,40 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
 }
 
 /**
- * Add the extensions to their respective extension points, and return the extension points with extensions.
+ * Add the extensions to their respective extension points, and return the extension points with any extensions.
+ *
+ * Syncs the extensions, but does not call IExtensionPoint.install or IExtensionPoint.run.
+ *
+ * @see runExtensionPoint
  */
 async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
+  // Enforce fresh view for _reloadOnNextNavigate
   if (_initialLoad || _reloadOnNextNavigate) {
     _initialLoad = false;
     _reloadOnNextNavigate = false;
     // XXX: could also include _editorExtensions to handle case where user activates a mod while the page editor
     // is open. However, that would require handling corner case where the user reactivating a mod that has dirty
     // changes. It's not worth the complexity of handling the corner case.
-    return logPromiseDuration(
+
+    pendingLoadPromise = logPromiseDuration(
       "loadPersistedExtensionsOnce:loadPersistedExtensions",
       loadPersistedExtensions()
     );
+
+    try {
+      return await pendingLoadPromise;
+    } finally {
+      // MemoizedUntilSettled behavior
+      pendingLoadPromise = null;
+    }
+  }
+
+  if (pendingLoadPromise != null) {
+    return pendingLoadPromise;
   }
 
   // NOTE: don't want _activeExtensionPoints, because we also want extension points that weren't active for the
-  // previous page/navigation.
+  // previous page/navigation. (Because they may now be active)
   return uniq([
     ..._persistedExtensions.values(),
     ..._editorExtensions.values(),

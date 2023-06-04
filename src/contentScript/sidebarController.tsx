@@ -78,8 +78,11 @@ export async function showSidebar(
   }
 
   if (!isAlreadyShowing || (activateOptions.refresh ?? true)) {
-    // Run the extension points available on the page. If the sidebar is already in the page, running
+    // Run the sidebar extension points available on the page. If the sidebar is already in the page, running
     // all the callbacks ensures the content is up-to-date
+
+    // Currently, this runs the listening SidebarExtensionPoint.run callbacks in not particular order. Also note that
+    // we're not awaiting their resolution (because they may contain long-running bricks).
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
 
@@ -92,8 +95,8 @@ export async function showSidebar(
     void sidebarInThisTab
       .activatePanel(seqNum, {
         ...activateOptions,
-        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
-        // depending on when the message is received, the sidebar might already be showing a panel)
+        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation,
+        // where depending on when the message is received, the sidebar might already be showing a panel)
         force: activateOptions.force || !isAlreadyShowing,
       })
       // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
@@ -160,15 +163,26 @@ export async function reloadSidebar(): Promise<void> {
 }
 
 /**
- * After a browserAction "toggleSidebarFrame" call, which handles the DOM insertion,
- * activate the frame if it was inserted, otherwise run other events on "hide"
+ * Rehydrate the already visible sidebar.
+ *
+ * For use with background/browserAction.
+ * - `browserAction` calls toggleSidebarFrame to immediately adds the sidebar iframe
+ * - It injects the content script
+ * - It calls this method via messenger to complete the sidebar initialization
+ * but the content
  */
 export function rehydrateSidebar(): void {
+  // To assist with debugging race conditions in sidebar initialization
+  console.debug("sidebarController:rehydrateSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (isSidebarFrameVisible()) {
     // `showSidebar` includes the logic to hydrate it
-    void showSidebar();
+    // `refresh: true` is the default, but be explicit that the sidebarShowEvents must run.
+    void showSidebar({ refresh: true });
   } else {
-    // `hideSidebar` includes events
+    // `hideSidebar` includes events to cleanup the sidebar
     hideSidebar();
   }
 }

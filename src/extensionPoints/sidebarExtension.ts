@@ -454,6 +454,12 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
     this.definition = cloned.definition;
   }
 
+  public override get syncInstall() {
+    // Panels must be reserved for the page to be considered ready. Otherwise, there are race conditions with whether
+    // the sidebar panels have been reserved by the time the user clicks the browserAction.
+    return true;
+  }
+
   override async defaultReader(): Promise<IReader> {
     return mergeReaders(this.definition.reader);
   }
