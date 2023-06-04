@@ -196,7 +196,8 @@ const sidebarSlice = createSlice({
     },
     addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
       if (state.forms.some((x) => x.nonce === form.nonce)) {
-        // Panel is already in the sidebar, do nothing as form definitions can't be updated
+        // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
+        // loading state for forms.)
         return;
       }
 
@@ -251,8 +252,11 @@ const sidebarSlice = createSlice({
           (x) => x.extensionId === panel.extensionId
         );
 
+      // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels
       void cancelPanels(
-        existingExtensionTemporaryPanels.map((panel) => panel.nonce)
+        existingExtensionTemporaryPanels
+          .filter((x) => x.nonce !== panel.nonce)
+          .map(({ nonce }) => nonce)
       );
 
       state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);

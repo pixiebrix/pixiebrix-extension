@@ -27,7 +27,7 @@ import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
   hideSidebarForm,
-  PANEL_HIDING_EVENT,
+  HIDE_SIDEBAR_EVENT_NAME,
   showSidebarForm,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
@@ -167,7 +167,7 @@ export class FormTransformer extends Transformer {
 
       // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
       window.addEventListener(
-        PANEL_HIDING_EVENT,
+        HIDE_SIDEBAR_EVENT_NAME,
         () => {
           controller.abort();
         },

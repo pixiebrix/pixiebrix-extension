@@ -36,7 +36,7 @@ const forms = new Map<UUID, RegisteredForm>();
 /**
  * Returns form panel entries corresponding forms registered for the sidebar.
  */
-export function getFormPanelEntries(): FormPanelEntry[] {
+export function getFormPanelSidebarEntries(): FormPanelEntry[] {
   expectContext("contentScript");
 
   return [...forms.entries()]

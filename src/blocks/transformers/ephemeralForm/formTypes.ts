@@ -39,7 +39,7 @@ export type FormDefinition = {
    *
    * Added to help determine which forms will be displayed once the sidebar initializes.
    *
-   * @see getReservedPanelKeys
+   * @see getFormPanelEntries
    * @since 1.7.29
    */
   location: "sidebar" | "modal";

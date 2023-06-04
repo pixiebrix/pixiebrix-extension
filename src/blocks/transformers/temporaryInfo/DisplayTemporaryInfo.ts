@@ -21,7 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
   hideTemporarySidebarPanel,
-  PANEL_HIDING_EVENT,
+  HIDE_SIDEBAR_EVENT_NAME,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
@@ -54,8 +54,8 @@ import { type UUID } from "@/types/stringTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type Location } from "@/types/extensionPointTypes";
 
-type Location = "panel" | "modal" | "popover";
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
 
@@ -168,8 +168,12 @@ export async function displayTemporaryInfo({
   }
 
   if (location === "panel") {
-    // Register before showing the sidebar in order to avoid race conditions in sidebar initialization.
-    registerEmptyTemporaryPanel(nonce, panelEntryMetadata.extensionId);
+    // Register before showTemporarySidebarPanel in order to avoid sidebar initialization race conditions
+    registerEmptyTemporaryPanel({
+      nonce,
+      location,
+      extensionId: panelEntryMetadata.extensionId,
+    });
 
     await ensureSidebar();
 
@@ -185,7 +189,7 @@ export async function displayTemporaryInfo({
     });
 
     window.addEventListener(
-      PANEL_HIDING_EVENT,
+      HIDE_SIDEBAR_EVENT_NAME,
       () => {
         controller.abort();
       },
@@ -204,7 +208,11 @@ export async function displayTemporaryInfo({
     await cancelTemporaryPanelsForExtension(panelEntryMetadata.extensionId);
 
     // Register empty panel for "loading" state
-    registerEmptyTemporaryPanel(nonce, panelEntryMetadata.extensionId);
+    registerEmptyTemporaryPanel({
+      nonce,
+      location,
+      extensionId: panelEntryMetadata.extensionId,
+    });
 
     // Create a source URL for content that will be loaded in the panel iframe
     const frameSource = await createFrameSource(nonce, location);
@@ -280,7 +288,13 @@ export async function displayTemporaryInfo({
   }
 
   try {
-    return await waitForTemporaryPanel(nonce, entry, { onRegister: onReady });
+    return await waitForTemporaryPanel({
+      nonce,
+      location,
+      entry,
+      extensionId: entry.extensionId,
+      onRegister: onReady,
+    });
   } catch (error) {
     if (isSpecificError(error, ClosePanelAction)) {
       onCloseClick?.(nonce);

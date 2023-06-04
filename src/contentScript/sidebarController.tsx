@@ -40,10 +40,10 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { getTemporaryPanelEntries } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { getFormPanelEntries } from "@/contentScript/ephemeralFormProtocol";
+import { getTemporaryPanelSidebarEntries } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 
-export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
+export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
 /**
  * Sequence number for ensuring render requests are handled in order
@@ -136,7 +136,7 @@ export async function ensureSidebar(): Promise<void> {
 export function hideSidebar(): void {
   reportEvent("SidePanelHide");
   removeSidebarFrame();
-  window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
+  window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }
 
 /**
@@ -419,9 +419,9 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
 /**
  * Return the panels that are "reserved", that will be shown when the sidebar is shown. The content may not be computed
  * yet. This includes:
- * - Permanent panels
- * - Temporary panels
- * - Temporary form definitions
+ * - Permanent panels added by sidebarExtension
+ * - Temporary panels added by DisplayTemporaryInfo
+ * - Temporary form definitions added by ephemeralForm
  */
 export function getReservedPanelEntries(): {
   panels: PanelEntry[];
@@ -430,7 +430,7 @@ export function getReservedPanelEntries(): {
 } {
   return {
     panels,
-    temporaryPanels: getTemporaryPanelEntries(),
-    forms: getFormPanelEntries(),
+    temporaryPanels: getTemporaryPanelSidebarEntries(),
+    forms: getFormPanelSidebarEntries(),
   };
 }
