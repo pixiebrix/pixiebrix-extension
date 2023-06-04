@@ -402,7 +402,7 @@ class DisplayTemporaryInfo extends Transformer {
 
     const getPayload = async () => {
       const result = await runRendererPipeline(
-        bodyPipeline?.__value__ ?? [],
+        bodyPipeline,
         {
           key: "body",
           counter,
