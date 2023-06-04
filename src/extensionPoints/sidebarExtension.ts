@@ -320,9 +320,10 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     });
   }
 
+  // Use arrow syntax to avoid having to bind when passing as listener
   run = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
-      // Keep sidebar up-to-date regardless of trigger policy
+      // Keep sidebar entries up-to-date regardless of trigger policy
       removeExtensionPoint(this.id);
       return;
     }
@@ -335,14 +336,8 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
       return;
     }
 
-    if (!isSidebarFrameVisible()) {
-      console.debug(
-        "Skipping run for %s because sidebar is not visible",
-        this.id
-      );
-      return;
-    }
-
+    // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
+    // the sidebar won't be visible yet on initial page load.
     reservePanels(
       this.extensions.map((extension) => ({
         extensionId: extension.id,
@@ -350,6 +345,14 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
         blueprintId: extension._recipe?.id,
       }))
     );
+
+    if (!isSidebarFrameVisible()) {
+      console.debug(
+        "Skipping run for %s because sidebar is not visible",
+        this.id
+      );
+      return;
+    }
 
     // On the initial run or a manual run, run directly
     if (
@@ -386,7 +389,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     const available = await this.isAvailable();
     if (available) {
       // Reserve the panels, so the sidebarController knows about them prior to the sidebar showing.
-      // Previously we were just relying on the sidebarShowEvents event listeners, but that cause race conditions
+      // Previously we were just relying on the sidebarShowEvents event listeners, but that caused race conditions
       // with how other content is loaded in the sidebar
       reservePanels(
         this.extensions.map((extension) => ({

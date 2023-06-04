@@ -50,6 +50,9 @@ export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
  */
 let renderSequenceNumber = 0;
 
+/**
+ * Event listeners triggered when the sidebar shows and is ready to receive messages.
+ */
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
@@ -62,9 +65,9 @@ export async function showSidebar(
   activateOptions: ActivatePanelOptions = {}
 ): Promise<void> {
   reportEvent("SidePanelShow");
-  const isShowing = isSidebarFrameVisible();
+  const isAlreadyShowing = isSidebarFrameVisible();
 
-  if (!isShowing) {
+  if (!isAlreadyShowing) {
     insertSidebarFrame();
   }
 
@@ -74,7 +77,7 @@ export async function showSidebar(
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
 
-  if (!isShowing || (activateOptions.refresh ?? true)) {
+  if (!isAlreadyShowing || (activateOptions.refresh ?? true)) {
     // Run the extension points available on the page. If the sidebar is already in the page, running
     // all the callbacks ensures the content is up-to-date
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
@@ -91,7 +94,7 @@ export async function showSidebar(
         ...activateOptions,
         // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
         // depending on when the message is received, the sidebar might already be showing a panel)
-        force: activateOptions.force || !isShowing,
+        force: activateOptions.force || !isAlreadyShowing,
       })
       // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
       .catch((error: unknown) => {
