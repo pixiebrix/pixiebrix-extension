@@ -348,7 +348,7 @@ export class TourStepTransformer extends Transformer {
 
     const getPayload = async () => {
       const result = await runRendererPipeline(
-        (body as PipelineExpression)?.__value__ ?? [],
+        body as PipelineExpression,
         {
           key: "body",
           counter,
@@ -518,7 +518,7 @@ export class TourStepTransformer extends Transformer {
     try {
       if (!isEmpty(onBeforeShow?.__value__)) {
         await options.runPipeline(
-          onBeforeShow.__value__ ?? [],
+          onBeforeShow,
           {
             key: "onBeforeShow",
             counter: 0,
@@ -543,7 +543,7 @@ export class TourStepTransformer extends Transformer {
 
       if (!isEmpty(onAfterShow?.__value__)) {
         await options.runPipeline(
-          onAfterShow.__value__ ?? [],
+          onAfterShow,
           {
             key: "onAfterShow",
             counter: 0,
