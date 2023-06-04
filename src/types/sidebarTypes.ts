@@ -31,9 +31,9 @@ import { type MessageContext } from "@/types/loggerTypes";
  * Current supports panels and ephemeral forms. In the future we may also support button entries, etc.
  *
  * @see PanelEntry
- * @see FormEntry
+ * @see FormPanelEntry
  * @see TemporaryPanelEntry
- * @see ActivateRecipeEntry
+ * @see ActivateRecipePanelEntry
  */
 export type EntryType =
   | "panel"
@@ -184,7 +184,7 @@ export type TemporaryPanelEntry = BaseExtensionPanelEntry & {
  * An ephemeral form to show in the sidebar. Only one form can be shown from an extension at a time.
  * @see ModalTransformer
  */
-export type FormEntry = BasePanelEntry & {
+export type FormPanelEntry = BasePanelEntry & {
   type: "form";
   /**
    * The extension that created the form
@@ -200,7 +200,7 @@ export type FormEntry = BasePanelEntry & {
   form: FormDefinition;
 };
 
-export type ActivateRecipeEntry = BasePanelEntry & {
+export type ActivateRecipePanelEntry = BasePanelEntry & {
   type: "activateRecipe";
   /**
    * The blueprint id of the recipe to activate
@@ -220,9 +220,9 @@ export type StaticPanelEntry = BasePanelEntry & {
 
 export type SidebarEntry =
   | PanelEntry
-  | FormEntry
+  | FormPanelEntry
   | TemporaryPanelEntry
-  | ActivateRecipeEntry
+  | ActivateRecipePanelEntry
   | StaticPanelEntry;
 
 /**
@@ -230,10 +230,10 @@ export type SidebarEntry =
  */
 export type SidebarEntries = {
   panels: PanelEntry[];
-  forms: FormEntry[];
+  forms: FormPanelEntry[];
   temporaryPanels: TemporaryPanelEntry[];
   staticPanels: StaticPanelEntry[];
-  recipeToActivate: ActivateRecipeEntry | null;
+  recipeToActivate: ActivateRecipePanelEntry | null;
 };
 
 /**

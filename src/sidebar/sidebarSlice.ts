@@ -16,11 +16,11 @@
  */
 
 import type {
-  FormEntry,
+  FormPanelEntry,
   PanelEntry,
   ActivatePanelOptions,
   TemporaryPanelEntry,
-  ActivateRecipeEntry,
+  ActivateRecipePanelEntry,
   SidebarEntry,
   SidebarState,
   StaticPanelEntry,
@@ -170,6 +170,21 @@ const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
   reducers: {
+    setInitialPanels(
+      state,
+      action: PayloadAction<{
+        staticPanels: StaticPanelEntry[];
+        panels: PanelEntry[];
+        temporaryPanels: TemporaryPanelEntry[];
+        forms: FormPanelEntry[];
+      }>
+    ) {
+      state.staticPanels = castDraft(action.payload.staticPanels);
+      state.forms = castDraft(action.payload.forms);
+      state.panels = castDraft(action.payload.panels);
+      state.temporaryPanels = castDraft(action.payload.temporaryPanels);
+      state.activeKey = defaultEventKey(state);
+    },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
       state.activeKey = eventKeyExists(state, action.payload)
@@ -179,7 +194,13 @@ const sidebarSlice = createSlice({
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
     },
-    addForm(state, action: PayloadAction<{ form: FormEntry }>) {
+    addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
+      if (state.forms.some((x) => x.nonce === form.nonce)) {
+        // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
+        // loading state for forms.)
+        return;
+      }
+
       const { form } = action.payload;
 
       const [thisExtensionForms, otherForms] = partition(
@@ -195,6 +216,7 @@ const sidebarSlice = createSlice({
         // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
         form,
       ];
+
       state.activeKey = eventKeyForEntry(form);
     },
     removeForm(state, action: PayloadAction<UUID>) {
@@ -230,8 +252,11 @@ const sidebarSlice = createSlice({
           (x) => x.extensionId === panel.extensionId
         );
 
+      // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels
       void cancelPanels(
-        existingExtensionTemporaryPanels.map((panel) => panel.nonce)
+        existingExtensionTemporaryPanels
+          .filter((x) => x.nonce !== panel.nonce)
+          .map(({ nonce }) => nonce)
       );
 
       state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
@@ -285,13 +310,6 @@ const sidebarSlice = createSlice({
         state.pendingActivePanel = payload;
       }
     },
-    addStaticPanel(state, action: PayloadAction<{ panel: StaticPanelEntry }>) {
-      state.staticPanels = [...state.staticPanels, action.payload.panel];
-
-      if (!state.activeKey || !eventKeyExists(state, state.activeKey)) {
-        state.activeKey = defaultEventKey(state);
-      }
-    },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
       state.panels = castDraft(
@@ -309,19 +327,11 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab.
-      // Prefer switching over to other panel types before showing static panels.
-      if (
-        !eventKeyExists(state, state.activeKey) ||
-        // Without this clause, we will always default to the first static panel when the
-        // Sidebar is opened (e.g. the Home panel), instead of a panel for an installed mod.
-        state.staticPanels.some(
-          (staticPanel) => state.activeKey === eventKeyForEntry(staticPanel)
-        )
-      ) {
+      if (!eventKeyExists(state, state.activeKey)) {
         state.activeKey = defaultEventKey(state);
       }
     },
-    showActivateRecipe(state, action: PayloadAction<ActivateRecipeEntry>) {
+    showActivateRecipe(state, action: PayloadAction<ActivateRecipePanelEntry>) {
       const entry = action.payload;
       state.recipeToActivate = entry;
       state.activeKey = eventKeyForEntry(entry);

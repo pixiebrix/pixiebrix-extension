@@ -206,12 +206,17 @@ export async function runRendererBlock({
       showModal({ url, controller });
 
       try {
-        await waitForTemporaryPanel(nonce, {
-          extensionId,
-          blueprintId,
+        await waitForTemporaryPanel({
           nonce,
-          heading: title,
-          payload,
+          location,
+          extensionId,
+          entry: {
+            extensionId,
+            blueprintId,
+            nonce,
+            heading: title,
+            payload,
+          },
         });
       } catch (error) {
         // Match behavior of Display Temporary Info

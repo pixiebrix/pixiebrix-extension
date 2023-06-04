@@ -34,6 +34,15 @@ jest.mock("@/auth/useLinkState", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("@/contentScript/messenger/api", () => ({
+  ensureExtensionPointsInstalled: jest.fn().mockResolvedValue(undefined),
+  getReservedSidebarEntries: jest.fn().mockResolvedValue({
+    panels: [],
+    forms: [],
+    temporaryPanels: [],
+  }),
+}));
+
 const useLinkStateMock = jest.mocked(useLinkState);
 
 describe("SidebarApp", () => {

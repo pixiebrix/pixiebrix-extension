@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
   hideActivateRecipeInSidebar,
-  PANEL_HIDING_EVENT,
+  HIDE_SIDEBAR_EVENT_NAME,
   showActivateRecipeInSidebar,
 } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
@@ -105,7 +105,7 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
     heading: "Activating",
   });
   window.addEventListener(
-    PANEL_HIDING_EVENT,
+    HIDE_SIDEBAR_EVENT_NAME,
     () => {
       controller.abort();
     },

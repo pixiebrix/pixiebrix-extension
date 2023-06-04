@@ -34,20 +34,25 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ExtensionRef } from "@/types/extensionTypes";
 import type {
   ActivatePanelOptions,
-  ActivateRecipeEntry,
-  FormEntry,
+  ActivateRecipePanelEntry,
+  FormPanelEntry,
   PanelEntry,
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
+import { getTemporaryPanelSidebarEntries } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 
-export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
+export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
 /**
  * Sequence number for ensuring render requests are handled in order
  */
 let renderSequenceNumber = 0;
 
+/**
+ * Event listeners triggered when the sidebar shows and is ready to receive messages.
+ */
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
@@ -60,9 +65,9 @@ export async function showSidebar(
   activateOptions: ActivatePanelOptions = {}
 ): Promise<void> {
   reportEvent("SidePanelShow");
-  const isShowing = isSidebarFrameVisible();
+  const isAlreadyShowing = isSidebarFrameVisible();
 
-  if (!isShowing) {
+  if (!isAlreadyShowing) {
     insertSidebarFrame();
   }
 
@@ -72,9 +77,12 @@ export async function showSidebar(
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
 
-  if (!isShowing || (activateOptions.refresh ?? true)) {
-    // Run the extension points available on the page. If the sidebar is already in the page, running
+  if (!isAlreadyShowing || (activateOptions.refresh ?? true)) {
+    // Run the sidebar extension points available on the page. If the sidebar is already in the page, running
     // all the callbacks ensures the content is up-to-date
+
+    // Currently, this runs the listening SidebarExtensionPoint.run callbacks in not particular order. Also note that
+    // we're not awaiting their resolution (because they may contain long-running bricks).
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
 
@@ -87,9 +95,9 @@ export async function showSidebar(
     void sidebarInThisTab
       .activatePanel(seqNum, {
         ...activateOptions,
-        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
-        // depending on when the message is received, the sidebar might already be showing a panel)
-        force: activateOptions.force || !isShowing,
+        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation,
+        // where depending on when the message is received, the sidebar might already be showing a panel)
+        force: activateOptions.force || !isAlreadyShowing,
       })
       // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
       .catch((error: unknown) => {
@@ -134,7 +142,7 @@ export async function ensureSidebar(): Promise<void> {
 export function hideSidebar(): void {
   reportEvent("SidePanelHide");
   removeSidebarFrame();
-  window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
+  window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }
 
 /**
@@ -155,15 +163,26 @@ export async function reloadSidebar(): Promise<void> {
 }
 
 /**
- * After a browserAction "toggleSidebarFrame" call, which handles the DOM insertion,
- * activate the frame if it was inserted, otherwise run other events on "hide"
+ * Rehydrate the already visible sidebar.
+ *
+ * For use with background/browserAction.
+ * - `browserAction` calls toggleSidebarFrame to immediately adds the sidebar iframe
+ * - It injects the content script
+ * - It calls this method via messenger to complete the sidebar initialization
+ * but the content
  */
 export function rehydrateSidebar(): void {
+  // To assist with debugging race conditions in sidebar initialization
+  console.debug("sidebarController:rehydrateSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (isSidebarFrameVisible()) {
     // `showSidebar` includes the logic to hydrate it
-    void showSidebar();
+    // `refresh: true` is the default, but be explicit that the sidebarShowEvents must run.
+    void showSidebar({ refresh: true });
   } else {
-    // `hideSidebar` includes events
+    // `hideSidebar` includes events to cleanup the sidebar
     hideSidebar();
   }
 }
@@ -180,7 +199,7 @@ function renderPanelsIfVisible(): void {
   }
 }
 
-export function showSidebarForm(entry: Except<FormEntry, "type">): void {
+export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -386,7 +405,7 @@ export function upsertPanel(
 }
 
 export function showActivateRecipeInSidebar(
-  entry: Except<ActivateRecipeEntry, "type">
+  entry: Except<ActivateRecipePanelEntry, "type">
 ): void {
   expectContext("contentScript");
 
@@ -412,4 +431,23 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
 
   const sequence = renderSequenceNumber++;
   void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
+}
+
+/**
+ * Return the panels that are "reserved", that will be shown when the sidebar is shown. The content may not be computed
+ * yet. This includes:
+ * - Permanent panels added by sidebarExtension
+ * - Temporary panels added by DisplayTemporaryInfo
+ * - Temporary form definitions added by ephemeralForm
+ */
+export function getReservedPanelEntries(): {
+  panels: PanelEntry[];
+  temporaryPanels: TemporaryPanelEntry[];
+  forms: FormPanelEntry[];
+} {
+  return {
+    panels,
+    temporaryPanels: getTemporaryPanelSidebarEntries(),
+    forms: getFormPanelSidebarEntries(),
+  };
 }

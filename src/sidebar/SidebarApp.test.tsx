@@ -25,6 +25,15 @@ jest.mock("@/hooks/useContextInvalidated", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("@/contentScript/messenger/api", () => ({
+  ensureExtensionPointsInstalled: jest.fn().mockResolvedValue(undefined),
+  getReservedSidebarEntries: jest.fn().mockResolvedValue({
+    panels: [],
+    forms: [],
+    temporaryPanels: [],
+  }),
+}));
+
 describe("SidebarApp", () => {
   test("it renders", () => {
     const rendered = render(<SidebarApp />);

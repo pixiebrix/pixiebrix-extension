@@ -27,7 +27,7 @@ import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
   hideSidebarForm,
-  PANEL_HIDING_EVENT,
+  HIDE_SIDEBAR_EVENT_NAME,
   showSidebarForm,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
@@ -129,36 +129,45 @@ export class FormTransformer extends Transformer {
     // Future improvements:
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
-    const frameNonce = uuidv4();
-    const frameSource = await createFrameSource(frameNonce, location);
+    const formNonce = uuidv4();
+    const frameSource = await createFrameSource(formNonce, location);
 
     const formDefinition = {
       schema,
       uiSchema,
       cancelable,
       submitCaption,
+      location,
     };
 
     abortSignal?.addEventListener("abort", () => {
-      void cancelForm(frameNonce);
+      void cancelForm(formNonce);
     });
 
     const controller = new AbortController();
 
-    if (location === "sidebar") {
-      // Show sidebar (which may also be showing native panels)
+    // Register form before adding modal or sidebar to avoid race condition in retrieving the form definition.
+    // Pre-registering the form also allows the sidebar to know a form will be shown in computing the default
+    // tab to show during sidebar initialization.
+    const formPromise = registerForm({
+      extensionId: logger.context.extensionId,
+      nonce: formNonce,
+      definition: formDefinition,
+    });
 
+    if (location === "sidebar") {
+      // Ensure the sidebar is visible (which may also be showing persistent panels)
       await ensureSidebar();
 
       showSidebarForm({
         extensionId: logger.context.extensionId,
-        nonce: frameNonce,
+        nonce: formNonce,
         form: formDefinition,
       });
 
       // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
       window.addEventListener(
-        PANEL_HIDING_EVENT,
+        HIDE_SIDEBAR_EVENT_NAME,
         () => {
           controller.abort();
         },
@@ -173,15 +182,15 @@ export class FormTransformer extends Transformer {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
-        hideSidebarForm(frameNonce);
-        void cancelForm(frameNonce);
+        hideSidebarForm(formNonce);
+        void cancelForm(formNonce);
       });
     } else {
       showModal({ url: frameSource, controller });
     }
 
     try {
-      return await registerForm(frameNonce, formDefinition);
+      return await formPromise;
     } finally {
       controller.abort();
     }
