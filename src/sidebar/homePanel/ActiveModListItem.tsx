@@ -42,11 +42,17 @@ export const ActiveModListItem: React.FunctionComponent<{
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
   const requestPermissions = useRequestPermissionsAction(installableItem);
 
-  const { data: starterBricksContained } = useAsyncState(
+  const { data: starterBricksContained, error } = useAsyncState(
     async () => getContainedStarterBrickNames(installableItem),
     [],
     { initialValue: [] }
   );
+
+  if (error) {
+    // Don't swallow logic errors, but don't crash the UI either
+    // Start brick information is nice-to-have, but not a must-have
+    console.error(error);
+  }
 
   return (
     <ListGroup.Item className={styles.root}>
@@ -65,7 +71,7 @@ export const ActiveModListItem: React.FunctionComponent<{
                   : styles.lineClampTwoLines
               )}
             >
-              {starterBricksContained.join(" • ")}
+              {(starterBricksContained ?? []).join(" • ")}
             </span>
           </div>
           {requestPermissions && (
