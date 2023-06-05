@@ -63,10 +63,10 @@ export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
 
 const getExtensionPointType = async (
   extensionPoint: ExtensionDefinition,
-  recipe?: RecipeDefinition
+  recipe: RecipeDefinition
 ): Promise<ExtensionPointType | null> => {
   // Look up the extension point in recipe inner definitions first
-  if (recipe.definitions) {
+  if (recipe.definitions?.[extensionPoint.id]) {
     const definition: ExtensionPointDefinition = recipe.definitions[
       extensionPoint.id
     ].definition as ExtensionPointDefinition;

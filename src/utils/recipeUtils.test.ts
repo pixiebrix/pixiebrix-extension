@@ -96,4 +96,17 @@ describe("getContainedExtensionPointTypes", () => {
 
     expect(result).toStrictEqual([]);
   });
+
+  test("inner definition not found", async () => {
+    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
+
+    const result = await getContainedExtensionPointTypes(
+      recipeFactory({
+        extensionPoints: [extensionPointConfigFactory()],
+        definitions: {},
+      })
+    );
+
+    expect(result).toStrictEqual([]);
+  });
 });
