@@ -118,9 +118,13 @@ export class GeocodeTransformer extends Transformer {
     },
   });
 
-  async transform({ service, address }: BlockArgs): Promise<GeocodedAddress> {
-    // TODO: Find a better solution than disabling
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async transform({
+    service,
+    address,
+  }: BlockArgs<{
+    address: string;
+    service: SanitizedServiceConfiguration;
+  }>): Promise<GeocodedAddress> {
     return geocodeAddress(service, address);
   }
 }

@@ -29,6 +29,7 @@ import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import { type UnknownObject } from "@/types/objectTypes";
 
 // Context for this protocol:
 // - Implemented and explained in https://github.com/pixiebrix/pixiebrix-extension/pull/1019
@@ -96,7 +97,7 @@ function sendMessageToOtherSide(message: Message | Response) {
 
 /** Content script handler for messages from app */
 async function onContentScriptReceiveMessage(
-  event: MessageEvent<Message>
+  event: MessageEvent<Message<UnknownObject>>
 ): Promise<void> {
   expectContext("contentScript");
 
@@ -146,6 +147,8 @@ async function oneResponse<R>(nonce: string): Promise<R> {
       // Responses *must not* have a `type`, but just a `nonce` and `payload`
       if (!event.data?.type && event.data?.meta?.nonce === nonce) {
         document.defaultView.removeEventListener("message", onMessage);
+        // TODO: Find a better solution than disabling
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         resolve(event.data.payload);
       }
     }
