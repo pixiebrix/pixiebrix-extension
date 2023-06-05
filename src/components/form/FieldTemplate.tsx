@@ -35,7 +35,7 @@ import MarkdownInline from "@/components/MarkdownInline";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
-    React.ComponentProps<As> & {
+    Omit<React.ComponentProps<As>, "name"> & {
       name: string;
       label?: ReactNode;
       fitLabelWidth?: boolean;
