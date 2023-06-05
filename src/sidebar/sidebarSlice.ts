@@ -177,12 +177,14 @@ const sidebarSlice = createSlice({
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
         forms: FormPanelEntry[];
+        recipeToActivate: ActivateRecipePanelEntry | null;
       }>
     ) {
       state.staticPanels = castDraft(action.payload.staticPanels);
       state.forms = castDraft(action.payload.forms);
       state.panels = castDraft(action.payload.panels);
       state.temporaryPanels = castDraft(action.payload.temporaryPanels);
+      state.recipeToActivate = castDraft(action.payload.recipeToActivate);
       state.activeKey = defaultEventKey(state);
     },
     selectTab(state, action: PayloadAction<string>) {
