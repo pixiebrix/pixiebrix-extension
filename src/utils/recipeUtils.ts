@@ -66,10 +66,10 @@ const getExtensionPointType = async (
   recipe: RecipeDefinition
 ): Promise<ExtensionPointType | null> => {
   // Look up the extension point in recipe inner definitions first
-  if (recipe.definitions) {
+  if (recipe.definitions?.[extensionPoint.id]) {
     const definition: ExtensionPointDefinition = recipe.definitions[
       extensionPoint.id
-    ]?.definition as ExtensionPointDefinition;
+    ].definition as ExtensionPointDefinition;
     const extensionPointType = definition?.type;
 
     if (extensionPointType) {
