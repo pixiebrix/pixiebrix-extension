@@ -53,7 +53,9 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   ) => {
     document.addEventListener(
       type,
-      (event: CustomEvent<{ id: number } & "result" & "error">) => {
+      (
+        event: CustomEvent<{ id: number; result?: unknown; error?: unknown }>
+      ) => {
         if (!event.detail) {
           throw new Error(
             `Handler for ${type} did not provide a detail property`
