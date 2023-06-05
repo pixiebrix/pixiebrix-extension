@@ -429,6 +429,8 @@ export function showActivateRecipeInSidebar(
 export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   expectContext("contentScript");
 
+  recipeToActivate = null;
+
   if (!isSidebarFrameVisible()) {
     return;
   }
