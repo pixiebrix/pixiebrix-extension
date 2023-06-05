@@ -50,9 +50,9 @@ export const ActiveModListItem: React.FunctionComponent<{
     { initialValue: [] }
   );
 
-  const { data: starterBricksContained, error } = fallbackValue(state, []);
+  const { data: starterBricksContained } = fallbackValue(state, []);
 
-  useReportError(error);
+  useReportError(state.error);
 
   return (
     <ListGroup.Item className={styles.root}>
