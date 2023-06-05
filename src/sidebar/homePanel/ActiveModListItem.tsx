@@ -50,7 +50,7 @@ export const ActiveModListItem: React.FunctionComponent<{
 
   if (error) {
     // Don't swallow logic errors, but don't crash the UI either
-    // Start brick information is nice-to-have, but not a must-have
+    // Starter brick information is nice-to-have, but not a must-have
     console.error(error);
   }
 
