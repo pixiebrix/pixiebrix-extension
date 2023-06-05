@@ -21,15 +21,24 @@ import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
-import { sleep } from "@/utils";
-import { BusinessError } from "@/errors/businessErrors";
 
-class Retry extends Transformer {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/retry");
-  defaultOutputKey = "retryOutput";
+/**
+ * A brick that runs one or more bricks synchronously or asynchronously. Used to group bricks and/or develop custom
+ * control flow using bricks, e.g.:
+ * - Run a brick asynchronously, updating Page State with the loading state
+ * - Re-usable custom error handling
+ * - Performance tracing
+ */
+class Run extends Transformer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/run");
+  defaultOutputKey = "runOutput";
 
   constructor() {
-    super(Retry.BLOCK_ID, "Retry", "Retry bricks on error");
+    super(
+      Run.BLOCK_ID,
+      "Run Bricks",
+      "Run one or more bricks synchronously or asynchronously"
+    );
   }
 
   override async isPure(): Promise<boolean> {
@@ -46,17 +55,14 @@ class Retry extends Transformer {
     {
       body: {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
-        description: "The bricks to execute",
+        description: "The brick(s) to execute",
       },
-      intervalMillis: {
-        type: "number",
-        description: "Number of milliseconds to wait between retries",
-      },
-      maxRetries: {
-        type: "number",
+      async: {
+        type: "boolean",
+        title: "Asynchronous",
         description:
-          "The maximum number of retries (not including the initial run)",
-        default: 3,
+          "True to run the brick(s) asynchronously. If true, outputs an empty value immediately",
+        default: false,
       },
     },
     ["body"]
@@ -65,44 +71,24 @@ class Retry extends Transformer {
   async transform(
     {
       body: bodyPipeline,
-      maxRetries = Number.MAX_SAFE_INTEGER,
-      intervalMillis,
+      async = false,
     }: BlockArgs<{
       body: PipelineExpression;
-      intervalMillis?: number;
-      maxRetries?: number;
+      async?: boolean;
     }>,
     options: BlockOptions
   ): Promise<unknown> {
-    let lastError: unknown;
-    let retryCount = 0;
+    const promise = options.runPipeline(bodyPipeline, {
+      key: "body",
+      counter: 0,
+    });
 
-    while (retryCount < maxRetries) {
-      if (retryCount > 0) {
-        // eslint-disable-next-line no-await-in-loop -- retry loop
-        await sleep(intervalMillis);
-      }
-
-      try {
-        // eslint-disable-next-line no-await-in-loop -- retry loop
-        return await options.runPipeline(bodyPipeline, {
-          key: "branch",
-          counter: retryCount,
-        });
-      } catch (error) {
-        lastError = error;
-      }
-
-      retryCount++;
+    if (async) {
+      return {};
     }
 
-    if (!lastError) {
-      // In practice, lastError will always be set. But throw just in case
-      throw new BusinessError("Maximum number of retries exceeded");
-    }
-
-    throw lastError;
+    return promise;
   }
 }
 
-export default Retry;
+export default Run;

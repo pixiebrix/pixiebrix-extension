@@ -78,13 +78,13 @@ class IfElse extends Transformer {
     const condition = boolean(rawCondition);
 
     if (condition) {
-      return options.runPipeline(ifPipeline.__value__ ?? [], {
+      return options.runPipeline(ifPipeline, {
         key: "if",
         counter: 0,
       });
     }
 
-    return options.runPipeline(elsePipeline?.__value__ ?? [], {
+    return options.runPipeline(elsePipeline, {
       key: "else",
       counter: 0,
     });

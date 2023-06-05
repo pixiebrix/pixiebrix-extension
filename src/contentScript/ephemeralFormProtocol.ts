@@ -20,8 +20,13 @@ import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
+import { type FormPanelEntry } from "@/types/sidebarTypes";
 
-type RegisteredForm = {
+export type RegisteredForm = {
+  /**
+   * The IExtension that created the form.
+   */
+  extensionId: UUID;
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
 };
@@ -29,14 +34,36 @@ type RegisteredForm = {
 const forms = new Map<UUID, RegisteredForm>();
 
 /**
- * Register a form with the content script that resolves the the form is either submitted or cancelled
+ * Returns form panel entries corresponding forms registered for the sidebar.
+ */
+export function getFormPanelSidebarEntries(): FormPanelEntry[] {
+  expectContext("contentScript");
+
+  return [...forms.entries()]
+    .filter(([, form]) => form.definition.location === "sidebar")
+    .map(([nonce, form]) => ({
+      type: "form",
+      nonce,
+      extensionId: form.extensionId,
+      form: form.definition,
+    }));
+}
+
+/**
+ * Register a form with the content script that resolves the form is either submitted or cancelled
+ * @param extensionId the id of the extension that created the form
  * @param nonce the form nonce
  * @param definition the form definition
  */
-export async function registerForm(
-  nonce: UUID,
-  definition: FormDefinition
-): Promise<unknown> {
+export async function registerForm({
+  extensionId,
+  nonce,
+  definition,
+}: {
+  extensionId: UUID;
+  nonce: UUID;
+  definition: FormDefinition;
+}): Promise<unknown> {
   expectContext("contentScript");
 
   const registration = pDefer();
@@ -46,6 +73,7 @@ export async function registerForm(
   }
 
   forms.set(nonce, {
+    extensionId,
     definition,
     registration,
   });

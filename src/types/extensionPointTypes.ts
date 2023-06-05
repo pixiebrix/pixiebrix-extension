@@ -25,6 +25,13 @@ import { type IReader } from "@/types/blocks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
+/**
+ * A location where content (e.g., form, temporary panel) can be added to the page.
+ */
+export type Location =
+  // Sidebar panel. ephemeralForm uses `sidebar` as the location for the sidebar
+  "panel" | "modal" | "popover";
+
 export type IExtensionPoint = Metadata & {
   /**
    * The kind of extension point.

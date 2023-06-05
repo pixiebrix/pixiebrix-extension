@@ -151,7 +151,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
   }
 
   /**
-   * Permissions required to use this extensions
+   * Permissions required to use the extensions attached to the extension point.
    * https://developer.chrome.com/extensions/permission_warnings
    */
   public abstract readonly permissions: Permissions.Permissions;

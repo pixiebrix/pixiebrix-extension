@@ -21,14 +21,21 @@ import { type Schema } from "@/types/schemaTypes";
 
 const logger = new ConsoleLogger();
 
-class ContextBlock extends Block {
+export class ContextBlock extends Block {
+  static contexts: UnknownObject[] = [];
+
   constructor() {
     super("test/context", "Return Context");
+  }
+
+  static clearContexts() {
+    ContextBlock.contexts = [];
   }
 
   inputSchema = propertiesToSchema({});
 
   async run(arg: BlockArgs, { ctxt }: BlockOptions) {
+    ContextBlock.contexts.push(ctxt);
     return ctxt;
   }
 }
@@ -147,6 +154,9 @@ const pipelineSchema: Schema = {
   },
 };
 
+/**
+ * A block for testing pipeline functionality. Returns the length of the provided pipeline block input.
+ */
 class PipelineBlock extends Block {
   constructor() {
     super("test/pipeline", "Pipeline Block");

@@ -158,7 +158,7 @@ class AddQuickBarAction extends Effect {
       ),
       async perform() {
         const pipelinePromise = runPipeline(
-          actionPipeline.__value__ ?? [],
+          actionPipeline,
           {
             key: "action",
             counter,

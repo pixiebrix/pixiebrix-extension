@@ -21,7 +21,7 @@ import {
   type Schema as ValidatorSchema,
   Validator,
 } from "@cfworker/json-schema";
-import { castArray } from "lodash";
+import { castArray, cloneDeep, pickBy } from "lodash";
 import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
@@ -43,6 +43,8 @@ import {
   type SemVerString,
 } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { inputProperties } from "@/helpers";
+import { isPipelineExpression } from "@/runtime/mapArgs";
 
 type BlockDefinition = {
   apiVersion?: ApiVersion;
@@ -147,13 +149,62 @@ class ExternalBlock extends Block {
     }
   }
 
-  async run(arg: BlockArgs, options: BlockOptions): Promise<unknown> {
+  /**
+   * Keep track of the lexical environment for any pipelines passed to the brick.
+   *
+   * Currently we're keeping track on the pipeline expression. That's inefficient for tracing, but is the simplest to
+   * implement. In the future, we may want to keep track of a map of lexical environments in the runtime.
+   *
+   * We also might in the future want to keep track in mapArgs:renderExplicit. However, that would be inefficient
+   * because ExternalBlock is currently the only block that switches the context. (The control flow bricks, e.g.,
+   * try-except extend the context, but don't swap out the "@input", "@options", etc.).
+   *
+   * TODO: also track for deferred expressions. (Currently, deferred expressions only appear in the Document Builder.).
+   *  Deferred expressions don't have a JSON Schema $ref type.
+   *
+   * Read more: https://en.wikipedia.org/wiki/Closure_(computer_programming)
+   * @private
+   */
+  private capturePipelineClosures(
+    args: BlockArgs,
+    options: BlockOptions
+  ): BlockArgs {
+    const pipelinePropertyNames = Object.keys(
+      pickBy(
+        inputProperties(this.inputSchema),
+        (value) =>
+          typeof value === "object" &&
+          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
+      )
+    );
+
+    if (typeof args === "object" && pipelinePropertyNames.length > 0) {
+      const fresh = cloneDeep(args);
+
+      for (const name of pipelinePropertyNames) {
+        // eslint-disable-next-line security/detect-object-injection -- from inputSchema
+        if (Object.hasOwn(fresh, name) && isPipelineExpression(fresh[name])) {
+          // eslint-disable-next-line security/detect-object-injection -- from inputSchema
+          fresh[name].__env__ = options.ctxt;
+        }
+      }
+
+      return fresh;
+    }
+
+    return args;
+  }
+
+  async run(args: BlockArgs, options: BlockOptions): Promise<unknown> {
+    const argsWithClosures = this.capturePipelineClosures(args, options);
+
     options.logger.debug("Running component pipeline", {
-      arg,
+      args: argsWithClosures,
     });
 
+    // Blocks only have inputs, they can't pick up free variables from the environment
     const initialValues: InitialValues = {
-      input: arg,
+      input: argsWithClosures,
       // OptionsArgs are set at the blueprint level. For composite bricks, the options should be passed in
       // as part of the brick inputs
       optionsArgs: undefined,

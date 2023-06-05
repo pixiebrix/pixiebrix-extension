@@ -21,6 +21,7 @@ import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
+import { type PipelineExpression } from "@/runtime/mapArgs";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -263,17 +264,13 @@ export type BlockOptions<
    * @since 1.6.4
    */
   runPipeline: (
-    // This should be BlockPipeline, but our dependencies are too tangled to use
-    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3477
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
-    pipeline: any,
+    pipeline: PipelineExpression,
     // The branch for tracing. Used to determine order of pipeline runs
     branch: {
       key: string;
       counter: number;
     },
-    // Should be UnknownObject, but can't use to introduce a circular dependency
-    extraContext?: Record<string, unknown>,
+    extraContext?: UnknownObject,
     root?: SelectorRoot
   ) => Promise<unknown>;
 
@@ -282,10 +279,7 @@ export type BlockOptions<
    * @since 1.7.13
    */
   runRendererPipeline: (
-    // This should be BlockPipeline, but our dependencies are too tangled to use
-    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3477
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
-    pipeline: any,
+    pipeline: PipelineExpression,
     // The branch for tracing. Used to determine order of pipeline runs
     branch: {
       key: string;

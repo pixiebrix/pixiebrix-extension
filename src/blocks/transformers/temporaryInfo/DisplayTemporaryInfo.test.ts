@@ -212,17 +212,17 @@ describe("DisplayTemporaryInfo", () => {
     expect(showModalMock).toHaveBeenCalled();
     expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
 
-    expect(waitForTemporaryPanelMock).toHaveBeenCalledWith(
-      // First argument is nonce
-      expect.toBeString(),
-      expect.objectContaining({
+    expect(waitForTemporaryPanelMock).toHaveBeenCalledWith({
+      nonce: expect.toBeString(),
+      extensionId,
+      location: "modal",
+      entry: expect.objectContaining({
         extensionId,
         heading: "Test Temp Panel",
         nonce: expect.toBeString(),
         payload: expect.toBeObject(),
       }),
-      { onRegister: undefined }
-    );
+    });
   });
 
   test("requires target for popover", async () => {

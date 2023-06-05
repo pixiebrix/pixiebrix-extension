@@ -53,6 +53,9 @@ function setSidebarWidth(pixels: number): void {
 
 const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
 
+/**
+ * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
+ */
 export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
 
 /** Removes the element; Returns false if no element was found */

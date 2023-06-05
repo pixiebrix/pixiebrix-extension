@@ -18,8 +18,8 @@
 import reportError from "@/telemetry/reportError";
 import {
   type ActivatePanelOptions,
-  type ActivateRecipeEntry,
-  type FormEntry,
+  type ActivateRecipePanelEntry,
+  type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
@@ -48,7 +48,7 @@ export type SidebarListener = {
    */
   onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
-  onShowActivateRecipe: (activateRecipeEntry: ActivateRecipeEntry) => void;
+  onShowActivateRecipe: (activateRecipeEntry: ActivateRecipePanelEntry) => void;
   onHideActivateRecipe: (recipeId: RegistryId) => void;
 };
 
@@ -126,7 +126,7 @@ export async function activatePanel(
   runListeners("onActivatePanel", sequence, options, { force: true });
 }
 
-export async function showForm(sequence: number, entry: FormEntry) {
+export async function showForm(sequence: number, entry: FormPanelEntry) {
   runListeners("onShowForm", sequence, entry);
 }
 
@@ -154,7 +154,7 @@ export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
 
 export async function showActivateRecipe(
   sequence: number,
-  entry: ActivateRecipeEntry
+  entry: ActivateRecipePanelEntry
 ) {
   runListeners("onShowActivateRecipe", sequence, entry);
 }

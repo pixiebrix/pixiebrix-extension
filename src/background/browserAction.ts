@@ -44,13 +44,16 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   }
 
   // Load the raw toggle script first, then the content script. The browser executes them
-  // in order but we don't need to use `Promise.all` to await them at the same time as we
+  // in order, but we don't need to use `Promise.all` to await them at the same time as we
   // want to catch each error separately.
   const sidebarTogglePromise = executeScript({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,
     files: ["browserActionInstantHandler.js"],
   });
+
+  // Clicking the browser action grants active tab. So PixieBrix might just now be getting access to run on the tab.
+  // It should automatically get added by webext-dynamic-content-scripts which tries to watch for new active tabs.
   const contentScriptPromise = ensureContentScript({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,

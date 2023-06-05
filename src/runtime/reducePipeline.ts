@@ -30,7 +30,11 @@ import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import { mapArgs } from "@/runtime/mapArgs";
+import {
+  isPipelineClosureExpression,
+  mapArgs,
+  type PipelineExpression,
+} from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -261,6 +265,34 @@ type RunBlockOptions = CommonOptions & {
 };
 
 /**
+ * Get the lexical environment for running a pipeline. Currently, we're just tracking on the pipeline arg itself.
+ * https://en.wikipedia.org/wiki/Closure_(computer_programming)
+ *
+ * @see ExternalBlock.initPipelineClosures
+ */
+function getPipelineLexicalEnvironment({
+  pipeline,
+  ctxt,
+  extraContext,
+}: {
+  pipeline: PipelineExpression;
+  ctxt: UnknownObject;
+  extraContext: UnknownObject | null;
+}): UnknownObject {
+  if (isPipelineClosureExpression(pipeline)) {
+    return {
+      ...pipeline.__env__,
+      ...extraContext,
+    };
+  }
+
+  return {
+    ...ctxt,
+    ...extraContext,
+  };
+}
+
+/**
  * Execute/run the resolved block in the target (self, etc.) with the validated args.
  */
 async function executeBlockWithValidatedProps(
@@ -319,11 +351,12 @@ async function executeBlockWithValidatedProps(
 
           const { runId, extensionId, branches } = options.trace;
           return reducePipelineExpression(
-            pipeline,
-            {
-              ...commonOptions.ctxt,
-              ...extraContext,
-            },
+            pipeline?.__value__ ?? [],
+            getPipelineLexicalEnvironment({
+              pipeline,
+              ctxt: commonOptions.ctxt,
+              extraContext,
+            }),
             rootOverride ?? root,
             {
               ...options,
@@ -355,11 +388,12 @@ async function executeBlockWithValidatedProps(
           let payload: PanelPayload;
           try {
             await reducePipelineExpression(
-              pipeline,
-              {
-                ...commonOptions.ctxt,
-                ...extraContext,
-              },
+              pipeline?.__value__ ?? [],
+              getPipelineLexicalEnvironment({
+                pipeline,
+                ctxt: commonOptions.ctxt,
+                extraContext,
+              }),
               rootOverride ?? root,
               {
                 ...options,
@@ -423,7 +457,7 @@ async function renderBlockArg(
     autoescape,
   } = options;
 
-  // Support YAML short-hand of leaving of `config:` directive for blocks that don't have parameters
+  // Support YAML shorthand of leaving of `config:` directive for blocks that don't have parameters
   const stageTemplate = config.config ?? {};
 
   if (type === "reader") {

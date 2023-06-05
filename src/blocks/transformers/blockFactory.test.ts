@@ -21,6 +21,21 @@ import { fromJS } from "@/blocks/transformers/blockFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { isUserDefinedBlock } from "@/types/blockTypes";
 import { MappingTransformer } from "./mapping";
+import blockRegistry from "@/blocks/registry";
+import {
+  ContextBlock,
+  contextBlock,
+  simpleInput,
+  testOptions,
+} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import Run from "@/blocks/transformers/controlFlow/Run";
+
+beforeEach(() => {
+  blockRegistry.clear();
+  blockRegistry.register([contextBlock]);
+  ContextBlock.clearContexts();
+});
 
 test("two plus two is four", () => {
   expect(2 + 2).toBe(4);
@@ -65,5 +80,85 @@ describe("isUserDefinedBlock", () => {
 
   test("is detected as built-in block", () => {
     expect(isUserDefinedBlock(new MappingTransformer())).toBe(false);
+  });
+});
+
+test("inner pipelines receive correct context", async () => {
+  const json = {
+    apiVersion: "v3",
+    kind: "component",
+    metadata: {
+      id: "test/pipeline-echo",
+      name: "Pipeline Echo brick",
+    },
+    inputSchema: {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {
+        customInput: {
+          type: "string",
+        },
+        body: {
+          $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+        },
+      },
+      required: ["customInput", "body"],
+    },
+    pipeline: [
+      {
+        id: "test/context",
+        label: "Pipeline Echo Brick Context",
+        config: {},
+        outputKey: "ignore",
+      },
+      {
+        id: "@pixiebrix/run",
+        config: {
+          body: {
+            __type__: "var",
+            __value__: "@input.body",
+          },
+        },
+      },
+    ],
+  };
+
+  const block = fromJS(json);
+  blockRegistry.register([block, new Run()]);
+
+  const pipeline = {
+    id: block.id,
+    config: {
+      customInput: "Block Environment",
+      body: {
+        __type__: "pipeline",
+        __value__: [{ id: "test/context", label: "Pipeline Arg Context" }],
+      },
+    },
+  };
+
+  await reducePipeline(
+    pipeline,
+    simpleInput({ customInput: "Closure Environment" }),
+    testOptions("v3")
+  );
+
+  expect(ContextBlock.contexts[0]).toStrictEqual({
+    "@input": {
+      body: {
+        __env__: expect.toBeObject(),
+        __type__: "pipeline",
+        __value__: expect.toBeArray(),
+      },
+      customInput: "Block Environment",
+    },
+    "@options": {},
+  });
+
+  expect(ContextBlock.contexts[1]).toStrictEqual({
+    "@input": {
+      customInput: "Closure Environment",
+    },
+    "@options": {},
   });
 });

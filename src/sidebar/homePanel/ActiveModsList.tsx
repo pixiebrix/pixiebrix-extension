@@ -88,7 +88,7 @@ export const ActiveModsList: React.FunctionComponent<{
             tableInstance.prepareRow(row);
             return (
               <ActiveModListItem
-                key={row.original.sharing.packageId}
+                key={`${row.original.sharing.packageId}-${row.original.name}`}
                 installableItem={row.original}
               />
             );

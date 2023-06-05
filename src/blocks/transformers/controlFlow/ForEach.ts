@@ -86,7 +86,7 @@ class ForEach extends Transformer {
     for (const [index, element] of elements.entries()) {
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
       last = await options.runPipeline(
-        bodyPipeline.__value__,
+        bodyPipeline,
         { key: "body", counter: index },
         {
           [`@${elementKey}`]: element,
