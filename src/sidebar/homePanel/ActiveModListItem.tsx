@@ -33,6 +33,8 @@ import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
 import cx from "classnames";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import useReportError from "@/hooks/useReportError";
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 export const ActiveModListItem: React.FunctionComponent<{
@@ -42,17 +44,15 @@ export const ActiveModListItem: React.FunctionComponent<{
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
   const requestPermissions = useRequestPermissionsAction(installableItem);
 
-  const { data: starterBricksContained, error } = useAsyncState(
+  const state = useAsyncState(
     async () => getContainedStarterBrickNames(installableItem),
     [],
     { initialValue: [] }
   );
 
-  if (error) {
-    // Don't swallow logic errors, but don't crash the UI either
-    // Starter brick information is nice-to-have, but not a must-have
-    console.error(error);
-  }
+  const { data: starterBricksContained, error } = fallbackValue(state, []);
+
+  useReportError(error);
 
   return (
     <ListGroup.Item className={styles.root}>
@@ -71,7 +71,7 @@ export const ActiveModListItem: React.FunctionComponent<{
                   : styles.lineClampTwoLines
               )}
             >
-              {(starterBricksContained ?? []).join(" • ")}
+              {starterBricksContained.join(" • ")}
             </span>
           </div>
           {requestPermissions && (
