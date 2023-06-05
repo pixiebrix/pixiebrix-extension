@@ -33,7 +33,6 @@ import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
 import cx from "classnames";
-import { fallbackValue } from "@/utils/asyncStateUtils";
 import useReportError from "@/hooks/useReportError";
 
 // eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
@@ -44,15 +43,13 @@ export const ActiveModListItem: React.FunctionComponent<{
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
   const requestPermissions = useRequestPermissionsAction(installableItem);
 
-  const state = useAsyncState(
+  const { data: starterBricksContained = [], error } = useAsyncState(
     async () => getContainedStarterBrickNames(installableItem),
     [],
     { initialValue: [] }
   );
 
-  const { data: starterBricksContained } = fallbackValue(state, []);
-
-  useReportError(state.error);
+  useReportError(error);
 
   return (
     <ListGroup.Item className={styles.root}>
