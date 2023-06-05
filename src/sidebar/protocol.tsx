@@ -63,12 +63,21 @@ const messageBuffer: Array<{
 
 const listeners: SidebarListener[] = [];
 
-export function addListener(fn: SidebarListener): void {
-  if (listeners.includes(fn)) {
+/**
+ * Add a listener.
+ *
+ * If this is only listener, any buffered messages from webext-messenger will be flushed to the listener. This is to
+ * account for races between webext-messenger and React App initialization.
+ *
+ * @param listener the listener to add
+ */
+export function addListener(listener: SidebarListener): void {
+  if (listeners.includes(listener)) {
     console.warn("Listener already registered for sidebar");
-  } else {
-    listeners.push(fn);
+    return;
   }
+
+  listeners.push(listener);
 
   if (listeners.length === 1) {
     // First listener was added
@@ -76,8 +85,12 @@ export function addListener(fn: SidebarListener): void {
   }
 }
 
-export function removeListener(fn: SidebarListener): void {
-  listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
+export function removeListener(listener: SidebarListener): void {
+  listeners.splice(
+    0,
+    listeners.length,
+    ...listeners.filter((x) => x !== listener)
+  );
 }
 
 /**
