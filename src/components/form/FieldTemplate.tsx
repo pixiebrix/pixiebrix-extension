@@ -181,8 +181,6 @@ const FieldTemplate: React.FC<FieldProps> = ({
   });
 
   return (
-    // TODO: Find a better solution than disabling
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       {!isEmpty(annotations) && (
         <Col xs="12" className="mb-2">

@@ -79,6 +79,7 @@ const DocumentOutline = ({
         }}
         dragItem={dragItemId ? tree.items[dragItemId] : null}
         onDelete={() => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
           onDelete(params.item.data.elementName);
         }}
       />

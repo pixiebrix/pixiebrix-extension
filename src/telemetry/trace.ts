@@ -252,8 +252,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-  // TODO: Find a better solution than disabling
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
   const data = await tx.store.get([
     record.runId,
     record.blockInstanceId,

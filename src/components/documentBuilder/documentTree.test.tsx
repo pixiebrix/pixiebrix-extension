@@ -26,7 +26,10 @@ import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { UNSET_UUID, uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
-import { type DocumentElementType } from "./documentBuilderTypes";
+import {
+  type DocumentElement,
+  type DocumentElementType,
+} from "./documentBuilderTypes";
 import DocumentContext, {
   initialValue,
 } from "@/components/documentBuilder/render/DocumentContext";
@@ -43,7 +46,7 @@ describe("When rendered in panel", () => {
     blockRegistry.register([markdownBlock]);
   });
 
-  const renderDocument = (config: any) => {
+  const renderDocument = (config: DocumentElement) => {
     const { Component, props } = buildDocumentBranch(config, {
       staticId: "body",
       branches: [],
@@ -89,7 +92,7 @@ describe("When rendered in panel", () => {
   );
 
   test("renders paragraph text", () => {
-    const config = {
+    const config: DocumentElement = {
       type: "text",
       config: {
         text: "Test Paragraph",
@@ -106,7 +109,7 @@ describe("When rendered in panel", () => {
   });
 
   test("renders markdown", () => {
-    const config = {
+    const config: DocumentElement = {
       type: "text",
       config: {
         text: "Test ~~Paragraph~~",
@@ -119,7 +122,8 @@ describe("When rendered in panel", () => {
   });
 
   test("renders unknown type", () => {
-    const config = {
+    const config: DocumentElement = {
+      // @ts-expect-error testing with invalid type
       type: "TheTypeForWhichAComponentIsNotDefined",
       className: "test-class",
     };
@@ -190,7 +194,7 @@ describe("When rendered in panel", () => {
           ],
         },
       ],
-    };
+    } as DocumentElement;
 
     const { container } = renderDocument(config);
 
@@ -216,7 +220,7 @@ describe("When rendered in panel", () => {
 
   describe("button", () => {
     test("renders button", () => {
-      const config = {
+      const config: DocumentElement = {
         type: "button",
         config: {
           title: "Button under test",
@@ -241,28 +245,31 @@ describe("When rendered in panel", () => {
       ${"primary"}   | ${"btn-primary"}
       ${"secondary"} | ${"btn-secondary"}
       ${"link"}      | ${"btn-link"}
-    `("applies button variant: $variant", ({ variant, className }) => {
-      const config = {
-        type: "button",
-        config: {
-          title: "Button under test",
-          variant,
-          onClick: {
-            __type__: "pipeline",
-            __value__: jest.fn(),
+    `(
+      "applies button variant: $variant",
+      ({ variant, className }: { variant: string; className: string }) => {
+        const config: DocumentElement = {
+          type: "button",
+          config: {
+            title: "Button under test",
+            variant,
+            onClick: {
+              __type__: "pipeline",
+              __value__: jest.fn(),
+            },
           },
-        },
-      };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+        };
+        const { container } = renderDocument(config);
+        const element = container.querySelector("button");
 
-      expect(element).toHaveClass(className);
-    });
+        expect(element).toHaveClass(className);
+      }
+    );
   });
 
   describe("card", () => {
     test("renders card", () => {
-      const config = {
+      const config: DocumentElement = {
         type: "card",
         config: {
           className: "test-class",
@@ -282,7 +289,7 @@ describe("When rendered in panel", () => {
       expect(cardBody).not.toBeNull();
     });
     test("renders card children", () => {
-      const config = {
+      const config: DocumentElement = {
         type: "card",
         config: {
           className: "test-class",
@@ -326,7 +333,7 @@ config:
       config:
         markdown: ${markdown}`;
 
-    const config = loadBrickYaml(yamlConfig);
+    const config = loadBrickYaml(yamlConfig) as DocumentElement;
     const { container } = renderDocument(config);
 
     // Wait for useAsyncState inside the PipelineComponent

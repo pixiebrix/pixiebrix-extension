@@ -67,8 +67,7 @@ export class ResolvePerson extends Transformer {
     if (organization) {
       const {
         data: { data },
-        // TODO: Find a better solution than disabling
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
       } = await proxyService<SearchResult>(pipedriveService, {
         url: "https://api.pipedrive.com/v1/organizations/search",
         method: "get",
@@ -83,8 +82,7 @@ export class ResolvePerson extends Transformer {
 
     const {
       data: { data },
-      // TODO: Find a better solution than disabling
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
     } = await proxyService<SearchResult>(pipedriveService, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",

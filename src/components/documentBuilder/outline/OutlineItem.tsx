@@ -57,7 +57,8 @@ const OutlineItem: React.FunctionComponent<
   const [hover, setHover] = useState(false);
 
   const allow = dragItem
-    ? acceptDrop(dragItem.data.element, item.data.element)
+    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
+      acceptDrop(dragItem.data.element, item.data.element)
     : false;
 
   return (

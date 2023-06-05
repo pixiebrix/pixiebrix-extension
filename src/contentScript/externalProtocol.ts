@@ -147,8 +147,7 @@ async function oneResponse<R>(nonce: string): Promise<R> {
       // Responses *must not* have a `type`, but just a `nonce` and `payload`
       if (!event.data?.type && event.data?.meta?.nonce === nonce) {
         document.defaultView.removeEventListener("message", onMessage);
-        // TODO: Find a better solution than disabling
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
         resolve(event.data.payload);
       }
     }
