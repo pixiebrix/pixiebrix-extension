@@ -57,6 +57,8 @@ export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
 
+let recipeToActivate: ActivateRecipePanelEntry = null;
+
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  * @param activateOptions options controlling the visible panel in the sidebar
@@ -415,15 +417,19 @@ export function showActivateRecipeInSidebar(
     );
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.showActivateRecipe(sequence, {
+  recipeToActivate = {
     type: "activateRecipe",
     ...entry,
-  });
+  };
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.showActivateRecipe(sequence, recipeToActivate);
 }
 
 export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
   expectContext("contentScript");
+
+  recipeToActivate = null;
 
   if (!isSidebarFrameVisible()) {
     return;
@@ -439,15 +445,18 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
  * - Permanent panels added by sidebarExtension
  * - Temporary panels added by DisplayTemporaryInfo
  * - Temporary form definitions added by ephemeralForm
+ * - Activate Recipe panel added by marketplace.ts activate button click-handlers
  */
 export function getReservedPanelEntries(): {
   panels: PanelEntry[];
   temporaryPanels: TemporaryPanelEntry[];
   forms: FormPanelEntry[];
+  recipeToActivate: ActivateRecipePanelEntry | null;
 } {
   return {
     panels,
     temporaryPanels: getTemporaryPanelSidebarEntries(),
     forms: getFormPanelSidebarEntries(),
+    recipeToActivate,
   };
 }

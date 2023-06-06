@@ -102,9 +102,8 @@ const ConnectedSidebar: React.VFC = () => {
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
     await ensureExtensionPointsInstalled(topFrame);
 
-    const { panels, temporaryPanels, forms } = await getReservedSidebarEntries(
-      topFrame
-    );
+    const { panels, temporaryPanels, forms, recipeToActivate } =
+      await getReservedSidebarEntries(topFrame);
 
     const staticPanels = showHomePanel ? [HOME_PANEL] : [];
 
@@ -114,6 +113,7 @@ const ConnectedSidebar: React.VFC = () => {
       temporaryPanels,
       forms,
       staticPanels,
+      recipeToActivate,
     });
 
     dispatch(
@@ -122,6 +122,7 @@ const ConnectedSidebar: React.VFC = () => {
         temporaryPanels,
         forms,
         staticPanels,
+        recipeToActivate,
       })
     );
 
