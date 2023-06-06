@@ -11,6 +11,10 @@ module.exports = function (content) {
 
   const options = this.getOptions();
 
+  if (!options.outputPath) {
+    throw new Error("outputPath option is required");
+  }
+
   const context = this.rootContext;
   const name = "[name].[ext]";
 

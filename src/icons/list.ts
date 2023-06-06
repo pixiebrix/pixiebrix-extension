@@ -49,8 +49,9 @@ function getCDNUrl({
 function getIconMap(resolve: RequireContext): Map<string, string> {
   const resolveId = resolve.id.toString();
 
-  // Note, resolveId can theoretically be a number. Haven't seen this in practice but want to include this
-  // check in case this comes up. If so, probably need to pass the library name as an argument to this function.
+  // The resolveId type can theoretically be a number (see __WebpackModuleApi.ModuleId).
+  // Haven't seen this in practice but want to include this check in case this comes up.
+  // If so, we probably want to pass the library name as an argument to this function.
   if (Number.isNaN(resolveId)) {
     throw new TypeError(`Invalid resolveId: ${resolveId}`);
   }
