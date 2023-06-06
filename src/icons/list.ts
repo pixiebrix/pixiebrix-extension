@@ -18,13 +18,15 @@
 /* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
 
 import { type IconLibrary } from "@/types/iconTypes";
+import bootstrapIconsPackage from "bootstrap-icons/package.json";
+import simpleIconsPackage from "simple-icons/package.json";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
 type CDNIconLibrary = "bootstrap-icons" | "simple-icons";
 
 const CDN_ICON_LIBRARY_VERSIONS: Record<CDNIconLibrary, string> = {
-  "bootstrap-icons": require("bootstrap-icons/package.json").version,
-  "simple-icons": require("simple-icons/package.json").version,
+  "bootstrap-icons": bootstrapIconsPackage.version,
+  "simple-icons": simpleIconsPackage.version,
 };
 
 function getCDNUrl({

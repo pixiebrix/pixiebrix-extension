@@ -34,7 +34,7 @@ export default async function getSvgIcon({
     throw new Error(`Unknown icon library: ${library}`);
   }
 
-  const iconUrl = libraryCache.get(id) ?? libraryCache.get("box");
+  const iconUrl = libraryCache.get(id) ?? libraryCache.get(DEFAULT_ICON_ID);
   if (!iconUrl) {
     throw new Error(`Could not find icon ${id} in icon library ${library}`);
   }

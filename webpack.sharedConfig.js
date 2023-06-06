@@ -86,11 +86,13 @@ const shared = {
           filename: "img/[name][ext]",
         },
       },
+      // Write empty files for these icons because their content is loaded from a CDN.
+      // We need the filenames, so we know what icons are available.
       {
         test: /bootstrap-icons\/.*\.svg$/,
         use: [
           {
-            loader: path.resolve("webpack-loaders/customLoader.js"),
+            loader: path.resolve("webpack-loaders/empty-file-loader.js"),
             options: {
               outputPath: "user-icons/bootstrap-icons",
             },
@@ -101,7 +103,7 @@ const shared = {
         test: /simple-icons\/.*\.svg$/,
         use: [
           {
-            loader: path.resolve("webpack-loaders/customLoader.js"),
+            loader: path.resolve("webpack-loaders/empty-file-loader.js"),
             options: {
               outputPath: "user-icons/simple-icons",
             },

@@ -7,8 +7,6 @@ const path = require("node:path");
 const { interpolateName } = require("loader-utils");
 
 module.exports = function (content) {
-  // Clear content because it's adding bloat to the final bundle.
-  // Instead, icon content is pulled from a CDN.
   content = "";
 
   const options = this.getOptions();
