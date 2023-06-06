@@ -28,6 +28,7 @@ import useFlags from "@/hooks/useFlags";
 import { selectOrganization } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
 import StorageSettings from "@/extensionConsole/pages/settings/StorageSettings";
+import GeneralSettings from "@/extensionConsole/pages/settings/GeneralSettings";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -56,6 +57,10 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
+      <Section>
+        <GeneralSettings />
+      </Section>
+
       {(organization == null || DEBUG) && (
         <Section>
           <PrivacySettings />
