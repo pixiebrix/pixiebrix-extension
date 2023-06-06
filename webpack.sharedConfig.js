@@ -42,11 +42,6 @@ const shared = {
 
       // Lighter jQuery version
       jquery: "jquery/dist/jquery.slim.min.js",
-
-      // TODO; remove this
-      // https://webpack.js.org/blog/2020-10-10-webpack-5-release/#deprecated-loaders
-      // [/user-icons\/bootstrap-icons\/.*\.svg$/]: false,
-      // [/user-icons\/simple-icons\/.*\.svg$/]: false,
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {
