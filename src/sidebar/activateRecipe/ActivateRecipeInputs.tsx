@@ -118,13 +118,11 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           </Col>
         </>
       )}
-      <div className="mt-1">
-        <ServicesBody
-          blueprint={recipe}
-          hideBuiltInServiceIntegrations
-          showOwnTitle
-        />
-      </div>
+      <ServicesBody
+        blueprint={recipe}
+        hideBuiltInServiceIntegrations
+        showOwnTitle
+      />
       {needsPermissions && (
         <Alert variant="info" className="mt-3">
           <span className={styles.permissionsBold}>

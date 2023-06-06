@@ -104,7 +104,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
       {fieldsToShow.length > 0 && showOwnTitle && (
-        <div>
+        <div className="mt-1">
           <h4>Integrations</h4>
         </div>
       )}
