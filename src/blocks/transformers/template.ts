@@ -57,7 +57,10 @@ export class TemplateTransformer extends Transformer {
   );
 
   async transform(
-    { template, templateEngine = "mustache" }: BlockArgs,
+    {
+      template,
+      templateEngine = "mustache",
+    }: BlockArgs<{ template: string; templateEngine: string }>,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
     if (templateEngine !== "mustache") {

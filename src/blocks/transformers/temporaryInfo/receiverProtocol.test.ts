@@ -21,6 +21,7 @@ import {
   removeListener,
   updateTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/receiverProtocol";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 
 describe("receiverProtocol", () => {
   test("add/remove listener", async () => {
@@ -31,7 +32,9 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(0, { title: "test" } as any);
+    await updateTemporaryPanel(0, {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledWith({
       title: "test",
@@ -39,7 +42,9 @@ describe("receiverProtocol", () => {
 
     removeListener(listener);
 
-    await updateTemporaryPanel(0, { title: "test" } as any);
+    await updateTemporaryPanel(0, {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });
@@ -52,8 +57,12 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(1, { title: "test" } as any);
-    await updateTemporaryPanel(0, { title: "test" } as any);
+    await updateTemporaryPanel(1, {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(0, {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });

@@ -43,7 +43,9 @@ class ParseJson extends Transformer {
     },
   });
 
-  async transform({ content }: BlockArgs): Promise<unknown> {
+  async transform({
+    content,
+  }: BlockArgs<{ content: string }>): Promise<unknown> {
     try {
       return JSON.parse(content);
     } catch (error) {
