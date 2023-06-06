@@ -20,12 +20,63 @@
 import { type IconLibrary } from "@/types/iconTypes";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
+type CDNIconLibrary = "bootstrap-icons" | "simple-icons";
+
+const CDN_ICON_LIBRARY_VERSIONS: Record<CDNIconLibrary, string> = {
+  "bootstrap-icons": require("bootstrap-icons/package.json").version,
+  "simple-icons": require("simple-icons/package.json").version,
+};
+
+function getCDNUrl({
+  library,
+  iconFilename,
+}: {
+  library: CDNIconLibrary;
+  iconFilename: string;
+}): string {
+  // eslint-disable-next-line security/detect-object-injection
+  const version = CDN_ICON_LIBRARY_VERSIONS[library];
+
+  if (!version) {
+    throw new Error(`Unknown CDN icon library: ${library}`);
+  }
+
+  return `https://cdn.jsdelivr.net/npm/${library}@${version}/icons/${iconFilename}`;
+}
 
 function getIconMap(resolve: RequireContext): Map<string, string> {
+  const resolveId = resolve.id.toString();
+
+  // Note, resolveId can theoretically be a number. Haven't seen this in practice but want to include this
+  // check in case this comes up. If so, probably need to pass the library name as an argument to this function.
+  if (Number.isNaN(resolveId)) {
+    throw new TypeError(`Invalid resolveId: ${resolveId}`);
+  }
+
+  const isBootstrapIcons = resolveId.includes("bootstrap-icons");
+  const isSimpleIcons = resolveId.includes("simple-icons");
+
   const icons = new Map<string, string>();
   for (const url of resolve.keys()) {
-    const iconName = url.split("/").pop().replace(".svg", "");
-    icons.set(iconName, resolve(url));
+    const iconFilename = url.split("/").pop();
+    const iconName = iconFilename.replace(".svg", "");
+
+    let iconUrl;
+    if (isBootstrapIcons) {
+      iconUrl = getCDNUrl({
+        library: "bootstrap-icons",
+        iconFilename,
+      });
+    } else if (isSimpleIcons) {
+      iconUrl = getCDNUrl({
+        library: "simple-icons",
+        iconFilename,
+      });
+    } else {
+      iconUrl = resolve(url);
+    }
+
+    icons.set(iconName, iconUrl);
   }
 
   return icons;

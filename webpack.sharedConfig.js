@@ -42,6 +42,11 @@ const shared = {
 
       // Lighter jQuery version
       jquery: "jquery/dist/jquery.slim.min.js",
+
+      // TODO; remove this
+      // https://webpack.js.org/blog/2020-10-10-webpack-5-release/#deprecated-loaders
+      // [/user-icons\/bootstrap-icons\/.*\.svg$/]: false,
+      // [/user-icons\/simple-icons\/.*\.svg$/]: false,
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {
@@ -88,17 +93,25 @@ const shared = {
       },
       {
         test: /bootstrap-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/bootstrap-icons/[name][ext]",
-        },
+        use: [
+          {
+            loader: path.resolve("webpack-loaders/customLoader.js"),
+            options: {
+              outputPath: "user-icons/bootstrap-icons",
+            },
+          },
+        ],
       },
       {
         test: /simple-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/simple-icons/[name][ext]",
-        },
+        use: [
+          {
+            loader: path.resolve("webpack-loaders/customLoader.js"),
+            options: {
+              outputPath: "user-icons/simple-icons",
+            },
+          },
+        ],
       },
       {
         test: /custom-icons\/.*\.svg$/,

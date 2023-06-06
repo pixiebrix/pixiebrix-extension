@@ -17,9 +17,11 @@
 
 import { type IconConfig } from "@/types/iconTypes";
 
+const DEFAULT_ICON_ID = "box";
+
 export default async function getSvgIcon({
   library = "bootstrap",
-  id = "box",
+  id = DEFAULT_ICON_ID,
   size = 14,
   color = "#ae87e8",
 }: Partial<IconConfig> = {}): Promise<string> {
