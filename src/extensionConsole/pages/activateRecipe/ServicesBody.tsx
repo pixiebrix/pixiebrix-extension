@@ -39,13 +39,20 @@ import { type RegistryId } from "@/types/registryTypes";
 interface OwnProps {
   blueprint: RecipeDefinition;
   hideBuiltInServiceIntegrations?: boolean;
+  showOwnTitle?: boolean;
 }
+
+type ValueField = {
+  serviceId: RegistryId;
+  index: number;
+};
 
 const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
 
 const ServicesBody: React.FunctionComponent<OwnProps> = ({
   blueprint,
   hideBuiltInServiceIntegrations,
+  showOwnTitle,
 }) => {
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
     useAuthOptions(),
@@ -84,33 +91,40 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     return true;
   }
 
+  const fieldsToShow: ValueField[] = field.value
+    // We need to grab the index before filtering, because the index used
+    // in the field name for AuthWidget needs to be consistent with the
+    // index in field.value
+    .map(({ id: serviceId }, index) => ({ serviceId, index }))
+    .filter(({ serviceId }) => shouldShowField(serviceId));
+
   return (
     <>
       {typeof error === "string" && (
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
-      {field.value.map(
-        ({ id: serviceId }, index) =>
-          // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
-          // consistent with the index in field.value
-          shouldShowField(serviceId) && (
-            <div key={serviceId}>
-              <ServiceFieldError servicesError={error} fieldIndex={index} />
-              <Card className={styles.serviceCard}>
-                <ServiceDescriptor
-                  serviceId={serviceId}
-                  serviceConfigs={serviceConfigs}
-                />
-                <AuthWidget
-                  authOptions={authOptions}
-                  serviceId={serviceId}
-                  name={joinName(field.name, String(index), "config")}
-                  onRefresh={refreshAuthOptions}
-                />
-              </Card>
-            </div>
-          )
+      {fieldsToShow.length > 0 && showOwnTitle && (
+        <div>
+          <h4>Integrations</h4>
+        </div>
       )}
+      {fieldsToShow.map(({ serviceId, index }) => (
+        <div key={serviceId}>
+          <ServiceFieldError servicesError={error} fieldIndex={index} />
+          <Card className={styles.serviceCard}>
+            <ServiceDescriptor
+              serviceId={serviceId}
+              serviceConfigs={serviceConfigs}
+            />
+            <AuthWidget
+              authOptions={authOptions}
+              serviceId={serviceId}
+              name={joinName(field.name, String(index), "config")}
+              onRefresh={refreshAuthOptions}
+            />
+          </Card>
+        </div>
+      ))}
     </>
   );
 };

@@ -41,7 +41,7 @@ import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 
 type ActivateRecipeInputsProps = {
   recipe: RecipeDefinition;
-  wizardSteps: WizardStep[];
+  optionsWizardStep: WizardStep;
   initialValues: WizardValues;
   onChange: (values: WizardValues) => void;
   validationSchema: AnyObjectSchema;
@@ -55,7 +55,7 @@ type ActivateRecipeInputsProps = {
 
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   recipe: inputRecipe,
-  wizardSteps,
+  optionsWizardStep,
   initialValues,
   onChange,
   validationSchema,
@@ -65,9 +65,6 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   onClickSubmit,
   activationError,
 }) => {
-  const optionsStep = wizardSteps.find(({ key }) => key === "options");
-  const servicesStep = wizardSteps.find(({ key }) => key === "services");
-
   const recipe = inputRecipe.options?.schema?.properties
     ? produce(inputRecipe, (draft) => {
         for (const [name, optionSchema] of Object.entries(
@@ -100,10 +97,10 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     <div className={cx("scrollable-area", styles.formBody)}>
       <Effect values={values} onChange={onChange} delayMillis={200} />
       {header}
-      {optionsStep && (
+      {optionsWizardStep && (
         <>
           <div>
-            <h4>{optionsStep.label}</h4>
+            <h4>{optionsWizardStep.label}</h4>
           </div>
           {/*
             Need to use Col for correct spacing here because the options
@@ -114,27 +111,20 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
             bring everything back in line.
           */}
           <Col className={styles.optionsBody}>
-            <optionsStep.Component blueprint={recipe} reinstall={isReinstall} />
+            <optionsWizardStep.Component
+              blueprint={recipe}
+              reinstall={isReinstall}
+            />
           </Col>
         </>
       )}
-      {servicesStep && (
-        <div className="mt-1">
-          <div>
-            <h4>{servicesStep.label}</h4>
-          </div>
-          {/*
-          Legacy usage of the wizard step Components:
-          <servicesStep.Component blueprint={recipe} reinstall={isReinstall} />
-
-          We need to be more specific here for props to work, so we use ServicesBody directly.
-
-          hideBuiltInServiceIntegrations - does what it says, hides a service field if the value is
-          set to a built-in service integration.
-          */}
-          <ServicesBody blueprint={recipe} hideBuiltInServiceIntegrations />
-        </div>
-      )}
+      <div className="mt-1">
+        <ServicesBody
+          blueprint={recipe}
+          hideBuiltInServiceIntegrations
+          showOwnTitle
+        />
+      </div>
       {needsPermissions && (
         <Alert variant="info" className="mt-3">
           <span className={styles.permissionsBold}>

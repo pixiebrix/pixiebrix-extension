@@ -124,7 +124,7 @@ function expectRefreshButton(count?: number) {
 }
 
 describe("ServicesBody", () => {
-  it("renders with one service and no options", async () => {
+  it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={recipeDefinitionFactory()} />, {
@@ -137,6 +137,24 @@ describe("ServicesBody", () => {
     expectRefreshButton();
     // Check that "configure" button is also shown when there are no options
     expect(screen.getByRole("button", { name: /configure/i })).toBeVisible();
+    // Ensure Integrations title is not shown
+    expect(screen.queryByText(/integrations/i)).not.toBeInTheDocument();
+  });
+
+  it("renders own title properly", async () => {
+    useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
+    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    render(
+      <ServicesBody blueprint={recipeDefinitionFactory()} showOwnTitle />,
+      {
+        initialValues: {
+          services: [{ id: serviceId1, config: null }],
+        },
+      }
+    );
+    await waitForEffect();
+    // Ensure Integrations title is shown
+    expect(screen.getByRole("heading", { name: "Integrations" })).toBeVisible();
   });
 
   it("does not hide field with one service, no options for the service, but other options exist", async () => {
@@ -231,7 +249,7 @@ describe("ServicesBody", () => {
     expect(screen.getByText(sharedOption2a.label)).toBeVisible();
   });
 
-  it("hides one field when one built-in option", async () => {
+  it("hides one field and label when one built-in option", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState([builtInOption1a]));
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
