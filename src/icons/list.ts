@@ -46,33 +46,20 @@ function getCDNUrl({
   return `https://cdn.jsdelivr.net/npm/${library}@${version}/icons/${iconFilename}`;
 }
 
-function getIconMap(resolve: RequireContext): Map<string, string> {
-  const resolveId = resolve.id.toString();
-
-  // The resolveId type can theoretically be a number (see __WebpackModuleApi.ModuleId).
-  // Haven't seen this in practice but want to include this check in case this comes up.
-  // If so, we probably want to pass the library name as an argument to this function.
-  if (Number.isNaN(resolveId)) {
-    throw new TypeError(`Invalid resolveId: ${resolveId}`);
-  }
-
-  const isBootstrapIcons = resolveId.includes("bootstrap-icons");
-  const isSimpleIcons = resolveId.includes("simple-icons");
-
+// Need to pass in the CDN library name because we can't reliably get the string passed to require.context
+function getIconMap(
+  resolve: RequireContext,
+  cdnLibrary: CDNIconLibrary = null
+): Map<string, string> {
   const icons = new Map<string, string>();
   for (const url of resolve.keys()) {
     const iconFilename = url.split("/").pop();
     const iconName = iconFilename.replace(".svg", "");
 
     let iconUrl;
-    if (isBootstrapIcons) {
+    if (cdnLibrary) {
       iconUrl = getCDNUrl({
-        library: "bootstrap-icons",
-        iconFilename,
-      });
-    } else if (isSimpleIcons) {
-      iconUrl = getCDNUrl({
-        library: "simple-icons",
+        library: cdnLibrary,
         iconFilename,
       });
     } else {
@@ -88,11 +75,17 @@ function getIconMap(resolve: RequireContext): Map<string, string> {
 export const icons = new Map<IconLibrary, Map<string, string>>();
 icons.set(
   "bootstrap",
-  getIconMap(require.context("bootstrap-icons/icons/", false, /\.svg$/))
+  getIconMap(
+    require.context("bootstrap-icons/icons/", false, /\.svg$/),
+    "bootstrap-icons"
+  )
 );
 icons.set(
   "simple-icons",
-  getIconMap(require.context("simple-icons/icons/", false, /\.svg$/))
+  getIconMap(
+    require.context("simple-icons/icons/", false, /\.svg$/),
+    "simple-icons"
+  )
 );
 icons.set(
   "custom",
