@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -24,8 +24,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
-  type ActivateRecipeEntry,
-  type FormEntry,
+  type ActivateRecipePanelEntry,
+  type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
@@ -40,6 +40,12 @@ import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
+import {
+  ensureExtensionPointsInstalled,
+  getReservedSidebarEntries,
+} from "@/contentScript/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
+import useAsyncEffect from "use-async-effect";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -51,10 +57,10 @@ function useConnectedListener(): SidebarListener {
       onRenderPanels(panels: PanelEntry[]) {
         dispatch(sidebarSlice.actions.setPanels({ panels }));
       },
-      onShowForm(form: FormEntry) {
+      onShowForm(form: FormPanelEntry) {
         dispatch(sidebarSlice.actions.addForm({ form }));
       },
-      onHideForm({ nonce }: Partial<FormEntry>) {
+      onHideForm({ nonce }: Partial<FormPanelEntry>) {
         dispatch(sidebarSlice.actions.removeForm(nonce));
       },
       onActivatePanel(options: ActivatePanelOptions) {
@@ -69,7 +75,7 @@ function useConnectedListener(): SidebarListener {
       onHideTemporaryPanel({ nonce }) {
         dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
       },
-      onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
+      onShowActivateRecipe(activateRecipeEntry: ActivateRecipePanelEntry) {
         dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
       },
       onHideActivateRecipe(recipeId: RegistryId) {
@@ -85,22 +91,52 @@ const ConnectedSidebar: React.VFC = () => {
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
+  const showHomePanel = flagOn("sidebar-home-tab") && permit("marketplace");
 
-  // `effect` will run once on component mount since listener and formsRef don't change on renders
-  useEffect(() => {
+  // `useAsyncEffect` will run once on component mount since listener and formsRef don't change on renders.
+  // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
+  // initial state to the sidebarSlice reducer.
+  useAsyncEffect(async () => {
+    const topFrame = await getTopLevelFrame();
+
+    // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
+    await ensureExtensionPointsInstalled(topFrame);
+
+    const { panels, temporaryPanels, forms, recipeToActivate } =
+      await getReservedSidebarEntries(topFrame);
+
+    const staticPanels = showHomePanel ? [HOME_PANEL] : [];
+
+    // Log to help debug race conditions with lifecycle
+    console.debug("ConnectedSidebar:sidebarSlice.actions.setInitialPanels", {
+      panels,
+      temporaryPanels,
+      forms,
+      staticPanels,
+      recipeToActivate,
+    });
+
+    dispatch(
+      sidebarSlice.actions.setInitialPanels({
+        panels,
+        temporaryPanels,
+        forms,
+        staticPanels,
+        recipeToActivate,
+      })
+    );
+
+    // To avoid races with panel registration, listen after reserving the initial panels.
     addListener(listener);
+
     return () => {
       // NOTE: we don't need to cancel any outstanding forms on unmount because the FormTransformer is set up to watch
       // for PANEL_HIDING_EVENT. (and the only time this SidebarApp would unmount is if the sidebar was closing)
       removeListener(listener);
     };
+    // Excluding showHomePanel from deps. The flags detect shouldn't change after initial mount. And if they somehow do,
+    // we don't want to attempt to change home panel visibility after initial mount.
   }, [listener]);
-
-  useEffect(() => {
-    if (flagOn("sidebar-home-tab") && permit("marketplace")) {
-      dispatch(sidebarSlice.actions.addStaticPanel({ panel: HOME_PANEL }));
-    }
-  }, []);
 
   return (
     <div className="full-height">

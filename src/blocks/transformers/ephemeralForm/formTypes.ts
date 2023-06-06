@@ -18,8 +18,29 @@
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 
 export type FormDefinition = {
+  /**
+   * RJSF schema for the form.
+   */
   schema: Schema;
+  /**
+   * RJSF uiSchema for the form.
+   */
   uiSchema: UiSchema;
+  /**
+   * True if the form is cancellable.
+   */
   cancelable: boolean;
+  /**
+   * The caption of the form submit button.
+   */
   submitCaption: string;
+  /**
+   * The location of the ephemeral form.
+   *
+   * Added to help determine which forms will be displayed once the sidebar initializes.
+   *
+   * @see getFormPanelEntries
+   * @since 1.7.29
+   */
+  location: "sidebar" | "modal";
 };

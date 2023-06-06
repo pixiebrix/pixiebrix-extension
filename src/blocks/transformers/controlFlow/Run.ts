@@ -78,7 +78,7 @@ class Run extends Transformer {
     }>,
     options: BlockOptions
   ): Promise<unknown> {
-    const promise = options.runPipeline(bodyPipeline.__value__, {
+    const promise = options.runPipeline(bodyPipeline, {
       key: "body",
       counter: 0,
     });

@@ -85,7 +85,7 @@ class Retry extends Transformer {
 
       try {
         // eslint-disable-next-line no-await-in-loop -- retry loop
-        return await options.runPipeline(bodyPipeline.__value__, {
+        return await options.runPipeline(bodyPipeline, {
           key: "branch",
           counter: retryCount,
         });

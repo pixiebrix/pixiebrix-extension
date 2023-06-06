@@ -17,7 +17,10 @@
 
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type FormEntry, type TemporaryPanelEntry } from "@/types/sidebarTypes";
+import {
+  type FormPanelEntry,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
@@ -37,7 +40,7 @@ describe("defaultEventKey", () => {
 
   it("prefers latest form", () => {
     const args = {
-      forms: [{ nonce: uuidv4() }, { nonce: uuidv4() }] as FormEntry[],
+      forms: [{ nonce: uuidv4() }, { nonce: uuidv4() }] as FormPanelEntry[],
       temporaryPanels: [{ nonce: uuidv4() }] as TemporaryPanelEntry[],
       panels: [{ extensionId: uuidv4() }],
     } as any;
@@ -48,7 +51,7 @@ describe("defaultEventKey", () => {
 
   it("prefers latest temporary panel", () => {
     const args = {
-      forms: [] as FormEntry[],
+      forms: [] as FormPanelEntry[],
       temporaryPanels: [
         { nonce: uuidv4() },
         { nonce: uuidv4() },
@@ -64,7 +67,7 @@ describe("defaultEventKey", () => {
 
   it("prefers first panel", () => {
     const args = {
-      forms: [] as FormEntry[],
+      forms: [] as FormPanelEntry[],
       temporaryPanels: [] as TemporaryPanelEntry[],
       panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
     } as any;
@@ -75,7 +78,7 @@ describe("defaultEventKey", () => {
 
   it("returns static panel as last resort before returning null", () => {
     const args = {
-      forms: [] as FormEntry[],
+      forms: [] as FormPanelEntry[],
       temporaryPanels: [] as TemporaryPanelEntry[],
       panels: [] as TemporaryPanelEntry[],
       staticPanels: [HOME_PANEL],
