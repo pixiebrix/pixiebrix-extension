@@ -302,7 +302,7 @@ const ActivateRecipePanelContent: React.FC<
     <div className={styles.root}>
       <ActivateRecipeInputs
         recipe={recipe}
-        wizardSteps={wizardSteps}
+        optionsWizardStep={wizardSteps.find(({ key }) => key === "options")}
         initialValues={initialValues}
         onChange={onChange}
         validationSchema={validationSchema}
