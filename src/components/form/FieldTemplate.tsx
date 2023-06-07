@@ -32,10 +32,11 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
 import MarkdownInline from "@/components/MarkdownInline";
+import { type Except } from "type-fest";
 
 export type FieldProps<As extends React.ElementType = React.ElementType> =
   FormControlProps &
-    Omit<React.ComponentProps<As>, "name"> & {
+    Except<React.ComponentProps<As>, "name"> & {
       name: string;
       label?: ReactNode;
       fitLabelWidth?: boolean;
@@ -48,7 +49,7 @@ export type FieldProps<As extends React.ElementType = React.ElementType> =
        * This value is regarded as absence of value, unset property.
        * It will be passed to the UI input control when the value is undefined.
        */
-      blankValue?: unknown;
+      blankValue?: string | number | string[];
     };
 
 type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -126,7 +127,8 @@ const FieldTemplate: React.FC<FieldProps> = ({
   );
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
-  const nonUndefinedValue = value === undefined ? blankValue : value;
+  const nonUndefinedValue: string | number | string[] =
+    value === undefined ? blankValue : value;
 
   const isBuiltinControl =
     AsControl === undefined || typeof AsControl === "string";
