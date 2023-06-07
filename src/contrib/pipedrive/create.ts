@@ -129,10 +129,21 @@ export class AddPerson extends Effect {
   );
 
   async effect(
-    { pipedrive, name, owner_id, email, phone }: BlockArgs,
+    {
+      pipedrive,
+      name,
+      owner_id,
+      email,
+      phone,
+    }: BlockArgs<{
+      pipedrive: SanitizedServiceConfiguration;
+      name: string;
+      owner_id: number;
+      email?: string;
+      phone?: string;
+    }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
@@ -148,7 +159,6 @@ export class AddPerson extends Effect {
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
       await proxyService(pipedrive, {
         url: "https://api.pipedrive.com/v1/persons",
         method: "post",

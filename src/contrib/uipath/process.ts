@@ -23,6 +23,8 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
@@ -123,10 +125,18 @@ export class RunProcess extends Transformer {
       awaitResult = false,
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
-    }: BlockArgs,
+    }: BlockArgs<{
+      uipath: SanitizedServiceConfiguration;
+      releaseKey: string;
+      strategy: string;
+      jobsCount: number;
+      robotIds: number[];
+      awaitResult: boolean;
+      maxWaitMillis: number;
+      inputArguments: UnknownObject;
+    }>,
     { logger }: BlockOptions
   ): Promise<unknown> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
     const responsePromise = proxyService<JobsResponse>(uipath, {
       url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
       method: "post",
@@ -155,7 +165,6 @@ export class RunProcess extends Transformer {
     }
 
     const poll = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
       const { data: resultData } = await proxyService<JobsResponse>(uipath, {
         url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
         method: "get",

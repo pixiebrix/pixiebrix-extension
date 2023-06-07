@@ -20,6 +20,7 @@ import { proxyService } from "@/background/messenger/api";
 import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
@@ -61,13 +62,16 @@ export class ResolvePerson extends Transformer {
     pipedriveService,
     name,
     organization,
-  }: BlockArgs): Promise<unknown> {
+  }: BlockArgs<{
+    pipedriveService: SanitizedServiceConfiguration;
+    name: string;
+    organization?: number;
+  }>): Promise<unknown> {
     let organization_id;
 
     if (organization) {
       const {
         data: { data },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
       } = await proxyService<SearchResult>(pipedriveService, {
         url: "https://api.pipedrive.com/v1/organizations/search",
         method: "get",
@@ -82,7 +86,6 @@ export class ResolvePerson extends Transformer {
 
     const {
       data: { data },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
     } = await proxyService<SearchResult>(pipedriveService, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
