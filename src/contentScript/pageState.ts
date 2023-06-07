@@ -44,7 +44,8 @@ function mergeState(
     }
 
     case "deep": {
-      return merge(previous, cloned);
+      // `merge` mutates the first argument, so we clone it first
+      return merge(cloneDeep(previous), cloned);
     }
 
     case "shallow": {
