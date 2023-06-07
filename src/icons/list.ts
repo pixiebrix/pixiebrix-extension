@@ -18,55 +18,14 @@
 /* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
 
 import { type IconLibrary } from "@/types/iconTypes";
-import bootstrapIconsPackage from "bootstrap-icons/package.json";
-import simpleIconsPackage from "simple-icons/package.json";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
-type CDNIconLibrary = "bootstrap-icons" | "simple-icons";
 
-const CDN_ICON_LIBRARY_VERSIONS: Record<CDNIconLibrary, string> = {
-  "bootstrap-icons": bootstrapIconsPackage.version,
-  "simple-icons": simpleIconsPackage.version,
-};
-
-function getCDNUrl({
-  library,
-  iconFilename,
-}: {
-  library: CDNIconLibrary;
-  iconFilename: string;
-}): string {
-  // eslint-disable-next-line security/detect-object-injection
-  const version = CDN_ICON_LIBRARY_VERSIONS[library];
-
-  if (!version) {
-    throw new Error(`Unknown CDN icon library: ${library}`);
-  }
-
-  return `https://cdn.jsdelivr.net/npm/${library}@${version}/icons/${iconFilename}`;
-}
-
-// Need to pass in the CDN library name because we can't reliably get the string passed to require.context
-function getIconMap(
-  resolve: RequireContext,
-  cdnLibrary: CDNIconLibrary = null
-): Map<string, string> {
+function getIconMap(resolve: RequireContext): Map<string, string> {
   const icons = new Map<string, string>();
   for (const url of resolve.keys()) {
-    const iconFilename = url.split("/").pop();
-    const iconName = iconFilename.replace(".svg", "");
-
-    let iconUrl;
-    if (cdnLibrary) {
-      iconUrl = getCDNUrl({
-        library: cdnLibrary,
-        iconFilename,
-      });
-    } else {
-      iconUrl = resolve(url);
-    }
-
-    icons.set(iconName, iconUrl);
+    const iconName = url.split("/").pop().replace(".svg", "");
+    icons.set(iconName, resolve(url));
   }
 
   return icons;
@@ -75,17 +34,11 @@ function getIconMap(
 export const icons = new Map<IconLibrary, Map<string, string>>();
 icons.set(
   "bootstrap",
-  getIconMap(
-    require.context("bootstrap-icons/icons/", false, /\.svg$/),
-    "bootstrap-icons"
-  )
+  getIconMap(require.context("bootstrap-icons/icons/", false, /\.svg$/))
 );
 icons.set(
   "simple-icons",
-  getIconMap(
-    require.context("simple-icons/icons/", false, /\.svg$/),
-    "simple-icons"
-  )
+  getIconMap(require.context("simple-icons/icons/", false, /\.svg$/))
 );
 icons.set(
   "custom",

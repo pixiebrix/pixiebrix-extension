@@ -86,29 +86,28 @@ const shared = {
           filename: "img/[name][ext]",
         },
       },
-      // Write empty files for these icons because their content is loaded from a CDN.
-      // We need the filenames, so we know what icons are available.
+      // Pull bootstrap-icons and simple-icons from CDN to reduce bundle size.
       {
         test: /bootstrap-icons\/.*\.svg$/,
-        use: [
-          {
-            loader: path.resolve("webpack-loaders/empty-file-loader.js"),
-            options: {
-              outputPath: "user-icons/bootstrap-icons",
-            },
-          },
-        ],
+        type: "asset/resource",
+        generator: {
+          emit: false,
+          publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${
+            require("bootstrap-icons/package.json").version
+          }/`,
+          filename: "icons/[name][ext]",
+        },
       },
       {
         test: /simple-icons\/.*\.svg$/,
-        use: [
-          {
-            loader: path.resolve("webpack-loaders/empty-file-loader.js"),
-            options: {
-              outputPath: "user-icons/simple-icons",
-            },
-          },
-        ],
+        type: "asset/resource",
+        generator: {
+          emit: false,
+          publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${
+            require("simple-icons/package.json").version
+          }/`,
+          filename: "icons/[name][ext]",
+        },
       },
       {
         test: /custom-icons\/.*\.svg$/,
