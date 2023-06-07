@@ -39,7 +39,6 @@ import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
 import FocusLock from "react-focus-lock";
-import { FloatingQuickBarButton } from "@/components/quickBar/FloatingQuickBarButton";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -167,7 +166,6 @@ export const QuickBarApp: React.FC = () => (
   >
     <AutoShow />
     <KBarComponent />
-    <FloatingQuickBarButton />
   </KBarProvider>
 );
 

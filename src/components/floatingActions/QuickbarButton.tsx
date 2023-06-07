@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,29 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@import "@/themes/colors.scss";
 
-.button {
-  position: fixed;
-  z-index: 2147481647;
-  bottom: 40px;
-  left: 40px;
-  padding: 0;
-  border: none;
-  overflow: hidden;
-  box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
-  background-color: $P500;
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: $P600 !important;
-  }
-  &:focus {
-    box-shadow: none !important;
-  }
-}
+import React from "react";
+import logoUrl from "@/icons/custom-icons/logo.svg";
+import { Button } from "react-bootstrap";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
-.logo {
-  height: 40px;
-  width: 40px;
+/**
+ * Button that appears at the bottom left part of the page with the pixiebrix logo.
+ * Meant to open the quickbar menu
+ */
+export function QuickbarButton() {
+  return (
+    <Button className="button" onClick={toggleQuickBar}>
+      {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
+              anyway */}
+      <img src={logoUrl} className="logo" alt="quick menu button" />
+    </Button>
+  );
 }

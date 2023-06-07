@@ -35,6 +35,7 @@ import {
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
 import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
+import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -53,6 +54,8 @@ export async function init(): Promise<void> {
   registerExternalMessenger();
   registerBuiltinBlocks();
   registerContribBlocks();
+
+  initFloatingActions();
 
   initTelemetry();
   initToaster();

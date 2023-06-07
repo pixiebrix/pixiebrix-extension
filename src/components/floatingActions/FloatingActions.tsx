@@ -15,32 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import { useSettings } from "@/hooks/useSettings";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
-import styles from "./FloatingQuickBarButton.module.scss?loadAsUrl";
-import logoUrl from "@/icons/custom-icons/logo.svg";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import { Button } from "react-bootstrap";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
-import { useSettings } from "@/hooks/useSettings";
+import React from "react";
+import styles from "./FloatingActions.module.scss?loadAsUrl";
+import ReactDOM from "react-dom";
+import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
 
-/**
- * Button that appears at the bottom left part of the page with the pixiebrix logo.
- * Meant to open the quickbar menu
- */
-export function FloatingQuickBarButton() {
+export function FloatingActions() {
   const { isFloatingActionButtonEnabled } = useSettings();
 
   return isFloatingActionButtonEnabled ? (
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, styles]}>
-        <Button className="button" onClick={toggleQuickBar}>
-          {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
-              anyway */}
-          <img src={logoUrl} className="logo" alt="quick menu button" />
-        </Button>
+        <div className="root">
+          <QuickbarButton />
+        </div>
       </Stylesheets>
     </EmotionShadowRoot.div>
   ) : null;
+}
+
+export function initFloatingActions() {
+  const container = document.createElement("div");
+  container.id = "pixiebrix-floating-actions-container";
+  document.body.prepend(container);
+  ReactDOM.render(<FloatingActions />, container);
 }
