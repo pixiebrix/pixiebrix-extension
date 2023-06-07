@@ -32,6 +32,8 @@ export function FloatingQuickBarButton({ onClick }: { onClick: () => void }) {
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, styles]}>
         <Button className="button" onClick={onClick}>
+          {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
+              anyway */}
           <img src={logoUrl} className="logo" alt="quick menu button" />
         </Button>
       </Stylesheets>
