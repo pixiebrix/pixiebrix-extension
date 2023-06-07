@@ -19,7 +19,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSelectors";
-import ActivationLink from "./ActivationLink";
+import ActivationLink from "../../../../../activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 
 const PublishedContent: React.FunctionComponent = (props) => {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -46,6 +46,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncEffect from "use-async-effect";
+import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -137,6 +138,21 @@ const ConnectedSidebar: React.VFC = () => {
     // Excluding showHomePanel from deps. The flags detect shouldn't change after initial mount. And if they somehow do,
     // we don't want to attempt to change home panel visibility after initial mount.
   }, [listener]);
+
+  const handleLinkClicks = (event: MouseEvent) => {
+    activateLinkClickHandler(event, (entry) => {
+      dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+    });
+  };
+
+  // Wire up a click handler on the document to handle activate link clicks
+  useEffect(() => {
+    document.addEventListener("click", handleLinkClicks);
+    return () => {
+      document.removeEventListener("click", handleLinkClicks);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
+  }, []);
 
   return (
     <div className="full-height">
