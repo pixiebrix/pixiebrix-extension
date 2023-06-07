@@ -22,21 +22,25 @@ import styles from "./FloatingQuickBarButton.module.scss?loadAsUrl";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { Button } from "react-bootstrap";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import { useSettings } from "@/hooks/useSettings";
 
 /**
  * Button that appears at the bottom left part of the page with the pixiebrix logo.
  * Meant to open the quickbar menu
  */
-export function FloatingQuickBarButton({ onClick }: { onClick: () => void }) {
-  return (
+export function FloatingQuickBarButton() {
+  const { isFloatingActionButtonEnabled } = useSettings();
+
+  return isFloatingActionButtonEnabled ? (
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, styles]}>
-        <Button className="button" onClick={onClick}>
+        <Button className="button" onClick={toggleQuickBar}>
           {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
               anyway */}
           <img src={logoUrl} className="logo" alt="quick menu button" />
         </Button>
       </Stylesheets>
     </EmotionShadowRoot.div>
-  );
+  ) : null;
 }

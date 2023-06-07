@@ -40,7 +40,6 @@ import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
 import FocusLock from "react-focus-lock";
 import { FloatingQuickBarButton } from "@/components/quickBar/FloatingQuickBarButton";
-import { useSettings } from "@/hooks/useSettings";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -83,7 +82,7 @@ const KBarComponent: React.FC = () => {
   useActions();
   useActionGenerators();
 
-  const { showing, query } = useKBar((state) => ({
+  const { showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
 
@@ -101,8 +100,6 @@ const KBarComponent: React.FC = () => {
     }
   }, [showing]);
 
-  const { isFloatingActionButtonEnabled } = useSettings();
-
   // We're using the Shadow DOM to isolate the style. However, that also means keydown events look like they're
   // coming from the div instead of the search input.
   //
@@ -114,36 +111,31 @@ const KBarComponent: React.FC = () => {
   // - Salesforce: https://salesforce.stackexchange.com/questions/183771/disable-keyboard-shortcuts-in-lightning-experience
 
   return (
-    <>
-      {isFloatingActionButtonEnabled ? (
-        <FloatingQuickBarButton onClick={query.toggle} />
-      ) : null}
-      <KBarPortal>
-        <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
-          <KBarAnimator style={animatorStyle}>
-            {/*
+    <KBarPortal>
+      <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
+        <KBarAnimator style={animatorStyle}>
+          {/*
               Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
               whichever website it's rendering on.
               To support react-select and any future potential emotion components we used the
               emotion variant of the react-shadow library.
             */}
-            <EmotionShadowRoot.div
-              data-testid="quickBar"
-              className="cke_editable"
-              contentEditable
-              suppressContentEditableWarning
-            >
-              <Stylesheets href={faStyleSheet} mountOnLoad>
-                <FocusLock>
-                  <KBarSearch style={searchStyle} />
-                  <QuickBarResults />
-                </FocusLock>
-              </Stylesheets>
-            </EmotionShadowRoot.div>
-          </KBarAnimator>
-        </KBarPositioner>
-      </KBarPortal>
-    </>
+          <EmotionShadowRoot.div
+            data-testid="quickBar"
+            className="cke_editable"
+            contentEditable
+            suppressContentEditableWarning
+          >
+            <Stylesheets href={faStyleSheet} mountOnLoad>
+              <FocusLock>
+                <KBarSearch style={searchStyle} />
+                <QuickBarResults />
+              </FocusLock>
+            </Stylesheets>
+          </EmotionShadowRoot.div>
+        </KBarAnimator>
+      </KBarPositioner>
+    </KBarPortal>
   );
 };
 
@@ -175,6 +167,7 @@ export const QuickBarApp: React.FC = () => (
   >
     <AutoShow />
     <KBarComponent />
+    <FloatingQuickBarButton />
   </KBarProvider>
 );
 
