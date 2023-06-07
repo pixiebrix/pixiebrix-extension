@@ -17,31 +17,24 @@
 
 import React from "react";
 import EmotionShadowRoot from "react-shadow/emotion";
-import logoUrl from "@/icons/custom-icons/favicon.svg";
+import { Stylesheets } from "@/components/Stylesheets";
+import styles from "./FloatingQuickBarButton.module.scss?loadAsUrl";
+import logoUrl from "@/icons/custom-icons/logo.svg";
+import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import { Button } from "react-bootstrap";
 
+/**
+ * Button that appears at the bottom left part of the page with the pixiebrix logo.
+ * Meant to open the quickbar menu
+ */
 export function FloatingQuickBarButton({ onClick }: { onClick: () => void }) {
   return (
     <EmotionShadowRoot.div>
-      <button
-        style={{
-          position: "fixed",
-          bottom: 40,
-          left: 40,
-          background: "none",
-          border: "none",
-        }}
-        onClick={onClick}
-      >
-        <img
-          src={logoUrl}
-          style={{
-            height: 40,
-            width: 40,
-            cursor: "pointer",
-          }}
-          alt="quick menu button"
-        />
-      </button>
+      <Stylesheets href={[bootstrap, styles]}>
+        <Button className="button" onClick={onClick}>
+          <img src={logoUrl} className="logo" alt="quick menu button" />
+        </Button>
+      </Stylesheets>
     </EmotionShadowRoot.div>
   );
 }

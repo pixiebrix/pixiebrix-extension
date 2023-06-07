@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
-import { useState } from "react";
-import { type SettingsState } from "@/store/settingsTypes";
-import { getSettingsState } from "@/store/settingsStorage";
-import useAsyncEffect from "use-async-effect";
-import { initialSettingsState } from "@/store/settingsSlice";
+.button {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
+  background-color: $P500;
+  &:hover {
+    background-color: $P600;
+  }
+}
 
-/**
- * Hook to fetch the settings from local storage if you don't have access to the redux state.
- * Default value is the initialSettingsState before it resolves
- */
-export function useSettings() {
-  const [settings, setSettings] = useState<SettingsState>(initialSettingsState);
-  useAsyncEffect(async () => {
-    const response = await getSettingsState();
-    setSettings(response);
-  }, []);
-
-  return settings;
+.logo {
+  height: 40px;
+  width: 40px;
 }

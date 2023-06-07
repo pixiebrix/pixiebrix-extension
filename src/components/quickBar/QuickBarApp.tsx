@@ -113,8 +113,6 @@ const KBarComponent: React.FC = () => {
   // - hotkey: https://github.com/github/hotkey/blob/main/src/utils.ts#L1
   // - Salesforce: https://salesforce.stackexchange.com/questions/183771/disable-keyboard-shortcuts-in-lightning-experience
 
-  console.log({ isFloatingActionButtonEnabled });
-
   return (
     <>
       {isFloatingActionButtonEnabled ? (
