@@ -21,8 +21,7 @@ import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 /**
- * Button that appears at the bottom left part of the page with the pixiebrix logo.
- * Meant to open the quickbar menu
+ * Opens the quickbar menu
  */
 export function QuickbarButton() {
   return (
