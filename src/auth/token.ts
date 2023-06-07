@@ -242,7 +242,7 @@ if (isExtensionContext()) {
 
       if (change) {
         for (const listener of listeners) {
-          listener(change.newValue);
+          listener(change.newValue as Partial<TokenAuthData>);
         }
       }
     }
