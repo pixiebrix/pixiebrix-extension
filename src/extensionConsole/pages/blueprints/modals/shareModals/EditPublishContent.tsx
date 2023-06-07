@@ -20,7 +20,7 @@ import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSelectors";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import ActivationLink from "../../../../../activation/ActivationLink";
+import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 import { MARKETPLACE_URL } from "@/utils/strings";
 

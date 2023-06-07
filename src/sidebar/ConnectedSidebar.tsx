@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -139,11 +139,14 @@ const ConnectedSidebar: React.VFC = () => {
     // we don't want to attempt to change home panel visibility after initial mount.
   }, [listener]);
 
-  const handleLinkClicks = (event: MouseEvent) => {
-    activateLinkClickHandler(event, (entry) => {
-      dispatch(sidebarSlice.actions.showActivateRecipe(entry));
-    });
-  };
+  const handleLinkClicks = useCallback(
+    (event: MouseEvent) => {
+      activateLinkClickHandler(event, (entry) => {
+        dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+      });
+    },
+    [dispatch]
+  );
 
   // Wire up a click handler on the document to handle activate link clicks
   useEffect(() => {

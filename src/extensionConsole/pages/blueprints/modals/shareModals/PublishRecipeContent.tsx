@@ -27,7 +27,7 @@ import {
 } from "@/services/api";
 import notify from "@/utils/notify";
 import { produce } from "immer";
-import ActivationLink from "../../../../../activation/ActivationLink";
+import ActivationLink from "@/activation/ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import PublishContentLayout from "./PublishContentLayout";

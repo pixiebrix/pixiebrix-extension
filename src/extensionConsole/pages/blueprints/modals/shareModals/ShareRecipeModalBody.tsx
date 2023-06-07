@@ -46,7 +46,7 @@ import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
-import ActivationLink from "../../../../../activation/ActivationLink";
+import ActivationLink from "@/activation/ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import Loader from "@/components/Loader";
