@@ -29,7 +29,7 @@ type ActivationLinkProps = {
   blueprintId: RegistryId;
 };
 
-const ACTIVATION_LINK_PREFIX = "https://app.pixiebrix.com/activate?id=";
+export const ACTIVATION_LINK_PREFIX = "https://app.pixiebrix.com/activate?id=";
 
 export function isActivationUrl(url: string): boolean {
   return url.startsWith(ACTIVATION_LINK_PREFIX);
