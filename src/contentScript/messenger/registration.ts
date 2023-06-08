@@ -76,7 +76,7 @@ import {
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { reloadOptimizedEnhancements } from "@/contentScript/justMarketplace";
+import { reloadOptimizedEnhancements } from "@/contentScript/marketplace";
 
 expectContext("contentScript");
 

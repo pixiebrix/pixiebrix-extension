@@ -17,10 +17,7 @@
 
 import { showActivateRecipeInSidebar } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
-import {
-  initSidebarActivation,
-  unloadMarketplaceEnhancements,
-} from "@/contentScript/sidebarActivation";
+import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
 import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
 import { validateRegistryId } from "@/types/helpers";
@@ -32,6 +29,7 @@ import {
   extensionFactory,
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories/extensionFactories";
+import { unloadOptimizedEnhancements } from "@/contentScript/marketplace";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
@@ -93,7 +91,7 @@ describe("marketplace enhancements", () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    unloadMarketplaceEnhancements();
+    unloadOptimizedEnhancements();
   });
 
   test("given a non-marketplace page, when loaded, then don't run enhancements", async () => {

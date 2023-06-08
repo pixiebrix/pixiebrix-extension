@@ -28,7 +28,7 @@
     },
     {
       "matches": ["https://*.pixiebrix.com/*"],
-      "js": ["justMarketplace.js"],
+      "js": ["marketplace.js"],
       "run_at": "document_end"
     }
   ],
