@@ -17,6 +17,7 @@
 import { compact, isEmpty } from "lodash";
 import { loadOptions } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 let enhancementsLoaded = false;
 
@@ -55,7 +56,16 @@ async function loadOptimizedEnhancements(): Promise<void> {
 
   const installedRecipeIds = await getInstalledRecipeIds();
 
-  console.log("*** activateButtonLinks", activateButtonLinks);
+  for (const button of activateButtonLinks) {
+    const url = new URL(button.href);
+    let recipeId: RegistryId;
+    try {
+      recipeId = validateRegistryId(url.searchParams.get("id"));
+    } catch {
+      continue;
+    }
+  }
+
   console.log("*** installedRecipeIds", installedRecipeIds);
 
   enhancementsLoaded = true;
