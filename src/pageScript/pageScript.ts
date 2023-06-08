@@ -34,6 +34,7 @@ import {
   SCRIPT_LOADED,
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
+  CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
@@ -58,6 +59,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { initialize, type SerializableResponse } from "./messenger/pigeon";
 import { TimeoutError } from "p-timeout";
+import { setCKEditorData } from "@/contrib/ckeditor";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -270,6 +272,11 @@ attachListener(
     return info;
   }
 );
+
+attachListener(CKEDITOR_SET_VALUE, async ({ selector, value }) => {
+  const element = findSingleElement(selector);
+  setCKEditorData(element, value);
+});
 
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);
 document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));
