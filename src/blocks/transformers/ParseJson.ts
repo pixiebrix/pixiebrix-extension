@@ -25,6 +25,7 @@ import { sortBy } from "lodash";
 
 function extractJsonString(content: string): string {
   // https://regex101.com/library/sjOfeq?orderBy=MOST_POINTS&page=3&search=json
+  // https://stackoverflow.com/a/63660736
   const objectRegex = /{(?:[^{}]|())*}/g;
   const arrayRegex = /\[(?:[^[\]]|())*]/g;
 
