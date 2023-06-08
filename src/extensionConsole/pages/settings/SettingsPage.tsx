@@ -57,10 +57,11 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      <Section>
-        <GeneralSettings />
-      </Section>
-
+      {flagOn("floating-quickbar-button") && (
+        <Section>
+          <GeneralSettings />
+        </Section>
+      )}
       {(organization == null || DEBUG) && (
         <Section>
           <PrivacySettings />

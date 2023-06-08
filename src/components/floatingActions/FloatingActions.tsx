@@ -25,6 +25,7 @@ import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getSettingsState } from "@/store/settingsStorage";
 import { initialSettingsState } from "@/store/settingsSlice";
+import { syncFlagOn } from "@/store/syncFlags";
 
 export function FloatingActions() {
   const { data } = useAsyncState(getSettingsState, [], {
@@ -32,7 +33,8 @@ export function FloatingActions() {
   });
   const { isFloatingActionButtonEnabled } = data;
 
-  return isFloatingActionButtonEnabled ? (
+  return isFloatingActionButtonEnabled &&
+    syncFlagOn("floating-quickbar-button") ? (
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, styles]}>
         <div className="root">
