@@ -67,10 +67,12 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   activeLabel.append(button);
 }
 
-async function loadOptimizedEnhancements(): Promise<void> {
+export async function loadOptimizedEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }
+
+  enhancementsLoaded = true;
 
   const activateButtonLinks = getActivateButtonLinks();
   if (isEmpty(activateButtonLinks)) {
@@ -95,6 +97,7 @@ async function loadOptimizedEnhancements(): Promise<void> {
 
     console.log("*** add onclick handler");
     button.addEventListener("click", async (event) => {
+      console.log("*** inside click handler");
       event.preventDefault();
 
       const isContentScriptReady = await pollUntilTruthy(
@@ -120,10 +123,6 @@ async function loadOptimizedEnhancements(): Promise<void> {
       }
     });
   }
-
-  console.log("*** installedRecipeIds", installedRecipeIds);
-
-  enhancementsLoaded = true;
 }
 
 export async function reloadOptimizedEnhancements() {

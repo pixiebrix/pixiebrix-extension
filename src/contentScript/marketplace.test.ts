@@ -29,7 +29,10 @@ import {
   extensionFactory,
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories/extensionFactories";
-import { unloadOptimizedEnhancements } from "@/contentScript/marketplace";
+import {
+  loadOptimizedEnhancements,
+  unloadOptimizedEnhancements,
+} from "@/contentScript/marketplace";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
@@ -43,6 +46,10 @@ const showFunctionMock = showActivateRecipeInSidebar as jest.MockedFunction<
 
 jest.mock("@/auth/token", () => ({
   getAuthHeaders: jest.fn(),
+}));
+
+jest.mock("@/contentScript/ready", () => ({
+  isReadyInThisDocument: jest.fn(() => true),
 }));
 
 const getAuthHeadersMock = getAuthHeaders as jest.MockedFunction<
@@ -109,6 +116,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
+    await loadOptimizedEnhancements();
     await initSidebarActivation();
 
     // Click an activate button
@@ -127,11 +135,9 @@ describe("marketplace enhancements", () => {
 
     await initSidebarActivation();
 
-    // The loadPageEnhancements function calls getInstalledRecipeIds,
-    // which calls isUserLoggedIn, which calls getAuthHeaders. Then
-    // there is another login check before loading the in progress
-    // recipe activation.
-    expect(getAuthHeadersMock).toHaveBeenCalledTimes(2);
+    // Before loading in-progress recipe activation, isUserLoggedIn is called,
+    // which calls getAuthHeaders
+    expect(getAuthHeadersMock).toHaveBeenCalledTimes(1);
     // The getInstalledRecipeIds function should not call loadOptions
     // when the user is not logged in
     expect(loadOptionsMock).not.toHaveBeenCalled();
@@ -154,6 +160,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
+    await loadOptimizedEnhancements();
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
@@ -176,6 +183,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
+    await loadOptimizedEnhancements();
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
@@ -197,6 +205,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
+    await loadOptimizedEnhancements();
     await initSidebarActivation();
 
     // Click an activate button
@@ -215,13 +224,12 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
 
+    await loadOptimizedEnhancements();
     await initSidebarActivation();
 
-    // The loadPageEnhancements function calls getInstalledRecipeIds,
-    // which calls isUserLoggedIn, which calls getAuthHeaders. Then
-    // there is another login check before loading the in progress
-    // recipe activation.
-    expect(getAuthHeadersMock).toHaveBeenCalledTimes(2);
+    // Before loading in-progress recipe activation, isUserLoggedIn is called,
+    // which calls getAuthHeaders
+    expect(getAuthHeadersMock).toHaveBeenCalledTimes(1);
     // The getInstalledRecipeIds function should call loadOptions
     // when the user is logged in
     expect(loadOptionsMock).toHaveBeenCalled();
