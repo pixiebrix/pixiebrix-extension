@@ -29,7 +29,7 @@ function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   );
 }
 
-async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
+export async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
   // TODO: why does it matter if the user is logged in to detect installed recipes at this point?
   // if (!(await isUserLoggedIn())) {
   //   return new Set();

@@ -16,8 +16,7 @@
  */
 
 import { type RegistryId } from "@/types/registryTypes";
-import { loadOptions } from "@/store/extensionsStorage";
-import { compact, startsWith } from "lodash";
+import { startsWith } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
@@ -33,22 +32,7 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
-
-async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
-  if (!(await isUserLoggedIn())) {
-    return new Set();
-  }
-
-  const options = await loadOptions();
-
-  if (!options) {
-    return new Set();
-  }
-
-  return new Set(
-    compact(options.extensions.map((extension) => extension._recipe?.id))
-  );
-}
+import { getInstalledRecipeIds } from "@/contentScript/justMarketplace";
 
 async function isUserLoggedIn(): Promise<boolean> {
   const authHeaders = await getAuthHeaders();
