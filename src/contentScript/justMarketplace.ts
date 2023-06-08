@@ -14,9 +14,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { isEmpty } from "lodash";
+
+let enhancementsLoaded = false;
+
+function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
+  return document.querySelectorAll<HTMLAnchorElement>(
+    "a[href*='.pixiebrix.com/activate']"
+  );
+}
+
+async function loadPageEnhancements(): Promise<void> {
+  if (enhancementsLoaded) {
+    return;
+  }
+
+  const activateButtonLinks = getActivateButtonLinks();
+  if (isEmpty(activateButtonLinks)) {
+    return;
+  }
+
+  console.log("*** activateButtonLinks", activateButtonLinks);
+
+  enhancementsLoaded = true;
+}
 
 if (location.protocol === "https:") {
-  console.log("*** justMarketplace loaded ✨");
+  void loadPageEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }
