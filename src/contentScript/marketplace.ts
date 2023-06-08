@@ -97,59 +97,6 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   });
 }
 
-let enhancementsLoaded = false;
-
-async function loadPageEnhancements(): Promise<void> {
-  // if (enhancementsLoaded) {
-  //   return;
-  // }
-  //
-  // enhancementsLoaded = true;
-  //
-  // const activateButtonLinks = getActivateButtonLinks();
-  // if (isEmpty(activateButtonLinks)) {
-  //   return;
-  // }
-  //
-  // const installedRecipeIds = await getInstalledRecipeIds();
-  //
-  // for (const button of activateButtonLinks) {
-  //   const url = new URL(button.href);
-  //   let recipeId: RegistryId;
-  //   try {
-  //     recipeId = validateRegistryId(url.searchParams.get("id"));
-  //   } catch {
-  //     continue;
-  //   }
-  // // Check if recipe is already activated, and change button content to indicate active status
-  // if (installedRecipeIds.has(recipeId)) {
-  //   changeActivateButtonToActiveLabel(button);
-  // }
-  // button.addEventListener("click", async (event) => {
-  //   event.preventDefault();
-  //
-  //   if (!(await isUserLoggedIn())) {
-  //     // Open the activate link in the current browser tab
-  //     window.location.assign(button.href);
-  //     return;
-  //   }
-  //
-  //   reportEvent("StartInstallBlueprint", {
-  //     blueprintId: recipeId,
-  //     screen: "marketplace",
-  //     reinstall: installedRecipeIds.has(recipeId),
-  //   });
-  //
-  //   await showSidebarActivationForRecipe(recipeId);
-  // });
-  // }
-}
-
-export async function reloadMarketplaceEnhancements() {
-  enhancementsLoaded = false;
-  await loadPageEnhancements();
-}
-
 export async function initMarketplaceEnhancements() {
   console.log("*** initMarketplaceEnhancements");
   window.addEventListener("ActivateRecipe", async (event: CustomEvent) => {
@@ -177,8 +124,6 @@ export async function initMarketplaceEnhancements() {
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {
     return;
   }
-
-  await loadPageEnhancements();
 
   if (!(await isUserLoggedIn())) {
     return;
