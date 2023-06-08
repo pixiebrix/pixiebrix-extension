@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
@@ -139,20 +139,17 @@ const ConnectedSidebar: React.VFC = () => {
     // we don't want to attempt to change home panel visibility after initial mount.
   }, [listener]);
 
-  const handleLinkClicks = useCallback(
-    (event: MouseEvent) => {
+  // Wire up a click handler on the document to handle activate link clicks
+  useEffect(() => {
+    const listener = (event: MouseEvent) => {
       activateLinkClickHandler(event, (entry) => {
         dispatch(sidebarSlice.actions.showActivateRecipe(entry));
       });
-    },
-    [dispatch]
-  );
+    };
 
-  // Wire up a click handler on the document to handle activate link clicks
-  useEffect(() => {
-    document.addEventListener("click", handleLinkClicks);
+    document.addEventListener("click", listener);
     return () => {
-      document.removeEventListener("click", handleLinkClicks);
+      document.removeEventListener("click", listener);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
   }, []);
