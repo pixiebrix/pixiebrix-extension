@@ -127,23 +127,23 @@ async function loadPageEnhancements(): Promise<void> {
     //   changeActivateButtonToActiveLabel(button);
     // }
 
-    button.addEventListener("click", async (event) => {
-      event.preventDefault();
-
-      if (!(await isUserLoggedIn())) {
-        // Open the activate link in the current browser tab
-        window.location.assign(button.href);
-        return;
-      }
-
-      reportEvent("StartInstallBlueprint", {
-        blueprintId: recipeId,
-        screen: "marketplace",
-        reinstall: installedRecipeIds.has(recipeId),
-      });
-
-      await showSidebarActivationForRecipe(recipeId);
-    });
+    // button.addEventListener("click", async (event) => {
+    //   event.preventDefault();
+    //
+    //   if (!(await isUserLoggedIn())) {
+    //     // Open the activate link in the current browser tab
+    //     window.location.assign(button.href);
+    //     return;
+    //   }
+    //
+    //   reportEvent("StartInstallBlueprint", {
+    //     blueprintId: recipeId,
+    //     screen: "marketplace",
+    //     reinstall: installedRecipeIds.has(recipeId),
+    //   });
+    //
+    //   await showSidebarActivationForRecipe(recipeId);
+    // });
   }
 }
 
@@ -153,8 +153,26 @@ export async function reloadMarketplaceEnhancements() {
 }
 
 export async function initMarketplaceEnhancements() {
-  window.addEventListener("ActivateRecipe", (event: CustomEvent) => {
+  window.addEventListener("ActivateRecipe", async (event: CustomEvent) => {
     console.log("*** ActivateRecipe event received", event.detail);
+
+    const { recipeId, activateUrl } = event.detail;
+
+    if (!(await isUserLoggedIn())) {
+      // Open the activate link in the current browser tab
+      window.location.assign(activateUrl);
+      return;
+    }
+
+    const installedRecipeIds = await getInstalledRecipeIds();
+
+    reportEvent("StartInstallBlueprint", {
+      blueprintId: recipeId,
+      screen: "marketplace",
+      reinstall: installedRecipeIds.has(recipeId),
+    });
+
+    await showSidebarActivationForRecipe(recipeId);
   });
 
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {
