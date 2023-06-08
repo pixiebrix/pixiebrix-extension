@@ -14,13 +14,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { isEmpty } from "lodash";
+import { compact, isEmpty } from "lodash";
+import { loadOptions } from "@/store/extensionsStorage";
+import { type RegistryId } from "@/types/registryTypes";
 
 let enhancementsLoaded = false;
 
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
     "a[href*='.pixiebrix.com/activate']"
+  );
+}
+
+async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
+  // TODO: why does it matter if the user is logged in to detect installed recipes at this point?
+  // if (!(await isUserLoggedIn())) {
+  //   return new Set();
+  // }
+
+  const options = await loadOptions();
+
+  if (!options) {
+    return new Set();
+  }
+
+  return new Set(
+    compact(options.extensions.map((extension) => extension._recipe?.id))
   );
 }
 
@@ -34,7 +53,10 @@ async function loadOptimizedEnhancements(): Promise<void> {
     return;
   }
 
+  const installedRecipeIds = await getInstalledRecipeIds();
+
   console.log("*** activateButtonLinks", activateButtonLinks);
+  console.log("*** installedRecipeIds", installedRecipeIds);
 
   enhancementsLoaded = true;
 }
