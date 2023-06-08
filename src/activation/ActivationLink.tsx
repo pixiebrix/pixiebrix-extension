@@ -18,7 +18,7 @@
 import { type RegistryId } from "@/types/registryTypes";
 import React from "react";
 import notify from "@/utils/notify";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+// eslint-disable-next-line no-restricted-imports -- Not actually using Form itself
 import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
@@ -29,10 +29,16 @@ type ActivationLinkProps = {
   blueprintId: RegistryId;
 };
 
+export const ACTIVATION_LINK_PREFIX = "https://app.pixiebrix.com/activate?id=";
+
+export function isActivationUrl(url: string): boolean {
+  return url.startsWith(ACTIVATION_LINK_PREFIX);
+}
+
 const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
   blueprintId,
 }) => {
-  const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
+  const installationLink = `${ACTIVATION_LINK_PREFIX}${blueprintId}`;
 
   return (
     <InputGroup>
