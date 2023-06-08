@@ -101,11 +101,12 @@ function addActivateRecipeListener() {
 
 export async function initMarketplaceEnhancements() {
   console.log("*** initMarketplaceEnhancements");
-  addActivateRecipeListener();
 
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {
     return;
   }
+
+  addActivateRecipeListener();
 
   if (!(await isUserLoggedIn())) {
     return;
