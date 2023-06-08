@@ -75,27 +75,6 @@ async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
   }
 }
 
-function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
-  // Check if the button is already changed to an active label or if it isn't a special activate button that
-  // should be swapped to an active label
-  const isActivateButton = Object.hasOwn(button.dataset, "activateButton");
-  if (button.innerHTML.includes("Reactivate") || !isActivateButton) {
-    return;
-  }
-
-  button.className = "";
-  button.innerHTML = "Reactivate";
-
-  const activeLabel = $(
-    '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>'
-  );
-  $(button).replaceWith(activeLabel);
-
-  // Keeping the original button element in the dom so that the event listeners can be added in
-  // the loadPageEnhancements function
-  activeLabel.append(button);
-}
-
 async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   const controller = new AbortController();
 
@@ -143,10 +122,10 @@ async function loadPageEnhancements(): Promise<void> {
       continue;
     }
 
-    // Check if recipe is already activated, and change button content to indicate active status
-    if (installedRecipeIds.has(recipeId)) {
-      changeActivateButtonToActiveLabel(button);
-    }
+    // // Check if recipe is already activated, and change button content to indicate active status
+    // if (installedRecipeIds.has(recipeId)) {
+    //   changeActivateButtonToActiveLabel(button);
+    // }
 
     button.addEventListener("click", async (event) => {
       event.preventDefault();
