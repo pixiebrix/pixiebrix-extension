@@ -24,7 +24,7 @@ function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   );
 }
 
-async function loadPageEnhancements(): Promise<void> {
+async function loadOptimizedEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }
@@ -40,7 +40,7 @@ async function loadPageEnhancements(): Promise<void> {
 }
 
 if (location.protocol === "https:") {
-  void loadPageEnhancements();
+  void loadOptimizedEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }
