@@ -131,6 +131,13 @@ export async function reloadOptimizedEnhancements() {
   await loadOptimizedEnhancements();
 }
 
+/**
+ * This should only be used for testing purposes
+ */
+export function unloadOptimizedEnhancements() {
+  enhancementsLoaded = false;
+}
+
 if (location.protocol === "https:") {
   void loadOptimizedEnhancements();
 } else {

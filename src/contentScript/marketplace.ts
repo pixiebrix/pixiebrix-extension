@@ -17,7 +17,7 @@
 
 import { type RegistryId } from "@/types/registryTypes";
 import { loadOptions } from "@/store/extensionsStorage";
-import { compact, isEmpty, startsWith } from "lodash";
+import { compact, startsWith } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
@@ -33,12 +33,6 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
-
-function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
-  return document.querySelectorAll<HTMLAnchorElement>(
-    "a[href*='.pixiebrix.com/activate']"
-  );
-}
 
 async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
   if (!(await isUserLoggedIn())) {
@@ -97,8 +91,7 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   });
 }
 
-export async function initMarketplaceEnhancements() {
-  console.log("*** initMarketplaceEnhancements");
+function addActivateRecipeListener() {
   window.addEventListener("ActivateRecipe", async (event: CustomEvent) => {
     console.log("*** ActivateRecipe event received", event.detail);
 
@@ -120,6 +113,11 @@ export async function initMarketplaceEnhancements() {
 
     await showSidebarActivationForRecipe(recipeId);
   });
+}
+
+export async function initMarketplaceEnhancements() {
+  console.log("*** initMarketplaceEnhancements");
+  addActivateRecipeListener();
 
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {
     return;
@@ -134,11 +132,4 @@ export async function initMarketplaceEnhancements() {
     await setActivatingBlueprint({ blueprintId: null });
     await showSidebarActivationForRecipe(recipeId);
   }
-}
-
-/**
- * This should only be used for testing purposes
- */
-export function unloadMarketplaceEnhancements() {
-  enhancementsLoaded = false;
 }
