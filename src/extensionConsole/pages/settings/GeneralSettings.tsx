@@ -38,7 +38,7 @@ const GeneralSettings: React.FunctionComponent = () => {
                 <i>{isFloatingActionButtonEnabled ? "Enabled" : "Disabled"}</i>
               </Form.Label>
               <Form.Text muted className="mb-2">
-                Toggle on to enable floating button that opens the quick menu
+                Toggle on to enable floating button that opens the Quick Bar
               </Form.Text>
             </div>
             <BootstrapSwitchButton

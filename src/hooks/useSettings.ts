@@ -15,22 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import { type SettingsState } from "@/store/settingsTypes";
 import { getSettingsState } from "@/store/settingsStorage";
-import useAsyncEffect from "use-async-effect";
 import { initialSettingsState } from "@/store/settingsSlice";
+import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * Hook to fetch the settings from local storage if you don't have access to the redux state.
  * Default value is the initialSettingsState before it resolves
  */
 export function useSettings() {
-  const [settings, setSettings] = useState<SettingsState>(initialSettingsState);
-  useAsyncEffect(async () => {
-    const response = await getSettingsState();
-    setSettings(response);
-  }, []);
-
-  return settings;
+  const { data } = useAsyncState(getSettingsState, [], {
+    initialValue: initialSettingsState,
+  });
+  return data;
 }

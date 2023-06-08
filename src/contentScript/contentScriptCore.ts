@@ -55,8 +55,6 @@ export async function init(): Promise<void> {
   registerBuiltinBlocks();
   registerContribBlocks();
 
-  initFloatingActions();
-
   initTelemetry();
   initToaster();
 
@@ -72,4 +70,5 @@ export async function init(): Promise<void> {
 
   // Let the partner page know
   initPartnerIntegrations();
+  initFloatingActions();
 }
