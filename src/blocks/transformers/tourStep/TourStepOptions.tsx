@@ -93,9 +93,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             label="Custom Body"
             description="Toggle on to provide a renderer brick for the step body. Edit the body in the Outline Panel"
             name={configName("body")}
-            // @ts-expect-error -- typing doesn't support checkboxes
             value={isPipelineExpression(body)}
-            // @ts-expect-error -- typing doesn't support checkboxes
             onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
                 await setFieldValue(configName("body"), {
@@ -147,9 +145,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             label="Wait for Target"
             description="Wait for the target element to be added to the page"
             name={configName("appearance", "wait")}
-            // @ts-expect-error -- typing doesn't support checkboxes
             value={Boolean(appearance?.wait)}
-            // @ts-expect-error -- typing doesn't support checkboxes
             onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
                 await setFieldValue(configName("appearance", "wait"), {
@@ -181,9 +177,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             label="Pre-Step Actions"
             description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
             name={configName("onBeforeShow")}
-            // @ts-expect-error -- typing doesn't support checkboxes
             value={onBeforeShow != null}
-            // @ts-expect-error -- typing doesn't support checkboxes
             onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
                 await setFieldValue(configName("onBeforeShow"), {
@@ -201,9 +195,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             label="Post-Step Actions"
             description="Toggle on to run actions after the step is completed. Edit the actions in the Outline Panel"
             name={configName("onAfterShow")}
-            // @ts-expect-error -- typing doesn't support checkboxes
             value={onAfterShow != null}
-            // @ts-expect-error -- typing doesn't support checkboxes
             onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
                 await setFieldValue(configName("onAfterShow"), {
@@ -242,9 +234,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             label="Scroll to Element"
             description="Toggle on to automatically scroll to the element"
             name={configName("appearance", "scroll")}
-            // @ts-expect-error -- typing doesn't support checkboxes
             value={Boolean(appearance?.scroll)}
-            // @ts-expect-error -- typing doesn't support checkboxes
             onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
                 await setFieldValue(configName("appearance", "scroll"), {

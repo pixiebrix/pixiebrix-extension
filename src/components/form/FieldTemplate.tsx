@@ -33,24 +33,32 @@ import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
 import MarkdownInline from "@/components/MarkdownInline";
 import { type Except } from "type-fest";
+import { type ActionMeta } from "react-select";
 
-export type FieldProps<As extends React.ElementType = React.ElementType> =
-  FormControlProps &
-    Except<React.ComponentProps<As>, "name"> & {
-      name: string;
-      label?: ReactNode;
-      fitLabelWidth?: boolean;
-      widerLabel?: boolean;
-      description?: ReactNode;
-      annotations?: FieldAnnotation[];
-      touched?: boolean;
+export type FieldProps<
+  As extends React.ElementType = React.ElementType,
+  T = Element
+> = Except<FormControlProps, "onChange" | "value"> &
+  Except<React.ComponentProps<As>, "name"> & {
+    name: string;
+    label?: ReactNode;
+    fitLabelWidth?: boolean;
+    widerLabel?: boolean;
+    description?: ReactNode;
+    annotations?: FieldAnnotation[];
+    touched?: boolean;
+    onChange?:
+      | React.ChangeEventHandler<T>
+      | ((args: React.FormEvent<T>) => void)
+      | ((option: unknown, actionMeta: ActionMeta<unknown>) => void);
 
-      /**
-       * This value is regarded as absence of value, unset property.
-       * It will be passed to the UI input control when the value is undefined.
-       */
-      blankValue?: string | number | string[];
-    };
+    /**
+     * This value is regarded as absence of value, unset property.
+     * It will be passed to the UI input control when the value is undefined.
+     */
+    // TODO: the goal of this type was to use the type of "value", but instead it's returning any
+    blankValue?: React.ComponentProps<As>["value"];
+  };
 
 type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type CustomFieldWidgetProps<
@@ -104,7 +112,9 @@ export function computeLabelAndColSize({
   return { labelSize, colSize };
 }
 
-const FieldTemplate: React.FC<FieldProps> = ({
+const FieldTemplate: <As extends React.ElementType, T = Element>(
+  p: FieldProps<As, T>
+) => React.ReactElement<FieldProps<As, T>> = ({
   name,
   label,
   fitLabelWidth,
@@ -226,4 +236,4 @@ const FieldTemplate: React.FC<FieldProps> = ({
   );
 };
 
-export default React.memo(FieldTemplate);
+export default React.memo(FieldTemplate) as typeof FieldTemplate;
