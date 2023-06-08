@@ -107,7 +107,9 @@ async function loadOptimizedEnhancements(): Promise<void> {
       if (isContentScriptReady) {
         console.log("*** dispatching ActivateRecipe", recipeId);
         window.dispatchEvent(
-          new CustomEvent("ActivateRecipe", { detail: { recipeId } })
+          new CustomEvent("ActivateRecipe", {
+            detail: { recipeId, activateUrl: button.href },
+          })
         );
       } else {
         // TODO: maybe open default href?
