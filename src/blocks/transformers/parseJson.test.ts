@@ -38,17 +38,135 @@ describe("ParseJson block", () => {
       foo: 42,
     });
   });
-});
 
-test("Throw BusinessError on invalid JSON", async () => {
-  const brick = new ParseJson();
-  await expect(async () => {
-    await brick.run(unsafeAssumeValidArg({ content: '{"foo": 42,}' }), {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
+  test("Allow JSON5 trailing comma", async () => {
+    const brick = new ParseJson();
+    const result = await brick.run(
+      unsafeAssumeValidArg({ content: '{"foo": 42,}' }),
+      {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    expect(result).toEqual({
+      foo: 42,
     });
-  }).rejects.toThrow(BusinessError);
+  });
+
+  test("Throw BusinessError on invalid JSON", async () => {
+    const brick = new ParseJson();
+    await expect(async () => {
+      await brick.run(unsafeAssumeValidArg({ content: '{"foo":}' }), {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      });
+    }).rejects.toThrow(BusinessError);
+  });
+
+  test("Throw BusinessError on invalid JSON5 if JSON5 not allowed", async () => {
+    const brick = new ParseJson();
+    await expect(async () => {
+      await brick.run(
+        unsafeAssumeValidArg({ content: '{"foo": 42,}', allowJson5: false }),
+        {
+          ctxt: null,
+          logger: null,
+          root: null,
+          runPipeline: neverPromise,
+          runRendererPipeline: neverPromise,
+        }
+      );
+    }).rejects.toThrow(BusinessError);
+  });
+
+  test("Optional property quotes", async () => {
+    const brick = new ParseJson();
+    const result = await brick.run(
+      unsafeAssumeValidArg({ content: "{foo: 42}" }),
+      {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    expect(result).toEqual({
+      foo: 42,
+    });
+  });
+
+  test("Handle leading and trailing text", async () => {
+    const brick = new ParseJson();
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        lenient: true,
+        content: 'Sure, here\'s your response: {"foo": 42}. What do you think?',
+      }),
+      {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    expect(result).toEqual({
+      foo: 42,
+    });
+  });
+
+  test("Lenient returns longest", async () => {
+    const brick = new ParseJson();
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        lenient: true,
+        content: 'abc {"foo": 42} {"bar": 421}',
+      }),
+      {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    expect(result).toEqual({
+      bar: 421,
+    });
+  });
+
+  test("Lenient returns array", async () => {
+    const brick = new ParseJson();
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        lenient: true,
+        content: 'abc [{"foo": 42}, {"bar": 421}] def',
+      }),
+      {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    expect(result).toEqual([
+      { foo: 42 },
+      {
+        bar: 421,
+      },
+    ]);
+  });
 });
