@@ -87,6 +87,7 @@
     "js-cookie": "^3.0.0",
     "js-yaml": "^4.1.0",
     "json-stringify-safe": "^5.0.1",
+    "json5": "^2.2.3",
     "jsonpath-plus": "^7.0.0",
     "kbar": "^0.1.0-beta.40",
     "lodash-es": "^4.17.21",
