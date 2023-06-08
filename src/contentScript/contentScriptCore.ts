@@ -34,7 +34,7 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
-import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
+import { initMarketplaceEnhancements } from "@/contentScript/sidebarActivation";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {

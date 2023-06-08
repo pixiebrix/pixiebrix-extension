@@ -20,7 +20,7 @@ import { getAuthHeaders } from "@/auth/token";
 import {
   initMarketplaceEnhancements,
   unloadMarketplaceEnhancements,
-} from "@/contentScript/marketplace";
+} from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
 import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
 import { validateRegistryId } from "@/types/helpers";
