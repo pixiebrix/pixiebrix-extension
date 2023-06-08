@@ -93,16 +93,19 @@ async function loadOptimizedEnhancements(): Promise<void> {
       changeActivateButtonToActiveLabel(button);
     }
 
+    console.log("*** add onclick handler");
     button.addEventListener("click", async (event) => {
       event.preventDefault();
 
       const isContentScriptReady = await pollUntilTruthy(
         isReadyInThisDocument,
         {
-          maxWaitMillis: 10_000,
+          maxWaitMillis: 0,
           intervalMillis: 100,
         }
       );
+
+      console.log("*** isContentScriptReady", isContentScriptReady);
 
       if (isContentScriptReady) {
         console.log("*** dispatching ActivateRecipe", recipeId);
@@ -113,6 +116,7 @@ async function loadOptimizedEnhancements(): Promise<void> {
         );
       } else {
         // TODO: maybe open default href?
+        console.log("*** running this clause");
       }
     });
   }
@@ -120,6 +124,11 @@ async function loadOptimizedEnhancements(): Promise<void> {
   console.log("*** installedRecipeIds", installedRecipeIds);
 
   enhancementsLoaded = true;
+}
+
+export async function reloadOptimizedEnhancements() {
+  enhancementsLoaded = false;
+  await loadOptimizedEnhancements();
 }
 
 if (location.protocol === "https:") {
