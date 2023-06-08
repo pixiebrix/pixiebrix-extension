@@ -18,6 +18,8 @@ import { compact, isEmpty } from "lodash";
 import { loadOptions } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
+import { isReadyInThisDocument } from "@/contentScript/ready";
+import { pollUntilTruthy } from "@/utils";
 
 let enhancementsLoaded = false;
 
@@ -91,11 +93,25 @@ async function loadOptimizedEnhancements(): Promise<void> {
       changeActivateButtonToActiveLabel(button);
     }
 
-    button.addEventListener("click", () => {
-      window.dispatchEvent(
-        new CustomEvent("ActivateRecipe", { detail: { recipeId } })
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      const isContentScriptReady = await pollUntilTruthy(
+        isReadyInThisDocument,
+        {
+          maxWaitMillis: 10_000,
+          intervalMillis: 100,
+        }
       );
-      console.log("*** dispatched ActivateRecipe", recipeId);
+
+      if (isContentScriptReady) {
+        console.log("*** dispatching ActivateRecipe", recipeId);
+        window.dispatchEvent(
+          new CustomEvent("ActivateRecipe", { detail: { recipeId } })
+        );
+      } else {
+        // TODO: maybe open default href?
+      }
     });
   }
 
