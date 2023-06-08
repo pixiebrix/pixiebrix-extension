@@ -36,6 +36,7 @@ import {
 import { onUncaughtError } from "@/errors/errorHelpers";
 import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
 import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
+import { syncFlagOn } from "@/store/syncFlags";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -70,5 +71,7 @@ export async function init(): Promise<void> {
 
   // Let the partner page know
   initPartnerIntegrations();
-  initFloatingActions();
+  if (syncFlagOn("floating-quickbar-button")) {
+    initFloatingActions();
+  }
 }
