@@ -125,25 +125,23 @@ describe("ParseJson block", () => {
     });
   });
 
-  test("Lenient returns longest", async () => {
+  test("Errors on multiple peer objects", async () => {
     const brick = new ParseJson();
-    const result = await brick.run(
-      unsafeAssumeValidArg({
-        lenient: true,
-        content: 'abc {"foo": 42} {"bar": 421}',
-      }),
-      {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
-    );
-
-    expect(result).toEqual({
-      bar: 421,
-    });
+    await expect(async () => {
+      await brick.run(
+        unsafeAssumeValidArg({
+          lenient: true,
+          content: 'abc {"foo": 42} {"bar": 421}',
+        }),
+        {
+          ctxt: null,
+          logger: null,
+          root: null,
+          runPipeline: neverPromise,
+          runRendererPipeline: neverPromise,
+        }
+      );
+    }).rejects.toThrow(BusinessError);
   });
 
   test("Lenient returns array", async () => {
@@ -164,6 +162,30 @@ describe("ParseJson block", () => {
 
     expect(result).toEqual([
       { foo: 42 },
+      {
+        bar: 421,
+      },
+    ]);
+  });
+
+  test("Lenient handles nested array", async () => {
+    const brick = new ParseJson();
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        lenient: true,
+        content: 'abc [[{"foo": 42}], {"bar": 421}] def',
+      }),
+      {
+        ctxt: null,
+        logger: null,
+        root: null,
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    expect(result).toEqual([
+      [{ foo: 42 }],
       {
         bar: 421,
       },
