@@ -153,6 +153,10 @@ export async function reloadMarketplaceEnhancements() {
 }
 
 export async function initMarketplaceEnhancements() {
+  window.addEventListener("ActivateRecipe", (event: CustomEvent) => {
+    console.log("*** ActivateRecipe event received", event.detail);
+  });
+
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {
     return;
   }
