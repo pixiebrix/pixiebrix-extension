@@ -99,7 +99,7 @@ function addActivateRecipeListener() {
   });
 }
 
-export async function initMarketplaceEnhancements() {
+export async function initSidebarActivation() {
   console.log("*** initMarketplaceEnhancements");
 
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {

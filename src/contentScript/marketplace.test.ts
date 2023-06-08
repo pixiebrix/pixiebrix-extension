@@ -18,7 +18,7 @@
 import { showActivateRecipeInSidebar } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
 import {
-  initMarketplaceEnhancements,
+  initSidebarActivation,
   unloadMarketplaceEnhancements,
 } from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
@@ -99,7 +99,7 @@ describe("marketplace enhancements", () => {
   test("given a non-marketplace page, when loaded, then don't run enhancements", async () => {
     window.location.assign("https://www.google.com/");
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     // The checks for auth state and installed recipes should not be called
     expect(getAuthHeadersMock).not.toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     // Click an activate button
     const activateButtons = document.querySelectorAll("a");
@@ -127,7 +127,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     // The loadPageEnhancements function calls getInstalledRecipeIds,
     // which calls isUserLoggedIn, which calls getAuthHeaders. Then
@@ -156,7 +156,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
     // Text content starts with a space because of the icon
@@ -178,7 +178,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
     expect(activateButtons[0].textContent).toBe("Reactivate");
@@ -199,7 +199,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     // Click an activate button
     const activateButtons = document.querySelectorAll("a");
@@ -217,7 +217,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
 
-    await initMarketplaceEnhancements();
+    await initSidebarActivation();
 
     // The loadPageEnhancements function calls getInstalledRecipeIds,
     // which calls isUserLoggedIn, which calls getAuthHeaders. Then
