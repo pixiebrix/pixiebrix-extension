@@ -90,6 +90,13 @@ async function loadOptimizedEnhancements(): Promise<void> {
     if (installedRecipeIds.has(recipeId)) {
       changeActivateButtonToActiveLabel(button);
     }
+
+    button.addEventListener("click", () => {
+      window.dispatchEvent(
+        new CustomEvent("ActivateRecipe", { detail: { recipeId } })
+      );
+      console.log("*** dispatched ActivateRecipe", recipeId);
+    });
   }
 
   console.log("*** installedRecipeIds", installedRecipeIds);
