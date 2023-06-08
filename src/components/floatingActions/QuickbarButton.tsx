@@ -25,6 +25,8 @@ import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
  */
 export function QuickbarButton() {
   return (
+    // Using standard css here because the shadow dom in `FloatingActions.tsx`
+    // prevents us from using regular css modules.
     <Button className="button" onClick={toggleQuickBar}>
       {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
               anyway */}
