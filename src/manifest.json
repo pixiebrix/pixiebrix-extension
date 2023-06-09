@@ -25,6 +25,11 @@
       "js": ["contentScript.js"],
       "css": ["contentScript.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://*.pixiebrix.com/*"],
+      "js": ["marketplace.js"],
+      "run_at": "document_end"
     }
   ],
   "sandbox": {
