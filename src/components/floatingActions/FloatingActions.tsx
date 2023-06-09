@@ -22,26 +22,16 @@ import React from "react";
 import styles from "./FloatingActions.module.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
-import useAsyncState from "@/hooks/useAsyncState";
-import { getSettingsState } from "@/store/settingsStorage";
-import { initialSettingsState } from "@/store/settingsSlice";
 
 export function FloatingActions() {
-  const { data } = useAsyncState(getSettingsState, [], {
-    initialValue: initialSettingsState,
-  });
-  const { isFloatingActionButtonEnabled } = data;
-
   return (
-    isFloatingActionButtonEnabled && (
-      <EmotionShadowRoot.div>
-        <Stylesheets href={[bootstrap, styles]}>
-          <div className="root">
-            <QuickbarButton />
-          </div>
-        </Stylesheets>
-      </EmotionShadowRoot.div>
-    )
+    <EmotionShadowRoot.div>
+      <Stylesheets href={[bootstrap, styles]}>
+        <div className="root">
+          <QuickbarButton />
+        </div>
+      </Stylesheets>
+    </EmotionShadowRoot.div>
   );
 }
 
