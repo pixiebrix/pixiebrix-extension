@@ -97,7 +97,7 @@ export async function loadOptimizedEnhancements(): Promise<void> {
       const isContentScriptReady = await pollUntilTruthy(
         isReadyInThisDocument,
         {
-          maxWaitMillis: 5000,
+          maxWaitMillis: 2000,
           intervalMillis: 100,
         }
       );
