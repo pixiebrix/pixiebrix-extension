@@ -33,14 +33,27 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
+import { isEmpty } from "lodash";
+import { type RegistryId } from "@/types/registryTypes";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
+  hideBuiltInServiceIntegrations?: boolean;
+  showOwnTitle?: boolean;
 }
+
+type ValueField = {
+  serviceId: RegistryId;
+  index: number;
+};
 
 const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
 
-const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+const ServicesBody: React.FunctionComponent<OwnProps> = ({
+  blueprint,
+  hideBuiltInServiceIntegrations,
+  showOwnTitle,
+}) => {
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
     useAuthOptions(),
     emptyAuthOptions
@@ -53,33 +66,65 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     [blueprint]
   );
 
+  function shouldShowField(serviceId: RegistryId): boolean {
+    if (!requiredServiceIds.includes(serviceId)) {
+      return false;
+    }
+
+    const serviceOptions = authOptions.filter(
+      (option) => option.serviceId === serviceId
+    );
+
+    // Always show field if there are no options available for the service
+    if (isEmpty(serviceOptions)) {
+      return true;
+    }
+
+    if (hideBuiltInServiceIntegrations) {
+      // Show the field if there are options for the service that are not built-in
+      return authOptions.some(
+        (option) =>
+          option.serviceId === serviceId && option.sharingType !== "built-in"
+      );
+    }
+
+    return true;
+  }
+
+  const fieldsToShow: ValueField[] = field.value
+    // We need to grab the index before filtering, because the index used
+    // in the field name for AuthWidget needs to be consistent with the
+    // index in field.value
+    .map(({ id: serviceId }, index) => ({ serviceId, index }))
+    .filter(({ serviceId }) => shouldShowField(serviceId));
+
   return (
     <>
       {typeof error === "string" && (
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
-      {field.value.map(
-        ({ id: serviceId }, index) =>
-          // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
-          // consistent with the index in field.value
-          requiredServiceIds.includes(serviceId) && (
-            <div key={serviceId}>
-              <ServiceFieldError servicesError={error} fieldIndex={index} />
-              <Card className={styles.serviceCard}>
-                <ServiceDescriptor
-                  serviceId={serviceId}
-                  serviceConfigs={serviceConfigs}
-                />
-                <AuthWidget
-                  authOptions={authOptions}
-                  serviceId={serviceId}
-                  name={joinName(field.name, String(index), "config")}
-                  onRefresh={refreshAuthOptions}
-                />
-              </Card>
-            </div>
-          )
+      {fieldsToShow.length > 0 && showOwnTitle && (
+        <div className="mt-1">
+          <h4>Integrations</h4>
+        </div>
       )}
+      {fieldsToShow.map(({ serviceId, index }) => (
+        <div key={serviceId}>
+          <ServiceFieldError servicesError={error} fieldIndex={index} />
+          <Card className={styles.serviceCard}>
+            <ServiceDescriptor
+              serviceId={serviceId}
+              serviceConfigs={serviceConfigs}
+            />
+            <AuthWidget
+              authOptions={authOptions}
+              serviceId={serviceId}
+              name={joinName(field.name, String(index), "config")}
+              onRefresh={refreshAuthOptions}
+            />
+          </Card>
+        </div>
+      ))}
     </>
   );
 };
