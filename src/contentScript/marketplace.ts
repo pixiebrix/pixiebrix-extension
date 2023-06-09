@@ -91,9 +91,7 @@ export async function loadOptimizedEnhancements(): Promise<void> {
       changeActivateButtonToActiveLabel(button);
     }
 
-    console.log("*** add onclick handler");
     button.addEventListener("click", async (event) => {
-      console.log("*** inside click handler");
       event.preventDefault();
 
       const isContentScriptReady = await pollUntilTruthy(
@@ -104,18 +102,15 @@ export async function loadOptimizedEnhancements(): Promise<void> {
         }
       );
 
-      console.log("*** isContentScriptReady", isContentScriptReady);
-
       if (isContentScriptReady) {
-        console.log("*** dispatching ActivateRecipe", recipeId);
         window.dispatchEvent(
           new CustomEvent("ActivateRecipe", {
             detail: { recipeId, activateUrl: button.href },
           })
         );
       } else {
-        // TODO: maybe open default href?
-        console.log("*** running this clause");
+        // Something probably went wrong with the content script, so just navigate to the activate url
+        window.location.assign(button.href);
       }
     });
   }

@@ -77,8 +77,6 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
 
 function addActivateRecipeListener() {
   window.addEventListener("ActivateRecipe", async (event: CustomEvent) => {
-    console.log("*** ActivateRecipe event received", event.detail);
-
     const { recipeId, activateUrl } = event.detail;
 
     if (!(await isUserLoggedIn())) {
@@ -100,8 +98,6 @@ function addActivateRecipeListener() {
 }
 
 export async function initSidebarActivation() {
-  console.log("*** initMarketplaceEnhancements");
-
   if (!startsWith(window.location.href, MARKETPLACE_URL)) {
     return;
   }

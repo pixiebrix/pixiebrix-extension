@@ -34,11 +34,6 @@ import {
   unloadOptimizedEnhancements,
 } from "@/contentScript/marketplace";
 import { isReadyInThisDocument } from "@/contentScript/ready";
-import { checkAvailable } from "@/contentScript/messenger/api";
-import { Target } from "@/types/messengerTypes";
-import { PageTarget } from "webext-messenger";
-import { Availability } from "@/blocks/types";
-import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
