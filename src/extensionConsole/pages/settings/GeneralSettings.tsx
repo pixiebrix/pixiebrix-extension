@@ -48,11 +48,9 @@ const GeneralSettings: React.FunctionComponent = () => {
               onlabel=" "
               offlabel=" "
               checked={isFloatingActionButtonEnabled}
-              onChange={() => {
+              onChange={(enable) => {
                 dispatch(
-                  settingsSlice.actions.setFloatingActionButtonEnabled(
-                    !isFloatingActionButtonEnabled
-                  )
+                  settingsSlice.actions.setFloatingActionButtonEnabled(enable)
                 );
               }}
             />
