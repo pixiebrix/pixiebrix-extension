@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { compact, isEmpty } from "lodash";
+import { compact, isEmpty, startsWith } from "lodash";
 import { loadOptions } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { pollUntilTruthy } from "@/utils";
+import { MARKETPLACE_URL } from "@/utils/strings";
 
 let enhancementsLoaded = false;
 
@@ -30,11 +31,6 @@ function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
 }
 
 export async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
-  // TODO: why does it matter if the user is logged in to detect installed recipes at this point?
-  // if (!(await isUserLoggedIn())) {
-  //   return new Set();
-  // }
-
   const options = await loadOptions();
 
   if (!options) {
@@ -103,7 +99,7 @@ export async function loadOptimizedEnhancements(): Promise<void> {
       const isContentScriptReady = await pollUntilTruthy(
         isReadyInThisDocument,
         {
-          maxWaitMillis: 0,
+          maxWaitMillis: 5000,
           intervalMillis: 100,
         }
       );
@@ -138,7 +134,9 @@ export function unloadOptimizedEnhancements() {
 }
 
 if (location.protocol === "https:") {
-  void loadOptimizedEnhancements();
+  if (startsWith(window.location.href, MARKETPLACE_URL)) {
+    void loadOptimizedEnhancements();
+  }
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }
