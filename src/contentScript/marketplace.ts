@@ -21,12 +21,21 @@ import { validateRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { pollUntilTruthy } from "@/utils";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { ACTIVATION_LINK_PREFIX } from "@/activation/ActivationLink";
+
+// This will be set by the marketplace page
+const MARKETPLACE_READY_ATTRIBUTE = "data-pb-marketplace-ready";
+
+function isMarketplacePageLoaded(): boolean {
+  const html = globalThis.document?.documentElement;
+  return html.hasAttribute(MARKETPLACE_READY_ATTRIBUTE);
+}
 
 let enhancementsLoaded = false;
 
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
-    "a[href*='.pixiebrix.com/activate']"
+    `a[href^="${ACTIVATION_LINK_PREFIX}"]`
   );
 }
 
@@ -92,6 +101,11 @@ export async function loadOptimizedEnhancements(): Promise<void> {
     }
 
     button.addEventListener("click", async (event) => {
+      // Don't handle clicks if marketplace is handling them already
+      if (isMarketplacePageLoaded()) {
+        return;
+      }
+
       event.preventDefault();
 
       const isContentScriptReady = await pollUntilTruthy(
