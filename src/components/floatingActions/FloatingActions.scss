@@ -30,10 +30,14 @@
   box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
   background-color: $P500;
   &:hover,
-  &:active,
   &:focus {
     background-color: $P600 !important;
   }
+
+  &:active {
+    background-color: $P900 !important;
+  }
+
   &:focus {
     box-shadow: none !important;
   }

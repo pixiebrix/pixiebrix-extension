@@ -19,9 +19,11 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import React from "react";
-import styles from "./FloatingActions.module.scss?loadAsUrl";
+import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
+import { getSettingsState } from "@/store/settingsStorage";
+import { syncFlagOn } from "@/store/syncFlags";
 
 export function FloatingActions() {
   return (
@@ -35,9 +37,16 @@ export function FloatingActions() {
   );
 }
 
-export function initFloatingActions() {
-  const container = document.createElement("div");
-  container.id = "pixiebrix-floating-actions-container";
-  document.body.prepend(container);
-  ReactDOM.render(<FloatingActions />, container);
+export async function initFloatingActions() {
+  const settings = await getSettingsState();
+  // Add floating actions if the feature flag and settings are enabled
+  if (
+    settings.isFloatingActionButtonEnabled &&
+    syncFlagOn("floating-quickbar-button")
+  ) {
+    const container = document.createElement("div");
+    container.id = "pixiebrix-floating-actions-container";
+    document.body.prepend(container);
+    ReactDOM.render(<FloatingActions />, container);
+  }
 }

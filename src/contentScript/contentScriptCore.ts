@@ -36,8 +36,6 @@ import {
 import { onUncaughtError } from "@/errors/errorHelpers";
 import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
 import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
-import { syncFlagOn } from "@/store/syncFlags";
-import { getSettingsState } from "@/store/settingsStorage";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -72,13 +70,5 @@ export async function init(): Promise<void> {
 
   // Let the partner page know
   initPartnerIntegrations();
-
-  const settings = await getSettingsState();
-  // Add floating actions if the feature flag and settings are enabled
-  if (
-    settings.isFloatingActionButtonEnabled &&
-    syncFlagOn("floating-quickbar-button")
-  ) {
-    initFloatingActions();
-  }
+  void initFloatingActions();
 }
