@@ -34,7 +34,7 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
-import { initMarketplaceEnhancements } from "@/contentScript/marketplace";
+import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -62,7 +62,7 @@ export async function init(): Promise<void> {
 
   await handleNavigate();
 
-  void initMarketplaceEnhancements();
+  void initSidebarActivation();
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });

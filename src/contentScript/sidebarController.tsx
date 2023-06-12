@@ -445,7 +445,7 @@ export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
  * - Permanent panels added by sidebarExtension
  * - Temporary panels added by DisplayTemporaryInfo
  * - Temporary form definitions added by ephemeralForm
- * - Activate Recipe panel added by marketplace.ts activate button click-handlers
+ * - Activate Recipe panel added by sidebarActivation.ts activate button click-handlers
  */
 export function getReservedPanelEntries(): {
   panels: PanelEntry[];
