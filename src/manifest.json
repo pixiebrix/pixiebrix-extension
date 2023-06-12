@@ -43,7 +43,6 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "https://*.pixiebrix.com/*",
     "*://*/*",
     "<all_urls>"
   ],
