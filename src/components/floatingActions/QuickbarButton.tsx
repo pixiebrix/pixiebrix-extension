@@ -30,7 +30,7 @@ export function QuickbarButton() {
     <Button className="button" onClick={toggleQuickBar}>
       {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
               anyway */}
-      <img src={logoUrl} className="logo" alt="open the quick bar" />
+      <img src={logoUrl} className="logo" alt="open the PixieBrix quick bar" />
     </Button>
   );
 }
