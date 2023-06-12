@@ -141,7 +141,7 @@
     "regenerator-runtime": "^0.13.9",
     "reselect": "^4.1.8",
     "rollbar": "^2.26.1",
-    "schema-to-yup": "1.12.13",
+    "schema-to-yup": "1.12.14",
     "semver": "^7.5.1",
     "serialize-error": "^11.0.0",
     "simple-icons": "^5.8.0",
