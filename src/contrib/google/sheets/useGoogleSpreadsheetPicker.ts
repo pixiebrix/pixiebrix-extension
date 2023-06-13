@@ -96,10 +96,10 @@ function useGoogleSpreadsheetPicker(): {
       throw new Error("Internal error: Google API key is not configured");
     }
 
-    reportEvent("SelectGoogleSpreadsheetEnsureToken");
+    reportEvent("SelectGoogleSpreadsheetEnsureTokenStart");
     const token = await ensureSheetsToken();
 
-    reportEvent("SelectGoogleSpreadsheetLoadLibary");
+    reportEvent("SelectGoogleSpreadsheetLoadLibraryStart");
     await new Promise((resolve, reject) => {
       // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiloadlibraries-callbackorconfig------
       gapi.load("picker", {
@@ -119,7 +119,7 @@ function useGoogleSpreadsheetPicker(): {
 
     const deferredPromise = pDefer<Doc>();
 
-    reportEvent("SelectGoogleSpreadsheetShowPicker");
+    reportEvent("SelectGoogleSpreadsheetShowPickerStart");
     const picker = new google.picker.PickerBuilder()
       .enableFeature(google.picker.Feature.NAV_HIDDEN)
       .setTitle("Select Spreadsheet")
