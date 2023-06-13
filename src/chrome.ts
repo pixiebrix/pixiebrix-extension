@@ -62,6 +62,21 @@ export function getChromeExtensionId(): string {
   );
 }
 
+/**
+ * Return true if the browser is Google Chrome.
+ *
+ * Unlike webext-detect-page, attempts to exclude other Chromium-based browsers like Microsoft Edge, Brave, and Opera.
+ */
+export function isGoogleChrome(): boolean {
+  // https://github.com/google/closure-library/blob/master/closure/goog/labs/useragent/browser.js#L87
+  // https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
+  // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
+  // @ts-expect-error -- userAgentData is defined in Chrome browser
+  return navigator.userAgentData?.brands?.some(
+    (x: { brand: string }) => x.brand === "Google Chrome"
+  );
+}
+
 export function getExtensionVersion(): string {
   return browser.runtime.getManifest().version;
 }

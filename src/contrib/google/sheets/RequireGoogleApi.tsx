@@ -20,7 +20,7 @@ import { useSyncExternalStore } from "use-sync-external-store/shim";
 import initGoogle, {
   subscribe,
   isGoogleInitialized,
-  isGoogleSupported,
+  isGAPISupported,
 } from "@/contrib/google/initGoogle";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
@@ -41,7 +41,7 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
     []
   );
 
-  if (!isGoogleSupported()) {
+  if (!isGAPISupported()) {
     return (
       <div>
         The Google API is not supported in this browser. Please use Google
