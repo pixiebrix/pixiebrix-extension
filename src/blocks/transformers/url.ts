@@ -86,7 +86,11 @@ export class UrlParams extends Transformer {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArgs): Promise<{ url: string }> {
+  }: BlockArgs<{
+    url: string;
+    params?: Record<string, string | number | boolean>;
+    spaceEncoding?: "percent" | "plus";
+  }>): Promise<{ url: string }> {
     return {
       url: makeURL(url, params, spaceEncoding),
     };

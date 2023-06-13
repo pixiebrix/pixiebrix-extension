@@ -23,6 +23,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 export const inputProperties: Record<string, Schema> = {
   url: {
@@ -72,7 +73,14 @@ export class RemoteMethod extends Transformer {
 
   inputSchema: Schema = propertiesToSchema(inputProperties, ["url"]);
 
-  async transform({ service, ...requestConfig }: BlockArgs): Promise<unknown> {
+  async transform({
+    service,
+    ...requestConfig
+  }: BlockArgs<{
+    service: SanitizedServiceConfiguration;
+    requestConfig: AxiosRequestConfig;
+    _blockArgBrand: never;
+  }>): Promise<unknown> {
     if (service && typeof service !== "object") {
       throw new PropError(
         "Expected configured service",

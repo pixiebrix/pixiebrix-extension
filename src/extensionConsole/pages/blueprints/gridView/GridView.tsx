@@ -17,7 +17,13 @@
 
 import styles from "./GridView.module.scss";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  type HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { type InstallableViewItem } from "@/installables/installableTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
@@ -110,7 +116,13 @@ const GridView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
   }, [expandedGridRows, columnCount]);
 
   const GridRow = useCallback(
-    ({ index, style }) => {
+    ({
+      index,
+      style,
+    }: {
+      index: number;
+      style: HTMLAttributes<HTMLDivElement>["style"];
+    }) => {
       const gridRow = expandedGridRows.at(index);
 
       if ("isGrouped" in gridRow) {

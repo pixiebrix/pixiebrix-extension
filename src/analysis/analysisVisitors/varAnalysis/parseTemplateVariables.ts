@@ -111,7 +111,7 @@ export class Variable {
 
 function traverseNode(node: any, inLoop = false) {
   if (node instanceof NodeSymbol) {
-    return [new Variable(node.value, { startIndex: node.colno })];
+    return [new Variable(String(node.value), { startIndex: node.colno })];
   }
 
   if (node instanceof Pair) {
@@ -134,7 +134,7 @@ function traverseNode(node: any, inLoop = false) {
     return parseFnOrFilter(node, inLoop);
   }
 
-  if (expressionTags.includes(node.typename)) {
+  if (expressionTags.includes(String(node.typename))) {
     return parseExpression(node, inLoop);
   }
 
@@ -183,7 +183,7 @@ function parseFnOrFilter(node: any, inLoop = false) {
 }
 
 function parseExpression(node: any, inLoop = false) {
-  if (!expressionTags.includes(node.typename)) {
+  if (!expressionTags.includes(String(node.typename))) {
     throw new TypeError(
       `Current node type is not in Expression, it is ${node.typename}`
     );
@@ -227,7 +227,7 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
   const targetVars =
     target instanceof NodeSymbol
       ? [
-          new Variable(target.value, {
+          new Variable(String(target.value), {
             type: "object",
             startIndex: target.colno,
           }),
@@ -236,7 +236,7 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
 
   if (val instanceof Literal) {
     const parentVar = targetVars.at(-1);
-    const newVar = new Variable(val.value, {
+    const newVar = new Variable(String(val.value), {
       parent: parentVar,
       startIndex: val.colno,
     });
@@ -268,7 +268,7 @@ function parseFor(node: any) {
 
   let listVars: Variable[];
   if (listNode instanceof NodeSymbol) {
-    const listVar = new Variable(listNode.value, {
+    const listVar = new Variable(String(listNode.value), {
       type: "list",
       startIndex: listNode.colno,
     });
@@ -281,7 +281,7 @@ function parseFor(node: any) {
 
   let itemVars: Variable[];
   if (itemNode instanceof NodeSymbol) {
-    const itemVar = new Variable(itemNode.value, {
+    const itemVar = new Variable(String(itemNode.value), {
       startIndex: itemNode.colno,
     });
     itemVars = [itemVar];

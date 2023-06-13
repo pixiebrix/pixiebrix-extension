@@ -193,8 +193,8 @@ export async function resolveObj<T>(
  * Same as lodash mapValues but supports promises
  */
 export async function asyncMapValues<T, TResult>(
-  mapping: T,
-  fn: ObjectIterator<T, Promise<TResult>>
+  mapping: Record<string, T[keyof T]>,
+  fn: ObjectIterator<Record<string, T[keyof T]>, Promise<TResult>>
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(

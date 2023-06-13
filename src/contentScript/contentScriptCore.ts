@@ -34,6 +34,7 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
+import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
@@ -69,4 +70,5 @@ export async function init(): Promise<void> {
 
   // Let the partner page know
   initPartnerIntegrations();
+  void initFloatingActions();
 }

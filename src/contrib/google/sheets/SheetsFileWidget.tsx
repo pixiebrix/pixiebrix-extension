@@ -38,6 +38,7 @@ import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreads
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
+import useReportError from "@/hooks/useReportError";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
@@ -81,6 +82,9 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- there's a bug in Formik where changes every render
     [sheetError]
   );
+
+  // Report to Rollbar to assist with debugging
+  useReportError(sheetError);
 
   useAsyncEffect(
     async (isMounted) => {

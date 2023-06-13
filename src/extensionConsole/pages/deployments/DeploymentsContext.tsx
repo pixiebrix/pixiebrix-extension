@@ -252,6 +252,8 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
+      // Default should be Dispatch<AnyAction>, but it's showing up as Dispatch<any>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
     } catch (error) {
