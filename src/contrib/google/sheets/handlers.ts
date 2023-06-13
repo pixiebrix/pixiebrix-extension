@@ -68,10 +68,10 @@ async function ensureSheetsReady(): Promise<string> {
 
   while (retry < maxRetries) {
     try {
+      // eslint-disable-next-line no-await-in-loop -- retry loop
       return await _ensureSheetsReadyOnce();
     } catch (error) {
-      console.error("Error ensuring google sheets ready", {
-        error,
+      console.error("Error ensuring google sheets API ready", error, {
         retry,
       });
       lastError = error;
