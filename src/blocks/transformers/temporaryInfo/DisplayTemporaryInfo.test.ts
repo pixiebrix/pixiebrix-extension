@@ -129,7 +129,7 @@ describe("DisplayTemporaryInfo", () => {
     });
 
     // Show function will be called with a "loading" payload
-    expect(showTemporarySidebarPanelMock).toHaveBeenCalledOnceWith({
+    expect(showTemporarySidebarPanelMock).toHaveBeenCalledExactlyOnceWith({
       blueprintId,
       extensionId,
       nonce: expect.toBeString(),
@@ -140,7 +140,7 @@ describe("DisplayTemporaryInfo", () => {
     });
 
     // Panel will be updated when the real payload is ready
-    expect(updatePanelDefinitionMock).toHaveBeenCalledOnceWith({
+    expect(updatePanelDefinitionMock).toHaveBeenCalledExactlyOnceWith({
       blueprintId,
       extensionId,
       nonce: expect.toBeString(),
