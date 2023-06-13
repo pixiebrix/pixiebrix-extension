@@ -21,6 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
 import { PropError } from "@/errors/businessErrors";
+import { type JsonObject } from "type-fest";
 
 export class TelemetryEffect extends Effect {
   constructor() {
@@ -50,7 +51,10 @@ export class TelemetryEffect extends Effect {
   };
 
   async effect(
-    { eventName, data = {} }: BlockArgs,
+    {
+      eventName,
+      data = {},
+    }: BlockArgs<{ eventName: string; data: JsonObject }>,
     { logger }: BlockOptions
   ): Promise<void> {
     if ("$eventName" in data) {
@@ -63,9 +67,7 @@ export class TelemetryEffect extends Effect {
     }
 
     if (await getDNT()) {
-      const message = `Event ${
-        eventName as string
-      } will not be reported because the user has DNT enabled`;
+      const message = `Event ${eventName} will not be reported because the user has DNT enabled`;
       console.warn(message);
       logger.warn(message);
     }

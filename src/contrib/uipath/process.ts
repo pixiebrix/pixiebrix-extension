@@ -23,6 +23,8 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
@@ -123,7 +125,16 @@ export class RunProcess extends Transformer {
       awaitResult = false,
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
-    }: BlockArgs,
+    }: BlockArgs<{
+      uipath: SanitizedServiceConfiguration;
+      releaseKey: string;
+      strategy: string;
+      jobsCount: number;
+      robotIds: number[];
+      awaitResult: boolean;
+      maxWaitMillis: number;
+      inputArguments: UnknownObject;
+    }>,
     { logger }: BlockOptions
   ): Promise<unknown> {
     const responsePromise = proxyService<JobsResponse>(uipath, {

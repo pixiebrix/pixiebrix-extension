@@ -19,6 +19,7 @@ import { Effect } from "@/types/blocks/effectTypes";
 import { type BlockArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { proxyService } from "@/background/messenger/api";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 export class AddLead extends Effect {
   constructor() {
@@ -69,7 +70,10 @@ export class AddLead extends Effect {
     required: ["salesforce", "LastName", "Company"],
   };
 
-  async effect({ salesforce, ...data }: BlockArgs): Promise<void> {
+  async effect({
+    salesforce,
+    ...data
+  }: BlockArgs<{ salesforce: SanitizedServiceConfiguration }>): Promise<void> {
     await proxyService(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",

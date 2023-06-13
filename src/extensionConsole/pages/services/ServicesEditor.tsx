@@ -92,7 +92,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       setNewConfiguration(null);
       setNewConfigurationService(null);
-      setNewIntegration(config);
+      setNewIntegration(config as IService);
       await flushReduxPersistence();
 
       try {

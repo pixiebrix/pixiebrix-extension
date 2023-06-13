@@ -98,5 +98,11 @@ module.exports = {
         "import/no-restricted-paths": "off",
       },
     },
+    {
+      files: ["**/*.js"],
+      rules: {
+        "@typescript-eslint/no-unsafe-argument": "off",
+      },
+    },
   ],
 };

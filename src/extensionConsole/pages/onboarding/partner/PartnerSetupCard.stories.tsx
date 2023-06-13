@@ -102,7 +102,7 @@ OAuth2.storyName = "OAuth2";
 OAuth2.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", (request, result, context) =>
+      rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
         result(context.json({}))
       ),
@@ -118,7 +118,7 @@ TokenUnlinked.storyName = "Token (Unlinked Extension)";
 TokenUnlinked.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", (request, result, context) =>
+      rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
         result(context.json({}))
       ),
@@ -134,7 +134,7 @@ TokenLinked.storyName = "Token (Linked Extension)";
 TokenLinked.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", (request, result, context) =>
+      rest.get("/api/me/", async (request, result, context) =>
         result(
           context.json({
             id: uuidv4(),

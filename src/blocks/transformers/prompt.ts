@@ -55,7 +55,10 @@ export class Prompt extends Transformer {
     },
   });
 
-  async transform({ message, defaultValue }: BlockArgs): Promise<unknown> {
+  async transform({
+    message,
+    defaultValue,
+  }: BlockArgs<{ message: string; defaultValue: string }>): Promise<unknown> {
     // eslint-disable-next-line no-alert -- purpose of this brick is to show an alert
     const value = window.prompt(message, defaultValue);
 

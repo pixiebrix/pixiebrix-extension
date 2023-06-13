@@ -93,7 +93,10 @@ export class UrlParser extends Transformer {
     },
   };
 
-  async transform({ url, base }: BlockArgs): Promise<unknown> {
+  async transform({
+    url,
+    base,
+  }: BlockArgs<{ url: string | URL; base?: string | URL }>): Promise<unknown> {
     const { isValid, parse } = await import(
       /* webpackChunkName: "psl" */ "psl"
     );

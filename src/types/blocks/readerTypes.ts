@@ -48,6 +48,6 @@ export abstract class Reader extends Block implements IReader {
   abstract read(root: SelectorRoot): Promise<JsonObject>;
 
   async run({ root }: BlockArgs): Promise<JsonObject> {
-    return this.read(root);
+    return this.read(root as SelectorRoot);
   }
 }

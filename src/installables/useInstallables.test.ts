@@ -30,6 +30,8 @@ import {
   recipeDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
+import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn(),
@@ -43,7 +45,9 @@ describe("useInstallables", () => {
     appApiMock.onGet("/api/extensions/").reply(200, []);
 
     useAllRecipesMock.mockReset();
-    useAllRecipesMock.mockReturnValue({ data: undefined } as any);
+    useAllRecipesMock.mockReturnValue({
+      data: undefined,
+    } as UseCachedQueryResult<RecipeDefinition[]>);
   });
 
   it("handles empty state", async () => {
@@ -127,7 +131,7 @@ describe("useInstallables", () => {
     useAllRecipesMock.mockReturnValue({
       data: [recipeDefinitionFactory({ metadata })],
       error: undefined,
-    } as any);
+    } as UseCachedQueryResult<RecipeDefinition[]>);
 
     const wrapper = renderHook(() => useInstallables(), {
       setupRedux(dispatch) {

@@ -339,7 +339,7 @@ describe("dynamicElementStorage when no state is persisted", () => {
 
   test.each([undefined, null])(
     "setEditorState is NOP for: %s",
-    async (state) => {
+    async (state?: null) => {
       await saveEditorState(state);
       expect(setReduxStorageMock).not.toHaveBeenCalled();
     }

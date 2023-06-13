@@ -109,8 +109,10 @@ const ConfigurationTitle: React.FunctionComponent = () => {
       title = <PlainTitle />;
     } else {
       const activeDocumentElementName =
-        getProperty<string>(elementTypeLabels, activeDocumentElement.type) ??
-        "Unknown element";
+        getProperty<string>(
+          elementTypeLabels,
+          String(activeDocumentElement.type)
+        ) ?? "Unknown element";
       title = (
         <BreadcrumbTitle
           crumbTitle={block?.name}

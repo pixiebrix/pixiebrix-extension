@@ -129,7 +129,19 @@ export class AddPerson extends Effect {
   );
 
   async effect(
-    { pipedrive, name, owner_id, email, phone }: BlockArgs,
+    {
+      pipedrive,
+      name,
+      owner_id,
+      email,
+      phone,
+    }: BlockArgs<{
+      pipedrive: SanitizedServiceConfiguration;
+      name: string;
+      owner_id: number;
+      email?: string;
+      phone?: string;
+    }>,
     { logger }: BlockOptions
   ): Promise<void> {
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
