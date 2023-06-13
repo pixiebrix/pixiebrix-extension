@@ -34,10 +34,10 @@ import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
     await browser.permissions.getAll();
-  const additional = selectAdditionalPermissionsSync(permissions);
-  // TODO: Find a better solution than casting to any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- typings appear to be incorrect
-  await browser.permissions.remove(additional as any);
+  const additional = selectAdditionalPermissionsSync(
+    permissions
+  ) as Permissions.Permissions;
+  await browser.permissions.remove(additional);
 }
 
 const FactoryResetSettings: React.FunctionComponent = () => {

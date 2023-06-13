@@ -49,7 +49,7 @@ type SubmitCallbacks = {
   validate: (values: EditorValues) => Promise<BrickValidationResult>;
   remove: (id: UUID) => Promise<void>;
   submit: (
-    values: EditorValues,
+    values: EditorValues & { id: UUID },
     helpers: { setErrors: (errors: unknown) => void }
   ) => Promise<void>;
 };

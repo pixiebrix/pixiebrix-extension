@@ -16,7 +16,11 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import {
+  type TemplateEngine,
+  type BlockArgs,
+  type BlockOptions,
+} from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import Mustache from "mustache";
@@ -60,7 +64,7 @@ export class TemplateTransformer extends Transformer {
     {
       template,
       templateEngine = "mustache",
-    }: BlockArgs<{ template: string; templateEngine: string }>,
+    }: BlockArgs<{ template: string; templateEngine: TemplateEngine }>,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
     if (templateEngine !== "mustache") {

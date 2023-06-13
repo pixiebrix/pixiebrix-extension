@@ -131,10 +131,6 @@ export class FormTransformer extends Transformer {
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
     const formNonce = uuidv4();
-    // TODO: This looks like a potential issue according to the typing
-    // createFrameSource expects location to be either "modal" | "panel"
-    // but location cand also be "sidebar"
-    const frameSource = await createFrameSource(formNonce, location as Mode);
 
     const formDefinition = {
       schema,
@@ -190,6 +186,8 @@ export class FormTransformer extends Transformer {
         void cancelForm(formNonce);
       });
     } else {
+      const frameSource = await createFrameSource(formNonce, location);
+
       showModal({ url: frameSource, controller });
     }
 

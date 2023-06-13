@@ -28,7 +28,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { type TreeItem } from "@atlaskit/tree/types";
 import { acceptDrop } from "@/components/documentBuilder/hooks/useMoveElement";
 import { UnstyledButton } from "@/components/UnstyledButton";
@@ -56,10 +56,10 @@ const OutlineItem: React.FunctionComponent<
 }) => {
   const [hover, setHover] = useState(false);
 
-  const allow = dragItem
-    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: Find a better solution than disabling
-      acceptDrop(dragItem.data.element, item.data.element)
-    : false;
+  const { element: dragElement }: { element: DocumentElement } = dragItem.data;
+  const { element: itemElement }: { element: DocumentElement } = item.data;
+
+  const allow = dragItem ? acceptDrop(dragElement, itemElement) : false;
 
   return (
     <div
@@ -109,9 +109,7 @@ const OutlineItem: React.FunctionComponent<
           )}
         </div>
         <div className="flex-grow-1">
-          <span>
-            {elementTypeLabels[item.data.element.type as DocumentElementType]}
-          </span>
+          <span>{elementTypeLabels[itemElement.type]}</span>
         </div>
         {hover && (
           <div>
