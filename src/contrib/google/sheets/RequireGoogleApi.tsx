@@ -51,7 +51,7 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
         $browser: detectBrowser(navigator.userAgent, navigator.vendor),
       });
     } else if (!isInitialized) {
-      reportEvent("UninitializedGAPIBrowserGateView", {
+      reportEvent("UninitializedGAPIGateView", {
         $browser: detectBrowser(navigator.userAgent, navigator.vendor),
       });
     }
