@@ -44,7 +44,7 @@ jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({
 jest.mock("@/contrib/google/initGoogle", () => ({
   __esModule: true,
   isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGoogleSupported: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn(() => () => {}),
 }));
 
