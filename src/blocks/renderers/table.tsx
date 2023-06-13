@@ -18,7 +18,10 @@
 import { Renderer } from "@/types/blocks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
-import makeDataTable, { type Row } from "@/blocks/renderers/dataTable";
+import makeDataTable, {
+  type ColumnDefinition,
+  type Row,
+} from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
@@ -87,7 +90,13 @@ export class TableRenderer extends Renderer {
   );
 
   async render(
-    { columns, data: userData }: BlockArgs,
+    {
+      columns,
+      data: userData,
+    }: BlockArgs<{
+      columns: Array<ColumnDefinition<Row> & { href: string }>;
+      data: unknown;
+    }>,
     { ctxt = [] }: BlockOptions
   ): Promise<SafeHTML> {
     let data = userData ?? ctxt;
@@ -106,7 +115,7 @@ export class TableRenderer extends Renderer {
     }
 
     const table = makeDataTable(
-      columns.map(({ label, property, href }: any) => ({
+      columns.map(({ label, property, href }) => ({
         label,
         property,
         renderer: href ? makeLinkRenderer(href) : undefined,

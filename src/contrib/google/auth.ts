@@ -84,6 +84,7 @@ class PermissionsError extends Error {
 
 export async function handleGoogleRequestRejection(
   token: string,
+  // TODO: Find a better solution than casting to any
   error: any
 ): Promise<Error> {
   console.debug("Google rejected request", { error });
@@ -96,10 +97,12 @@ export async function handleGoogleRequestRejection(
   if (status === 404) {
     return new PermissionsError(
       "Cannot locate the Google drive resource. Have you been granted access?",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       status
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   if ([403, 401].includes(status)) {
     await chromeP.identity.removeCachedAuthToken({ token });
     console.debug(
@@ -109,6 +112,7 @@ export async function handleGoogleRequestRejection(
       `Permission denied, re-authenticate with Google and try again. Details: ${getErrorMessage(
         error.result.error
       )}`,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       status
     );
   }

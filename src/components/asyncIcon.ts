@@ -8,9 +8,9 @@ import {
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 
-async function handleIconImport(
-  moduleImport: Promise<{ definition: IconProp }>
-): Promise<IconProp> {
+type ModuleImport = Promise<{ definition: IconProp }>;
+
+async function handleIconImport(moduleImport: ModuleImport): Promise<IconProp> {
   try {
     const { definition } = await moduleImport;
     return definition;
@@ -39,7 +39,7 @@ export async function fetchFortAwesomeIcon(
         import(
           /* webpackChunkName: "free-solid-svg-icons/[request]" */
           `@fortawesome/free-solid-svg-icons/${camelCase(iconName)}.js`
-        )
+        ) as ModuleImport
       );
     }
 
@@ -48,7 +48,7 @@ export async function fetchFortAwesomeIcon(
         import(
           /* webpackChunkName: "free-brands-svg-icons/[request]" */
           `@fortawesome/free-brands-svg-icons/${camelCase(iconName)}.js`
-        )
+        ) as ModuleImport
       );
     }
 
@@ -57,7 +57,7 @@ export async function fetchFortAwesomeIcon(
         import(
           /* webpackChunkName: "free-regular-svg-icons/[request]" */
           `@fortawesome/free-regular-svg-icons/${camelCase(iconName)}.js`
-        )
+        ) as ModuleImport
       );
     }
 

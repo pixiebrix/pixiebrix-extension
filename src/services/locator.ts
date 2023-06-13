@@ -59,8 +59,7 @@ function excludeSecrets(
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
-    // @ts-expect-error: ts doesn't think $ref can be on SchemaDefinition
-    if (!REF_SECRETS.includes(type.$ref)) {
+    if (typeof type !== "boolean" && !REF_SECRETS.includes(type.$ref)) {
       // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
       result[key] = config[key];

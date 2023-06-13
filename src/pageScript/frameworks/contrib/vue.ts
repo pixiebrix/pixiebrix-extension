@@ -119,7 +119,7 @@ export class VueRootVisitor implements RootInstanceVisitor<Instance> {
       return true;
     }
 
-    const instance = (node as any).__vue__;
+    const instance = (node as unknown as VueHTMLElement).__vue__;
     return this.processInstance(instance);
   }
 }

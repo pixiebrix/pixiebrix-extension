@@ -66,7 +66,7 @@ export class ParseCsv extends Transformer {
   });
 
   async transform(
-    { content }: BlockArgs,
+    { content }: BlockArgs<{ content: string }>,
     { logger }: BlockOptions
   ): Promise<unknown> {
     const { default: Papa } = await import(

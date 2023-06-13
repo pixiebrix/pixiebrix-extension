@@ -139,7 +139,7 @@ function processElement($elements: JQuery, selector: SingleSelector) {
     value = cleanValue($elements.text());
   }
 
-  return castValue(value, selector.type);
+  return castValue(String(value), selector.type);
 }
 
 async function select(

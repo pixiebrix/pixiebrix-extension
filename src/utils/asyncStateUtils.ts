@@ -16,6 +16,7 @@
  */
 
 import {
+  type ExtractValueType,
   type AsyncState,
   type AsyncStateArray,
   type AsyncValueArray,
@@ -75,7 +76,9 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // In success state only if all information is available
   if (states.every((x) => x.isSuccess)) {
     try {
-      const data = mergeFunction(...(states.map((x) => x.data) as any));
+      const data = mergeFunction(
+        ...(states.map((x) => x.data) as ExtractValueType<AsyncStates>)
+      );
 
       // We might consider checking that currentData is not undefined for any of the states instead of using isFetching.
       // That would enable the merged state to include currentData even if the individual states are still fetching.
@@ -85,7 +88,11 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
       //  before others. (Although the same issue technically applies to `data` above...)
       const currentData = isFetching
         ? undefined
-        : mergeFunction(...(states.map((x) => x.currentData) as any));
+        : mergeFunction(
+            ...(states.map(
+              (x) => x.currentData
+            ) as ExtractValueType<AsyncStates>)
+          );
 
       return {
         data,

@@ -23,10 +23,11 @@ import VarMap, {
   VarExistence,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import getMenuOptions from "./getMenuOptions";
+import { type JsonObject } from "type-fest";
 
 describe("setting values", () => {
   let knownVars: VarMap;
-  let trace: any;
+  let trace: Record<string, JsonObject>;
   beforeEach(() => {
     knownVars = new VarMap();
     knownVars.setExistenceFromValues({

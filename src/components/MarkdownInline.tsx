@@ -36,7 +36,7 @@ const MarkdownInline: React.FunctionComponent<MarkdownProps> = ({
   const content = useMemo(
     () =>
       typeof markdown === "string"
-        ? sanitize(marked.parseInline(markdown), sanitizeConfig)
+        ? sanitize(String(marked.parseInline(markdown)), sanitizeConfig)
         : null,
     [markdown, sanitizeConfig]
   );

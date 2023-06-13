@@ -28,6 +28,7 @@ import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
 import {
+  type Service,
   type RawServiceConfiguration,
   type SecretsConfig,
 } from "@/types/serviceTypes";
@@ -92,7 +93,7 @@ serviceRegistry.register([
     ) => requestConfig,
     isToken: true,
   },
-] as any);
+] as Service[]);
 
 const requestConfig: AxiosRequestConfig = {
   url: "https://www.example.com",
@@ -190,7 +191,7 @@ describe("proxy service requests", () => {
       proxiedServiceConfig,
       requestConfig
     );
-    expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
+    expect(JSON.parse(String(axiosMock.history.post[0].data))).toEqual({
       ...requestConfig,
       service_id: EXAMPLE_SERVICE_API,
       auth_id: proxiedServiceConfig.id,

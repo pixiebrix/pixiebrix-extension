@@ -89,7 +89,7 @@ function useOpenEditorTab() {
 
 const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
   const [activeTab, setTab] = useState("edit");
-  const [editorWidth, setEditorWidth] = useState();
+  const [editorWidth, setEditorWidth] = useState<number>();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
   const { id: brickId } = useParams<{ id: UUID }>();
@@ -122,7 +122,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
 
   const openEditorTab = useOpenEditorTab();
 
-  const editorRef = useRef(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editorRef.current) {
