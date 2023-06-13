@@ -21,6 +21,12 @@ import {
 } from "@/contrib/google/auth";
 import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
+import { expectContext } from "@/utils/expectContext";
+import initGoogle, {
+  isGoogleInitialized,
+  isGAPISupported,
+  markGoogleInvalidated,
+} from "@/contrib/google/initGoogle";
 
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
@@ -29,10 +35,56 @@ type BatchUpdateSpreadsheetResponse =
 type Spreadsheet = gapi.client.sheets.Spreadsheet;
 type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 
-export async function createTab(spreadsheetId: string, tabName: string) {
+/**
+ * Ensure GAPI is initialized and return the Google token.
+ */
+async function _ensureSheetsReadyOnce(): Promise<string> {
+  expectContext("extension");
+
+  if (!isGAPISupported()) {
+    throw new Error("Google API not supported by browser");
+  }
+
+  if (!isGoogleInitialized()) {
+    await initGoogle();
+  }
+
   const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
     interactive: false,
   });
+
+  if (!gapi.client.sheets) {
+    markGoogleInvalidated();
+    throw new Error("gapi sheets module not loaded");
+  }
+
+  return token;
+}
+
+async function ensureSheetsReady(): Promise<string> {
+  const maxRetries = 3;
+  let retry = 0;
+  let lastError;
+
+  while (retry < maxRetries) {
+    try {
+      return await _ensureSheetsReadyOnce();
+    } catch (error) {
+      console.error("Error ensuring google sheets ready", {
+        error,
+        retry,
+      });
+      lastError = error;
+      retry++;
+    }
+  }
+
+  throw lastError;
+}
+
+export async function createTab(spreadsheetId: string, tabName: string) {
+  const token = await ensureSheetsReady();
+
   try {
     return (await gapi.client.sheets.spreadsheets.batchUpdate({
       spreadsheetId,
@@ -58,9 +110,8 @@ export async function appendRows(
   tabName: string,
   values: any[]
 ) {
-  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive: false,
-  });
+  const token = await ensureSheetsReady();
+
   try {
     return (await gapi.client.sheets.spreadsheets.values.append({
       spreadsheetId,
@@ -77,9 +128,8 @@ export async function appendRows(
 }
 
 export async function batchUpdate(spreadsheetId: string, requests: any[]) {
-  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive: false,
-  });
+  const token = await ensureSheetsReady();
+
   try {
     return (await gapi.client.sheets.spreadsheets.batchUpdate({
       spreadsheetId,
@@ -96,9 +146,8 @@ export async function batchGet(
   spreadsheetId: string,
   ranges: string | string[]
 ) {
-  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive: false,
-  });
+  const token = await ensureSheetsReady();
+
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
       spreadsheetId,
@@ -121,13 +170,7 @@ export async function batchGet(
 export async function getSheetProperties(
   spreadsheetId: string
 ): Promise<SpreadsheetProperties> {
-  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive: false,
-  });
-
-  if (!gapi.client.sheets) {
-    throw new Error("gapi sheets module not loaded");
-  }
+  const token = await ensureSheetsReady();
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
@@ -160,13 +203,7 @@ export async function getSheetProperties(
 }
 
 export async function getTabNames(spreadsheetId: string): Promise<string[]> {
-  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive: false,
-  });
-
-  if (!gapi.client.sheets) {
-    throw new Error("gapi sheets module not loaded");
-  }
+  const token = await ensureSheetsReady();
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({

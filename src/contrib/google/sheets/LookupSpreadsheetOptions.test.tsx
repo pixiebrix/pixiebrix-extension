@@ -30,7 +30,7 @@ import { render } from "@/pageEditor/testHelpers";
 import { services, sheets } from "@/background/messenger/api";
 import {
   isGoogleInitialized,
-  isGoogleSupported,
+  isGAPISupported,
 } from "@/contrib/google/initGoogle";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -49,8 +49,8 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
-const isGoogleSupportedMock = isGoogleSupported as jest.MockedFunction<
-  typeof isGoogleSupported
+const isGoogleSupportedMock = isGAPISupported as jest.MockedFunction<
+  typeof isGAPISupported
 >;
 const isGoogleInitializedMock = isGoogleInitialized as jest.MockedFunction<
   typeof isGoogleInitialized
