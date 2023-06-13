@@ -101,10 +101,13 @@ function useGoogleSpreadsheetPicker(): {
       // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiloadlibraries-callbackorconfig------
       gapi.load("picker", {
         callback: resolve,
-        onerror: () => reject(new Error("gapi picker failed to load")),
+        onerror() {
+          reject(new Error("gapi picker failed to load"));
+        },
         timeout: PICKER_LOAD_TIMEOUT_MS,
-        ontimeout: () =>
-          reject(new Error("gapi picker failed to load before timeout")),
+        ontimeout() {
+          reject(new Error("gapi picker failed to load before timeout"));
+        },
       });
     });
 
