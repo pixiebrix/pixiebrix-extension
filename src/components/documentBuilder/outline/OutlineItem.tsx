@@ -56,8 +56,10 @@ const OutlineItem: React.FunctionComponent<
 }) => {
   const [hover, setHover] = useState(false);
 
-  const { element: dragElement }: { element: DocumentElement } = dragItem.data;
-  const { element: itemElement }: { element: DocumentElement } = item.data;
+  const { element: dragElement }: { element: DocumentElement } =
+    dragItem?.data ?? {};
+  const { element: itemElement }: { element: DocumentElement } =
+    item.data ?? {};
 
   const allow = dragItem ? acceptDrop(dragElement, itemElement) : false;
 

@@ -36,6 +36,7 @@ import testMiddleware, {
 } from "@/testUtils/testMiddleware";
 import notify from "@/utils/notify";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("@/utils/notify", () => ({
   __esModule: true,
@@ -111,6 +112,7 @@ describe("useSubmitBrick", () => {
           reactivate: false,
           public: true,
           organizations: [],
+          id: uuidv4(),
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
@@ -161,6 +163,7 @@ describe("useSubmitBrick", () => {
           reactivate: false,
           public: true,
           organizations: [],
+          id: uuidv4(),
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
