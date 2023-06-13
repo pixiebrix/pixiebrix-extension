@@ -16,17 +16,19 @@
  */
 import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
 import { useCallback, useState } from "react";
-import { ensureGoogleToken, isAuthRejectedError } from "@/contrib/google/auth";
-import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
+import { isAuthRejectedError } from "@/contrib/google/auth";
 import { isNullOrBlank } from "@/utils";
 import { type Data, type Doc } from "@/contrib/google/sheets/types";
 import pDefer from "p-defer";
 import { reportEvent } from "@/telemetry/events";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
+import { ensureSheetsReady } from "@/contrib/google/sheets/handlers";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
+
+const PICKER_LOAD_TIMEOUT_MS = 5000;
 
 /**
  * React Hook returning callback for showing a Google Spreadsheet file picker.
@@ -53,7 +55,8 @@ function useGoogleSpreadsheetPicker(): {
 
   const ensureSheetsToken = useCallback(async () => {
     try {
-      const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
+      const token = await ensureSheetsReady({
+        maxRetries: 1,
         interactive: true,
       });
       setHasRejectedPermissions(false);
@@ -94,8 +97,15 @@ function useGoogleSpreadsheetPicker(): {
 
     const token = await ensureSheetsToken();
 
-    await new Promise((resolve) => {
-      gapi.load("picker", { callback: resolve });
+    await new Promise((resolve, reject) => {
+      // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiloadlibraries-callbackorconfig------
+      gapi.load("picker", {
+        callback: resolve,
+        onerror: () => reject(new Error("gapi picker failed to load")),
+        timeout: PICKER_LOAD_TIMEOUT_MS,
+        ontimeout: () =>
+          reject(new Error("gapi picker failed to load before timeout")),
+      });
     });
 
     // https://developers.google.com/drive/picker/reference#docs-view

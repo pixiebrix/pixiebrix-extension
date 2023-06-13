@@ -38,7 +38,11 @@ type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 /**
  * Ensure GAPI is initialized and return the Google token.
  */
-async function _ensureSheetsReadyOnce(): Promise<string> {
+async function _ensureSheetsReadyOnce({
+  interactive,
+}: {
+  interactive: boolean;
+}): Promise<string> {
   expectContext("extension");
 
   if (!isGAPISupported()) {
@@ -50,7 +54,7 @@ async function _ensureSheetsReadyOnce(): Promise<string> {
   }
 
   const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive: false,
+    interactive,
   });
 
   if (!gapi.client.sheets) {
@@ -61,29 +65,34 @@ async function _ensureSheetsReadyOnce(): Promise<string> {
   return token;
 }
 
-async function ensureSheetsReady(): Promise<string> {
-  const maxRetries = 3;
+export async function ensureSheetsReady({
+  maxRetries = 3,
+  interactive,
+}: {
+  maxRetries?: number;
+  interactive: boolean;
+}): Promise<string> {
   let retry = 0;
   let lastError;
 
-  while (retry < maxRetries) {
+  do {
     try {
       // eslint-disable-next-line no-await-in-loop -- retry loop
-      return await _ensureSheetsReadyOnce();
+      return await _ensureSheetsReadyOnce({ interactive });
     } catch (error) {
-      console.error("Error ensuring google sheets API ready", error, {
+      console.error("Error ensuring Google Sheets API ready", error, {
         retry,
       });
       lastError = error;
       retry++;
     }
-  }
+  } while (retry < maxRetries);
 
   throw lastError;
 }
 
 export async function createTab(spreadsheetId: string, tabName: string) {
-  const token = await ensureSheetsReady();
+  const token = await ensureSheetsReady({ interactive: false });
 
   try {
     return (await gapi.client.sheets.spreadsheets.batchUpdate({
@@ -110,7 +119,7 @@ export async function appendRows(
   tabName: string,
   values: any[]
 ) {
-  const token = await ensureSheetsReady();
+  const token = await ensureSheetsReady({ interactive: false });
 
   try {
     return (await gapi.client.sheets.spreadsheets.values.append({
@@ -128,7 +137,7 @@ export async function appendRows(
 }
 
 export async function batchUpdate(spreadsheetId: string, requests: any[]) {
-  const token = await ensureSheetsReady();
+  const token = await ensureSheetsReady({ interactive: false });
 
   try {
     return (await gapi.client.sheets.spreadsheets.batchUpdate({
@@ -146,7 +155,7 @@ export async function batchGet(
   spreadsheetId: string,
   ranges: string | string[]
 ) {
-  const token = await ensureSheetsReady();
+  const token = await ensureSheetsReady({ interactive: false });
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
@@ -170,7 +179,7 @@ export async function batchGet(
 export async function getSheetProperties(
   spreadsheetId: string
 ): Promise<SpreadsheetProperties> {
-  const token = await ensureSheetsReady();
+  const token = await ensureSheetsReady({ interactive: false });
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
@@ -192,6 +201,7 @@ export async function getSheetProperties(
         resolve(r.result);
       });
     });
+
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }
@@ -203,7 +213,7 @@ export async function getSheetProperties(
 }
 
 export async function getTabNames(spreadsheetId: string): Promise<string[]> {
-  const token = await ensureSheetsReady();
+  const token = await ensureSheetsReady({ interactive: false });
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
