@@ -46,6 +46,7 @@ import {
 } from "@/types/runtimeTypes";
 import { Renderer } from "@/types/blocks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
+import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 
 const fields = {
   DescriptionField,
@@ -87,12 +88,12 @@ const CustomFormComponent: React.FunctionComponent<{
           fields={fields}
           widgets={uiWidgets}
           FieldTemplate={FieldTemplate}
-          onChange={async ({ formData }) => {
+          onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
             if (autoSave) {
               await onSubmit(formData);
             }
           }}
-          onSubmit={async ({ formData }) => {
+          onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
             await onSubmit(formData);
           }}
         >
@@ -175,7 +176,7 @@ async function setData(
   values: UnknownObject,
   { blueprintId, extensionId }: Context
 ): Promise<void> {
-  const cleanValues = JSON.parse(safeJsonStringify(values));
+  const cleanValues: JsonObject = JSON.parse(safeJsonStringify(values));
 
   switch (storage.type) {
     case "localStorage": {

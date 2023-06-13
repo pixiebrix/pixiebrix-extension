@@ -97,7 +97,7 @@ ActivateBlueprint.args = {
 ActivateBlueprint.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/marketplace/listings/", (request, result, context) =>
+      rest.get("/api/marketplace/listings/", async (request, result, context) =>
         result(
           context.json([
             {

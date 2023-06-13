@@ -48,6 +48,7 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
     throw new Error(`Unexpected starter brick type: ${config.definition.type}`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the factory methods perform validation
+  // TODO: Find a better solution than casting to any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- the factory methods perform validation
   return TYPE_MAP[config.definition.type](config as any);
 }

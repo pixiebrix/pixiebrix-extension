@@ -81,7 +81,11 @@ export class ElementEvent extends Effect {
   }
 
   async effect(
-    { selector, isRootAware, event }: BlockArgs,
+    {
+      selector,
+      isRootAware,
+      event,
+    }: BlockArgs<{ selector: string; isRootAware: boolean; event: string }>,
     { logger, root }: BlockOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({

@@ -310,7 +310,9 @@ describe("SchemaField", () => {
 
       await userEvent.click(toggle);
 
-      const newOption = screen.getByText(toggleOption, { exact: false });
+      const newOption = screen.getByText(String(toggleOption), {
+        exact: false,
+      });
       expect(newOption).not.toBeNull();
 
       // Await this element to avoid the "unable to click element" error
@@ -423,6 +425,7 @@ describe("SchemaField", () => {
       expectedOptions: ["select", "var", "omit"],
     },
   ];
+  // eslint-disable-next-line jest/expect-expect
   test.each(databaseFieldTestCases)(
     "database field toggle options (required: $isRequired)",
     async ({ isRequired, expectedOptions }) => {

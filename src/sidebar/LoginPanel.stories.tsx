@@ -25,13 +25,14 @@ import settingsSlice from "@/store/settingsSlice";
 import servicesSlice from "@/store/servicesSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/services/api";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
   title: "Sidebar/LoginPanel",
   component: LoginPanel,
 } as ComponentMeta<typeof LoginPanel>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       settings: settingsSlice.reducer,

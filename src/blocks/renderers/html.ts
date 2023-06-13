@@ -37,7 +37,7 @@ export class HtmlRenderer extends Renderer {
     },
   });
 
-  async render({ html }: BlockArgs): Promise<SafeHTML> {
+  async render({ html }: BlockArgs<{ html: string }>): Promise<SafeHTML> {
     return sanitize(html);
   }
 }

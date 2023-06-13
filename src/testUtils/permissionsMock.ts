@@ -50,27 +50,29 @@ browser.permissions = {
       )
   ),
   onAdded: {
-    addListener: jest.fn().mockImplementation((listener) => {
+    addListener: jest.fn().mockImplementation((listener: () => void) => {
       addListeners.add(listener);
     }),
-    removeListener: jest.fn().mockImplementation((listener) => {
+    removeListener: jest.fn().mockImplementation((listener: () => void) => {
       addListeners.delete(listener);
     }),
     hasListener: jest
       .fn()
-      .mockImplementation((listener) => addListeners.has(listener)),
+      .mockImplementation((listener: () => void) => addListeners.has(listener)),
     hasListeners: jest.fn().mockReturnValue(() => addListeners.size > 0),
   },
   onRemoved: {
-    addListener: jest.fn().mockImplementation((listener) => {
+    addListener: jest.fn().mockImplementation((listener: () => void) => {
       removeListeners.add(listener);
     }),
-    removeListener: jest.fn().mockImplementation((listener) => {
+    removeListener: jest.fn().mockImplementation((listener: () => void) => {
       removeListeners.delete(listener);
     }),
     hasListener: jest
       .fn()
-      .mockImplementation((listener) => removeListeners.has(listener)),
+      .mockImplementation((listener: () => void) =>
+        removeListeners.has(listener)
+      ),
     hasListeners: jest.fn().mockImplementation(() => removeListeners.size > 0),
   },
   remove: jest

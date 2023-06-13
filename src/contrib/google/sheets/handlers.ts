@@ -187,17 +187,20 @@ export async function getSheetProperties(
       fields: "properties",
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
+      // TODO: Find a better solution than casting to any
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
         if (r.code >= 300) {
           reject(
             new Error(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               r.message ?? `Google sheets request failed with status: ${r.code}`
             )
           );
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         resolve(r.result);
       });
     });
@@ -221,17 +224,20 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
       fields: "sheets.properties",
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
+      // TODO: Find a better solution than casting to any
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
         if (r.code >= 300) {
           reject(
             new Error(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               r.message ?? `Google sheets request failed with status: ${r.code}`
             )
           );
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         resolve(r.result);
       });
     });

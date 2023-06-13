@@ -71,7 +71,10 @@ describe("ElementEvent", () => {
         isRootAware: true,
         event: "click",
       }),
-      { root: document.querySelector("button"), logger } as any
+      {
+        root: document.querySelector("button"),
+        logger,
+      } as unknown as BlockOptions
     );
 
     expect(clickHandler).toHaveBeenCalled();

@@ -37,7 +37,11 @@ export class NavigateURLEffect extends Effect {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArgs): Promise<void> {
+  }: BlockArgs<{
+    url: string;
+    params?: Record<string, string | number | boolean>;
+    spaceEncoding?: "plus" | "percent";
+  }>): Promise<void> {
     document.location.href = makeURL(url, params, spaceEncoding);
   }
 }
@@ -58,7 +62,11 @@ export class OpenURLEffect extends Effect {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArgs): Promise<void> {
+  }: BlockArgs<{
+    url: string;
+    params?: Record<string, string | number | boolean>;
+    spaceEncoding?: "plus" | "percent";
+  }>): Promise<void> {
     await openTab({
       url: makeURL(url, params, spaceEncoding),
     });
