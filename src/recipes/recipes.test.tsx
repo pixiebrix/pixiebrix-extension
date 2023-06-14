@@ -61,7 +61,7 @@ test("load recipes and save one", async () => {
     ])
     .onPut(`/api/bricks/${packageId}/`)
     .reply(({ data }) => {
-      resultRecipeDefinition = JSON.parse(data);
+      resultRecipeDefinition = JSON.parse(data as string);
       return [201, { data }];
     });
 
@@ -143,6 +143,8 @@ test("load recipes and save one", async () => {
   ]);
 
   // Validate the recipe config sent to server
-  const validationResult = await validateSchema(resultRecipeDefinition.config);
+  const validationResult = await validateSchema(
+    resultRecipeDefinition.config as string
+  );
   expect(validationResult).toEqual({});
 });

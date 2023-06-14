@@ -47,7 +47,7 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGoogleSupported: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
@@ -56,17 +56,9 @@ jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),
 }));
 
-const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
-  typeof sheets.getSheetProperties
->;
-
-const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
-  typeof sheets.getTabNames
->;
-
-const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
-  typeof sheets.getHeaders
->;
+const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
+const getTabNamesMock = jest.mocked(sheets.getTabNames);
+const getHeadersMock = jest.mocked(sheets.getHeaders);
 
 beforeAll(() => {
   registerDefaultWidgets();

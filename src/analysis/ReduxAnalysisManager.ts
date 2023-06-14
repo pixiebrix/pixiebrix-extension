@@ -154,7 +154,7 @@ class ReduxAnalysisManager {
             trailing: true,
           })
         : effect,
-    } as any);
+    } as never);
   }
 }
 

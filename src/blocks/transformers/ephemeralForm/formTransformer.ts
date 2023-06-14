@@ -34,6 +34,7 @@ import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
 import { type BlockConfig } from "@/blocks/types";
 import { isExpression } from "@/runtime/mapArgs";
+import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -121,7 +122,7 @@ export class FormTransformer extends Transformer {
       cancelable = true,
       submitCaption = "Submit",
       location = "modal",
-    }: BlockArgs,
+    }: BlockArgs<FormDefinition>,
     { logger, abortSignal }: BlockOptions
   ): Promise<unknown> {
     expectContext("contentScript");
@@ -130,7 +131,6 @@ export class FormTransformer extends Transformer {
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
     const formNonce = uuidv4();
-    const frameSource = await createFrameSource(formNonce, location);
 
     const formDefinition = {
       schema,
@@ -186,6 +186,8 @@ export class FormTransformer extends Transformer {
         void cancelForm(formNonce);
       });
     } else {
+      const frameSource = await createFrameSource(formNonce, location);
+
       showModal({ url: frameSource, controller });
     }
 

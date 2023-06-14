@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import initGoogle, {
   subscribe,
   isGoogleInitialized,
-  isGoogleSupported,
+  isGAPISupported,
 } from "@/contrib/google/initGoogle";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
+import { reportEvent } from "@/telemetry/events";
+import { detectBrowser } from "@/vendors/mixpanel";
 
 /**
  * Wrapper component to require that the Google API is initialized before rendering its children.
@@ -32,6 +34,7 @@ import useUserAction from "@/hooks/useUserAction";
  */
 export const RequireGoogleApi: React.FC = ({ children }) => {
   const isInitialized = useSyncExternalStore(subscribe, isGoogleInitialized);
+  const isSupported = isGAPISupported();
 
   const initGoogleAction = useUserAction(
     initGoogle,
@@ -41,7 +44,20 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
     []
   );
 
-  if (!isGoogleSupported()) {
+  // Report to help provide customer support
+  useEffect(() => {
+    if (!isSupported) {
+      reportEvent("UnsupportedBrowserGateView", {
+        $browser: detectBrowser(navigator.userAgent, navigator.vendor),
+      });
+    } else if (!isInitialized) {
+      reportEvent("UninitializedGAPIGateView", {
+        $browser: detectBrowser(navigator.userAgent, navigator.vendor),
+      });
+    }
+  }, [isSupported, isInitialized]);
+
+  if (!isSupported) {
     return (
       <div>
         The Google API is not supported in this browser. Please use Google

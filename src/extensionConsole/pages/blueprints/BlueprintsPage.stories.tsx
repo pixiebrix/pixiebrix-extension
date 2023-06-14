@@ -26,13 +26,14 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
 import { recipesSlice } from "@/recipes/recipesSlice";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
   title: "Blueprints/BlueprintsPage",
   component: BlueprintsPage,
 } as ComponentMeta<typeof BlueprintsPage>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,

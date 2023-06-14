@@ -35,7 +35,7 @@
   "sandbox": {
     "pages": ["sandbox.html"]
   },
-  "optional_permissions": ["clipboardWrite", "*://*/*", "<all_urls>"],
+  "optional_permissions": ["clipboardWrite"],
   "permissions": [
     "activeTab",
     "storage",
@@ -43,7 +43,8 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "https://*.pixiebrix.com/*"
+    "*://*/*",
+    "<all_urls>"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {

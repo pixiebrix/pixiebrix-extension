@@ -16,13 +16,20 @@
  */
 
 import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { type EditablePackage } from "@/types/contract";
 
 describe("getKindDisplayName", () => {
-  it.each(["block", "Block", "reader"])("maps %s to Brick", (kind) => {
-    expect(getKindDisplayName(kind as any)).toEqual("Brick");
-  });
+  it.each(["block", "Block", "reader"])(
+    "maps %s to Brick",
+    (kind: EditablePackage["kind"]) => {
+      expect(getKindDisplayName(kind)).toEqual("Brick");
+    }
+  );
 
-  it.each(["recipe", "Recipe", "blueprint"])("maps %s to Mod", (kind) => {
-    expect(getKindDisplayName(kind as any)).toEqual("Mod");
-  });
+  it.each(["recipe", "Recipe", "blueprint"])(
+    "maps %s to Mod",
+    (kind: EditablePackage["kind"]) => {
+      expect(getKindDisplayName(kind)).toEqual("Mod");
+    }
+  );
 });

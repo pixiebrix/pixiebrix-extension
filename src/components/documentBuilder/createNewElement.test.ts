@@ -102,6 +102,7 @@ test("sets default config for button", () => {
 
 test("throws on unknown elements", () => {
   expect(() => {
-    createNewElement("unknown" as any);
+    // @ts-expect-error intentionally testing an invalid value
+    createNewElement("unknown");
   }).toThrow();
 });

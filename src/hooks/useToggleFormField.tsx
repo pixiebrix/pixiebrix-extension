@@ -26,6 +26,7 @@ import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
@@ -55,7 +56,8 @@ function useToggleFormField(
   const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
   const { values: formState, setValues: setFormState } =
     useFormikContext<FormState>();
-  const parentValues = getIn(formState, parentFieldName) ?? formState;
+  const parentValues: UnknownObject =
+    getIn(formState, parentFieldName) ?? formState;
   const value = getIn(formState, name);
 
   const inputMode = useMemo(

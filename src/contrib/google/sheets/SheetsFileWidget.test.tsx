@@ -27,7 +27,10 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
-import { isGoogleInitialized } from "@/contrib/google/initGoogle";
+import {
+  isGAPISupported,
+  isGoogleInitialized,
+} from "@/contrib/google/initGoogle";
 import userEvent from "@testing-library/user-event";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
@@ -44,7 +47,7 @@ jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({
 jest.mock("@/contrib/google/initGoogle", () => ({
   __esModule: true,
   isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGoogleSupported: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn(() => () => {}),
 }));
 
@@ -59,11 +62,13 @@ jest.mock("@/background/messenger/api", () => ({
 const useGoogleSpreadsheetPickerMock = jest.mocked(useGoogleSpreadsheetPicker);
 const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
 const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
+const isGAPISupportedMock = jest.mocked(isGAPISupported);
 
 describe("SheetsFileWidget", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     isGoogleInitializedMock.mockReturnValue(true);
+    isGAPISupportedMock.mockReturnValue(true);
   });
 
   it("smoke test", async () => {
@@ -79,7 +84,7 @@ describe("SheetsFileWidget", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("required gapi", async () => {
+  it("requires gapi", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
 
     render(
@@ -98,10 +103,34 @@ describe("SheetsFileWidget", () => {
     ).toBeVisible();
   });
 
+  it("requires gapi support", async () => {
+    isGAPISupportedMock.mockReturnValue(false);
+
+    render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    // Text provided by the requireGoogleHOC
+    expect(
+      screen.getByText(
+        "The Google API is not supported in this browser. Please use Google Chrome."
+      )
+    ).toBeVisible();
+  });
+
   it("selects from file picker", async () => {
     const showPickerMock = jest.fn().mockResolvedValue({
       id: "abc123",
       name: "Test Sheet",
+    });
+
+    getSheetPropertiesMock.mockResolvedValue({
+      title: "Test Sheet",
     });
 
     useGoogleSpreadsheetPickerMock.mockReturnValue({
@@ -122,6 +151,9 @@ describe("SheetsFileWidget", () => {
     await act(async () => {
       await userEvent.click(screen.getByText("Select"));
     });
+
+    // Verify the widget fetches the information for the selected sheet to re-verify access to the sheet via the API
+    expect(getSheetPropertiesMock).toHaveBeenCalledOnce();
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -177,6 +209,10 @@ describe("SheetsFileWidget", () => {
   });
 
   it("removes unused service on mount", async () => {
+    getSheetPropertiesMock.mockResolvedValue({
+      title: "Test Sheet",
+    });
+
     const initialValues = formStateFactory(
       {
         services: [

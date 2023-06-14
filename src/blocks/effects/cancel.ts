@@ -40,7 +40,7 @@ export class CancelEffect extends Effect {
     },
   };
 
-  async effect({ message }: BlockArgs): Promise<void> {
+  async effect({ message }: BlockArgs<{ message: string }>): Promise<void> {
     throw new CancelError(message ?? "Action cancelled");
   }
 }

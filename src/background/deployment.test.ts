@@ -48,6 +48,7 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { type RegistryPackage } from "@/types/contract";
 
 setContext("background");
 const axiosMock = new MockAdapter(axios);
@@ -225,7 +226,7 @@ describe("updateDeployments", () => {
 
     const extensionPoint = extensionPointDefinitionFactory();
     const brick = {
-      ...parsePackage(extensionPoint as any),
+      ...parsePackage(extensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
     registryFindMock.mockResolvedValue(brick);
@@ -312,7 +313,7 @@ describe("updateDeployments", () => {
 
     const extensionPoint = extensionPointDefinitionFactory();
     const brick = {
-      ...parsePackage(extensionPoint as any),
+      ...parsePackage(extensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
     registryFindMock.mockResolvedValue(brick);
@@ -523,7 +524,7 @@ describe("updateDeployments", () => {
   test("can uninstall all deployments", async () => {
     const personalExtensionPoint = extensionPointDefinitionFactory();
     const personalBrick = {
-      ...parsePackage(personalExtensionPoint as any),
+      ...parsePackage(personalExtensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
@@ -537,7 +538,7 @@ describe("updateDeployments", () => {
 
     const deploymentExtensionPoint = extensionPointDefinitionFactory();
     const deploymentsBrick = {
-      ...parsePackage(deploymentExtensionPoint as any),
+      ...parsePackage(deploymentExtensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 

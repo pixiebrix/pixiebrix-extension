@@ -39,7 +39,7 @@ export class SimpleEventTarget<Detail> extends EventTarget {
       return this.weakEvents.get(callback);
     }
 
-    const native = (event: CustomEvent) => {
+    const native = (event: CustomEvent<Detail>) => {
       callback(event.detail);
     };
 
