@@ -24,6 +24,10 @@ import { MARKETPLACE_URL } from "@/utils/strings";
 
 let enhancementsLoaded = false;
 
+function isMarketplacePage(): boolean {
+  return startsWith(window.location.href, MARKETPLACE_URL);
+}
+
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
     "a[href*='.pixiebrix.com/activate']"
@@ -87,7 +91,8 @@ export async function loadOptimizedEnhancements(): Promise<void> {
     }
 
     // Check if recipe is already activated, and change button content to indicate active status
-    if (installedRecipeIds.has(recipeId)) {
+    // Note: This should only run on the Marketplace page
+    if (isMarketplacePage() && installedRecipeIds.has(recipeId)) {
       changeActivateButtonToActiveLabel(button);
     }
 
@@ -129,9 +134,7 @@ export function unloadOptimizedEnhancements() {
 }
 
 if (location.protocol === "https:") {
-  if (startsWith(window.location.href, MARKETPLACE_URL)) {
-    void loadOptimizedEnhancements();
-  }
+  void loadOptimizedEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }

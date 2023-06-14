@@ -16,16 +16,14 @@
  */
 
 import { type RegistryId } from "@/types/registryTypes";
-import { startsWith } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
-  hideActivateRecipeInSidebar,
   HIDE_SIDEBAR_EVENT_NAME,
+  hideActivateRecipeInSidebar,
   showActivateRecipeInSidebar,
 } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import {
   getActivatingBlueprint,
   setActivatingBlueprint,
@@ -103,10 +101,6 @@ function addActivateRecipeListener() {
 }
 
 export async function initSidebarActivation() {
-  if (!startsWith(window.location.href, MARKETPLACE_URL)) {
-    return;
-  }
-
   addActivateRecipeListener();
 
   if (!(await isUserLoggedIn())) {
