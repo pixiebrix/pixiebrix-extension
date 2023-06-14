@@ -158,7 +158,14 @@ export function subscribe(listener: Listener): () => void {
   };
 }
 
-// `pMemoize` will avoid multiple injections, while also allow retrying if the first injection fails
+/**
+ * Initialize the Google API.
+ *
+ * Memoized to avoid multiple injections, while also allow retrying if the initial injection fails or the context
+ * is later invalidated.
+ *
+ * @see markGoogleInvalidated
+ */
 const initGoogle = pMemoize(_initGoogle);
 
 export default initGoogle;

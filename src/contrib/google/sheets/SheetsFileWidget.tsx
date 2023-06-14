@@ -20,7 +20,6 @@ import "./SheetsFileWidget.module.scss";
 import React, { useEffect, useState } from "react";
 import { type SheetMeta } from "@/contrib/google/sheets/types";
 import { useField, useFormikContext } from "formik";
-import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- Only using Form.Control here
@@ -38,15 +37,17 @@ import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreads
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
-import useReportError from "@/hooks/useReportError";
+import useAsyncState from "@/hooks/useAsyncState";
+import reportError from "@/telemetry/reportError";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
+  const { values: formState, setValues: setFormState } = useFormikContext();
+
+  const [pickerError, setPickerError] = useState<unknown>(null);
+
   const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
     string | Expression
   >(props);
-  const { values: formState, setValues: setFormState } = useFormikContext();
-  const [sheetError, setSheetError] = useState<unknown>(null);
-  const [sheetMetadata, setSheetMetadata] = useState<SheetMeta | null>(null);
 
   const { ensureSheetsTokenAction, showPicker, hasRejectedPermissions } =
     useGoogleSpreadsheetPicker();
@@ -54,7 +55,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
   useEffect(
     () => {
-      // This widget is also used outside the Edit tab of the page editor,
+      // This widget is also used outside the Edit tab of the Page Editor,
       // so this won't always be FormState. We only need to clean up services
       // when it is FormState.
       if (!isFormState(formState)) {
@@ -64,73 +65,94 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
       const newState = produce(formState, (draft) =>
         produceExcludeUnusedDependencies(draft)
       );
+
       setFormState(newState);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
     []
   );
 
+  const sheetMetaState = useAsyncState<SheetMeta | null>(async () => {
+    const spreadsheetId = spreadsheetIdField.value;
+
+    // Expression would mean it's a service integration, and the integration picker shows the configuration name, so we
+    // don't need to type to load the doc metadata
+    if (!isExpression(spreadsheetId) && !isNullOrBlank(spreadsheetId)) {
+      const properties = await sheets.getSheetProperties(spreadsheetId);
+      return { id: spreadsheetId, name: properties.title };
+    }
+
+    return null;
+  }, [spreadsheetIdField.value]);
+
   // Set sheet lookup error on Formik
   useEffect(
     () => {
-      if (getErrorMessage(sheetError).includes("not found")) {
-        spreadsheetIdFieldHelpers.setError(
-          "The sheet does not exist, or you do not have access to it"
-        );
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- there's a bug in Formik where changes every render
-    [sheetError]
-  );
+      if (sheetMetaState.error) {
+        const message = getErrorMessage(sheetMetaState.error);
 
-  // Report to Rollbar to assist with debugging
-  useReportError(sheetError);
-
-  useAsyncEffect(
-    async (isMounted) => {
-      if (isExpression(spreadsheetIdField.value)) {
-        // Expression would mean it's a service integration, and the
-        // service picker shows the service name, so we don't need
-        // to load the doc here.
-        return;
-      }
-
-      const spreadsheetId = spreadsheetIdField.value;
-
-      if (sheetMetadata?.id === spreadsheetId) {
-        // Already up to date
-        return;
-      }
-
-      try {
-        setSheetError(null);
-
-        if (
-          !isNullOrBlank(spreadsheetIdField.value) &&
-          sheetMetadata?.id !== spreadsheetId
-        ) {
-          const properties = await sheets.getSheetProperties(
-            spreadsheetIdField.value
+        if (getErrorMessage(message).includes("not found")) {
+          spreadsheetIdFieldHelpers.setError(
+            "The sheet does not exist, or you do not have access to it"
           );
-          if (!isMounted()) return;
-          setSheetMetadata({ id: spreadsheetId, name: properties.title });
         } else {
-          setSheetMetadata(null);
+          spreadsheetIdFieldHelpers.setError(
+            `Error retrieving sheet information: ${message}`
+          );
         }
-      } catch (error) {
-        if (!isMounted()) return;
-        setSheetMetadata(null);
-        setSheetError(error);
-        notify.error({ message: "Error retrieving sheet information", error });
+
+        // Report to Rollbar to assist with debugging
+        reportError(sheetMetaState.error);
       }
     },
-    [
-      sheetMetadata?.id,
-      spreadsheetIdField.value,
-      setSheetMetadata,
-      setSheetError,
-    ]
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- there's a bug in Formik where `setError` changes every render
+    [sheetMetaState.error]
   );
+
+  const pickerHandler = async () => {
+    try {
+      const doc = await showPicker();
+      // We have the name from the doc. However, just set the field value, which will trigger a fetch of the
+      // metadata to check/verify API access to the sheet
+      spreadsheetIdFieldHelpers.setValue(doc.id);
+    } catch (error) {
+      if (!isSpecificError(error, CancelError)) {
+        setPickerError(error);
+
+        // Notify and report to Rollbar
+        notify.error({
+          message: "Error loading Google File Picker",
+          error,
+          includeErrorDetails: true,
+        });
+      }
+    }
+  };
+
+  if (pickerError) {
+    return (
+      <div>
+        Error showing Google File Picker. See{" "}
+        <a
+          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
+          target="_blank"
+          rel="noreferrer"
+        >
+          troubleshooting information.
+        </a>
+        <AsyncButton
+          onClick={async () => {
+            setPickerError(null);
+            if (await ensureSheetsTokenAction()) {
+              await pickerHandler();
+            }
+          }}
+        >
+          Try Again
+        </AsyncButton>
+      </div>
+    );
+  }
 
   if (hasRejectedPermissions) {
     return (
@@ -154,13 +176,14 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 
   return (
     <InputGroup>
-      {sheetMetadata ? (
-        // There's a render when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
+      {sheetMetaState.data ? (
+        // There's a render when doc.name is blank while fetching, so we're getting warnings about
+        // controlled/uncontrolled components. Therefore, fall back to the id if the name isn't provided yet
         <Form.Control
           id={spreadsheetIdField.name}
           type="text"
           disabled
-          value={sheetMetadata.name ?? spreadsheetIdField.value ?? ""}
+          value={sheetMetaState.data.name ?? spreadsheetIdField.value ?? ""}
         />
       ) : (
         <Form.Control
@@ -172,25 +195,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
         />
       )}
       <InputGroup.Append>
-        <AsyncButton
-          variant="info"
-          onClick={async () => {
-            try {
-              const doc = await showPicker();
-              spreadsheetIdFieldHelpers.setValue(doc.id);
-              setSheetMetadata(doc);
-            } catch (error) {
-              if (!isSpecificError(error, CancelError)) {
-                // Ensure we're notifying Rollbar
-                notify.error({
-                  message: "Error loading file picker",
-                  error,
-                  includeErrorDetails: true,
-                });
-              }
-            }
-          }}
-        >
+        <AsyncButton variant="info" onClick={pickerHandler}>
           Select
         </AsyncButton>
       </InputGroup.Append>
