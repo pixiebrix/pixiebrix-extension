@@ -12,9 +12,8 @@ exports[`SheetsFileWidget selects from file picker 1`] = `
         class="form-control"
         disabled=""
         id="spreadsheetId"
-        name="spreadsheetId"
         type="text"
-        value="abc123"
+        value="Test Sheet"
       />
       <div
         class="input-group-append"

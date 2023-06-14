@@ -50,6 +50,7 @@ function useGoogleSpreadsheetPicker(): {
   hasRejectedPermissions: boolean;
 } {
   const pickerOrigin = useCurrentOrigin();
+
   const [hasRejectedPermissions, setHasRejectedPermissions] =
     useState<boolean>(false);
 
@@ -95,8 +96,10 @@ function useGoogleSpreadsheetPicker(): {
       throw new Error("Internal error: Google API key is not configured");
     }
 
+    reportEvent("SelectGoogleSpreadsheetEnsureTokenStart");
     const token = await ensureSheetsToken();
 
+    reportEvent("SelectGoogleSpreadsheetLoadLibraryStart");
     await new Promise((resolve, reject) => {
       // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiloadlibraries-callbackorconfig------
       gapi.load("picker", {
@@ -116,6 +119,7 @@ function useGoogleSpreadsheetPicker(): {
 
     const deferredPromise = pDefer<Doc>();
 
+    reportEvent("SelectGoogleSpreadsheetShowPickerStart");
     const picker = new google.picker.PickerBuilder()
       .enableFeature(google.picker.Feature.NAV_HIDDEN)
       .setTitle("Select Spreadsheet")
@@ -146,6 +150,7 @@ function useGoogleSpreadsheetPicker(): {
           reportEvent("SelectGoogleSpreadsheetPicked");
           deferredPromise.resolve(doc);
         } else if (data.action === google.picker.Action.CANCEL) {
+          reportEvent("SelectGoogleSpreadsheetCancelled");
           deferredPromise.reject(new CancelError("No spreadsheet selected"));
         }
       })
