@@ -85,6 +85,12 @@ export async function showSidebar(
 
     // Currently, this runs the listening SidebarExtensionPoint.run callbacks in not particular order. Also note that
     // we're not awaiting their resolution (because they may contain long-running bricks).
+    if (!isSidebarFrameVisible()) {
+      console.error(
+        "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit"
+      );
+    }
+
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
 
