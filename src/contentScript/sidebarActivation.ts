@@ -30,7 +30,7 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
-import { getInstalledRecipeIds } from "@/contentScript/marketplace";
+import { getInstalledRecipeIds } from "@/contentScript/loadOptimizedEnhancements";
 
 async function isUserLoggedIn(): Promise<boolean> {
   const authHeaders = await getAuthHeaders();

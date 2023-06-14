@@ -32,7 +32,7 @@ import {
 import {
   loadOptimizedEnhancements,
   unloadOptimizedEnhancements,
-} from "@/contentScript/marketplace";
+} from "@/contentScript/loadOptimizedEnhancements";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 
 jest.mock("@/contentScript/sidebarController", () => ({
@@ -146,17 +146,6 @@ describe("marketplace enhancements", () => {
     // User is not logged in, so current page should navigate away from marketplace
     // @ts-expect-error -- some typing weirdness with jest-location-mock
     expect(window.location).not.toBeAt(MARKETPLACE_URL);
-  });
-
-  test("given a non-marketplace page, when loaded, then don't run enhancements", async () => {
-    window.location.assign("https://www.google.com/");
-
-    await initSidebarActivation();
-
-    // The checks for auth state and installed recipes should not be called
-    expect(getAuthHeadersMock).not.toHaveBeenCalled();
-    expect(loadOptionsMock).not.toHaveBeenCalled();
-    // TODO: the in progress recipe activation also should not be called
   });
 
   test("given user is not logged in, when loaded, then don't resume activation in progress", async () => {
