@@ -22,11 +22,13 @@
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import shadowWrap from "@/utils/shadowWrap";
+import { expectContext } from "@/utils/expectContext";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-const html: HTMLElement = globalThis.document.documentElement;
+// Use ? because it's not defined during header generation. But otherwise it will always be defined.
+const html: HTMLElement = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
@@ -55,6 +57,8 @@ function setSidebarWidth(pixels: number): void {
  * Returns the sidebar frame if it's in the DOM, or null otherwise. The sidebar might not be initialized yet.
  */
 function getSidebar(): Element | null {
+  expectContext("contentScript");
+
   return html.querySelector(`#${PANEL_FRAME_ID}`);
 }
 
