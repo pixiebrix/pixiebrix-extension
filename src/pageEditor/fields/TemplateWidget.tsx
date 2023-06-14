@@ -39,7 +39,7 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
 }) => {
   const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
 
-  const insertSnippet = useCallback((snippet) => {
+  const insertSnippet = useCallback((snippet: string) => {
     const { current } = templateInput;
     const pos = current.selectionStart;
     current.setRangeText(snippet, pos, pos);

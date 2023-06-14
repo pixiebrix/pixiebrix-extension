@@ -28,7 +28,10 @@ import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import blockRegistry from "@/blocks/registry";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import {
+  type EditorRootState,
+  PipelineFlavor,
+} from "@/pageEditor/pageEditorTypes";
 import {
   echoBlock,
   teapotBlock,
@@ -338,7 +341,7 @@ describe("can add a node", () => {
     expect(jqNode).toHaveTextContent(/jq - json processor/i);
 
     // Adding a node in the middle of the sub pipeline, between JQ and Echo nodes
-    const reduxState = getReduxStore().getState() as any;
+    const reduxState = getReduxStore().getState() as EditorRootState;
     const currentElement = selectActiveElement(reduxState);
     const jqNodeId = (
       currentElement.extension.blockPipeline[1].config

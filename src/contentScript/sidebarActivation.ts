@@ -76,25 +76,30 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
 }
 
 function addActivateRecipeListener() {
-  window.addEventListener("ActivateRecipe", async (event: CustomEvent) => {
-    const { recipeId, activateUrl } = event.detail;
+  window.addEventListener(
+    "ActivateRecipe",
+    async (
+      event: CustomEvent<{ recipeId: RegistryId; activateUrl: string | URL }>
+    ) => {
+      const { recipeId, activateUrl } = event.detail;
 
-    if (!(await isUserLoggedIn())) {
-      // Open the activate link in the current browser tab
-      window.location.assign(activateUrl);
-      return;
+      if (!(await isUserLoggedIn())) {
+        // Open the activate link in the current browser tab
+        window.location.assign(activateUrl);
+        return;
+      }
+
+      const installedRecipeIds = await getInstalledRecipeIds();
+
+      reportEvent("StartInstallBlueprint", {
+        blueprintId: recipeId,
+        screen: "marketplace",
+        reinstall: installedRecipeIds.has(recipeId),
+      });
+
+      await showSidebarActivationForRecipe(recipeId);
     }
-
-    const installedRecipeIds = await getInstalledRecipeIds();
-
-    reportEvent("StartInstallBlueprint", {
-      blueprintId: recipeId,
-      screen: "marketplace",
-      reinstall: installedRecipeIds.has(recipeId),
-    });
-
-    await showSidebarActivationForRecipe(recipeId);
-  });
+  );
 }
 
 export async function initSidebarActivation() {

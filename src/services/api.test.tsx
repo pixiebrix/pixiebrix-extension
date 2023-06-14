@@ -65,7 +65,7 @@ describe("appBaseQuery", () => {
 
     try {
       await act(async () => {
-        await update({ id: uuidv4() } as any).unwrap();
+        await update({ id: uuidv4() }).unwrap();
       });
 
       expect.fail("Expected error");

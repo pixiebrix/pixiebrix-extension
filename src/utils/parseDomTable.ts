@@ -19,7 +19,7 @@ import { compact, isEmpty, zip, zipObject } from "lodash";
 import objectHash from "object-hash";
 import slugify from "slugify";
 
-interface ParsingOptions {
+export interface ParsingOptions {
   orientation?: "vertical" | "horizontal" | "infer";
 }
 

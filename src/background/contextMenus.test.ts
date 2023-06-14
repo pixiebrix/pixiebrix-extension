@@ -77,7 +77,7 @@ describe("contextMenus", () => {
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register([fromJS(extensionPoint as any)]);
+    extensionPointRegistry.register([fromJS(extensionPoint)]);
 
     const menuExtension = extensionFactory({
       extensionPointId: extensionPoint.metadata.id,

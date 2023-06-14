@@ -36,6 +36,7 @@ import testMiddleware, {
 } from "@/testUtils/testMiddleware";
 import notify from "@/utils/notify";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("@/utils/notify", () => ({
   __esModule: true,
@@ -106,11 +107,14 @@ describe("useSubmitBrick", () => {
       // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
       await result.current.submit(
         {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           config: brickToYaml(pipedriveYaml as any),
           reactivate: false,
           public: true,
           organizations: [],
+          id: uuidv4(),
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
           resetForm,
           setErrors,
@@ -154,11 +158,14 @@ describe("useSubmitBrick", () => {
       // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
       await result.current.submit(
         {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           config: brickToYaml(pipedriveYaml as any),
           reactivate: false,
           public: true,
           organizations: [],
+          id: uuidv4(),
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
           resetForm,
           setErrors,

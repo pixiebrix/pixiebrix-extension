@@ -23,21 +23,19 @@ import { objToYaml } from "@/utils/objToYaml";
 
 describe("validateSchema", () => {
   test("validates a v1 blueprint", async () => {
-    await expect(
-      validateSchema(objToYaml(trelloBlueprint as any))
-    ).resolves.toEqual({});
+    await expect(validateSchema(objToYaml(trelloBlueprint))).resolves.toEqual(
+      {}
+    );
   });
 
   test("validates a v3 blueprint", async () => {
-    await expect(validateSchema(v3Blueprint as any)).resolves.toEqual({});
+    await expect(validateSchema(v3Blueprint)).resolves.toEqual({});
 
-    const value = await validateSchema(v3Blueprint as any);
+    const value = await validateSchema(v3Blueprint);
     console.debug(value);
   });
 
   test("validates a brick", async () => {
-    await expect(
-      validateSchema(objToYaml(amazonBrick as any))
-    ).resolves.toEqual({});
+    await expect(validateSchema(objToYaml(amazonBrick))).resolves.toEqual({});
   });
 });

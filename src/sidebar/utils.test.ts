@@ -17,10 +17,7 @@
 
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import {
-  type FormPanelEntry,
-  type TemporaryPanelEntry,
-} from "@/types/sidebarTypes";
+import { type SidebarEntries } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
@@ -40,24 +37,21 @@ describe("defaultEventKey", () => {
 
   it("prefers latest form", () => {
     const args = {
-      forms: [{ nonce: uuidv4() }, { nonce: uuidv4() }] as FormPanelEntry[],
-      temporaryPanels: [{ nonce: uuidv4() }] as TemporaryPanelEntry[],
+      forms: [{ nonce: uuidv4() }, { nonce: uuidv4() }],
+      temporaryPanels: [{ nonce: uuidv4() }],
       panels: [{ extensionId: uuidv4() }],
-    } as any;
+    } as SidebarEntries;
 
     expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.forms[1]));
     expect(defaultEventKey(args)).not.toBe("form-undefined");
   });
 
   it("prefers latest temporary panel", () => {
-    const args = {
-      forms: [] as FormPanelEntry[],
-      temporaryPanels: [
-        { nonce: uuidv4() },
-        { nonce: uuidv4() },
-      ] as TemporaryPanelEntry[],
+    const args: SidebarEntries = {
+      forms: [],
+      temporaryPanels: [{ nonce: uuidv4() }, { nonce: uuidv4() }],
       panels: [{ extensionId: uuidv4() }],
-    } as any;
+    } as SidebarEntries;
 
     expect(defaultEventKey(args)).toBe(
       eventKeyForEntry(args.temporaryPanels[1])
@@ -67,10 +61,10 @@ describe("defaultEventKey", () => {
 
   it("prefers first panel", () => {
     const args = {
-      forms: [] as FormPanelEntry[],
-      temporaryPanels: [] as TemporaryPanelEntry[],
+      forms: [],
+      temporaryPanels: [],
       panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
-    } as any;
+    } as SidebarEntries;
 
     expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.panels[0]));
     expect(defaultEventKey(args)).not.toBe("panel-undefined");
@@ -78,11 +72,11 @@ describe("defaultEventKey", () => {
 
   it("returns static panel as last resort before returning null", () => {
     const args = {
-      forms: [] as FormPanelEntry[],
-      temporaryPanels: [] as TemporaryPanelEntry[],
-      panels: [] as TemporaryPanelEntry[],
+      forms: [],
+      temporaryPanels: [],
+      panels: [],
       staticPanels: [HOME_PANEL],
-    } as any;
+    } as unknown as SidebarEntries;
 
     expect(defaultEventKey(args)).toBe(eventKeyForEntry(HOME_PANEL));
     expect(defaultEventKey(args)).not.toBe("panel-undefined");
@@ -90,7 +84,7 @@ describe("defaultEventKey", () => {
 });
 
 describe("eventKeyForEntry", () => {
-  it.each([[undefined, null]])("returns null for %s", (value) => {
+  it.each([[undefined, null]])("returns null for %s", (value?: null) => {
     expect(eventKeyForEntry(value)).toBe(null);
   });
 

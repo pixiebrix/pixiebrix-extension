@@ -82,8 +82,9 @@ function runListeners<Method extends keyof PanelListener>(
 
   for (const listener of listeners) {
     try {
+      // @ts-expect-error -- TODO: improve typings
       // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
-      listener[method](data as any);
+      listener[method](data);
     } catch (error) {
       reportError(error);
     }

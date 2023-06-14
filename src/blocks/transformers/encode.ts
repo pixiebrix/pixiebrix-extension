@@ -45,7 +45,9 @@ export class Base64Encode extends Transformer {
     ["stringToEncode"]
   );
 
-  async transform({ stringToEncode }: BlockArgs): Promise<string> {
+  async transform({
+    stringToEncode,
+  }: BlockArgs<{ stringToEncode: string }>): Promise<string> {
     return btoa(stringToEncode);
   }
 }
@@ -72,7 +74,9 @@ export class Base64Decode extends Transformer {
     ["encodedData"]
   );
 
-  async transform({ encodedData }: BlockArgs): Promise<string> {
+  async transform({
+    encodedData,
+  }: BlockArgs<{ encodedData: string }>): Promise<string> {
     return btoa(encodedData);
   }
 }

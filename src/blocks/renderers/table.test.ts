@@ -23,6 +23,7 @@ import { neverPromise } from "@/testUtils/testHelpers";
 describe("parse compile error", () => {
   test("null data", async () => {
     const result = await new TableRenderer().render(
+      // @ts-expect-error test data
       unsafeAssumeValidArg({
         data: null,
         columns: [{ label: "label", property: "property" }],
@@ -41,6 +42,7 @@ describe("parse compile error", () => {
 
   test("table with data", async () => {
     const result = await new TableRenderer().render(
+      // @ts-expect-error test data
       unsafeAssumeValidArg({
         data: [{ property: "Foo" }],
         columns: [{ label: "label", property: "property" }],

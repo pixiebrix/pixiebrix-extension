@@ -20,6 +20,7 @@ import quickbarRegistry from "@/components/quickBar/quickBarRegistry";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type BlockOptions } from "@/types/runtimeTypes";
 
 const brick = new AddQuickBarAction();
 
@@ -58,7 +59,7 @@ describe("AddQuickBarAction", () => {
       logger,
       root: document,
       abortSignal: abortController.signal,
-    } as any);
+    } as BlockOptions);
     expect(addActionMock).toHaveBeenCalledWith({
       id: expect.toBeString(),
       extensionPointId: logger.context.extensionPointId,

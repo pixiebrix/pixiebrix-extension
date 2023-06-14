@@ -152,8 +152,9 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
     promiseNonce.current = nonce;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- tests ensure internal types match
-      const promiseResult = await merge(...(datums as any));
+      const promiseResult = await merge(
+        ...(datums as AsyncValueArray<AsyncStates>)
+      );
       if (checkIsMounted() && promiseNonce.current === nonce) {
         dispatch(promiseSlice.actions.success({ data: promiseResult }));
       }

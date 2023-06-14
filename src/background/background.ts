@@ -33,7 +33,7 @@ import initContextMenus from "@/background/contextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";
 import initNavigation from "@/background/navigation";
-import initGoogle from "@/contrib/google/initGoogle";
+import initGoogle, { isGAPISupported } from "@/contrib/google/initGoogle";
 import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
@@ -52,7 +52,6 @@ initBrowserAction();
 initInstaller();
 initNavigation();
 initExecutor();
-void initGoogle();
 initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
@@ -63,3 +62,13 @@ initActiveTabTracking();
 initPartnerTheme();
 initStarterBlueprints();
 initPartnerTokenRefresh();
+
+if (isGAPISupported()) {
+  // Optimistically initialize Google API, if Google API is supported. But do not prompt for permissions
+  void initGoogle();
+} else {
+  console.debug("Google API not supported by browser", {
+    // @ts-expect-error -- exists on Chromium, but not other browsers
+    browserBrands: navigator.userAgentData?.brands,
+  });
+}

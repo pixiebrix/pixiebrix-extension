@@ -315,7 +315,7 @@ export function selectErrorFromRejectionEvent(
   // WARNING: don't prefix the error message, e.g., with "Asynchronous error:" because that breaks
   // message-based error filtering via IGNORED_ERROR_PATTERNS
   if (typeof event.reason === "string" || event.reason == null) {
-    return new Error(event.reason ?? "Unknown promise rejection");
+    return new Error(String(event.reason ?? "Unknown promise rejection"));
   }
 
   return selectError(event.reason);
