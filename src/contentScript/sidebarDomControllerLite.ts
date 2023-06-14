@@ -26,7 +26,7 @@ import shadowWrap from "@/utils/shadowWrap";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-const html = globalThis.document?.documentElement;
+const html: HTMLElement = globalThis.document.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
@@ -51,16 +51,26 @@ function setSidebarWidth(pixels: number): void {
   html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, CSS.px(pixels));
 }
 
-const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
+/**
+ * Returns the sidebar frame if it's in the DOM, or null otherwise. The sidebar might not be initialized yet.
+ */
+function getSidebar(): Element | null {
+  return html.querySelector(`#${PANEL_FRAME_ID}`);
+}
 
 /**
  * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
  */
-export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
+export function isSidebarFrameVisible(): boolean {
+  return Boolean(getSidebar());
+}
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
+
+  console.debug("removeSidebarFrame: sidebar exists", Boolean(sidebar));
+
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
@@ -72,6 +82,7 @@ export function removeSidebarFrame(): boolean {
 /** Inserts the element; Returns false if it already existed */
 export function insertSidebarFrame(): boolean {
   if (isSidebarFrameVisible()) {
+    console.debug("insertSidebarFrame: sidebar frame already exists");
     return false;
   }
 
@@ -110,9 +121,18 @@ export function insertSidebarFrame(): boolean {
     easing: "cubic-bezier(0.23, 1, 0.32, 1)",
   });
 
+  if (!isSidebarFrameVisible()) {
+    console.error(
+      "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame"
+    );
+  }
+
   return true;
 }
 
+/**
+ * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
+ */
 export function toggleSidebarFrame(): boolean {
   if (isSidebarFrameVisible()) {
     removeSidebarFrame();

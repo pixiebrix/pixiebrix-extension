@@ -320,7 +320,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     });
   }
 
-  // Use arrow syntax to avoid having to bind when passing as listener
+  // Use arrow syntax to avoid having to bind when passing as listener to `sidebarShowEvents.add`
   run = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       // Keep sidebar entries up-to-date regardless of trigger policy
