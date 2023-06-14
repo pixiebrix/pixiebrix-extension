@@ -50,7 +50,7 @@ const GeneralSettings: React.FunctionComponent = () => {
               offlabel=" "
               checked={isFloatingActionButtonEnabled}
               onChange={(enable) => {
-                reportEvent("ToggleFloatingQuickBarButton", {
+                reportEvent("ToggleFloatingQuickBarButtonSetting", {
                   enabled: enable,
                 });
                 dispatch(
