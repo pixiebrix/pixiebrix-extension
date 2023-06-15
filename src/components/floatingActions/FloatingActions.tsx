@@ -24,6 +24,7 @@ import ReactDOM from "react-dom";
 import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
 import { getSettingsState } from "@/store/settingsStorage";
 import { syncFlagOn } from "@/store/syncFlags";
+import { isLoadedInIframe } from "@/iframeUtils";
 
 export function FloatingActions() {
   return (
@@ -41,6 +42,7 @@ export async function initFloatingActions() {
   const settings = await getSettingsState();
   // Add floating actions if the feature flag and settings are enabled
   if (
+    !isLoadedInIframe() &&
     settings.isFloatingActionButtonEnabled &&
     syncFlagOn("floating-quickbar-button")
   ) {
