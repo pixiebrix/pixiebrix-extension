@@ -35,7 +35,7 @@ const GeneralSettings: React.FunctionComponent = () => {
           <Form.Group controlId="floating-action-button">
             <div>
               <Form.Label>
-                Floating action button{" "}
+                Floating action button:{" "}
                 <i>{isFloatingActionButtonEnabled ? "Enabled" : "Disabled"}</i>
               </Form.Label>
               <Form.Text muted className="mb-2">
