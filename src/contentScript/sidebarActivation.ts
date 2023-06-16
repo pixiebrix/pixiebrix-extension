@@ -16,23 +16,21 @@
  */
 
 import { type RegistryId } from "@/types/registryTypes";
-import { startsWith } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
-  hideActivateRecipeInSidebar,
   HIDE_SIDEBAR_EVENT_NAME,
+  hideActivateRecipeInSidebar,
   showActivateRecipeInSidebar,
 } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import {
   getActivatingBlueprint,
   setActivatingBlueprint,
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
-import { getInstalledRecipeIds } from "@/contentScript/marketplace";
+import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
 
 async function isUserLoggedIn(): Promise<boolean> {
   const authHeaders = await getAuthHeaders();
@@ -103,10 +101,6 @@ function addActivateRecipeListener() {
 }
 
 export async function initSidebarActivation() {
-  if (!startsWith(window.location.href, MARKETPLACE_URL)) {
-    return;
-  }
-
   addActivateRecipeListener();
 
   if (!(await isUserLoggedIn())) {

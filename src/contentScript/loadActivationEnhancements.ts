@@ -24,6 +24,10 @@ import { MARKETPLACE_URL } from "@/utils/strings";
 
 let enhancementsLoaded = false;
 
+function isMarketplacePage(): boolean {
+  return startsWith(window.location.href, MARKETPLACE_URL);
+}
+
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
     "a[href*='.pixiebrix.com/activate']"
@@ -63,7 +67,7 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   activeLabel.append(button);
 }
 
-export async function loadOptimizedEnhancements(): Promise<void> {
+export async function loadActivationEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }
@@ -87,7 +91,8 @@ export async function loadOptimizedEnhancements(): Promise<void> {
     }
 
     // Check if recipe is already activated, and change button content to indicate active status
-    if (installedRecipeIds.has(recipeId)) {
+    // Note: This should only run on the Marketplace page
+    if (isMarketplacePage() && installedRecipeIds.has(recipeId)) {
       changeActivateButtonToActiveLabel(button);
     }
 
@@ -116,22 +121,20 @@ export async function loadOptimizedEnhancements(): Promise<void> {
   }
 }
 
-export async function reloadOptimizedEnhancements() {
+export async function reloadActivationEnhancements() {
   enhancementsLoaded = false;
-  await loadOptimizedEnhancements();
+  await loadActivationEnhancements();
 }
 
 /**
  * This should only be used for testing purposes
  */
-export function unloadOptimizedEnhancements() {
+export function unloadActivationEnhancements() {
   enhancementsLoaded = false;
 }
 
 if (location.protocol === "https:") {
-  if (startsWith(window.location.href, MARKETPLACE_URL)) {
-    void loadOptimizedEnhancements();
-  }
+  void loadActivationEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }

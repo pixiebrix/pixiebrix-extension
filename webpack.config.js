@@ -282,7 +282,7 @@ module.exports = (env, options) =>
       [
         "background/background",
         "contentScript/contentScript",
-        "contentScript/marketplace",
+        "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
         "extensionConsole/options",
