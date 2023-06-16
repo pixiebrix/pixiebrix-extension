@@ -22,6 +22,8 @@ import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { reportEvent } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
 import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
+import reportError from "@/telemetry/reportError";
+import notify from "@/utils/notify";
 
 /**
  * Opens the quickbar menu
@@ -46,7 +48,9 @@ export function QuickbarButton() {
                 isFloatingActionButtonEnabled: false,
               });
               reportEvent("OnScreenHideFloatingQuickBarButton");
-            } catch {
+            } catch (error) {
+              notify.error("Error saving settings");
+              reportError(error);
               setHidden(false);
             }
           }}
