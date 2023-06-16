@@ -47,7 +47,7 @@ export function QuickbarButton() {
                 ...settings,
                 isFloatingActionButtonEnabled: false,
               });
-              reportEvent("OnScreenHideFloatingQuickBarButton");
+              reportEvent("FloatingQuickBarButtonOnScreenHide");
             } catch (error) {
               notify.error("Error saving settings");
               reportError(error);
