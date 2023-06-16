@@ -30,9 +30,9 @@ import {
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories/extensionFactories";
 import {
-  loadOptimizedEnhancements,
-  unloadOptimizedEnhancements,
-} from "@/contentScript/loadOptimizedEnhancements";
+  loadActivationEnhancements,
+  unloadActivationEnhancements,
+} from "@/contentScript/loadActivationEnhancements";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 
 jest.mock("@/contentScript/sidebarController", () => ({
@@ -100,7 +100,7 @@ describe("marketplace enhancements", () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    unloadOptimizedEnhancements();
+    unloadActivationEnhancements();
   });
 
   test("given user is logged in, when an activate button is clicked, should open the sidebar", async () => {
@@ -117,7 +117,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await loadOptimizedEnhancements();
+    await loadActivationEnhancements();
     await initSidebarActivation();
 
     // Click an activate button
@@ -135,7 +135,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
-    await loadOptimizedEnhancements();
+    await loadActivationEnhancements();
     await initSidebarActivation();
 
     // Click an activate button
@@ -179,7 +179,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await loadOptimizedEnhancements();
+    await loadActivationEnhancements();
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
@@ -202,7 +202,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await loadOptimizedEnhancements();
+    await loadActivationEnhancements();
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
@@ -214,7 +214,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
 
-    await loadOptimizedEnhancements();
+    await loadActivationEnhancements();
     await initSidebarActivation();
 
     // Before loading in-progress recipe activation, isUserLoggedIn is called,

@@ -27,8 +27,8 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://*.pixiebrix.com/*"],
-      "js": ["marketplace.js"],
+      "matches": ["*://*/*"],
+      "js": ["loadActivationEnhancements.js"],
       "run_at": "document_end"
     }
   ],

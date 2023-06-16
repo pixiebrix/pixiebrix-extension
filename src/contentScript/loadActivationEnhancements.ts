@@ -67,7 +67,7 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   activeLabel.append(button);
 }
 
-export async function loadOptimizedEnhancements(): Promise<void> {
+export async function loadActivationEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }
@@ -121,20 +121,20 @@ export async function loadOptimizedEnhancements(): Promise<void> {
   }
 }
 
-export async function reloadOptimizedEnhancements() {
+export async function reloadActivationEnhancements() {
   enhancementsLoaded = false;
-  await loadOptimizedEnhancements();
+  await loadActivationEnhancements();
 }
 
 /**
  * This should only be used for testing purposes
  */
-export function unloadOptimizedEnhancements() {
+export function unloadActivationEnhancements() {
   enhancementsLoaded = false;
 }
 
 if (location.protocol === "https:") {
-  void loadOptimizedEnhancements();
+  void loadActivationEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }

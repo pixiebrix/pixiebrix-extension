@@ -76,7 +76,7 @@ import {
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { reloadOptimizedEnhancements } from "@/contentScript/loadOptimizedEnhancements";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancements";
 
 expectContext("contentScript");
 
@@ -138,7 +138,7 @@ declare global {
     GET_PAGE_STATE: typeof getPageState;
     SET_PAGE_STATE: typeof setPageState;
 
-    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadOptimizedEnhancements;
+    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
 }
 
@@ -202,6 +202,6 @@ export default function registerMessenger(): void {
     GET_PAGE_STATE: getPageState,
     SET_PAGE_STATE: setPageState,
 
-    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadOptimizedEnhancements,
+    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });
 }
