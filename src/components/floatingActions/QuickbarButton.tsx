@@ -22,7 +22,6 @@ import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { reportEvent } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
 import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
-import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 
 /**
@@ -49,8 +48,7 @@ export function QuickbarButton() {
               });
               reportEvent("FloatingQuickBarButtonOnScreenHide");
             } catch (error) {
-              notify.error("Error saving settings");
-              reportError(error);
+              notify.error({ message: "Error saving settings", error });
               setHidden(false);
             }
           }}
