@@ -23,23 +23,51 @@
   left: 40px;
 }
 
-.button {
-  padding: 0;
-  border: none;
-  overflow: hidden;
-  box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
-  background-color: $P500;
-  &:hover,
-  &:focus {
-    background-color: $P600 !important;
+.quickbar-button-container {
+  display: flex;
+  flex-direction: column;
+  .hide-button-container {
+    max-height: 0;
+    transition: max-height 0.5s ease-in-out;
+    overflow: hidden;
   }
 
-  &:active {
-    background-color: $P900 !important;
+  .hide-button {
+    // Explicit font size since bootstrap uses REM sizes that get overriden by parent page
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background-color: $N0;
+    margin: 10px 0;
+    border: 1px solid $N50;
+    box-shadow: 0px 4px 8px -4px rgba(56, 51, 66, 0.16);
+    font-weight: 700;
+    color: $N400;
   }
 
-  &:focus {
-    box-shadow: none !important;
+  &:hover > .hide-button-container {
+    max-height: 200px;
+  }
+
+  .quickbar-button {
+    padding: 7px;
+    border: none;
+    overflow: hidden;
+    box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
+    background-color: $P500;
+    border-radius: 12px;
+    &:hover,
+    &:focus {
+      background-color: $P600 !important;
+    }
+
+    &:active {
+      background-color: $P900 !important;
+    }
+
+    &:focus {
+      box-shadow: none !important;
+    }
   }
 }
 
