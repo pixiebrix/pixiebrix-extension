@@ -18,12 +18,14 @@
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import {
+  cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -33,22 +35,21 @@ jest.mock("@/sidebar/messenger/api", () => ({
 jest.mock("@/contentScript/messenger/api", () => ({
   closeTemporaryPanel: jest.fn().mockResolvedValue(undefined),
   cancelTemporaryPanel: jest.fn().mockResolvedValue(undefined),
+  cancelForm: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("@/blocks/transformers/temporaryInfo/messenger/api", () => ({
   updateTemporaryPanel: jest.fn().mockResolvedValue(undefined),
 }));
 
-const cancelTemporaryPanelMock = cancelTemporaryPanel as jest.MockedFunction<
-  typeof cancelTemporaryPanel
->;
-const closeTemporaryPanelMock = closeTemporaryPanel as jest.MockedFunction<
-  typeof closeTemporaryPanel
->;
+const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
+const closeTemporaryPanelMock = jest.mocked(closeTemporaryPanel);
+const cancelFormMock = jest.mocked(cancelForm);
 
 beforeEach(() => {
   cancelTemporaryPanelMock.mockReset();
   closeTemporaryPanelMock.mockReset();
+  cancelFormMock.mockReset();
 });
 
 describe("sidebarSlice.selectTab", () => {
@@ -139,5 +140,41 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
       },
       [activePanel.nonce]
     );
+  });
+});
+
+describe("sidebarSlice.addForm", () => {
+  it("adds form to empty state", async () => {
+    const state = sidebarSlice.getInitialState();
+
+    const extensionId = autoUUIDSequence();
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.addForm({
+        form: {
+          type: "form",
+          extensionId,
+          nonce: autoUUIDSequence(),
+          form: {
+            schema: {
+              title: "Form Title",
+            },
+            uiSchema: {},
+            cancelable: false,
+            submitCaption: "Submit",
+            location: "sidebar",
+          },
+        },
+      })
+    );
+
+    await tick();
+
+    expect(newState.forms).toHaveLength(1);
+    expect(cancelFormMock).toHaveBeenCalledExactlyOnceWith({
+      frameId: 0,
+      tabId: 1,
+    });
   });
 });
