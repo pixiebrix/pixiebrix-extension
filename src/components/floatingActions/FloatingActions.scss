@@ -28,7 +28,7 @@
   display: flex;
   align-items: flex-end;
   // scaling the container down then the content up
-  // so the background doesn't peek through the button
+  // because the background was showing around the button when moving
   transform: scale(0.65);
   border-radius: 12px;
   padding: 5px;
@@ -50,6 +50,7 @@
 }
 
 .content-container {
+  // translateX to account for some positioning from the scaling
   transform: scale(1.4) translateX(9px);
 }
 
@@ -60,6 +61,8 @@
     max-height: 0;
     transition: max-height 0.5s ease-in-out;
     overflow: hidden;
+    // absolutely positioned the hide button so it doesn't
+    // affect the size of the drag container background
     position: absolute;
     top: -45px;
   }
