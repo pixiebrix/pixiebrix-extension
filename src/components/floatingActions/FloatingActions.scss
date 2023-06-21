@@ -19,8 +19,37 @@
 .root {
   position: fixed;
   z-index: 2147481647;
-  bottom: 40px;
-  left: 40px;
+  bottom: 0;
+  left: 0;
+  margin: 30px 10px;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: background-color 0.5s ease-in-out;
+  &:hover {
+    background-color: $N0;
+  }
+}
+
+.drag-container {
+  display: flex;
+  align-items: flex-end;
+  // scaling the container down then the content up
+  // so the background doesn't peek through the button
+  transform: scale(0.65);
+}
+
+.drag-handle {
+  user-select: none;
+  cursor: grab;
+  padding: 5px;
+  height: 50px;
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.content-container {
+  transform: scale(1.4) translateX(12px);
 }
 
 .quickbar-button-container {
@@ -30,6 +59,8 @@
     max-height: 0;
     transition: max-height 0.5s ease-in-out;
     overflow: hidden;
+    position: absolute;
+    top: -45px;
   }
 
   .hide-button {
@@ -43,6 +74,7 @@
     box-shadow: 0px 4px 8px -4px rgba(56, 51, 66, 0.16);
     font-weight: 700;
     color: $N400;
+    white-space: nowrap;
   }
 
   &:hover > .hide-button-container {

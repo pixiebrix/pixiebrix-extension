@@ -18,21 +18,37 @@
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import React from "react";
+import React, { useState } from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
 import { getSettingsState } from "@/store/settingsStorage";
 import { syncFlagOn } from "@/store/syncFlags";
 import { isLoadedInIframe } from "@/iframeUtils";
+import Draggable from "react-draggable";
+import dragIcon from "@/icons/drag-handle.svg";
 
 export function FloatingActions() {
-  return (
+  // Using this boolean to hide the FAB since the setting state doesn't refresh immediately
+  const [hidden, setHidden] = useState<boolean>(false);
+  return hidden ? null : (
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, styles]}>
-        <div className="root">
-          <QuickbarButton />
-        </div>
+        <Draggable handle=".drag-handle" bounds="body">
+          <div className="root">
+            <div className="drag-container">
+              <img
+                src={dragIcon}
+                className="drag-handle"
+                alt="drag to move quick bar button"
+                draggable={false}
+              />
+              <div className="content-container">
+                <QuickbarButton setHidden={setHidden} />
+              </div>
+            </div>
+          </div>
+        </Draggable>
       </Stylesheets>
     </EmotionShadowRoot.div>
   );

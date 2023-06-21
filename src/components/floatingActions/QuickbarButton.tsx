@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
@@ -27,11 +27,12 @@ import notify from "@/utils/notify";
 /**
  * Opens the quickbar menu
  */
-export function QuickbarButton() {
-  // Using this boolean to hide the FAB since the setting state doesn't refresh immediately
-  const [hidden, setHidden] = useState<boolean>(false);
-
-  return hidden ? null : (
+export function QuickbarButton({
+  setHidden,
+}: {
+  setHidden: (hidden: boolean) => void;
+}) {
+  return (
     // Using standard css here because the shadow dom in `FloatingActions.tsx`
     // prevents us from using regular css modules.
     <div className="quickbar-button-container">
