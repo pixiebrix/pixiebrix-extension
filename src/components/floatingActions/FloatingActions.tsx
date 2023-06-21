@@ -18,21 +18,25 @@
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import React, { useState } from "react";
+import React from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
+import store from "@/components/floatingActions/store";
 import { getSettingsState } from "@/store/settingsStorage";
 import { syncFlagOn } from "@/store/syncFlags";
 import { isLoadedInIframe } from "@/iframeUtils";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
 import { reportEvent } from "@/telemetry/events";
+import { Provider, useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
 
-// Boolean to prevent repositioning from triggering multiple times
+// Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;
-
 function reportReposition() {
+  // Check here to prevent reporting the event twice on the same page. We just want to know
+  // whether users are repositioning on the page at all.
   if (!dragReported) {
     reportEvent("FloatingQuickBarButtonRepositioned");
     dragReported = true;
@@ -40,32 +44,37 @@ function reportReposition() {
 }
 
 export function FloatingActions() {
-  // Using this boolean to hide the FAB since the setting state doesn't refresh immediately
-  const [hidden, setHidden] = useState<boolean>(false);
-  return hidden ? null : (
-    <EmotionShadowRoot.div>
-      <Stylesheets href={[bootstrap, styles]}>
-        <Draggable
-          handle=".drag-handle"
-          onDrag={reportReposition}
-          bounds="body"
-        >
-          <div className="root">
-            <div className="drag-container">
-              <img
-                src={dragIcon}
-                className="drag-handle"
-                alt="drag to move quick bar button"
-                draggable={false}
-              />
-              <div className="content-container">
-                <QuickbarButton setHidden={setHidden} />
-              </div>
-            </div>
+  const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
+
+  return isFloatingActionButtonEnabled ? (
+    <Draggable handle=".drag-handle" onStart={reportReposition} bounds="body">
+      <div className="root">
+        <div className="drag-container">
+          <img
+            src={dragIcon}
+            className="drag-handle"
+            alt="drag to move quick bar button"
+            // Setting draggable=false prevents browser default drag events on images
+            draggable={false}
+          />
+          <div className="content-container">
+            <QuickbarButton />
           </div>
-        </Draggable>
-      </Stylesheets>
-    </EmotionShadowRoot.div>
+        </div>
+      </div>
+    </Draggable>
+  ) : null;
+}
+
+function FloatingActionsContainer() {
+  return (
+    <Provider store={store}>
+      <EmotionShadowRoot.div>
+        <Stylesheets href={[bootstrap, styles]}>
+          <FloatingActions />
+        </Stylesheets>
+      </EmotionShadowRoot.div>
+    </Provider>
   );
 }
 
@@ -80,6 +89,6 @@ export async function initFloatingActions() {
     const container = document.createElement("div");
     container.id = "pixiebrix-floating-actions-container";
     document.body.prepend(container);
-    ReactDOM.render(<FloatingActions />, container);
+    ReactDOM.render(<FloatingActionsContainer />, container);
   }
 }

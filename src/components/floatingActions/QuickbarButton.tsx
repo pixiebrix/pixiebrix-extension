@@ -21,17 +21,16 @@ import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { reportEvent } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import notify from "@/utils/notify";
+import { useDispatch } from "react-redux";
+import SettingsSlice from "@/store/settingsSlice";
 
 /**
  * Opens the quickbar menu
  */
-export function QuickbarButton({
-  setHidden,
-}: {
-  setHidden: (hidden: boolean) => void;
-}) {
+export function QuickbarButton() {
+  const dispatch = useDispatch();
+
   return (
     // Using standard css here because the shadow dom in `FloatingActions.tsx`
     // prevents us from using regular css modules.
@@ -41,16 +40,12 @@ export function QuickbarButton({
           className="hide-button"
           onClick={async () => {
             try {
-              setHidden(true);
-              const settings = await getSettingsState();
-              await saveSettingsState({
-                ...settings,
-                isFloatingActionButtonEnabled: false,
-              });
+              dispatch(
+                SettingsSlice.actions.setFloatingActionButtonEnabled(false)
+              );
               reportEvent("FloatingQuickBarButtonOnScreenHide");
             } catch (error) {
               notify.error({ message: "Error saving settings", error });
-              setHidden(false);
             }
           }}
           variant="outline"
