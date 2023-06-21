@@ -194,7 +194,6 @@ export async function reloadSidebar(): Promise<void> {
  * - `browserAction` calls toggleSidebarFrame to immediately adds the sidebar iframe
  * - It injects the content script
  * - It calls this method via messenger to complete the sidebar initialization
- * but the content
  */
 export function rehydrateSidebar(): void {
   // To assist with debugging race conditions in sidebar initialization
