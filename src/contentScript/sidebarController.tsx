@@ -66,6 +66,10 @@ let recipeToActivate: ActivateRecipePanelEntry = null;
 export async function showSidebar(
   activateOptions: ActivatePanelOptions = {}
 ): Promise<void> {
+  console.debug("sidebarController:showSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   reportEvent("SidePanelShow");
   const isAlreadyShowing = isSidebarFrameVisible();
 
@@ -90,6 +94,10 @@ export async function showSidebar(
         "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit"
       );
     }
+
+    console.debug("sidebarController:showSidebar emitting sidebarShowEvents", {
+      isSidebarFrameVisible: isSidebarFrameVisible(),
+    });
 
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
@@ -141,6 +149,10 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
+  console.debug("sidebarController:ensureSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (!isSidebarFrameVisible()) {
     expectContext("contentScript");
     await logPromiseDuration("ensureSidebar", showSidebar());
@@ -148,6 +160,10 @@ export async function ensureSidebar(): Promise<void> {
 }
 
 export function hideSidebar(): void {
+  console.debug("sidebarController:hideSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   reportEvent("SidePanelHide");
   removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
@@ -160,8 +176,9 @@ export function hideSidebar(): void {
  * - Does not reload ephemeral forms
  */
 export async function reloadSidebar(): Promise<void> {
-  // Need to hide and re-show because the controller sends the content on load. The sidebar doesn't automatically
-  // request its own content on mount.
+  console.debug("sidebarController:reloadSidebar");
+
+  // Hide and reshow to force a full-refresh of the sidebar
 
   if (isSidebarFrameVisible()) {
     hideSidebar();
@@ -198,12 +215,16 @@ export function rehydrateSidebar(): void {
 function renderPanelsIfVisible(): void {
   expectContext("contentScript");
 
+  console.debug("sidebarController:renderPanelsIfVisible");
+
   if (isSidebarFrameVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
     void sidebarInThisTab.renderPanels(seqNum, panels);
   } else {
-    console.debug("Skipping renderPanels because the sidebar is not visible");
+    console.debug(
+      "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible"
+    );
   }
 }
 
@@ -282,6 +303,10 @@ export function hideTemporarySidebarPanel(nonce: UUID): void {
 export function removeExtension(extensionId: UUID): void {
   expectContext("contentScript");
 
+  console.debug("sidebarController:removeExtension %s", extensionId, {
+    panel: panels.find((x) => x.extensionId === extensionId),
+  });
+
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(...current.filter((x) => x.extensionId !== extensionId));
@@ -300,8 +325,9 @@ export function removeExtensionPoint(
 ): void {
   expectContext("contentScript");
 
-  console.debug("removeExtensionPoint %s", extensionPointId, {
+  console.debug("sidebarController:removeExtensionPoint %s", extensionPointId, {
     preserveExtensionIds,
+    panels: panels.filter((x) => x.extensionPointId === extensionPointId),
   });
 
   // `panels` is const, so replace the contents
@@ -313,6 +339,7 @@ export function removeExtensionPoint(
         preserveExtensionIds.includes(x.extensionId)
     )
   );
+
   renderPanelsIfVisible();
 }
 
@@ -337,7 +364,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
       };
 
       console.debug(
-        "reservePanels: reserve panel %s for %s",
+        "sidebarController:reservePanels: reserve panel %s for %s",
         extensionId,
         extensionPointId,
         blueprintId,
@@ -353,6 +380,12 @@ export function reservePanels(refs: ExtensionRef[]): void {
 
 export function updateHeading(extensionId: UUID, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
+
+  console.debug("sidebarController:updateHeading %s", extensionId, {
+    heading,
+    panel: entry,
+  });
+
   if (entry) {
     entry.heading = heading;
     console.debug(
@@ -380,7 +413,7 @@ export function upsertPanel(
     entry.payload = payload;
     entry.heading = heading;
     console.debug(
-      "upsertPanel: update existing panel %s for %s",
+      "sidebarController:upsertPanel: update existing panel %s for %s",
       extensionId,
       extensionPointId,
       blueprintId,
@@ -388,7 +421,7 @@ export function upsertPanel(
     );
   } else {
     console.debug(
-      "upsertPanel: add new panel %s for %s",
+      "sidebarController:upsertPanel: add new panel %s for %s",
       extensionId,
       extensionPointId,
       blueprintId,
