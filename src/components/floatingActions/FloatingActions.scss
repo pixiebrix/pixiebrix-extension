@@ -22,12 +22,6 @@
   bottom: 0;
   left: 0;
   margin: 30px 10px;
-  border-radius: 12px;
-  background-color: transparent;
-  transition: background-color 0.5s ease-in-out;
-  &:hover {
-    background-color: $N0;
-  }
 }
 
 .drag-container {
@@ -36,6 +30,13 @@
   // scaling the container down then the content up
   // so the background doesn't peek through the button
   transform: scale(0.65);
+  border-radius: 12px;
+  padding: 5px;
+  background-color: transparent;
+  transition: background-color 0.5s ease-in-out;
+  &:hover {
+    background-color: $N0;
+  }
 }
 
 .drag-handle {
@@ -49,7 +50,7 @@
 }
 
 .content-container {
-  transform: scale(1.4) translateX(12px);
+  transform: scale(1.4) translateX(9px);
 }
 
 .quickbar-button-container {
