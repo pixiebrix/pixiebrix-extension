@@ -27,6 +27,17 @@ import { syncFlagOn } from "@/store/syncFlags";
 import { isLoadedInIframe } from "@/iframeUtils";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
+import { reportEvent } from "@/telemetry/events";
+
+// Boolean to prevent repositioning from triggering multiple times
+let dragReported = false;
+
+function reportReposition() {
+  if (!dragReported) {
+    reportEvent("FloatingQuickBarButtonRepositioned");
+    dragReported = true;
+  }
+}
 
 export function FloatingActions() {
   // Using this boolean to hide the FAB since the setting state doesn't refresh immediately
@@ -34,7 +45,11 @@ export function FloatingActions() {
   return hidden ? null : (
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, styles]}>
-        <Draggable handle=".drag-handle" bounds="body">
+        <Draggable
+          handle=".drag-handle"
+          onDrag={reportReposition}
+          bounds="body"
+        >
           <div className="root">
             <div className="drag-container">
               <img
