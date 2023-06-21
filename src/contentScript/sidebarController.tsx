@@ -215,7 +215,7 @@ export function rehydrateSidebar(): void {
 function renderPanelsIfVisible(): void {
   expectContext("contentScript");
 
-  console.debug("sidebarController:renderPanelsIfVisible %s");
+  console.debug("sidebarController:renderPanelsIfVisible");
 
   if (isSidebarFrameVisible()) {
     const seqNum = renderSequenceNumber;
