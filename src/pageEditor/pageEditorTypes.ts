@@ -67,6 +67,11 @@ export enum ModalKey {
   ADD_BLOCK,
 }
 
+export type RecipeMetadataFormState = Pick<
+  Metadata,
+  "id" | "name" | "version" | "description"
+>;
+
 export interface EditorState {
   /**
    * A sequence number that changes whenever a new element is selected.
@@ -237,8 +242,3 @@ export type RootState = AuthRootState &
   SessionChangesRootState & {
     savingExtension: SavingExtensionState;
   };
-
-export type RecipeMetadataFormState = Pick<
-  Metadata,
-  "id" | "name" | "version" | "description"
->;

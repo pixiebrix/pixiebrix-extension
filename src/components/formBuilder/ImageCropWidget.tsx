@@ -49,15 +49,15 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     makeClientCrop(crop);
   };
 
-  const makeClientCrop = (crop: Crop) => {
+  function makeClientCrop(crop: Crop) {
     if (imageRef && crop.width && crop.height) {
       const croppedImage = getCroppedImg(imageRef.current, crop);
       setCroppedImageUrl(croppedImage);
       onChange(croppedImage);
     }
-  };
+  }
 
-  const getCroppedImg = (image: HTMLImageElement, crop: Crop) => {
+  function getCroppedImg(image: HTMLImageElement, crop: Crop) {
     const canvas = document.createElement("canvas");
     const pixelRatio = window.devicePixelRatio;
     const scaleX = image.naturalWidth / image.width;
@@ -83,7 +83,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     );
 
     return canvas.toDataURL("image/png");
-  };
+  }
 
   const source: string | null =
     typeof uiSchema?.source === "string" ? uiSchema.source : null;
