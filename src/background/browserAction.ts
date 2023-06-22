@@ -17,7 +17,6 @@
 
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
-import { executeScript } from "webext-content-scripts";
 import webextAlert from "./webextAlert";
 import { memoizeUntilSettled, isMac } from "@/utils";
 import { notify } from "@/extensionConsole/messenger/api";
@@ -37,6 +36,8 @@ const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 
 // Don't accept objects here as they're not easily memoizable
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
+  console.debug("browserAction:toggleSidebar", tabId, tabUrl);
+
   if (!isScriptableUrl(tabUrl)) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
@@ -46,10 +47,15 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   // Load the raw toggle script first, then the content script. The browser executes them
   // in order, but we don't need to use `Promise.all` to await them at the same time as we
   // want to catch each error separately.
-  const sidebarTogglePromise = executeScript({
-    tabId,
+  // Call browser.tabs.executeScript instead of using webext-content-scripts:executeScript because we need to
+  // await the script running. See https://github.com/fregante/webext-content-scripts/issues/22
+  const sidebarTogglePromise = browser.tabs.executeScript(tabId, {
+    file: "browserActionInstantHandler.js",
+    matchAboutBlank: false,
+    allFrames: false,
     frameId: TOP_LEVEL_FRAME_ID,
-    files: ["browserActionInstantHandler.js"],
+    // Run at end instead of idle to ensure immediate feedback to clicking the browser action icon
+    runAt: "document_end",
   });
 
   // Clicking the browser action grants active tab. So PixieBrix might just now be getting access to run on the tab.
