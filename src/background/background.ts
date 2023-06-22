@@ -24,8 +24,6 @@ import "@/development/errorsBadge";
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
-import "webext-dynamic-content-scripts/including-active-tab";
-
 import registerMessenger from "@/background/messenger/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
@@ -39,7 +37,6 @@ import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import initActiveTabTracking from "@/background/activeTab";
 import initPartnerTheme from "@/background/partnerTheme";
 import initStarterBlueprints from "@/background/starterBlueprints";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
@@ -58,7 +55,6 @@ initBrowserCommands();
 initDeploymentUpdater();
 initFirefoxCompat();
 activateBrowserActionIcon();
-initActiveTabTracking();
 initPartnerTheme();
 initStarterBlueprints();
 initPartnerTokenRefresh();

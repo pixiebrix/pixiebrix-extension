@@ -70,8 +70,7 @@ async function dispatchMenu(
 
   console.time("ensureContentScript");
 
-  // Using the context menu gives temporary access to the page. The content script should already be injected via
-  // webext-dynamic-content-scripts, but double check just in case.
+  // Browser will add at document_idle. But ensure it's ready before continuing
   await pTimeout(ensureContentScript(target), {
     milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
     message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,

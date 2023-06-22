@@ -58,8 +58,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
     runAt: "document_end",
   });
 
-  // Clicking the browser action grants active tab. So PixieBrix might just now be getting access to run on the tab.
-  // It should automatically get added by webext-dynamic-content-scripts which tries to watch for new active tabs.
+  // Chrome adds automatically at document_idle, so it might not be ready yet when the user click the browser action
   const contentScriptPromise = ensureContentScript({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,

@@ -39,10 +39,10 @@ async function initContentScript() {
   const uuid = uuidv4();
 
   if (isInstalledInThisSession()) {
-    // `webext-dynamic-content-scripts` to 10.0.0-1 can inject the same content script multiple times
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/5743
     // Must prevent multiple injection because repeat messenger registration causes message handling errors:
     // https://github.com/pixiebrix/webext-messenger/issues/88
+    // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
+    // multiple times: https://github.com/pixiebrix/pixiebrix-extension/pull/5743
     console.warn(
       `contentScript: was requested twice in the same context, skipping content script initialization ${context}`
     );
