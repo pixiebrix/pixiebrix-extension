@@ -171,6 +171,11 @@ export async function setAnimationFrameInterval(
   }
 }
 
+export const sleep = async (milliseconds: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+
 export async function waitForBody(): Promise<void> {
   while (!document.body) {
     // eslint-disable-next-line no-await-in-loop -- Polling pattern
@@ -204,11 +209,6 @@ export async function asyncMapValues<T, TResult>(
     zip(entries, values).map(([[key], value]) => [key, value])
   ) as any;
 }
-
-export const sleep = async (milliseconds: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, milliseconds);
-  });
 
 export async function awaitValue<T>(
   valueFactory: () => T,
