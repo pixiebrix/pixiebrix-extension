@@ -73,7 +73,7 @@ export function isSidebarFrameVisible(): boolean {
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
 
-  console.debug("sidebarDomControllerLite:removeSidebarFrame: sidebar exists", {
+  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
     isSidebarFrameVisible: Boolean(sidebar),
   });
 
