@@ -40,7 +40,8 @@ import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
   findLocalDeploymentServiceConfigurations,
-  makeUpdatedFilter,
+  // TODO: replace me
+  //  makeUpdatedFilter,
   mergeDeploymentServiceConfigurations,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
@@ -65,7 +66,9 @@ const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
 const locateAllForService = locator.locateAllForService.bind(locator);
 
-const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
+// TODO: replace me
+//  const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
+const UPDATE_INTERVAL_MS = 10_000;
 
 async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
   await saveOptions(state);
@@ -202,9 +205,10 @@ async function uninstallRecipe(
     editor = result.editor;
   }
 
-  await Promise.allSettled(
-    recipeExtensions.map(async ({ id }) => removeExtensionForEveryTab(id))
-  );
+  // TODO: replace me
+  // await Promise.allSettled(
+  //   recipeExtensions.map(async ({ id }) => removeExtensionForEveryTab(id))
+  // );
 
   return { options, editor };
 }
@@ -323,10 +327,12 @@ async function selectUpdatedDeployments(
   deployments: Deployment[],
   { restricted }: { restricted: boolean }
 ): Promise<Deployment[]> {
+  // TODO: replace me
   // Always get the freshest options slice from the local storage
-  const { extensions } = await loadOptions();
-  const updatePredicate = makeUpdatedFilter(extensions, { restricted });
-  return deployments.filter((deployment) => updatePredicate(deployment));
+  // const { extensions } = await loadOptions();
+  // const updatePredicate = makeUpdatedFilter(extensions, { restricted });
+  // return deployments.filter((deployment) => updatePredicate(deployment));
+  return deployments;
 }
 
 async function markAllAsInstalled() {
