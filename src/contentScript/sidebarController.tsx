@@ -20,7 +20,7 @@ import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
-import { logPromiseDuration } from "@/utils";
+import { logPromiseDuration, waitAnimationFrame } from "@/utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import {
   insertSidebarFrame,
@@ -194,9 +194,13 @@ export async function reloadSidebar(): Promise<void> {
  * - `browserAction` calls toggleSidebarFrame to immediately adds the sidebar iframe
  * - It injects the content script
  * - It calls this method via messenger to complete the sidebar initialization
- * but the content
  */
-export function rehydrateSidebar(): void {
+export async function rehydrateSidebar(): Promise<void> {
+  // Ensure DOM state is ready for accurate call to isSidebarFrameVisible. Shouldn't strictly be necessary, but
+  // giving it a try and shouldn't impact performance. The background page has limited ability to determine when it's
+  // OK to call rehydrateSidebar via messenger. See background/browserAction.ts.
+  await waitAnimationFrame();
+
   // To assist with debugging race conditions in sidebar initialization
   console.debug("sidebarController:rehydrateSidebar", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
