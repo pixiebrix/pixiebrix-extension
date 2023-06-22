@@ -21,7 +21,6 @@ import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
-import { appApi } from "@/services/api";
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -33,13 +32,6 @@ if (typeof createLogger === "function") {
 const store = configureStore({
   reducer: {
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-  },
-  middleware(getDefaultMiddleware) {
-    /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware()
-      .concat(appApi.middleware)
-      .concat(conditionalMiddleware);
-    /* eslint-enable unicorn/prefer-spread */
   },
 });
 
