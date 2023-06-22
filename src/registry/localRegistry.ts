@@ -144,6 +144,28 @@ export async function clear(): Promise<void> {
 }
 
 /**
+ * Replace the local database with the packages from the registry.
+ *
+ * Memoized to avoid multiple network requests across tabs.
+ */
+export const syncPackages = memoizeUntilSettled(async () => {
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+  const timestamp = new Date();
+
+  // In the future, use the paginated endpoint?
+  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
+
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
+
+  await replaceAll(packages);
+});
+
+/**
  * Deletes and recreates the brick definition database.
  */
 export async function recreateDB(): Promise<void> {
@@ -197,28 +219,6 @@ export function parsePackage(
     rawConfig: undefined,
   };
 }
-
-/**
- * Replace the local database with the packages from the registry.
- *
- * Memoized to avoid multiple network requests across tabs.
- */
-export const syncPackages = memoizeUntilSettled(async () => {
-  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
-  const timestamp = new Date();
-
-  // In the future, use the paginated endpoint?
-  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
-
-  const packages = data.map((x) => ({
-    ...parsePackage(x),
-    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
-    // that were made during the call.
-    timestamp,
-  }));
-
-  await replaceAll(packages);
-});
 
 /**
  * Return the latest version of a brick, or null if it's not found.

@@ -151,6 +151,17 @@ function getProp(value: any, prop: string | number): unknown {
   return undefined;
 }
 
+const EMBER_INTERNAL_PROPS = new Set([
+  "renderer",
+  "parentView",
+  "store",
+  "localStorage",
+  "childViews",
+  "elementId",
+  "args",
+  "_router",
+]);
+
 function pickExternalProps(obj: UnknownObject): UnknownObject {
   // Lodash's pickby was having issues with some getters
   return Object.fromEntries(
@@ -213,17 +224,6 @@ function isManaged(node: Node): boolean {
 
   return Boolean(ignoreNotFound(() => getEmberComponentById(elt.id)));
 }
-
-const EMBER_INTERNAL_PROPS = new Set([
-  "renderer",
-  "parentView",
-  "store",
-  "localStorage",
-  "childViews",
-  "elementId",
-  "args",
-  "_router",
-]);
 
 /**
  * Returns the "target" of a (classic) component.

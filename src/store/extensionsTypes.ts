@@ -20,19 +20,6 @@ import {
   type UnresolvedExtension,
 } from "@/types/extensionTypes";
 
-export type OptionsState =
-  | LegacyExtensionObjectShapeState
-  | LegacyExtensionObjectState
-  | ExtensionOptionsState;
-
-export type ExtensionOptionsState = {
-  extensions: PersistedExtension[];
-};
-
-export type ExtensionsRootState = {
-  options: OptionsState;
-};
-
 /**
  * @deprecated use PersistedOptionsState - this is only used in the migration
  */
@@ -46,9 +33,22 @@ export type LegacyExtensionObjectShapeState = {
   };
 };
 
+export type ExtensionOptionsState = {
+  extensions: PersistedExtension[];
+};
+
 /**
  * @deprecated use ExtensionOptionsState - this is only used in a migration
  */
 export type LegacyExtensionObjectState = {
   extensions: UnresolvedExtension[];
+};
+
+export type OptionsState =
+  | LegacyExtensionObjectShapeState
+  | LegacyExtensionObjectState
+  | ExtensionOptionsState;
+
+export type ExtensionsRootState = {
+  options: OptionsState;
 };

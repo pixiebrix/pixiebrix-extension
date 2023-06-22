@@ -97,6 +97,23 @@ type CommonOptions = ApiVersionOptions & {
   abortSignal?: AbortSignal;
 };
 
+/**
+ * An execution branch (defer, pipeline, etc.).
+ * @since 1.7.0
+ */
+type Branch = {
+  /**
+   * A static identifier for the branch.
+   * @since 1.7.0
+   */
+  key: string;
+  /**
+   * A monotonically increasing counter for executions of branch with key
+   * @since 1.7.0
+   */
+  counter: number;
+};
+
 type RunMetadata = {
   /**
    * The extension UUID to correlate trace records for a brick.
@@ -196,23 +213,6 @@ type BlockProps<TArgs extends RenderedArgs | BlockArgs = RenderedArgs> = {
    * @see IBlock.isRootAware
    */
   root: SelectorRoot | null;
-};
-
-/**
- * An execution branch (defer, pipeline, etc.).
- * @since 1.7.0
- */
-type Branch = {
-  /**
-   * A static identifier for the branch.
-   * @since 1.7.0
-   */
-  key: string;
-  /**
-   * A monotonically increasing counter for executions of branch with key
-   * @since 1.7.0
-   */
-  counter: number;
 };
 
 type BlockOutput = {
