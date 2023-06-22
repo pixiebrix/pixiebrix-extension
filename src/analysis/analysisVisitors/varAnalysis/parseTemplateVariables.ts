@@ -32,6 +32,7 @@ const VARIABLE_START_INDEX = Symbol("#Variable_start_index");
 
 export interface VariableOptions {
   type?: string;
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   parent?: Variable | undefined;
   startIndex: number;
 }

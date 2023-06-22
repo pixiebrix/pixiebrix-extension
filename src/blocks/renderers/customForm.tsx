@@ -120,6 +120,186 @@ function assertObject(value: unknown): asserts value is UnknownObject {
 
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
+export const customFormRendererSchema = {
+  type: "object",
+  properties: {
+    storage: {
+      oneOf: [
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "database",
+            },
+            databaseId: {
+              type: "string",
+              format: "uuid",
+            },
+            service: {
+              $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
+            },
+          },
+          required: ["type", "service", "databaseId"],
+        },
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "state",
+            },
+            namespace: {
+              type: "string",
+              description:
+                "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
+              enum: ["blueprint", "extension", "shared"],
+              default: "blueprint",
+            },
+          },
+          required: ["type"],
+        },
+        {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              const: "localStorage",
+            },
+          },
+          required: ["type"],
+        },
+      ],
+    },
+    autoSave: {
+      type: "boolean",
+      description:
+        "Toggle on to automatically save/submit the form on change. If enabled, form will not display a submit button.",
+      default: false,
+    },
+    submitCaption: {
+      type: "string",
+      description: "The submit button caption (default='Submit')",
+      default: "Submit",
+    },
+    successMessage: {
+      type: "string",
+      default: "Successfully submitted form",
+      description:
+        "An optional message to display if the form submitted successfully",
+    },
+    recordId: {
+      type: "string",
+      description:
+        "Unique identifier for the data record. Required if using a database or local storage",
+    },
+    schema: {
+      type: "object",
+      additionalProperties: true,
+    },
+    uiSchema: {
+      type: "object",
+      additionalProperties: true,
+    },
+  },
+  required: ["schema"],
+};
+
+export class CustomFormRenderer extends Renderer {
+  static BLOCK_ID = validateRegistryId("@pixiebrix/form");
+  constructor() {
+    super(
+      CustomFormRenderer.BLOCK_ID,
+      "Custom Form",
+      "Show a custom form connected to a data source"
+    );
+  }
+
+  inputSchema: Schema = customFormRendererSchema as Schema;
+
+  async render(
+    {
+      storage = { type: "localStorage" },
+      recordId,
+      schema,
+      uiSchema,
+      autoSave = false,
+      successMessage,
+      submitCaption = "Submit",
+    }: BlockArgs<{
+      storage?: Storage;
+      successMessage?: string;
+      recordId?: string | null;
+      autoSave?: boolean;
+      submitCaption?: string;
+      schema: Schema;
+      uiSchema?: UiSchema;
+    }>,
+    { logger }: BlockOptions
+  ): Promise<ComponentRef> {
+    if (logger.context.extensionId == null) {
+      throw new Error("extensionId is required");
+    }
+
+    if (
+      isEmpty(recordId) &&
+      ["database", "localStorage"].includes(storage.type)
+    ) {
+      throw new PropError(
+        "recordId is required for database and localStorage",
+        this.id,
+        "recordId",
+        recordId
+      );
+    }
+
+    const { blueprintId, extensionId } = logger.context;
+
+    const initialData = await getInitialData(storage, recordId, {
+      blueprintId,
+      extensionId,
+    });
+
+    const normalizedData = normalizeIncomingFormData(schema, initialData);
+
+    console.debug("Initial data for form", {
+      recordId,
+      initialData,
+      normalizedData,
+    });
+
+    return {
+      Component: CustomFormComponent,
+      props: {
+        recordId,
+        formData: normalizedData,
+        schema,
+        uiSchema,
+        autoSave,
+        submitCaption,
+        async onSubmit(values: JsonObject) {
+          try {
+            const normalizedValues = normalizeOutgoingFormData(schema, values);
+            await setData(storage, recordId, normalizedValues, {
+              blueprintId,
+              extensionId,
+            });
+            if (!isEmpty(successMessage)) {
+              notify.success(successMessage);
+            }
+          } catch (error) {
+            notify.error({
+              error,
+              message: "Error submitting form",
+              reportError: false,
+            });
+          }
+        },
+      },
+    };
+  }
+}
+
 async function getInitialData(
   storage: Storage,
   recordId: string,
@@ -225,91 +405,6 @@ async function setData(
   }
 }
 
-export const customFormRendererSchema = {
-  type: "object",
-  properties: {
-    storage: {
-      oneOf: [
-        {
-          type: "object",
-          properties: {
-            type: {
-              type: "string",
-              const: "database",
-            },
-            databaseId: {
-              type: "string",
-              format: "uuid",
-            },
-            service: {
-              $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
-            },
-          },
-          required: ["type", "service", "databaseId"],
-        },
-        {
-          type: "object",
-          properties: {
-            type: {
-              type: "string",
-              const: "state",
-            },
-            namespace: {
-              type: "string",
-              description:
-                "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
-              enum: ["blueprint", "extension", "shared"],
-              default: "blueprint",
-            },
-          },
-          required: ["type"],
-        },
-        {
-          type: "object",
-          properties: {
-            type: {
-              type: "string",
-              const: "localStorage",
-            },
-          },
-          required: ["type"],
-        },
-      ],
-    },
-    autoSave: {
-      type: "boolean",
-      description:
-        "Toggle on to automatically save/submit the form on change. If enabled, form will not display a submit button.",
-      default: false,
-    },
-    submitCaption: {
-      type: "string",
-      description: "The submit button caption (default='Submit')",
-      default: "Submit",
-    },
-    successMessage: {
-      type: "string",
-      default: "Successfully submitted form",
-      description:
-        "An optional message to display if the form submitted successfully",
-    },
-    recordId: {
-      type: "string",
-      description:
-        "Unique identifier for the data record. Required if using a database or local storage",
-    },
-    schema: {
-      type: "object",
-      additionalProperties: true,
-    },
-    uiSchema: {
-      type: "object",
-      additionalProperties: true,
-    },
-  },
-  required: ["schema"],
-};
-
 // Server can send null or undefined for an empty field.
 // In order for RJSF to handle an absence of value properly,
 // the field must not be present on the data object at all
@@ -339,99 +434,4 @@ export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
   }
 
   return normalizedData;
-}
-
-export class CustomFormRenderer extends Renderer {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/form");
-  constructor() {
-    super(
-      CustomFormRenderer.BLOCK_ID,
-      "Custom Form",
-      "Show a custom form connected to a data source"
-    );
-  }
-
-  inputSchema: Schema = customFormRendererSchema as Schema;
-
-  async render(
-    {
-      storage = { type: "localStorage" },
-      recordId,
-      schema,
-      uiSchema,
-      autoSave = false,
-      successMessage,
-      submitCaption = "Submit",
-    }: BlockArgs<{
-      storage?: Storage;
-      successMessage?: string;
-      recordId?: string | null;
-      autoSave?: boolean;
-      submitCaption?: string;
-      schema: Schema;
-      uiSchema?: UiSchema;
-    }>,
-    { logger }: BlockOptions
-  ): Promise<ComponentRef> {
-    if (logger.context.extensionId == null) {
-      throw new Error("extensionId is required");
-    }
-
-    if (
-      isEmpty(recordId) &&
-      ["database", "localStorage"].includes(storage.type)
-    ) {
-      throw new PropError(
-        "recordId is required for database and localStorage",
-        this.id,
-        "recordId",
-        recordId
-      );
-    }
-
-    const { blueprintId, extensionId } = logger.context;
-
-    const initialData = await getInitialData(storage, recordId, {
-      blueprintId,
-      extensionId,
-    });
-
-    const normalizedData = normalizeIncomingFormData(schema, initialData);
-
-    console.debug("Initial data for form", {
-      recordId,
-      initialData,
-      normalizedData,
-    });
-
-    return {
-      Component: CustomFormComponent,
-      props: {
-        recordId,
-        formData: normalizedData,
-        schema,
-        uiSchema,
-        autoSave,
-        submitCaption,
-        async onSubmit(values: JsonObject) {
-          try {
-            const normalizedValues = normalizeOutgoingFormData(schema, values);
-            await setData(storage, recordId, normalizedValues, {
-              blueprintId,
-              extensionId,
-            });
-            if (!isEmpty(successMessage)) {
-              notify.success(successMessage);
-            }
-          } catch (error) {
-            notify.error({
-              error,
-              message: "Error submitting form",
-              reportError: false,
-            });
-          }
-        },
-      },
-    };
-  }
 }

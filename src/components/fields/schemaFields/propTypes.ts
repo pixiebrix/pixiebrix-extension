@@ -22,8 +22,6 @@ import type * as Yup from "yup";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
-export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
-
 export interface SchemaFieldProps {
   /**
    * The field name; generally used to identify this field in the form state
@@ -111,3 +109,5 @@ export interface SchemaFieldProps {
    */
   inputRef?: React.MutableRefObject<HTMLElement>;
 }
+
+export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
