@@ -16,23 +16,16 @@
  */
 
 import pDefer, { type DeferredPromise } from "p-defer";
-import { injectContentScript } from "webext-content-scripts";
 import { isRemoteProcedureCallRequest } from "@/pageScript/messenger/pigeon";
-import {
-  isContentScriptDynamicallyRegistered,
-  isContentScriptStaticallyRegistered,
-} from "webext-dynamic-content-scripts/utils";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types/messengerTypes";
 import {
-  getTargetState,
   ENSURE_CONTENT_SCRIPT_READY,
+  getTargetState,
 } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
-import { possiblyActiveTabs } from "webext-dynamic-content-scripts/distribution/active-tab";
-
 import MessageSender = Runtime.MessageSender;
 
 const debug = console.debug.bind(console, "ensureContentScript:");
@@ -111,18 +104,6 @@ export async function onReadyNotification(
   }
 }
 
-async function injectFromManifest(target: Target): Promise<void> {
-  debug("injecting", target);
-  const scripts = browser.runtime
-    .getManifest()
-    .content_scripts.map((script) => {
-      script.all_frames = false;
-      return script;
-    });
-
-  await injectContentScript(target, scripts);
-}
-
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
  * - If it's not expected to be injected automatically, it also injects it into the page.
@@ -159,8 +140,7 @@ async function ensureContentScriptWithoutTimeout(
   target: Target,
   signal: AbortSignal
 ): Promise<void> {
-  // Start waiting for the notification as early as possible,
-  // `webext-dynamic-content-scripts` might have already injected the content script
+  // Start waiting for the notification as early as possible. Browser might have already injected the content script
   const readyNotificationPromise = onReadyNotification(target, signal);
 
   const state = await getTargetState(target); // It will throw if we don't have permissions
@@ -175,21 +155,6 @@ async function ensureContentScriptWithoutTimeout(
 
     await readyNotificationPromise;
     return;
-  }
-
-  if (isContentScriptStaticallyRegistered(state.url)) {
-    // TODO: Potentially inject anyway on pixiebrix.com: https://github.com/pixiebrix/pixiebrix-extension/issues/4189
-    debug("handled by the browser, due to the manifest", target);
-  } else if (await isContentScriptDynamicallyRegistered(state.url)) {
-    debug(
-      "handled by webext-dynamic-content-script, due to host grant",
-      target
-    );
-  } else if (possiblyActiveTabs.has(target.tabId)) {
-    debug("handled by webext-dynamic-content-script, due to activeTab", target);
-  } else {
-    console.warn("injecting now but will likely fail", target);
-    await injectFromManifest(target);
   }
 
   await readyNotificationPromise;

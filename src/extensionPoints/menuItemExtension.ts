@@ -175,6 +175,8 @@ async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
   return rejectOnCancelled(promise, isNavigationCancelled);
 }
 
+type MenuTargetMode = "document" | "eventTarget";
+
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   /**
    * Mapping of menu container nonce UUID to the DOM element for the menu container
@@ -943,7 +945,6 @@ export type MenuPosition =
 /**
  * @since 1.7.16
  */
-type MenuTargetMode = "document" | "eventTarget";
 
 export interface MenuDefinition extends ExtensionPointDefinition {
   type: "menuItem";

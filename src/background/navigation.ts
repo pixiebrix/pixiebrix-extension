@@ -22,7 +22,6 @@ import { canAccessTab, isScriptableUrl } from "@/permissions/permissionsUtils";
 import { debounce } from "lodash";
 import { syncFlagOn } from "@/store/syncFlags";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
-import { isContentScriptRegistered } from "webext-dynamic-content-scripts/utils";
 import { getTargetState } from "@/contentScript/ready";
 
 export function reactivateEveryTab(): void {
@@ -41,7 +40,6 @@ async function traceNavigation(target: Target): Promise<void> {
     tabUrl,
     isScriptableUrl: isScriptableUrl(tabUrl),
     contentScriptState: await getTargetState(target),
-    isContentScriptRegistered: await isContentScriptRegistered(tabUrl),
     canInject: await canInjectTab(target),
     // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
     canAccessTab: await canAccessTab(target),
@@ -54,8 +52,7 @@ async function onNavigation({ tabId, frameId }: Target): Promise<void> {
   }
 
   if (await canAccessTab({ tabId, frameId })) {
-    // The content script will already be injected on webNavigation.onCommitted via webext-dynamic-content-scripts and
-    // content-scripts-register-polyfill, so we don't have to call ensureContentScript before messaging the
+    // The content script will already be injected, so we don't have to call ensureContentScript before messaging the
     // content script with handleNavigate.
     handleNavigate({ tabId, frameId });
   }

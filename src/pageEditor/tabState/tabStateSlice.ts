@@ -48,6 +48,18 @@ const initialTabState: TabState = {
   error: null,
 };
 
+/**
+ * This thunk is long-running. It waits for the page's chrome runtime context
+ * to be invalidated, and then resolves with an error.
+ */
+const awaitContextInvalidated = createAsyncThunk<
+  void,
+  void,
+  { state: TabStateRootState }
+>("tabState/awaitContextInvalidated", async () => {
+  await onContextInvalidated();
+});
+
 const connectToContentScript = createAsyncThunk<
   FrameConnectionState,
   void,
@@ -88,18 +100,6 @@ const connectToContentScript = createAsyncThunk<
     hasPermissions: true,
     meta: { frameworks },
   };
-});
-
-/**
- * This thunk is long-running. It waits for the page's chrome runtime context
- * to be invalidated, and then resolves with an error.
- */
-const awaitContextInvalidated = createAsyncThunk<
-  void,
-  void,
-  { state: TabStateRootState }
->("tabState/awaitContextInvalidated", async () => {
-  await onContextInvalidated();
 });
 
 export const tabStateSlice = createSlice({

@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { reportEvent } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import notify from "@/utils/notify";
+import { useDispatch } from "react-redux";
+import SettingsSlice from "@/store/settingsSlice";
 
 /**
  * Opens the quickbar menu
  */
 export function QuickbarButton() {
-  // Using this boolean to hide the FAB since the setting state doesn't refresh immediately
-  const [hidden, setHidden] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
-  return hidden ? null : (
+  return (
     // Using standard css here because the shadow dom in `FloatingActions.tsx`
     // prevents us from using regular css modules.
     <div className="quickbar-button-container">
@@ -40,16 +40,12 @@ export function QuickbarButton() {
           className="hide-button"
           onClick={async () => {
             try {
-              setHidden(true);
-              const settings = await getSettingsState();
-              await saveSettingsState({
-                ...settings,
-                isFloatingActionButtonEnabled: false,
-              });
+              dispatch(
+                SettingsSlice.actions.setFloatingActionButtonEnabled(false)
+              );
               reportEvent("FloatingQuickBarButtonOnScreenHide");
             } catch (error) {
               notify.error({ message: "Error saving settings", error });
-              setHidden(false);
             }
           }}
           variant="outline"

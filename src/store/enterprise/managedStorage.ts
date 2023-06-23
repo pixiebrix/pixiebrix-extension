@@ -82,6 +82,33 @@ const waitForInitialManagedStorage = pMemoize(async () => {
 });
 
 /**
+ * Initialize the managed storage state and listen for changes. Safe to call multiple times.
+ */
+export const initManagedStorage = once(() => {
+  expectContext("extension");
+
+  try {
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/onChanged
+    // `browser.storage.managed.onChanged` might also exist, but it's not available in testing
+    // See: https://github.com/clarkbw/jest-webextension-mock/issues/170
+    browser.storage.onChanged.addListener(async (changes, area) => {
+      if (area === "managed") {
+        managedStorageState = await readManagedStorageImmediately();
+        notifyAll();
+      }
+    });
+  } catch (error) {
+    // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
+    console.warn(
+      "Not listening for managed storage changes because managed storage is not supported",
+      { error }
+    );
+  }
+
+  void waitForInitialManagedStorage();
+});
+
+/**
  * Read a single-value from enterprise managed storage.
  *
  * If managed storage has not been initialized yet, reads from the managed storage API. Waits up to
@@ -162,30 +189,3 @@ export function INTERNAL_reset(): void {
   listeners.splice(0, listeners.length);
   pMemoizeClear(waitForInitialManagedStorage);
 }
-
-/**
- * Initialize the managed storage state and listen for changes. Safe to call multiple times.
- */
-export const initManagedStorage = once(() => {
-  expectContext("extension");
-
-  try {
-    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/onChanged
-    // `browser.storage.managed.onChanged` might also exist, but it's not available in testing
-    // See: https://github.com/clarkbw/jest-webextension-mock/issues/170
-    browser.storage.onChanged.addListener(async (changes, area) => {
-      if (area === "managed") {
-        managedStorageState = await readManagedStorageImmediately();
-        notifyAll();
-      }
-    });
-  } catch (error) {
-    // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
-    console.warn(
-      "Not listening for managed storage changes because managed storage is not supported",
-      { error }
-    );
-  }
-
-  void waitForInitialManagedStorage();
-});

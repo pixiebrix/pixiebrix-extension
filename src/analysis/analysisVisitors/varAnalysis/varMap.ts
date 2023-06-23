@@ -17,6 +17,11 @@
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
 
+export enum VarExistence {
+  MAYBE = "MAYBE",
+  DEFINITELY = "DEFINITELY",
+}
+
 type SetExistenceArgs = {
   /**
    * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
@@ -81,11 +86,6 @@ type SetExistenceFromValuesArgs = {
    */
   parentPath?: string;
 };
-
-export enum VarExistence {
-  MAYBE = "MAYBE",
-  DEFINITELY = "DEFINITELY",
-}
 
 // This symbols are used to define the own properties of the existence tree node
 export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");

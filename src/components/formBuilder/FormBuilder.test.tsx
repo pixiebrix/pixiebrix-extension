@@ -103,6 +103,8 @@ const getReactSelectContainer = (): HTMLElement =>
   screen.getByTestId("formbuilder-select-wrapper").querySelector("div");
 
 describe("Dropdown field", () => {
+  let rendered: RenderResult;
+
   async function addOption() {
     // Add a text option
     screen.getByText("Add Item").click();
@@ -123,7 +125,6 @@ describe("Dropdown field", () => {
     await waitForEffect();
   }
 
-  let rendered: RenderResult;
   beforeEach(async () => {
     rendered = renderFormBuilder();
 
@@ -220,6 +221,8 @@ describe("Dropdown field", () => {
 });
 
 describe("Dropdown with labels field", () => {
+  let rendered: RenderResult;
+
   async function addOption() {
     // Add a text option
     screen.getByText("Add Item").click();
@@ -249,7 +252,6 @@ describe("Dropdown with labels field", () => {
     await waitForEffect();
   }
 
-  let rendered: RenderResult;
   beforeEach(async () => {
     rendered = renderFormBuilder();
 

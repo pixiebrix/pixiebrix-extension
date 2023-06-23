@@ -107,6 +107,11 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
     },
   }
 );
+
+type ExternalExtensionPointParams = {
+  extensionPointId?: RegistryId;
+};
+
 /**
  * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
  */
@@ -181,10 +186,6 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
     options: undefined,
     extensionPoints,
   });
-};
-
-type ExternalExtensionPointParams = {
-  extensionPointId?: RegistryId;
 };
 
 type InnerExtensionPointParams = {
