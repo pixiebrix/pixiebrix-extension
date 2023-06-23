@@ -459,6 +459,29 @@ module.exports = (env, options) =>
             },
           ],
         },
+        // Pull bootstrap-icons and simple-icons from CDN to reduce bundle size.
+        {
+          test: /bootstrap-icons\/.*\.svg$/,
+          type: "asset/resource",
+          generator: {
+            emit: false,
+            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${
+              require("bootstrap-icons/package.json").version
+            }/`,
+            filename: "icons/[name][ext]",
+          },
+        },
+        {
+          test: /simple-icons\/.*\.svg$/,
+          type: "asset/resource",
+          generator: {
+            emit: false,
+            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${
+              require("simple-icons/package.json").version
+            }/`,
+            filename: "icons/[name][ext]",
+          },
+        },
       ],
     },
   });
