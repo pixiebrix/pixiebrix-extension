@@ -59,6 +59,7 @@ import { type IBlock } from "@/types/blockTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type TourConfig = {
   /**
@@ -67,6 +68,24 @@ export type TourConfig = {
    */
   tour: BlockPipeline | BlockConfig;
 };
+
+type TourDefinitionOptions = UnknownObject;
+
+export interface TourDefinition extends ExtensionPointDefinition {
+  defaultOptions?: TourDefinitionOptions;
+
+  /**
+   * Automatically run the tour on matching pages.
+   * @since 1.7.19
+   */
+  autoRunSchedule?: "never" | "once" | "always";
+
+  /**
+   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
+   * @since 1.7.19
+   */
+  allowUserRun?: boolean;
+}
 
 export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   public get kind(): "tour" {
@@ -247,24 +266,6 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
       this.extensionTours.get(extension.id).run();
     }
   }
-}
-
-type TourDefinitionOptions = Record<string, unknown>;
-
-export interface TourDefinition extends ExtensionPointDefinition {
-  defaultOptions?: TourDefinitionOptions;
-
-  /**
-   * Automatically run the tour on matching pages.
-   * @since 1.7.19
-   */
-  autoRunSchedule?: "never" | "once" | "always";
-
-  /**
-   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
-   * @since 1.7.19
-   */
-  allowUserRun?: boolean;
 }
 
 class RemoteTourExtensionPoint extends TourExtensionPoint {

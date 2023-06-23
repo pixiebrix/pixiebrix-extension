@@ -30,13 +30,6 @@ interface DisplayProps {
   errorContext?: string;
 }
 
-interface BoundaryProps extends DisplayProps {
-  /**
-   * Custom error display component
-   */
-  ErrorComponent?: React.FC<DisplayProps & ErrorState>;
-}
-
 interface ErrorState {
   /**
    * True if there was an error. Will always be true in ErrorDisplayProps
@@ -55,6 +48,13 @@ interface ErrorState {
    * The error stack trace, if available.
    */
   stack: string | null;
+}
+
+interface BoundaryProps extends DisplayProps {
+  /**
+   * Custom error display component
+   */
+  ErrorComponent?: React.FC<DisplayProps & ErrorState>;
 }
 
 /**

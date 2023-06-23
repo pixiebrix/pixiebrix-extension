@@ -127,6 +127,16 @@ async function _initGoogle(): Promise<void> {
 }
 
 /**
+ * Initialize the Google API.
+ *
+ * Memoized to avoid multiple injections, while also allow retrying if the initial injection fails or the context
+ * is later invalidated.
+ *
+ * @see markGoogleInvalidated
+ */
+const initGoogle = pMemoize(_initGoogle);
+
+/**
  * Mark the Google API context as invalidated and notify listeners.
  */
 export function markGoogleInvalidated(): void {
@@ -157,15 +167,5 @@ export function subscribe(listener: Listener): () => void {
     listeners.delete(listener);
   };
 }
-
-/**
- * Initialize the Google API.
- *
- * Memoized to avoid multiple injections, while also allow retrying if the initial injection fails or the context
- * is later invalidated.
- *
- * @see markGoogleInvalidated
- */
-const initGoogle = pMemoize(_initGoogle);
 
 export default initGoogle;

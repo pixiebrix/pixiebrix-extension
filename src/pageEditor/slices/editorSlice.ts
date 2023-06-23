@@ -147,6 +147,7 @@ const cloneActiveExtension = createAsyncThunk<
     }
   );
   // Add the cloned extension
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   thunkAPI.dispatch(actions.addElement(newElement));
 });
 

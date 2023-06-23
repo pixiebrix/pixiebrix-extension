@@ -56,6 +56,22 @@ const UnknownType: React.FC<{ componentType: string }> = ({
   <div className="text-danger">Unknown component type: {componentType}</div>
 );
 
+export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
+  const { staticId, branches } = tracePath;
+  const componentDefinition = getComponentDefinition(root, tracePath);
+  if (root.children?.length > 0) {
+    componentDefinition.props.children = root.children.map((child, index) => {
+      const { Component, props } = buildDocumentBranch(child, {
+        staticId: joinPathParts(staticId, root.type, "children"),
+        branches: [...branches, { staticId, index }],
+      });
+      return <Component key={index} {...props} />;
+    });
+  }
+
+  return componentDefinition;
+};
+
 // eslint-disable-next-line complexity
 export function getComponentDefinition(
   element: DocumentElement,
@@ -196,19 +212,3 @@ export function getComponentDefinition(
     }
   }
 }
-
-export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
-  const { staticId, branches } = tracePath;
-  const componentDefinition = getComponentDefinition(root, tracePath);
-  if (root.children?.length > 0) {
-    componentDefinition.props.children = root.children.map((child, index) => {
-      const { Component, props } = buildDocumentBranch(child, {
-        staticId: joinPathParts(staticId, root.type, "children"),
-        branches: [...branches, { staticId, index }],
-      });
-      return <Component key={index} {...props} />;
-    });
-  }
-
-  return componentDefinition;
-};

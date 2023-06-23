@@ -37,6 +37,7 @@ interface SingleSelector {
 
 interface ChildrenSelector {
   multi?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   find?: SelectorMap;
 }
 
