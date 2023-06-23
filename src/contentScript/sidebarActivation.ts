@@ -31,6 +31,7 @@ import {
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
+import { isLoadedInIframe } from "@/iframeUtils";
 
 async function isUserLoggedIn(): Promise<boolean> {
   const authHeaders = await getAuthHeaders();
@@ -109,7 +110,8 @@ export async function initSidebarActivation() {
 
   const recipeId = await getInProgressRecipeActivation();
 
-  if (recipeId) {
+  // Do not try to show sidebar activation inside an iframe
+  if (recipeId && !isLoadedInIframe()) {
     await setActivatingBlueprint({ blueprintId: null });
     await showSidebarActivationForRecipe(recipeId);
   }
