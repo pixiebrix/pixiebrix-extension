@@ -108,6 +108,7 @@ export async function initSidebarActivation() {
   }
 
   const recipeId = await getInProgressRecipeActivation();
+
   if (recipeId) {
     await setActivatingBlueprint({ blueprintId: null });
     await showSidebarActivationForRecipe(recipeId);

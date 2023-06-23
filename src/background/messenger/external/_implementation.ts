@@ -98,9 +98,10 @@ type ActivateBlueprintOptions = {
 
   /**
    * The "source" page to associate with the activation. This affects the wording in the ActivateWizard
-   * component
+   * component. We used to have multiple sources: template vs. marketplace. However, we got rid of "templates" as a
+   * separate pageSource. Keep for now for analytics consistency.
    */
-  pageSource?: "marketplace" | "other";
+  pageSource?: "marketplace";
 
   /**
    * The URL to redirect to after activation is complete (if present)
@@ -121,6 +122,7 @@ export async function openActivateBlueprint({
       blueprintId
     )}`;
 
+  // TODO: possibly remove this event, it's not really being used/observed at all, and the pageSource is very misleading
   reportEvent("ExternalActivate", { blueprintId, pageSource });
 
   if (newTab) {
