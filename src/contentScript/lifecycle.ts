@@ -379,7 +379,7 @@ export async function runEditorExtension(
  * extension points from the current tab to not interrupt the user's workflow. This function can be
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
-async function cleanupDeactivatedExtensionPoints() {
+async function cleanUpDeactivatedExtensionPoints() {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasPersistedExtension = Object.values(_persistedExtensions).some(
       (persistedExtensionPoint) => {
@@ -421,7 +421,7 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
   console.log("*** _persistedExtensions", _persistedExtensions);
 
   // TODO: filter resolved extensions - remove the ones that don't have the right version number
-  await cleanupDeactivatedExtensionPoints();
+  await cleanUpDeactivatedExtensionPoints();
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
