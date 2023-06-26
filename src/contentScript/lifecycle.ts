@@ -417,10 +417,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
     loadOptions()
   );
 
-  console.log("*** _activeExtensionPoints", _activeExtensionPoints);
-  console.log("*** _persistedExtensions", _persistedExtensions);
-
-  // TODO: filter resolved extensions - remove the ones that don't have the right version number
   await cleanUpDeactivatedExtensionPoints();
 
   // Exclude the following:
