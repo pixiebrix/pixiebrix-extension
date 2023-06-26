@@ -46,7 +46,7 @@ import RequireRecipe, {
 import { persistor } from "@/sidebar/store";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
-import { selectPanelCount } from "@/sidebar/sidebarSelectors";
+import { selectShouldCloseSidebarAfterActivate } from "@/sidebar/sidebarSelectors";
 
 const { actions } = sidebarSlice;
 
@@ -189,7 +189,7 @@ const ActivateRecipePanelContent: React.FC<
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useActivateRecipe("marketplace");
-  const panelCount = useSelector(selectPanelCount);
+  const shouldCloseSidebar = useSelector(selectShouldCloseSidebarAfterActivate);
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -199,7 +199,7 @@ const ActivateRecipePanelContent: React.FC<
   async function handleActivationDecision() {
     reduxDispatch(actions.hideActivateRecipe());
 
-    if (panelCount === 0) {
+    if (shouldCloseSidebar) {
       const topFrame = await getTopLevelFrame();
       void hideSidebar(topFrame);
     }
