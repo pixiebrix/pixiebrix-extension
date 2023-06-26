@@ -384,6 +384,9 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
     loadOptions()
   );
 
+  console.log("*** _activeExtensionPoints", _activeExtensionPoints);
+  console.log("*** _persistedExtensions", _persistedExtensions);
+
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
   // - dynamic extensions: these are already installed on the page via the Page Editor
@@ -398,6 +401,9 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
       activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
     )
   );
+
+  // TODO: filter resolved extensions - remove the ones that don't have the right version number
+  console.log("*** resolvedExtensions", resolvedExtensions);
 
   const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
 
@@ -414,6 +420,8 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
             const extensionPoint = await extensionPointRegistry.lookup(
               extensionPointId
             );
+
+            console.log("*** extensionPoint", extensionPoint);
 
             extensionPoint.syncExtensions(extensions);
 
