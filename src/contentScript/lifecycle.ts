@@ -373,6 +373,37 @@ export async function runEditorExtension(
 }
 
 /**
+ * When Mods are updated in the background script (i.e. via the Deployment updater), we don't reload the
+ * current tab to not interrupt the user's workflow. This function can be used to, e.g., clean up
+ * any extension points from deactivated mods on the next page navigation.
+ */
+async function cleanupDeactivatedExtensionPoints() {
+  for (const extensionPoint of _activeExtensionPoints) {
+    const hasPersistedExtension = Object.values(_persistedExtensions).some(
+      (persistedExtensionPoint) => {
+        return persistedExtensionPoint.id === extensionPoint.id;
+      }
+    );
+
+    if (!hasPersistedExtension) {
+      console.log("*** should remove extension point", extensionPoint);
+      try {
+        extensionPoint.uninstall({ global: true });
+        _activeExtensionPoints.delete(extensionPoint);
+        sidebar.removeExtensionPoint(extensionPoint.id);
+      } catch (error) {
+        reportError(error);
+      }
+
+      console.log(
+        "*** _activeExtensionPoints after deletion",
+        _activeExtensionPoints
+      );
+    }
+  }
+}
+
+/**
  * Add extensions to their respective extension points.
  *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
@@ -386,6 +417,9 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
 
   console.log("*** _activeExtensionPoints", _activeExtensionPoints);
   console.log("*** _persistedExtensions", _persistedExtensions);
+
+  // TODO: filter resolved extensions - remove the ones that don't have the right version number
+  await cleanupDeactivatedExtensionPoints();
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
@@ -401,9 +435,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
       activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
     )
   );
-
-  // TODO: filter resolved extensions - remove the ones that don't have the right version number
-  console.log("*** resolvedExtensions", resolvedExtensions);
 
   const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
 
