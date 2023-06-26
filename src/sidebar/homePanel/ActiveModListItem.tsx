@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
@@ -35,7 +34,6 @@ import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissi
 import cx from "classnames";
 import useReportError from "@/hooks/useReportError";
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- Mod is not short for anything
 export const ActiveModListItem: React.FunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
