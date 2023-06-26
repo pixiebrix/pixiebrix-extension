@@ -379,16 +379,14 @@ export async function runEditorExtension(
  * extension points from the current tab to not interrupt the user's workflow. This function can be
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
-async function cleanUpDeactivatedExtensionPoints() {
+function cleanUpDeactivatedExtensionPoints() {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasPersistedExtension = Object.values(_persistedExtensions).some(
-      (persistedExtensionPoint) => {
-        return persistedExtensionPoint.id === extensionPoint.id;
-      }
+      (persistedExtensionPoint) =>
+        persistedExtensionPoint.id === extensionPoint.id
     );
 
     if (!hasPersistedExtension) {
-      console.log("*** should remove extension point", extensionPoint);
       try {
         extensionPoint.uninstall({ global: true });
         _activeExtensionPoints.delete(extensionPoint);
@@ -396,11 +394,6 @@ async function cleanUpDeactivatedExtensionPoints() {
       } catch (error) {
         reportError(error);
       }
-
-      console.log(
-        "*** _activeExtensionPoints after deletion",
-        _activeExtensionPoints
-      );
     }
   }
 }
@@ -417,7 +410,7 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
     loadOptions()
   );
 
-  await cleanUpDeactivatedExtensionPoints();
+  cleanUpDeactivatedExtensionPoints();
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
@@ -449,8 +442,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
             const extensionPoint = await extensionPointRegistry.lookup(
               extensionPointId
             );
-
-            console.log("*** extensionPoint", extensionPoint);
 
             extensionPoint.syncExtensions(extensions);
 
