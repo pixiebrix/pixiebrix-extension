@@ -18,7 +18,7 @@ inputSchema:
       description: The OAuth 2.0 client secret. Note that this "secret" can be shared publicly.
       default: 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
 authentication:
-  # No baseURL is okay here, right?
+  # No baseURL because we're hitting multiple different Google API base URLs
   oauth2:
     # access_type=offline and prompt=consent will force a refresh token to be returned
     authorizeUrl: https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent
