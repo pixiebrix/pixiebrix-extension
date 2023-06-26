@@ -25,6 +25,12 @@ export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.staticPanels) &&
   sidebar.recipeToActivate == null;
 
+export const selectPanelCount = ({ sidebar }: SidebarRootState) =>
+  sidebar.panels.length +
+  sidebar.forms.length +
+  sidebar.temporaryPanels.length +
+  sidebar.staticPanels.length;
+
 export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
   sidebar.activeKey;
 
