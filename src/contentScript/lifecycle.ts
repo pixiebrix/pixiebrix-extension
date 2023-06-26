@@ -373,9 +373,11 @@ export async function runEditorExtension(
 }
 
 /**
- * When Mods are updated in the background script (i.e. via the Deployment updater), we don't reload the
- * current tab to not interrupt the user's workflow. This function can be used to, e.g., clean up
- * any extension points from deactivated mods on the next page navigation.
+ * Uninstall any extension points for mods that are no longer active.
+ *
+ * When mods are updated in the background script (i.e. via the Deployment updater), we don't remove
+ * extension points from the current tab to not interrupt the user's workflow. This function can be
+ * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 async function cleanupDeactivatedExtensionPoints() {
   for (const extensionPoint of _activeExtensionPoints) {
