@@ -21,7 +21,7 @@ import Loader from "@/components/Loader";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateRecipePanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import {
   hideSidebar,
@@ -46,6 +46,7 @@ import RequireRecipe, {
 import { persistor } from "@/sidebar/store";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 
 const { actions } = sidebarSlice;
 
@@ -188,16 +189,20 @@ const ActivateRecipePanelContent: React.FC<
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useActivateRecipe("marketplace");
+  const sidebarHasModPanels = useSelector(selectSidebarHasModPanels);
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
     initialState
   );
 
-  async function closeSidebar() {
+  async function handleActivationDecision() {
     reduxDispatch(actions.hideActivateRecipe());
-    const topFrame = await getTopLevelFrame();
-    void hideSidebar(topFrame);
+
+    if (!sidebarHasModPanels) {
+      const topFrame = await getTopLevelFrame();
+      void hideSidebar(topFrame);
+    }
   }
 
   const formValuesRef = useRef<WizardValues>(initialValues);
@@ -292,7 +297,7 @@ const ActivateRecipePanelContent: React.FC<
           </div>
         </div>
         <div className={styles.footer}>
-          <AsyncButton onClick={closeSidebar}>Ok</AsyncButton>
+          <AsyncButton onClick={handleActivationDecision}>Ok</AsyncButton>
         </div>
       </div>
     );
@@ -306,7 +311,7 @@ const ActivateRecipePanelContent: React.FC<
         initialValues={initialValues}
         onChange={onChange}
         validationSchema={validationSchema}
-        onClickCancel={closeSidebar}
+        onClickCancel={handleActivationDecision}
         needsPermissions={state.needsPermissions}
         header={
           <>
