@@ -18,7 +18,7 @@
 import {
   getSharingType,
   isExtension,
-  isUnavailableRecipe,
+  isUnavailableMod,
 } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
@@ -155,21 +155,21 @@ describe("isExtension", () => {
   });
 });
 
-describe("isUnavailableRecipe", () => {
+describe("isUnavailableMod", () => {
   it("returns false for a recipe definition", () => {
     const installable = recipeDefinitionFactory();
-    expect(isUnavailableRecipe(installable)).toBe(false);
+    expect(isUnavailableMod(installable)).toBe(false);
   });
 
   it("returns true for UnavailableRecipe", () => {
     const installable = {
       isStub: true,
     } as UnavailableMod;
-    expect(isUnavailableRecipe(installable)).toBe(true);
+    expect(isUnavailableMod(installable)).toBe(true);
   });
 
   it("returns false for an extension", () => {
     const installable = extensionFactory() as ResolvedExtension;
-    expect(isUnavailableRecipe(installable)).toBe(false);
+    expect(isUnavailableMod(installable)).toBe(false);
   });
 });

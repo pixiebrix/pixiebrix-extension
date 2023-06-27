@@ -33,7 +33,7 @@ import { type MessageContext } from "@/types/loggerTypes";
  * @see PanelEntry
  * @see FormPanelEntry
  * @see TemporaryPanelEntry
- * @see ActivateRecipePanelEntry
+ * @see ActivateModPanelEntry
  */
 export type EntryType =
   | "panel"
@@ -200,10 +200,10 @@ export type FormPanelEntry = BasePanelEntry & {
   form: FormDefinition;
 };
 
-export type ActivateRecipePanelEntry = BasePanelEntry & {
+export type ActivateModPanelEntry = BasePanelEntry & {
   type: "activateRecipe";
   /**
-   * The blueprint id of the recipe to activate
+   * The blueprint id of the mod to activate
    */
   recipeId: RegistryId;
   /**
@@ -222,7 +222,7 @@ export type SidebarEntry =
   | PanelEntry
   | FormPanelEntry
   | TemporaryPanelEntry
-  | ActivateRecipePanelEntry
+  | ActivateModPanelEntry
   | StaticPanelEntry;
 
 /**
@@ -233,7 +233,7 @@ export type SidebarEntries = {
   forms: FormPanelEntry[];
   temporaryPanels: TemporaryPanelEntry[];
   staticPanels: StaticPanelEntry[];
-  recipeToActivate: ActivateRecipePanelEntry | null;
+  recipeToActivate: ActivateModPanelEntry | null;
 };
 
 /**

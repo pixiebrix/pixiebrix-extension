@@ -39,18 +39,18 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
 
 /**
- * Returns true if installable is an UnavailableRecipe
+ * Returns true if installable is an UnavailableMod
  * @param installable the installable
  * @see UnavailableMod
  */
-export function isUnavailableRecipe(
+export function isUnavailableMod(
   installable: Installable
 ): installable is UnavailableMod {
   return "isStub" in installable && installable.isStub;
 }
 
 /**
- * Returns true if the installable is a singleton extension, not a recipe.
+ * Returns true if the installable is a singleton extension, not a mod.
  * @param installable the installable
  */
 export function isExtension(
@@ -68,7 +68,7 @@ export function isExtensionFromRecipe(installable: Installable): boolean {
 }
 
 /**
- * Return true if the installable is a RecipeDefinition or UnavailableRecipe
+ * Return true if the installable is a ModDefinition or UnavailableMod
  * @param installable the installable
  */
 export function isBlueprint(
@@ -251,8 +251,8 @@ export function updateAvailable(
   installedExtensions: Map<RegistryId, UnresolvedExtension>,
   installable: Installable
 ): boolean {
-  if (isUnavailableRecipe(installable)) {
-    // Unavailable recipes are never update-able
+  if (isUnavailableMod(installable)) {
+    // Unavailable mods are never update-able
     return false;
   }
 
@@ -357,7 +357,7 @@ const getExtensionPointType = async (
 const getExtensionPointTypesContained = async (
   installableItem: InstallableViewItem
 ): Promise<ExtensionPointType[]> => {
-  if (isUnavailableRecipe(installableItem.installable)) {
+  if (isUnavailableMod(installableItem.installable)) {
     return [];
   }
 

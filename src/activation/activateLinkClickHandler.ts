@@ -16,13 +16,13 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type ActivateRecipePanelEntry } from "@/types/sidebarTypes";
+import { type ActivateModPanelEntry } from "@/types/sidebarTypes";
 import { isActivationUrl } from "@/activation/ActivationLink";
 import notify from "@/utils/notify";
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
-  callback: (entry: ActivateRecipePanelEntry) => void
+  callback: (entry: ActivateModPanelEntry) => void
 ) {
   const path = event.composedPath();
   const target = path[0] as HTMLElement;
@@ -45,7 +45,7 @@ export default function activateLinkClickHandler(
 
   event.preventDefault();
 
-  const entry: ActivateRecipePanelEntry = {
+  const entry: ActivateModPanelEntry = {
     type: "activateRecipe",
     recipeId,
     heading: "Activating",
