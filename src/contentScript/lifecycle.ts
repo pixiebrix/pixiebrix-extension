@@ -130,6 +130,7 @@ async function runExtensionPoint(
   };
 
   try {
+    console.log("*** installing extensionPoint", extensionPoint);
     installed = await extensionPoint.install();
   } catch (error) {
     if (error instanceof PromiseCancelled) {
@@ -411,6 +412,11 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
   const options = await logPromiseDuration(
     "loadPersistedExtensions:loadOptions",
     loadOptions()
+  );
+
+  console.log(
+    "*** loadPeristedExtensions _activeExtensionPoints",
+    _activeExtensionPoints
   );
 
   // Exclude the following:

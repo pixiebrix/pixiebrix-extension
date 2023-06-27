@@ -234,22 +234,35 @@ describe("lifecycle", () => {
 
     await tick();
 
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+      extensionPoint,
+    ]);
+
     const updatedExtensionPoint = fromJS(
       extensionPointFactory({
         trigger: "initialize",
       })()
     );
 
+    console.log("updatedExtensionPoint", updatedExtensionPoint);
+    updatedExtensionPoint.id = "test/updated-extension-point";
+
     extensionPointRegistry.register([updatedExtensionPoint]);
 
     const updatedExtension = extensionFactory({
       extensionPointId: updatedExtensionPoint.id,
     });
+
     loadOptionsMock.mockResolvedValue({ extensions: [updatedExtension] });
     lifecycleModule.queueReactivateTab();
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
+
+    console.log(
+      "active extension points",
+      lifecycleModule.getActiveExtensionPoints()
+    );
 
     // New extension point is installed, old extension point is removed
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
