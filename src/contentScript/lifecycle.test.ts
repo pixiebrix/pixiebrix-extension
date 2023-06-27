@@ -244,7 +244,9 @@ describe("lifecycle", () => {
       })()
     );
 
-    console.log("updatedExtensionPoint", updatedExtensionPoint);
+    // @ts-expect-error -- There's some weirdness going on with this extensionPointFactory;
+    // it's not iterating the extension point id, nor is allowing the id to be passed as an override
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/5972
     updatedExtensionPoint.id = "test/updated-extension-point";
 
     extensionPointRegistry.register([updatedExtensionPoint]);
@@ -258,11 +260,6 @@ describe("lifecycle", () => {
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
-
-    console.log(
-      "active extension points",
-      lifecycleModule.getActiveExtensionPoints()
-    );
 
     // New extension point is installed, old extension point is removed
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);

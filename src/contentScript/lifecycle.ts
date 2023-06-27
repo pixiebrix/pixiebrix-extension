@@ -130,7 +130,6 @@ async function runExtensionPoint(
   };
 
   try {
-    console.log("*** installing extensionPoint", extensionPoint);
     installed = await extensionPoint.install();
   } catch (error) {
     if (error instanceof PromiseCancelled) {
@@ -380,24 +379,21 @@ export async function runEditorExtension(
  * extension points from the current tab to not interrupt the user's workflow. This function can be
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
-function cleanUpDeactivatedExtensionPoints(extensionMap) {
-  console.log("*** cleanUpDeactivatedExtensionPoints");
-  console.log("*** extensionMap", extensionMap);
-
+function cleanUpDeactivatedExtensionPoints(
+  extensionMap: Record<RegistryId, ResolvedExtension[]>
+): void {
   for (const extensionPoint of _activeExtensionPoints) {
-    console.log("*** extensionPoint.id", extensionPoint.id);
-
     const resolvedExtension = extensionMap[extensionPoint.id];
 
-    if (!resolvedExtension) {
-      try {
-        extensionPoint.uninstall({ global: true });
-        console.log("*** activeExtensionPoints before", _activeExtensionPoints);
-        _activeExtensionPoints.delete(extensionPoint);
-        console.log("*** activeExtensionPoints after", _activeExtensionPoints);
-      } catch (error) {
-        reportError(error);
-      }
+    if (resolvedExtension) {
+      continue;
+    }
+
+    try {
+      extensionPoint.uninstall({ global: true });
+      _activeExtensionPoints.delete(extensionPoint);
+    } catch (error) {
+      reportError(error);
     }
   }
 }
@@ -412,11 +408,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
   const options = await logPromiseDuration(
     "loadPersistedExtensions:loadOptions",
     loadOptions()
-  );
-
-  console.log(
-    "*** loadPeristedExtensions _activeExtensionPoints",
-    _activeExtensionPoints
   );
 
   // Exclude the following:
@@ -451,9 +442,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
             const extensionPoint = await extensionPointRegistry.lookup(
               extensionPointId
             );
-
-            console.log("*** extensionPoint at installation", extensionPoint);
-
             extensionPoint.syncExtensions(extensions);
 
             // Mark the extensions as installed
