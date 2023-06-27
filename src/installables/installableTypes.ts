@@ -21,6 +21,7 @@ import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
+ * @deprecated
  * A mod that has been deleted (or user no longer has access) from the registry, but is still installed locally.
  * @since 1.7.22
  */
