@@ -65,7 +65,8 @@ const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
 const locateAllForService = locator.locateAllForService.bind(locator);
 
-const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
+const UPDATE_INTERVAL_MS = 30_000;
+//const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
 async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
   await saveOptions(state);
