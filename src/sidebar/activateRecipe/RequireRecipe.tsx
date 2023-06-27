@@ -18,7 +18,7 @@
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredRecipe } from "@/recipes/recipesHooks";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import Loader from "@/components/Loader";
 import styles from "./RequireRecipe.module.scss";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
@@ -30,7 +30,7 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 export type RecipeState = {
-  recipe: RecipeDefinition;
+  recipe: ModDefinition;
   recipeNameNode: React.ReactNode;
   includesQuickBar: boolean;
   requiresConfiguration: boolean;
@@ -52,7 +52,7 @@ type Props = {
  * @see checkRecipePermissions
  */
 function requiresUserConfiguration(
-  recipe: RecipeDefinition,
+  recipe: ModDefinition,
   authOptions: AuthOption[]
 ): boolean {
   const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
@@ -116,7 +116,7 @@ const RequireRecipe: React.FC<Props> = ({ recipeId, children }) => {
   const state = useDeriveAsyncState(
     recipeDefinitionState,
     authOptionsState,
-    async (recipe: RecipeDefinition, authOptions: AuthOption[]) => {
+    async (recipe: ModDefinition, authOptions: AuthOption[]) => {
       const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
         recipe,
         authOptions

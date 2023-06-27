@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { type Except } from "type-fest";
 
 export type RecipesState = Except<
-  UseCachedQueryResult<RecipeDefinition[]>,
+  UseCachedQueryResult<ModDefinition[]>,
   "refetch"
 >;
 

@@ -24,7 +24,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { useGetRecipeQuery } from "@/services/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
@@ -55,7 +55,7 @@ jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
 
 global.chrome.commands.getAll = jest.fn();
 
-function setupRecipe(recipe: RecipeDefinition) {
+function setupRecipe(recipe: ModDefinition) {
   const recipeResponse: RecipeResponse = {
     config: recipe,
     updated_at: recipe.updated_at,

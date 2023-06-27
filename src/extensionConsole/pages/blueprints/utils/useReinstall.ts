@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
@@ -23,14 +23,14 @@ import { actions as extensionActions } from "@/store/extensionsSlice";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 
-type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
+type Reinstall = (recipe: ModDefinition) => Promise<void>;
 
 function useReinstall(): Reinstall {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 
   return useCallback(
-    async (recipe: RecipeDefinition) => {
+    async (recipe: ModDefinition) => {
       const recipeId = recipe.metadata.id;
       const recipeExtensions = extensions.filter(
         (x) => x._recipe?.id === recipeId

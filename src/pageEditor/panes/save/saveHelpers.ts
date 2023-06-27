@@ -39,8 +39,8 @@ import { type Except } from "type-fest";
 import {
   type ExtensionDefinition,
   type OptionsDefinition,
-  type RecipeDefinition,
-  type UnsavedRecipeDefinition,
+  type ModDefinition,
+  type UnsavedModDefinition,
 } from "@/types/recipeTypes";
 import {
   type IExtension,
@@ -67,7 +67,7 @@ export function generateScopeBrickId(
 
 export function isRecipeEditable(
   editablePackages: EditablePackage[],
-  recipe: RecipeDefinition
+  recipe: ModDefinition
 ): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
@@ -85,7 +85,7 @@ export function isRecipeEditable(
  * For now, we'll just handle the normal case and send people to the workshop for the corner cases.
  */
 function findRecipeIndex(
-  sourceRecipe: RecipeDefinition,
+  sourceRecipe: ModDefinition,
   extension: IExtension
 ): number {
   if (sourceRecipe.metadata.version !== extension._recipe.version) {
@@ -135,11 +135,11 @@ function findRecipeIndex(
  * @param element the new extension state (i.e., submitted via Formik)
  */
 export function replaceRecipeExtension(
-  sourceRecipe: RecipeDefinition,
+  sourceRecipe: ModDefinition,
   metadata: Metadata,
   installedExtensions: IExtension[],
   element: FormState
-): UnsavedRecipeDefinition {
+): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
     (x) => x.id === element.uuid
   );
@@ -288,14 +288,14 @@ function selectExtensionPointConfig(
 }
 
 type RecipeParts = {
-  sourceRecipe?: RecipeDefinition;
+  sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedExtension[];
   dirtyRecipeElements: FormState[];
   options?: OptionsDefinition;
   metadata?: RecipeMetadataFormState;
 };
 
-const emptyRecipe: UnsavedRecipeDefinition = {
+const emptyRecipe: UnsavedModDefinition = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   kind: "recipe",
   metadata: {
@@ -328,10 +328,10 @@ export function buildRecipe({
   dirtyRecipeElements,
   options,
   metadata,
-}: RecipeParts): UnsavedRecipeDefinition {
+}: RecipeParts): UnsavedModDefinition {
   // If there's no source recipe, then we're creating a new one, so we
   // start with an empty recipe definition that will be filled in
-  const recipe: UnsavedRecipeDefinition = sourceRecipe ?? emptyRecipe;
+  const recipe: UnsavedModDefinition = sourceRecipe ?? emptyRecipe;
 
   return produce(recipe, (draft) => {
     // Options dirty state is only populated if a change is made

@@ -18,7 +18,7 @@
 import extensionsSlice from "@/store/extensionsSlice";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";
@@ -57,7 +57,7 @@ export async function getBuiltInServiceAuths(): Promise<SanitizedAuth[]> {
 }
 
 export function getAllRequiredServiceIds(
-  blueprints: RecipeDefinition[]
+  blueprints: ModDefinition[]
 ): RegistryId[] {
   const requiredServiceIds = blueprints.flatMap((blueprint) =>
     getRequiredServiceIds(blueprint)
@@ -89,7 +89,7 @@ export async function getBuiltInAuthsByRequiredServiceIds(
 
 function installBlueprint(
   state: ExtensionOptionsState,
-  blueprint: RecipeDefinition,
+  blueprint: ModDefinition,
   services: Record<RegistryId, UUID>
 ): ExtensionOptionsState {
   return reducer(
@@ -103,7 +103,7 @@ function installBlueprint(
 }
 
 async function installBlueprints(
-  blueprints: RecipeDefinition[]
+  blueprints: ModDefinition[]
 ): Promise<boolean> {
   let installed = false;
   if (blueprints.length === 0) {
@@ -136,7 +136,7 @@ async function installBlueprints(
   return installed;
 }
 
-async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
+async function getStarterBlueprints(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -146,7 +146,7 @@ async function getStarterBlueprints(): Promise<RecipeDefinition[]> {
   }
 
   try {
-    const { data: starterBlueprints } = await client.get<RecipeDefinition[]>(
+    const { data: starterBlueprints } = await client.get<ModDefinition[]>(
       "/api/onboarding/starter-blueprints/",
       { params: { ignore_user_state: true } }
     );

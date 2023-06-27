@@ -24,7 +24,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
@@ -84,7 +84,7 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
+function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
   const recipe = recipeDefinitionFactory({
     ...recipeOverride,
     metadata: {

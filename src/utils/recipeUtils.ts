@@ -20,7 +20,7 @@ import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import {
   type ExtensionDefinition,
-  type RecipeDefinition,
+  type ModDefinition,
 } from "@/types/recipeTypes";
 import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -53,7 +53,7 @@ export function generateRecipeId(
  * in order to install this recipe, excluding the PixieBrix service.
  * @param recipe the recipe from which to extract service ids
  */
-export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
+export const getRequiredServiceIds = (recipe: ModDefinition): RegistryId[] =>
   uniq(
     (recipe.extensionPoints ?? [])
       .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
@@ -63,7 +63,7 @@ export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
 
 const getExtensionPointType = async (
   extensionPoint: ExtensionDefinition,
-  recipe: RecipeDefinition
+  recipe: ModDefinition
 ): Promise<ExtensionPointType | null> => {
   // Look up the extension point in recipe inner definitions first
   if (recipe.definitions?.[extensionPoint.id]) {
@@ -86,7 +86,7 @@ const getExtensionPointType = async (
 };
 
 export const getContainedExtensionPointTypes = async (
-  recipe: RecipeDefinition
+  recipe: ModDefinition
 ): Promise<ExtensionPointType[]> => {
   const extensionPointTypes = await Promise.all(
     recipe.extensionPoints.map(async (extensionPoint) =>

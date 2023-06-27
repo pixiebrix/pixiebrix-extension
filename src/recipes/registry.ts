@@ -26,7 +26,7 @@ import {
 } from "@/types/schemaTypes";
 import {
   type OptionsDefinition,
-  type RecipeDefinition,
+  type ModDefinition,
 } from "@/types/recipeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
@@ -35,11 +35,11 @@ type UnnormalizedOptionsDefinition = {
   uiSchema?: UiSchema;
 };
 
-type UnnormalizedRecipeDefinition = Exclude<RecipeDefinition, "options"> & {
+type UnnormalizedRecipeDefinition = Exclude<ModDefinition, "options"> & {
   options?: UnnormalizedOptionsDefinition;
 };
 
-type RegistryRecipeDefinition = RecipeDefinition & {
+type RegistryRecipeDefinition = ModDefinition & {
   id: RegistryId;
 };
 

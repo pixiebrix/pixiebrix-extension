@@ -18,7 +18,7 @@
 import { define } from "cooky-cutter";
 import { type MarketplaceListing, type MarketplaceTag } from "@/types/contract";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export const marketplaceTagFactory = define<MarketplaceTag>({
@@ -30,7 +30,7 @@ export const marketplaceTagFactory = define<MarketplaceTag>({
 });
 
 export function recipeToMarketplacePackage(
-  recipe: RecipeDefinition
+  recipe: ModDefinition
 ): MarketplaceListing["package"] {
   return {
     id: recipe.metadata.id,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
@@ -23,7 +23,7 @@ import {
   type InstallableViewItem,
   type SharingSource,
   type SharingType,
-  type UnavailableRecipe,
+  type UnavailableMod,
 } from "@/installables/installableTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -41,11 +41,11 @@ import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
 /**
  * Returns true if installable is an UnavailableRecipe
  * @param installable the installable
- * @see UnavailableRecipe
+ * @see UnavailableMod
  */
 export function isUnavailableRecipe(
   installable: Installable
-): installable is UnavailableRecipe {
+): installable is UnavailableMod {
   return "isStub" in installable && installable.isStub;
 }
 
@@ -73,7 +73,7 @@ export function isExtensionFromRecipe(installable: Installable): boolean {
  */
 export function isBlueprint(
   installable: Installable
-): installable is RecipeDefinition | UnavailableRecipe {
+): installable is ModDefinition | UnavailableMod {
   return !isExtension(installable);
 }
 
@@ -141,10 +141,7 @@ function hasSourceRecipeWithScope(
   return scope && extension._recipe?.id.startsWith(scope + "/");
 }
 
-function hasRecipeScope(
-  recipe: RecipeDefinition | UnavailableRecipe,
-  scope: string
-) {
+function hasRecipeScope(recipe: ModDefinition | UnavailableMod, scope: string) {
   return Boolean(recipe.metadata?.id.startsWith(scope + "/"));
 }
 
@@ -200,7 +197,7 @@ export function isDeployment(
  * Returns true if a Blueprint has been made public but is not yet published to the Marketplace.
  */
 export function isRecipePendingPublish(
-  recipe: RecipeDefinition,
+  recipe: ModDefinition,
   marketplaceListings: Record<RegistryId, MarketplaceListing>
 ): boolean {
   return recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
@@ -250,7 +247,7 @@ export function getSharingType({
 }
 
 export function updateAvailable(
-  availableRecipes: Map<RegistryId, RecipeDefinition>,
+  availableRecipes: Map<RegistryId, ModDefinition>,
   installedExtensions: Map<RegistryId, UnresolvedExtension>,
   installable: Installable
 ): boolean {

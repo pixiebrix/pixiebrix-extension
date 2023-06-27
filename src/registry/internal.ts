@@ -31,7 +31,7 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
 import { resolveObj } from "@/utils";
 import {
-  type RecipeDefinition,
+  type ModDefinition,
   type ResolvedExtensionDefinition,
 } from "@/types/recipeTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
@@ -253,7 +253,7 @@ export async function resolveExtensionInnerDefinitions<
  * TODO: resolve other definitions (brick, service, etc.) within the extensions
  */
 export async function resolveRecipeInnerDefinitions(
-  recipe: Pick<RecipeDefinition, "extensionPoints" | "definitions">
+  recipe: Pick<ModDefinition, "extensionPoints" | "definitions">
 ): Promise<ResolvedExtensionDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
 

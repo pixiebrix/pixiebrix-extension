@@ -24,7 +24,7 @@ import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import {
   type Installable,
-  type UnavailableRecipe,
+  type UnavailableMod,
 } from "@/installables/installableTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
@@ -164,7 +164,7 @@ describe("isUnavailableRecipe", () => {
   it("returns true for UnavailableRecipe", () => {
     const installable = {
       isStub: true,
-    } as UnavailableRecipe;
+    } as UnavailableMod;
     expect(isUnavailableRecipe(installable)).toBe(true);
   });
 

@@ -20,7 +20,7 @@ import { render } from "@/extensionConsole/testHelpers";
 import PublishRecipeModals from "./PublishRecipeModals";
 import { authSlice } from "@/auth/authSlice";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
@@ -32,7 +32,7 @@ import {
 } from "@/testUtils/factories/recipeFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
-let blueprint: RecipeDefinition;
+let blueprint: ModDefinition;
 let auth: AuthState;
 
 jest.mock("@/recipes/recipesHooks", () => ({

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import Form, {
   type RenderBody,
   type RenderSubmit,
@@ -40,7 +40,7 @@ import { isUUID } from "@/types/helpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 
 type ActivateRecipeInputsProps = {
-  recipe: RecipeDefinition;
+  recipe: ModDefinition;
   optionsWizardStep: WizardStep;
   initialValues: WizardValues;
   onChange: (values: WizardValues) => void;

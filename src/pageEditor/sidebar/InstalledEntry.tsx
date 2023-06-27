@@ -31,7 +31,7 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import {
   disableOverlay,
@@ -55,7 +55,7 @@ import { type IExtension } from "@/types/extensionTypes";
  */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
-  recipes: RecipeDefinition[];
+  recipes: ModDefinition[];
   isAvailable: boolean;
   isNested?: boolean;
 }> = ({ extension, recipes, isAvailable, isNested = false }) => {

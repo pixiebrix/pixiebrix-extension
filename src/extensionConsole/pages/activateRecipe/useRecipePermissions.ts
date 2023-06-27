@@ -17,7 +17,7 @@
 
 import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -40,7 +40,7 @@ type RecipePermissionsState = AsyncState<PermissionsStatus> & {
  * @see useCloudExtensionPermissions
  */
 function useRecipePermissions(
-  blueprint: RecipeDefinition,
+  blueprint: ModDefinition,
   serviceAuths: ServiceAuthPair[]
 ): RecipePermissionsState {
   const { data: browserPermissions } = useExtensionPermissions();

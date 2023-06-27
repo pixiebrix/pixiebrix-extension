@@ -48,7 +48,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
   type OptionsDefinition,
-  type UnsavedRecipeDefinition,
+  type UnsavedModDefinition,
 } from "@/types/recipeTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type EditablePackage } from "@/types/contract";
@@ -590,7 +590,7 @@ describe("isRecipeEditable", () => {
 });
 
 function selectExtensionPoints(
-  recipe: UnsavedRecipeDefinition
+  recipe: UnsavedModDefinition
 ): ExtensionPointConfig[] {
   return recipe.extensionPoints.map(({ id }) => {
     const definition = recipe.definitions[id]

@@ -18,7 +18,7 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 
 /**
@@ -26,7 +26,7 @@ import { resolveRecipeInnerDefinitions } from "@/registry/internal";
  * @param recipe the recipe definition
  */
 export default async function includesQuickBarExtensionPoint(
-  recipe?: RecipeDefinition
+  recipe?: ModDefinition
 ): Promise<boolean> {
   const resolvedExtensionDefinitions = await resolveRecipeInnerDefinitions(
     recipe

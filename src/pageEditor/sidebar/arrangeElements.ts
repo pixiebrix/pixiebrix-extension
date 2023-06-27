@@ -16,7 +16,7 @@
  */
 
 import { groupBy, lowerCase, sortBy } from "lodash";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import {
   type FormState,
   isFormState,
@@ -30,7 +30,7 @@ import { type RegistryId } from "@/types/registryTypes";
 type ArrangeElementsArgs = {
   elements: FormState[];
   installed: IExtension[];
-  recipes: RecipeDefinition[];
+  recipes: ModDefinition[];
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
   query: string;

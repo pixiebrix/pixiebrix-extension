@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
@@ -29,7 +29,7 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
 };
 
 const OptionsBody: React.FunctionComponent<{
-  blueprint: Pick<RecipeDefinition, "options">;
+  blueprint: Pick<ModDefinition, "options">;
 }> = ({ blueprint }) => {
   const OptionsGroup = useMemo(
     () =>

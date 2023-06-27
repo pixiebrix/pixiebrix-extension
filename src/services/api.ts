@@ -45,8 +45,8 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type ServiceDefinition } from "@/types/serviceTypes";
 import {
-  type RecipeDefinition,
-  type UnsavedRecipeDefinition,
+  type ModDefinition,
+  type UnsavedModDefinition,
 } from "@/types/recipeTypes";
 
 type QueryArgs = {
@@ -290,14 +290,12 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["CloudExtensions"],
     }),
-    getRecipe: builder.query<RecipeDefinition, { recipeId: RegistryId }>({
+    getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
       query: ({ recipeId }) => ({
         url: `/api/recipes/${encodeURIComponent(recipeId)}/`,
         method: "get",
       }),
-      transformResponse(
-        baseQueryReturnValue: RecipeResponse
-      ): RecipeDefinition {
+      transformResponse(baseQueryReturnValue: RecipeResponse): ModDefinition {
         // Pull out sharing and updated_at from response and merge into the base
         // response to create a RecipeDefinition
         const {
@@ -321,7 +319,7 @@ export const appApi = createApi({
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
-        recipe: UnsavedRecipeDefinition;
+        recipe: UnsavedModDefinition;
         organizations: UUID[];
         public: boolean;
         shareDependencies?: boolean;
@@ -346,7 +344,7 @@ export const appApi = createApi({
     }),
     updateRecipe: builder.mutation<
       PackageUpsertResponse,
-      { packageId: UUID; recipe: UnsavedRecipeDefinition }
+      { packageId: UUID; recipe: UnsavedModDefinition }
     >({
       query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
@@ -359,9 +357,9 @@ export const appApi = createApi({
             name: recipe.metadata.id,
             config: recipeConfig,
             kind: "recipe" as Kind,
-            public: Boolean((recipe as RecipeDefinition).sharing?.public),
+            public: Boolean((recipe as ModDefinition).sharing?.public),
             organizations:
-              (recipe as RecipeDefinition).sharing?.organizations ?? [],
+              (recipe as ModDefinition).sharing?.organizations ?? [],
           },
         };
       },
@@ -445,7 +443,7 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
-    getStarterBlueprints: builder.query<RecipeDefinition[], void>({
+    getStarterBlueprints: builder.query<ModDefinition[], void>({
       query: () => ({
         url: "/api/onboarding/starter-blueprints/",
         method: "get",

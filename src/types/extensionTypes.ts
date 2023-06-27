@@ -33,10 +33,10 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { pick } from "lodash";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/recipeTypes";
 
 /**
- * RecipeMetadata that includes sharing information.
+ * ModMetadata that includes sharing information.
  *
  * We created this type as an alternative to Metadata in order to include information about the origin of an extension,
  * e.g. on the ActiveBricks page.
@@ -45,7 +45,7 @@ import { type RecipeDefinition } from "@/types/recipeTypes";
  * @see IExtension._recipe
  */
 // Don't export -- the use is clearer if it's always written as IExtension[_recipe] property
-type RecipeMetadata = Metadata & {
+type ModMetadata = Metadata & {
   /**
    * `undefined` for recipes that were activated prior to the field being added
    */
@@ -112,7 +112,7 @@ export type IExtension<Config extends UnknownObject = UnknownObject> = {
    * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
    * directly
    */
-  _recipe: RecipeMetadata | undefined;
+  _recipe: ModMetadata | undefined;
 
   /**
    * A human-readable label for the extension.
@@ -256,7 +256,7 @@ export type ExtensionRef = {
  * @see IExtension._recipe
  */
 export function selectSourceRecipeMetadata(
-  recipeDefinition: RecipeDefinition
+  recipeDefinition: ModDefinition
 ): IExtension["_recipe"] {
   if (recipeDefinition.metadata?.id == null) {
     throw new TypeError("Expected a RecipeDefinition");
