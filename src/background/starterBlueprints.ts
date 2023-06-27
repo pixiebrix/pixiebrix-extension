@@ -18,7 +18,7 @@
 import extensionsSlice from "@/store/extensionsSlice";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";

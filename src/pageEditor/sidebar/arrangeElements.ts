@@ -16,7 +16,7 @@
  */
 
 import { groupBy, lowerCase, sortBy } from "lodash";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import {
   type FormState,
   isFormState,

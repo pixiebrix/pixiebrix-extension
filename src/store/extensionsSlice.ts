@@ -38,10 +38,7 @@ import {
   selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
-import {
-  type ModDefinition,
-  type ExtensionDefinition,
-} from "@/types/recipeTypes";
+import { type ModDefinition, type ExtensionDefinition } from "@/types/modTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
 

@@ -18,7 +18,7 @@
 import {
   type ModDefinition,
   type ResolvedExtensionDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/modTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {

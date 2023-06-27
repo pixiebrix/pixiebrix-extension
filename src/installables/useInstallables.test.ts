@@ -30,7 +30,7 @@ import {
   recipeDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
 jest.mock("@/recipes/recipesHooks", () => ({

@@ -19,7 +19,7 @@ import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";

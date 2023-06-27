@@ -49,7 +49,7 @@ import {
   type IExtension,
   type PersistedExtension,
 } from "@/types/extensionTypes";
-import { type UnsavedModDefinition } from "@/types/recipeTypes";
+import { type UnsavedModDefinition } from "@/types/modTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 

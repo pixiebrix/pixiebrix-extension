@@ -41,7 +41,7 @@ import {
   type OptionsDefinition,
   type ModDefinition,
   type UnsavedModDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/modTypes";
 import {
   type IExtension,
   type UnresolvedExtension,

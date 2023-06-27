@@ -20,7 +20,7 @@ import { render } from "@/extensionConsole/testHelpers";
 import PublishRecipeModals from "./PublishRecipeModals";
 import { authSlice } from "@/auth/authSlice";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { useGetMarketplaceListingsQuery } from "@/services/api";

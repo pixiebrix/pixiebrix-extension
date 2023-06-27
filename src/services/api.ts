@@ -47,7 +47,7 @@ import { type ServiceDefinition } from "@/types/serviceTypes";
 import {
   type ModDefinition,
   type UnsavedModDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/modTypes";
 
 type QueryArgs = {
   /**

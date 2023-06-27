@@ -33,7 +33,7 @@ import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import {
   cloudExtensionFactory,

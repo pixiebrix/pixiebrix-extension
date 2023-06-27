@@ -18,7 +18,7 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 
 /**

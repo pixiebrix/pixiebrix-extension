@@ -18,7 +18,7 @@
 import { define } from "cooky-cutter";
 import { type MarketplaceListing, type MarketplaceTag } from "@/types/contract";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export const marketplaceTagFactory = define<MarketplaceTag>({

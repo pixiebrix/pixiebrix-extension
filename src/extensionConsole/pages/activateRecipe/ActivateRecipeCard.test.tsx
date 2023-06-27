@@ -24,7 +24,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { useGetRecipeQuery } from "@/services/api";
 import AsyncStateGate from "@/components/AsyncStateGate";

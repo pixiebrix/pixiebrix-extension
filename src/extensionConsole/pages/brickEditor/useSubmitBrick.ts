@@ -38,7 +38,7 @@ import {
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
-import { type UnsavedModDefinition } from "@/types/recipeTypes";
+import { type UnsavedModDefinition } from "@/types/modTypes";
 import { type Definition } from "@/types/registryTypes";
 
 type SubmitOptions = {

@@ -21,7 +21,7 @@ import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
 import { type RawServiceConfiguration } from "@/types/serviceTypes";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import useAsyncState from "@/hooks/useAsyncState";

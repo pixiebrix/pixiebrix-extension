@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,

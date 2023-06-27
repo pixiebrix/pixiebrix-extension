@@ -29,7 +29,7 @@ import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
 import { type AnyObjectSchema } from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";

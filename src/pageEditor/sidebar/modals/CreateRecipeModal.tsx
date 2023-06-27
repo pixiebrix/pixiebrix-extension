@@ -73,7 +73,7 @@ import ModalLayout from "@/components/ModalLayout";
 import {
   type ModDefinition,
   type UnsavedModDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/modTypes";
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IExtension } from "@/types/extensionTypes";

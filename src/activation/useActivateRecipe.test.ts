@@ -23,7 +23,7 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type MenuDefinition } from "@/extensionPoints/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";

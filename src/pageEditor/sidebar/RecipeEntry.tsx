@@ -38,7 +38,7 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 

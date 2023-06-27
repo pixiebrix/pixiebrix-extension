@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import Form, {
   type RenderBody,
   type RenderSubmit,

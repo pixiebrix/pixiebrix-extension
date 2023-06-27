@@ -18,7 +18,7 @@
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredRecipe } from "@/recipes/recipesHooks";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import Loader from "@/components/Loader";
 import styles from "./RequireRecipe.module.scss";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";

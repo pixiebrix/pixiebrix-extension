@@ -16,10 +16,7 @@
  */
 
 import { array, define } from "cooky-cutter";
-import {
-  type ExtensionDefinition,
-  type ModDefinition,
-} from "@/types/recipeTypes";
+import { type ExtensionDefinition, type ModDefinition } from "@/types/modTypes";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,

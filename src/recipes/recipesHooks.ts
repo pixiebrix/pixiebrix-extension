@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useCallback, useEffect } from "react";

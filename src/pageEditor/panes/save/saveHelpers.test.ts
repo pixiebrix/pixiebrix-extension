@@ -49,7 +49,7 @@ import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
   type OptionsDefinition,
   type UnsavedModDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/modTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type EditablePackage } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";

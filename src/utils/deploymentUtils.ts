@@ -18,7 +18,7 @@
 import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
-import { type ModDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type IExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
