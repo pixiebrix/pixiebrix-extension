@@ -81,7 +81,6 @@ describe("installStarterBlueprints", () => {
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -165,11 +164,7 @@ describe("installStarterBlueprints", () => {
   test("starter blueprints request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -183,7 +178,6 @@ describe("installStarterBlueprints", () => {
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(500);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -201,8 +195,6 @@ describe("installStarterBlueprints", () => {
       .reply(200, builtInServiceAuths);
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [recipe]);
-
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -238,18 +230,12 @@ describe("installStarterBlueprints", () => {
       extensions: [extension],
     });
 
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
-
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
         extensionPoints: [extension],
         ...recipe,
       },
     ]);
-
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -268,13 +254,8 @@ describe("installStarterBlueprints", () => {
     });
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
-
-    axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
