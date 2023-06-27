@@ -5,6 +5,9 @@ metadata:
   version: 1.0.0
   name: Google (Client Integration)
   description: OAuth2 PKCE Authentication for Google
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
 authentication:
   # No baseURL because we're hitting multiple different Google API base URLs
   oauth2:
