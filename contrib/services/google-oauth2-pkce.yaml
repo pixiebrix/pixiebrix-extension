@@ -5,18 +5,6 @@ metadata:
   version: 1.0.0
   name: Google (Client Integration)
   description: OAuth2 PKCE Authentication for Google
-inputSchema:
-  $schema: https://json-schema.org/draft/2019-09/schema#
-  type: object
-  properties:
-    clientId:
-      type: string
-      description: The OAuth 2.0 client ID
-      default: 676864882630-n33qt0a585mcaf2vithipddia0l8blmc.apps.googleusercontent.com
-    clientSecret:
-      type: string
-      description: The OAuth 2.0 client secret. Note that this "secret" can be shared publicly.
-      default: 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
 authentication:
   # No baseURL because we're hitting multiple different Google API base URLs
   oauth2:
@@ -25,7 +13,7 @@ authentication:
     tokenUrl: https://oauth2.googleapis.com/token
     code_challenge_method: S256
     scope: https://www.googleapis.com/auth/drive
-    client_id: "{{#clientId}}{{{.}}}{{/clientId}}{{^clientId}}g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM{{/clientId}}"
-    client_secret: "{{#clientSecret}}{{{.}}}{{/clientSecret}}{{^clientSecret}}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{{/clientSecret}}"
+    client_id: 676864882630-n33qt0a585mcaf2vithipddia0l8blmc.apps.googleusercontent.com
+    client_secret: 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
   headers:
     Authorization: "Bearer {{{ access_token }}}"
