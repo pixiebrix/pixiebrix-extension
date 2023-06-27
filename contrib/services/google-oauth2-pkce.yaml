@@ -8,6 +8,7 @@ metadata:
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
+  properties: {}
 authentication:
   # No baseURL because we're hitting multiple different Google API base URLs
   oauth2:
