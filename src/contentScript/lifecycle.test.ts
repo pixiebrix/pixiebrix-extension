@@ -245,7 +245,7 @@ describe("lifecycle", () => {
     );
 
     // @ts-expect-error -- There's some weirdness going on with this extensionPointFactory;
-    // it's not iterating the extension point id, nor is allowing the id to be passed as an override
+    // it's not incrementing the extension point id, nor is allowing the id to be passed as an override
     // https://github.com/pixiebrix/pixiebrix-extension/issues/5972
     updatedExtensionPoint.id = "test/updated-extension-point";
 
