@@ -26,7 +26,7 @@ import {
   type ModStatus,
   type ModViewItem,
   type SharingType,
-} from "@/mods/modTypes";
+} from "@/types/modTypes";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";

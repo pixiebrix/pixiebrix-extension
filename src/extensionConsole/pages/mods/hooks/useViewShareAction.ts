@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isModDefinition } from "@/utils/modUtils";
 import {

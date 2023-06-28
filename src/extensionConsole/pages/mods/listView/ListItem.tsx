@@ -21,7 +21,7 @@ import React from "react";
 import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
 import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
 
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import Status from "@/extensionConsole/pages/mods/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";

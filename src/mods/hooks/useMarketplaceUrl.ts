@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 function useMarketplaceUrl(modViewItem: ModViewItem): string | null {

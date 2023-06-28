@@ -42,7 +42,7 @@ import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import ModsPageToolbar from "@/extensionConsole/pages/mods/ModsPageToolbar";
 import ModsPageContent from "@/extensionConsole/pages/mods/ModsPageContent";
 import Loader from "@/components/Loader";
-import type { Mod, ModViewItem } from "@/mods/modTypes";
+import type { Mod, ModViewItem } from "@/types/modTypes";
 
 const statusFilter = (
   rows: Array<Row<ModViewItem>>,

@@ -18,7 +18,7 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

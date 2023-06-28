@@ -24,7 +24,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { type Row } from "react-table";

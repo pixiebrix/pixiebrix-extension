@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Mod, type ModStatus, type ModViewItem } from "@/mods/modTypes";
+import { type Mod, type ModStatus, type ModViewItem } from "@/types/modTypes";
 import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";

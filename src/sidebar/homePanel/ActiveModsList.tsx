@@ -17,7 +17,7 @@
 import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
 
 import React from "react";
-import { type Mod, type ModViewItem } from "@/mods/modTypes";
+import { type Mod, type ModViewItem } from "@/types/modTypes";
 import { ListGroup, Row } from "react-bootstrap";
 import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";

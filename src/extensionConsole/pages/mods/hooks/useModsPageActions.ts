@@ -21,7 +21,7 @@ import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/mods/hooks/useViewShareAction";
 import useDeleteExtensionAction from "@/mods/hooks/useDeleteExtensionAction";
 import useReactivateAction from "@/extensionConsole/pages/mods/hooks/useReactivateAction";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import useViewLogsAction from "@/extensionConsole/pages/mods/hooks/useViewLogsAction";
 import useDeactivateAction from "@/mods/hooks/useDeactivateAction";

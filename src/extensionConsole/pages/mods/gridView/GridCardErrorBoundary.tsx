@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Card } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";

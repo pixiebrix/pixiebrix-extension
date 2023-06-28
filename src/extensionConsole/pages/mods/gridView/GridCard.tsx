@@ -18,7 +18,7 @@
 import styles from "./GridCard.module.scss";
 
 import React from "react";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/mods/Status";

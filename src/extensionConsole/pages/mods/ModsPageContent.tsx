@@ -29,7 +29,7 @@ import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import BotGamesView from "@/extensionConsole/pages/mods/BotGamesView";
 import { type TableInstance } from "react-table";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 
 export type ModsPageContentProps = {
   tableInstance: TableInstance<ModViewItem>;

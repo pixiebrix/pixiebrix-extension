@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useModsPageActions from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;

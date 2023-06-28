@@ -18,7 +18,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { type TableInstance } from "react-table";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import useFlags from "@/hooks/useFlags";
 import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
 import { kebabCase } from "lodash";

@@ -18,7 +18,7 @@
 import { getSharingType, isExtension, isUnavailableMod } from "./modUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
-import { type Mod, type UnavailableMod } from "@/mods/modTypes";
+import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";

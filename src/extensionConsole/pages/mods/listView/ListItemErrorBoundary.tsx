@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 
 import styles from "./ListItem.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -28,7 +28,7 @@ import {
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { type ModViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import useModsPageActions from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 
 const Status: React.VoidFunctionComponent<{
