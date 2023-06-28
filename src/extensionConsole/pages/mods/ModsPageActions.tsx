@@ -32,7 +32,7 @@ import useBlueprintsPageActions from "@/extensionConsole/pages/mods/hooks/useBlu
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 import { type ModViewItem } from "@/mods/modTypes";
 
-const BlueprintsPageActions: React.FunctionComponent<{
+const ModsPageActions: React.FunctionComponent<{
   installableViewItem: ModViewItem;
 }> = ({ installableViewItem }) => {
   const actions = useBlueprintsPageActions(installableViewItem);
@@ -123,4 +123,4 @@ const BlueprintsPageActions: React.FunctionComponent<{
   return <EllipsisMenu items={actionItems} />;
 };
 
-export default BlueprintsPageActions;
+export default ModsPageActions;
