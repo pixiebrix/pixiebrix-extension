@@ -130,6 +130,11 @@ async function personFactory(data: Partial<UserData>): Promise<Person> {
       };
 }
 
+// OK to memoize. The addAuthListener will modify the Rollbar instance in place
+// As of pMemoize 7.0.0, pMemoize does not cache rejections by default
+// https://github-redirect.dependabot.com/sindresorhus/p-memoize/pull/48
+export const getRollbar = pMemoize(initRollbar);
+
 async function updatePerson(data: Partial<UserData>): Promise<void> {
   const rollbar = await getRollbar();
   if (rollbar) {
@@ -140,8 +145,3 @@ async function updatePerson(data: Partial<UserData>): Promise<void> {
     });
   }
 }
-
-// OK to memoize. The addAuthListener will modify the Rollbar instance in place
-// As of pMemoize 7.0.0, pMemoize does not cache rejections by default
-// https://github-redirect.dependabot.com/sindresorhus/p-memoize/pull/48
-export const getRollbar = pMemoize(initRollbar);

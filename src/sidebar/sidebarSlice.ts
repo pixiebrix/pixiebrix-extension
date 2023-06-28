@@ -197,13 +197,13 @@ const sidebarSlice = createSlice({
       state.pendingActivePanel = null;
     },
     addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
+      const { form } = action.payload;
+
       if (state.forms.some((x) => x.nonce === form.nonce)) {
         // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
         // loading state for forms.)
         return;
       }
-
-      const { form } = action.payload;
 
       const [thisExtensionForms, otherForms] = partition(
         state.forms,

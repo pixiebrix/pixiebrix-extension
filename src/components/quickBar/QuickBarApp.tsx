@@ -169,6 +169,17 @@ export const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
+export const initQuickBarApp = once(() => {
+  expectContext("contentScript");
+
+  const container = document.createElement("div");
+  container.id = "pixiebrix-quickbar-container";
+  document.body.prepend(container);
+  ReactDOM.render(<QuickBarApp />, container);
+
+  console.debug("Initialized quick bar");
+});
+
 /**
  * Show the quick bar.
  */
@@ -181,14 +192,3 @@ export const toggleQuickBar = () => {
 
   window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
 };
-
-export const initQuickBarApp = once(() => {
-  expectContext("contentScript");
-
-  const container = document.createElement("div");
-  container.id = "pixiebrix-quickbar-container";
-  document.body.prepend(container);
-  ReactDOM.render(<QuickBarApp />, container);
-
-  console.debug("Initialized quick bar");
-});

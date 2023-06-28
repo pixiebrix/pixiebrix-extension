@@ -112,7 +112,7 @@ const useSavingWizard = () => {
   /**
    * Saves an extension that is not a part of a Recipe
    */
-  const saveNonRecipeElement = async () => {
+  async function saveNonRecipeElement() {
     dispatch(savingExtensionActions.setSavingInProgress());
     const error = await create({
       element,
@@ -124,7 +124,7 @@ const useSavingWizard = () => {
       },
     });
     closeWizard(error);
-  };
+  }
 
   /**
    * Creates personal extension from a page editor element. It will not be a part of the Recipe
@@ -300,11 +300,11 @@ const useSavingWizard = () => {
     closeWizard(error);
   };
 
-  const updateExtensionRecipeLinks = (
+  function updateExtensionRecipeLinks(
     recipeId: RegistryId,
     recipeMetadata: IExtension["_recipe"],
     extraUpdate: Partial<PersistedExtension> = {}
-  ) => {
+  ) {
     // 1) Update the extensions in the Redux optionsSlice
     const recipeExtensions = extensions.filter(
       (x) => x._recipe?.id === recipeId
@@ -331,9 +331,9 @@ const useSavingWizard = () => {
 
       dispatch(editorActions.updateElement(elementUpdate));
     }
-  };
+  }
 
-  const closeWizard = (errorMessage?: string | null) => {
+  function closeWizard(errorMessage?: string | null) {
     dispatch(savingExtensionActions.closeWizard());
 
     if (savingDeferred) {
@@ -345,7 +345,7 @@ const useSavingWizard = () => {
 
       savingDeferred = null;
     }
-  };
+  }
 
   return {
     isWizardOpen,

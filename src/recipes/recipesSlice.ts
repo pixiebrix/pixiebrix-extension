@@ -49,48 +49,6 @@ export const initialState: RecipesState = Object.freeze({
   isLoadingFromRemote: false,
 });
 
-/**
- * Load recipes from the local database.
- */
-const loadRecipesFromCache = createAsyncThunk<
-  void,
-  void,
-  { state: RecipesRootState }
->("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
-  if (!getState().recipes.isCacheUninitialized) {
-    throw new Error("Already loaded recipes from cache");
-  }
-
-  try {
-    dispatch(recipesSlice.actions.startFetchingFromCache());
-    const recipes = await recipeRegistry.all();
-    dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
-  } catch {
-    dispatch(recipesSlice.actions.setCacheError());
-  }
-});
-
-export const syncRemoteRecipes = createAsyncThunk<
-  void,
-  void,
-  { state: RecipesRootState }
->("recipes/refresh", async (arg, { dispatch, getState }) => {
-  if (getState().recipes.isFetchingFromRemote) {
-    throw new Error("Already fetching recipes from server");
-  }
-
-  try {
-    dispatch(recipesSlice.actions.startFetchingFromRemote());
-    await syncRemotePackages();
-    const recipes = await recipeRegistry.all();
-    dispatch(recipesSlice.actions.setRecipes(recipes));
-  } catch (error) {
-    // Serialize because stored in Redux
-    const serializedError = serializeError(error, { useToJSON: false });
-    dispatch(recipesSlice.actions.setError(serializedError));
-  }
-});
-
 export const recipesSlice = createSlice({
   name: "recipes",
   initialState,
@@ -135,6 +93,48 @@ export const recipesSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(revertAll, () => initialState);
   },
+});
+
+/**
+ * Load recipes from the local database.
+ */
+const loadRecipesFromCache = createAsyncThunk<
+  void,
+  void,
+  { state: RecipesRootState }
+>("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
+  if (!getState().recipes.isCacheUninitialized) {
+    throw new Error("Already loaded recipes from cache");
+  }
+
+  try {
+    dispatch(recipesSlice.actions.startFetchingFromCache());
+    const recipes = await recipeRegistry.all();
+    dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
+  } catch {
+    dispatch(recipesSlice.actions.setCacheError());
+  }
+});
+
+export const syncRemoteRecipes = createAsyncThunk<
+  void,
+  void,
+  { state: RecipesRootState }
+>("recipes/refresh", async (arg, { dispatch, getState }) => {
+  if (getState().recipes.isFetchingFromRemote) {
+    throw new Error("Already fetching recipes from server");
+  }
+
+  try {
+    dispatch(recipesSlice.actions.startFetchingFromRemote());
+    await syncRemotePackages();
+    const recipes = await recipeRegistry.all();
+    dispatch(recipesSlice.actions.setRecipes(recipes));
+  } catch (error) {
+    // Serialize because stored in Redux
+    const serializedError = serializeError(error, { useToJSON: false });
+    dispatch(recipesSlice.actions.setError(serializedError));
+  }
 });
 
 export const recipesActions = {

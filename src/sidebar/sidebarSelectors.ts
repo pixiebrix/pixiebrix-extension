@@ -25,6 +25,11 @@ export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.staticPanels) &&
   sidebar.recipeToActivate == null;
 
+export const selectSidebarHasModPanels = ({ sidebar }: SidebarRootState) =>
+  !isEmpty(sidebar.panels) ||
+  !isEmpty(sidebar.forms) ||
+  !isEmpty(sidebar.temporaryPanels);
+
 export const selectSidebarActiveTabKey = ({ sidebar }: SidebarRootState) =>
   sidebar.activeKey;
 

@@ -19,18 +19,57 @@ import React from "react";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import { reportEvent } from "@/telemetry/events";
+import AsyncButton from "@/components/AsyncButton";
+import notify from "@/utils/notify";
+import { useDispatch } from "react-redux";
+import SettingsSlice from "@/store/settingsSlice";
 
 /**
  * Opens the quickbar menu
  */
 export function QuickbarButton() {
+  const dispatch = useDispatch();
+
   return (
     // Using standard css here because the shadow dom in `FloatingActions.tsx`
     // prevents us from using regular css modules.
-    <Button className="button" onClick={toggleQuickBar}>
-      {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
+    <div className="quickbar-button-container">
+      <div className="hide-button-container">
+        <AsyncButton
+          className="hide-button"
+          onClick={async () => {
+            try {
+              dispatch(
+                SettingsSlice.actions.setFloatingActionButtonEnabled(false)
+              );
+              reportEvent("FloatingQuickBarButtonOnScreenHide");
+            } catch (error) {
+              notify.error({ message: "Error saving settings", error });
+            }
+          }}
+          variant="outline"
+        >
+          Hide Button
+        </AsyncButton>
+      </div>
+      <div>
+        <Button
+          className="quickbar-button"
+          onClick={() => {
+            reportEvent("FloatingQuickBarButtonClick");
+            toggleQuickBar();
+          }}
+        >
+          {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles
               anyway */}
-      <img src={logoUrl} className="logo" alt="open the PixieBrix quick bar" />
-    </Button>
+          <img
+            src={logoUrl}
+            className="logo"
+            alt="open the PixieBrix quick bar"
+          />
+        </Button>
+      </div>
+    </div>
   );
 }

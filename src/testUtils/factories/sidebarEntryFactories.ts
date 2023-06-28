@@ -69,7 +69,7 @@ const panelEntryFactory = define<PanelEntry>({
   heading: (n: number) => `Panel Test ${n}`,
   payload: null,
   extensionPointId: (n: number) =>
-    validateRegistryId(`@test/panel-extensionPoint-test-${n}`),
+    validateRegistryId(`@test/panel-extension-point-test-${n}`),
 });
 
 export function sidebarEntryFactory(

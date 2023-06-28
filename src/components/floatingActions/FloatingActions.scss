@@ -19,27 +19,91 @@
 .root {
   position: fixed;
   z-index: 2147481647;
-  bottom: 40px;
-  left: 40px;
+  bottom: 0;
+  left: 0;
+  margin: 30px 10px;
 }
 
-.button {
-  padding: 0;
-  border: none;
-  overflow: hidden;
-  box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
-  background-color: $P500;
-  &:hover,
-  &:focus {
-    background-color: $P600 !important;
+.drag-container {
+  display: flex;
+  align-items: flex-end;
+  // scaling the container down then the content up
+  // because the background was showing around the button when moving
+  transform: scale(0.65);
+  border-radius: 12px;
+  padding: 5px;
+  background-color: transparent;
+  transition: background-color 0.5s ease-in-out;
+  &:hover {
+    background-color: $N0;
   }
+}
 
+.drag-handle {
+  user-select: none;
+  cursor: grab;
+  padding: 5px;
+  height: 50px;
   &:active {
-    background-color: $P900 !important;
+    cursor: grabbing;
+  }
+}
+
+.content-container {
+  // translateX to account for some positioning from the scaling
+  transform: scale(1.4) translateX(9px);
+}
+
+.quickbar-button-container {
+  display: flex;
+  flex-direction: column;
+  .hide-button-container {
+    max-height: 0;
+    transition: max-height 0.5s ease-in-out;
+    overflow: hidden;
+    // absolutely positioned the hide button so it doesn't
+    // affect the size of the drag container background
+    position: absolute;
+    top: -45px;
   }
 
-  &:focus {
-    box-shadow: none !important;
+  .hide-button {
+    // Explicit font size since bootstrap uses REM sizes that get overriden by parent page
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background-color: $N0;
+    margin: 10px 0;
+    border: 1px solid $N50;
+    box-shadow: 0px 4px 8px -4px rgba(56, 51, 66, 0.16);
+    font-weight: 700;
+    color: $N400;
+    white-space: nowrap;
+  }
+
+  &:hover > .hide-button-container {
+    max-height: 200px;
+  }
+
+  .quickbar-button {
+    padding: 7px;
+    border: none;
+    overflow: hidden;
+    box-shadow: 0px 4px 4px rgba(56, 51, 66, 0.12);
+    background-color: $P500;
+    border-radius: 12px;
+    &:hover,
+    &:focus {
+      background-color: $P600 !important;
+    }
+
+    &:active {
+      background-color: $P900 !important;
+    }
+
+    &:focus {
+      box-shadow: none !important;
+    }
   }
 }
 

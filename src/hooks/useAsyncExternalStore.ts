@@ -28,7 +28,6 @@ import { uuidv4 } from "@/types/helpers";
 import deepEquals from "fast-deep-equal";
 
 type Subscribe = (callback: () => void) => () => void;
-const stateControllerMap = new Map<Subscribe, StateController>();
 
 class StateController<T = unknown> {
   private readonly stateListeners = new Set<() => void>();
@@ -109,6 +108,8 @@ class StateController<T = unknown> {
     return this.state;
   }
 }
+
+const stateControllerMap = new Map<Subscribe, StateController>();
 
 /**
  * Test helper method to reset the state of all useAsyncExternalStore hooks.
