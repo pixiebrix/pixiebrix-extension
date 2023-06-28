@@ -17,22 +17,19 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import { getLabel, isExtension } from "@/utils/installableUtils";
+import { getLabel, isModDefinition } from "@/utils/installableUtils";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 
-function useViewLogsAction(
-  installableViewItem: ModViewItem
-): () => void | null {
+function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
-  const { mod, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
+  const { mod, status } = modViewItem;
 
   const viewLogs = () => {
     dispatch(
       blueprintModalsSlice.actions.setLogsContext({
         title: getLabel(mod),
-        messageContext: isInstallableBlueprint
+        messageContext: isModDefinition(mod)
           ? {
               label: getLabel(mod),
               blueprintId: mod.metadata.id,
