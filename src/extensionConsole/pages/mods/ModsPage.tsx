@@ -24,7 +24,7 @@ import { reportEvent } from "@/telemetry/events";
 import Modals from "./modals/Modals";
 import useShowPublishUrlEffect from "@/extensionConsole/pages/mods/hooks/useShowPublishUrlEffect";
 
-const BlueprintsPage: React.FunctionComponent = () => {
+const ModsPage: React.FunctionComponent = () => {
   useTitle("Mods");
   const { mods, error } = useMods();
   useShowPublishUrlEffect();
@@ -45,4 +45,4 @@ const BlueprintsPage: React.FunctionComponent = () => {
   );
 };
 
-export default BlueprintsPage;
+export default ModsPage;

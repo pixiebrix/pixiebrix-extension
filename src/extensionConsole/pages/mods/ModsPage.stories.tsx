@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import BlueprintsPage from "@/extensionConsole/pages/mods/BlueprintsPage";
+import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
@@ -29,9 +29,9 @@ import { recipesSlice } from "@/recipes/recipesSlice";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
-  title: "Blueprints/BlueprintsPage",
-  component: BlueprintsPage,
-} as ComponentMeta<typeof BlueprintsPage>;
+  title: "Mods/ModsPage",
+  component: ModsPage,
+} as ComponentMeta<typeof ModsPage>;
 
 function optionsStore(initialState?: UnknownObject) {
   return configureStore({
@@ -52,9 +52,9 @@ function optionsStore(initialState?: UnknownObject) {
   });
 }
 
-const Template: ComponentStory<typeof BlueprintsPage> = (args) => (
+const Template: ComponentStory<typeof ModsPage> = (args) => (
   <Provider store={optionsStore()}>
-    <BlueprintsPage {...args} />
+    <ModsPage {...args} />
   </Provider>
 );
 
