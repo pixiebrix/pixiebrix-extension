@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsFromInstallable } from "@/utils/installableUtils";
 import { useSelector } from "react-redux";
-import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
+import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 
 function useRequestPermissionsAction(
   installableViewItem: InstallableViewItem

@@ -18,13 +18,13 @@
 import styles from "./GridCard.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/blueprints/Status";
 import BlueprintsPageActions from "@/extensionConsole/pages/blueprints/BlueprintsPageActions";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
-import InstallableIcon from "@/installables/InstallableIcon";
+import InstallableIcon from "@/mods/InstallableIcon";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;

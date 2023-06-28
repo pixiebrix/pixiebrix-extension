@@ -26,8 +26,8 @@ import {
   type InstallableStatus,
   type InstallableViewItem,
   type SharingType,
-} from "@/installables/installableTypes";
-import useInstallablePermissions from "@/installables/hooks/useInstallablePermissions";
+} from "@/mods/installableTypes";
+import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
@@ -42,7 +42,7 @@ import {
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/installables/hooks/useInstallablePermissions", () => jest.fn());
+jest.mock("@/mods/hooks/useInstallablePermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],

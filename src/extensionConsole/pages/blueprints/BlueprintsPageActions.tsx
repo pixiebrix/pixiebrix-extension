@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 
 const BlueprintsPageActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;

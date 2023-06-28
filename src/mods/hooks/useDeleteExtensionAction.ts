@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { getLabel, isExtension } from "@/utils/installableUtils";

@@ -22,10 +22,7 @@ import {
 } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
-import {
-  type Installable,
-  type UnavailableMod,
-} from "@/installables/installableTypes";
+import { type Installable, type UnavailableMod } from "@/mods/installableTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";

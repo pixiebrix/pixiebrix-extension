@@ -28,7 +28,7 @@ import {
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 
 const Status: React.VoidFunctionComponent<{

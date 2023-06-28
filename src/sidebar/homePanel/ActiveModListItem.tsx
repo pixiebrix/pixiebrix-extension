@@ -18,7 +18,7 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,10 +27,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { getContainedStarterBrickNames } from "@/utils/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import InstallableIcon from "@/installables/InstallableIcon";
+import InstallableIcon from "@/mods/InstallableIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
-import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
+import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
+import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import cx from "classnames";
 import useReportError from "@/hooks/useReportError";
 

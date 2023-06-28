@@ -29,7 +29,7 @@ import GetStartedView from "@/extensionConsole/pages/blueprints/GetStartedView";
 import useOnboarding from "@/extensionConsole/pages/blueprints/onboardingView/useOnboarding";
 import BotGamesView from "@/extensionConsole/pages/blueprints/BotGamesView";
 import { type TableInstance } from "react-table";
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type InstallableViewItem } from "@/mods/installableTypes";
 
 export type BlueprintsPageContentProps = {
   tableInstance: TableInstance<InstallableViewItem>;

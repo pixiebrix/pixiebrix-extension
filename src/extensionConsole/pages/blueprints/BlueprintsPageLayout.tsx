@@ -37,15 +37,12 @@ import {
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
-import useInstallableViewItems from "@/installables/useInstallableViewItems";
+import useInstallableViewItems from "@/mods/useInstallableViewItems";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
-import type {
-  Installable,
-  InstallableViewItem,
-} from "@/installables/installableTypes";
+import type { Installable, InstallableViewItem } from "@/mods/installableTypes";
 
 const statusFilter = (
   rows: Array<Row<InstallableViewItem>>,
