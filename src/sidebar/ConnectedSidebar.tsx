@@ -24,7 +24,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
-  type ActivateRecipePanelEntry,
+  type ActivateModPanelEntry,
   type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
@@ -76,7 +76,7 @@ function useConnectedListener(): SidebarListener {
       onHideTemporaryPanel({ nonce }) {
         dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
       },
-      onShowActivateRecipe(activateRecipeEntry: ActivateRecipePanelEntry) {
+      onShowActivateRecipe(activateRecipeEntry: ActivateModPanelEntry) {
         dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
       },
       onHideActivateRecipe(recipeId: RegistryId) {

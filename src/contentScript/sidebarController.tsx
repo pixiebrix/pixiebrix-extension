@@ -34,7 +34,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ExtensionRef } from "@/types/extensionTypes";
 import type {
   ActivatePanelOptions,
-  ActivateRecipePanelEntry,
+  ActivateModPanelEntry,
   FormPanelEntry,
   PanelEntry,
   PanelPayload,
@@ -57,7 +57,7 @@ export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
 
-let recipeToActivate: ActivateRecipePanelEntry = null;
+let recipeToActivate: ActivateModPanelEntry = null;
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
@@ -450,7 +450,7 @@ export function upsertPanel(
 }
 
 export function showActivateRecipeInSidebar(
-  entry: Except<ActivateRecipePanelEntry, "type">
+  entry: Except<ActivateModPanelEntry, "type">
 ): void {
   expectContext("contentScript");
 
@@ -494,7 +494,7 @@ export function getReservedPanelEntries(): {
   panels: PanelEntry[];
   temporaryPanels: TemporaryPanelEntry[];
   forms: FormPanelEntry[];
-  recipeToActivate: ActivateRecipePanelEntry | null;
+  recipeToActivate: ActivateModPanelEntry | null;
 } {
   return {
     panels,

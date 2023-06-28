@@ -71,9 +71,9 @@ import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import {
-  type RecipeDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IExtension } from "@/types/extensionTypes";
@@ -82,7 +82,7 @@ import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPerm
 const { actions: optionsActions } = extensionsSlice;
 
 function selectRecipeMetadata(
-  unsavedRecipe: UnsavedRecipeDefinition,
+  unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
 ): IExtension["_recipe"] {
   return {
@@ -164,7 +164,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   );
 
   const createRecipeFromRecipe = useCallback(
-    async (recipe: RecipeDefinition, metadata: RecipeMetadataFormState) => {
+    async (recipe: ModDefinition, metadata: RecipeMetadataFormState) => {
       const recipeId = recipe.metadata.id;
       // eslint-disable-next-line security/detect-object-injection -- recipeId
       const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
@@ -203,7 +203,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         public: false,
       }).unwrap();
 
-      const savedRecipe: RecipeDefinition = {
+      const savedRecipe: ModDefinition = {
         ...newRecipe,
         sharing: {
           public: response.public,
@@ -264,7 +264,7 @@ function useInitialFormState({
   activeElement,
 }: {
   activeElement: FormState;
-  activeRecipe: RecipeDefinition | null;
+  activeRecipe: ModDefinition | null;
 }): RecipeMetadataFormState | null {
   const scope = useSelector(selectScope);
 

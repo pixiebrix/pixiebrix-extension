@@ -50,7 +50,7 @@ import {
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isExpression } from "@/runtime/mapArgs";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   getMinimalSchema,
   getMinimalUiSchema,
@@ -123,7 +123,7 @@ export function baseFromExtension<T extends ExtensionPointType>(
 // Add the recipe options to the form state if the extension is a part of a recipe
 export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
   element: TElement,
-  recipes: RecipeDefinition[]
+  recipes: ModDefinition[]
 ) {
   if (element.recipe?.id) {
     const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);

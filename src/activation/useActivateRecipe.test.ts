@@ -23,7 +23,7 @@ import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type MenuDefinition } from "@/extensionPoints/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
@@ -55,7 +55,7 @@ jest.mock("@/services/api", () => {
 
 function setupInputs(): {
   formValues: WizardValues;
-  recipe: RecipeDefinition;
+  recipe: ModDefinition;
 } {
   const formValues: WizardValues = {
     extensions: { 0: true },

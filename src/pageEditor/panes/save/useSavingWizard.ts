@@ -49,7 +49,7 @@ import {
   type IExtension,
   type PersistedExtension,
 } from "@/types/extensionTypes";
-import { type UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -63,7 +63,7 @@ type RecipeConfiguration = {
 let savingDeferred: DeferredPromise<void>;
 
 export function selectRecipeMetadata(
-  unsavedRecipe: UnsavedRecipeDefinition,
+  unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
 ): IExtension["_recipe"] {
   return {
@@ -186,7 +186,7 @@ const useSavingWizard = () => {
       id: validateRegistryId(recipeMeta.id),
     };
 
-    const newRecipe: UnsavedRecipeDefinition = replaceRecipeExtension(
+    const newRecipe: UnsavedModDefinition = replaceRecipeExtension(
       recipe,
       newMeta,
       extensions,
@@ -250,7 +250,7 @@ const useSavingWizard = () => {
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
-    const newRecipe: UnsavedRecipeDefinition = replaceRecipeExtension(
+    const newRecipe: UnsavedModDefinition = replaceRecipeExtension(
       recipe,
       recipeMeta,
       extensions,

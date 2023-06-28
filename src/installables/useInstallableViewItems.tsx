@@ -34,7 +34,7 @@ import {
   getUpdatedAt,
   isDeployment,
   isExtension,
-  isUnavailableRecipe,
+  isUnavailableMod,
   updateAvailable,
 } from "@/utils/installableUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
@@ -135,7 +135,7 @@ function useInstallableViewItems(installables: Installable[]): {
           installedExtensions,
           installable
         ),
-        unavailable: isUnavailableRecipe(installable),
+        unavailable: isUnavailableMod(installable),
         installable,
       } satisfies InstallableViewItem;
     });

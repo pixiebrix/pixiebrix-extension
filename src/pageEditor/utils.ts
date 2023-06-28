@@ -33,7 +33,7 @@ import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
 import { type IExtension } from "@/types/extensionTypes";
@@ -73,9 +73,9 @@ export function getRecipeIdForElement(
 }
 
 export function getRecipeById(
-  recipes: RecipeDefinition[],
+  recipes: ModDefinition[],
   id: RegistryId
-): RecipeDefinition | undefined {
+): ModDefinition | undefined {
   return recipes.find((recipe) => recipe.metadata.id === id);
 }
 

@@ -49,7 +49,7 @@ import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { selectSourceRecipeMetadata } from "@/types/extensionTypes";
 
 type ConvertInstallableFormState = {
@@ -165,7 +165,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
         shareDependencies: true,
       }).unwrap();
 
-      const recipe: RecipeDefinition = {
+      const recipe: ModDefinition = {
         ...unsavedRecipe,
         sharing: pick(response, ["public", "organizations"]),
         ...pick(response, ["updated_at"]),
