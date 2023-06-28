@@ -23,9 +23,9 @@ import { useSelector } from "react-redux";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 
 function useRequestPermissionsAction(
-  installableViewItem: ModViewItem
+  modViewItem: ModViewItem
 ): () => void | null {
-  const { mod } = installableViewItem;
+  const { mod } = modViewItem;
 
   // Without memoization, the selector reference changes on every render, which causes useModPermissions
   // to recompute, spamming the background worker with service locator requests
@@ -34,11 +34,10 @@ function useRequestPermissionsAction(
     [mod]
   );
 
-  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
+  const extensionsFromMod = useSelector(memoizedExtensionsSelector);
 
-  const { hasPermissions, requestPermissions } = useModPermissions(
-    extensionsFromInstallable
-  );
+  const { hasPermissions, requestPermissions } =
+    useModPermissions(extensionsFromMod);
 
   return hasPermissions ? null : requestPermissions;
 }
