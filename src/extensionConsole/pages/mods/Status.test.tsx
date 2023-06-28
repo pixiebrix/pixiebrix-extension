@@ -19,7 +19,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/mods/Status";
 import useModsPageActions, {
-  type BlueprintsPageActions,
+  type ModsPageActions,
 } from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 
 jest.mock("@/extensionConsole/pages/mods/hooks/useModsPageActions", () => ({
@@ -32,9 +32,7 @@ const useInstallableViewItemActionsMock =
 
 describe("Status", () => {
   beforeEach(() => {
-    useInstallableViewItemActionsMock.mockReturnValue(
-      {} as BlueprintsPageActions
-    );
+    useInstallableViewItemActionsMock.mockReturnValue({} as ModsPageActions);
   });
 
   it("shows active", async () => {
@@ -55,7 +53,7 @@ describe("Status", () => {
   it("shows activate", async () => {
     useInstallableViewItemActionsMock.mockReturnValue({
       activate: jest.fn(),
-    } as unknown as BlueprintsPageActions);
+    } as unknown as ModsPageActions);
 
     const wrapper = render(
       <Status

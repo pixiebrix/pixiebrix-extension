@@ -19,7 +19,7 @@
 /// <reference types="jest-extended" />
 
 import useModsPageActions, {
-  type BlueprintsPageActions,
+  type ModsPageActions,
 } from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
@@ -46,7 +46,7 @@ jest.mock("@/mods/hooks/useModPermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
-  actualActions: BlueprintsPageActions
+  actualActions: ModsPageActions
 ) => {
   // Union both set of keys to ensure all possible keys are covered
   const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);
