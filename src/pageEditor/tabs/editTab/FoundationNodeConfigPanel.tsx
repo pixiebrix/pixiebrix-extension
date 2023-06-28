@@ -26,11 +26,10 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { useSelector } from "react-redux";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { Alert, Col, Row } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
-import styles from "./FoundationNodeConfigPanel.module.scss";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
@@ -68,18 +67,13 @@ const FoundationNodeConfigPanel: React.FC = () => {
     [extensionPoint.metadata.id]
   );
 
-  const { EditorNode, label } = ADAPTERS.get(extensionPoint.definition.type);
+  const { EditorNode } = ADAPTERS.get(extensionPoint.definition.type);
 
   return (
     <>
       {extensionPoint.definition.type === "quickBar" && (
         <UnconfiguredQuickBarAlert />
       )}
-      <Row className={styles.topRow}>
-        <Col xl>
-          <p className={styles.brickName}>{label}</p>
-        </Col>
-      </Row>
       <ConnectedFieldTemplate name="label" label="Name" />
       {showVersionField && <ApiVersionField />}
       <UpgradedToApiV3 />
