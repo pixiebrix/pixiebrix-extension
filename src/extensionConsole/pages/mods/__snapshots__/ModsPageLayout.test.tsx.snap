@@ -25,7 +25,7 @@ exports[`ModsPageLayout renders 1`] = `
         <a
           class="mt-3 nav-link active"
           data-rb-event-key="Get Started"
-          data-testid="get-started-blueprint-tab"
+          data-testid="get-started-mod-tab"
           href="#"
           role="button"
         >
@@ -58,7 +58,7 @@ exports[`ModsPageLayout renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="Active"
-          data-testid="active-blueprint-tab"
+          data-testid="active-mod-tab"
           href="#"
           role="button"
         >
@@ -86,7 +86,7 @@ exports[`ModsPageLayout renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="All"
-          data-testid="all-mods-blueprint-tab"
+          data-testid="all-mods-mod-tab"
           href="#"
           role="button"
         >
@@ -114,7 +114,7 @@ exports[`ModsPageLayout renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="Personal"
-          data-testid="personal-blueprint-tab"
+          data-testid="personal-mod-tab"
           href="#"
           role="button"
         >
@@ -142,7 +142,7 @@ exports[`ModsPageLayout renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="Public"
-          data-testid="public-marketplace-blueprint-tab"
+          data-testid="public-marketplace-mod-tab"
           href="#"
           role="button"
         >
@@ -177,7 +177,7 @@ exports[`ModsPageLayout renders 1`] = `
         <a
           class="media nav-link"
           data-rb-event-key="https://www.pixiebrix.com/marketplace/"
-          data-testid="open-public-marketplace-blueprint-tab"
+          data-testid="open-public-marketplace-mod-tab"
           href="https://www.pixiebrix.com/marketplace/"
           rel="noopener noreferrer"
           target="_blank"

@@ -28,7 +28,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import BlueprintsPageSidebar from "./BlueprintsPageSidebar";
+import ModsPageSidebar from "./ModsPageSidebar";
 import {
   selectActiveTab,
   selectGroupBy,
@@ -154,7 +154,7 @@ const ModsPageLayout: React.FunctionComponent<{
 
   return (
     <BootstrapRow className={styles.root}>
-      <BlueprintsPageSidebar
+      <ModsPageSidebar
         teamFilters={teamFilters}
         tableInstance={tableInstance}
       />

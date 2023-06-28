@@ -93,9 +93,7 @@ describe("ModsPageLayout", () => {
       screen.queryByText("Welcome to the PixieBrix Extension Console")
     ).not.toBeNull();
     expect(screen.queryByText("Get Started")).not.toBeNull();
-    expect(screen.getByTestId("get-started-blueprint-tab")).toHaveClass(
-      "active"
-    );
+    expect(screen.getByTestId("get-started-mod-tab")).toHaveClass("active");
   });
 
   test("does not show 'Get Started' tab for enterprise users", async () => {
@@ -171,7 +169,7 @@ describe("ModsPageLayout", () => {
     });
     await waitForEffect();
     expect(screen.queryByText("Bot Games")).not.toBeNull();
-    expect(screen.getByTestId("bot-games-blueprint-tab")).toHaveClass("active");
+    expect(screen.getByTestId("bot-games-mod-tab")).toHaveClass("active");
   });
 
   test("search query heading renders", async () => {
