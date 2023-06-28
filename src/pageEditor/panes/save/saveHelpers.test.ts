@@ -100,6 +100,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -144,6 +146,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -179,6 +183,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -229,6 +235,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -289,6 +297,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -346,6 +356,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -395,6 +407,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -433,6 +447,8 @@ describe("blueprint options", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -766,6 +782,8 @@ describe("buildRecipe", () => {
           recipe,
           services: {},
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         })
       );
 

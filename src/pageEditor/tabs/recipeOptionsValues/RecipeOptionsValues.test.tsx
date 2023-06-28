@@ -63,6 +63,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -120,6 +122,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -144,6 +148,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -182,6 +188,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -216,6 +224,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });

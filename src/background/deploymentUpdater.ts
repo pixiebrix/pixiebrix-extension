@@ -216,6 +216,10 @@ async function installDeployment(
   let options = optionsState;
   let editor = editorState;
 
+  const isReinstall = optionsState.extensions.some(
+    (x) => x._deployment?.id === deployment.id
+  );
+
   // Uninstall existing versions of the extensions
   const result = await uninstallRecipe(
     options,
@@ -239,6 +243,8 @@ async function installDeployment(
       ),
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
+      screen: "background",
+      isReinstall,
     })
   );
 

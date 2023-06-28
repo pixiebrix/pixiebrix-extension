@@ -98,6 +98,8 @@ function installBlueprint(
       recipe: blueprint,
       extensionPoints: blueprint.extensionPoints,
       services,
+      screen: "starterMod",
+      isReinstall: false,
     })
   );
 }
