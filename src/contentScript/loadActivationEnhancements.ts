@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { activationEnhancements } from "@/contentScript/activationEnhancements";
+import { loadActivationEnhancements } from "@/contentScript/activationEnhancements";
 
 if (location.protocol === "https:") {
-  void activationEnhancements();
+  void loadActivationEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
 }

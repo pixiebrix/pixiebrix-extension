@@ -77,7 +77,7 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   activeLabel.append(button);
 }
 
-export async function activationEnhancements(): Promise<void> {
+export async function loadActivationEnhancements(): Promise<void> {
   if (isLoadedInIframe()) {
     return;
   }
@@ -157,7 +157,7 @@ export async function activationEnhancements(): Promise<void> {
 
 export async function reloadActivationEnhancements() {
   enhancementsLoaded = false;
-  await activationEnhancements();
+  await loadActivationEnhancements();
 }
 
 /**
