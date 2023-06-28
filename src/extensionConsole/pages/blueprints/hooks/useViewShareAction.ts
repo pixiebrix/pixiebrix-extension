@@ -26,18 +26,18 @@ import {
 function useViewShareAction(
   installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable, unavailable, sharing } = installableViewItem;
+  const { mod, unavailable, sharing } = installableViewItem;
   const dispatch = useDispatch();
-  const isInstallableBlueprint = !isExtension(installable);
+  const isInstallableBlueprint = !isExtension(mod);
   const isDeployment = sharing.source.type === "Deployment";
 
   const viewShare = () => {
     const shareContext: ShareContext = isInstallableBlueprint
       ? {
-          blueprintId: getPackageId(installable),
+          blueprintId: getPackageId(mod),
         }
       : {
-          extensionId: installable.id,
+          extensionId: mod.id,
         };
 
     dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));

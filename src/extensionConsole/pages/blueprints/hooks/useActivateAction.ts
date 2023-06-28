@@ -25,21 +25,19 @@ function useActivateAction(
   installableViewItem: ModViewItem
 ): () => void | null {
   const dispatch = useDispatch();
-  const { installable, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
+  const { mod, status } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(mod);
 
   const activate = () => {
     if (isInstallableBlueprint) {
       reportEvent("StartInstallBlueprint", {
-        blueprintId: installable.metadata.id,
+        blueprintId: mod.metadata.id,
         screen: "extensionConsole",
         reinstall: false,
       });
 
       dispatch(
-        push(
-          `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
-        )
+        push(`/marketplace/activate/${encodeURIComponent(mod.metadata.id)}`)
       );
     } else {
       reportEvent("StartInstallBlueprint", {
@@ -48,7 +46,7 @@ function useActivateAction(
         reinstall: false,
       });
 
-      dispatch(push(`/extensions/install/${installable.id}`));
+      dispatch(push(`/extensions/install/${mod.id}`));
     }
   };
 

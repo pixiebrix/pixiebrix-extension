@@ -88,7 +88,7 @@ const installableItemFactory = ({
   unavailable?: boolean;
 }) =>
   ({
-    installable: isExtension ? extensionFactory() : recipeFactory(),
+    mod: isExtension ? extensionFactory() : recipeFactory(),
     sharing: {
       source: {
         type: sharingType,
@@ -321,7 +321,7 @@ describe("useBlueprintsPageActions", () => {
       mockHooks();
 
       blueprintItem = {
-        installable: recipeFactory({
+        mod: recipeFactory({
           sharing: { public: true, organizations: [] },
         }),
         sharing: {
@@ -386,7 +386,7 @@ describe("actions", () => {
       deactivate();
 
       expect(uninstallRecipe).toHaveBeenCalledWith(
-        (blueprintInstallable.installable as ModDefinition).metadata.id,
+        (blueprintInstallable.mod as ModDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function)
       );
@@ -403,7 +403,7 @@ describe("actions", () => {
         sharingType: "Personal",
         status: "Active",
       });
-      (extensionInstallable.installable as IExtension).id = extension.id;
+      (extensionInstallable.mod as IExtension).id = extension.id;
 
       const {
         result: {

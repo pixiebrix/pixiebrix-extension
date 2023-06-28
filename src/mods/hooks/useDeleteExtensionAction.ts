@@ -25,11 +25,11 @@ import { CancelError } from "@/errors/businessErrors";
 function useDeleteExtensionAction(
   installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable, sharing, status } = installableViewItem;
+  const { mod, sharing, status } = installableViewItem;
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const isInstallableExtension = isExtension(installable);
-  const isInstallableBlueprint = !isExtension(installable);
+  const isInstallableExtension = isExtension(mod);
+  const isInstallableBlueprint = !isExtension(mod);
   const isActive = status === "Active" || status === "Paused";
 
   const isCloudExtension =
@@ -56,13 +56,11 @@ function useDeleteExtensionAction(
         throw new CancelError();
       }
 
-      await deleteCloudExtension({ extensionId: installable.id }).unwrap();
+      await deleteCloudExtension({ extensionId: mod.id }).unwrap();
     },
     {
-      successMessage: `Deleted mod ${getLabel(installable)} from your account`,
-      errorMessage: `Error deleting mod ${getLabel(
-        installable
-      )} from your account`,
+      successMessage: `Deleted mod ${getLabel(mod)} from your account`,
+      errorMessage: `Error deleting mod ${getLabel(mod)} from your account`,
       event: "ExtensionCloudDelete",
     },
     [modals]

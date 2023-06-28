@@ -132,7 +132,7 @@ function useInstallableViewItems(installables: Mod[]): {
           installable
         ),
         unavailable: isUnavailableMod(installable),
-        installable,
+        mod: installable,
       } satisfies ModViewItem;
     });
   }, [

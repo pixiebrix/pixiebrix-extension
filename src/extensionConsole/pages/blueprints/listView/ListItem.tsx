@@ -31,13 +31,12 @@ const ListItem: React.VoidFunctionComponent<{
   installableItem: ModViewItem;
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, installable, description } =
-    installableItem;
+  const { name, sharing, updatedAt, mod, description } = installableItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>
-        <ModIcon size="2x" mod={installable} />
+        <ModIcon size="2x" mod={mod} />
       </div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>

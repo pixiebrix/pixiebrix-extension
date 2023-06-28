@@ -61,9 +61,8 @@ export type ModViewItem = {
   status: ModStatus;
   hasUpdate: boolean;
   installedVersionNumber: string;
-  // Used to get Installable actions from useInstallableActions
-  // TODO: rename to mod
-  installable: Mod;
+  // Used to get Mod actions from useModActions
+  mod: Mod;
   /**
    * True if the source package is no longer available
    */

@@ -138,10 +138,10 @@ const GridView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
             return (
               <GridCardErrorBoundary
                 installableItem={row.original}
-                key={getUniqueId(row.original.installable)}
+                key={getUniqueId(row.original.mod)}
               >
                 <GridCard
-                  key={getUniqueId(row.original.installable)}
+                  key={getUniqueId(row.original.mod)}
                   installableItem={row.original}
                 />
               </GridCardErrorBoundary>

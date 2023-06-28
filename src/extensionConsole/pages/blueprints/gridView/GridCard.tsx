@@ -33,8 +33,7 @@ type GridCardProps = {
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
-  const { name, updatedAt, sharing, installable, description } =
-    installableItem;
+  const { name, updatedAt, sharing, mod, description } = installableItem;
 
   return (
     <div className={styles.root}>
@@ -48,7 +47,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
                 <div className={styles.packageId}>{sharing.packageId}</div>
               </div>
               <span className="mb-2">
-                <ModIcon size="2x" mod={installable} />
+                <ModIcon size="2x" mod={mod} />
               </span>
             </div>
           </div>

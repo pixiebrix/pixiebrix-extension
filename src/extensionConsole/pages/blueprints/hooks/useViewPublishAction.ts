@@ -26,19 +26,19 @@ import {
 function useViewPublishAction(
   installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable, unavailable, sharing } = installableViewItem;
+  const { mod, unavailable, sharing } = installableViewItem;
   const isDeployment = sharing.source.type === "Deployment";
 
   const dispatch = useDispatch();
-  const isInstallableExtension = isExtension(installable);
+  const isInstallableExtension = isExtension(mod);
   const isInstallableBlueprint = !isInstallableExtension;
   const viewPublish = () => {
     const publishContext: PublishContext = isInstallableBlueprint
       ? {
-          blueprintId: getPackageId(installable),
+          blueprintId: getPackageId(mod),
         }
       : {
-          extensionId: installable.id,
+          extensionId: mod.id,
         };
 
     dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));

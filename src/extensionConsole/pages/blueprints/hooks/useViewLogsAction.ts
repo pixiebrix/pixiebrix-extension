@@ -25,19 +25,19 @@ function useViewLogsAction(
   installableViewItem: ModViewItem
 ): () => void | null {
   const dispatch = useDispatch();
-  const { installable, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
+  const { mod, status } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(mod);
 
   const viewLogs = () => {
     dispatch(
       blueprintModalsSlice.actions.setLogsContext({
-        title: getLabel(installable),
+        title: getLabel(mod),
         messageContext: isInstallableBlueprint
           ? {
-              label: getLabel(installable),
-              blueprintId: installable.metadata.id,
+              label: getLabel(mod),
+              blueprintId: mod.metadata.id,
             }
-          : selectExtensionContext(installable),
+          : selectExtensionContext(mod),
       })
     );
   };

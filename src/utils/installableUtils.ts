@@ -357,13 +357,13 @@ const getExtensionPointType = async (
 const getExtensionPointTypesContained = async (
   installableItem: ModViewItem
 ): Promise<ExtensionPointType[]> => {
-  if (isUnavailableMod(installableItem.installable)) {
+  if (isUnavailableMod(installableItem.mod)) {
     return [];
   }
 
-  return isBlueprint(installableItem.installable)
-    ? getContainedExtensionPointTypes(installableItem.installable)
-    : [await getExtensionPointType(installableItem.installable)];
+  return isBlueprint(installableItem.mod)
+    ? getContainedExtensionPointTypes(installableItem.mod)
+    : [await getExtensionPointType(installableItem.mod)];
 };
 
 export const getContainedStarterBrickNames = async (

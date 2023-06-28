@@ -37,7 +37,7 @@ import useReportError from "@/hooks/useReportError";
 export const ActiveModListItem: React.FunctionComponent<{
   installableItem: ModViewItem;
 }> = ({ installableItem }) => {
-  const { name, installable } = installableItem;
+  const { name, mod } = installableItem;
   const marketplaceListingUrl = useMarketplaceUrl(installableItem);
   const requestPermissions = useRequestPermissionsAction(installableItem);
 
@@ -53,7 +53,7 @@ export const ActiveModListItem: React.FunctionComponent<{
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
         <div className={styles.icon}>
-          <ModIcon mod={installable} />
+          <ModIcon mod={mod} />
         </div>
         <div>
           <div>

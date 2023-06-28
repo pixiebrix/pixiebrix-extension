@@ -34,8 +34,8 @@ function useDeactivateAction(
 ): () => void | null {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
-  const { installable, status, sharing } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(installable);
+  const { mod, status, sharing } = installableViewItem;
+  const isInstallableBlueprint = !isExtension(mod);
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
 
@@ -48,8 +48,8 @@ function useDeactivateAction(
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
     (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, installable),
-    [installable]
+      selectExtensionsFromInstallable(state, mod),
+    [mod]
   );
 
   const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
@@ -57,7 +57,7 @@ function useDeactivateAction(
   const deactivate = useUserAction(
     async () => {
       if (isInstallableBlueprint) {
-        const blueprintId = installable.metadata.id;
+        const blueprintId = mod.metadata.id;
         await uninstallRecipe(blueprintId, extensionsFromInstallable, dispatch);
 
         reportEvent("BlueprintRemove", {
@@ -77,10 +77,10 @@ function useDeactivateAction(
       }
     },
     {
-      successMessage: `Deactivated mod: ${getLabel(installable)}`,
-      errorMessage: `Error deactivating mod: ${getLabel(installable)}`,
+      successMessage: `Deactivated mod: ${getLabel(mod)}`,
+      errorMessage: `Error deactivating mod: ${getLabel(mod)}`,
     },
-    [installable, extensionsFromInstallable]
+    [mod, extensionsFromInstallable]
   );
 
   return isActive && !isRestricted ? deactivate : null;

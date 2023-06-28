@@ -25,14 +25,14 @@ import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 function useRequestPermissionsAction(
   installableViewItem: ModViewItem
 ): () => void | null {
-  const { installable } = installableViewItem;
+  const { mod } = installableViewItem;
 
   // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
     (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, installable),
-    [installable]
+      selectExtensionsFromInstallable(state, mod),
+    [mod]
   );
 
   const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
