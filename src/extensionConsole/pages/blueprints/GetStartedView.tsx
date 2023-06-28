@@ -26,7 +26,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
-import InstallableIcon from "@/mods/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const ExternalLink: React.VoidFunctionComponent<{
@@ -83,7 +83,7 @@ const GetStartedView: React.VoidFunctionComponent<{
               Success!{" "}
               {!isFetchingRecipe && (
                 <>
-                  <InstallableIcon installable={recipe} />{" "}
+                  <ModIcon mod={recipe} />{" "}
                 </>
               )}
               <ExternalLink

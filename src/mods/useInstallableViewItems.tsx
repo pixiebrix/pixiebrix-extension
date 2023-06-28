@@ -16,10 +16,10 @@
  */
 
 import {
-  type Installable,
+  type Mod,
   type InstallableStatus,
   type InstallableViewItem,
-} from "@/mods/installableTypes";
+} from "@/mods/modTypes";
 import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -42,7 +42,7 @@ import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
-function useInstallableViewItems(installables: Installable[]): {
+function useInstallableViewItems(installables: Mod[]): {
   installableViewItems: readonly InstallableViewItem[];
   isLoading: boolean;
 } {
@@ -67,7 +67,7 @@ function useInstallableViewItems(installables: Installable[]): {
   );
 
   const isActive = useCallback(
-    (installable: Installable) => {
+    (installable: Mod) => {
       if (isExtension(installable)) {
         return installedExtensionIds.has(installable.id);
       }
@@ -78,7 +78,7 @@ function useInstallableViewItems(installables: Installable[]): {
   );
 
   const getStatus = useCallback(
-    (installable: Installable): InstallableStatus => {
+    (installable: Mod): InstallableStatus => {
       if (isDeployment(installable, installedExtensions)) {
         if (isExtension(installable)) {
           return isDeploymentActive(installable) ? "Active" : "Paused";

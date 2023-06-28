@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsFromInstallable } from "@/utils/installableUtils";

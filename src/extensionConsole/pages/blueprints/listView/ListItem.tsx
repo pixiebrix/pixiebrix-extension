@@ -21,11 +21,11 @@ import React from "react";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
 import BlueprintsPageActions from "@/extensionConsole/pages/blueprints/BlueprintsPageActions";
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 import Status from "@/extensionConsole/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
-import InstallableIcon from "@/mods/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 
 const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
@@ -37,7 +37,7 @@ const ListItem: React.VoidFunctionComponent<{
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>
-        <InstallableIcon size="2x" installable={installable} />
+        <ModIcon size="2x" mod={installable} />
       </div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>

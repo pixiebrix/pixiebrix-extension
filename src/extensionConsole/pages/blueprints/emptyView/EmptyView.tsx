@@ -17,7 +17,7 @@
 
 import React from "react";
 import styles from "./EmptyView.module.scss";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 import { type TableInstance } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";

@@ -26,7 +26,7 @@ import {
   type InstallableStatus,
   type InstallableViewItem,
   type SharingType,
-} from "@/mods/installableTypes";
+} from "@/mods/modTypes";
 import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";

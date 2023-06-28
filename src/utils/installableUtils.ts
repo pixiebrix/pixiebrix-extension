@@ -19,12 +19,12 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
-  type Installable,
+  type Mod,
   type InstallableViewItem,
   type SharingSource,
   type SharingType,
   type UnavailableMod,
-} from "@/mods/installableTypes";
+} from "@/mods/modTypes";
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
@@ -44,7 +44,7 @@ import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
  * @see UnavailableMod
  */
 export function isUnavailableMod(
-  installable: Installable
+  installable: Mod
 ): installable is UnavailableMod {
   return "isStub" in installable && installable.isStub;
 }
@@ -54,7 +54,7 @@ export function isUnavailableMod(
  * @param installable the installable
  */
 export function isExtension(
-  installable: Installable
+  installable: Mod
 ): installable is ResolvedExtension {
   return "extensionPointId" in installable;
 }
@@ -63,7 +63,7 @@ export function isExtension(
  * Return true if the installable is an IExtension that originated from a recipe.
  * @param installable the installable
  */
-export function isExtensionFromRecipe(installable: Installable): boolean {
+export function isExtensionFromRecipe(installable: Mod): boolean {
   return isExtension(installable) && Boolean(installable._recipe);
 }
 
@@ -72,7 +72,7 @@ export function isExtensionFromRecipe(installable: Installable): boolean {
  * @param installable the installable
  */
 export function isBlueprint(
-  installable: Installable
+  installable: Mod
 ): installable is ModDefinition | UnavailableMod {
   return !isExtension(installable);
 }
@@ -81,7 +81,7 @@ export function isBlueprint(
  * Returns a unique id for the installable. Suitable for use as a React key
  * @param installable the installable
  */
-export function getUniqueId(installable: Installable): UUID | RegistryId {
+export function getUniqueId(installable: Mod): UUID | RegistryId {
   return isExtension(installable) ? installable.id : installable.metadata.id;
 }
 
@@ -89,13 +89,13 @@ export function getUniqueId(installable: Installable): UUID | RegistryId {
  * Returns the human-readable label for the installable
  * @param installable the installable
  */
-export function getLabel(installable: Installable): string {
+export function getLabel(installable: Mod): string {
   return isExtension(installable)
     ? installable.label
     : installable.metadata.name;
 }
 
-export const getDescription = (installable: Installable): string => {
+export const getDescription = (installable: Mod): string => {
   const description = isExtension(installable)
     ? installable._recipe?.description
     : installable.metadata.description;
@@ -111,20 +111,20 @@ export const getDescription = (installable: Installable): string => {
  * Return the registry id associated with an installable, or null
  * @param installable the installable
  */
-export function getPackageId(installable: Installable): RegistryId | null {
+export function getPackageId(installable: Mod): RegistryId | null {
   return isExtension(installable)
     ? installable._recipe?.id
     : installable.metadata.id;
 }
 
-export function getUpdatedAt(installable: Installable): string | null {
+export function getUpdatedAt(installable: Mod): string | null {
   return isExtension(installable)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on IExtension here
       installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 }
 
-function isPublic(installable: Installable): boolean {
+function isPublic(installable: Mod): boolean {
   return isExtension(installable)
     ? installable._recipe?.sharing?.public
     : installable.sharing.public;
@@ -150,7 +150,7 @@ function hasRecipeScope(recipe: ModDefinition | UnavailableMod, scope: string) {
  * @param installable the installable
  * @param userScope the user's scope, or null if it's not set
  */
-function isPersonal(installable: Installable, userScope: string | null) {
+function isPersonal(installable: Mod, userScope: string | null) {
   if (isExtension(installable)) {
     return (
       isPersonalExtension(installable) ||
@@ -163,7 +163,7 @@ function isPersonal(installable: Installable, userScope: string | null) {
 
 export function getInstalledVersionNumber(
   installedExtensions: UnresolvedExtension[],
-  installable: Installable
+  installable: Mod
 ): string | null {
   if (isExtension(installable)) {
     return installable._recipe?.version;
@@ -178,7 +178,7 @@ export function getInstalledVersionNumber(
 }
 
 export function isDeployment(
-  installable: Installable,
+  installable: Mod,
   installedExtensions: UnresolvedExtension[]
 ): boolean {
   if (isExtension(installable)) {
@@ -209,7 +209,7 @@ export function getSharingType({
   scope,
   installedExtensions,
 }: {
-  installable: Installable;
+  installable: Mod;
   organizations: Organization[];
   scope: string;
   installedExtensions: UnresolvedExtension[];
@@ -249,7 +249,7 @@ export function getSharingType({
 export function updateAvailable(
   availableRecipes: Map<RegistryId, ModDefinition>,
   installedExtensions: Map<RegistryId, UnresolvedExtension>,
-  installable: Installable
+  installable: Mod
 ): boolean {
   if (isUnavailableMod(installable)) {
     // Unavailable mods are never update-able
@@ -302,7 +302,7 @@ export function updateAvailable(
 }
 
 function getOrganization(
-  installable: Installable,
+  installable: Mod,
   organizations: Organization[]
 ): Organization {
   const sharing = isExtension(installable)
@@ -324,7 +324,7 @@ function getOrganization(
  * Select UnresolvedExtensions currently installed from the installable.
  */
 export const selectExtensionsFromInstallable = createSelector(
-  [selectExtensions, (state: unknown, installable: Installable) => installable],
+  [selectExtensions, (state: unknown, installable: Mod) => installable],
   (installedExtensions, installable) =>
     isBlueprint(installable)
       ? installedExtensions.filter(

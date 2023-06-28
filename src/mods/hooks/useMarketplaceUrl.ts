@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 function useMarketplaceUrl(

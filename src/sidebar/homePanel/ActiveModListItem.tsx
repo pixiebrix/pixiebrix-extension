@@ -18,7 +18,7 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { getContainedStarterBrickNames } from "@/utils/installableUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import InstallableIcon from "@/mods/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
@@ -53,7 +53,7 @@ export const ActiveModListItem: React.FunctionComponent<{
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
         <div className={styles.icon}>
-          <InstallableIcon installable={installable} />
+          <ModIcon mod={installable} />
         </div>
         <div>
           <div>

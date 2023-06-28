@@ -20,7 +20,7 @@ import { type Filters, type SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 
 type View = "list" | "grid";
 

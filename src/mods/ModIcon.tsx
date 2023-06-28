@@ -24,7 +24,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
-import { type Installable } from "@/mods/installableTypes";
+import { type Mod } from "@/mods/modTypes";
 import {
   getPackageId,
   isBlueprint,
@@ -34,12 +34,12 @@ import cx from "classnames";
 import styles from "./ModIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 
-function getDefaultInstallableIcon(installable: Installable) {
-  if (isUnavailableMod(installable)) {
+function getDefaultModIcon(mod: Mod) {
+  if (isUnavailableMod(mod)) {
     return faExclamationCircle;
   }
 
-  if (isBlueprint(installable) && installable.extensionPoints.length > 1) {
+  if (isBlueprint(mod) && mod.extensionPoints.length > 1) {
     return faCubes;
   }
 
@@ -48,14 +48,14 @@ function getDefaultInstallableIcon(installable: Installable) {
 
 export const DEFAULT_TEXT_ICON_COLOR = "#241C32";
 
-const InstallableIcon: React.FunctionComponent<{
-  installable: Installable;
+const ModIcon: React.FunctionComponent<{
+  mod: Mod;
   size?: "1x" | "2x";
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
    */
   faIconClass?: string;
-}> = ({ installable, size = "1x", faIconClass = "" }) => {
+}> = ({ mod, size = "1x", faIconClass = "" }) => {
   const {
     data: listings,
     isLoading,
@@ -63,11 +63,11 @@ const InstallableIcon: React.FunctionComponent<{
   } = useGetMarketplaceListingsQuery();
 
   const listing: MarketplaceListing | null = isSuccess
-    ? listings[getPackageId(installable)]
+    ? listings[getPackageId(mod)]
     : null;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only load default icon once
-  const defaultIcon = useMemo(() => getDefaultInstallableIcon(installable), []);
+  const defaultIcon = useMemo(() => getDefaultModIcon(mod), []);
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
   if (isLoading) {
@@ -101,4 +101,4 @@ const InstallableIcon: React.FunctionComponent<{
   );
 };
 
-export default InstallableIcon;
+export default ModIcon;

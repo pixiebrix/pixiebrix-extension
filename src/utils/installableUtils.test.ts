@@ -22,7 +22,7 @@ import {
 } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
-import { type Installable, type UnavailableMod } from "@/mods/installableTypes";
+import { type Mod, type UnavailableMod } from "@/mods/modTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
@@ -30,7 +30,7 @@ import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("getSharingType", () => {
   test("personal extension", () => {
-    const installable: Installable = extensionFactory() as any;
+    const installable: Mod = extensionFactory() as any;
     const { type, label } = getSharingType({
       installable,
       organizations: [],
@@ -43,7 +43,7 @@ describe("getSharingType", () => {
   });
 
   test("public deployment", () => {
-    const installable: Installable = extensionFactory({
+    const installable: Mod = extensionFactory({
       _deployment: {
         id: uuidv4(),
         active: true,
@@ -63,7 +63,7 @@ describe("getSharingType", () => {
 
   test("organization deployment", () => {
     const orgId = uuidv4();
-    const installable: Installable = extensionFactory({
+    const installable: Mod = extensionFactory({
       _deployment: {
         id: orgId,
         active: true,
@@ -124,7 +124,7 @@ describe("getSharingType", () => {
   });
 
   test("public installable", () => {
-    const installable: Installable = recipeDefinitionFactory({
+    const installable: Mod = recipeDefinitionFactory({
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 

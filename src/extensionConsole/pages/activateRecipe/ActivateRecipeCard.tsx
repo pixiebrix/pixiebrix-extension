@@ -39,7 +39,7 @@ import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice
 import { BLUEPRINTS_PAGE_TABS } from "@/extensionConsole/pages/blueprints/BlueprintsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
-import InstallableIcon from "@/mods/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 
 const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();
@@ -89,7 +89,7 @@ const ActivateRecipeCard: React.FC = () => {
               <div className={styles.wizardHeaderLayout}>
                 <div className={styles.wizardMainInfo}>
                   <span className={styles.blueprintIcon}>
-                    <InstallableIcon installable={recipe} />
+                    <ModIcon mod={recipe} />
                   </span>
                   <span>
                     <Card.Title>{recipe.metadata.name}</Card.Title>

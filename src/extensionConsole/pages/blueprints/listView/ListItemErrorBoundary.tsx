@@ -18,12 +18,12 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type InstallableViewItem } from "@/mods/installableTypes";
+import { type InstallableViewItem } from "@/mods/modTypes";
 
 import styles from "./ListItem.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/InstallableIcon";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
 import cx from "classnames";
 
 type Props = {
