@@ -15,49 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import BlueprintsPage from "@/extensionConsole/pages/mods/BlueprintsPage";
+import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
-import {
-  createRenderHookWithWrappers,
-  createRenderWithWrappers,
-} from "@/testUtils/testHelpers";
 import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import extensionsSlice from "@/store/extensionsSlice";
+import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
-import servicesSlice from "@/store/servicesSlice";
+import { recipesSlice } from "@/recipes/recipesSlice";
+import { type UnknownObject } from "@/types/objectTypes";
 
-const configureStoreForTests = () =>
-  configureStore({
+export default {
+  title: "Blueprints/BlueprintsPage",
+  component: BlueprintsPage,
+} as ComponentMeta<typeof BlueprintsPage>;
+
+function optionsStore(initialState?: UnknownObject) {
+  return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
+      blueprints: blueprintsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
       recipes: recipesSlice.reducer,
-      services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-      return getDefaultMiddleware()
-        .concat(appApi.middleware)
-        .concat(recipesMiddleware);
+      return getDefaultMiddleware().concat(appApi.middleware);
       /* eslint-enable unicorn/prefer-spread */
     },
+    ...(initialState ?? { preloadedState: initialState }),
   });
+}
 
-const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
-const renderHookWithWrappers = createRenderHookWithWrappers(
-  configureStoreForTests
+const Template: ComponentStory<typeof BlueprintsPage> = (args) => (
+  <Provider store={optionsStore()}>
+    <BlueprintsPage {...args} />
+  </Provider>
 );
 
-// eslint-disable-next-line import/export -- re-export RTL
-export * from "@testing-library/react";
-// eslint-disable-next-line import/export -- override render
-export { renderWithWrappers as render };
-export { renderHookWithWrappers as renderHook };
+export const Default = Template.bind({});
+Default.parameters = {
+  // Initial state is a loading state. Our loader is not compatible with Storyshots
+  storyshots: false,
+};
