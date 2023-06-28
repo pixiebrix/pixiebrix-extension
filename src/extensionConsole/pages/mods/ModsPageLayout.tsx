@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./BlueprintsCard.module.scss";
+import styles from "./ModsPageLayout.module.scss";
 
 import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
@@ -60,7 +60,7 @@ const statusFilter = (
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
-// searching utilities on InstallableRows
+// searching utilities on ModViewItems
 const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Name",
@@ -105,16 +105,16 @@ const columns: Array<Column<ModViewItem>> = [
   },
 ];
 
-const BlueprintsPageLayout: React.FunctionComponent<{
-  installables: Mod[];
-}> = ({ installables }) => {
-  const { modViewItems, isLoading } = useModViewItems(installables);
+const ModsPageLayout: React.FunctionComponent<{
+  mods: Mod[];
+}> = ({ mods }) => {
+  const { modViewItems, isLoading } = useModViewItems(mods);
 
   const teamFilters = useMemo(
     () =>
-      uniq(
-        modViewItems.map((installable) => installable.sharing.source.label)
-      ).filter((label) => label !== "Public" && label !== "Personal"),
+      uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
+        (label) => label !== "Public" && label !== "Personal"
+      ),
     [modViewItems]
   );
 
@@ -185,4 +185,4 @@ const BlueprintsPageLayout: React.FunctionComponent<{
   );
 };
 
-export default BlueprintsPageLayout;
+export default ModsPageLayout;

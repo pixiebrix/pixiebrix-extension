@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import BlueprintsPageLayout from "@/extensionConsole/pages/mods/BlueprintsPageLayout";
+import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
 import useMods from "@/mods/useMods";
 import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
@@ -35,11 +35,7 @@ const ModsPage: React.FunctionComponent = () => {
 
   return (
     <div className="h-100">
-      {error ? (
-        <ErrorDisplay error={error} />
-      ) : (
-        <BlueprintsPageLayout installables={mods} />
-      )}
+      {error ? <ErrorDisplay error={error} /> : <ModsPageLayout mods={mods} />}
       <Modals />
     </div>
   );
