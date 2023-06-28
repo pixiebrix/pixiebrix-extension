@@ -20,14 +20,14 @@ import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsFromMod } from "@/utils/installableUtils";
 import { useSelector } from "react-redux";
-import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
+import useModPermissions from "@/mods/hooks/useModPermissions";
 
 function useRequestPermissionsAction(
   installableViewItem: ModViewItem
 ): () => void | null {
   const { mod } = installableViewItem;
 
-  // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
+  // Without memoization, the selector reference changes on every render, which causes useModPermissions
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
     (state: { options: OptionsState }) => selectExtensionsFromMod(state, mod),
@@ -36,7 +36,7 @@ function useRequestPermissionsAction(
 
   const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
 
-  const { hasPermissions, requestPermissions } = useInstallablePermissions(
+  const { hasPermissions, requestPermissions } = useModPermissions(
     extensionsFromInstallable
   );
 

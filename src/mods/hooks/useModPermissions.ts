@@ -35,7 +35,7 @@ const fallback: PermissionsStatus = {
  * Outside the `BlueprintsPage` you probably want to use useAsyncState with `collectExtensionPermissions`
  * @see collectExtensionPermissions
  */
-function useInstallablePermissions(extensions: IExtension[]): {
+function useModPermissions(extensions: IExtension[]): {
   hasPermissions: boolean;
   requestPermissions: () => Promise<boolean>;
 } {
@@ -62,4 +62,4 @@ function useInstallablePermissions(extensions: IExtension[]): {
   };
 }
 
-export default useInstallablePermissions;
+export default useModPermissions;
