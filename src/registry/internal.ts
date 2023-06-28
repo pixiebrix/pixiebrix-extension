@@ -33,7 +33,7 @@ import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
   type ResolvedExtensionDefinition,
-} from "@/types/modTypes";
+} from "@/types/modDefinitionTypes";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";

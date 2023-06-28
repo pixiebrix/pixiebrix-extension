@@ -41,7 +41,7 @@ import {
   type OptionsDefinition,
   type ModDefinition,
   type UnsavedModDefinition,
-} from "@/types/modTypes";
+} from "@/types/modDefinitionTypes";
 import {
   type IExtension,
   type UnresolvedExtension,

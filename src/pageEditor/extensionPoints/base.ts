@@ -50,7 +50,7 @@ import {
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isExpression } from "@/runtime/mapArgs";
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   getMinimalSchema,
   getMinimalUiSchema,

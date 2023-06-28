@@ -18,7 +18,10 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
-import { type ExtensionDefinition, type ModDefinition } from "@/types/modTypes";
+import {
+  type ExtensionDefinition,
+  type ModDefinition,
+} from "@/types/modDefinitionTypes";
 import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {

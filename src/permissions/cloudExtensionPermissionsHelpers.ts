@@ -19,7 +19,7 @@ import { type CloudExtension } from "@/types/contract";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { type ResolvedExtensionDefinition } from "@/types/modTypes";
+import { type ResolvedExtensionDefinition } from "@/types/modDefinitionTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 // Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with recipePermissionsHelpers.ts

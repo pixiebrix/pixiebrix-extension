@@ -25,7 +25,7 @@ import { type RecipesRootState, type RecipesState } from "./recipesTypes";
 import recipeRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
 export const initialState: RecipesState = Object.freeze({

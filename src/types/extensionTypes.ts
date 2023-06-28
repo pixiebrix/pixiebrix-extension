@@ -33,7 +33,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { pick } from "lodash";
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * ModMetadata that includes sharing information.

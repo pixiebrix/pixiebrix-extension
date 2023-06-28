@@ -35,7 +35,7 @@ import {
 import {
   type ModDefinition,
   type UnsavedModDefinition,
-} from "@/types/modTypes";
+} from "@/types/modDefinitionTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";

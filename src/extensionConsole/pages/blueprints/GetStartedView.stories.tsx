@@ -28,7 +28,7 @@ import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { recipesSlice } from "@/recipes/recipesSlice";
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 export default {

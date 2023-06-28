@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type IExtension } from "@/types/extensionTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";

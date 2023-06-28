@@ -24,7 +24,10 @@ import {
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { type OptionsDefinition, type ModDefinition } from "@/types/modTypes";
+import {
+  type OptionsDefinition,
+  type ModDefinition,
+} from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type UnnormalizedOptionsDefinition = {

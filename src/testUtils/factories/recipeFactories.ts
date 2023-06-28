@@ -16,7 +16,10 @@
  */
 
 import { array, define } from "cooky-cutter";
-import { type ExtensionDefinition, type ModDefinition } from "@/types/modTypes";
+import {
+  type ExtensionDefinition,
+  type ModDefinition,
+} from "@/types/modDefinitionTypes";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,

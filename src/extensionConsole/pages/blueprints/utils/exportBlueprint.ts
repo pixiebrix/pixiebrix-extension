@@ -23,7 +23,7 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
   type OptionsDefinition,
   type UnsavedModDefinition,
-} from "@/types/modTypes";
+} from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";

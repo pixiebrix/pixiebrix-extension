@@ -31,7 +31,7 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { type OptionsDefinition } from "@/types/modTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 

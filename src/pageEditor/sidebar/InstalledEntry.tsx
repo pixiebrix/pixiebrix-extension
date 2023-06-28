@@ -31,7 +31,7 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import {
   disableOverlay,

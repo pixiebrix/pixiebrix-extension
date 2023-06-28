@@ -49,7 +49,7 @@ import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
-import { type ModDefinition } from "@/types/modTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { selectSourceRecipeMetadata } from "@/types/extensionTypes";
 
 type ConvertInstallableFormState = {
