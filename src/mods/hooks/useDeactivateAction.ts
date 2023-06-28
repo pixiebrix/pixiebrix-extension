@@ -20,8 +20,8 @@ import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import {
   getLabel,
-  isExtension,
-  selectExtensionsFromInstallable,
+  isModDefinition,
+  selectExtensionsFromMod,
 } from "@/utils/installableUtils";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
@@ -29,13 +29,10 @@ import useUserAction from "@/hooks/useUserAction";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { reportEvent } from "@/telemetry/events";
 
-function useDeactivateAction(
-  installableViewItem: ModViewItem
-): () => void | null {
+function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
-  const { mod, status, sharing } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
+  const { mod, status, sharing } = modViewItem;
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
 
@@ -47,29 +44,28 @@ function useDeactivateAction(
   // Without memoization, the selector reference changes on every render, which causes useInstallablePermissions
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
-    (state: { options: OptionsState }) =>
-      selectExtensionsFromInstallable(state, mod),
+    (state: { options: OptionsState }) => selectExtensionsFromMod(state, mod),
     [mod]
   );
 
-  const extensionsFromInstallable = useSelector(memoizedExtensionsSelector);
+  const extensionsFromMod = useSelector(memoizedExtensionsSelector);
 
   const deactivate = useUserAction(
     async () => {
-      if (isInstallableBlueprint) {
+      if (isModDefinition(mod)) {
         const blueprintId = mod.metadata.id;
-        await uninstallRecipe(blueprintId, extensionsFromInstallable, dispatch);
+        await uninstallRecipe(blueprintId, extensionsFromMod, dispatch);
 
         reportEvent("BlueprintRemove", {
           blueprintId,
         });
       } else {
         await uninstallExtensions(
-          extensionsFromInstallable.map(({ id }) => id),
+          extensionsFromMod.map(({ id }) => id),
           dispatch
         );
 
-        for (const extension of extensionsFromInstallable) {
+        for (const extension of extensionsFromMod) {
           reportEvent("ExtensionRemove", {
             extensionId: extension.id,
           });
@@ -80,7 +76,7 @@ function useDeactivateAction(
       successMessage: `Deactivated mod: ${getLabel(mod)}`,
       errorMessage: `Error deactivating mod: ${getLabel(mod)}`,
     },
-    [mod, extensionsFromInstallable]
+    [mod, extensionsFromMod]
   );
 
   return isActive && !isRestricted ? deactivate : null;

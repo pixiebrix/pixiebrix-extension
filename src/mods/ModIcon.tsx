@@ -27,7 +27,7 @@ import { type MarketplaceListing } from "@/types/contract";
 import { type Mod } from "@/mods/modTypes";
 import {
   getPackageId,
-  isBlueprint,
+  isModDefinition,
   isUnavailableMod,
 } from "@/utils/installableUtils";
 import cx from "classnames";
@@ -39,7 +39,7 @@ function getDefaultModIcon(mod: Mod) {
     return faExclamationCircle;
   }
 
-  if (isBlueprint(mod) && mod.extensionPoints.length > 1) {
+  if (isModDefinition(mod) && mod.extensionPoints.length > 1) {
     return faCubes;
   }
 

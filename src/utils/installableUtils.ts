@@ -71,7 +71,7 @@ export function isExtensionFromRecipe(installable: Mod): boolean {
  * Return true if the installable is a ModDefinition or UnavailableMod
  * @param installable the installable
  */
-export function isBlueprint(
+export function isModDefinition(
   installable: Mod
 ): installable is ModDefinition | UnavailableMod {
   return !isExtension(installable);
@@ -257,7 +257,7 @@ export function updateAvailable(
   }
 
   const installedExtension: ResolvedExtension | UnresolvedExtension =
-    isBlueprint(installable)
+    isModDefinition(installable)
       ? installedExtensions.get(installable.metadata.id)
       : installable;
 
@@ -323,10 +323,10 @@ function getOrganization(
 /**
  * Select UnresolvedExtensions currently installed from the installable.
  */
-export const selectExtensionsFromInstallable = createSelector(
+export const selectExtensionsFromMod = createSelector(
   [selectExtensions, (state: unknown, installable: Mod) => installable],
   (installedExtensions, installable) =>
-    isBlueprint(installable)
+    isModDefinition(installable)
       ? installedExtensions.filter(
           (extension) => extension._recipe?.id === installable.metadata.id
         )
@@ -361,7 +361,7 @@ const getExtensionPointTypesContained = async (
     return [];
   }
 
-  return isBlueprint(installableItem.mod)
+  return isModDefinition(installableItem.mod)
     ? getContainedExtensionPointTypes(installableItem.mod)
     : [await getExtensionPointType(installableItem.mod)];
 };
