@@ -31,7 +31,7 @@ import {
   isUnavailableMod,
 } from "@/utils/installableUtils";
 import cx from "classnames";
-import styles from "./InstallableIcon.module.scss";
+import styles from "./ModIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 
 function getDefaultInstallableIcon(installable: Installable) {
