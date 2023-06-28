@@ -17,22 +17,19 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import { getPackageId, isExtension } from "@/utils/installableUtils";
+import { getPackageId, isModDefinition } from "@/utils/installableUtils";
 import {
   blueprintModalsSlice,
   type ShareContext,
 } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
 
-function useViewShareAction(
-  installableViewItem: ModViewItem
-): () => void | null {
-  const { mod, unavailable, sharing } = installableViewItem;
+function useViewShareAction(modViewItem: ModViewItem): () => void | null {
+  const { mod, unavailable, sharing } = modViewItem;
   const dispatch = useDispatch();
-  const isInstallableBlueprint = !isExtension(mod);
   const isDeployment = sharing.source.type === "Deployment";
 
   const viewShare = () => {
-    const shareContext: ShareContext = isInstallableBlueprint
+    const shareContext: ShareContext = isModDefinition(mod)
       ? {
           blueprintId: getPackageId(mod),
         }
