@@ -27,13 +27,13 @@ import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLa
 import ModIcon from "@/mods/ModIcon";
 
 type GridCardProps = {
-  installableItem: ModViewItem;
+  modViewItem: ModViewItem;
 };
 
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
-  installableItem,
+  modViewItem,
 }) => {
-  const { name, updatedAt, sharing, mod, description } = installableItem;
+  const { name, updatedAt, sharing, mod, description } = modViewItem;
 
   return (
     <div className={styles.root}>
@@ -53,8 +53,8 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
           <div>
             <div className={styles.actions}>
-              <Status modViewItem={installableItem} />
-              <ModsPageActions modViewItem={installableItem} />
+              <Status modViewItem={modViewItem} />
+              <ModsPageActions modViewItem={modViewItem} />
             </div>
           </div>
         </Card.Body>
