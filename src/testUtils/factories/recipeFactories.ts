@@ -18,8 +18,8 @@
 import { array, define } from "cooky-cutter";
 import {
   type ExtensionDefinition,
-  type RecipeDefinition,
-} from "@/types/recipeTypes";
+  type ModDefinition,
+} from "@/types/modDefinitionTypes";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
@@ -73,7 +73,7 @@ export const extensionPointConfigFactory = define<ExtensionDefinition>({
   }),
 });
 
-export const recipeDefinitionFactory = define<RecipeDefinition>({
+export const recipeDefinitionFactory = define<ModDefinition>({
   kind: "recipe",
   apiVersion: "v3",
   metadata: (n: number) =>
@@ -118,7 +118,7 @@ type ExternalExtensionPointParams = {
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
 }: ExternalExtensionPointParams = {}) =>
-  define<RecipeDefinition>({
+  define<ModDefinition>({
     kind: "recipe",
     apiVersion: "v3",
     metadata: (n: number) => ({
@@ -171,7 +171,7 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
     };
   }
 
-  return define<RecipeDefinition>({
+  return define<ModDefinition>({
     kind: "recipe",
     apiVersion: "v3",
     metadata: (n: number) => ({
@@ -197,7 +197,7 @@ type InnerExtensionPointParams = {
 export const innerExtensionPointRecipeFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
 }: InnerExtensionPointParams = {}) =>
-  define<RecipeDefinition>({
+  define<ModDefinition>({
     kind: "recipe",
     apiVersion: "v3",
     metadata: recipeMetadataFactory,

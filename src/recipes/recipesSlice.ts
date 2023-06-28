@@ -25,7 +25,7 @@ import { type RecipesRootState, type RecipesState } from "./recipesTypes";
 import recipeRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
 export const initialState: RecipesState = Object.freeze({
@@ -60,7 +60,7 @@ export const recipesSlice = createSlice({
       state.isCacheUninitialized = false;
       state.isLoadingFromCache = true;
     },
-    setRecipesFromCache(state, action: PayloadAction<RecipeDefinition[]>) {
+    setRecipesFromCache(state, action: PayloadAction<ModDefinition[]>) {
       // NOTE: there will be a flash of `isFetching: false` before the remote fetch starts
       setValueOnState(state, action.payload);
       state.isLoadingFromCache = false;
@@ -79,7 +79,7 @@ export const recipesSlice = createSlice({
       state.isFetching = true;
       state.isFetchingFromRemote = true;
     },
-    setRecipes(state, action: PayloadAction<RecipeDefinition[]>) {
+    setRecipes(state, action: PayloadAction<ModDefinition[]>) {
       setValueOnState(state, action.payload);
       state.isFetchingFromRemote = false;
       state.isLoadingFromRemote = false;

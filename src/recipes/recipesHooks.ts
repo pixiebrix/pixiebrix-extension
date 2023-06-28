@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllRecipes } from "@/recipes/recipesSelectors";
 import { useCallback, useEffect } from "react";
@@ -45,11 +45,11 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
  */
 export function useOptionalRecipe(
   id: RegistryId
-): FetchableAsyncState<RecipeDefinition | null> {
+): FetchableAsyncState<ModDefinition | null> {
   const state = useAllRecipes();
 
   const findRecipe = useCallback(
-    (recipes: RecipeDefinition[]) => recipes.find((x) => x.metadata.id === id),
+    (recipes: ModDefinition[]) => recipes.find((x) => x.metadata.id === id),
     [id]
   );
 
@@ -76,13 +76,11 @@ export function useOptionalRecipe(
  * @see useOptionalRecipe
  * @see useAllRecipes
  */
-export function useRequiredRecipe(
-  id: RegistryId
-): AsyncState<RecipeDefinition> {
+export function useRequiredRecipe(id: RegistryId): AsyncState<ModDefinition> {
   const state = useAllRecipes();
 
   const findRecipe = useCallback(
-    (recipes: RecipeDefinition[]) => {
+    (recipes: ModDefinition[]) => {
       const recipe = recipes.find((x) => x.metadata.id === id);
       if (!recipe) {
         throw new Error(`Recipe ${id} not found`);
@@ -119,7 +117,7 @@ export function useRequiredRecipe(
  *
  * Safe to include multiple times in the React tree, because it's connected to the Redux store.
  */
-export function useAllRecipes(): UseCachedQueryResult<RecipeDefinition[]> {
+export function useAllRecipes(): UseCachedQueryResult<ModDefinition[]> {
   const dispatch = useDispatch();
   const refetch = useCallback(
     () => dispatch(recipesActions.syncRemoteRecipes()),

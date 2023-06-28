@@ -33,7 +33,7 @@ import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { type IExtension } from "@/types/extensionTypes";
-import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
 
 /**

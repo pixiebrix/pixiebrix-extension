@@ -203,7 +203,7 @@ async function install({
       // notice-able for end-user relative to the extension download/install time
       const { ssoUrl, partnerId, controlRoomUrl } = await readManagedStorage();
       if (ssoUrl) {
-        // Don't launch the SSO page automatically. The SSO flow will be launched by deployment.ts:updateDeployments
+        // Don't launch the SSO page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
         return;
       }
 

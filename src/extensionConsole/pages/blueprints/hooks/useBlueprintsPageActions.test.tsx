@@ -33,7 +33,7 @@ import { uuidv4 } from "@/types/helpers";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import {
   cloudExtensionFactory,
@@ -386,7 +386,7 @@ describe("actions", () => {
       deactivate();
 
       expect(uninstallRecipe).toHaveBeenCalledWith(
-        (blueprintInstallable.installable as RecipeDefinition).metadata.id,
+        (blueprintInstallable.installable as ModDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function)
       );

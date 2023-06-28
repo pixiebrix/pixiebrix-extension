@@ -34,7 +34,7 @@ import initNavigation from "@/background/navigation";
 import initGoogle, { isGAPISupported } from "@/contrib/google/initGoogle";
 import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
-import initDeploymentUpdater from "@/background/deployment";
+import initDeploymentUpdater from "@/background/deploymentUpdater";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initPartnerTheme from "@/background/partnerTheme";

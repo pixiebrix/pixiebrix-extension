@@ -28,14 +28,14 @@ import { type Installable } from "@/installables/installableTypes";
 import {
   getPackageId,
   isBlueprint,
-  isUnavailableRecipe,
+  isUnavailableMod,
 } from "@/utils/installableUtils";
 import cx from "classnames";
 import styles from "./InstallableIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 
 function getDefaultInstallableIcon(installable: Installable) {
-  if (isUnavailableRecipe(installable)) {
+  if (isUnavailableMod(installable)) {
     return faExclamationCircle;
   }
 

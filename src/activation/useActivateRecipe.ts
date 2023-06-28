@@ -16,7 +16,7 @@
  */
 
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,17 +42,14 @@ export type ActivateRecipeFormCallback =
    * Callback for activating a recipe.
    *
    * @param {WizardValues} formValues - The form values for recipe configuration options
-   * @param {RecipeDefinition} recipe - The recipe definition to install
+   * @param {ModDefinition} recipe - The recipe definition to install
    * @returns {Promise<ActivateResult>} a promise that resolves to an ActivateResult
    */
-  (
-    formValues: WizardValues,
-    recipe: RecipeDefinition
-  ) => Promise<ActivateResult>;
+  (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>;
 
 type ActivationSource = "marketplace" | "extensionConsole";
 
-function selectActivateEventData(recipe: RecipeDefinition) {
+function selectActivateEventData(recipe: ModDefinition) {
   return {
     blueprintId: recipe.metadata.id,
     extensions: recipe.extensionPoints.map((x) => x.label),
@@ -77,7 +74,7 @@ function useActivateRecipe(
   const [createDatabase] = useCreateDatabaseMutation();
 
   return useCallback(
-    async (formValues: WizardValues, recipe: RecipeDefinition) => {
+    async (formValues: WizardValues, recipe: ModDefinition) => {
       const recipeExtensions = extensions.filter(
         (extension) => extension._recipe?.id === recipe.metadata.id
       );

@@ -25,7 +25,7 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { type UnavailableRecipe } from "@/installables/installableTypes";
+import { type UnavailableMod } from "@/installables/installableTypes";
 import { selectUnavailableRecipe } from "@/installables/useInstallables";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
@@ -88,7 +88,7 @@ describe("useInstallableViewItems", () => {
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 
-    const unavailableRecipe: UnavailableRecipe =
+    const unavailableRecipe: UnavailableMod =
       selectUnavailableRecipe(extension);
 
     const wrapper = renderHook(

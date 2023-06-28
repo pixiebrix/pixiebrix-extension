@@ -17,7 +17,7 @@
 
 import { define, type FactoryConfig } from "cooky-cutter";
 import {
-  type ActivateRecipePanelEntry,
+  type ActivateModPanelEntry,
   type EntryType,
   type FormPanelEntry,
   type PanelEntry,
@@ -29,7 +29,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 
-const activateRecipeEntryFactory = define<ActivateRecipePanelEntry>({
+const activateRecipeEntryFactory = define<ActivateModPanelEntry>({
   type: "activateRecipe",
   recipeId: (n: number) =>
     validateRegistryId(`@test/activate-recipe-test-${n}`),
@@ -86,8 +86,8 @@ export function sidebarEntryFactory(
 ): FormPanelEntry;
 export function sidebarEntryFactory(
   type: "activateRecipe",
-  override?: FactoryConfig<ActivateRecipePanelEntry>
-): ActivateRecipePanelEntry;
+  override?: FactoryConfig<ActivateModPanelEntry>
+): ActivateModPanelEntry;
 
 export function sidebarEntryFactory(
   type: "staticPanel",
@@ -99,7 +99,7 @@ export function sidebarEntryFactory(
 ): SidebarEntry {
   if (type === "activateRecipe") {
     return activateRecipeEntryFactory(
-      override as FactoryConfig<ActivateRecipePanelEntry>
+      override as FactoryConfig<ActivateModPanelEntry>
     );
   }
 

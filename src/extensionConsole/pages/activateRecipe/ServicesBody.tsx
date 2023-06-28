@@ -19,7 +19,7 @@ import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
@@ -37,7 +37,7 @@ import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 
 interface OwnProps {
-  blueprint: RecipeDefinition;
+  blueprint: ModDefinition;
   hideBuiltInServiceIntegrations?: boolean;
   showOwnTitle?: boolean;
 }
