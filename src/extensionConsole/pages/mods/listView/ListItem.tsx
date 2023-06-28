@@ -55,7 +55,7 @@ const ListItem: React.VoidFunctionComponent<{
         </div>
       </div>
       <div className={styles.status}>
-        <Status installableViewItem={installableItem} />
+        <Status modViewItem={installableItem} />
       </div>
       <div className="flex-shrink-0">
         <ModsPageActions modViewItem={installableItem} />

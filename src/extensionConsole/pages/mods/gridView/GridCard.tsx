@@ -53,7 +53,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
           <div>
             <div className={styles.actions}>
-              <Status installableViewItem={installableItem} />
+              <Status modViewItem={installableItem} />
               <ModsPageActions modViewItem={installableItem} />
             </div>
           </div>

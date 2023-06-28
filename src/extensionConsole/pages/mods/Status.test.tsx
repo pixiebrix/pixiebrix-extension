@@ -38,7 +38,7 @@ describe("Status", () => {
   it("shows active", async () => {
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             active: true,
           } as any
@@ -57,7 +57,7 @@ describe("Status", () => {
 
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             active: true,
           } as any
@@ -72,7 +72,7 @@ describe("Status", () => {
   it("shows warning for unavailable", async () => {
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             unavailable: true,
           } as any
@@ -87,7 +87,7 @@ describe("Status", () => {
   it("paused", async () => {
     const wrapper = render(
       <Status
-        installableViewItem={
+        modViewItem={
           {
             status: "Paused",
           } as any

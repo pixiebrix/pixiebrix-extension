@@ -32,13 +32,13 @@ import { type ModViewItem } from "@/mods/modTypes";
 import useModsPageActions from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 
 const Status: React.VoidFunctionComponent<{
-  installableViewItem: ModViewItem;
-}> = ({ installableViewItem }) => {
+  modViewItem: ModViewItem;
+}> = ({ modViewItem }) => {
   const { activate, reactivate, requestPermissions } =
-    useModsPageActions(installableViewItem);
+    useModsPageActions(modViewItem);
 
   const { hasUpdate, status, installedVersionNumber, unavailable } =
-    installableViewItem;
+    modViewItem;
 
   if (unavailable) {
     return (
