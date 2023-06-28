@@ -32,7 +32,7 @@ type Props = {
    */
   errorContext?: string;
 
-  installableItem: ModViewItem;
+  modViewItem: ModViewItem;
 
   style: React.CSSProperties;
 };
@@ -71,12 +71,12 @@ class ListItemErrorBoundary extends Component<Props, State> {
             />
           </div>
           <div className={styles.primaryInfo}>
-            <h5 className={styles.name}>{this.props.installableItem.name}</h5>
+            <h5 className={styles.name}>{this.props.modViewItem.name}</h5>
             <p className={cx(styles.description, "text-muted")}>
               An error occurred retrieving mod
             </p>
             <div className={styles.packageId}>
-              {this.props.installableItem.sharing.packageId}
+              {this.props.modViewItem.sharing.packageId}
             </div>
           </div>
           <div className="flex-shrink-0"></div>

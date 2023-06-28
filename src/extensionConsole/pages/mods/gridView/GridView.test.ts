@@ -37,7 +37,7 @@ const groupedTestRows = [
 describe("expandGridRows", () => {
   test("with divisible column count", () => {
     const divisibleColumnCount = 3; // `testRows.length` == 6, which is divisible by 3
-    // @ts-expect-error - omit full InstallableItem type for testing purposes
+    // @ts-expect-error - omit full ModViewItem type for testing purposes
     const expandedRows = expandGridRows(testRows, divisibleColumnCount);
     const expected = [
       [{ id: "0" }, { id: "1" }, { id: "2" }],
@@ -48,7 +48,7 @@ describe("expandGridRows", () => {
 
   test("with indivisible column count", () => {
     const indivisible = 4; // `testRows.length` == 6, which is indivisible by 4
-    // @ts-expect-error - omit full InstallableItem type for testing purposes
+    // @ts-expect-error - omit full ModViewItem type for testing purposes
     const expandedRows = expandGridRows(testRows, indivisible);
     const expected = [
       [{ id: "0" }, { id: "1" }, { id: "2" }, { id: "3" }],
@@ -59,7 +59,7 @@ describe("expandGridRows", () => {
 
   test("with grouped rows and divisible column count", () => {
     const divisibleColumnCount = 2; // `groupedTestRows` `subRows.length` are both divisible by 2
-    // @ts-expect-error - omit full InstallableItem type for testing purposes
+    // @ts-expect-error - omit full ModViewItem type for testing purposes
     const expandedRows = expandGridRows(groupedTestRows, divisibleColumnCount);
     const expected = [
       {
@@ -77,7 +77,7 @@ describe("expandGridRows", () => {
   test("with grouped rows and indivisible column count", () => {
     const indivisibleColumnCount = 3; // `groupedTestRows` `subRows.length` are both indivisible by 3
     const expandedRows = expandGridRows(
-      // @ts-expect-error - omit full InstallableItem type for testing purposes
+      // @ts-expect-error - omit full ModViewItem type for testing purposes
       groupedTestRows,
       indivisibleColumnCount
     );

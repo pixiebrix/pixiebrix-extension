@@ -27,12 +27,13 @@ jest.mock("@/extensionConsole/pages/mods/hooks/useModsPageActions", () => ({
   default: jest.fn().mockReturnValue({}),
 }));
 
-const useInstallableViewItemActionsMock =
-  useModsPageActions as jest.MockedFunction<typeof useModsPageActions>;
+const useModPageActionsMock = useModsPageActions as jest.MockedFunction<
+  typeof useModsPageActions
+>;
 
 describe("Status", () => {
   beforeEach(() => {
-    useInstallableViewItemActionsMock.mockReturnValue({} as ModsPageActions);
+    useModPageActionsMock.mockReturnValue({} as ModsPageActions);
   });
 
   it("shows active", async () => {
@@ -51,7 +52,7 @@ describe("Status", () => {
   });
 
   it("shows activate", async () => {
-    useInstallableViewItemActionsMock.mockReturnValue({
+    useModPageActionsMock.mockReturnValue({
       activate: jest.fn(),
     } as unknown as ModsPageActions);
 

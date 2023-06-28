@@ -28,10 +28,10 @@ import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLa
 import ModIcon from "@/mods/ModIcon";
 
 const ListItem: React.VoidFunctionComponent<{
-  installableItem: ModViewItem;
+  modViewItem: ModViewItem;
   style: React.CSSProperties;
-}> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, mod, description } = installableItem;
+}> = ({ modViewItem, style }) => {
+  const { name, sharing, updatedAt, mod, description } = modViewItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
@@ -55,10 +55,10 @@ const ListItem: React.VoidFunctionComponent<{
         </div>
       </div>
       <div className={styles.status}>
-        <Status modViewItem={installableItem} />
+        <Status modViewItem={modViewItem} />
       </div>
       <div className="flex-shrink-0">
-        <ModsPageActions modViewItem={installableItem} />
+        <ModsPageActions modViewItem={modViewItem} />
       </div>
     </ListGroup.Item>
   );
