@@ -17,19 +17,15 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import { isExtension } from "@/utils/installableUtils";
+import { isModDefinition } from "@/utils/installableUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
-function useActivateAction(
-  installableViewItem: ModViewItem
-): () => void | null {
+function useActivateAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
-  const { mod, status } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
-
+  const { mod, status } = modViewItem;
   const activate = () => {
-    if (isInstallableBlueprint) {
+    if (isModDefinition(mod)) {
       reportEvent("StartInstallBlueprint", {
         blueprintId: mod.metadata.id,
         screen: "extensionConsole",
