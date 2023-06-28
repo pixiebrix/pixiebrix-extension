@@ -16,7 +16,7 @@
  */
 
 /* eslint-disable new-cap -- test methods */
-import useInstallableViewItems from "@/mods/useInstallableViewItems";
+import useModViewItems from "@/mods/useModViewItems";
 import {
   type PersistedExtension,
   type ResolvedExtension,
@@ -36,7 +36,7 @@ import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 const axiosMock = new MockAdapter(axios);
 
-describe("useInstallableViewItems", () => {
+describe("useModViewItems", () => {
   beforeEach(() => {
     axiosMock.onGet("/api/marketplace/listings").reply(200, []);
   });
@@ -44,7 +44,7 @@ describe("useInstallableViewItems", () => {
   it("creates entry for IExtension", async () => {
     const extension = extensionFactory() as ResolvedExtension;
 
-    const wrapper = renderHook(() => useInstallableViewItems([extension]), {
+    const wrapper = renderHook(() => useModViewItems([extension]), {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.UNSAFE_setExtensions([
@@ -68,7 +68,7 @@ describe("useInstallableViewItems", () => {
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 
-    const wrapper = renderHook(() => useInstallableViewItems([recipe]), {
+    const wrapper = renderHook(() => useModViewItems([recipe]), {
       setupRedux(dispatch) {
         dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
       },
@@ -91,14 +91,11 @@ describe("useInstallableViewItems", () => {
     const unavailableRecipe: UnavailableMod =
       selectUnavailableRecipe(extension);
 
-    const wrapper = renderHook(
-      () => useInstallableViewItems([unavailableRecipe]),
-      {
-        setupRedux(dispatch) {
-          dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
-        },
-      }
-    );
+    const wrapper = renderHook(() => useModViewItems([unavailableRecipe]), {
+      setupRedux(dispatch) {
+        dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
+      },
+    });
 
     await wrapper.waitForEffect();
 

@@ -37,7 +37,7 @@ import {
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
-import useInstallableViewItems from "@/mods/useInstallableViewItems";
+import useModViewItems from "@/mods/useModViewItems";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
@@ -108,8 +108,7 @@ const columns: Array<Column<ModViewItem>> = [
 const BlueprintsPageLayout: React.FunctionComponent<{
   installables: Mod[];
 }> = ({ installables }) => {
-  const { installableViewItems, isLoading } =
-    useInstallableViewItems(installables);
+  const { installableViewItems, isLoading } = useModViewItems(installables);
 
   const teamFilters = useMemo(
     () =>

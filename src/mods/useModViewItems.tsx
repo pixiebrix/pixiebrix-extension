@@ -38,7 +38,7 @@ import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
-function useInstallableViewItems(installables: Mod[]): {
+function useModViewItems(installables: Mod[]): {
   installableViewItems: readonly ModViewItem[];
   isLoading: boolean;
 } {
@@ -154,4 +154,4 @@ function useInstallableViewItems(installables: Mod[]): {
   };
 }
 
-export default useInstallableViewItems;
+export default useModViewItems;
