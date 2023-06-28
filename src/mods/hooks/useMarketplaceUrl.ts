@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-function useMarketplaceUrl(
-  installableViewItem: InstallableViewItem
-): string | null {
+function useMarketplaceUrl(installableViewItem: ModViewItem): string | null {
   const { sharing } = installableViewItem;
   const isPublished = Boolean(sharing.listingId);
 

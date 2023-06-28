@@ -18,7 +18,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { type TableInstance } from "react-table";
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import useFlags from "@/hooks/useFlags";
 import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
 import { kebabCase } from "lodash";
@@ -33,7 +33,7 @@ import { MARKETPLACE_URL } from "@/utils/strings";
 
 type BlueprintsPageSidebarProps = {
   teamFilters: string[];
-  tableInstance: TableInstance<InstallableViewItem>;
+  tableInstance: TableInstance<ModViewItem>;
 };
 
 const BLUEPRINT_TAB_KEYS = [
@@ -99,9 +99,7 @@ const ListItem: BsPrefixRefForwardingComponent<
   </Nav.Link>
 );
 
-const useOnboardingTabs = (
-  tableInstance: TableInstance<InstallableViewItem>
-) => {
+const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
     useGetStarterBlueprintsQuery();
   const [activeTab, setActiveTab] = useReduxState(

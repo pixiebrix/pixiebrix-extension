@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { isExtension } from "@/utils/installableUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
 function useActivateAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
   const dispatch = useDispatch();
   const { installable, status } = installableViewItem;

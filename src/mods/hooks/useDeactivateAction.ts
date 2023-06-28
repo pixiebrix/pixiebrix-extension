@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import {
@@ -30,7 +30,7 @@ import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { reportEvent } from "@/telemetry/events";
 
 function useDeactivateAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
   const dispatch = useDispatch();
   const { restrict } = useFlags();

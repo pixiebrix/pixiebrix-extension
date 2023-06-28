@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsFromInstallable } from "@/utils/installableUtils";
@@ -23,7 +23,7 @@ import { useSelector } from "react-redux";
 import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
 
 function useRequestPermissionsAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
   const { installable } = installableViewItem;
 

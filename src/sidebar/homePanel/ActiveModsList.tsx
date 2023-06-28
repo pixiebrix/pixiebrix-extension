@@ -17,7 +17,7 @@
 import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
 
 import React from "react";
-import { type Mod, type InstallableViewItem } from "@/mods/modTypes";
+import { type Mod, type ModViewItem } from "@/mods/modTypes";
 import { ListGroup, Row } from "react-bootstrap";
 import useInstallableViewItems from "@/mods/useInstallableViewItems";
 import { type Column, useTable } from "react-table";
@@ -27,7 +27,7 @@ import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-const columns: Array<Column<InstallableViewItem>> = [
+const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Name",
     accessor: "name",
@@ -69,7 +69,7 @@ export const ActiveModsList: React.FunctionComponent<{
       !installableViewItem.unavailable
   );
 
-  const tableInstance = useTable<InstallableViewItem>({
+  const tableInstance = useTable<ModViewItem>({
     columns,
     data: activeMods,
   });

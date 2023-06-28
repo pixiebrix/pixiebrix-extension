@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isExtension } from "@/utils/installableUtils";
 import {
@@ -24,7 +24,7 @@ import {
 } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
 
 function useViewPublishAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
   const { installable, unavailable, sharing } = installableViewItem;
   const isDeployment = sharing.source.type === "Deployment";

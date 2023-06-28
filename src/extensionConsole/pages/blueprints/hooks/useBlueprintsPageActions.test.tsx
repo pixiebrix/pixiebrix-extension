@@ -23,8 +23,8 @@ import useBlueprintsPageActions, {
 } from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
-  type InstallableStatus,
-  type InstallableViewItem,
+  type ModStatus,
+  type ModViewItem,
   type SharingType,
 } from "@/mods/modTypes";
 import useInstallablePermissions from "@/mods/hooks/useInstallablePermissions";
@@ -84,7 +84,7 @@ const installableItemFactory = ({
 }: {
   isExtension: boolean;
   sharingType: SharingType;
-  status: InstallableStatus;
+  status: ModStatus;
   unavailable?: boolean;
 }) =>
   ({
@@ -96,7 +96,7 @@ const installableItemFactory = ({
     },
     status,
     unavailable,
-  } as InstallableViewItem);
+  } as ModViewItem);
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -316,7 +316,7 @@ describe("useBlueprintsPageActions", () => {
   });
 
   describe("public blueprint", () => {
-    let blueprintItem: InstallableViewItem;
+    let blueprintItem: ModViewItem;
     beforeEach(() => {
       mockHooks();
 
@@ -330,7 +330,7 @@ describe("useBlueprintsPageActions", () => {
           },
         },
         status: "Active",
-      } as InstallableViewItem;
+      } as ModViewItem;
     });
 
     test("pending publish", () => {

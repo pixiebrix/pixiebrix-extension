@@ -17,7 +17,7 @@
 
 import React from "react";
 import styles from "./EmptyView.module.scss";
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { type TableInstance } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +26,7 @@ import workshopImage from "@img/workshop.svg";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const EmptyView: React.VoidFunctionComponent<{
-  tableInstance: TableInstance<InstallableViewItem>;
+  tableInstance: TableInstance<ModViewItem>;
   height: number;
   width: number;
 }> = ({ tableInstance, height, width }) => {

@@ -30,10 +30,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useBlueprintsPageActions from "@/extensionConsole/pages/blueprints/hooks/useBlueprintsPageActions";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 
 const BlueprintsPageActions: React.FunctionComponent<{
-  installableViewItem: InstallableViewItem;
+  installableViewItem: ModViewItem;
 }> = ({ installableViewItem }) => {
   const actions = useBlueprintsPageActions(installableViewItem);
 

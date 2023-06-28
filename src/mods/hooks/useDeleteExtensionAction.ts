@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
 import { getLabel, isExtension } from "@/utils/installableUtils";
@@ -23,7 +23,7 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 
 function useDeleteExtensionAction(
-  installableViewItem: InstallableViewItem
+  installableViewItem: ModViewItem
 ): () => void | null {
   const { installable, sharing, status } = installableViewItem;
   const modals = useModals();

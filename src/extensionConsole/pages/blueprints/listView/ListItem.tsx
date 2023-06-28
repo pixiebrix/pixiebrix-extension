@@ -21,14 +21,14 @@ import React from "react";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
 import BlueprintsPageActions from "@/extensionConsole/pages/blueprints/BlueprintsPageActions";
 
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import Status from "@/extensionConsole/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpdatedLabel";
 import ModIcon from "@/mods/ModIcon";
 
 const ListItem: React.VoidFunctionComponent<{
-  installableItem: InstallableViewItem;
+  installableItem: ModViewItem;
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
   const { name, sharing, updatedAt, installable, description } =

@@ -18,7 +18,7 @@
 import styles from "./GridCard.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/extensionConsole/pages/blueprints/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/blueprints/Status";
@@ -27,7 +27,7 @@ import LastUpdatedLabel from "@/extensionConsole/pages/blueprints/labels/LastUpd
 import ModIcon from "@/mods/ModIcon";
 
 type GridCardProps = {
-  installableItem: InstallableViewItem;
+  installableItem: ModViewItem;
 };
 
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({

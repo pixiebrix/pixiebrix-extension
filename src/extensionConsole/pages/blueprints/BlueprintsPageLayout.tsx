@@ -42,10 +42,10 @@ import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/blueprints/BlueprintsToolbar";
 import BlueprintsPageContent from "@/extensionConsole/pages/blueprints/BlueprintsPageContent";
 import Loader from "@/components/Loader";
-import type { Mod, InstallableViewItem } from "@/mods/modTypes";
+import type { Mod, ModViewItem } from "@/mods/modTypes";
 
 const statusFilter = (
-  rows: Array<Row<InstallableViewItem>>,
+  rows: Array<Row<ModViewItem>>,
   _: string[],
   filterValue: string
 ) => {
@@ -61,7 +61,7 @@ const statusFilter = (
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
 // searching utilities on InstallableRows
-const columns: Array<Column<InstallableViewItem>> = [
+const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Name",
     accessor: "name",
@@ -126,7 +126,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
   const activeTab = useSelector(selectActiveTab);
   const searchQuery = useSelector(selectSearchQuery);
 
-  const tableInstance = useTable<InstallableViewItem>(
+  const tableInstance = useTable<ModViewItem>(
     {
       columns,
       data: installableViewItems,

@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 
 import styles from "./ListItem.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,7 +32,7 @@ type Props = {
    */
   errorContext?: string;
 
-  installableItem: InstallableViewItem;
+  installableItem: ModViewItem;
 
   style: React.CSSProperties;
 };

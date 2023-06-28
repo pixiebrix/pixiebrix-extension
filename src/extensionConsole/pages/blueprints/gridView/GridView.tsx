@@ -24,7 +24,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { type InstallableViewItem } from "@/mods/modTypes";
+import { type ModViewItem } from "@/mods/modTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { type Row } from "react-table";
@@ -43,9 +43,9 @@ import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/bluepr
  *  @returns {array} - an array of groupBy rows and/or chunked rows
  */
 export function expandGridRows(
-  rows: Array<Row<InstallableViewItem>>,
+  rows: Array<Row<ModViewItem>>,
   columnCount: number
-): Array<Row<InstallableViewItem> | Array<Row<InstallableViewItem>>> {
+): Array<Row<ModViewItem> | Array<Row<ModViewItem>>> {
   const gridRows = [];
   let nextGridRow = [];
   for (const row of rows) {
@@ -133,7 +133,7 @@ const GridView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
 
       return (
         <div style={style} className={styles.root}>
-          {gridRow.map((row: Row<InstallableViewItem>) => {
+          {gridRow.map((row: Row<ModViewItem>) => {
             tableInstance.prepareRow(row);
             return (
               <GridCardErrorBoundary

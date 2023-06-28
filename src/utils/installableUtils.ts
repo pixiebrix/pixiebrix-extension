@@ -20,7 +20,7 @@ import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Mod,
-  type InstallableViewItem,
+  type ModViewItem,
   type SharingSource,
   type SharingType,
   type UnavailableMod,
@@ -355,7 +355,7 @@ const getExtensionPointType = async (
 };
 
 const getExtensionPointTypesContained = async (
-  installableItem: InstallableViewItem
+  installableItem: ModViewItem
 ): Promise<ExtensionPointType[]> => {
   if (isUnavailableMod(installableItem.installable)) {
     return [];
@@ -367,7 +367,7 @@ const getExtensionPointTypesContained = async (
 };
 
 export const getContainedStarterBrickNames = async (
-  installableItem: InstallableViewItem
+  installableItem: ModViewItem
 ): Promise<string[]> => {
   const extensionPointTypes = await getExtensionPointTypesContained(
     installableItem
