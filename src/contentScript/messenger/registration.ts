@@ -76,7 +76,7 @@ import {
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancements";
+import { reloadActivationEnhancements } from "@/contentScript/activationEnhancements";
 
 expectContext("contentScript");
 

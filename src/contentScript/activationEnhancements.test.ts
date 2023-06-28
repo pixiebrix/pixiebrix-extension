@@ -30,9 +30,9 @@ import {
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories/extensionFactories";
 import {
-  loadActivationEnhancements,
+  activationEnhancements,
   unloadActivationEnhancements,
-} from "@/contentScript/loadActivationEnhancements";
+} from "@/contentScript/activationEnhancements";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 
 jest.mock("@/contentScript/sidebarController", () => ({
@@ -117,7 +117,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await loadActivationEnhancements();
+    await activationEnhancements();
     await initSidebarActivation();
 
     // Click an activate button
@@ -135,7 +135,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
 
-    await loadActivationEnhancements();
+    await activationEnhancements();
     await initSidebarActivation();
 
     // Click an activate button
@@ -179,7 +179,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await loadActivationEnhancements();
+    await activationEnhancements();
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
@@ -202,7 +202,7 @@ describe("marketplace enhancements", () => {
       extensions: [extension1, extension2],
     });
 
-    await loadActivationEnhancements();
+    await activationEnhancements();
     await initSidebarActivation();
 
     const activateButtons = document.querySelectorAll("a");
@@ -214,7 +214,7 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
 
-    await loadActivationEnhancements();
+    await activationEnhancements();
     await initSidebarActivation();
 
     // Before loading in-progress recipe activation, isUserLoggedIn is called,

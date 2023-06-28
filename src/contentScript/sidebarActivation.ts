@@ -30,7 +30,7 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
-import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
+import { getInstalledRecipeIds } from "@/contentScript/activationEnhancements";
 import { isLoadedInIframe } from "@/iframeUtils";
 
 async function isUserLoggedIn(): Promise<boolean> {
@@ -82,6 +82,11 @@ function addActivateRecipeListener() {
     ) => {
       const { recipeId, activateUrl } = event.detail;
 
+      console.log(
+        `*** ActivateRecipe on url ${window.location.href}`,
+        event.detail
+      );
+
       if (!(await isUserLoggedIn())) {
         // Open the activate link in the current browser tab
         window.location.assign(activateUrl);
@@ -102,6 +107,12 @@ function addActivateRecipeListener() {
 }
 
 export async function initSidebarActivation() {
+  if (isLoadedInIframe()) {
+    return;
+  }
+
+  console.log("*** initSidebarActivation on url", window.location.href);
+
   addActivateRecipeListener();
 
   if (!(await isUserLoggedIn())) {

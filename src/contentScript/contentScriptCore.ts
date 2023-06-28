@@ -48,7 +48,7 @@ onUncaughtError((error) => {
 });
 
 export async function init(): Promise<void> {
-  console.debug("contentScriptCore: init");
+  console.debug("contentScriptCore: init for url", window.location.href);
 
   registerMessenger();
   registerExternalMessenger();
