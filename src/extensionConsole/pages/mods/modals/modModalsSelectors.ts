@@ -17,14 +17,13 @@
 
 import { type RootState } from "@/store/optionsStore";
 
-export const selectShowLogsContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showLogsContext;
+export const selectShowLogsContext = ({ modModals }: RootState) =>
+  modModals.showLogsContext;
 
-export const selectShowShareContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showShareContext;
+export const selectShowShareContext = ({ modModals }: RootState) =>
+  modModals.showShareContext;
 
-export const selectShowPublishContext = ({ blueprintModals }: RootState) =>
-  blueprintModals.showPublishContext;
+export const selectShowPublishContext = ({ modModals }: RootState) =>
+  modModals.showPublishContext;
 
-export const selectModalsContext = ({ blueprintModals }: RootState) =>
-  blueprintModals;
+export const selectModalsContext = ({ modModals }: RootState) => modModals;

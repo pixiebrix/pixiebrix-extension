@@ -34,24 +34,24 @@ export type PublishContext = ShareContext & {
   cancelingPublish?: boolean;
 };
 
-type BlueprintModalsState = {
+type ModModalsState = {
   showLogsContext: LogsContext;
   showShareContext: ShareContext;
   showPublishContext: PublishContext;
 };
 
-export type BlueprintModalsRootState = {
-  blueprintModals: BlueprintModalsState;
+export type ModModalsRootState = {
+  modModals: ModModalsState;
 };
 
-const initialState: BlueprintModalsState = Object.freeze<BlueprintModalsState>({
+const initialState: ModModalsState = Object.freeze<ModModalsState>({
   showLogsContext: null,
   showShareContext: null,
   showPublishContext: null,
 });
 
 export const modModalsSlice = createSlice({
-  name: "blueprintModals",
+  name: "modModals",
   initialState,
   reducers: {
     setLogsContext(state, action: PayloadAction<LogsContext>) {

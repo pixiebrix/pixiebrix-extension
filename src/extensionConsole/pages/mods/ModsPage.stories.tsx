@@ -39,7 +39,7 @@ function optionsStore(initialState?: UnknownObject) {
       auth: authSlice.reducer,
       blueprints: modsSlice.reducer,
       options: extensionsSlice.reducer,
-      blueprintModals: modModalsSlice.reducer,
+      modModals: modModalsSlice.reducer,
       recipes: recipesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },

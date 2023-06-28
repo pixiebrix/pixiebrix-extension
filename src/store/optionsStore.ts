@@ -27,7 +27,7 @@ import servicesSlice, {
   type ServicesRootState,
 } from "@/store/servicesSlice";
 import {
-  type BlueprintModalsRootState,
+  type ModModalsRootState,
   modModalsSlice,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
@@ -73,7 +73,7 @@ export type RootState = AuthRootState &
   ServicesRootState &
   SettingsRootState &
   WorkshopRootState &
-  BlueprintModalsRootState &
+  ModModalsRootState &
   SessionRootState &
   SessionChangesRootState;
 
@@ -102,7 +102,7 @@ const store = configureStore({
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    blueprintModals: modModalsSlice.reducer,
+    modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
     recipes: recipesSlice.reducer,
     session: sessionSlice.reducer,
