@@ -50,7 +50,7 @@ const initialState: BlueprintModalsState = Object.freeze<BlueprintModalsState>({
   showPublishContext: null,
 });
 
-export const blueprintModalsSlice = createSlice({
+export const modModalsSlice = createSlice({
   name: "blueprintModals",
   initialState,
   reducers: {

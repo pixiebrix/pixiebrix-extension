@@ -18,8 +18,8 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 import { MARKETPLACE_URL } from "@/utils/strings";
@@ -28,11 +28,11 @@ const EditPublishContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   const cancelPublish = () => {
-    dispatch(blueprintModalsSlice.actions.setCancelingPublish());
+    dispatch(modModalsSlice.actions.setCancelingPublish());
   };
 
   const { blueprintId } = useSelector(selectShowPublishContext);

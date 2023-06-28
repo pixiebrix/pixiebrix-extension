@@ -19,9 +19,9 @@ import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import { getPackageId, isExtension, isModDefinition } from "@/utils/modUtils";
 import {
-  blueprintModalsSlice,
+  modModalsSlice,
   type PublishContext,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 
 function useViewPublishAction(modViewItem: ModViewItem): () => void | null {
   const { mod, unavailable, sharing } = modViewItem;
@@ -37,7 +37,7 @@ function useViewPublishAction(modViewItem: ModViewItem): () => void | null {
           extensionId: mod.id,
         };
 
-    dispatch(blueprintModalsSlice.actions.setPublishContext(publishContext));
+    dispatch(modModalsSlice.actions.setPublishContext(publishContext));
   };
 
   const showPublishAction =

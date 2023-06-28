@@ -21,13 +21,13 @@ import { render } from "@/extensionConsole/testHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
 import * as api from "@/services/api";
 import {
   selectModalsContext,
   selectShowShareContext,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
+} from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { type RootState } from "@/store/optionsStore";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
@@ -72,7 +72,7 @@ describe("it renders", () => {
           })
         );
         dispatch(
-          blueprintModalsSlice.actions.setShareContext({
+          modModalsSlice.actions.setShareContext({
             extensionId: extension.id,
           })
         );
@@ -95,7 +95,7 @@ describe("it renders", () => {
           })
         );
         dispatch(
-          blueprintModalsSlice.actions.setShareContext({
+          modModalsSlice.actions.setShareContext({
             extensionId: extension.id,
           })
         );
@@ -114,13 +114,13 @@ describe("it renders", () => {
   test.each([
     {
       name: "Share",
-      sharingAction: blueprintModalsSlice.actions.setShareContext,
+      sharingAction: modModalsSlice.actions.setShareContext,
       contextToBeEmpty: "showPublishContext",
       sharingContext: "showShareContext",
     },
     {
       name: "Publish",
-      sharingAction: blueprintModalsSlice.actions.setPublishContext,
+      sharingAction: modModalsSlice.actions.setPublishContext,
       contextToBeEmpty: "showShareContext",
       sharingContext: "showPublishContext",
     },
@@ -196,7 +196,7 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
-          blueprintModalsSlice.actions.setShareContext({
+          modModalsSlice.actions.setShareContext({
             extensionId: extension.id,
           })
         );

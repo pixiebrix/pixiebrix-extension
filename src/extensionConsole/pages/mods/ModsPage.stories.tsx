@@ -23,7 +23,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -39,7 +39,7 @@ function optionsStore(initialState?: UnknownObject) {
       auth: authSlice.reducer,
       blueprints: modsSlice.reducer,
       options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
+      blueprintModals: modModalsSlice.reducer,
       recipes: recipesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },

@@ -28,8 +28,8 @@ import servicesSlice, {
 } from "@/store/servicesSlice";
 import {
   type BlueprintModalsRootState,
-  blueprintModalsSlice,
-} from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+  modModalsSlice,
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -102,7 +102,7 @@ const store = configureStore({
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    blueprintModals: blueprintModalsSlice.reducer,
+    blueprintModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
     recipes: recipesSlice.reducer,
     session: sessionSlice.reducer,

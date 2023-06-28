@@ -18,7 +18,7 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 

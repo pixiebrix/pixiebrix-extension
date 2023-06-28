@@ -19,7 +19,7 @@ import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import PublishRecipeModals from "./PublishRecipeModals";
 import { authSlice } from "@/auth/authSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -76,7 +76,7 @@ test("renders publish modal", async () => {
         dispatch(authSlice.actions.setAuth(auth));
 
         dispatch(
-          blueprintModalsSlice.actions.setPublishContext({
+          modModalsSlice.actions.setPublishContext({
             blueprintId: blueprint.metadata.id,
           })
         );
@@ -101,7 +101,7 @@ test("renders edit publish modal", async () => {
         dispatch(authSlice.actions.setAuth(auth));
 
         dispatch(
-          blueprintModalsSlice.actions.setPublishContext({
+          modModalsSlice.actions.setPublishContext({
             blueprintId: blueprint.metadata.id,
           })
         );
@@ -126,7 +126,7 @@ test("renders cancel publish modal", async () => {
         dispatch(authSlice.actions.setAuth(auth));
 
         dispatch(
-          blueprintModalsSlice.actions.setPublishContext({
+          modModalsSlice.actions.setPublishContext({
             blueprintId: blueprint.metadata.id,
             cancelingPublish: true,
           })

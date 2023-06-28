@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import { getLabel, isModDefinition } from "@/utils/modUtils";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
@@ -27,7 +27,7 @@ function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
 
   const viewLogs = () => {
     dispatch(
-      blueprintModalsSlice.actions.setLogsContext({
+      modModalsSlice.actions.setLogsContext({
         title: getLabel(mod),
         messageContext: isModDefinition(mod)
           ? {

@@ -17,8 +17,8 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/blueprintModalsSelectors";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
 import { appApi } from "@/services/api";
@@ -60,7 +60,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
 const PublishRecipeModals: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
-    dispatch(blueprintModalsSlice.actions.closeModal());
+    dispatch(modModalsSlice.actions.closeModal());
   };
 
   const showPublishContext = useSelector(selectShowPublishContext);
