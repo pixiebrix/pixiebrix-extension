@@ -380,12 +380,15 @@ export async function runEditorExtension(
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
-  extensionMap: Record<RegistryId, ResolvedExtension[]>
+  activeExtensionMap: Record<RegistryId, ResolvedExtension[]>
 ): void {
   for (const extensionPoint of _activeExtensionPoints) {
-    const resolvedExtension = extensionMap[extensionPoint.id];
+    const hasActiveExtensions = Object.hasOwn(
+      activeExtensionMap,
+      extensionPoint.id
+    );
 
-    if (resolvedExtension) {
+    if (hasActiveExtensions) {
       continue;
     }
 
@@ -418,22 +421,25 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
       isDeploymentActive(extension) && !_editorExtensions.has(extension.id)
   );
 
-  const resolvedExtensions = await logPromiseDuration(
+  const resolvedActiveExtensions = await logPromiseDuration(
     "loadPersistedExtensions:resolveDefinitions",
     Promise.all(
       activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
     )
   );
 
-  const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
+  const activeExtensionMap = groupBy(
+    resolvedActiveExtensions,
+    (extension) => extension.extensionPointId
+  );
 
-  cleanUpDeactivatedExtensionPoints(extensionMap);
+  cleanUpDeactivatedExtensionPoints(activeExtensionMap);
 
   _persistedExtensions.clear();
 
   const added = compact(
     await Promise.all(
-      Object.entries(extensionMap).map(
+      Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
           ResolvedExtension[]
