@@ -17,23 +17,23 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import { getPackageId, isExtension } from "@/utils/installableUtils";
+import {
+  getPackageId,
+  isExtension,
+  isModDefinition,
+} from "@/utils/installableUtils";
 import {
   blueprintModalsSlice,
   type PublishContext,
 } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
 
-function useViewPublishAction(
-  installableViewItem: ModViewItem
-): () => void | null {
-  const { mod, unavailable, sharing } = installableViewItem;
+function useViewPublishAction(modViewItem: ModViewItem): () => void | null {
+  const { mod, unavailable, sharing } = modViewItem;
   const isDeployment = sharing.source.type === "Deployment";
 
   const dispatch = useDispatch();
-  const isInstallableExtension = isExtension(mod);
-  const isInstallableBlueprint = !isInstallableExtension;
   const viewPublish = () => {
-    const publishContext: PublishContext = isInstallableBlueprint
+    const publishContext: PublishContext = isModDefinition(mod)
       ? {
           blueprintId: getPackageId(mod),
         }
@@ -49,7 +49,7 @@ function useViewPublishAction(
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
     // Extensions can be published
-    (isInstallableExtension ||
+    (isExtension(mod) ||
       // In case of blueprint, skip if it is already published
       sharing.listingId == null);
 
