@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import BlueprintsPageLayout from "@/extensionConsole/pages/blueprints/BlueprintsPageLayout";
-import useInstallables from "@/mods/useInstallables";
+import useMods from "@/mods/useMods";
 import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { reportEvent } from "@/telemetry/events";
@@ -26,7 +26,7 @@ import useShowPublishUrlEffect from "@/extensionConsole/pages/blueprints/hooks/u
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Mods");
-  const { installables, error } = useInstallables();
+  const { installables, error } = useMods();
   useShowPublishUrlEffect();
 
   useEffect(() => {

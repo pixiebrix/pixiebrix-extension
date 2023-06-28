@@ -30,7 +30,7 @@ import { type IExtension } from "@/types/extensionTypes";
 
 type InstallablesState = {
   /**
-   * The installables fetched/generated so far. There's no loading/fetching state. `useInstallables` just adds entries
+   * The installables fetched/generated so far. There's no loading/fetching state. `useMods` just adds entries
    * as they become available.
    */
   installables: Mod[];
@@ -54,7 +54,7 @@ export function selectUnavailableRecipe(extension: IExtension): UnavailableMod {
  * React Hook returning `Installable`s, a common abstraction for recipes and un-packaged IExtensions.
  * @see Mod
  */
-function useInstallables(): InstallablesState {
+function useMods(): InstallablesState {
   const scope = useSelector(selectScope);
   const unresolvedExtensions = useSelector(selectExtensions);
 
@@ -148,4 +148,4 @@ function useInstallables(): InstallablesState {
   };
 }
 
-export default useInstallables;
+export default useMods;

@@ -17,12 +17,12 @@
 import React from "react";
 import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
-import useInstallables from "@/mods/useInstallables";
+import useMods from "@/mods/useMods";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
 const HomePanel: React.FunctionComponent = () => {
-  const { installables, error } = useInstallables();
+  const { installables, error } = useMods();
 
   return (
     <div className="full-height h-100">
