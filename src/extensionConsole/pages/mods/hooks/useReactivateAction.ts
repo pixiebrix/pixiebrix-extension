@@ -50,7 +50,7 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
 
       dispatch(push(reactivatePath));
     } else {
-      // This should never happen, because the hook will return `reactivate: null` for installables with no
+      // This should never happen, because the hook will return `reactivate: null` for mods with no
       // associated blueprint
       notify.error({
         error: new Error("Cannot reactivate item with no associated mod"),

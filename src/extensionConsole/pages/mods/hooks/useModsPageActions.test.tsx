@@ -371,7 +371,7 @@ describe("actions", () => {
 
     test("calls uninstallRecipe for a blueprint", () => {
       mockHooks();
-      const blueprintInstallable = modViewItemFactory({
+      const modViewItem = modViewItemFactory({
         isExtension: false,
         sharingType: "Personal",
         status: "Active",
@@ -381,12 +381,12 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useModsPageActions(blueprintInstallable));
+      } = renderHook(() => useModsPageActions(modViewItem));
 
       deactivate();
 
       expect(uninstallRecipe).toHaveBeenCalledWith(
-        (blueprintInstallable.mod as ModDefinition).metadata.id,
+        (modViewItem.mod as ModDefinition).metadata.id,
         expect.any(Array),
         expect.any(Function)
       );
@@ -398,18 +398,18 @@ describe("actions", () => {
 
       const extension = cloudExtensionFactory();
 
-      const extensionInstallable = modViewItemFactory({
+      const modViewItem = modViewItemFactory({
         isExtension: true,
         sharingType: "Personal",
         status: "Active",
       });
-      (extensionInstallable.mod as IExtension).id = extension.id;
+      (modViewItem.mod as IExtension).id = extension.id;
 
       const {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useModsPageActions(extensionInstallable), {
+      } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
           dispatch(extensionActions.installCloudExtension({ extension }));
           dispatch(

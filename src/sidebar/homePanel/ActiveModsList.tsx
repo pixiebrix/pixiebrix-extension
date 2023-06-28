@@ -58,14 +58,12 @@ const NoActiveModsView: React.FunctionComponent = () => (
 );
 
 export const ActiveModsList: React.FunctionComponent<{
-  installables: Mod[];
+  mods: Mod[];
 }> = ({ mods }) => {
   const { modViewItems, isLoading } = useModViewItems(mods);
 
   const activeMods = modViewItems.filter(
-    (installableViewItem) =>
-      installableViewItem.status === "Active" &&
-      !installableViewItem.unavailable
+    (modViewItem) => modViewItem.status === "Active" && !modViewItem.unavailable
   );
 
   const tableInstance = useTable<ModViewItem>({
@@ -85,7 +83,7 @@ export const ActiveModsList: React.FunctionComponent<{
             return (
               <ActiveModListItem
                 key={`${row.original.sharing.packageId}-${row.original.name}`}
-                installableItem={row.original}
+                modViewItem={row.original}
               />
             );
           })}

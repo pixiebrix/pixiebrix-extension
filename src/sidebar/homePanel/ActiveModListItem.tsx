@@ -35,14 +35,14 @@ import cx from "classnames";
 import useReportError from "@/hooks/useReportError";
 
 export const ActiveModListItem: React.FunctionComponent<{
-  installableItem: ModViewItem;
-}> = ({ installableItem }) => {
-  const { name, mod } = installableItem;
-  const marketplaceListingUrl = useMarketplaceUrl(installableItem);
-  const requestPermissions = useRequestPermissionsAction(installableItem);
+  modViewItem: ModViewItem;
+}> = ({ modViewItem }) => {
+  const { name, mod } = modViewItem;
+  const marketplaceListingUrl = useMarketplaceUrl(modViewItem);
+  const requestPermissions = useRequestPermissionsAction(modViewItem);
 
   const { data: starterBricksContained = [], error } = useAsyncState(
-    async () => getContainedStarterBrickNames(installableItem),
+    async () => getContainedStarterBrickNames(modViewItem),
     [],
     { initialValue: [] }
   );
