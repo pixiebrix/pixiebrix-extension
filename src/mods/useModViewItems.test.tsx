@@ -58,7 +58,7 @@ describe("useModViewItems", () => {
 
     expect(wrapper.result.current).toEqual({
       isLoading: false,
-      installableViewItems: [expect.toBeObject()],
+      modViewItems: [expect.toBeObject()],
     });
   });
 
@@ -78,7 +78,7 @@ describe("useModViewItems", () => {
 
     expect(wrapper.result.current).toEqual({
       isLoading: false,
-      installableViewItems: [expect.toBeObject()],
+      modViewItems: [expect.toBeObject()],
     });
   });
 
@@ -101,7 +101,7 @@ describe("useModViewItems", () => {
 
     expect(wrapper.result.current).toEqual({
       isLoading: false,
-      installableViewItems: [expect.toBeObject()],
+      modViewItems: [expect.toBeObject()],
     });
   });
 });

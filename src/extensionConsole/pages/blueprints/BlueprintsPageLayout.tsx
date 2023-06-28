@@ -108,16 +108,14 @@ const columns: Array<Column<ModViewItem>> = [
 const BlueprintsPageLayout: React.FunctionComponent<{
   installables: Mod[];
 }> = ({ installables }) => {
-  const { installableViewItems, isLoading } = useModViewItems(installables);
+  const { modViewItems, isLoading } = useModViewItems(installables);
 
   const teamFilters = useMemo(
     () =>
       uniq(
-        installableViewItems.map(
-          (installable) => installable.sharing.source.label
-        )
+        modViewItems.map((installable) => installable.sharing.source.label)
       ).filter((label) => label !== "Public" && label !== "Personal"),
-    [installableViewItems]
+    [modViewItems]
   );
 
   const groupBy = useSelector(selectGroupBy);
@@ -128,7 +126,7 @@ const BlueprintsPageLayout: React.FunctionComponent<{
   const tableInstance = useTable<ModViewItem>(
     {
       columns,
-      data: installableViewItems,
+      data: modViewItems,
       initialState: {
         groupBy,
         sortBy,

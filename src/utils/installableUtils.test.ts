@@ -32,7 +32,7 @@ describe("getSharingType", () => {
   test("personal extension", () => {
     const installable: Mod = extensionFactory() as any;
     const { type, label } = getSharingType({
-      installable,
+      mod: installable,
       organizations: [],
       scope: "test_scope",
       installedExtensions: [],
@@ -51,7 +51,7 @@ describe("getSharingType", () => {
       },
     }) as any;
     const { type, label } = getSharingType({
-      installable,
+      mod: installable,
       organizations: [],
       scope: "test_scope",
       installedExtensions: [],
@@ -88,7 +88,7 @@ describe("getSharingType", () => {
     ];
 
     const { type, label } = getSharingType({
-      installable,
+      mod: installable,
       organizations: testOrganizations,
       scope: "test_scope",
       installedExtensions: [],
@@ -113,7 +113,7 @@ describe("getSharingType", () => {
     ];
 
     const { type, label } = getSharingType({
-      installable,
+      mod: installable,
       organizations: testOrganizations,
       scope: "test_scope",
       installedExtensions: [],
@@ -129,7 +129,7 @@ describe("getSharingType", () => {
     }) as any;
 
     const { type, label } = getSharingType({
-      installable,
+      mod: installable,
       organizations: [],
       scope: "test_scope",
       installedExtensions: [],

@@ -204,26 +204,26 @@ export function isRecipePendingPublish(
 }
 
 export function getSharingType({
-  installable,
+  mod,
   organizations,
   scope,
   installedExtensions,
 }: {
-  installable: Mod;
+  mod: Mod;
   organizations: Organization[];
   scope: string;
   installedExtensions: UnresolvedExtension[];
 }): SharingSource {
   let sharingType: SharingType = null;
-  const organization = getOrganization(installable, organizations);
+  const organization = getOrganization(mod, organizations);
 
-  if (isPersonal(installable, scope)) {
+  if (isPersonal(mod, scope)) {
     sharingType = "Personal";
-  } else if (isDeployment(installable, installedExtensions)) {
+  } else if (isDeployment(mod, installedExtensions)) {
     sharingType = "Deployment";
   } else if (organization) {
     sharingType = "Team";
-  } else if (isPublic(installable)) {
+  } else if (isPublic(mod)) {
     sharingType = "Public";
   }
 

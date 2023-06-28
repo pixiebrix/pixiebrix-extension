@@ -60,9 +60,9 @@ const NoActiveModsView: React.FunctionComponent = () => (
 export const ActiveModsList: React.FunctionComponent<{
   installables: Mod[];
 }> = ({ installables }) => {
-  const { installableViewItems, isLoading } = useModViewItems(installables);
+  const { modViewItems, isLoading } = useModViewItems(installables);
 
-  const activeMods = installableViewItems.filter(
+  const activeMods = modViewItems.filter(
     (installableViewItem) =>
       installableViewItem.status === "Active" &&
       !installableViewItem.unavailable
