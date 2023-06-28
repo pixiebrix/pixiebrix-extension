@@ -214,4 +214,57 @@ describe("lifecycle", () => {
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
     expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
   });
+
+  it("Removes extension points from deactivated mods", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+      })()
+    );
+
+    extensionPointRegistry.register([extensionPoint]);
+
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.id,
+    });
+
+    loadOptionsMock.mockResolvedValue({ extensions: [extension] });
+
+    await lifecycleModule.handleNavigate();
+
+    await tick();
+
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+      extensionPoint,
+    ]);
+
+    const updatedExtensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "initialize",
+      })()
+    );
+
+    // @ts-expect-error -- There's some weirdness going on with this extensionPointFactory;
+    // it's not incrementing the extension point id, nor is allowing the id to be passed as an override
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/5972
+    updatedExtensionPoint.id = "test/updated-extension-point";
+
+    extensionPointRegistry.register([updatedExtensionPoint]);
+
+    const updatedExtension = extensionFactory({
+      extensionPointId: updatedExtensionPoint.id,
+    });
+
+    loadOptionsMock.mockResolvedValue({ extensions: [updatedExtension] });
+    lifecycleModule.queueReactivateTab();
+
+    await lifecycleModule.handleNavigate({ force: true });
+    await tick();
+
+    // New extension point is installed, old extension point is removed
+    expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
+      updatedExtensionPoint,
+    ]);
+  });
 });

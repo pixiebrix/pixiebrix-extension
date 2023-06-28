@@ -373,6 +373,35 @@ export async function runEditorExtension(
 }
 
 /**
+ * Uninstall any extension points for mods that are no longer active.
+ *
+ * When mods are updated in the background script (i.e. via the Deployment updater), we don't remove
+ * extension points from the current tab in order to not interrupt the user's workflow. This function can be
+ * used to do that clean up at a more appropriate time, e.g. upon navigation.
+ */
+function cleanUpDeactivatedExtensionPoints(
+  activeExtensionMap: Record<RegistryId, ResolvedExtension[]>
+): void {
+  for (const extensionPoint of _activeExtensionPoints) {
+    const hasActiveExtensions = Object.hasOwn(
+      activeExtensionMap,
+      extensionPoint.id
+    );
+
+    if (hasActiveExtensions) {
+      continue;
+    }
+
+    try {
+      extensionPoint.uninstall({ global: true });
+      _activeExtensionPoints.delete(extensionPoint);
+    } catch (error) {
+      reportError(error);
+    }
+  }
+}
+
+/**
  * Add extensions to their respective extension points.
  *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
@@ -392,20 +421,25 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
       isDeploymentActive(extension) && !_editorExtensions.has(extension.id)
   );
 
-  const resolvedExtensions = await logPromiseDuration(
+  const resolvedActiveExtensions = await logPromiseDuration(
     "loadPersistedExtensions:resolveDefinitions",
     Promise.all(
       activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
     )
   );
 
-  const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
+  const activeExtensionMap = groupBy(
+    resolvedActiveExtensions,
+    (extension) => extension.extensionPointId
+  );
+
+  cleanUpDeactivatedExtensionPoints(activeExtensionMap);
 
   _persistedExtensions.clear();
 
   const added = compact(
     await Promise.all(
-      Object.entries(extensionMap).map(
+      Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
           ResolvedExtension[]
@@ -414,7 +448,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
             const extensionPoint = await extensionPointRegistry.lookup(
               extensionPointId
             );
-
             extensionPoint.syncExtensions(extensions);
 
             // Mark the extensions as installed

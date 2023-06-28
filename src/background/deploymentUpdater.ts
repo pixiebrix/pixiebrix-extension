@@ -202,10 +202,6 @@ async function uninstallRecipe(
     editor = result.editor;
   }
 
-  await Promise.allSettled(
-    recipeExtensions.map(async ({ id }) => removeExtensionForEveryTab(id))
-  );
-
   return { options, editor };
 }
 
