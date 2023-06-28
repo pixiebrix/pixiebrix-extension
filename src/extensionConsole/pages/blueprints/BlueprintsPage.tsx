@@ -26,7 +26,7 @@ import useShowPublishUrlEffect from "@/extensionConsole/pages/blueprints/hooks/u
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Mods");
-  const { installables, error } = useMods();
+  const { mods, error } = useMods();
   useShowPublishUrlEffect();
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
       {error ? (
         <ErrorDisplay error={error} />
       ) : (
-        <BlueprintsPageLayout installables={installables} />
+        <BlueprintsPageLayout installables={mods} />
       )}
       <Modals />
     </div>

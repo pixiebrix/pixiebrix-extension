@@ -28,14 +28,14 @@ import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type IExtension } from "@/types/extensionTypes";
 
-type InstallablesState = {
+type ModsState = {
   /**
-   * The installables fetched/generated so far. There's no loading/fetching state. `useMods` just adds entries
+   * The mods fetched/generated so far. There's no loading/fetching state. `useMods` just adds entries
    * as they become available.
    */
-  installables: Mod[];
+  mods: Mod[];
   /**
-   * An error that occurred while fetching/generating installables, or undefined.
+   * An error that occurred while fetching/generating mods, or undefined.
    */
   error: unknown;
 };
@@ -51,10 +51,10 @@ export function selectUnavailableRecipe(extension: IExtension): UnavailableMod {
 }
 
 /**
- * React Hook returning `Installable`s, a common abstraction for recipes and un-packaged IExtensions.
+ * React Hook for consolidating Mods.
  * @see Mod
  */
-function useMods(): InstallablesState {
+function useMods(): ModsState {
   const scope = useSelector(selectScope);
   const unresolvedExtensions = useSelector(selectExtensions);
 
@@ -139,7 +139,7 @@ function useMods(): InstallablesState {
   }, [knownRecipes, resolvedExtensions]);
 
   return {
-    installables: [
+    mods: [
       ...extensionsWithoutRecipe,
       ...knownPersonalOrTeamRecipes,
       ...unavailableRecipes,

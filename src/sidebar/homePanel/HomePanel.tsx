@@ -22,7 +22,7 @@ import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
 const HomePanel: React.FunctionComponent = () => {
-  const { installables, error } = useMods();
+  const { mods, error } = useMods();
 
   return (
     <div className="full-height h-100">
@@ -30,7 +30,7 @@ const HomePanel: React.FunctionComponent = () => {
         {error ? (
           <ErrorDisplay error={error} />
         ) : (
-          <ActiveModsList installables={installables} />
+          <ActiveModsList installables={mods} />
         )}
       </Container>
     </div>

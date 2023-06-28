@@ -56,7 +56,7 @@ describe("useMods", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [],
+      mods: [],
       error: false,
     });
   });
@@ -82,7 +82,7 @@ describe("useMods", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           isStub: true,
         }),
@@ -91,7 +91,7 @@ describe("useMods", () => {
     });
   });
 
-  it("multiple unavailable are single installable", async () => {
+  it("multiple unavailable are single mod", async () => {
     const metadata = recipeMetadataFactory();
 
     const wrapper = renderHook(() => useMods(), {
@@ -116,7 +116,7 @@ describe("useMods", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           isStub: true,
         }),
@@ -153,7 +153,7 @@ describe("useMods", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           kind: "recipe",
         }),
@@ -161,7 +161,7 @@ describe("useMods", () => {
       error: false,
     });
 
-    expect(wrapper.result.current.installables[0]).not.toHaveProperty("isStub");
+    expect(wrapper.result.current.mods[0]).not.toHaveProperty("isStub");
   });
 
   it("handles inactive cloud extension", async () => {
@@ -172,7 +172,7 @@ describe("useMods", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           active: false,
           extensionPointId: expect.toBeString(),
@@ -203,7 +203,7 @@ describe("useMods", () => {
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
-      installables: [
+      mods: [
         expect.objectContaining({
           active: true,
           extensionPointId: expect.toBeString(),
