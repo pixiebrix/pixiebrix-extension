@@ -40,7 +40,7 @@ import { uniq } from "lodash";
 import useModViewItems from "@/mods/useModViewItems";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/extensionConsole/pages/mods/BlueprintsToolbar";
-import BlueprintsPageContent from "@/extensionConsole/pages/mods/BlueprintsPageContent";
+import ModsPageContent from "@/extensionConsole/pages/mods/ModsPageContent";
 import Loader from "@/components/Loader";
 import type { Mod, ModViewItem } from "@/mods/modTypes";
 
@@ -171,7 +171,7 @@ const ModsPageLayout: React.FunctionComponent<{
           ) : (
             <AutoSizer defaultHeight={500}>
               {({ height, width }: Size) => (
-                <BlueprintsPageContent
+                <ModsPageContent
                   tableInstance={tableInstance}
                   width={width}
                   height={height}

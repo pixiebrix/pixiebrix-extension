@@ -31,14 +31,16 @@ import BotGamesView from "@/extensionConsole/pages/mods/BotGamesView";
 import { type TableInstance } from "react-table";
 import { type ModViewItem } from "@/mods/modTypes";
 
-export type BlueprintsPageContentProps = {
+export type ModsPageContentProps = {
   tableInstance: TableInstance<ModViewItem>;
   width: number;
   height: number;
 };
-const BlueprintsPageContent: React.VoidFunctionComponent<
-  BlueprintsPageContentProps
-> = ({ tableInstance, width, height }) => {
+const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
+  tableInstance,
+  width,
+  height,
+}) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
   const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
@@ -48,7 +50,7 @@ const BlueprintsPageContent: React.VoidFunctionComponent<
     rows,
   } = tableInstance;
 
-  const BlueprintsView = view === "list" ? ListView : GridView;
+  const ModsView = view === "list" ? ListView : GridView;
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
@@ -60,11 +62,7 @@ const BlueprintsPageContent: React.VoidFunctionComponent<
 
   if (rows.length > 0) {
     return (
-      <BlueprintsView
-        tableInstance={tableInstance}
-        width={width}
-        height={height}
-      />
+      <ModsView tableInstance={tableInstance} width={width} height={height} />
     );
   }
 
@@ -85,4 +83,4 @@ const BlueprintsPageContent: React.VoidFunctionComponent<
   );
 };
 
-export default BlueprintsPageContent;
+export default ModsPageContent;

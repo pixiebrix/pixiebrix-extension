@@ -22,12 +22,12 @@ import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 import ListItemErrorBoundary from "@/extensionConsole/pages/mods/listView/ListItemErrorBoundary";
-import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/mods/BlueprintsPageContent";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/ModsPageContent";
 
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;
 
-const ListView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
+const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   tableInstance,
   height,
   width,

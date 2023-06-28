@@ -32,7 +32,7 @@ import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHea
 import { uuidv4 } from "@/types/helpers";
 import { getUniqueId } from "@/utils/installableUtils";
 import GridCardErrorBoundary from "@/extensionConsole/pages/mods/gridView/GridCardErrorBoundary";
-import { type BlueprintsPageContentProps } from "@/extensionConsole/pages/mods/BlueprintsPageContent";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/ModsPageContent";
 
 /**
  *  Expands `react-table` rows recursively in chunks of
@@ -82,7 +82,7 @@ const MIN_CARD_WIDTH_PX = 235;
 const CARD_HEIGHT_PX = 230;
 const HEADER_ROW_HEIGHT_PX = 43;
 
-const GridView: React.VoidFunctionComponent<BlueprintsPageContentProps> = ({
+const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   tableInstance,
   width,
   height,
