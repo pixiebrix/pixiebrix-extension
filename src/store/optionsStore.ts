@@ -97,7 +97,7 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    blueprints: persistReducer(persistModsConfig, modsSlice.reducer),
+    mods: persistReducer(persistModsConfig, modsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),

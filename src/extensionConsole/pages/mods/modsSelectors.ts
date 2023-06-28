@@ -18,15 +18,11 @@
 import { type ModsState } from "@/extensionConsole/pages/mods/modsSlice";
 
 export type ModsRootState = {
-  blueprints: ModsState;
+  mods: ModsState;
 };
 
-export const selectView = ({ blueprints }: ModsRootState) => blueprints.view;
-export const selectGroupBy = ({ blueprints }: ModsRootState) =>
-  blueprints.groupBy;
-export const selectSortBy = ({ blueprints }: ModsRootState) =>
-  blueprints.sortBy;
-export const selectActiveTab = ({ blueprints }: ModsRootState) =>
-  blueprints.activeTab;
-export const selectSearchQuery = ({ blueprints }: ModsRootState) =>
-  blueprints.searchQuery;
+export const selectView = ({ mods }: ModsRootState) => mods.view;
+export const selectGroupBy = ({ mods }: ModsRootState) => mods.groupBy;
+export const selectSortBy = ({ mods }: ModsRootState) => mods.sortBy;
+export const selectActiveTab = ({ mods }: ModsRootState) => mods.activeTab;
+export const selectSearchQuery = ({ mods }: ModsRootState) => mods.searchQuery;

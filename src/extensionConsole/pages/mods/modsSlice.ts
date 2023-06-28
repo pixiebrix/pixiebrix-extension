@@ -52,7 +52,7 @@ const initialState: ModsState = {
 };
 
 const modsSlice = createSlice({
-  name: "blueprints",
+  name: "mods",
   initialState,
   reducers: {
     setView(state, { payload: view }: PayloadAction<View>) {
@@ -80,7 +80,7 @@ const modsSlice = createSlice({
 });
 
 export const persistModsConfig = {
-  key: "blueprintsOptions",
+  key: "modsOptions",
   storage: localStorage as StorageInterface,
 };
 

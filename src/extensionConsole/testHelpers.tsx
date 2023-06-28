@@ -37,7 +37,7 @@ const configureStoreForTests = () =>
       settings: settingsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: modsSlice.reducer,
+      mods: modsSlice.reducer,
       recipes: recipesSlice.reducer,
       services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
