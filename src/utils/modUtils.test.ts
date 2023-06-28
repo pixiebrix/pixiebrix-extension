@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getSharingType,
-  isExtension,
-  isUnavailableMod,
-} from "./installableUtils";
+import { getSharingType, isExtension, isUnavailableMod } from "./modUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import { type Mod, type UnavailableMod } from "@/mods/modTypes";
@@ -30,9 +26,9 @@ import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("getSharingType", () => {
   test("personal extension", () => {
-    const installable: Mod = extensionFactory() as any;
+    const mod: Mod = extensionFactory() as any;
     const { type, label } = getSharingType({
-      mod: installable,
+      mod: mod,
       organizations: [],
       scope: "test_scope",
       installedExtensions: [],
@@ -43,7 +39,7 @@ describe("getSharingType", () => {
   });
 
   test("public deployment", () => {
-    const installable: Mod = extensionFactory({
+    const mod: Mod = extensionFactory({
       _deployment: {
         id: uuidv4(),
         active: true,
@@ -51,7 +47,7 @@ describe("getSharingType", () => {
       },
     }) as any;
     const { type, label } = getSharingType({
-      mod: installable,
+      mod: mod,
       organizations: [],
       scope: "test_scope",
       installedExtensions: [],
@@ -63,7 +59,7 @@ describe("getSharingType", () => {
 
   test("organization deployment", () => {
     const orgId = uuidv4();
-    const installable: Mod = extensionFactory({
+    const mod: Mod = extensionFactory({
       _deployment: {
         id: orgId,
         active: true,
@@ -72,7 +68,7 @@ describe("getSharingType", () => {
     }) as any;
 
     // @ts-expect-error -- we are generating a test extension
-    installable._recipe = {
+    mod._recipe = {
       id: "test_org",
       sharing: {
         organizations: [orgId],
@@ -88,7 +84,7 @@ describe("getSharingType", () => {
     ];
 
     const { type, label } = getSharingType({
-      mod: installable,
+      mod: mod,
       organizations: testOrganizations,
       scope: "test_scope",
       installedExtensions: [],
@@ -98,11 +94,11 @@ describe("getSharingType", () => {
     expect(label).toBe("test_org");
   });
 
-  test("team installable", () => {
-    const installable = recipeDefinitionFactory();
+  test("team mod", () => {
+    const mod = recipeDefinitionFactory();
     const orgId = uuidv4();
 
-    installable.sharing.organizations = [orgId];
+    mod.sharing.organizations = [orgId];
 
     const testOrganizations = [
       {
@@ -113,7 +109,7 @@ describe("getSharingType", () => {
     ];
 
     const { type, label } = getSharingType({
-      mod: installable,
+      mod: mod,
       organizations: testOrganizations,
       scope: "test_scope",
       installedExtensions: [],
@@ -123,13 +119,13 @@ describe("getSharingType", () => {
     expect(label).toBe("test_org");
   });
 
-  test("public installable", () => {
-    const installable: Mod = recipeDefinitionFactory({
+  test("public mod", () => {
+    const mod: Mod = recipeDefinitionFactory({
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
     const { type, label } = getSharingType({
-      mod: installable,
+      mod: mod,
       organizations: [],
       scope: "test_scope",
       installedExtensions: [],
@@ -142,31 +138,31 @@ describe("getSharingType", () => {
 
 describe("isExtension", () => {
   it("returns true for an extension", () => {
-    const installable = extensionFactory() as ResolvedExtension;
-    expect(isExtension(installable)).toBe(true);
+    const mod = extensionFactory() as ResolvedExtension;
+    expect(isExtension(mod)).toBe(true);
   });
 
   it("returns false for a recipe", () => {
-    const installable = recipeDefinitionFactory();
-    expect(isExtension(installable)).toBe(false);
+    const mod = recipeDefinitionFactory();
+    expect(isExtension(mod)).toBe(false);
   });
 });
 
 describe("isUnavailableMod", () => {
   it("returns false for a recipe definition", () => {
-    const installable = recipeDefinitionFactory();
-    expect(isUnavailableMod(installable)).toBe(false);
+    const mod = recipeDefinitionFactory();
+    expect(isUnavailableMod(mod)).toBe(false);
   });
 
   it("returns true for UnavailableRecipe", () => {
-    const installable = {
+    const mod = {
       isStub: true,
     } as UnavailableMod;
-    expect(isUnavailableMod(installable)).toBe(true);
+    expect(isUnavailableMod(mod)).toBe(true);
   });
 
   it("returns false for an extension", () => {
-    const installable = extensionFactory() as ResolvedExtension;
-    expect(isUnavailableMod(installable)).toBe(false);
+    const mod = extensionFactory() as ResolvedExtension;
+    expect(isUnavailableMod(mod)).toBe(false);
   });
 });

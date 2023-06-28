@@ -32,7 +32,7 @@ import {
   isExtension,
   isUnavailableMod,
   updateAvailable,
-} from "@/utils/installableUtils";
+} from "@/utils/modUtils";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";

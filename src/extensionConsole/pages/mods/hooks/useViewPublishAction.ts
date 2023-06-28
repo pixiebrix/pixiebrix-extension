@@ -17,11 +17,7 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import {
-  getPackageId,
-  isExtension,
-  isModDefinition,
-} from "@/utils/installableUtils";
+import { getPackageId, isExtension, isModDefinition } from "@/utils/modUtils";
 import {
   blueprintModalsSlice,
   type PublishContext,

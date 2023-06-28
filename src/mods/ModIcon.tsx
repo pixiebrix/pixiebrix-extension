@@ -29,7 +29,7 @@ import {
   getPackageId,
   isModDefinition,
   isUnavailableMod,
-} from "@/utils/installableUtils";
+} from "@/utils/modUtils";
 import cx from "classnames";
 import styles from "./ModIcon.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";

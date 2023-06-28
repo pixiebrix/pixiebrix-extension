@@ -39,68 +39,66 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
 
 /**
- * Returns true if installable is an UnavailableMod
- * @param installable the installable
+ * Returns true if the mod is an UnavailableMod
+ * @param mod the mod
  * @see UnavailableMod
  */
-export function isUnavailableMod(
-  installable: Mod
-): installable is UnavailableMod {
-  return "isStub" in installable && installable.isStub;
+export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
+  return "isStub" in mod && mod.isStub;
 }
 
 /**
- * Returns true if the installable is a singleton extension, not a mod.
- * @param installable the installable
+ * Returns true if the mod is a ResolvedExtension, instead of a mod definition.
+ * @param mod the mod
  */
-export function isExtension(
-  installable: Mod
-): installable is ResolvedExtension {
-  return "extensionPointId" in installable;
+export function isExtension(mod: Mod): mod is ResolvedExtension {
+  return "extensionPointId" in mod;
 }
 
 /**
- * Return true if the installable is an IExtension that originated from a recipe.
- * @param installable the installable
+ * Return true if the mod is an IExtension that originated from a recipe.
+ * @param mod the mod
  */
-export function isExtensionFromRecipe(installable: Mod): boolean {
-  return isExtension(installable) && Boolean(installable._recipe);
+export function isExtensionFromRecipe(mod: Mod): boolean {
+  return isExtension(mod) && Boolean(mod._recipe);
 }
 
 /**
- * Return true if the installable is a ModDefinition or UnavailableMod
- * @param installable the installable
+ * Return true if the mod is a ModDefinition or UnavailableMod
+ * @param mod the mod
  */
 export function isModDefinition(
-  installable: Mod
-): installable is ModDefinition | UnavailableMod {
-  return !isExtension(installable);
+  mod: Mod
+): mod is ModDefinition | UnavailableMod {
+  return !isExtension(mod);
 }
 
 /**
- * Returns a unique id for the installable. Suitable for use as a React key
- * @param installable the installable
+ * Returns a unique id for the mod. Suitable for use as a React key
+ * @param mod the mod
  */
-export function getUniqueId(installable: Mod): UUID | RegistryId {
-  return isExtension(installable) ? installable.id : installable.metadata.id;
+export function getUniqueId(mod: Mod): UUID | RegistryId {
+  return isExtension(mod) ? mod.id : mod.metadata.id;
 }
 
 /**
- * Returns the human-readable label for the installable
- * @param installable the installable
+ * Returns the human-readable label for the mod
+ * @param mod the mod
  */
-export function getLabel(installable: Mod): string {
-  return isExtension(installable)
-    ? installable.label
-    : installable.metadata.name;
+export function getLabel(mod: Mod): string {
+  return isExtension(mod) ? mod.label : mod.metadata.name;
 }
 
-export const getDescription = (installable: Mod): string => {
-  const description = isExtension(installable)
-    ? installable._recipe?.description
-    : installable.metadata.description;
+/**
+ * Returns the description for the mod
+ * @param mod the mod
+ */
+export const getDescription = (mod: Mod): string => {
+  const description = isExtension(mod)
+    ? mod._recipe?.description
+    : mod.metadata.description;
 
-  if (!description && isExtension(installable)) {
+  if (!description && isExtension(mod)) {
     return "Created in the Page Editor";
   }
 
@@ -108,26 +106,26 @@ export const getDescription = (installable: Mod): string => {
 };
 
 /**
- * Return the registry id associated with an installable, or null
- * @param installable the installable
+ * Return the registry id associated with a mod, or null
+ * @param mod the mod
  */
-export function getPackageId(installable: Mod): RegistryId | null {
-  return isExtension(installable)
-    ? installable._recipe?.id
-    : installable.metadata.id;
+export function getPackageId(mod: Mod): RegistryId | null {
+  return isExtension(mod) ? mod._recipe?.id : mod.metadata.id;
 }
 
-export function getUpdatedAt(installable: Mod): string | null {
-  return isExtension(installable)
+/**
+ * Returns the timestamp for the time the mod was last updated (edited)
+ * @param mod the mod
+ */
+export function getUpdatedAt(mod: Mod): string | null {
+  return isExtension(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on IExtension here
-      installable._recipe?.updated_at ?? installable.updateTimestamp
-    : installable.updated_at;
+      mod._recipe?.updated_at ?? mod.updateTimestamp
+    : mod.updated_at;
 }
 
-function isPublic(installable: Mod): boolean {
-  return isExtension(installable)
-    ? installable._recipe?.sharing?.public
-    : installable.sharing.public;
+function isPublic(mod: Mod): boolean {
+  return isExtension(mod) ? mod._recipe?.sharing?.public : mod.sharing.public;
 }
 
 function isPersonalExtension(extension: IExtension): boolean {
@@ -146,46 +144,43 @@ function hasRecipeScope(recipe: ModDefinition | UnavailableMod, scope: string) {
 }
 
 /**
- * Returns true if the user directly owns the installable
- * @param installable the installable
+ * Returns true if the user directly owns the mod
+ * @param mod the mod
  * @param userScope the user's scope, or null if it's not set
  */
-function isPersonal(installable: Mod, userScope: string | null) {
-  if (isExtension(installable)) {
-    return (
-      isPersonalExtension(installable) ||
-      hasSourceRecipeWithScope(installable, userScope)
-    );
+function isPersonal(mod: Mod, userScope: string | null) {
+  if (isExtension(mod)) {
+    return isPersonalExtension(mod) || hasSourceRecipeWithScope(mod, userScope);
   }
 
-  return hasRecipeScope(installable, userScope);
+  return hasRecipeScope(mod, userScope);
 }
 
 export function getInstalledVersionNumber(
   installedExtensions: UnresolvedExtension[],
-  installable: Mod
+  mod: Mod
 ): string | null {
-  if (isExtension(installable)) {
-    return installable._recipe?.version;
+  if (isExtension(mod)) {
+    return mod._recipe?.version;
   }
 
   const installedExtension = installedExtensions.find(
     (extension: UnresolvedExtension) =>
-      extension._recipe?.id === installable.metadata.id
+      extension._recipe?.id === mod.metadata.id
   );
 
   return installedExtension?._recipe?.version;
 }
 
 export function isDeployment(
-  installable: Mod,
+  mod: Mod,
   installedExtensions: UnresolvedExtension[]
 ): boolean {
-  if (isExtension(installable)) {
-    return Boolean(installable._deployment);
+  if (isExtension(mod)) {
+    return Boolean(mod._deployment);
   }
 
-  const recipeId = installable.metadata.id;
+  const recipeId = mod.metadata.id;
   return installedExtensions.some(
     (installedExtension) =>
       installedExtension._recipe?.id === recipeId &&
@@ -249,17 +244,15 @@ export function getSharingType({
 export function updateAvailable(
   availableRecipes: Map<RegistryId, ModDefinition>,
   installedExtensions: Map<RegistryId, UnresolvedExtension>,
-  installable: Mod
+  mod: Mod
 ): boolean {
-  if (isUnavailableMod(installable)) {
+  if (isUnavailableMod(mod)) {
     // Unavailable mods are never update-able
     return false;
   }
 
   const installedExtension: ResolvedExtension | UnresolvedExtension =
-    isModDefinition(installable)
-      ? installedExtensions.get(installable.metadata.id)
-      : installable;
+    isModDefinition(mod) ? installedExtensions.get(mod.metadata.id) : mod;
 
   if (!installedExtension?._recipe) {
     return false;
@@ -302,12 +295,10 @@ export function updateAvailable(
 }
 
 function getOrganization(
-  installable: Mod,
+  mod: Mod,
   organizations: Organization[]
 ): Organization {
-  const sharing = isExtension(installable)
-    ? installable._recipe?.sharing
-    : installable.sharing;
+  const sharing = isExtension(mod) ? mod._recipe?.sharing : mod.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;
@@ -321,16 +312,16 @@ function getOrganization(
 }
 
 /**
- * Select UnresolvedExtensions currently installed from the installable.
+ * Select UnresolvedExtensions currently installed from the mod.
  */
 export const selectExtensionsFromMod = createSelector(
-  [selectExtensions, (state: unknown, installable: Mod) => installable],
-  (installedExtensions, installable) =>
-    isModDefinition(installable)
+  [selectExtensions, (state: unknown, mod: Mod) => mod],
+  (installedExtensions, mod) =>
+    isModDefinition(mod)
       ? installedExtensions.filter(
-          (extension) => extension._recipe?.id === installable.metadata.id
+          (extension) => extension._recipe?.id === mod.metadata.id
         )
-      : installedExtensions.filter((x) => x.id === installable.id)
+      : installedExtensions.filter((x) => x.id === mod.id)
 );
 
 export const StarterBrickMap: Record<ExtensionPointType, string> = {
@@ -355,22 +346,22 @@ const getExtensionPointType = async (
 };
 
 const getExtensionPointTypesContained = async (
-  installableItem: ModViewItem
+  modViewItem: ModViewItem
 ): Promise<ExtensionPointType[]> => {
-  if (isUnavailableMod(installableItem.mod)) {
+  if (isUnavailableMod(modViewItem.mod)) {
     return [];
   }
 
-  return isModDefinition(installableItem.mod)
-    ? getContainedExtensionPointTypes(installableItem.mod)
-    : [await getExtensionPointType(installableItem.mod)];
+  return isModDefinition(modViewItem.mod)
+    ? getContainedExtensionPointTypes(modViewItem.mod)
+    : [await getExtensionPointType(modViewItem.mod)];
 };
 
 export const getContainedStarterBrickNames = async (
-  installableItem: ModViewItem
+  modViewItem: ModViewItem
 ): Promise<string[]> => {
   const extensionPointTypes = await getExtensionPointTypesContained(
-    installableItem
+    modViewItem
   );
   const starterBricksContained = [];
   for (const extensionPointType of extensionPointTypes) {

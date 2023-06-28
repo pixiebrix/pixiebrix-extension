@@ -17,7 +17,7 @@
 
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
-import { isModDefinition } from "@/utils/installableUtils";
+import { isModDefinition } from "@/utils/modUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
