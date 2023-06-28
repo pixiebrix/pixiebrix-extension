@@ -18,26 +18,26 @@
 import { type ModViewItem } from "@/mods/modTypes";
 import { useDispatch } from "react-redux";
 import useFlags from "@/hooks/useFlags";
-import { isExtension, isExtensionFromRecipe } from "@/utils/installableUtils";
+import {
+  isExtensionFromRecipe,
+  isModDefinition,
+} from "@/utils/installableUtils";
 import { reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 
-const useReactivateAction = (
-  installableViewItem: ModViewItem
-): (() => void | null) => {
+const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
-  const { mod, unavailable, status, sharing } = installableViewItem;
-  const isInstallableBlueprint = !isExtension(mod);
-  const hasBlueprint = isExtensionFromRecipe(mod) || isInstallableBlueprint;
+  const { mod, unavailable, status, sharing } = modViewItem;
+  const hasBlueprint = isExtensionFromRecipe(mod) || isModDefinition(mod);
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
   const isRestricted = isDeployment && restrict("uninstall");
 
   const reactivate = () => {
     if (hasBlueprint) {
-      const blueprintId = isInstallableBlueprint
+      const blueprintId = isModDefinition(mod)
         ? mod.metadata.id
         : mod._recipe.id;
 
