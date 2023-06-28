@@ -76,7 +76,7 @@ const mockHooks = ({
   }));
 };
 
-const installableItemFactory = ({
+const modViewItemFactory = ({
   isExtension,
   sharingType,
   status,
@@ -105,7 +105,7 @@ afterEach(() => {
 describe("useModsPageActions", () => {
   test("cloud extension", () => {
     mockHooks();
-    const cloudExtensionItem = installableItemFactory({
+    const cloudExtensionItem = modViewItemFactory({
       isExtension: true,
       sharingType: "Personal",
       status: "Inactive",
@@ -122,7 +122,7 @@ describe("useModsPageActions", () => {
 
   test("active personal extension", () => {
     mockHooks();
-    const personalExtensionItem = installableItemFactory({
+    const personalExtensionItem = modViewItemFactory({
       isExtension: true,
       sharingType: "Personal",
       status: "Active",
@@ -139,7 +139,7 @@ describe("useModsPageActions", () => {
 
   test("active personal blueprint", () => {
     mockHooks();
-    const personalBlueprintItem = installableItemFactory({
+    const personalBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Active",
@@ -156,7 +156,7 @@ describe("useModsPageActions", () => {
 
   test("inactive personal blueprint", () => {
     mockHooks();
-    const personalBlueprintItem = installableItemFactory({
+    const personalBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Inactive",
@@ -170,7 +170,7 @@ describe("useModsPageActions", () => {
 
   test("active team blueprint", () => {
     mockHooks();
-    const teamBlueprintItem = installableItemFactory({
+    const teamBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -187,7 +187,7 @@ describe("useModsPageActions", () => {
 
   test("inactive team blueprint", () => {
     mockHooks();
-    const teamBlueprintItem = installableItemFactory({
+    const teamBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Inactive",
@@ -201,7 +201,7 @@ describe("useModsPageActions", () => {
 
   test("public blueprint", () => {
     mockHooks();
-    const publicBlueprintItem = installableItemFactory({
+    const publicBlueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Active",
@@ -218,7 +218,7 @@ describe("useModsPageActions", () => {
 
   test("team deployment for unrestricted user", () => {
     mockHooks({ restricted: false });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Active",
@@ -232,7 +232,7 @@ describe("useModsPageActions", () => {
 
   test("restricted team deployment", () => {
     mockHooks({ restricted: true });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Active",
@@ -246,7 +246,7 @@ describe("useModsPageActions", () => {
 
   test("blueprint with missing permissions", () => {
     mockHooks({ hasPermissions: false });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -270,7 +270,7 @@ describe("useModsPageActions", () => {
 
   test("blueprint with access revoked", () => {
     mockHooks();
-    const blueprintItem = installableItemFactory({
+    const blueprintItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -285,7 +285,7 @@ describe("useModsPageActions", () => {
 
   test("paused deployment with unrestricted user", () => {
     mockHooks({ restricted: false });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Paused",
@@ -302,7 +302,7 @@ describe("useModsPageActions", () => {
 
   test("paused deployment with restricted user", () => {
     mockHooks({ restricted: true });
-    const deploymentItem = installableItemFactory({
+    const deploymentItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Deployment",
       status: "Paused",
@@ -371,7 +371,7 @@ describe("actions", () => {
 
     test("calls uninstallRecipe for a blueprint", () => {
       mockHooks();
-      const blueprintInstallable = installableItemFactory({
+      const blueprintInstallable = modViewItemFactory({
         isExtension: false,
         sharingType: "Personal",
         status: "Active",
@@ -398,7 +398,7 @@ describe("actions", () => {
 
       const extension = cloudExtensionFactory();
 
-      const extensionInstallable = installableItemFactory({
+      const extensionInstallable = modViewItemFactory({
         isExtension: true,
         sharingType: "Personal",
         status: "Active",

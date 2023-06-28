@@ -41,7 +41,7 @@ jest.mock("@/recipes/recipesHooks", () => ({
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));
 
-const installables: Mod[] = [];
+const mods: Mod[] = [];
 
 describe("ModsPageLayout", () => {
   const { env } = process;
@@ -60,7 +60,7 @@ describe("ModsPageLayout", () => {
   });
 
   test("renders", async () => {
-    const rendered = render(<ModsPageLayout mods={installables} />);
+    const rendered = render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -70,7 +70,7 @@ describe("ModsPageLayout", () => {
 
     const deferred = onDeferredGet("/api/onboarding/starter-blueprints/");
 
-    render(<ModsPageLayout mods={installables} />);
+    render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
@@ -87,7 +87,7 @@ describe("ModsPageLayout", () => {
   });
 
   test("get started tab is active by default", async () => {
-    render(<ModsPageLayout mods={installables} />);
+    render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
@@ -102,7 +102,7 @@ describe("ModsPageLayout", () => {
         organization: userOrganizationFactory(),
       })
     );
-    render(<ModsPageLayout mods={installables} />);
+    render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console")
@@ -113,7 +113,7 @@ describe("ModsPageLayout", () => {
   test("shows the bot games tab", async () => {
     mockCachedUser();
 
-    render(<ModsPageLayout mods={installables} />, {
+    render(<ModsPageLayout mods={mods} />, {
       setupRedux(dispatch) {
         dispatch(
           authSlice.actions.setAuth(
@@ -133,11 +133,11 @@ describe("ModsPageLayout", () => {
   test("doesn't flash get started tab while loading the bot games tab", async () => {
     mockLoadingUser();
 
-    render(<ModsPageLayout mods={installables} />);
+    render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(screen.queryByText("Get Started")).toBeNull();
 
-    render(<ModsPageLayout mods={installables} />, {
+    render(<ModsPageLayout mods={mods} />, {
       setupRedux(dispatch) {
         dispatch(
           authSlice.actions.setAuth(
@@ -155,7 +155,7 @@ describe("ModsPageLayout", () => {
   });
 
   test("bot games tab is active by default", async () => {
-    render(<ModsPageLayout mods={installables} />, {
+    render(<ModsPageLayout mods={mods} />, {
       setupRedux(dispatch) {
         dispatch(
           authSlice.actions.setAuth(
@@ -174,7 +174,7 @@ describe("ModsPageLayout", () => {
 
   test("search query heading renders", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    render(<ModsPageLayout mods={installables} />);
+    render(<ModsPageLayout mods={mods} />);
 
     await waitForEffect();
 
@@ -203,7 +203,7 @@ describe("ModsPageLayout", () => {
 describe("Serializable Data Test", () => {
   test("Pushes unserializable data to redux", async () => {
     const spy = jest.spyOn(console, "error");
-    render(<ModsPageLayout mods={installables} />, {
+    render(<ModsPageLayout mods={mods} />, {
       setupRedux(dispatch) {
         dispatch(
           blueprintsSlice.actions.setSearchQuery(
