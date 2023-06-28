@@ -28,14 +28,14 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import useBlueprintsPageActions from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+import useModsPageActions from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 import { type ModViewItem } from "@/mods/modTypes";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
-  const actions = useBlueprintsPageActions(modViewItem);
+  const actions = useModsPageActions(modViewItem);
 
   const { hasUpdate } = modViewItem;
 

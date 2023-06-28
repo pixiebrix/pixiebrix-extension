@@ -18,9 +18,9 @@
 /* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
 /// <reference types="jest-extended" />
 
-import useBlueprintsPageActions, {
+import useModsPageActions, {
   type BlueprintsPageActions,
-} from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+} from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 import useFlags from "@/hooks/useFlags";
 import {
   type ModStatus,
@@ -102,7 +102,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe("useBlueprintsPageActions", () => {
+describe("useModsPageActions", () => {
   test("cloud extension", () => {
     mockHooks();
     const cloudExtensionItem = installableItemFactory({
@@ -113,7 +113,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(cloudExtensionItem));
+    } = renderHook(() => useModsPageActions(cloudExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
@@ -130,7 +130,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(personalExtensionItem));
+    } = renderHook(() => useModsPageActions(personalExtensionItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
       actions
@@ -147,7 +147,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
+    } = renderHook(() => useModsPageActions(personalBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -164,7 +164,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(personalBlueprintItem));
+    } = renderHook(() => useModsPageActions(personalBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -178,7 +178,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
+    } = renderHook(() => useModsPageActions(teamBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
@@ -195,7 +195,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(teamBlueprintItem));
+    } = renderHook(() => useModsPageActions(teamBlueprintItem));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
@@ -209,7 +209,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(publicBlueprintItem));
+    } = renderHook(() => useModsPageActions(publicBlueprintItem));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
       actions
@@ -226,7 +226,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModsPageActions(deploymentItem));
     expectActions(["reactivate", "deactivate", "viewLogs"], actions);
   });
 
@@ -240,7 +240,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModsPageActions(deploymentItem));
     expectActions(["viewLogs"], actions);
   });
 
@@ -254,7 +254,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModsPageActions(deploymentItem));
     expectActions(
       [
         "viewPublish",
@@ -279,7 +279,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(blueprintItem));
+    } = renderHook(() => useModsPageActions(blueprintItem));
     expectActions(["deactivate", "viewLogs"], actions);
   });
 
@@ -293,7 +293,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModsPageActions(deploymentItem));
 
     // Unrestricted users (e.g., developers) need to be able to deactivate/reactivate a deployment to use a later
     // version of the blueprint for development/testing.
@@ -310,7 +310,7 @@ describe("useBlueprintsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useBlueprintsPageActions(deploymentItem));
+    } = renderHook(() => useModsPageActions(deploymentItem));
 
     expectActions(["viewLogs"], actions);
   });
@@ -336,7 +336,7 @@ describe("useBlueprintsPageActions", () => {
     test("pending publish", () => {
       const {
         result: { current: actions },
-      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
+      } = renderHook(() => useModsPageActions(blueprintItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
         actions
@@ -348,7 +348,7 @@ describe("useBlueprintsPageActions", () => {
 
       const {
         result: { current: actions },
-      } = renderHook(() => useBlueprintsPageActions(blueprintItem));
+      } = renderHook(() => useModsPageActions(blueprintItem));
       expectActions(
         [
           "viewInMarketplaceHref",
@@ -381,7 +381,7 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useBlueprintsPageActions(blueprintInstallable));
+      } = renderHook(() => useModsPageActions(blueprintInstallable));
 
       deactivate();
 
@@ -409,7 +409,7 @@ describe("actions", () => {
         result: {
           current: { deactivate },
         },
-      } = renderHook(() => useBlueprintsPageActions(extensionInstallable), {
+      } = renderHook(() => useModsPageActions(extensionInstallable), {
         setupRedux(dispatch) {
           dispatch(extensionActions.installCloudExtension({ extension }));
           dispatch(

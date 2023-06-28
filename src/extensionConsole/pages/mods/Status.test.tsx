@@ -18,22 +18,17 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/mods/Status";
-import useBlueprintsPageActions, {
+import useModsPageActions, {
   type BlueprintsPageActions,
-} from "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions";
+} from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 
-jest.mock(
-  "@/extensionConsole/pages/mods/hooks/useBlueprintsPageActions",
-  () => ({
-    __esModule: true,
-    default: jest.fn().mockReturnValue({}),
-  })
-);
+jest.mock("@/extensionConsole/pages/mods/hooks/useModsPageActions", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({}),
+}));
 
 const useInstallableViewItemActionsMock =
-  useBlueprintsPageActions as jest.MockedFunction<
-    typeof useBlueprintsPageActions
-  >;
+  useModsPageActions as jest.MockedFunction<typeof useModsPageActions>;
 
 describe("Status", () => {
   beforeEach(() => {
