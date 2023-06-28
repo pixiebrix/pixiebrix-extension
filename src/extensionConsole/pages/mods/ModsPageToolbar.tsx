@@ -37,7 +37,7 @@ import {
 import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
 import { useSelector } from "react-redux";
 
-const BlueprintsToolbar: React.FunctionComponent<{
+const ModsPageToolbar: React.FunctionComponent<{
   tableInstance: TableInstance;
 }> = ({ tableInstance }) => {
   const {
@@ -67,9 +67,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
   const isGrouped = groupBy.length > 0;
 
   const isSorted = sortBy.length > 0;
-  const numberOfBlueprints = isGrouped
-    ? flatRows.length - rows.length
-    : rows.length;
+  const numberOfMods = isGrouped ? flatRows.length - rows.length : rows.length;
 
   const { groupByOptions, sortByOptions } = useMemo(() => {
     const groupByOptions = flatHeaders
@@ -91,7 +89,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
 
   const tabContentTitle =
     globalFilter && !["Bot Games", "Get Started"].includes(activeTab.key)
-      ? `${numberOfBlueprints} results for "${globalFilter}"`
+      ? `${numberOfMods} results for "${globalFilter}"`
       : activeTab.tabTitle;
 
   return (
@@ -179,4 +177,4 @@ const BlueprintsToolbar: React.FunctionComponent<{
   );
 };
 
-export default BlueprintsToolbar;
+export default ModsPageToolbar;
