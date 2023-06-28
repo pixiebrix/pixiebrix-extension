@@ -376,7 +376,7 @@ export async function runEditorExtension(
  * Uninstall any extension points for mods that are no longer active.
  *
  * When mods are updated in the background script (i.e. via the Deployment updater), we don't remove
- * extension points from the current tab to not interrupt the user's workflow. This function can be
+ * extension points from the current tab in order to not interrupt the user's workflow. This function can be
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
