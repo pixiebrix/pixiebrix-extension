@@ -5,7 +5,7 @@ import { Col, Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import modsSlice, { type ActiveTab } from "./modsSlice";
-import { selectActiveTab, selectSearchQuery } from "./blueprintsSelectors";
+import { selectActiveTab, selectSearchQuery } from "./modsSelectors";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

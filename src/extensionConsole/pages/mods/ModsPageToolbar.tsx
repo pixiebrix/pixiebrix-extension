@@ -33,7 +33,7 @@ import {
   selectGroupBy,
   selectSortBy,
   selectView,
-} from "@/extensionConsole/pages/mods/blueprintsSelectors";
+} from "@/extensionConsole/pages/mods/modsSelectors";
 import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import { useSelector } from "react-redux";
 

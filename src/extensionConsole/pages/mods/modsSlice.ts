@@ -31,7 +31,7 @@ export type ActiveTab = {
   hideToolbar?: boolean;
 };
 
-export type BlueprintsState = {
+export type ModsState = {
   view: View;
   groupBy: string[];
   sortBy: Array<SortingRule<ModViewItem>>;
@@ -39,7 +39,7 @@ export type BlueprintsState = {
   searchQuery: string;
 };
 
-const initialState: BlueprintsState = {
+const initialState: ModsState = {
   view: "list",
   groupBy: [],
   sortBy: [],
@@ -79,7 +79,7 @@ const modsSlice = createSlice({
   },
 });
 
-export const persistBlueprintsConfig = {
+export const persistModsConfig = {
   key: "blueprintsOptions",
   storage: localStorage as StorageInterface,
 };

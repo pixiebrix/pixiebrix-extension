@@ -20,7 +20,7 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import modsSlice, {
-  persistBlueprintsConfig,
+  persistModsConfig,
 } from "@/extensionConsole/pages/mods/modsSlice";
 import { appApi } from "@/services/api";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
@@ -39,7 +39,7 @@ export default {
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      blueprints: persistReducer(persistBlueprintsConfig, modsSlice.reducer),
+      blueprints: persistReducer(persistModsConfig, modsSlice.reducer),
       recipes: recipesSlice.reducer,
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,

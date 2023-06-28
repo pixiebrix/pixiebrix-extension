@@ -19,7 +19,7 @@ import { useGetOrganizationsQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
 import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { selectActiveTab } from "@/extensionConsole/pages/mods/blueprintsSelectors";
+import { selectActiveTab } from "@/extensionConsole/pages/mods/modsSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 

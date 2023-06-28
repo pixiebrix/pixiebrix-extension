@@ -23,7 +23,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/services/api";
 import { persistReducer } from "redux-persist";
 import modsSlice, {
-  persistBlueprintsConfig,
+  persistModsConfig,
 } from "@/extensionConsole/pages/mods/modsSlice";
 
 export default {
@@ -48,7 +48,7 @@ export default {
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      blueprints: persistReducer(persistBlueprintsConfig, modsSlice.reducer),
+      blueprints: persistReducer(persistModsConfig, modsSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

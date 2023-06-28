@@ -42,13 +42,13 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { type SettingsRootState } from "@/store/settingsTypes";
 import modsSlice, {
-  persistBlueprintsConfig,
+  persistModsConfig,
 } from "@/extensionConsole/pages/mods/modsSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type BlueprintsRootState } from "@/extensionConsole/pages/mods/blueprintsSelectors";
+import { type ModsRootState } from "@/extensionConsole/pages/mods/modsSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
@@ -68,7 +68,7 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export type RootState = AuthRootState &
   LogRootState &
-  BlueprintsRootState &
+  ModsRootState &
   ExtensionsRootState &
   ServicesRootState &
   SettingsRootState &
@@ -97,7 +97,7 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    blueprints: persistReducer(persistBlueprintsConfig, modsSlice.reducer),
+    blueprints: persistReducer(persistModsConfig, modsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
