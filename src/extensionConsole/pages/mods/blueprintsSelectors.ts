@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlueprintsState } from "@/extensionConsole/pages/mods/blueprintsSlice";
+import { type BlueprintsState } from "@/extensionConsole/pages/mods/modsSlice";
 
 export type BlueprintsRootState = {
   blueprints: BlueprintsState;

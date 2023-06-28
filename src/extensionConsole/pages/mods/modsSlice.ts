@@ -51,7 +51,7 @@ const initialState: BlueprintsState = {
   searchQuery: "",
 };
 
-const blueprintsSlice = createSlice({
+const modsSlice = createSlice({
   name: "blueprints",
   initialState,
   reducers: {
@@ -84,4 +84,4 @@ export const persistBlueprintsConfig = {
   storage: localStorage as StorageInterface,
 };
 
-export default blueprintsSlice;
+export default modsSlice;

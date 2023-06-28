@@ -21,7 +21,7 @@ import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import blueprintsSlice from "@/extensionConsole/pages/mods/blueprintsSlice";
+import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { blueprintModalsSlice } from "@/extensionConsole/pages/mods/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
@@ -37,7 +37,7 @@ function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
+      blueprints: modsSlice.reducer,
       options: extensionsSlice.reducer,
       blueprintModals: blueprintModalsSlice.reducer,
       recipes: recipesSlice.reducer,
