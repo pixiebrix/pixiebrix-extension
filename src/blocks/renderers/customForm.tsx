@@ -47,6 +47,7 @@ import {
 import { Renderer } from "@/types/blocks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
+import cx from "classnames";
 
 const fields = {
   DescriptionField,
@@ -77,8 +78,25 @@ const CustomFormComponent: React.FunctionComponent<{
   formData: JsonObject;
   autoSave: boolean;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, submitCaption, formData, autoSave, onSubmit }) => (
-  <div className="CustomForm p-3">
+  className?: string;
+}> = ({
+  schema,
+  uiSchema,
+  submitCaption,
+  formData,
+  autoSave,
+  className,
+  onSubmit,
+}) => (
+  <div
+    className={
+      // Since 1.7.33, support a className prop to allow for adjusting margin/padding
+      cx("CustomForm", {
+        "p-3": className === undefined,
+        [className]: Boolean(className),
+      })
+    }
+  >
     <ErrorBoundary>
       <Stylesheets href={[bootstrap, custom]}>
         <JsonSchemaForm
@@ -201,6 +219,11 @@ export const customFormRendererSchema = {
       type: "object",
       additionalProperties: true,
     },
+    // Added in 1.7.33 to allow for adjusting the native margin/padding when used in the document builder
+    className: {
+      schema: { type: "string", format: "bootstrap-class" },
+      label: "Layout/Style",
+    },
   },
   required: ["schema"],
 };
@@ -226,6 +249,7 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
+      className,
     }: BlockArgs<{
       storage?: Storage;
       successMessage?: string;
@@ -234,6 +258,7 @@ export class CustomFormRenderer extends Renderer {
       submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
+      className?: string;
     }>,
     { logger }: BlockOptions
   ): Promise<ComponentRef> {
@@ -277,6 +302,7 @@ export class CustomFormRenderer extends Renderer {
         uiSchema,
         autoSave,
         submitCaption,
+        className,
         async onSubmit(values: JsonObject) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
