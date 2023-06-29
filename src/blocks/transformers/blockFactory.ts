@@ -67,7 +67,7 @@ type BrickDefinition = {
   services?: Record<string, RegistryId>;
 };
 
-function validateBlockDefinition(
+function validateBrickDefinition(
   component: unknown
 ): asserts component is BrickDefinition {
   const validator = new Validator(
@@ -235,6 +235,6 @@ export function fromJS(component: UnknownObject): IBlock {
     return readerFactory(component);
   }
 
-  validateBlockDefinition(component);
+  validateBrickDefinition(component);
   return new ExternalBlock(component);
 }

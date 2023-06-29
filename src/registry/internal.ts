@@ -62,7 +62,7 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
   return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
 
-async function resolveBlockDefinition(
+async function resolveBrickDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinition
 ) {
@@ -112,7 +112,7 @@ async function resolveReaderDefinition(
         );
       }
 
-      const block = await resolveBlockDefinition(
+      const block = await resolveBrickDefinition(
         definitions,
         definition as InnerBlock<"component">
       );
@@ -205,7 +205,7 @@ async function resolveInnerDefinition(
 
     case "reader":
     case "component": {
-      return resolveBlockDefinition(definitions, innerDefinition as InnerBlock);
+      return resolveBrickDefinition(definitions, innerDefinition as InnerBlock);
     }
 
     default: {
