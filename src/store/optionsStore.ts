@@ -48,7 +48,7 @@ import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type ModsRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
+import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
@@ -68,7 +68,7 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export type RootState = AuthRootState &
   LogRootState &
-  ModsRootState &
+  ModsPageRootState &
   ExtensionsRootState &
   ServicesRootState &
   SettingsRootState &
@@ -97,7 +97,7 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    mods: persistReducer(persistModsConfig, modsPageSlice.reducer),
+    modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),

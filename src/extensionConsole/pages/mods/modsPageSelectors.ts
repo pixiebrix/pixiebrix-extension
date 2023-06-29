@@ -15,14 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModsState } from "@/extensionConsole/pages/mods/modsPageSlice";
+import { type ModsPageState } from "@/extensionConsole/pages/mods/modsPageSlice";
 
-export type ModsRootState = {
-  mods: ModsState;
+export type ModsPageRootState = {
+  modsPage: ModsPageState;
 };
 
-export const selectView = ({ mods }: ModsRootState) => mods.view;
-export const selectGroupBy = ({ mods }: ModsRootState) => mods.groupBy;
-export const selectSortBy = ({ mods }: ModsRootState) => mods.sortBy;
-export const selectActiveTab = ({ mods }: ModsRootState) => mods.activeTab;
-export const selectSearchQuery = ({ mods }: ModsRootState) => mods.searchQuery;
+export const selectView = ({ modsPage }: ModsPageRootState) => modsPage.view;
+export const selectGroupBy = ({ modsPage }: ModsPageRootState) =>
+  modsPage.groupBy;
+export const selectSortBy = ({ modsPage }: ModsPageRootState) =>
+  modsPage.sortBy;
+export const selectActiveTab = ({ modsPage }: ModsPageRootState) =>
+  modsPage.activeTab;
+export const selectSearchQuery = ({ modsPage }: ModsPageRootState) =>
+  modsPage.searchQuery;

@@ -37,7 +37,7 @@ function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      mods: modsPageSlice.reducer,
+      modsPage: modsPageSlice.reducer,
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
       recipes: recipesSlice.reducer,

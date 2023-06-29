@@ -31,7 +31,7 @@ export type ActiveTab = {
   hideToolbar?: boolean;
 };
 
-export type ModsState = {
+export type ModsPageState = {
   view: View;
   groupBy: string[];
   sortBy: Array<SortingRule<ModViewItem>>;
@@ -39,7 +39,7 @@ export type ModsState = {
   searchQuery: string;
 };
 
-const initialState: ModsState = {
+const initialState: ModsPageState = {
   view: "list",
   groupBy: [],
   sortBy: [],
@@ -52,7 +52,7 @@ const initialState: ModsState = {
 };
 
 const modsPageSlice = createSlice({
-  name: "mods",
+  name: "modsPage",
   initialState,
   reducers: {
     setView(state, { payload: view }: PayloadAction<View>) {

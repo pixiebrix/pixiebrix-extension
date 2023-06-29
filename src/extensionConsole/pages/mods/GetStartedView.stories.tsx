@@ -39,7 +39,7 @@ export default {
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      mods: persistReducer(persistModsConfig, modsPageSlice.reducer),
+      modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
       recipes: recipesSlice.reducer,
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
