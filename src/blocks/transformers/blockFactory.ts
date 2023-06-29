@@ -26,7 +26,7 @@ import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
@@ -51,7 +51,7 @@ type BrickDefinition = {
   kind: "component";
   metadata: Metadata;
   defaultOptions: Record<string, string>;
-  pipeline: BlockConfig | BlockPipeline;
+  pipeline: BrickConfig | BlockPipeline;
   inputSchema: Schema;
   /**
    * An optional RJSF uiSchema for inputs.

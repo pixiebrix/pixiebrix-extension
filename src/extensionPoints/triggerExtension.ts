@@ -38,7 +38,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -78,7 +78,7 @@ import { type JsonObject } from "type-fest";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type TriggerConfig = {
-  action: BlockPipeline | BlockConfig;
+  action: BlockPipeline | BrickConfig;
 };
 
 export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {

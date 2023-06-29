@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import {
   nestedPosition,
   type VisitPipelineExtra,
@@ -36,7 +36,7 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
 
   public override visitPipeline(
     position: BlockPosition,
-    pipeline: BlockConfig[],
+    pipeline: BrickConfig[],
     extra: VisitPipelineExtra
   ): void {
     // Validating position only if renderers are allowed in this pipeline

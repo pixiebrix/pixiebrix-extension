@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
 
@@ -79,7 +79,7 @@ export class RegexTransformer extends Transformer {
     ],
   };
 
-  override getOutputSchema(config: BlockConfig): Schema | undefined {
+  override getOutputSchema(config: BrickConfig): Schema | undefined {
     const pattern = extractRegexLiteral(config);
     const { input } = config.config;
 

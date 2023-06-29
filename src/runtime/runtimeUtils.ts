@@ -23,7 +23,7 @@ import {
 import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { isEmpty } from "lodash";
-import { type BlockConfig, type BlockWindow } from "@/blocks/types";
+import { type BrickConfig, type BlockWindow } from "@/blocks/types";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -108,9 +108,9 @@ export async function logIfInvalidOutput(
  * Helper method to render a top-level field of blockConfig.
  */
 async function renderConfigOption(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   context: BlockArgsContext,
-  fieldName: keyof BlockConfig,
+  fieldName: keyof BrickConfig,
   {
     explicitRender,
     autoescape,
@@ -135,7 +135,7 @@ async function renderConfigOption(
  * Return true if the stage should be run given the current context
  */
 export async function shouldRunBlock(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   context: BlockArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
@@ -152,11 +152,11 @@ export async function shouldRunBlock(
 
 /**
  * Select the root element (or document) for a block based on the current root and the block's rootMode
- * @see BlockConfig.rootMode
- * @see BlockConfig.root
+ * @see BrickConfig.rootMode
+ * @see BrickConfig.root
  */
 export async function selectBlockRootElement(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   defaultRoot: SelectorRoot,
   context: BlockArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions

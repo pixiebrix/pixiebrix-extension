@@ -48,7 +48,7 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -80,7 +80,7 @@ export type ContextMenuConfig = {
   /**
    * Action to perform on click.
    */
-  action: BlockConfig | BlockPipeline;
+  action: BrickConfig | BlockPipeline;
 
   /**
    * (Experimental) message to show on success when running the extension

@@ -19,7 +19,7 @@ import { freshIdentifier } from "@/utils";
 import getType from "@/runtime/getType";
 import { type BlockType } from "@/runtime/runtimeTypes";
 import {
-  type BlockConfig,
+  type BrickConfig,
   type BlockPipeline,
   type BlockPosition,
 } from "@/blocks/types";
@@ -80,7 +80,7 @@ class PipelineMapVisitor extends PipelineVisitor {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     this.pipelineMap[blockConfig.instanceId] = {

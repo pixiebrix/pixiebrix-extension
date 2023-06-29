@@ -17,7 +17,7 @@
 
 import { castArray } from "lodash";
 import { type OutputUnit } from "@cfworker/json-schema";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import { type JsonObject } from "type-fest";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -28,7 +28,7 @@ export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
   readonly config: BlockPipeline;
 
-  constructor(message: string, config: BlockConfig | BlockPipeline) {
+  constructor(message: string, config: BrickConfig | BlockPipeline) {
     super(message);
     this.config = castArray(config);
   }

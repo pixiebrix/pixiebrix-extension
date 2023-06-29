@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import {
-  type BlockConfig,
+  type BrickConfig,
   type BlockPipeline,
   type BlockPosition,
 } from "@/blocks/types";
@@ -39,7 +39,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitResolvedBlockExtra
   ): void {
     // Generate an instanceId for the block
@@ -99,7 +99,7 @@ export async function normalizePipelineForEditor(
 class OmitEditorMetadataVisitor extends PipelineVisitor {
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitResolvedBlockExtra
   ): void {
     // Remove up instanceIds

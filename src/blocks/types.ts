@@ -82,29 +82,29 @@ export type ReaderConfig =
  * - target: the last tab that the current tab opened
  * - top: the top-most frame in the window
  * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
- * @see {@link BlockConfig.window}
+ * @see {@link BrickConfig.window}
  */
 export type BlockWindow = "self" | "opener" | "target" | "top" | "broadcast";
 
 /**
  * Condition expression written in templateEngine for deciding if the step should be run.
- * @see {@link BlockConfig.if}
+ * @see {@link BrickConfig.if}
  */
 export type BlockIf = string | boolean | number | Expression;
 
 /**
- * A block configuration to be executed by the PixieBrix runtime.
+ * A brick configuration to be executed by the PixieBrix runtime.
  * @see runStage
  * @see reducePipeline
  */
-export type BlockConfig = {
+export type BrickConfig = {
   /**
-   * The registry id of the configured block
+   * The registry id of the configured brick
    */
   id: RegistryId;
 
   /**
-   * The configuration of the block
+   * The configuration of the brick
    */
   // XXX: in the future, should use JsonObject here, but will require extra type assertions in the codebase.
   config: UnknownObject;
@@ -197,7 +197,7 @@ export type BlockConfig = {
 /**
  * A pipeline of blocks to execute sequentially
  */
-export type BlockPipeline = BlockConfig[];
+export type BlockPipeline = BrickConfig[];
 
 /**
  * A control flow branch, for tracing. The array of branches is used to correlate runs of the same block in a pipeline

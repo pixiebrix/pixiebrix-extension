@@ -24,7 +24,7 @@ import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNo
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
-  type BlockConfig,
+  type BrickConfig,
   type BlockPipeline,
   type Branch,
 } from "@/blocks/types";
@@ -104,7 +104,7 @@ type SubPipeline = {
  */
 function getSubPipelinesForBlock(
   block: IBlock | null,
-  blockConfig: BlockConfig
+  blockConfig: BrickConfig
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
@@ -253,7 +253,7 @@ const usePipelineNodes = (): {
     extensionHasTraces: extensionHasTracesInput,
   }: {
     index: number;
-    blockConfig: BlockConfig;
+    blockConfig: BrickConfig;
     latestPipelineCall: Branch[];
     flavor: PipelineFlavor;
     pipelinePath: string;

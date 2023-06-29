@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -30,7 +30,7 @@ class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     super.visitBlock(position, blockConfig, extra);

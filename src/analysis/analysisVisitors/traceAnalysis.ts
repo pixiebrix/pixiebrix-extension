@@ -22,7 +22,7 @@ import {
   type TraceError,
   type TraceRecord,
 } from "@/telemetry/trace";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -117,7 +117,7 @@ class TraceAnalysis extends AnalysisVisitor {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     super.visitBlock(position, blockConfig, extra);

@@ -17,7 +17,7 @@
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type IBlock } from "@/types/blockTypes";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
@@ -31,14 +31,14 @@ export const blockFactory = define<IBlock>({
   run: jest.fn(),
 });
 
-export const blockConfigFactory = define<BlockConfig>({
+export const blockConfigFactory = define<BrickConfig>({
   instanceId: uuidSequence,
   id: (i: number) => validateRegistryId(`testing/block-${i}`),
   config: () => ({}),
 });
 
 export const pipelineFactory: (
-  blockConfigOverride?: FactoryConfig<BlockConfig>
+  blockConfigOverride?: FactoryConfig<BrickConfig>
 ) => BlockPipeline = (blockConfigProps) => {
   const blockConfig1 = blockConfigFactory(blockConfigProps);
   const blockConfig2 = blockConfigFactory(blockConfigProps);

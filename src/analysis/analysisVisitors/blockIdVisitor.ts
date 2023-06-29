@@ -19,7 +19,7 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { castArray } from "lodash";
 
 /**
@@ -38,7 +38,7 @@ class BlockIdVisitor extends PipelineVisitor {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     super.visitBlock(position, blockConfig, extra);
@@ -46,7 +46,7 @@ class BlockIdVisitor extends PipelineVisitor {
   }
 
   public static collectBlockIds(
-    pipeline: BlockConfig | BlockConfig[]
+    pipeline: BrickConfig | BrickConfig[]
   ): Set<RegistryId> {
     const visitor = new BlockIdVisitor();
     visitor.visitRootPipeline(castArray(pipeline));

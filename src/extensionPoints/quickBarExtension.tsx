@@ -42,7 +42,7 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
@@ -74,7 +74,7 @@ export type QuickBarConfig = {
    */
   icon?: IconConfig;
 
-  action: BlockConfig | BlockPipeline;
+  action: BrickConfig | BlockPipeline;
 };
 
 export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConfig> {

@@ -45,7 +45,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { cloneDeep, debounce, stubTrue } from "lodash";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
@@ -68,7 +68,7 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
   heading: string;
-  body: BlockConfig | BlockPipeline;
+  body: BrickConfig | BlockPipeline;
 };
 
 export type Trigger =

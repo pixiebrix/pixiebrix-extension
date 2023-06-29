@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import { inputProperties } from "@/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -78,7 +78,7 @@ export function isTemplateString(literalOrTemplate: string): boolean {
   return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
 }
 
-async function upgradeBlock(blockConfig: BlockConfig): Promise<void> {
+async function upgradeBlock(blockConfig: BrickConfig): Promise<void> {
   const { inputSchema } = await blockRegistry.lookup(blockConfig.id);
   const inputProps = inputProperties(inputSchema);
 

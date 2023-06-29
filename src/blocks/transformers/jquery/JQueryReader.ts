@@ -19,7 +19,7 @@ import { Transformer } from "@/types/blocks/transformerTypes";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { mapValues } from "lodash";
 import { isExpression } from "@/runtime/mapArgs";
 
@@ -91,7 +91,7 @@ export class JQueryReader extends Transformer {
     additionalProperties: true,
   };
 
-  override getOutputSchema(config: BlockConfig): Schema | undefined {
+  override getOutputSchema(config: BrickConfig): Schema | undefined {
     const selectors = config.config.selectors as SelectorMap;
 
     if (isExpression(selectors)) {

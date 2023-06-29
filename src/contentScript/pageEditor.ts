@@ -21,7 +21,7 @@ import {
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
@@ -54,7 +54,7 @@ export type RunBlockArgs = {
   /**
    * The IBlock configuration.
    */
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
   /**
    * Context to render the BlockArg, should include @input, @options, and service context
    * @see makeServiceContext
@@ -62,7 +62,7 @@ export type RunBlockArgs = {
   context: BlockArgsContext;
   /**
    * Root jQuery selector to determine the root if the rootMode is "inherit".
-   * @see BlockConfig.rootMode
+   * @see BrickConfig.rootMode
    */
   rootSelector: string | undefined;
 };

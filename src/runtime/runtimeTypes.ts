@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type IBlock } from "@/types/blockTypes";
 import { type BlockArgs, type OutputKey } from "@/types/runtimeTypes";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**
  * A block configuration with the corresponding resolved IBlock and BlockType.
- * @see BlockConfig
+ * @see BrickConfig
  * @see BlockType
  */
 export type ResolvedBlockConfig = {
   block: IBlock;
-  config: BlockConfig;
+  config: BrickConfig;
   type: BlockType;
 };
 

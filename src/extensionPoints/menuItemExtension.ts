@@ -48,7 +48,7 @@ import notify, {
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions, {
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
@@ -119,13 +119,13 @@ export type MenuItemExtensionConfig = {
   /**
    * The action to perform when the button is clicked
    */
-  action: BlockConfig | BlockPipeline;
+  action: BrickConfig | BlockPipeline;
 
   /**
    * (Experimental) condition to determine whether to show the menu item
    * @see if
    */
-  if?: BlockConfig | BlockPipeline;
+  if?: BrickConfig | BlockPipeline;
 
   /**
    * (Experimental) re-install the menu if an off the selectors change.

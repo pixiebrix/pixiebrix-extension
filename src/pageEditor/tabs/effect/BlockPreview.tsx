@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { useDebouncedCallback } from "use-debounce";
@@ -135,7 +135,7 @@ const previewSlice = createSlice({
 });
 
 const BlockPreview: React.FunctionComponent<{
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
   extensionPoint: BaseExtensionPointState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
@@ -151,11 +151,11 @@ const BlockPreview: React.FunctionComponent<{
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
-  // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
+  // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, context: BlockArgsContext) => {
+    async (blockConfig: BrickConfig, context: BlockArgsContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
 

@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
 import { isTemplateExpression } from "@/runtime/mapArgs";
@@ -32,7 +32,7 @@ function containsTemplateExpression(literalOrTemplate: string): boolean {
  * Returns the regex literal pattern, or null if the regex is a variable or template expression
  * @param blockConfig
  */
-export function extractRegexLiteral(blockConfig: BlockConfig): string | null {
+export function extractRegexLiteral(blockConfig: BrickConfig): string | null {
   const { regex: rawRegex = "" } = blockConfig.config;
   if (typeof rawRegex === "string") {
     return rawRegex;
@@ -57,7 +57,7 @@ class RegexAnalysis extends AnalysisVisitor {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     super.visitBlock(position, blockConfig, extra);

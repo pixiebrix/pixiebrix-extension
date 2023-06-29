@@ -39,7 +39,7 @@ import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
   selectBlockRootElement,
@@ -166,7 +166,7 @@ export type IntermediateState = {
   /**
    * The context available to the brick. Contains `@inputs`, `@options`, and the other entries accumulated so far from
    * the previous bricks' output keys.
-   * @see BlockConfig.outputKey
+   * @see BrickConfig.outputKey
    */
   context: BlockArgsContext;
   /**
@@ -230,7 +230,7 @@ type BlockOutput = {
 
   /**
    * The updated context, i.e., with the new outputKey.
-   * @see BlockConfig.outputKey
+   * @see BrickConfig.outputKey
    */
   context: BlockArgsContext;
 };
@@ -247,7 +247,7 @@ type TraceMetadata = {
   extensionId: UUID;
   /**
    * The instanceId of the configured block
-   * @see BlockConfig.instanceId
+   * @see BrickConfig.instanceId
    */
   blockInstanceId: UUID;
   /**
@@ -456,7 +456,7 @@ async function renderBlockArg(
   const stageTemplate = config.config ?? {};
 
   if (type === "reader") {
-    // `reducePipeline` is responsible for passing the correct root into runStage based on the BlockConfig
+    // `reducePipeline` is responsible for passing the correct root into runStage based on the BrickConfig
     if ((config.window ?? "self") === "self") {
       return { root: state.root } as unknown as RenderedArgs;
     }
@@ -623,7 +623,7 @@ async function applyReduceDefaults({
 }
 
 export async function blockReducer(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   state: IntermediateState,
   options: ReduceOptions
 ): Promise<BlockOutput> {
@@ -796,7 +796,7 @@ export async function blockReducer(
 }
 
 function throwBlockError(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   state: IntermediateState,
   error: unknown,
   options: ReduceOptions
@@ -851,7 +851,7 @@ function throwBlockError(
 }
 
 async function getStepLogger(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   pipelineLogger: Logger
 ): Promise<Logger> {
   let resolvedConfig: ResolvedBlockConfig;
@@ -883,7 +883,7 @@ async function getStepLogger(
 
 /** Execute all the blocks of an extension. */
 export async function reduceExtensionPipeline(
-  pipeline: BlockConfig | BlockPipeline,
+  pipeline: BrickConfig | BlockPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {}
 ): Promise<unknown> {
@@ -900,7 +900,7 @@ export async function reduceExtensionPipeline(
 
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
-  pipeline: BlockConfig | BlockPipeline,
+  pipeline: BrickConfig | BlockPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions>
 ): Promise<unknown> {

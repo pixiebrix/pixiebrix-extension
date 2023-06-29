@@ -29,7 +29,7 @@ import {
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
 import { joinPathParts } from "@/utils";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
@@ -64,7 +64,7 @@ function useAddBlock(): AddBlock {
   const addBlockLocation = useSelector(selectAddBlockLocation);
 
   const makeNewBlock = useCallback(
-    async (block: IBlock): Promise<BlockConfig> => {
+    async (block: IBlock): Promise<BrickConfig> => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([

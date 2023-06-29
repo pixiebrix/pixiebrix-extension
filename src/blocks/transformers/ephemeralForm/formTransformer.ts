@@ -32,7 +32,7 @@ import {
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { isExpression } from "@/runtime/mapArgs";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 
@@ -105,7 +105,7 @@ export class FormTransformer extends Transformer {
     additionalProperties: true,
   };
 
-  override getOutputSchema(config: BlockConfig): Schema | undefined {
+  override getOutputSchema(config: BrickConfig): Schema | undefined {
     const formSchema = config.config?.schema as Schema;
 
     if (isExpression(formSchema)) {

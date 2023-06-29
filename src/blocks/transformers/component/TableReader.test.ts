@@ -17,7 +17,7 @@
 
 import { TableReader } from "@/blocks/transformers/component/TableReader";
 import blockRegistry from "@/blocks/registry";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import {
   unsafeAssumeValidArg,
   validateOutputKey,
@@ -37,7 +37,7 @@ describe("TableReader", () => {
   });
 
   test("runs successfully", async () => {
-    const blockConfig: BlockConfig = {
+    const blockConfig: BrickConfig = {
       id: tableReaderBlock.id,
       config: {
         orientation: "infer",
@@ -71,7 +71,7 @@ describe("TableReader", () => {
   });
 
   test("throws an error when selector doesn't match a table/list", async () => {
-    const blockConfig: BlockConfig = {
+    const blockConfig: BrickConfig = {
       id: tableReaderBlock.id,
       config: {
         orientation: "infer",
@@ -97,7 +97,7 @@ describe("TableReader", () => {
   });
 
   test("selector is optional", async () => {
-    const blockConfig: BlockConfig = {
+    const blockConfig: BrickConfig = {
       id: tableReaderBlock.id,
       config: {},
       outputKey: validateOutputKey("table"),

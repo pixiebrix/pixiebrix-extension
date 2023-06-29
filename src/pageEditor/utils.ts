@@ -17,7 +17,7 @@
 
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import {
@@ -89,7 +89,7 @@ export function getRecipeById(
  */
 export function getPipelinePropNames(
   block: IBlock | null,
-  blockConfig: BlockConfig
+  blockConfig: BrickConfig
 ): string[] {
   switch (blockConfig.id) {
     // Special handling for tour step to avoid clutter and input type alternatives
@@ -136,7 +136,7 @@ export function getPipelinePropNames(
 }
 
 export function getVariableKeyForSubPipeline(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   pipelinePropName: string
 ): string | null {
   let keyPropName: string = null;
@@ -207,7 +207,7 @@ function getElementsPipelinePropNames(
   return propNames;
 }
 
-export function getDocumentPipelinePaths(block: BlockConfig): string[] {
+export function getDocumentPipelinePaths(block: BrickConfig): string[] {
   return getElementsPipelinePropNames(
     "config.body",
     (block.config.body ?? []) as DocumentElement[]

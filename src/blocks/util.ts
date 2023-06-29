@@ -17,7 +17,7 @@
 
 import { mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
@@ -66,7 +66,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
 
 /** Return IBlocks for all blocks referenced in a pipeline, including any sub-pipelines. */
 export async function selectAllBlocks(
-  config: BlockConfig | BlockPipeline
+  config: BrickConfig | BlockPipeline
 ): Promise<IBlock[]> {
   const ids = BlockIdVisitor.collectBlockIds(config);
   return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));

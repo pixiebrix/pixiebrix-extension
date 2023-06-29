@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import {
   contextBlock,
   echoBlock,
@@ -43,7 +43,7 @@ describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
         templateEngine,
       };
       const result = await reducePipeline(
-        pipeline as BlockConfig,
+        pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
         testOptions("v1")
       );
@@ -73,7 +73,7 @@ describe("apiVersion: v1", () => {
       templateEngine: "nunjucks",
     };
     const result = await reducePipeline(
-      pipeline as BlockConfig,
+      pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
       testOptions("v1")
     );
@@ -152,7 +152,7 @@ describe("apiVersion: v3", () => {
       templateEngine: "mustache",
     };
     const result = await reducePipeline(
-      pipeline as BlockConfig,
+      pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
       testOptions("v3")
     );
@@ -191,7 +191,7 @@ describe("Error handling", () => {
     };
     try {
       await reducePipeline(
-        pipeline as BlockConfig,
+        pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
         testOptions("v3")
       );

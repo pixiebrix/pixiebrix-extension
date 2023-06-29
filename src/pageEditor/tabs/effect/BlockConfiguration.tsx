@@ -29,7 +29,7 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BlockConfig, type BlockWindow } from "@/blocks/types";
+import { type BrickConfig, type BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
@@ -61,8 +61,8 @@ const BlockConfiguration: React.FunctionComponent<{
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
-  const [config] = useField<BlockConfig>(name);
-  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BlockConfig>(
+  const [config] = useField<BrickConfig>(name);
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
     configName("root")
   );
   const blockErrors = getIn(context.errors, name);

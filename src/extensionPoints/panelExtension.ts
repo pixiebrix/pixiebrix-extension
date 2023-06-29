@@ -44,7 +44,7 @@ import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -64,7 +64,7 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type PanelConfig = {
   heading?: string;
-  body: BlockConfig | BlockPipeline;
+  body: BrickConfig | BlockPipeline;
   icon?: IconConfig;
   collapsible?: boolean;
   shadowDOM?: boolean;

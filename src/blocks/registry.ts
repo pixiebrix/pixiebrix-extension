@@ -22,7 +22,7 @@ import {
   type ResolvedBlockConfig,
 } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IBlock } from "@/types/blockTypes";
 
@@ -104,7 +104,7 @@ const registry = new BlocksRegistry();
 export default registry;
 
 export async function resolveBlockConfig(
-  config: BlockConfig
+  config: BrickConfig
 ): Promise<ResolvedBlockConfig> {
   const block = await registry.lookup(config.id);
   return {

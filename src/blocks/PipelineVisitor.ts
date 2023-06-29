@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import { type TypedBlock } from "@/blocks/registry";
@@ -47,7 +47,7 @@ export function nestedPosition(
 export type VisitBlockExtra = {
   index: number;
   parentNodeId?: UUID | undefined;
-  pipeline: BlockConfig[];
+  pipeline: BrickConfig[];
   pipelinePosition: BlockPosition;
   pipelineFlavor: PipelineFlavor;
 };
@@ -63,7 +63,7 @@ export type VisitPipelineExtra = {
   /**
    * Parent block of the pipeline, if any
    */
-  parentNode?: BlockConfig | undefined;
+  parentNode?: BrickConfig | undefined;
 
   /**
    * Parent block of the pipeline, if any
@@ -90,7 +90,7 @@ class PipelineVisitor {
    */
   public visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
@@ -122,7 +122,7 @@ class PipelineVisitor {
 
   public visitDocument(
     position: BlockPosition,
-    blockConfig: BlockConfig
+    blockConfig: BrickConfig
   ): void {
     const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
     for (const subPipelineProperty of subPipelineProperties) {
@@ -131,7 +131,7 @@ class PipelineVisitor {
         "__value__"
       );
 
-      const subPipeline: BlockConfig[] = get(blockConfig, subPipelineAccessor);
+      const subPipeline: BrickConfig[] = get(blockConfig, subPipelineAccessor);
       if (subPipeline?.length > 0) {
         const pipelinePosition = nestedPosition(position, subPipelineAccessor);
         const pipelineFlavor = getSubPipelineFlavor(
@@ -155,7 +155,7 @@ class PipelineVisitor {
    */
   public visitPipeline(
     position: BlockPosition,
-    pipeline: BlockConfig[],
+    pipeline: BrickConfig[],
     { flavor, parentNode }: VisitPipelineExtra
   ): void {
     for (const [index, blockConfig] of pipeline.entries()) {
@@ -170,7 +170,7 @@ class PipelineVisitor {
   }
 
   public visitRootPipeline(
-    pipeline: BlockConfig[],
+    pipeline: BrickConfig[],
     extra?: VisitRootPipelineExtra
   ): void {
     const flavor = extra?.extensionPointType

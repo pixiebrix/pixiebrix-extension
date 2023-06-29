@@ -23,7 +23,7 @@ import {
   type VisitBlockExtra,
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import {
@@ -379,7 +379,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * @param blockConfig the block configuration
    * @private
    */
-  private safeGetOutputSchema(blockConfig: BlockConfig): Schema {
+  private safeGetOutputSchema(blockConfig: BrickConfig): Schema {
     const block = this.allBlocks.get(blockConfig.id)?.block;
 
     if (!block) {
@@ -413,7 +413,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     // Create a new context frame with:
@@ -552,7 +552,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitPipeline(
     position: BlockPosition,
-    pipeline: BlockConfig[],
+    pipeline: BrickConfig[],
     extra: VisitPipelineExtra
   ) {
     // Get variable provided to child pipeline if applicable (e.g. for a for-each, try-except, block)
@@ -682,7 +682,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitDocument(
     position: BlockPosition,
-    blockConfig: BlockConfig
+    blockConfig: BrickConfig
   ): void {
     // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
     // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)

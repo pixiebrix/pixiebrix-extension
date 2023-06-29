@@ -18,7 +18,7 @@
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { GetAPITransformer } from "@/blocks/transformers/httpGet";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BlockPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
@@ -43,7 +43,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
 
   override visitBlock(
     position: BlockPosition,
-    blockConfig: BlockConfig,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     super.visitBlock(position, blockConfig, extra);
