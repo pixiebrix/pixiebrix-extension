@@ -106,7 +106,7 @@ export type ExpressionType =
 
 /**
  * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)
- * @see BlockConfig
+ * @see BrickConfig
  * @see loadBrickYaml
  * @since 1.5.0
  */
@@ -185,7 +185,7 @@ export type OptionsArgs = Record<string, Primitive>;
  * Values available to a block to render its arguments.
  * @see BlockArgs
  * @see RenderedArgs
- * @see BlockConfig.outputKey
+ * @see BrickConfig.outputKey
  */
 export type BlockArgsContext = UnknownObject & {
   // Nominal typing

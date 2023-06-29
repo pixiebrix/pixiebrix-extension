@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -52,7 +52,7 @@ export interface IBlock extends Metadata {
    * @see outputSchema
    * @since 1.7.20
    */
-  getOutputSchema?: (config: BlockConfig) => Schema | undefined;
+  getOutputSchema?: (config: BrickConfig) => Schema | undefined;
 
   /**
    * Returns the optional permissions required to run this block.
@@ -139,7 +139,7 @@ export abstract class Block implements IBlock {
     return true;
   }
 
-  getOutputSchema(_config: BlockConfig): Schema | undefined {
+  getOutputSchema(_config: BrickConfig): Schema | undefined {
     return this.outputSchema;
   }
 
