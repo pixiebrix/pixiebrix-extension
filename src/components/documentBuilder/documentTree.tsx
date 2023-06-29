@@ -166,7 +166,7 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, variant, size, className } =
+      const { title, onClick, variant, size, className, disabled } =
         config as ButtonDocumentConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
@@ -183,6 +183,7 @@ export function getComponentDefinition(
           onClick: onClick.__value__,
           tracePath,
           variant,
+          disabled,
           size,
           className,
         },

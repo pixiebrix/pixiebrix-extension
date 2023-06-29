@@ -43,7 +43,14 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   buttonProps,
   ...restPreviewProps
 }) => {
-  const { title, variant, size, className: buttonClassName } = buttonProps;
+  const {
+    title,
+    variant,
+    size,
+    className: buttonClassName,
+    disabled,
+  } = buttonProps;
+
   return (
     <div>
       <div
@@ -60,6 +67,10 @@ const Button: React.FunctionComponent<ButtonProps> = ({
         />
         <BsButton
           onClick={() => {}}
+          disabled={
+            // Exact match for literal boolean value
+            disabled === true
+          }
           // Not resolving expressions in Preview
           className={
             isExpression(buttonClassName) ? undefined : buttonClassName
