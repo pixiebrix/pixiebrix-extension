@@ -22,8 +22,8 @@ import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
   type OptionsDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
@@ -47,7 +47,7 @@ function inferOptionsSchema(optionsArgs: OptionsArgs): OptionsDefinition {
 export function makeBlueprint(
   extension: UnresolvedExtension,
   metadata: Metadata
-): UnsavedRecipeDefinition {
+): UnsavedModDefinition {
   const {
     extensionPointId,
     label,

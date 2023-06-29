@@ -28,7 +28,7 @@ import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { recipesSlice } from "@/recipes/recipesSlice";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 export default {
@@ -62,7 +62,7 @@ const testRecipe = {
     name: "Test Blueprint",
   },
   extensionPoints: [],
-} as RecipeDefinition;
+} as ModDefinition;
 
 const Template: ComponentStory<typeof GetStartedView> = (args) => (
   <Provider
@@ -97,7 +97,7 @@ ActivateBlueprint.args = {
 ActivateBlueprint.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/marketplace/listings/", (request, result, context) =>
+      rest.get("/api/marketplace/listings/", async (request, result, context) =>
         result(
           context.json([
             {

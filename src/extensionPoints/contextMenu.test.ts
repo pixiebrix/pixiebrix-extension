@@ -32,6 +32,8 @@ import { type ResolvedExtension } from "@/types/extensionTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
+const rootReader = new RootReader();
+
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
   define<ExtensionPointConfig<MenuDefinition>>({
     apiVersion: "v3",
@@ -66,8 +68,6 @@ const extensionFactory = define<ResolvedExtension<ContextMenuConfig>>({
     action: () => [] as BlockPipeline,
   }),
 });
-
-const rootReader = new RootReader();
 
 beforeEach(() => {
   window.document.body.innerHTML = "";

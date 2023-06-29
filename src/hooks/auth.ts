@@ -21,7 +21,7 @@ import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
 import { type RawServiceConfiguration } from "@/types/serviceTypes";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -119,7 +119,7 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
 }
 
 export function getDefaultAuthOptionsForRecipe(
-  recipe: RecipeDefinition,
+  recipe: ModDefinition,
   authOptions: AuthOption[]
 ): Record<RegistryId, AuthOption | null> {
   const requiredServiceIds = getRequiredServiceIds(recipe);

@@ -106,7 +106,7 @@ function readPathSpec(
     );
   }
 
-  const values: Record<string, unknown> = {};
+  const values: UnknownObject = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
@@ -118,7 +118,7 @@ function readPathSpec(
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+      values[key] = getPropByPath(obj as UnknownObject, pathOrObj, {
         proxy,
         maxDepth: MAX_READ_DEPTH,
       });
@@ -128,16 +128,25 @@ function readPathSpec(
   return values;
 }
 
-attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
-  const factory = () => {
-    const values = readPathSpec(window, pathSpec);
-    return Object.values(values).every((value) => isEmpty(value))
-      ? undefined
-      : values;
-  };
+attachListener(
+  READ_WINDOW,
+  async ({
+    pathSpec,
+    waitMillis,
+  }: {
+    pathSpec: PathSpec;
+    waitMillis: number;
+  }) => {
+    const factory = () => {
+      const values = readPathSpec(window, pathSpec);
+      return Object.values(values).every((value) => isEmpty(value))
+        ? undefined
+        : values;
+    };
 
-  return awaitValue(factory, { waitMillis }) as SerializableResponse;
-});
+    return awaitValue(factory, { waitMillis }) as SerializableResponse;
+  }
+);
 
 async function read<TComponent>(
   adapter: ReadableComponentAdapter<TComponent>,
@@ -191,6 +200,8 @@ async function read<TComponent>(
   const target = traverse(adapter.getParent, component, traverseUp);
   const rawData = adapter.getData(target);
   const readData = readPathSpec(
+    // TODO: Find a better solution than casting to any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
     rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
     adapter.proxy

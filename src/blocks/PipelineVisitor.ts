@@ -131,7 +131,7 @@ class PipelineVisitor {
         "__value__"
       );
 
-      const subPipeline = get(blockConfig, subPipelineAccessor);
+      const subPipeline: BlockConfig[] = get(blockConfig, subPipelineAccessor);
       if (subPipeline?.length > 0) {
         const pipelinePosition = nestedPosition(position, subPipelineAccessor);
         const pipelineFlavor = getSubPipelineFlavor(

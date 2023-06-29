@@ -282,6 +282,7 @@ module.exports = (env, options) =>
       [
         "background/background",
         "contentScript/contentScript",
+        "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
         "extensionConsole/options",
@@ -305,10 +306,6 @@ module.exports = (env, options) =>
 
     resolve: {
       alias: {
-        // Enforce a single version
-        // TODO: Undo after https://github.com/fregante/webext-dynamic-content-scripts/issues/54
-        "webext-content-scripts": require.resolve("webext-content-scripts"),
-
         ...mockHeavyDependencies(),
 
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
@@ -461,6 +458,29 @@ module.exports = (env, options) =>
               },
             },
           ],
+        },
+        // Pull bootstrap-icons and simple-icons from CDN to reduce bundle size.
+        {
+          test: /bootstrap-icons\/.*\.svg$/,
+          type: "asset/resource",
+          generator: {
+            emit: false,
+            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${
+              require("bootstrap-icons/package.json").version
+            }/`,
+            filename: "icons/[name][ext]",
+          },
+        },
+        {
+          test: /simple-icons\/.*\.svg$/,
+          type: "asset/resource",
+          generator: {
+            emit: false,
+            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${
+              require("simple-icons/package.json").version
+            }/`,
+            filename: "icons/[name][ext]",
+          },
         },
       ],
     },

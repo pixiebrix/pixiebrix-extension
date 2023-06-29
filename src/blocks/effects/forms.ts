@@ -18,7 +18,7 @@
 import { Effect } from "@/types/blocks/effectTypes";
 import { boolean } from "@/utils";
 import { findSingleElement } from "@/utils/requireSingleElement";
-import { type RequireExactlyOne } from "type-fest";
+import { type JsonObject, type RequireExactlyOne } from "type-fest";
 import {
   BusinessError,
   MultipleElementsFoundError,
@@ -304,7 +304,13 @@ export class FormFill extends Effect {
       fieldSelectors = {},
       submit = false,
       isRootAware = false,
-    }: BlockArgs,
+    }: BlockArgs<{
+      formSelector: string;
+      fieldNames: JsonObject;
+      fieldSelectors: JsonObject;
+      submit: boolean;
+      isRootAware: boolean;
+    }>,
     { logger, root }: BlockOptions
   ): Promise<void> {
     const submitRoot = isRootAware ? root : document;

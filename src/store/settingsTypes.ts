@@ -27,6 +27,28 @@ export const AUTH_METHODS = [
   "partner-oauth2",
 ] as const;
 
+export type SkunkworksSettings = {
+  /**
+   * Experimental feature to suggest HTML elements to select in the Page Editor
+   */
+  suggestElements?: boolean;
+
+  /**
+   * Experimental setting to detect and exclude random classes when generating selectors
+   */
+  excludeRandomClasses?: boolean;
+
+  /**
+   * Experimental setting to support multi-element selector.
+   */
+  selectionTools?: boolean;
+
+  /**
+   * Experimental setting to support autosuggest for variables in the Page Editor
+   */
+  varAutosuggest?: boolean;
+};
+
 export type SettingsState = SkunkworksSettings & {
   /**
    * Whether the extension is synced to the app for provisioning.
@@ -54,6 +76,10 @@ export type SettingsState = SkunkworksSettings & {
    * Whether the non-Chrome browser warning has been dismissed.
    */
   browserWarningDismissed: boolean;
+  /**
+   * Button to enable the floating action button on the page
+   */
+  isFloatingActionButtonEnabled: boolean;
 
   /**
    * Partner id for the user, if any.
@@ -91,26 +117,4 @@ export type SettingsState = SkunkworksSettings & {
 
 export type SettingsRootState = {
   settings: SettingsState;
-};
-
-export type SkunkworksSettings = {
-  /**
-   * Experimental feature to suggest HTML elements to select in the Page Editor
-   */
-  suggestElements?: boolean;
-
-  /**
-   * Experimental setting to detect and exclude random classes when generating selectors
-   */
-  excludeRandomClasses?: boolean;
-
-  /**
-   * Experimental setting to support multi-element selector.
-   */
-  selectionTools?: boolean;
-
-  /**
-   * Experimental setting to support autosuggest for variables in the Page Editor
-   */
-  varAutosuggest?: boolean;
 };

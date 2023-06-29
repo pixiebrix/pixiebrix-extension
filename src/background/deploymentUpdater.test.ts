@@ -19,7 +19,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { updateDeployments } from "@/background/deployment";
+import { updateDeployments } from "@/background/deploymentUpdater";
 import { reportEvent } from "@/telemetry/events";
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -48,6 +48,7 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { type RegistryPackage } from "@/types/contract";
 
 setContext("background");
 const axiosMock = new MockAdapter(axios);
@@ -225,7 +226,7 @@ describe("updateDeployments", () => {
 
     const extensionPoint = extensionPointDefinitionFactory();
     const brick = {
-      ...parsePackage(extensionPoint as any),
+      ...parsePackage(extensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
     registryFindMock.mockResolvedValue(brick);
@@ -312,7 +313,7 @@ describe("updateDeployments", () => {
 
     const extensionPoint = extensionPointDefinitionFactory();
     const brick = {
-      ...parsePackage(extensionPoint as any),
+      ...parsePackage(extensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
     registryFindMock.mockResolvedValue(brick);
@@ -387,11 +388,13 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    jest.doMock("@/background/deployment", () => ({
+    jest.doMock("@/background/deploymentUpdater", () => ({
       uninstallAllDeployments: jest.fn(),
     }));
 
-    const { uninstallAllDeployments } = await import("@/background/deployment");
+    const { uninstallAllDeployments } = await import(
+      "@/background/deploymentUpdater"
+    );
 
     await updateDeployments();
 
@@ -523,7 +526,7 @@ describe("updateDeployments", () => {
   test("can uninstall all deployments", async () => {
     const personalExtensionPoint = extensionPointDefinitionFactory();
     const personalBrick = {
-      ...parsePackage(personalExtensionPoint as any),
+      ...parsePackage(personalExtensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
@@ -537,7 +540,7 @@ describe("updateDeployments", () => {
 
     const deploymentExtensionPoint = extensionPointDefinitionFactory();
     const deploymentsBrick = {
-      ...parsePackage(deploymentExtensionPoint as any),
+      ...parsePackage(deploymentExtensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 

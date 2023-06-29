@@ -76,6 +76,8 @@ async function activateDeployment(
   deployment: Deployment,
   installed: IExtension[]
 ): Promise<void> {
+  let isReinstall = false;
+
   // Clear existing installations of the blueprint
   for (const extension of installed) {
     // Extension won't have recipe if it was locally created by a developer
@@ -85,6 +87,8 @@ async function activateDeployment(
           extensionId: extension.id,
         })
       );
+
+      isReinstall = true;
     }
   }
 
@@ -100,6 +104,8 @@ async function activateDeployment(
       ),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
+      screen: "extensionConsole",
+      isReinstall,
     })
   );
 
@@ -252,6 +258,8 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
+      // Default should be Dispatch<AnyAction>, but it's showing up as Dispatch<any>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
     } catch (error) {

@@ -35,6 +35,7 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   varAutosuggest: false,
+  isFloatingActionButtonEnabled: false,
   partnerId: null,
   authMethod: null,
   authServiceId: null,
@@ -66,6 +67,9 @@ const settingsSlice = createSlice({
     },
     dismissBrowserWarning(state) {
       state.browserWarningDismissed = true;
+    },
+    setFloatingActionButtonEnabled(state, { payload }: { payload: boolean }) {
+      state.isFloatingActionButtonEnabled = payload;
     },
     setPartnerId(
       state,

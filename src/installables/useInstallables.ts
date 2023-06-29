@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { type Installable, type UnavailableRecipe } from "./installableTypes";
+import { type Installable, type UnavailableMod } from "./installableTypes";
 import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
@@ -40,9 +40,7 @@ type InstallablesState = {
   error: unknown;
 };
 
-export function selectUnavailableRecipe(
-  extension: IExtension
-): UnavailableRecipe {
+export function selectUnavailableRecipe(extension: IExtension): UnavailableMod {
   return {
     metadata: extension._recipe,
     kind: "recipe",
@@ -122,7 +120,7 @@ function useInstallables(): InstallablesState {
 
   // Find extensions that were installed by a recipe that's no longer available to the user, e.g., because it was
   // deleted, or because the user no longer has access to it.
-  const unavailableRecipes: UnavailableRecipe[] = useMemo(() => {
+  const unavailableRecipes: UnavailableMod[] = useMemo(() => {
     const knownRecipeIds = new Set(
       (knownRecipes ?? []).map((x) => x.metadata.id)
     );

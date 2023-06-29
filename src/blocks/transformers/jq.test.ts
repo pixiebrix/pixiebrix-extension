@@ -23,6 +23,7 @@ import { neverPromise } from "@/testUtils/testHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 
 describe("smoke tests", () => {
   test("passes input to filter", async () => {
@@ -95,7 +96,7 @@ describe("parse compile error", () => {
       await throwIfInvalidInput(new JQTransformer(), {
         filter: 42,
         data: {},
-      } as any);
+      } as unknown as RenderedArgs);
       expect.fail("Invalid test, expected validateInput to throw");
     } catch (error) {
       expect(serializeError(error)).toStrictEqual({

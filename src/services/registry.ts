@@ -42,7 +42,9 @@ export async function readRawConfigurations(): Promise<
 
   if (typeof base?.configured === "string") {
     // Not really sure why redux-persist stores the next level down as escaped JSON?
-    return Object.values(JSON.parse(base.configured));
+    return Object.values(
+      JSON.parse(base.configured) as Record<string, RawServiceConfiguration>
+    );
   }
 
   if (!base?.configured) {

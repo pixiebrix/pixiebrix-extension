@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "./common";
@@ -26,7 +26,7 @@ import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {
   extension: IExtension | FormState;
-  recipes: RecipeDefinition[];
+  recipes: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
   isNested?: boolean;

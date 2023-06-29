@@ -91,7 +91,7 @@ import {
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
@@ -147,6 +147,7 @@ const cloneActiveExtension = createAsyncThunk<
     }
   );
   // Add the cloned extension
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   thunkAPI.dispatch(actions.addElement(newElement));
 });
 

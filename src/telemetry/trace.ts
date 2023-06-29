@@ -252,12 +252,9 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-  const data = await tx.store.get([
-    record.runId,
-    record.blockInstanceId,
-    callId,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- types are wrong in idb?
-  ] as any);
+  const data = await tx.store.get(
+    IDBKeyRange.only([record.runId, record.blockInstanceId, callId])
+  );
 
   if (data) {
     await tx.store.put({

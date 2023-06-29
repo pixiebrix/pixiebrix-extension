@@ -22,6 +22,7 @@ import Banner from "@/components/banner/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import settingsSlice from "@/store/settingsSlice";
+import { isGoogleChrome } from "@/chrome";
 
 const BrowserBanner: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();
@@ -29,11 +30,7 @@ const BrowserBanner: React.VoidFunctionComponent = () => {
     selectBrowserWarningDismissed
   );
 
-  if (
-    browserWarningDismissed ||
-    // @ts-expect-error -- userAgentData is defined in Chrome browser
-    navigator.userAgentData?.brands?.some((x) => x.brand === "Google Chrome")
-  ) {
+  if (browserWarningDismissed || isGoogleChrome()) {
     return null;
   }
 

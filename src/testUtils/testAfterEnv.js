@@ -45,7 +45,5 @@ globalThis.crypto = {
   getRandomValues: (array) => crypto.randomBytes(array.length),
 };
 
-jest.setMock("webext-dynamic-content-scripts/distribution/active-tab", {});
-
 jest.setMock("webext-detect-page", detectPageMock);
 jest.setMock("@/services/apiClient", apiClientMock);

@@ -114,11 +114,11 @@ const KBarComponent: React.FC = () => {
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
           {/*
-            Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
-            whichever website it's rendering on.
-            To support react-select and any future potential emotion components we used the
-            emotion variant of the react-shadow library.
-          */}
+              Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
+              whichever website it's rendering on.
+              To support react-select and any future potential emotion components we used the
+              emotion variant of the react-shadow library.
+            */}
           <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
@@ -169,6 +169,17 @@ export const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
+export const initQuickBarApp = once(() => {
+  expectContext("contentScript");
+
+  const container = document.createElement("div");
+  container.id = "pixiebrix-quickbar-container";
+  document.body.prepend(container);
+  ReactDOM.render(<QuickBarApp />, container);
+
+  console.debug("Initialized quick bar");
+});
+
 /**
  * Show the quick bar.
  */
@@ -181,14 +192,3 @@ export const toggleQuickBar = () => {
 
   window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
 };
-
-export const initQuickBarApp = once(() => {
-  expectContext("contentScript");
-
-  const container = document.createElement("div");
-  container.id = "pixiebrix-quickbar-container";
-  document.body.prepend(container);
-  ReactDOM.render(<QuickBarApp />, container);
-
-  console.debug("Initialized quick bar");
-});

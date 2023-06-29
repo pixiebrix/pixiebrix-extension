@@ -37,6 +37,7 @@ interface SingleSelector {
 
 interface ChildrenSelector {
   multi?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   find?: SelectorMap;
 }
 
@@ -139,7 +140,7 @@ function processElement($elements: JQuery, selector: SingleSelector) {
     value = cleanValue($elements.text());
   }
 
-  return castValue(value, selector.type);
+  return castValue(String(value), selector.type);
 }
 
 async function select(

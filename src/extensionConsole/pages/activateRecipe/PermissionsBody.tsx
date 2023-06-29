@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -61,7 +61,7 @@ const QuickBarAlert = () => (
 );
 
 const PermissionsBody: React.FunctionComponent<{
-  blueprint: RecipeDefinition;
+  blueprint: ModDefinition;
 }> = ({ blueprint }) => {
   const selectedAuths = useSelectedAuths();
 

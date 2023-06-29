@@ -130,9 +130,10 @@ export class RegexTransformer extends Transformer {
   async transform({
     regex,
     input,
-  }: BlockArgs): Promise<
-    Record<string, string> | Array<Record<string, string>>
-  > {
+  }: BlockArgs<{
+    regex: string | RegExp;
+    input: string | null | Array<string | null>;
+  }>): Promise<Record<string, string> | Array<Record<string, string>>> {
     let compiled: RegExp;
 
     try {

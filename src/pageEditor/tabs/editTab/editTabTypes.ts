@@ -30,6 +30,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type React from "react";
 import { type OutputKey } from "@/types/runtimeTypes";
 
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 type FormikError = string | FormikErrorTree;
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record creates a circular ref

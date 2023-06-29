@@ -48,8 +48,8 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
   type OptionsDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type EditablePackage } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
@@ -100,6 +100,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -144,6 +146,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -179,6 +183,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -229,6 +235,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -289,6 +297,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -346,6 +356,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -395,6 +407,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -433,6 +447,8 @@ describe("blueprint options", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -590,7 +606,7 @@ describe("isRecipeEditable", () => {
 });
 
 function selectExtensionPoints(
-  recipe: UnsavedRecipeDefinition
+  recipe: UnsavedModDefinition
 ): ExtensionPointConfig[] {
   return recipe.extensionPoints.map(({ id }) => {
     const definition = recipe.definitions[id]
@@ -766,6 +782,8 @@ describe("buildRecipe", () => {
           recipe,
           services: {},
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         })
       );
 

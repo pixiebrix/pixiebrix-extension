@@ -14,25 +14,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { type RegistryId } from "@/types/registryTypes";
-import { loadOptions } from "@/store/extensionsStorage";
 import { compact, isEmpty, startsWith } from "lodash";
+import { loadOptions } from "@/store/extensionsStorage";
+import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  ensureSidebar,
-  hideActivateRecipeInSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
-  showActivateRecipeInSidebar,
-} from "@/contentScript/sidebarController";
-import { getAuthHeaders } from "@/auth/token";
+import { isReadyInThisDocument } from "@/contentScript/ready";
+import { pollUntilTruthy } from "@/utils";
 import { MARKETPLACE_URL } from "@/utils/strings";
-import {
-  getActivatingBlueprint,
-  setActivatingBlueprint,
-} from "@/background/messenger/external/_implementation";
-import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/events";
+
+let enhancementsLoaded = false;
+
+function isMarketplacePage(): boolean {
+  return startsWith(window.location.href, MARKETPLACE_URL);
+}
 
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
@@ -40,11 +34,7 @@ function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   );
 }
 
-async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
-  if (!(await isUserLoggedIn())) {
-    return new Set();
-  }
-
+export async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
   const options = await loadOptions();
 
   if (!options) {
@@ -54,25 +44,6 @@ async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
   return new Set(
     compact(options.extensions.map((extension) => extension._recipe?.id))
   );
-}
-
-async function isUserLoggedIn(): Promise<boolean> {
-  const authHeaders = await getAuthHeaders();
-  return Boolean(authHeaders);
-}
-
-async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
-  try {
-    const activatingRecipeId = await getActivatingBlueprint();
-    if (typeof activatingRecipeId !== "string") {
-      return null;
-    }
-
-    return validateRegistryId(activatingRecipeId);
-  } catch (error) {
-    reportError(error);
-    return null;
-  }
 }
 
 function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
@@ -96,31 +67,7 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
   activeLabel.append(button);
 }
 
-async function showSidebarActivationForRecipe(recipeId: RegistryId) {
-  const controller = new AbortController();
-
-  await ensureSidebar();
-  showActivateRecipeInSidebar({
-    recipeId,
-    heading: "Activating",
-  });
-  window.addEventListener(
-    HIDE_SIDEBAR_EVENT_NAME,
-    () => {
-      controller.abort();
-    },
-    {
-      signal: controller.signal,
-    }
-  );
-  controller.signal.addEventListener("abort", () => {
-    hideActivateRecipeInSidebar(recipeId);
-  });
-}
-
-let enhancementsLoaded = false;
-
-async function loadPageEnhancements(): Promise<void> {
+export async function loadActivationEnhancements(): Promise<void> {
   if (enhancementsLoaded) {
     return;
   }
@@ -144,56 +91,50 @@ async function loadPageEnhancements(): Promise<void> {
     }
 
     // Check if recipe is already activated, and change button content to indicate active status
-    if (installedRecipeIds.has(recipeId)) {
+    // Note: This should only run on the Marketplace page
+    if (isMarketplacePage() && installedRecipeIds.has(recipeId)) {
       changeActivateButtonToActiveLabel(button);
     }
 
     button.addEventListener("click", async (event) => {
       event.preventDefault();
 
-      if (!(await isUserLoggedIn())) {
-        // Open the activate link in the current browser tab
+      const isContentScriptReady = await pollUntilTruthy(
+        isReadyInThisDocument,
+        {
+          maxWaitMillis: 2000,
+          intervalMillis: 100,
+        }
+      );
+
+      if (isContentScriptReady) {
+        window.dispatchEvent(
+          new CustomEvent("ActivateRecipe", {
+            detail: { recipeId, activateUrl: button.href },
+          })
+        );
+      } else {
+        // Something probably went wrong with the content script, so just navigate to the activate url
         window.location.assign(button.href);
-        return;
       }
-
-      reportEvent("StartInstallBlueprint", {
-        blueprintId: recipeId,
-        screen: "marketplace",
-        reinstall: installedRecipeIds.has(recipeId),
-      });
-
-      await showSidebarActivationForRecipe(recipeId);
     });
   }
 }
 
-export async function reloadMarketplaceEnhancements() {
+export async function reloadActivationEnhancements() {
   enhancementsLoaded = false;
-  await loadPageEnhancements();
-}
-
-export async function initMarketplaceEnhancements() {
-  if (!startsWith(window.location.href, MARKETPLACE_URL)) {
-    return;
-  }
-
-  await loadPageEnhancements();
-
-  if (!(await isUserLoggedIn())) {
-    return;
-  }
-
-  const recipeId = await getInProgressRecipeActivation();
-  if (recipeId) {
-    await setActivatingBlueprint({ blueprintId: null });
-    await showSidebarActivationForRecipe(recipeId);
-  }
+  await loadActivationEnhancements();
 }
 
 /**
  * This should only be used for testing purposes
  */
-export function unloadMarketplaceEnhancements() {
+export function unloadActivationEnhancements() {
   enhancementsLoaded = false;
+}
+
+if (location.protocol === "https:") {
+  void loadActivationEnhancements();
+} else {
+  console.warn("Unsupported protocol", location.protocol);
 }

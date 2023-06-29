@@ -17,14 +17,14 @@
 
 import React from "react";
 import { useRequiredRecipe } from "@/recipes/recipesHooks";
-import { render } from "@/sidebar/testHelpers";
+import { render, screen } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
@@ -39,13 +39,22 @@ import {
   marketplaceListingFactory,
   recipeToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
+import * as messengerApi from "@/contentScript/messenger/api";
+import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRequiredRecipe: jest.fn(),
 }));
 
+jest.mock("@/sidebar/sidebarSelectors", () => ({
+  selectSidebarHasModPanels: jest.fn(),
+}));
+
 const useRequiredRecipeMock = jest.mocked(useRequiredRecipe);
 const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
+const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
+const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
 jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
   __esModule: true,
@@ -75,7 +84,7 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
+function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
   const recipe = recipeDefinitionFactory({
     ...recipeOverride,
     metadata: {
@@ -107,6 +116,8 @@ function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
 
 beforeEach(() => {
   appApiMock.reset();
+  selectSidebarHasModPanelsMock.mockReset();
+  hideSidebarSpy.mockReset();
 
   includesQuickBarMock.mockResolvedValue(false);
 
@@ -265,5 +276,27 @@ describe("ActivateRecipePanel", () => {
     await waitForEffect();
 
     expect(rendered.getByTestId("loader")).not.toBeNull();
+  });
+
+  it("activating a mod closes the sidebar when there are no other mod panels to show", async () => {
+    selectSidebarHasModPanelsMock.mockImplementation(() => false);
+
+    setupMocksAndRender();
+    await waitForEffect();
+
+    await userEvent.click(screen.getByRole("button", { name: /ok/i }));
+
+    expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("activating a mod leaves the sidebar open when there are other mod panels to show", async () => {
+    selectSidebarHasModPanelsMock.mockImplementation(() => true);
+
+    setupMocksAndRender();
+    await waitForEffect();
+
+    await userEvent.click(screen.getByRole("button", { name: /ok/i }));
+
+    expect(hideSidebarSpy).toHaveBeenCalledTimes(0);
   });
 });

@@ -41,7 +41,7 @@ describe("blocksMap", () => {
     blocksRegistry.TEST_reset();
   });
 
-  const createReaderBlock = () => blockFactory({ read: jest.fn() } as any);
+  const createReaderBlock = () => blockFactory({ read: jest.fn() } as unknown);
 
   test("can add and read a block", async () => {
     const block = createReaderBlock();
@@ -71,10 +71,12 @@ describe("blocksMap", () => {
   test("caches the typed blocks", async () => {
     getByKindsMock.mockResolvedValueOnce([
       {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         ...parsePackage(extensionPointDefinitionFactory() as any),
         timestamp: new Date(),
       },
       {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         ...parsePackage(extensionPointDefinitionFactory() as any),
         timestamp: new Date(),
       },
@@ -129,6 +131,7 @@ describe("blocksRegistry", () => {
 
   test("cache invalid until all()", async () => {
     const value = extensionPointDefinitionFactory();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const brick = { ...parsePackage(value as any), timestamp: new Date() };
 
     getByKindsMock.mockResolvedValueOnce([brick]);

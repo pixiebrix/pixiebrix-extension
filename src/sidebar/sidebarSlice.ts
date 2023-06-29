@@ -20,7 +20,7 @@ import type {
   PanelEntry,
   ActivatePanelOptions,
   TemporaryPanelEntry,
-  ActivateRecipePanelEntry,
+  ActivateModPanelEntry,
   SidebarEntry,
   SidebarState,
   StaticPanelEntry,
@@ -177,7 +177,7 @@ const sidebarSlice = createSlice({
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
         forms: FormPanelEntry[];
-        recipeToActivate: ActivateRecipePanelEntry | null;
+        recipeToActivate: ActivateModPanelEntry | null;
       }>
     ) {
       state.staticPanels = castDraft(action.payload.staticPanels);
@@ -197,13 +197,13 @@ const sidebarSlice = createSlice({
       state.pendingActivePanel = null;
     },
     addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
+      const { form } = action.payload;
+
       if (state.forms.some((x) => x.nonce === form.nonce)) {
         // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
         // loading state for forms.)
         return;
       }
-
-      const { form } = action.payload;
 
       const [thisExtensionForms, otherForms] = partition(
         state.forms,
@@ -333,7 +333,7 @@ const sidebarSlice = createSlice({
         state.activeKey = defaultEventKey(state);
       }
     },
-    showActivateRecipe(state, action: PayloadAction<ActivateRecipePanelEntry>) {
+    showActivateRecipe(state, action: PayloadAction<ActivateModPanelEntry>) {
       const entry = action.payload;
       state.recipeToActivate = entry;
       state.activeKey = eventKeyForEntry(entry);

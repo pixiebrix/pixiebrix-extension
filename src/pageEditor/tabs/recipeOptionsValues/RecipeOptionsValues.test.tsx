@@ -23,7 +23,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
@@ -37,11 +37,11 @@ jest.mock("@/recipes/recipesHooks", () => ({
 jest.mock("@/contrib/google/initGoogle", () => ({
   __esModule: true,
   isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGoogleSupported: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn(),
 }));
 
-function mockRecipe(recipe: RecipeDefinition) {
+function mockRecipe(recipe: ModDefinition) {
   (useAllRecipes as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([recipe])
   );
@@ -63,6 +63,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -120,6 +122,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -144,6 +148,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -182,6 +188,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -216,6 +224,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });

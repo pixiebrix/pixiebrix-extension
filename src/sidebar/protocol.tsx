@@ -18,7 +18,7 @@
 import reportError from "@/telemetry/reportError";
 import {
   type ActivatePanelOptions,
-  type ActivateRecipePanelEntry,
+  type ActivateModPanelEntry,
   type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
@@ -49,7 +49,7 @@ export type SidebarListener = {
    */
   onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
-  onShowActivateRecipe: (activateRecipeEntry: ActivateRecipePanelEntry) => void;
+  onShowActivateRecipe: (activateRecipeEntry: ActivateModPanelEntry) => void;
   onHideActivateRecipe: (recipeId: RegistryId) => void;
 };
 
@@ -209,7 +209,7 @@ export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
 
 export async function showActivateRecipe(
   sequence: number,
-  entry: ActivateRecipePanelEntry
+  entry: ActivateModPanelEntry
 ) {
   runListeners("onShowActivateRecipe", sequence, entry);
 }

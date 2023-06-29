@@ -98,26 +98,32 @@ type ActivateBlueprintOptions = {
 
   /**
    * The "source" page to associate with the activation. This affects the wording in the ActivateWizard
-   * component
+   * component. We used to have multiple sources: template vs. marketplace. However, we got rid of "templates" as a
+   * separate pageSource. Keep for now for analytics consistency.
    */
   pageSource?: "marketplace";
+
+  /**
+   * The URL to redirect to after activation is complete (if present)
+   */
+  redirectUrl?: string;
 };
 
 export async function openActivateBlueprint({
   blueprintId,
   newTab = true,
+  pageSource = "marketplace",
+  redirectUrl,
 }: ActivateBlueprintOptions) {
-  const baseUrl = browser.runtime.getURL("options.html");
-  const url = `${baseUrl}#/marketplace/activate/${encodeURIComponent(
-    blueprintId
-  )}`;
+  const baseConsoleUrl = browser.runtime.getURL("options.html");
+  const url =
+    redirectUrl ??
+    `${baseConsoleUrl}#/marketplace/activate/${encodeURIComponent(
+      blueprintId
+    )}`;
 
-  reportEvent("ExternalActivate", {
-    blueprintId,
-    // We used to have multiple sources: template vs. marketplace. However we got rid of "templates" as a separate
-    // pageSource. Keep for now for analytics consistency
-    pageSource: "marketplace",
-  });
+  // TODO: possibly remove this event, it's not really being used/observed at all, and the pageSource is very misleading
+  reportEvent("ExternalActivate", { blueprintId, pageSource });
 
   if (newTab) {
     await browser.tabs.create({ url });
