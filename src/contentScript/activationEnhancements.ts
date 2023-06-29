@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { compact, isEmpty, startsWith } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { loadOptions } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { pollUntilTruthy } from "@/utils";
 import { MARKETPLACE_URL } from "@/utils/strings";
-import { ACTIVATION_LINK_PREFIX } from "@/activation/ActivationLink";
 import { isLoadedInIframe } from "@/iframeUtils";
 
 // This will be set by the marketplace page
@@ -35,12 +34,13 @@ function isMarketplacePageLoaded(): boolean {
 let enhancementsLoaded = false;
 
 function isMarketplacePage(): boolean {
-  return startsWith(window.location.href, MARKETPLACE_URL);
+  const url = window.location.href;
+  return url.startsWith(MARKETPLACE_URL);
 }
 
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   return document.querySelectorAll<HTMLAnchorElement>(
-    `a[href^="${ACTIVATION_LINK_PREFIX}"]`
+    `a[href^="${process.env.SERVICE_URL}/activate"]`
   );
 }
 

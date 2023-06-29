@@ -24,7 +24,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
-import { startsWith } from "lodash";
 
 type ActivationLinkProps = {
   blueprintId: RegistryId;
@@ -33,7 +32,7 @@ type ActivationLinkProps = {
 export const ACTIVATION_LINK_PREFIX = "https://app.pixiebrix.com/activate?id=";
 
 export function isActivationUrl(url: string): boolean {
-  return startsWith(url, ACTIVATION_LINK_PREFIX);
+  return url.startsWith(ACTIVATION_LINK_PREFIX);
 }
 
 const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
