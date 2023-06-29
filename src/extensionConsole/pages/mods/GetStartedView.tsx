@@ -52,31 +52,27 @@ const GetStartedView: React.VoidFunctionComponent<{
   const { homepage_url: homepageUrl } = browser.runtime.getManifest();
   const { getMilestone } = useMilestones();
 
-  const onboardingBlueprintId = getMilestone(
-    "first_time_public_blueprint_install"
-  )?.metadata?.blueprintId as RegistryId;
+  const onboardingModId = getMilestone("first_time_public_blueprint_install")
+    ?.metadata?.blueprintId as RegistryId;
 
-  const { data: recipe, isFetching: isFetchingRecipe } = useOptionalRecipe(
-    onboardingBlueprintId
-  );
+  const { data: recipe, isFetching: isFetchingRecipe } =
+    useOptionalRecipe(onboardingModId);
 
   const { data: listings } = useGetMarketplaceListingsQuery(
-    { package__name: onboardingBlueprintId },
-    { skip: !onboardingBlueprintId }
+    { package__name: onboardingModId },
+    { skip: !onboardingModId }
   );
 
-  const onboardingBlueprintListing = listings
-    ? listings[onboardingBlueprintId]
-    : null;
+  const onboardingModListing = listings ? listings[onboardingModId] : null;
 
-  const marketplaceUrl = `${homepageUrl}/marketplace/${onboardingBlueprintListing?.id}/`;
+  const marketplaceUrl = `${homepageUrl}/marketplace/${onboardingModListing?.id}/`;
 
   return (
     <div
       style={{ height: `${height}px`, width: `${width}px` }}
       className={styles.root}
     >
-      {onboardingBlueprintListing && (
+      {onboardingModListing && (
         <Row className={styles.infoRow}>
           <Col>
             <h4>
@@ -87,7 +83,7 @@ const GetStartedView: React.VoidFunctionComponent<{
                 </>
               )}
               <ExternalLink
-                linkText={onboardingBlueprintListing.package.verbose_name}
+                linkText={onboardingModListing.package.verbose_name}
                 url={marketplaceUrl}
               />{" "}
               is ready to use.
@@ -100,7 +96,7 @@ const GetStartedView: React.VoidFunctionComponent<{
               <li>
                 Check out the &quot;How to Use&quot; section for{" "}
                 <ExternalLink
-                  linkText={`${onboardingBlueprintListing.package.verbose_name}`}
+                  linkText={`${onboardingModListing.package.verbose_name}`}
                   url={marketplaceUrl}
                 />{" "}
                 in the Marketplace for more details about how to use this mod.
