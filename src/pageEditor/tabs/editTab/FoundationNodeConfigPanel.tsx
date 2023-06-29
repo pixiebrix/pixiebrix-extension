@@ -30,6 +30,7 @@ import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
