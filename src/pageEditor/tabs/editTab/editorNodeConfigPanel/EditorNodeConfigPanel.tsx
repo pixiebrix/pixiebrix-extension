@@ -32,7 +32,7 @@ import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import classNames from "classnames";
+import cx from "classnames";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
@@ -44,8 +44,9 @@ const EditorNodeConfigPanel: React.FC = () => {
     };
   }, [blockId]);
 
-  const { data: listings = {}, isLoading: isLoadingListing } =
-    useGetMarketplaceListingsQuery({ package__name: blockId });
+  const { data: listings = {} } = useGetMarketplaceListingsQuery({
+    package__name: blockId,
+  });
 
   const { instructions: listingInstructions, id: listingId } =
     listings[blockId] ?? {};
@@ -65,13 +66,12 @@ const EditorNodeConfigPanel: React.FC = () => {
     />
   );
 
-  const showDocumentationLink =
-    !isLoadingListing && listingInstructions && listingId;
+  const showDocumentationLink = listingInstructions && listingId;
 
   return (
     <>
       <AnalysisResult />
-      <Row className={classNames(styles.brickInfo, "justify-content-between")}>
+      <Row className={cx(styles.brickInfo, "justify-content-between")}>
         <Col>
           <p>{blockInfo?.block.name}</p>
         </Col>

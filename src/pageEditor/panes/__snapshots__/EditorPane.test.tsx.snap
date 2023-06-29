@@ -1922,17 +1922,6 @@ exports[`renders the first selected node 1`] = `
                   Echo Block
                 </p>
               </div>
-              <div
-                class="col-auto"
-              >
-                <a
-                  href="https://www.pixiebrix.com/marketplace/undefined/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  View Documentation
-                </a>
-              </div>
             </div>
             <div
               class="topRow row"
