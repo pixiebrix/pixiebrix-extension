@@ -57,7 +57,7 @@ import {
 } from "@/extensionPoints/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
@@ -92,9 +92,9 @@ export type QuickBarProviderConfig = {
 
 export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<QuickBarProviderConfig> {
   static isQuickBarProviderExtensionPoint(
-    extensionPoint: IExtensionPoint
+    extensionPoint: StarterBrick
   ): extensionPoint is QuickBarProviderExtensionPoint {
-    // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (IExtensionPoint)
+    // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (StarterBrick)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (extensionPoint as any)?._definition?.type === "quickBarProvider";
   }
@@ -373,7 +373,7 @@ export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderExtens
 
 export function fromJS(
   config: ExtensionPointConfig<QuickBarProviderDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBarProvider") {
     throw new Error(`Expected type=quickBarProvider, got ${type}`);

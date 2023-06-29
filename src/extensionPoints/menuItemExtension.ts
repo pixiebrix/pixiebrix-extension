@@ -81,7 +81,7 @@ import {
   RunReason,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
 import initialize from "@/vendors/initialize";
@@ -1165,7 +1165,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<MenuDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "menuItem") {
     // `type` is `never` here due to the if-statement

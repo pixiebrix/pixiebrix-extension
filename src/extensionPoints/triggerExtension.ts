@@ -75,7 +75,7 @@ import { type IBlock } from "@/types/blockTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -921,7 +921,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<TriggerDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "trigger") {
     throw new Error(`Expected type=trigger, got ${type}`);

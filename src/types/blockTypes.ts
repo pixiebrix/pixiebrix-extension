@@ -71,7 +71,7 @@ export interface IBlock extends Metadata {
    *
    * FIXME: isPure is marked as optional because we're using IBlock to represent packages/bricks in some places, e.g.,
    *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
-   *  take advantages the IExtensionPoint is compatible with the the IBlock interface even though they represent two
+   *  take advantages the StarterBrick is compatible with the the IBlock interface even though they represent two
    *  different concepts
    *
    * Examples of impure actions:

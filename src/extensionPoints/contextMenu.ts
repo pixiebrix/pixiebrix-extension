@@ -65,7 +65,7 @@ import { type IReader } from "@/types/blocks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type IBlock } from "@/types/blockTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -449,7 +449,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<MenuDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {
     throw new Error(`Expected type=contextMenu, got ${type}`);

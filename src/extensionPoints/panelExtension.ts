@@ -60,7 +60,7 @@ import { type IBlock } from "@/types/blockTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type PanelConfig = {
   heading?: string;
@@ -572,7 +572,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<PanelDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "panel") {
     throw new Error(`Expected type=panel, got ${type}`);

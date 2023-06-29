@@ -58,7 +58,7 @@ import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type IBlock } from "@/types/blockTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export type TourConfig = {
@@ -311,7 +311,7 @@ class RemoteTourExtensionPoint extends TourExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<TourDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "tour") {
     throw new Error(`Expected type=tour, got ${type}`);

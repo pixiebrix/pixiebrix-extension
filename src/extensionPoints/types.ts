@@ -20,7 +20,7 @@ import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -121,7 +121,7 @@ export function assertExtensionPointConfig(
 }
 
 export abstract class ExtensionPoint<TConfig extends UnknownObject>
-  implements IExtensionPoint
+  implements StarterBrick
 {
   public readonly id: RegistryId;
 

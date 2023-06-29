@@ -64,7 +64,7 @@ import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
   heading: string;
@@ -497,7 +497,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   }
 }
 
-export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
+export function fromJS(config: ExtensionPointConfig): StarterBrick {
   const { type } = config.definition;
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);

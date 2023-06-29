@@ -162,8 +162,8 @@ export enum RunReason {
 }
 
 /**
- * Arguments for running an IExtensionPoint
- * @see IExtensionPoint.run
+ * Arguments for running an StarterBrick
+ * @see StarterBrick.run
  */
 export type RunArgs = {
   /**

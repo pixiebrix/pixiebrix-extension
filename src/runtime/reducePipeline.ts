@@ -136,7 +136,7 @@ export type ReduceOptions = CommonOptions & RunMetadata;
 export type InitialValues = {
   /**
    * The inputs to the BrickPipeline, e.g., from the foundation's readers. Are placed under the `@input` key
-   * @see IExtensionPoint.defaultReader
+   * @see StarterBrick.defaultReader
    */
   input: UnknownObject;
   /**

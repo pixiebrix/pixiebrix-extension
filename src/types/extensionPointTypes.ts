@@ -32,7 +32,7 @@ export type Location =
   // Sidebar panel. ephemeralForm uses `sidebar` as the location for the sidebar
   "panel" | "modal" | "popover";
 
-export type IExtensionPoint = Metadata & {
+export type StarterBrick = Metadata & {
   /**
    * The kind of extension point.
    */
@@ -57,7 +57,7 @@ export type IExtensionPoint = Metadata & {
    * Return the IReader used by the extension point. This method should only be called for calculating availability
    * and the schema, as it may include stub readers.
    *
-   * @see IExtensionPoint.previewReader
+   * @see StarterBrick.previewReader
    */
   defaultReader: () => Promise<IReader>;
 

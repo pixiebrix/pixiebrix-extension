@@ -46,7 +46,7 @@ import {
   type IExtension,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type IBlock } from "@/types/blockTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
@@ -148,7 +148,7 @@ async function resolveReaderDefinition(
 async function resolveExtensionPointDefinition(
   definitions: InnerDefinitions,
   originalInnerDefinition: InnerExtensionPoint
-): Promise<IExtensionPoint> {
+): Promise<StarterBrick> {
   const innerDefinition = cloneDeep(originalInnerDefinition);
 
   // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
@@ -190,7 +190,7 @@ async function resolveExtensionPointDefinition(
 async function resolveInnerDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinitions[string]
-): Promise<IBlock | IExtensionPoint> {
+): Promise<IBlock | StarterBrick> {
   if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
   }
