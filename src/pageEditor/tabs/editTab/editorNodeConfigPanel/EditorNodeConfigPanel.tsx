@@ -30,6 +30,9 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
+import { MARKETPLACE_URL } from "@/utils/strings";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import classNames from "classnames";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
@@ -40,6 +43,9 @@ const EditorNodeConfigPanel: React.FC = () => {
       type: await getType(block),
     };
   }, [blockId]);
+
+  const { data: listings = {}, isLoading: isLoadingListing } =
+    useGetMarketplaceListingsQuery({ package__name: blockId });
 
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)
@@ -59,6 +65,20 @@ const EditorNodeConfigPanel: React.FC = () => {
   return (
     <>
       <AnalysisResult />
+      <Row className={styles.topRow}>
+        {isLoadingListing || (
+          <Col xl>
+            <a
+              href={`${MARKETPLACE_URL}${listings[blockId].id}/`}
+              className={classNames("text-info", styles.brickInfo)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Documentation
+            </a>
+          </Col>
+        )}
+      </Row>
       <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate
