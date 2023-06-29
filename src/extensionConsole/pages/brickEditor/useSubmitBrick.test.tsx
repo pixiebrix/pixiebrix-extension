@@ -45,7 +45,7 @@ jest.mock("@/utils/notify", () => ({
   },
 }));
 
-jest.mock("@/extensionConsole/pages/blueprints/utils/useReinstall", () => ({
+jest.mock("@/extensionConsole/pages/mods/utils/useReinstall", () => ({
   __esModule: true,
   useReinstall: jest.fn(),
   default: jest.fn(),

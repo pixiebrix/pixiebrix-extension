@@ -238,6 +238,7 @@ describe("When rendered in panel", () => {
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
       expect(element).toHaveTextContent("Button under test");
+      expect(element).not.toBeDisabled();
     });
 
     test.each`
@@ -265,6 +266,27 @@ describe("When rendered in panel", () => {
         expect(element).toHaveClass(className);
       }
     );
+
+    test.each([true, "y"])("renders disabled button for %s", (disabled) => {
+      const config: DocumentElement = {
+        type: "button",
+        config: {
+          title: "Button under test",
+          className: "test-class",
+          disabled,
+          onClick: {
+            __type__: "pipeline",
+            __value__: jest.fn(),
+          },
+        },
+      };
+      const { container } = renderDocument(config);
+      const element = container.querySelector("button");
+
+      expect(element).not.toBeNull();
+      expect(element).toHaveClass("test-class");
+      expect(element).toBeDisabled();
+    });
   });
 
   describe("card", () => {

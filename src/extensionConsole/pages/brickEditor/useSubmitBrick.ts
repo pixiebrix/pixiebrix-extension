@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import useReinstall from "@/extensionConsole/pages/blueprints/utils/useReinstall";
+import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import {
