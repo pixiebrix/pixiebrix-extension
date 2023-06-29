@@ -33,7 +33,7 @@ beforeEach(() => {
 function defineBlock(schema: Schema): RegistryId {
   class DefinedBlock extends BrickABC {
     constructor() {
-      super("test/block", "Test BrickABC");
+      super("test/block", "Test Brick");
     }
 
     inputSchema = schema;

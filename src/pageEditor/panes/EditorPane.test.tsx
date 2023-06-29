@@ -27,7 +27,7 @@ import {
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import blockRegistry from "@/blocks/registry";
+import brickRegistry from "@/blocks/registry";
 import {
   type EditorRootState,
   PipelineFlavor,
@@ -88,11 +88,11 @@ async function tickAsyncEffects() {
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
 
-const jqBlock = new JQTransformer();
-const alertBlock = new AlertEffect();
-const forEachBlock = new ForEach();
-const markdownBlock = new MarkdownRenderer();
-const uiPathBlock = new RunProcess();
+const jqBrick = new JQTransformer();
+const alertBrick = new AlertEffect();
+const forEachBrick = new ForEach();
+const markdownBrick = new MarkdownRenderer();
+const uiPathBrick = new RunProcess();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
@@ -100,20 +100,20 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 beforeAll(async () => {
   registerDefaultWidgets();
 
-  blockRegistry.clear();
+  brickRegistry.clear();
 
-  blockRegistry.register([
+  brickRegistry.register([
     echoBlock,
     teapotBlock,
-    jqBlock,
-    alertBlock,
-    forEachBlock,
-    markdownBlock,
-    uiPathBlock,
+    jqBrick,
+    alertBrick,
+    forEachBrick,
+    markdownBrick,
+    uiPathBrick,
   ]);
 
   // Force block map to be created
-  await blockRegistry.allTyped();
+  await brickRegistry.allTyped();
 
   const tags = [
     marketplaceTagFactory({ subtype: "role" }),
@@ -169,7 +169,7 @@ const getFormStateWithSubPipelines = (): FormState =>
       config: defaultBlockConfig(echoBlock.inputSchema),
     }),
     brickConfigFactory({
-      id: forEachBlock.id,
+      id: forEachBrick.id,
       outputKey: "forEachOutput" as OutputKey,
       config: {
         elements: makeTemplateExpression("var", "@input.elements"),
@@ -351,7 +351,7 @@ describe("can add a node", () => {
       `icon-button-${jqNodeId}-add-brick`
     );
 
-    // The name of the block is "Teapot BrickABC", searching for "Teapot" to get a single result in the Add Brick Dialog
+    // The name of the brick is "Teapot Brick", searching for "Teapot" to get a single result in the Add Brick Dialog
     await addABlock(addButtonInSubPipeline, "Teapot");
     // Nodes. Root: Foundation, Echo, ForEach: JQ node, new Teapot node, Echo
     nodes = screen.getAllByTestId("editor-node");
@@ -360,7 +360,7 @@ describe("can add a node", () => {
     // Selecting the Teapot node
     const teapotNode = nodes[4];
     expect(teapotNode).toHaveClass("active");
-    expect(teapotNode).toHaveTextContent(/teapot block/i);
+    expect(teapotNode).toHaveTextContent(/teapot brick/i);
   });
 });
 
@@ -389,7 +389,7 @@ describe("can remove a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the first Echo block
+    // Select the first Echo brick
     await immediateUserEvent.click(screen.getAllByText(/echo/i)[0]);
 
     // Click the remove button
@@ -409,7 +409,7 @@ describe("can remove a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the second Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[1]);
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[1]);
 
     // Click the remove button
     await immediateUserEvent.click(
@@ -531,8 +531,8 @@ describe("can copy and paste a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the first Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+    // Select the first Echo brick
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -556,8 +556,8 @@ describe("can copy and paste a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the first Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+    // Select the first Echo brick
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -581,7 +581,7 @@ describe("can copy and paste a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the ForEach block
+    // Select the ForEach brick
     await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]);
 
     // Click the copy button
@@ -651,11 +651,11 @@ describe("validation", () => {
     // Going back to extension 1.
     // See the 2 error badges in the Node Layout.
     // Select the Markdown node and check the error.
-    // Select the Echo block and check the error.
+    // Select the Echo brick and check the error.
     const extension1 = getPlainFormState();
     const extension2 = getPlainFormState();
 
-    // Selecting the Echo block in the first extension
+    // Selecting the Echo brick in the first extension
     const { instanceId: echoBlockInstanceId } =
       extension1.extension.blockPipeline[0];
     const rendered = render(
@@ -728,12 +728,12 @@ describe("validation", () => {
 
     const editorNodes = rendered.queryAllByTestId("editor-node");
 
-    // Selecting the markdown block in the first extension
+    // Selecting the markdown brick in the first extension
     await immediateUserEvent.click(editorNodes[1]);
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
 
-    // Selecting the echo block
+    // Selecting the echo brick
     await immediateUserEvent.click(editorNodes[2]);
 
     expectEditorError(
@@ -818,17 +818,17 @@ describe("validation", () => {
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
       formFactory: triggerFormStateFactory,
-      disallowedBlock: markdownBlock,
+      disallowedBlock: markdownBrick,
     },
     {
       pipelineFlavor: PipelineFlavor.NoEffect,
       formFactory: formStateFactory,
-      disallowedBlock: alertBlock,
+      disallowedBlock: alertBrick,
     },
   ];
 
   test.each(disallowedBlockValidationTestCases)(
-    "validates a disallowed block in $pipelineFlavor pipeline",
+    "validates a disallowed brick in $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlock }) => {
       const formState = formFactory();
       const disallowedBlockConfig = brickConfigFactory({
@@ -863,16 +863,16 @@ describe("validation", () => {
 
       await tickAsyncEffects();
 
-      const blockType = await getType(disallowedBlock);
+      const brickType = await getType(disallowedBlock);
       expectEditorError(
         rendered.container,
-        `Brick of type "${blockType}" is not allowed in this pipeline`
+        `Brick of type "${brickType}" is not allowed in this pipeline`
       );
     }
   );
 });
 
-describe("block validation in Add BrickABC Modal UI", () => {
+describe("brick validation in Add Brick Modal UI", () => {
   const testCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
@@ -887,7 +887,7 @@ describe("block validation in Add BrickABC Modal UI", () => {
   ];
 
   test.each(testCases)(
-    "shows alert on blocks for $pipelineFlavor pipeline",
+    "shows alert on bricks for $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
       render(
@@ -911,7 +911,7 @@ describe("block validation in Add BrickABC Modal UI", () => {
 
       await immediateUserEvent.click(addBrickButton);
 
-      // Try to find the disallowed block and make sure it's not there
+      // Try to find the disallowed brick and make sure it's not there
       await immediateUserEvent.type(
         screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
         disallowedBlockName
@@ -952,7 +952,7 @@ describe("block validation in Add BrickABC Modal UI", () => {
 
     await immediateUserEvent.click(addBrickButton);
 
-    // Try to find the disallowed block and make sure it's not there
+    // Try to find the disallowed brick and make sure it's not there
     await immediateUserEvent.type(
       screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
       "uipath"
@@ -963,10 +963,10 @@ describe("block validation in Add BrickABC Modal UI", () => {
 
     const addButtons = screen.queryAllByRole("button", { name: /add/i });
 
-    // Assert that no UiPath blocks are available
+    // Assert that no UiPath bricks are available
     for (const button of addButtons) {
-      const block = button.parentElement;
-      expect(block).not.toHaveTextContent("uipath");
+      const brick = button.parentElement;
+      expect(brick).not.toHaveTextContent("uipath");
     }
   });
 });

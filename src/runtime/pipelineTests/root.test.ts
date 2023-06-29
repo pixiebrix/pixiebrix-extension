@@ -36,7 +36,7 @@ import { BrickABC } from "@/types/brickTypes";
 
 class RootAwareBlock extends BrickABC {
   constructor() {
-    super("block/root-aware", "Root Aware BrickABC");
+    super("block/root-aware", "Root Aware Brick");
   }
 
   inputSchema = propertiesToSchema({});

@@ -176,7 +176,7 @@ type SetVarsFromSchemaArgs = {
  *
  * Examples:
  * - Blueprint input schema
- * - BrickABC output schema
+ * - Brick output schema
  * - Service configuration schema
  */
 function setVarsFromSchema({

@@ -38,7 +38,7 @@ const componentBlock = fromJS({
   kind: "component",
   metadata: {
     id: "test/component",
-    name: "Component BrickABC",
+    name: "Component Brick",
     version: validateSemVerString("1.0.0"),
     description: "Component block using v1 runtime",
   },

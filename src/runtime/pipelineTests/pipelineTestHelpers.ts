@@ -43,7 +43,7 @@ export class ContextBlock extends BrickABC {
 export class EchoBlock extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/echo");
   constructor() {
-    super(EchoBlock.BLOCK_ID, "Echo BrickABC");
+    super(EchoBlock.BLOCK_ID, "Echo Brick");
   }
 
   inputSchema = propertiesToSchema({
@@ -77,7 +77,7 @@ class RootAwareBlock extends BrickABC {
  */
 class TeapotBlock extends BrickABC {
   constructor() {
-    super("test/teapot", "Teapot BrickABC");
+    super("test/teapot", "Teapot Brick");
   }
 
   inputSchema = propertiesToSchema({});
@@ -89,7 +89,7 @@ class TeapotBlock extends BrickABC {
 
 class IdentityBlock extends BrickABC {
   constructor() {
-    super("test/identity", "Identity BrickABC");
+    super("test/identity", "Identity Brick");
   }
 
   inputSchema = propertiesToSchema({
@@ -103,7 +103,7 @@ class IdentityBlock extends BrickABC {
 
 class ThrowBlock extends BrickABC {
   constructor() {
-    super("test/throw", "Throw BrickABC");
+    super("test/throw", "Throw Brick");
   }
 
   inputSchema = propertiesToSchema({
@@ -119,7 +119,7 @@ class ThrowBlock extends BrickABC {
 
 class ArrayBlock extends BrickABC {
   constructor() {
-    super("test/array", "Array BrickABC");
+    super("test/array", "Array Brick");
   }
 
   inputSchema = propertiesToSchema({});
@@ -159,7 +159,7 @@ const pipelineSchema: Schema = {
  */
 class PipelineBlock extends BrickABC {
   constructor() {
-    super("test/pipeline", "Pipeline BrickABC");
+    super("test/pipeline", "Pipeline Brick");
   }
 
   inputSchema = propertiesToSchema({
@@ -174,11 +174,11 @@ class PipelineBlock extends BrickABC {
 }
 
 /**
- * Test block that renders an array of elements with a deferred expression
+ * Test brick that renders an array of elements with a deferred expression
  */
-class DeferBlock extends BrickABC {
+class DeferBrick extends BrickABC {
   constructor() {
-    super("test/defer", "Defer BrickABC");
+    super("test/defer", "Defer Brick");
   }
 
   inputSchema = propertiesToSchema(
@@ -237,7 +237,7 @@ export const throwBlock = new ThrowBlock();
 export const teapotBlock = new TeapotBlock();
 export const arrayBlock = new ArrayBlock();
 export const pipelineBlock = new PipelineBlock();
-export const deferBlock = new DeferBlock();
+export const deferBlock = new DeferBrick();
 export const rootAwareBlock = new RootAwareBlock();
 
 /**

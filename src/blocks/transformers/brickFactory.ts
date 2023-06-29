@@ -87,7 +87,7 @@ function validateBrickDefinition(
 }
 
 /**
- * A non-native (i.e., non-JS) BrickABC. Typically defined in YAML/JSON.
+ * A non-native (i.e., non-JS) Brick. Typically defined in YAML/JSON.
  */
 class ExternalBlock extends BrickABC {
   public readonly component: BrickDefinition;

@@ -37,7 +37,7 @@ class DeferredEchoBlock extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/deferred");
   readonly promise: Promise<unknown>;
   constructor(promise: Promise<unknown>) {
-    super(DeferredEchoBlock.BLOCK_ID, "Deferred BrickABC");
+    super(DeferredEchoBlock.BLOCK_ID, "Deferred Brick");
     this.promise = promise;
   }
 
