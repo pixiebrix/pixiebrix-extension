@@ -91,6 +91,21 @@ describe("When rendered in panel", () => {
     }
   );
 
+  test.each([1, 2, 3, 4, 5, 6])("renders tag for h%d", (headerLevel) => {
+    const { container } = renderDocument({
+      type: "header",
+      config: {
+        title: "Test Header",
+        heading: `h${headerLevel}`,
+      },
+    });
+
+    const element = container.querySelector(`h${headerLevel}`);
+
+    expect(element).not.toBeNull();
+    expect(element).toHaveTextContent("Test Header");
+  });
+
   test("renders paragraph text", () => {
     const config: DocumentElement = {
       type: "text",

@@ -22,6 +22,7 @@ import cx from "classnames";
 import styles from "./HeadingStyleWidget.module.scss";
 import { useField } from "formik";
 
+// Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
 const headingTypes = {
   h1: {
     heading: "h1",
@@ -35,6 +36,18 @@ const headingTypes = {
     heading: "h3",
     title: "H3",
   },
+  h4: {
+    heading: "h4",
+    title: "H4",
+  },
+  h5: {
+    heading: "h5",
+    title: "H5",
+  },
+  h6: {
+    heading: "h6",
+    title: "H6",
+  },
 };
 
 const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
@@ -45,23 +58,21 @@ const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
   return (
     <div className="mt-2">
       <ButtonGroup>
-        {[headingTypes.h1, headingTypes.h2, headingTypes.h3].map(
-          (headingType) => (
-            <Button
-              key={headingType.heading}
-              className={cx(styles.button, {
-                active: value === headingType.heading,
-              })}
-              variant="light"
-              size="sm"
-              onClick={() => {
-                setValue(headingType.heading);
-              }}
-            >
-              {headingType.title}
-            </Button>
-          )
-        )}
+        {Object.values(headingTypes).map((headingType) => (
+          <Button
+            key={headingType.heading}
+            className={cx(styles.button, {
+              active: value === headingType.heading,
+            })}
+            variant="light"
+            size="sm"
+            onClick={() => {
+              setValue(headingType.heading);
+            }}
+          >
+            {headingType.title}
+          </Button>
+        ))}
       </ButtonGroup>
     </div>
   );

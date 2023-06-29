@@ -54,7 +54,8 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "heading"),
         schema: {
           type: "string",
-          enum: ["h1", "h2", "h3"],
+          // Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
+          enum: ["h1", "h2", "h3", "h4", "h5", "h6"],
           format: "heading-style",
         },
         label: "Heading",

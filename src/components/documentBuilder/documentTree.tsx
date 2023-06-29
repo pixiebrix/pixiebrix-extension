@@ -36,13 +36,15 @@ import { joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 
+// Legacy header components, where each header type was a separate element
 const headerComponents = {
   header_1: "h1",
   header_2: "h2",
   header_3: "h3",
 } as const;
 
-const headingComponents = ["h1", "h2", "h3"];
+// Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
+const headingComponents = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 const gridComponents = {
   container: Container,
