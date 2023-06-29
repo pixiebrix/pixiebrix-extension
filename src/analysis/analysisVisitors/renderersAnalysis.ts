@@ -46,19 +46,19 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBricks {
     }
 
     let lastRendererIndex = -1;
-    for (let blockIndex = pipeline.length - 1; blockIndex >= 0; --blockIndex) {
-      const pipelineBlock = pipeline.at(blockIndex);
-      const blockType = this.allBlocks.get(pipelineBlock.id)?.type;
-      const blockErrors = [];
+    for (let brickIndex = pipeline.length - 1; brickIndex >= 0; --brickIndex) {
+      const pipelineBlock = pipeline.at(brickIndex);
+      const brickType = this.allBlocks.get(pipelineBlock.id)?.type;
+      const brickErrors = [];
 
-      if (blockType !== "renderer") {
+      if (brickType !== "renderer") {
         continue;
       }
 
       if (lastRendererIndex === -1) {
-        lastRendererIndex = blockIndex;
+        lastRendererIndex = brickIndex;
       } else {
-        blockErrors.push(MULTIPLE_RENDERERS_ERROR_MESSAGE);
+        brickErrors.push(MULTIPLE_RENDERERS_ERROR_MESSAGE);
 
         // Push error annotation for the other renderer,
         // which was found before this one
@@ -70,13 +70,13 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBricks {
         });
       }
 
-      if (blockIndex !== pipeline.length - 1) {
-        blockErrors.push(RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE);
+      if (brickIndex !== pipeline.length - 1) {
+        brickErrors.push(RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE);
       }
 
-      for (const message of blockErrors) {
+      for (const message of brickErrors) {
         this.annotations.push({
-          position: nestedPosition(position, String(blockIndex)),
+          position: nestedPosition(position, String(brickIndex)),
           message,
           analysisId: this.id,
           type: AnnotationType.Error,
