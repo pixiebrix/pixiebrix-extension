@@ -228,6 +228,8 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
             ...cleanRecipeExtensions,
           ]),
           extensionPoints: savedRecipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         })
       );
 
