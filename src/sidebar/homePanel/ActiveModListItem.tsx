@@ -18,31 +18,31 @@
 import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type InstallableViewItem } from "@/installables/installableTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
-import { getContainedStarterBrickNames } from "@/utils/installableUtils";
+import { getContainedStarterBrickNames } from "@/utils/modUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import InstallableIcon from "@/installables/InstallableIcon";
+import ModIcon from "@/mods/ModIcon";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import useMarketplaceUrl from "@/installables/hooks/useMarketplaceUrl";
-import useRequestPermissionsAction from "@/installables/hooks/useRequestPermissionsAction";
+import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
+import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
 import cx from "classnames";
 import useReportError from "@/hooks/useReportError";
 
 export const ActiveModListItem: React.FunctionComponent<{
-  installableItem: InstallableViewItem;
-}> = ({ installableItem }) => {
-  const { name, installable } = installableItem;
-  const marketplaceListingUrl = useMarketplaceUrl(installableItem);
-  const requestPermissions = useRequestPermissionsAction(installableItem);
+  modViewItem: ModViewItem;
+}> = ({ modViewItem }) => {
+  const { name, mod } = modViewItem;
+  const marketplaceListingUrl = useMarketplaceUrl(modViewItem);
+  const requestPermissions = useRequestPermissionsAction(modViewItem);
 
   const { data: starterBricksContained = [], error } = useAsyncState(
-    async () => getContainedStarterBrickNames(installableItem),
+    async () => getContainedStarterBrickNames(modViewItem),
     [],
     { initialValue: [] }
   );
@@ -53,7 +53,7 @@ export const ActiveModListItem: React.FunctionComponent<{
     <ListGroup.Item className={styles.root}>
       <div className={styles.mainContent}>
         <div className={styles.icon}>
-          <InstallableIcon installable={installable} />
+          <ModIcon mod={mod} />
         </div>
         <div>
           <div>

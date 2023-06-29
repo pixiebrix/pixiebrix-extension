@@ -178,6 +178,8 @@ describe("useActivateRecipe", () => {
         extensionPoints: recipe.extensionPoints,
         services: {},
         optionsArgs: {},
+        screen: "extensionConsole",
+        isReinstall: false,
       })
     );
 
@@ -248,6 +250,8 @@ describe("useActivateRecipe", () => {
         optionsArgs: {
           myDatabase: createdDatabase.id,
         },
+        screen: "marketplace",
+        isReinstall: false,
       })
     );
   });

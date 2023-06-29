@@ -1918,6 +1918,19 @@ exports[`renders the first selected node 1`] = `
               <div
                 class="col-xl"
               >
+                <p
+                  class="brickName"
+                >
+                  Echo Block
+                </p>
+              </div>
+            </div>
+            <div
+              class="topRow row"
+            >
+              <div
+                class="col-xl"
+              >
                 <div
                   class="formGroup form-group row"
                 >

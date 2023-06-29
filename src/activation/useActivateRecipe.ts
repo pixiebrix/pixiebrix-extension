@@ -169,14 +169,10 @@ function useActivateRecipe(
               services.map(({ id, config }) => [id, config])
             ),
             optionsArgs,
+            screen: source,
+            isReinstall: recipeExtensions.length > 0,
           })
         );
-
-        reportEvent("InstallBlueprint", {
-          blueprintId: recipe.metadata.id,
-          screen: source,
-          reinstall: recipeExtensions.length > 0,
-        });
 
         reactivateEveryTab();
       } catch (error) {

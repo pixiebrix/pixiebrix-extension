@@ -114,6 +114,21 @@ const extensionsSlice = createSlice({
         extensionPoints: ExtensionDefinition[];
         optionsArgs?: OptionsArgs;
         deployment?: Deployment;
+        /**
+         * The screen or source of the installation. Used for telemetry.
+         * @since 1.7.33
+         */
+        screen:
+          | "marketplace"
+          | "extensionConsole"
+          | "pageEditor"
+          | "background"
+          | "starterMod";
+        /**
+         * True if this is reinstalling an already active mod. Used for telemetry.
+         * @since 1.7.33
+         */
+        isReinstall: boolean;
       }>
     ) {
       requireLatestState(state);
@@ -124,6 +139,8 @@ const extensionsSlice = createSlice({
         optionsArgs,
         extensionPoints,
         deployment,
+        screen,
+        isReinstall,
       } = payload;
 
       for (const {
@@ -197,6 +214,7 @@ const extensionsSlice = createSlice({
 
         assertExtensionNotResolved(extension);
 
+        // Display name is 'StarterBrickActivate' in telemetry
         reportEvent("ExtensionActivate", selectEventData(extension));
 
         // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
@@ -206,6 +224,15 @@ const extensionsSlice = createSlice({
 
         void contextMenus.preload([extension]);
       }
+
+      // Display name is 'ModActivate' in telemetry
+      reportEvent("InstallBlueprint", {
+        blueprintId: recipe.metadata.id,
+        blueprintVersion: recipe.metadata.version,
+        deploymentId: deployment?.id,
+        screen,
+        reinstall: isReinstall,
+      });
     },
     // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
     saveExtension(

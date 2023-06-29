@@ -61,6 +61,11 @@ const EditorNodeConfigPanel: React.FC = () => {
       <AnalysisResult />
       <Row className={styles.topRow}>
         <Col xl>
+          <p className={styles.brickName}>{blockInfo?.block.name}</p>
+        </Col>
+      </Row>
+      <Row className={styles.topRow}>
+        <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}
             label="Step Name"
