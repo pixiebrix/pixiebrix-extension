@@ -53,8 +53,6 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     throw new Error("ButtonElement requires meta.extensionId");
   }
 
-  const disabled = boolean(rawDisabled);
-
   const handler = async () => {
     const currentCounter = counter;
     setCounter((previous) => previous + 1);
@@ -92,7 +90,13 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     }
   };
 
-  return <AsyncButton onClick={handler} disabled={disabled} {...restProps} />;
+  return (
+    <AsyncButton
+      onClick={handler}
+      disabled={boolean(rawDisabled)}
+      {...restProps}
+    />
+  );
 };
 
 export default ButtonElement;
