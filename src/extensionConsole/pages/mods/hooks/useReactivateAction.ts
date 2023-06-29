@@ -27,13 +27,13 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
   const { mod, unavailable, status, sharing } = modViewItem;
-  const hasBlueprint = isExtensionFromRecipe(mod) || isModDefinition(mod);
+  const hasModDefinition = isExtensionFromRecipe(mod) || isModDefinition(mod);
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
   const isRestricted = isDeployment && restrict("uninstall");
 
   const reactivate = () => {
-    if (hasBlueprint) {
+    if (hasModDefinition) {
       const blueprintId = isModDefinition(mod)
         ? mod.metadata.id
         : mod._recipe.id;
@@ -60,7 +60,7 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
 
   // Only blueprints/deployments can be reactivated. (Because there's no reason to reactivate an extension... there's
   // no activation-time integrations/options associated with them.)
-  return hasBlueprint && isActive && !isRestricted && !unavailable
+  return hasModDefinition && isActive && !isRestricted && !unavailable
     ? reactivate
     : null;
 };
