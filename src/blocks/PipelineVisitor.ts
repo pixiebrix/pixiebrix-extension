@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import { type TypedBlock } from "@/blocks/registry";
@@ -33,12 +33,12 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 
 export const ROOT_POSITION = Object.freeze({
   path: PIPELINE_BLOCKS_FIELD_NAME,
-}) as BlockPosition;
+}) as BrickPosition;
 
 export function nestedPosition(
-  position: BlockPosition,
+  position: BrickPosition,
   ...rest: string[]
-): BlockPosition {
+): BrickPosition {
   return {
     path: joinPathParts(position.path, ...rest),
   };
@@ -48,7 +48,7 @@ export type VisitBlockExtra = {
   index: number;
   parentNodeId?: UUID | undefined;
   pipeline: BrickConfig[];
-  pipelinePosition: BlockPosition;
+  pipelinePosition: BrickPosition;
   pipelineFlavor: PipelineFlavor;
 };
 export type VisitResolvedBlockExtra = VisitBlockExtra & {
@@ -68,7 +68,7 @@ export type VisitPipelineExtra = {
   /**
    * Parent block of the pipeline, if any
    */
-  parentPosition?: BlockPosition | undefined;
+  parentPosition?: BrickPosition | undefined;
 
   /**
    * Name (e.g., body/action) of the parent block's property that contains the pipeline
@@ -89,7 +89,7 @@ class PipelineVisitor {
    * @param blockConfig the block configuration
    */
   public visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
@@ -121,7 +121,7 @@ class PipelineVisitor {
   }
 
   public visitDocument(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig
   ): void {
     const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
@@ -154,7 +154,7 @@ class PipelineVisitor {
    * @param extra Extra information about the pipeline
    */
   public visitPipeline(
-    position: BlockPosition,
+    position: BrickPosition,
     pipeline: BrickConfig[],
     { flavor, parentNode }: VisitPipelineExtra
   ): void {

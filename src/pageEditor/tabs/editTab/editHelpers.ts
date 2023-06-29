@@ -21,7 +21,7 @@ import { type BrickType } from "@/runtime/runtimeTypes";
 import {
   type BrickConfig,
   type BrickPipeline,
-  type BlockPosition,
+  type BrickPosition,
 } from "@/blocks/types";
 import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
@@ -79,7 +79,7 @@ class PipelineMapVisitor extends PipelineVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {

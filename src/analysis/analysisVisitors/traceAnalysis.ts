@@ -22,7 +22,7 @@ import {
   type TraceError,
   type TraceRecord,
 } from "@/telemetry/trace";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -59,7 +59,7 @@ class TraceAnalysis extends AnalysisVisitor {
   }
 
   mapErrorAnnotations(
-    position: BlockPosition,
+    position: BrickPosition,
     traceError: ErrorObject
   ): AnalysisAnnotation[] {
     const annotations: AnalysisAnnotation[] = [];
@@ -116,7 +116,7 @@ class TraceAnalysis extends AnalysisVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {

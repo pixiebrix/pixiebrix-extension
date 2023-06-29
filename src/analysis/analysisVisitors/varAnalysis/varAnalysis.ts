@@ -23,7 +23,7 @@ import {
   type VisitBlockExtra,
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import {
@@ -412,7 +412,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
@@ -471,7 +471,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<unknown>
   ): void {
     if (isVarExpression(expression)) {
@@ -482,7 +482,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   private visitVarExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<string, "var">
   ) {
     const varName = expression.__value__;
@@ -496,7 +496,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   private visitNunjucksExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<string, "nunjucks">
   ) {
     let templateVariables: string[];
@@ -516,7 +516,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   private pushNotFoundVariableAnnotation(
-    position: BlockPosition,
+    position: BrickPosition,
     varName: string,
     expression: Expression<string, TemplateEngine>
   ) {
@@ -551,7 +551,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitPipeline(
-    position: BlockPosition,
+    position: BrickPosition,
     pipeline: BrickConfig[],
     extra: VisitPipelineExtra
   ) {
@@ -681,7 +681,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitDocument(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig
   ): void {
     // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline

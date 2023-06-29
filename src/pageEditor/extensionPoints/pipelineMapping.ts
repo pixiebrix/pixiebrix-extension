@@ -19,7 +19,7 @@ import { uuidv4 } from "@/types/helpers";
 import {
   type BrickConfig,
   type BrickPipeline,
-  type BlockPosition,
+  type BrickPosition,
 } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
@@ -38,7 +38,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitResolvedBlockExtra
   ): void {
@@ -98,7 +98,7 @@ export async function normalizePipelineForEditor(
 
 class OmitEditorMetadataVisitor extends PipelineVisitor {
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitResolvedBlockExtra
   ): void {

@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -27,7 +27,7 @@ class FormBrickAnalysis extends AnalysisVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {

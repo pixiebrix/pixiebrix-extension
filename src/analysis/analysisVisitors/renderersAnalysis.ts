@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import {
   nestedPosition,
   type VisitPipelineExtra,
@@ -35,7 +35,7 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBlocks {
   }
 
   public override visitPipeline(
-    position: BlockPosition,
+    position: BrickPosition,
     pipeline: BrickConfig[],
     extra: VisitPipelineExtra
   ): void {

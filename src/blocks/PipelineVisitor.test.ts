@@ -17,7 +17,7 @@
 
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import { type BlockPosition, type BrickConfig } from "@/blocks/types";
+import { type BrickPosition, type BrickConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -33,7 +33,7 @@ test("should invoke the callback for the pipeline bricks", () => {
   const visitBlock = jest.fn();
   class Visitor extends PipelineVisitor {
     override visitBlock(
-      position: BlockPosition,
+      position: BrickPosition,
       blockConfig: BrickConfig,
       extra: VisitBlockExtra
     ) {
@@ -90,7 +90,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
 
   class Visitor extends PipelineVisitor {
     override visitBlock(
-      position: BlockPosition,
+      position: BrickPosition,
       blockConfig: BrickConfig,
       extra: VisitBlockExtra
     ) {
@@ -170,7 +170,7 @@ test("should invoke the callback for the Document button pipeline", () => {
 
   class Visitor extends PipelineVisitor {
     override visitBlock(
-      position: BlockPosition,
+      position: BrickPosition,
       blockConfig: BrickConfig,
       extra: VisitBlockExtra
     ) {

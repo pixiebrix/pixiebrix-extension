@@ -16,7 +16,7 @@
  */
 
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -31,7 +31,7 @@ class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBlocks {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {

@@ -16,7 +16,7 @@
  */
 
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { type BlockPosition, type BrickPipeline } from "@/blocks/types";
+import { type BrickPosition, type BrickPipeline } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
@@ -39,7 +39,7 @@ test("should invoke the callback for a brick expression", () => {
   const visitExpression = jest.fn();
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
-      position: BlockPosition,
+      position: BrickPosition,
       expression: Expression<unknown>
     ) {
       visitExpression(position, expression);
@@ -88,7 +88,7 @@ test("should invoke the callback for a Document expression", () => {
   const visitExpression = jest.fn();
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
-      position: BlockPosition,
+      position: BrickPosition,
       expression: Expression<unknown>
     ) {
       visitExpression(position, expression);

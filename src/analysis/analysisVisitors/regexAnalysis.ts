@@ -16,7 +16,7 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
 import { isTemplateExpression } from "@/runtime/mapArgs";
@@ -56,7 +56,7 @@ class RegexAnalysis extends AnalysisVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {

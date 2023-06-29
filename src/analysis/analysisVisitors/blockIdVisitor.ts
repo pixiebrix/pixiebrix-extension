@@ -19,7 +19,7 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BrickConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { castArray } from "lodash";
 
 /**
@@ -37,7 +37,7 @@ class BlockIdVisitor extends PipelineVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
+    position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
