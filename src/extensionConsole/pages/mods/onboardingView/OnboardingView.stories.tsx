@@ -48,7 +48,7 @@ export default {
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      blueprints: persistReducer(persistModsConfig, modsSlice.reducer),
+      mods: persistReducer(persistModsConfig, modsSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

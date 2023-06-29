@@ -80,7 +80,7 @@ const modsSlice = createSlice({
 });
 
 export const persistModsConfig = {
-  key: "modsOptions",
+  key: "blueprintsOptions",
   storage: localStorage as StorageInterface,
 };
 
