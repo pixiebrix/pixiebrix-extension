@@ -22,12 +22,12 @@ import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import blocksRegistry from "@/blocks/registry";
+import bricksRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Need at least one item so callers see the registry as initialized
-blocksRegistry.register([echoBlock]);
+bricksRegistry.register([echoBlock]);
 
 describe("DataPanel", () => {
   test("it renders with form state and trace data", async () => {
