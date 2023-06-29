@@ -14,33 +14,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from "react";
-import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { Container } from "react-bootstrap";
-import useMods from "@/mods/useMods";
-import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
-const HomePanel: React.FunctionComponent = () => {
+import React, { useEffect } from "react";
+import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
+import useMods from "@/mods/useMods";
+import { useTitle } from "@/hooks/title";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import { reportEvent } from "@/telemetry/events";
+import Modals from "./modals/Modals";
+import useShowPublishUrlEffect from "@/extensionConsole/pages/mods/hooks/useShowPublishUrlEffect";
+
+const ModsPage: React.FunctionComponent = () => {
+  useTitle("Mods");
   const { mods, error } = useMods();
+  useShowPublishUrlEffect();
+
+  useEffect(() => {
+    reportEvent("BlueprintsPageView");
+  }, []);
 
   return (
-    <div className="full-height h-100">
-      <Container className="scrollable-area">
-        {error ? (
-          <ErrorDisplay error={error} />
-        ) : (
-          <ActiveModsList mods={mods} />
-        )}
-      </Container>
+    <div className="h-100">
+      {error ? <ErrorDisplay error={error} /> : <ModsPageLayout mods={mods} />}
+      <Modals />
     </div>
   );
 };
 
-export const HOME_PANEL: StaticPanelEntry = {
-  type: "staticPanel",
-  heading: "Home",
-  key: "home",
-};
-
-export default HomePanel;
+export default ModsPage;

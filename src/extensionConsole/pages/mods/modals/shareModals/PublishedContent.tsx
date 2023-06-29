@@ -14,33 +14,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from "react";
-import { type StaticPanelEntry } from "@/types/sidebarTypes";
-import { Container } from "react-bootstrap";
-import useMods from "@/mods/useMods";
-import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
 
-const HomePanel: React.FunctionComponent = () => {
-  const { mods, error } = useMods();
+import React from "react";
+import { Modal } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import ActivationLink from "@/activation/ActivationLink";
+import PublishContentLayout from "./PublishContentLayout";
+
+const PublishedContent: React.FunctionComponent = (props) => {
+  const { blueprintId } = useSelector(selectShowPublishContext);
 
   return (
-    <div className="full-height h-100">
-      <Container className="scrollable-area">
-        {error ? (
-          <ErrorDisplay error={error} />
-        ) : (
-          <ActiveModsList mods={mods} />
-        )}
-      </Container>
-    </div>
+    <PublishContentLayout title="Published">
+      <Modal.Body>
+        <p>The mod has been published to the Marketplace.</p>
+        <p className="mb-1">Public link to share:</p>
+        <ActivationLink blueprintId={blueprintId} />
+      </Modal.Body>
+    </PublishContentLayout>
   );
 };
 
-export const HOME_PANEL: StaticPanelEntry = {
-  type: "staticPanel",
-  heading: "Home",
-  key: "home",
-};
-
-export default HomePanel;
+export default PublishedContent;

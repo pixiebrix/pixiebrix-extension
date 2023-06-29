@@ -15,49 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
+import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
+import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
-import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import {
-  createRenderHookWithWrappers,
-  createRenderWithWrappers,
-} from "@/testUtils/testHelpers";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import extensionsSlice from "@/store/extensionsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
-import servicesSlice from "@/store/servicesSlice";
+import { recipesSlice } from "@/recipes/recipesSlice";
+import { type UnknownObject } from "@/types/objectTypes";
 
-const configureStoreForTests = () =>
-  configureStore({
+export default {
+  title: "ModsPage/ModsPage",
+  component: ModsPage,
+} as ComponentMeta<typeof ModsPage>;
+
+function optionsStore(initialState?: UnknownObject) {
+  return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
+      modsPage: modsPageSlice.reducer,
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
-      modsPage: modsPageSlice.reducer,
       recipes: recipesSlice.reducer,
-      services: servicesSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
       /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-      return getDefaultMiddleware()
-        .concat(appApi.middleware)
-        .concat(recipesMiddleware);
+      return getDefaultMiddleware().concat(appApi.middleware);
       /* eslint-enable unicorn/prefer-spread */
     },
+    ...(initialState ?? { preloadedState: initialState }),
   });
+}
 
-const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
-const renderHookWithWrappers = createRenderHookWithWrappers(
-  configureStoreForTests
+const Template: ComponentStory<typeof ModsPage> = (args) => (
+  <Provider store={optionsStore()}>
+    <ModsPage {...args} />
+  </Provider>
 );
 
-// eslint-disable-next-line import/export -- re-export RTL
-export * from "@testing-library/react";
-// eslint-disable-next-line import/export -- override render
-export { renderWithWrappers as render };
-export { renderHookWithWrappers as renderHook };
+export const Default = Template.bind({});
+Default.parameters = {
+  // Initial state is a loading state. Our loader is not compatible with Storyshots
+  storyshots: false,
+};
