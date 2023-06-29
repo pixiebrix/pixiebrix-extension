@@ -106,3 +106,14 @@ test("throws on unknown elements", () => {
     createNewElement("unknown");
   }).toThrow();
 });
+
+test("sets padding to zero for form", () => {
+  const actual = createNewElement("form");
+  expect(actual.type).toBe("pipeline");
+  expect((actual.config as any).pipeline.__value__[0].id).toBe(
+    "@pixiebrix/form"
+  );
+  expect((actual.config as any).pipeline.__value__[0].config.className).toBe(
+    "p-0"
+  );
+});
