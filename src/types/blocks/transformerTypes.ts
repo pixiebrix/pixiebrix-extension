@@ -16,7 +16,7 @@
  */
 
 import { BrickABC } from "@/types/blockTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export abstract class Transformer extends BrickABC {
   override async isRootAware(): Promise<boolean> {
@@ -24,9 +24,9 @@ export abstract class Transformer extends BrickABC {
     return false;
   }
 
-  abstract transform(value: BlockArgs, options: BlockOptions): Promise<unknown>;
+  abstract transform(value: BrickArgs, options: BlockOptions): Promise<unknown>;
 
-  async run(value: BlockArgs, options: BlockOptions): Promise<unknown> {
+  async run(value: BrickArgs, options: BlockOptions): Promise<unknown> {
     return this.transform(value, options);
   }
 }

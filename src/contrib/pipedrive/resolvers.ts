@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
@@ -62,7 +62,7 @@ export class ResolvePerson extends Transformer {
     pipedriveService,
     name,
     organization,
-  }: BlockArgs<{
+  }: BrickArgs<{
     pipedriveService: SanitizedServiceConfiguration;
     name: string;
     organization?: number;

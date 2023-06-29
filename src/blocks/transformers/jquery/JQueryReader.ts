@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
 import { type BrickConfig } from "@/blocks/types";
@@ -123,7 +123,7 @@ export class JQueryReader extends Transformer {
   }
 
   async transform(
-    { selectors }: BlockArgs<{ selectors: SelectorMap }>,
+    { selectors }: BrickArgs<{ selectors: SelectorMap }>,
     { root }: BlockOptions
   ): Promise<unknown> {
     return readJQuery({ type: "jquery", selectors }, root);

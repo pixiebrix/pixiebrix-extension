@@ -18,7 +18,7 @@
 import { setComponentData } from "@/pageScript/messenger/api";
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export class SetVueValues extends Effect {
@@ -51,7 +51,7 @@ export class SetVueValues extends Effect {
   async effect({
     component: selector,
     values: valueMap,
-  }: BlockArgs): Promise<void> {
+  }: BrickArgs): Promise<void> {
     await setComponentData({ framework: "vue", selector, valueMap });
   }
 }

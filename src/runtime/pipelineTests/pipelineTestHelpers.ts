@@ -11,7 +11,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import {
   type ApiVersion,
-  type BlockArgs,
+  type BrickArgs,
   type BlockOptions,
   type OptionsArgs,
 } from "@/types/runtimeTypes";
@@ -34,7 +34,7 @@ export class ContextBlock extends BrickABC {
 
   inputSchema = propertiesToSchema({});
 
-  async run(arg: BlockArgs, { ctxt }: BlockOptions) {
+  async run(arg: BrickArgs, { ctxt }: BlockOptions) {
     ContextBlock.contexts.push(ctxt);
     return ctxt;
   }
@@ -52,7 +52,7 @@ export class EchoBlock extends BrickABC {
     },
   });
 
-  async run({ message }: BlockArgs) {
+  async run({ message }: BrickArgs) {
     return { message };
   }
 }
@@ -64,7 +64,7 @@ class RootAwareBlock extends BrickABC {
 
   inputSchema = propertiesToSchema({});
 
-  async run(_arg: BlockArgs, { root }: BlockOptions) {
+  async run(_arg: BrickArgs, { root }: BlockOptions) {
     return {
       tagName: (root as HTMLElement).tagName,
     };
@@ -96,7 +96,7 @@ class IdentityBlock extends BrickABC {
     data: {},
   });
 
-  async run(arg: BlockArgs) {
+  async run(arg: BrickArgs) {
     return arg;
   }
 }
@@ -112,7 +112,7 @@ class ThrowBlock extends BrickABC {
     },
   });
 
-  async run({ message }: BlockArgs<{ message: string }>) {
+  async run({ message }: BrickArgs<{ message: string }>) {
     throw new BusinessError(message);
   }
 }
@@ -166,7 +166,7 @@ class PipelineBlock extends BrickABC {
     pipeline: pipelineSchema,
   });
 
-  async run({ pipeline }: BlockArgs<{ pipeline: PipelineExpression }>) {
+  async run({ pipeline }: BrickArgs<{ pipeline: PipelineExpression }>) {
     return {
       length: pipeline.__value__.length,
     };
@@ -203,7 +203,7 @@ class DeferBlock extends BrickABC {
       element,
       array = [],
       elementKey = "element",
-    }: BlockArgs<{
+    }: BrickArgs<{
       element: UnknownObject;
       array: unknown[];
       elementKey?: string;

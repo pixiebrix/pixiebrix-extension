@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -58,7 +58,7 @@ export class HideEffect extends Effect {
       selector,
       mode = "hide",
       isRootAware,
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector: string;
       mode?: "hide" | "remove";
       isRootAware: boolean;

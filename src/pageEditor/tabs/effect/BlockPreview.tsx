@@ -39,7 +39,7 @@ import { useField } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
@@ -58,14 +58,14 @@ const HACK_TRACE_OPTIONAL = new Set([
 
 function isTraceOptional(
   blockId: RegistryId,
-  { type }: { type: BlockType }
+  { type }: { type: BrickType }
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
 }
 
 type PreviewInfo = {
   block: Brick;
-  type: BlockType;
+  type: BrickType;
   isPure: boolean;
   isRootAware: boolean;
   traceOptional: boolean;

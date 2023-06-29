@@ -23,7 +23,7 @@ import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type BlockArgs,
+  type BrickArgs,
   type BlockOptions,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
@@ -50,7 +50,7 @@ export class WaitEffect extends Effect {
   };
 
   async effect(
-    { timeMillis = 0 }: BlockArgs<{ timeMillis: number }>,
+    { timeMillis = 0 }: BrickArgs<{ timeMillis: number }>,
     { logger }: BlockOptions
   ): Promise<void> {
     if (timeMillis > 0) {
@@ -141,7 +141,7 @@ export class WaitElementEffect extends Effect {
       selector,
       maxWaitMillis = 0,
       isRootAware,
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector: string | string[];
       maxWaitMillis: number | undefined;
       isRootAware: boolean;

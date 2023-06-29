@@ -17,27 +17,27 @@
 
 import { type BrickConfig } from "@/blocks/types";
 import { type Brick } from "@/types/blockTypes";
-import { type BlockArgs, type OutputKey } from "@/types/runtimeTypes";
+import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
+export type BrickType = "reader" | "effect" | "transform" | "renderer";
 /**
- * A block configuration with the corresponding resolved Brick and BlockType.
+ * A block configuration with the corresponding resolved Brick and BrickType.
  * @see BrickConfig
- * @see BlockType
+ * @see BrickType
  */
-export type ResolvedBlockConfig = {
+export type ResolvedBrickConfig = {
   block: Brick;
   config: BrickConfig;
-  type: BlockType;
+  type: BrickType;
 };
 
 /**
- * Assume that a value matches the expected arg for any block.
+ * Assume that a value matches the expected arg for any brick.
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
  */
-export function unsafeAssumeValidArg(value: unknown): BlockArgs {
-  return value as BlockArgs;
+export function unsafeAssumeValidArg(value: unknown): BrickArgs {
+  return value as BrickArgs;
 }
 
 const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;

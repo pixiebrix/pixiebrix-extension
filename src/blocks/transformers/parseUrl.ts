@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { pick } from "lodash";
@@ -96,7 +96,7 @@ export class UrlParser extends Transformer {
   async transform({
     url,
     base,
-  }: BlockArgs<{ url: string | URL; base?: string | URL }>): Promise<unknown> {
+  }: BrickArgs<{ url: string | URL; base?: string | URL }>): Promise<unknown> {
     const { isValid, parse } = await import(
       /* webpackChunkName: "psl" */ "psl"
     );

@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -126,7 +126,7 @@ class ParseJson extends Transformer {
     content,
     allowJson5 = true,
     lenient = false,
-  }: BlockArgs<{
+  }: BrickArgs<{
     content: string;
     allowJson5?: boolean;
     lenient?: boolean;

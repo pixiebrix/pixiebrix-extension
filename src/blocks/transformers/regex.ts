@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isArray, unary } from "lodash";
@@ -130,7 +130,7 @@ export class RegexTransformer extends Transformer {
   async transform({
     regex,
     input,
-  }: BlockArgs<{
+  }: BrickArgs<{
     regex: string | RegExp;
     input: string | null | Array<string | null>;
   }>): Promise<Record<string, string> | Array<Record<string, string>>> {

@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -72,7 +72,7 @@ class Run extends Transformer {
     {
       body: bodyPipeline,
       async = false,
-    }: BlockArgs<{
+    }: BrickArgs<{
       body: PipelineExpression;
       async?: boolean;
     }>,

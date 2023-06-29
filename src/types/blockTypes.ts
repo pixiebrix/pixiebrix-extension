@@ -19,7 +19,7 @@ import { type BrickConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickIcon } from "@/types/iconTypes";
 
@@ -108,7 +108,7 @@ export interface Brick extends Metadata {
    * @param value the rendered input values
    * @param options the runtime options for the block.
    */
-  run: (value: BlockArgs, options: BlockOptions) => Promise<unknown>;
+  run: (value: BrickArgs, options: BlockOptions) => Promise<unknown>;
 }
 
 /**
@@ -155,7 +155,7 @@ export abstract class BrickABC implements Brick {
     this.icon = icon;
   }
 
-  abstract run(value: BlockArgs, options: BlockOptions): Promise<unknown>;
+  abstract run(value: BrickArgs, options: BlockOptions): Promise<unknown>;
 }
 
 /**

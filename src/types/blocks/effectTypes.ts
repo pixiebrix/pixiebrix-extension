@@ -16,7 +16,7 @@
  */
 
 import { BrickABC } from "@/types/blockTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export abstract class Effect extends BrickABC {
   override async isRootAware(): Promise<boolean> {
@@ -24,9 +24,9 @@ export abstract class Effect extends BrickABC {
     return false;
   }
 
-  abstract effect(inputs: BlockArgs, env?: BlockOptions): Promise<void>;
+  abstract effect(inputs: BrickArgs, env?: BlockOptions): Promise<void>;
 
-  async run(value: BlockArgs, options: BlockOptions): Promise<void> {
+  async run(value: BrickArgs, options: BlockOptions): Promise<void> {
     return this.effect(value, options);
   }
 }

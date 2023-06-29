@@ -28,7 +28,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { Effect } from "@/types/blocks/effectTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 type CellValue = string | number | null;
 
@@ -260,7 +260,7 @@ export class GoogleSheetsAppend extends Effect {
       tabName,
       shape = "infer",
       rowValues: rawValues = {},
-    }: BlockArgs<{
+    }: BrickArgs<{
       spreadsheetId: string | SanitizedServiceConfiguration;
       tabName: string;
       shape: Shape;

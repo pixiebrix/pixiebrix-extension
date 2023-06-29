@@ -53,7 +53,7 @@ import { type Except, type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { Transformer } from "@/types/blocks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Location } from "@/types/extensionPointTypes";
 
 // Match naming of the sidebar panel extension point triggers
@@ -369,7 +369,7 @@ class DisplayTemporaryInfo extends Transformer {
       location = "panel",
       refreshTrigger = "manual",
       isRootAware = false,
-    }: BlockArgs<{
+    }: BrickArgs<{
       title: string;
       location: Location;
       refreshTrigger: RefreshTrigger;

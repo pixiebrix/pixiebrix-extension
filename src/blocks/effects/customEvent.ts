@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 import { Effect } from "@/types/blocks/effectTypes";
@@ -53,7 +53,7 @@ class CustomEventEffect extends Effect {
     {
       eventName,
       data = {},
-    }: BlockArgs<{ eventName: string; data?: JsonObject }>,
+    }: BrickArgs<{ eventName: string; data?: JsonObject }>,
     { root }: BlockOptions
   ): Promise<void> {
     const event = new CustomEvent(eventName, { detail: data, bubbles: true });

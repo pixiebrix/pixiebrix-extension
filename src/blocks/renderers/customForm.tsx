@@ -40,7 +40,7 @@ import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  type BlockArgs,
+  type BrickArgs,
   type BlockOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
@@ -226,7 +226,7 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
-    }: BlockArgs<{
+    }: BrickArgs<{
       storage?: Storage;
       successMessage?: string;
       recordId?: string | null;

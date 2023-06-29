@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -42,7 +42,7 @@ export class SoundEffect extends Effect {
     ["sound"]
   );
 
-  async effect({ sound }: BlockArgs<{ sound: string }>): Promise<void> {
+  async effect({ sound }: BrickArgs<{ sound: string }>): Promise<void> {
     const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));
     // NOTE: this does not wait for the sound effect to complete
     await audio.play();

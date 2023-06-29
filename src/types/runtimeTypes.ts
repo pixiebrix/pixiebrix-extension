@@ -183,7 +183,7 @@ export type OptionsArgs = Record<string, Primitive>;
 
 /**
  * Values available to a block to render its arguments.
- * @see BlockArgs
+ * @see BrickArgs
  * @see RenderedArgs
  * @see BrickConfig.outputKey
  */
@@ -197,14 +197,14 @@ export type BlockArgsContext = UnknownObject & {
 /**
  * The JSON Schema validated arguments to pass into the `run` method of an Brick.
  *
- * Uses `any` for values so that blocks don't have to assert/cast all their argument types. The input values
+ * Uses `any` for values so that bricks don't have to assert/cast all their argument types. The input values
  * are validated using JSON Schema in `reducePipeline`.
  *
  * @see IBlock.inputSchema
  * @see IBlock.run
  * @see reducePipeline
  */
-export type BlockArgs<
+export type BrickArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
   T extends Record<string, any> = Record<string, any>
 > = T & {
@@ -213,7 +213,7 @@ export type BlockArgs<
 
 /**
  * The non-validated arguments to pass into the `run` method of an Brick.
- * @see BlockArgs
+ * @see BrickArgs
  */
 export type RenderedArgs = UnknownObject & {
   _renderedArgBrand: never;

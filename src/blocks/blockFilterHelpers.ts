@@ -21,7 +21,7 @@ import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RegistryId } from "@/types/registryTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
@@ -83,7 +83,7 @@ export function makeIsBlockAllowedForPipeline(
     return stubTrue;
   }
 
-  let excludedType: BlockType;
+  let excludedType: BrickType;
 
   switch (pipelineFlavor) {
     case PipelineFlavor.NoEffect: {

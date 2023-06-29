@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -63,7 +63,7 @@ export class MappingTransformer extends Transformer {
     key,
     missing = "null",
     mapping,
-  }: BlockArgs<{
+  }: BrickArgs<{
     mapping: UnknownObject;
     missing: string;
     key: string | number;

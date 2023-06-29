@@ -17,7 +17,7 @@
 
 import { freshIdentifier } from "@/utils";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import {
   type BrickConfig,
   type BlockPipeline,
@@ -31,7 +31,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/blockTypes";
 import { type SafeString } from "@/types/stringTypes";
 
-export function showOutputKey(blockType: BlockType): boolean {
+export function showOutputKey(blockType: BrickType): boolean {
   return blockType !== "effect" && blockType !== "renderer";
 }
 

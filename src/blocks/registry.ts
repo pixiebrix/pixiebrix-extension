@@ -18,8 +18,8 @@
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import {
-  type BlockType,
-  type ResolvedBlockConfig,
+  type BrickType,
+  type ResolvedBrickConfig,
 } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
 import { type BrickConfig } from "@/blocks/types";
@@ -31,7 +31,7 @@ import { type Brick } from "@/types/blockTypes";
  */
 export type TypedBlock = {
   block: Brick;
-  type: BlockType;
+  type: BrickType;
 };
 
 export type TypedBlockMap = Map<RegistryId, TypedBlock>;
@@ -105,7 +105,7 @@ export default registry;
 
 export async function resolveBlockConfig(
   config: BrickConfig
-): Promise<ResolvedBlockConfig> {
+): Promise<ResolvedBrickConfig> {
   const block = await registry.lookup(config.id);
   return {
     config,

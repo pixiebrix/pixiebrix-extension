@@ -20,7 +20,7 @@ import { proxyService } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
 function makeProperties(
   obj: Record<string, unknown>,
@@ -99,7 +99,7 @@ export class AddUpdateContact extends Effect {
     lastname,
     company,
     ...otherValues
-  }: BlockArgs): Promise<void> {
+  }: BrickArgs): Promise<void> {
     const proxyHubspot = partial(proxyService, service);
 
     const properties = makeProperties({
@@ -186,7 +186,7 @@ export class AddUpdateCompany extends Effect {
     required: ["website"],
   };
 
-  async effect(config: BlockArgs): Promise<void> {
+  async effect(config: BrickArgs): Promise<void> {
     const { hubspot, website } = config;
 
     const proxyHubspot = partial(proxyService, hubspot);

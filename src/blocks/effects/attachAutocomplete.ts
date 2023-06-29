@@ -25,7 +25,7 @@ import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
 import { Effect } from "@/types/blocks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 
 export class AttachAutocomplete extends Effect {
   constructor() {
@@ -62,7 +62,7 @@ export class AttachAutocomplete extends Effect {
       selector,
       options,
       isRootAware = false,
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector: string;
       options: string[];
       isRootAware?: boolean;

@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
@@ -127,7 +127,7 @@ export class TourEffect extends Effect {
       disableInteraction = false,
       steps = [] as Step[],
       isRootAware = false,
-    }: BlockArgs,
+    }: BrickArgs,
     { root, abortSignal: blockAbortSignal, logger }: BlockOptions
   ): Promise<void> {
     const { extensionId, label, extensionLabel, blueprintId } = logger.context;

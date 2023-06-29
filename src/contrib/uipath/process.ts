@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -125,7 +125,7 @@ export class RunProcess extends Transformer {
       awaitResult = false,
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
-    }: BlockArgs<{
+    }: BrickArgs<{
       uipath: SanitizedServiceConfiguration;
       releaseKey: string;
       strategy: string;

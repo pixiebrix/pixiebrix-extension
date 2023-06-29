@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -463,7 +463,7 @@ export class TourStepTransformer extends Transformer {
   inputSchema: Schema = StepSchema;
 
   async transform(
-    args: BlockArgs<StepInputs>,
+    args: BrickArgs<StepInputs>,
     options: BlockOptions
   ): Promise<unknown> {
     const {
@@ -534,7 +534,7 @@ export class TourStepTransformer extends Transformer {
       markTourStep(nonce, { step: title, context });
 
       // If passing markdown, wrap in Markdown brick
-      const modifiedArgs: BlockArgs<StepInputs> =
+      const modifiedArgs: BrickArgs<StepInputs> =
         typeof body === "string"
           ? { ...args, body: markdownPipeline(body) }
           : args;

@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
@@ -66,7 +66,7 @@ export class ParseCsv extends Transformer {
   });
 
   async transform(
-    { content }: BlockArgs<{ content: string }>,
+    { content }: BrickArgs<{ content: string }>,
     { logger }: BlockOptions
   ): Promise<unknown> {
     const { default: Papa } = await import(

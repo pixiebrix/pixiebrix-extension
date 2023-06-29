@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
@@ -65,7 +65,7 @@ export class CopyToClipboard extends Effect {
     text,
     // Fallback to "text" for backward compatability
     contentType: contentTypeInput = "text",
-  }: BlockArgs<{
+  }: BrickArgs<{
     text: string | boolean | number;
     contentType: ContentType;
   }>): Promise<void> {

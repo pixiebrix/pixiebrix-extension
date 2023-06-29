@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
@@ -54,7 +54,7 @@ export class TelemetryEffect extends Effect {
     {
       eventName,
       data = {},
-    }: BlockArgs<{ eventName: string; data: JsonObject }>,
+    }: BrickArgs<{ eventName: string; data: JsonObject }>,
     { logger }: BlockOptions
   ): Promise<void> {
     if ("$eventName" in data) {

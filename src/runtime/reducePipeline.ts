@@ -47,7 +47,7 @@ import {
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type ResolvedBlockConfig } from "@/runtime/runtimeTypes";
+import { type ResolvedBrickConfig } from "@/runtime/runtimeTypes";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
@@ -61,7 +61,7 @@ import { type PanelPayload } from "@/types/sidebarTypes";
 import { getLoggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type BlockArgs,
+  type BrickArgs,
   type BlockArgsContext,
   type SelectorRoot,
   type RenderedArgs,
@@ -190,7 +190,7 @@ export type IntermediateState = {
  * All the data that determine the execution behavior of a block
  * @see IBlock.run
  */
-type BlockProps<TArgs extends RenderedArgs | BlockArgs = RenderedArgs> = {
+type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
   /**
    * The rendered args for the block, which may or may not have been already validated against the inputSchema depending
    * on the static type.
@@ -296,8 +296,8 @@ function getPipelineLexicalEnvironment({
  * Execute/run the resolved block in the target (self, etc.) with the validated args.
  */
 async function executeBlockWithValidatedProps(
-  { config, block }: ResolvedBlockConfig,
-  { args, context, root, previousOutput }: BlockProps<BlockArgs>,
+  { config, block }: ResolvedBrickConfig,
+  { args, context, root, previousOutput }: BlockProps<BrickArgs>,
   options: RunBlockOptions
 ): Promise<unknown> {
   const commonOptions = {
@@ -434,7 +434,7 @@ async function executeBlockWithValidatedProps(
 }
 
 async function renderBlockArg(
-  resolvedConfig: ResolvedBlockConfig,
+  resolvedConfig: ResolvedBrickConfig,
   state: IntermediateState,
   options: RunBlockOptions
 ): Promise<RenderedArgs> {
@@ -511,7 +511,7 @@ async function renderBlockArg(
 }
 
 function selectTraceRecordMeta(
-  resolvedConfig: ResolvedBlockConfig,
+  resolvedConfig: ResolvedBrickConfig,
   options: RunBlockOptions
 ): TraceRecordMeta {
   return {
@@ -533,7 +533,7 @@ function selectTraceEnabled({
 }
 
 export async function runBlock(
-  resolvedConfig: ResolvedBlockConfig,
+  resolvedConfig: ResolvedBrickConfig,
   props: BlockProps,
   options: RunBlockOptions
 ): Promise<unknown> {
@@ -578,7 +578,7 @@ export async function runBlock(
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProps = props as unknown as BlockProps<BlockArgs>;
+    const validatedProps = props as unknown as BlockProps<BrickArgs>;
     return await executeBlockWithValidatedProps(
       resolvedConfig,
       validatedProps,
@@ -854,7 +854,7 @@ async function getStepLogger(
   blockConfig: BrickConfig,
   pipelineLogger: Logger
 ): Promise<Logger> {
-  let resolvedConfig: ResolvedBlockConfig;
+  let resolvedConfig: ResolvedBrickConfig;
 
   try {
     resolvedConfig = await resolveBlockConfig(blockConfig);

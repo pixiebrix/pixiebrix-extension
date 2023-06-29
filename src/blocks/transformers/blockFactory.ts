@@ -29,11 +29,11 @@ import blockRegistry from "@/blocks/registry";
 import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import {
   type ApiVersion,
-  type BlockArgs,
+  type BrickArgs,
   type BlockOptions,
 } from "@/types/runtimeTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -137,7 +137,7 @@ class ExternalBlock extends BrickABC {
     return awareness.some(Boolean);
   }
 
-  async inferType(): Promise<BlockType | null> {
+  async inferType(): Promise<BrickType | null> {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline.at(-1);
 
@@ -166,9 +166,9 @@ class ExternalBlock extends BrickABC {
    * @private
    */
   private capturePipelineClosures(
-    args: BlockArgs,
+    args: BrickArgs,
     options: BlockOptions
-  ): BlockArgs {
+  ): BrickArgs {
     const pipelinePropertyNames = Object.keys(
       pickBy(
         inputProperties(this.inputSchema),
@@ -195,7 +195,7 @@ class ExternalBlock extends BrickABC {
     return args;
   }
 
-  async run(args: BlockArgs, options: BlockOptions): Promise<unknown> {
+  async run(args: BrickArgs, options: BlockOptions): Promise<unknown> {
     const argsWithClosures = this.capturePipelineClosures(args, options);
 
     options.logger.debug("Running component pipeline", {

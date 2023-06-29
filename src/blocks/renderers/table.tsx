@@ -23,7 +23,7 @@ import makeDataTable, {
   type Row,
 } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 // Type ColumnDefinition = {
@@ -93,7 +93,7 @@ export class TableRenderer extends Renderer {
     {
       columns,
       data: userData,
-    }: BlockArgs<{
+    }: BrickArgs<{
       columns: Array<ColumnDefinition<Row> & { href: string }>;
       data: unknown;
     }>,

@@ -28,7 +28,7 @@ import Run from "@/blocks/transformers/controlFlow/Run";
 import { BrickABC } from "@/types/blockTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import pDefer from "p-defer";
 
 const runBlock = new Run();
@@ -47,7 +47,7 @@ class DeferredEchoBlock extends BrickABC {
     },
   });
 
-  async run({ message }: BlockArgs) {
+  async run({ message }: BrickArgs) {
     await this.promise;
     return { message };
   }

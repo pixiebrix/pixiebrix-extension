@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFindElementsWithRootMode } from "@/blocks/rootModeHelpers";
@@ -71,7 +71,7 @@ export class ScrollIntoViewEffect extends Effect {
       behavior = "auto",
       block = "start",
       inline = "nearest",
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector?: string;
       behavior?: "auto" | "smooth";
       block?: "start" | "center" | "end" | "nearest";

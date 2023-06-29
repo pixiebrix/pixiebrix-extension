@@ -27,7 +27,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { Reader } from "@/types/blocks/readerTypes";
 import {
   type ApiVersion,
-  type BlockArgs,
+  type BrickArgs,
   type BlockOptions,
   type Expression,
   type SelectorRoot,
@@ -45,7 +45,7 @@ class RootAwareBlock extends BrickABC {
     return true;
   }
 
-  async run(arg: BlockArgs, { root }: BlockOptions) {
+  async run(arg: BrickArgs, { root }: BlockOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,

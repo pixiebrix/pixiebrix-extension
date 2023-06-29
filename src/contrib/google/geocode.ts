@@ -21,7 +21,7 @@ import { Transformer } from "@/types/blocks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
 interface GeocodedAddress {
   state?: string;
@@ -121,7 +121,7 @@ export class GeocodeTransformer extends Transformer {
   async transform({
     service,
     address,
-  }: BlockArgs<{
+  }: BrickArgs<{
     address: string;
     service: SanitizedServiceConfiguration;
   }>): Promise<GeocodedAddress> {

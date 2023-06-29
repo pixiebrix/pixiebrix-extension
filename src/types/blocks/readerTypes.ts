@@ -17,7 +17,7 @@
 
 import { type JsonObject } from "type-fest";
 import { BrickABC, type Brick } from "@/types/blockTypes";
-import { type BlockArgs, type SelectorRoot } from "@/types/runtimeTypes";
+import { type BrickArgs, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 /**
@@ -47,7 +47,7 @@ export abstract class Reader extends BrickABC implements IReader {
 
   abstract read(root: SelectorRoot): Promise<JsonObject>;
 
-  async run({ root }: BlockArgs): Promise<JsonObject> {
+  async run({ root }: BrickArgs): Promise<JsonObject> {
     return this.read(root as SelectorRoot);
   }
 }

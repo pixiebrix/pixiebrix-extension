@@ -18,7 +18,7 @@
 import { Transformer } from "@/types/blocks/transformerTypes";
 import {
   type TemplateEngine,
-  type BlockArgs,
+  type BrickArgs,
   type BlockOptions,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -64,7 +64,7 @@ export class TemplateTransformer extends Transformer {
     {
       template,
       templateEngine = "mustache",
-    }: BlockArgs<{ template: string; templateEngine: TemplateEngine }>,
+    }: BrickArgs<{ template: string; templateEngine: TemplateEngine }>,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
     if (templateEngine !== "mustache") {
