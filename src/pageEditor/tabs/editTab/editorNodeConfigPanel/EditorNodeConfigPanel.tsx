@@ -47,6 +47,9 @@ const EditorNodeConfigPanel: React.FC = () => {
   const { data: listings = {}, isLoading: isLoadingListing } =
     useGetMarketplaceListingsQuery({ package__name: blockId });
 
+  const { instructions: listingInstructions, id: listingId } =
+    listings[blockId] ?? {};
+
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)
   );
@@ -62,7 +65,8 @@ const EditorNodeConfigPanel: React.FC = () => {
     />
   );
 
-  const showDocumentationLink = !isLoadingListing && listings[blockId]?.id;
+  const showDocumentationLink =
+    !isLoadingListing && listingInstructions && listingId;
 
   return (
     <>
@@ -74,7 +78,7 @@ const EditorNodeConfigPanel: React.FC = () => {
         {showDocumentationLink && (
           <Col xs="auto">
             <a
-              href={`${MARKETPLACE_URL}${listings[blockId]?.id}/`}
+              href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
               target="_blank"
               rel="noopener noreferrer"
             >
