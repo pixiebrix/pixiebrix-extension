@@ -32,7 +32,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
 export default {
-  title: "Blueprints/GetStartedView",
+  title: "ModsPage/GetStartedView",
   component: GetStartedView,
 } as ComponentMeta<typeof GetStartedView>;
 

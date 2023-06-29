@@ -29,7 +29,7 @@ import { recipesSlice } from "@/recipes/recipesSlice";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
-  title: "Mods/ModsPage",
+  title: "ModsPage/ModsPage",
   component: ModsPage,
 } as ComponentMeta<typeof ModsPage>;
 
