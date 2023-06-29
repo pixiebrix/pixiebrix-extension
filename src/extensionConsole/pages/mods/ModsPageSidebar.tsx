@@ -118,9 +118,8 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
   const { getMilestone } = useMilestones();
 
-  const onboardingBlueprintId = getMilestone(
-    "first_time_public_blueprint_install"
-  )?.metadata?.blueprintId as RegistryId;
+  const onboardingModId = getMilestone("first_time_public_blueprint_install")
+    ?.metadata?.blueprintId as RegistryId;
 
   const isFreemiumUser = !me?.organization;
 
@@ -129,7 +128,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
       return true;
     }
 
-    if (onboardingBlueprintId === modViewItem.sharing.packageId) {
+    if (onboardingModId === modViewItem.sharing.packageId) {
       return false;
     }
 
