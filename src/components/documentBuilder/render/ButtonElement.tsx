@@ -27,6 +27,7 @@ import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTy
 import { getTopLevelFrame } from "webext-messenger";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/blocks/errors";
+import { boolean } from "@/utils";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BlockPipeline;
@@ -37,6 +38,7 @@ type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
 const ButtonElement: React.FC<ButtonElementProps> = ({
   onClick,
   tracePath,
+  disabled: rawDisabled,
   ...restProps
 }) => {
   const {
@@ -44,6 +46,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     meta,
     options: { ctxt, logger },
   } = useContext(DocumentContext);
+
   const [counter, setCounter] = useState(0);
 
   if (!meta.extensionId) {
@@ -87,7 +90,13 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     }
   };
 
-  return <AsyncButton onClick={handler} {...restProps} />;
+  return (
+    <AsyncButton
+      onClick={handler}
+      disabled={boolean(rawDisabled)}
+      {...restProps}
+    />
+  );
 };
 
 export default ButtonElement;

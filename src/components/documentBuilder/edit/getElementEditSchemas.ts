@@ -151,7 +151,8 @@ function getElementEditSchemas(
       };
       const disabledEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "disabled"),
-        schema: { type: "boolean" },
+        // Allow any to permit truthy values like for other conditional fields
+        schema: { type: ["string", "boolean", "null", "number"] },
         label: "Disabled",
       };
       return [

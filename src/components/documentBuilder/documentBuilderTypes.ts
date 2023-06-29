@@ -84,8 +84,11 @@ export type ButtonDocumentConfig = {
   label: string;
   title: string | Expression;
   variant?: string | Expression;
-  // Default size type coming from Bootstrap Button
+  /**
+   * Default size type coming from Bootstrap Button
+   */
   size?: "sm" | "lg" | Expression<"sm" | "lg">;
+  disabled?: boolean | Expression;
   className?: string | Expression;
   onClick: PipelineExpression;
 };
