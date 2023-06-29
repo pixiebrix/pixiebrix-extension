@@ -25,6 +25,8 @@ export const GET_COMPONENT_DATA = "@@pixiebrix/script/GET_COMPONENT_DATA";
 export const SET_COMPONENT_DATA = "@@pixiebrix/script/SET_COMPONENT_DATA";
 export const GET_COMPONENT_INFO = "@@pixiebrix/script/GET_COMPONENT_INFO";
 
+export const CKEDITOR_SET_VALUE = "@@pixiebrix/script/CKEDITOR_SET_VALUE";
+
 type UNKNOWN_VERSION = null;
 
 const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;

@@ -24,6 +24,7 @@ import {
   DETECT_FRAMEWORK_VERSIONS,
   type FrameworkMeta,
   READ_WINDOW,
+  CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
 import { type ElementInfo } from "@/pageScript/frameworks";
 import { type JsonObject } from "type-fest";
@@ -79,3 +80,8 @@ export const withReadWindow = createSendScriptMessage(
 export const withDetectFrameworkVersions = createSendScriptMessage<
   FrameworkMeta[]
 >(DETECT_FRAMEWORK_VERSIONS);
+
+export const setCKEditorData = createSendScriptMessage<
+  void,
+  { selector: string; value: string }
+>(CKEDITOR_SET_VALUE);
