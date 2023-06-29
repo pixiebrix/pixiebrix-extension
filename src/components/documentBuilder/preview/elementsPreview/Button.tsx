@@ -43,13 +43,9 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   buttonProps,
   ...restPreviewProps
 }) => {
-  const {
-    title,
-    variant,
-    size,
-    className: buttonClassName,
-    disabled,
-  } = buttonProps;
+  // NOTE: not passing through "disabled" prop because that prevents the user from clicking the button in the preview
+  // to select the element in the Document Builder.
+  const { title, variant, size, className: buttonClassName } = buttonProps;
 
   return (
     <div>
@@ -67,10 +63,6 @@ const Button: React.FunctionComponent<ButtonProps> = ({
         />
         <BsButton
           onClick={() => {}}
-          disabled={
-            // Exact match for literal boolean value
-            disabled === true
-          }
           // Not resolving expressions in Preview
           className={
             isExpression(buttonClassName) ? undefined : buttonClassName
