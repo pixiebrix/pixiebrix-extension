@@ -267,14 +267,13 @@ describe("When rendered in panel", () => {
       }
     );
 
-    test("renders disabled button", () => {
+    test.each([true, "y"])("renders disabled button for %s", (disabled) => {
       const config: DocumentElement = {
         type: "button",
         config: {
           title: "Button under test",
-          variant: "primary",
           className: "test-class",
-          disabled: true,
+          disabled,
           onClick: {
             __type__: "pipeline",
             __value__: jest.fn(),
