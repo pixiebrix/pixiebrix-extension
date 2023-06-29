@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModsState } from "@/extensionConsole/pages/mods/modsSlice";
+import { type ModsState } from "@/extensionConsole/pages/mods/modsPageSlice";
 
 export type ModsRootState = {
   mods: ModsState;

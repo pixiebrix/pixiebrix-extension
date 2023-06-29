@@ -4,8 +4,8 @@ import styles from "./ListFilters.module.scss";
 import { Col, Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import modsSlice, { type ActiveTab } from "./modsSlice";
-import { selectActiveTab, selectSearchQuery } from "./modsSelectors";
+import modsPageSlice, { type ActiveTab } from "./modsPageSlice";
+import { selectActiveTab, selectSearchQuery } from "./modsPageSelectors";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -104,7 +104,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     useGetStarterBlueprintsQuery();
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
-    modsSlice.actions.setActiveTab
+    modsPageSlice.actions.setActiveTab
   );
   const { data: modViewItems } = tableInstance;
 
@@ -220,11 +220,11 @@ const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
   } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
-    modsSlice.actions.setActiveTab
+    modsPageSlice.actions.setActiveTab
   );
   const [_, setSearchQuery] = useReduxState(
     selectSearchQuery,
-    modsSlice.actions.setSearchQuery
+    modsPageSlice.actions.setSearchQuery
   );
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearchInput] = useDebounce(searchInput, 300, {

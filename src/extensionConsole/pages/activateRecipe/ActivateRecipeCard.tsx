@@ -35,7 +35,7 @@ import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
 import { type WizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
 import notify from "@/utils/notify";
-import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
@@ -144,7 +144,7 @@ const ActivateRecipeCard: React.FC = () => {
           },
         });
 
-        dispatch(modsSlice.actions.setActiveTab(MODS_PAGE_TABS.getStarted));
+        dispatch(modsPageSlice.actions.setActiveTab(MODS_PAGE_TABS.getStarted));
       }
 
       dispatch(push("/mods"));

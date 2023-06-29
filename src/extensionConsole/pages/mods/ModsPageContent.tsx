@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 import {
   selectActiveTab,
   selectView,
-} from "@/extensionConsole/pages/mods/modsSelectors";
+} from "@/extensionConsole/pages/mods/modsPageSelectors";
 import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
 import EmptyView from "@/extensionConsole/pages/mods/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";

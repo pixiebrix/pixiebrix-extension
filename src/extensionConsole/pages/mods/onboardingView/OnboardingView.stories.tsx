@@ -22,9 +22,9 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/services/api";
 import { persistReducer } from "redux-persist";
-import modsSlice, {
+import modsPageSlice, {
   persistModsConfig,
-} from "@/extensionConsole/pages/mods/modsSlice";
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 
 export default {
   title: "Blueprints/OnboardingView",
@@ -48,7 +48,7 @@ export default {
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      mods: persistReducer(persistModsConfig, modsSlice.reducer),
+      mods: persistReducer(persistModsConfig, modsPageSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

@@ -34,7 +34,7 @@ import {
   selectGroupBy,
   selectSearchQuery,
   selectSortBy,
-} from "./modsSelectors";
+} from "./modsPageSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useModViewItems from "@/mods/useModViewItems";

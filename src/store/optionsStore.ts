@@ -41,14 +41,14 @@ import workshopSlice, {
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { type SettingsRootState } from "@/store/settingsTypes";
-import modsSlice, {
+import modsPageSlice, {
   persistModsConfig,
-} from "@/extensionConsole/pages/mods/modsSlice";
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type ModsRootState } from "@/extensionConsole/pages/mods/modsSelectors";
+import { type ModsRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
@@ -97,7 +97,7 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    mods: persistReducer(persistModsConfig, modsSlice.reducer),
+    mods: persistReducer(persistModsConfig, modsPageSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),

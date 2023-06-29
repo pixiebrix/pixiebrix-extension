@@ -19,9 +19,9 @@ import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import modsSlice, {
+import modsPageSlice, {
   persistModsConfig,
-} from "@/extensionConsole/pages/mods/modsSlice";
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 import { appApi } from "@/services/api";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import { Provider } from "react-redux";
@@ -39,7 +39,7 @@ export default {
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
-      mods: persistReducer(persistModsConfig, modsSlice.reducer),
+      mods: persistReducer(persistModsConfig, modsPageSlice.reducer),
       recipes: recipesSlice.reducer,
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,

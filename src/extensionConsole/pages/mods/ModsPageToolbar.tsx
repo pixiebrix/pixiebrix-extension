@@ -33,8 +33,8 @@ import {
   selectGroupBy,
   selectSortBy,
   selectView,
-} from "@/extensionConsole/pages/mods/modsSelectors";
-import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
+} from "@/extensionConsole/pages/mods/modsPageSelectors";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useSelector } from "react-redux";
 
 const ModsPageToolbar: React.FunctionComponent<{
@@ -47,16 +47,19 @@ const ModsPageToolbar: React.FunctionComponent<{
     state: { globalFilter },
   } = tableInstance;
 
-  const [view, setView] = useReduxState(selectView, modsSlice.actions.setView);
+  const [view, setView] = useReduxState(
+    selectView,
+    modsPageSlice.actions.setView
+  );
 
   const [groupBy, setGroupBy] = useReduxState(
     selectGroupBy,
-    modsSlice.actions.setGroupBy
+    modsPageSlice.actions.setGroupBy
   );
 
   const [sortBy, setSortBy] = useReduxState(
     selectSortBy,
-    modsSlice.actions.setSortBy
+    modsPageSlice.actions.setSortBy
   );
 
   const activeTab = useSelector(selectActiveTab);

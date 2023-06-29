@@ -51,7 +51,7 @@ const initialState: ModsState = {
   searchQuery: "",
 };
 
-const modsSlice = createSlice({
+const modsPageSlice = createSlice({
   name: "mods",
   initialState,
   reducers: {
@@ -84,4 +84,4 @@ export const persistModsConfig = {
   storage: localStorage as StorageInterface,
 };
 
-export default modsSlice;
+export default modsPageSlice;

@@ -21,7 +21,7 @@ import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
 import { type Mod } from "@/types/modTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
-import modsSlice from "@/extensionConsole/pages/mods/modsSlice";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
 import { authSlice } from "@/auth/authSlice";
 import { mockCachedUser, mockLoadingUser } from "@/testUtils/userMock";
@@ -206,7 +206,7 @@ describe("Serializable Data Test", () => {
     render(<ModsPageLayout mods={mods} />, {
       setupRedux(dispatch) {
         dispatch(
-          modsSlice.actions.setSearchQuery((() => {}) as unknown as string)
+          modsPageSlice.actions.setSearchQuery((() => {}) as unknown as string)
         );
       },
     });
