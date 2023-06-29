@@ -76,6 +76,8 @@ async function activateDeployment(
   deployment: Deployment,
   installed: IExtension[]
 ): Promise<void> {
+  let isReinstall = false;
+
   // Clear existing installations of the blueprint
   for (const extension of installed) {
     // Extension won't have recipe if it was locally created by a developer
@@ -85,6 +87,8 @@ async function activateDeployment(
           extensionId: extension.id,
         })
       );
+
+      isReinstall = true;
     }
   }
 
@@ -100,6 +104,8 @@ async function activateDeployment(
       ),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
+      screen: "extensionConsole",
+      isReinstall,
     })
   );
 
