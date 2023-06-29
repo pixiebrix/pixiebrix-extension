@@ -49,6 +49,9 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
   list: DOCUMENT_ELEMENT_TYPES as unknown as DocumentElementType[],
 };
 
+// HTML5/Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
+export const VALID_HEADER_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
+
 export function getAllowedChildTypes(
   parentElement: DocumentElement
 ): DocumentElementType[] {

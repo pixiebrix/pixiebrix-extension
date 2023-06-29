@@ -35,6 +35,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
 // Legacy header components, where each header type was a separate element
 const headerComponents = {
@@ -42,9 +43,6 @@ const headerComponents = {
   header_2: "h2",
   header_3: "h3",
 } as const;
-
-// Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
-const headingComponents = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 const gridComponents = {
   container: Container,
@@ -102,7 +100,7 @@ export function getComponentDefinition(
       props.children = title;
 
       return {
-        Component: headingComponents.includes(heading as string)
+        Component: VALID_HEADER_TAGS.includes(heading as string)
           ? (heading as ElementType)
           : "h1",
         props,

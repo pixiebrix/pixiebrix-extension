@@ -21,34 +21,17 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import cx from "classnames";
 import styles from "./HeadingStyleWidget.module.scss";
 import { useField } from "formik";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
-// Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
-const headingTypes = {
-  h1: {
-    heading: "h1",
-    title: "H1",
-  },
-  h2: {
-    heading: "h2",
-    title: "H2",
-  },
-  h3: {
-    heading: "h3",
-    title: "H3",
-  },
-  h4: {
-    heading: "h4",
-    title: "H4",
-  },
-  h5: {
-    heading: "h5",
-    title: "H5",
-  },
-  h6: {
-    heading: "h6",
-    title: "H6",
-  },
-};
+const headingTypes = Object.fromEntries(
+  VALID_HEADER_TAGS.map((heading) => [
+    heading,
+    {
+      heading,
+      title: heading.toUpperCase(),
+    },
+  ])
+);
 
 const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
   props

@@ -18,6 +18,7 @@
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
 import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
 function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
@@ -54,8 +55,7 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "heading"),
         schema: {
           type: "string",
-          // Bootstrap supports H1-H6: https://getbootstrap.com/docs/4.0/content/typography/
-          enum: ["h1", "h2", "h3", "h4", "h5", "h6"],
+          enum: VALID_HEADER_TAGS,
           format: "heading-style",
         },
         label: "Heading",
