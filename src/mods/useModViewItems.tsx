@@ -146,7 +146,7 @@ function useModViewItems(mods: Mod[]): {
   ]);
 
   return {
-    modViewItems: modViewItems,
+    modViewItems,
     // Don't wait for the marketplace listings to load. They're only used to determine the icon and sharing options.
     // FIXME: when the marketplace data loads, it causes a re-render because the data is passed to React Table. So if
     //  the user had a 3-dot menu open for one of the mods, it will close. This is a bit jarring.
