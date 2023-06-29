@@ -284,10 +284,13 @@ attachListener(
   }
 );
 
-attachListener(CKEDITOR_SET_VALUE, async ({ selector, value }) => {
-  const element = findSingleElement(selector);
-  setCKEditorData(element, value);
-});
+attachListener(
+  CKEDITOR_SET_VALUE,
+  async ({ selector, value }: { selector: string; value: string }) => {
+    const element = findSingleElement(selector);
+    setCKEditorData(element, value);
+  }
+);
 
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);
 document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));
