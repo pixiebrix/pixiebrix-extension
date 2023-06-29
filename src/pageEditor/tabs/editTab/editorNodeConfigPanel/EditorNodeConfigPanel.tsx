@@ -62,6 +62,8 @@ const EditorNodeConfigPanel: React.FC = () => {
     />
   );
 
+  const showDocumentationLink = !isLoadingListing && listings[blockId]?.id;
+
   return (
     <>
       <AnalysisResult />
@@ -69,10 +71,10 @@ const EditorNodeConfigPanel: React.FC = () => {
         <Col>
           <p>{blockInfo?.block.name}</p>
         </Col>
-        {isLoadingListing || (
+        {showDocumentationLink && (
           <Col xs="auto">
             <a
-              href={`${MARKETPLACE_URL}${listings[blockId].id}/`}
+              href={`${MARKETPLACE_URL}${listings[blockId]?.id}/`}
               target="_blank"
               rel="noopener noreferrer"
             >

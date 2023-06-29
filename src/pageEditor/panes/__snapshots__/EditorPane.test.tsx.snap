@@ -1913,16 +1913,25 @@ exports[`renders the first selected node 1`] = `
             class="configPanel"
           >
             <div
-              class="topRow row"
+              class="brickInfo justify-content-between row"
             >
               <div
-                class="col-xl"
+                class="col"
               >
-                <p
-                  class="brickName"
-                >
+                <p>
                   Echo Block
                 </p>
+              </div>
+              <div
+                class="col-auto"
+              >
+                <a
+                  href="https://www.pixiebrix.com/marketplace/undefined/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  View Documentation
+                </a>
               </div>
             </div>
             <div
