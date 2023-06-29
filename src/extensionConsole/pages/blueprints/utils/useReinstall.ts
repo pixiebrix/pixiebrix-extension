@@ -54,6 +54,8 @@ function useReinstall(): Reinstall {
           extensionPoints: recipe.extensionPoints,
           services: currentAuths,
           optionsArgs: currentOptions,
+          screen: "extensionConsole",
+          isReinstall: true,
         })
       );
     },

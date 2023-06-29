@@ -72,6 +72,8 @@ export const useInstallBotGamesBlueprint = () => {
       installRecipe({
         recipe: botGamesRecipe,
         extensionPoints: botGamesRecipe.extensionPoints,
+        screen: "extensionConsole",
+        isReinstall: false,
       })
     );
 
