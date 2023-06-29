@@ -21,7 +21,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BlockIcon } from "@/types/iconTypes";
+import { type BrickIcon } from "@/types/iconTypes";
 
 /**
  * An instance of a re-usable block.
@@ -121,7 +121,7 @@ export abstract class Block implements IBlock {
 
   readonly description: string;
 
-  readonly icon: BlockIcon;
+  readonly icon: BrickIcon;
 
   abstract readonly inputSchema: Schema;
 
@@ -147,7 +147,7 @@ export abstract class Block implements IBlock {
     id: string,
     name: string,
     description?: string,
-    icon?: BlockIcon
+    icon?: BrickIcon
   ) {
     this.id = validateRegistryId(id);
     this.name = name;

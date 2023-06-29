@@ -21,7 +21,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { type BlockIcon } from "@/types/iconTypes";
+import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
@@ -132,7 +132,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
 
   public readonly name: string;
 
-  public readonly icon: BlockIcon;
+  public readonly icon: BrickIcon;
 
   public readonly description: string;
 

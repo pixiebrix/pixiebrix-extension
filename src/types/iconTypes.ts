@@ -19,7 +19,7 @@
  * The icon for a brick, should start with `fa`
  * @deprecated icons are now defined in listings
  */
-export type BlockIcon = string;
+export type BrickIcon = string;
 
 export type IconLibrary = "bootstrap" | "simple-icons" | "custom";
 
