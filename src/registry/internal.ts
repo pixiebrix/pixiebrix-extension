@@ -47,7 +47,7 @@ import {
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
@@ -190,7 +190,7 @@ async function resolveExtensionPointDefinition(
 async function resolveInnerDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinitions[string]
-): Promise<IBlock | StarterBrick> {
+): Promise<Brick | StarterBrick> {
   if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
   }

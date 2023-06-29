@@ -195,7 +195,7 @@ export type BlockArgsContext = UnknownObject & {
 };
 
 /**
- * The JSON Schema validated arguments to pass into the `run` method of an IBlock.
+ * The JSON Schema validated arguments to pass into the `run` method of an Brick.
  *
  * Uses `any` for values so that blocks don't have to assert/cast all their argument types. The input values
  * are validated using JSON Schema in `reducePipeline`.
@@ -212,7 +212,7 @@ export type BlockArgs<
 };
 
 /**
- * The non-validated arguments to pass into the `run` method of an IBlock.
+ * The non-validated arguments to pass into the `run` method of an Brick.
  * @see BlockArgs
  */
 export type RenderedArgs = UnknownObject & {

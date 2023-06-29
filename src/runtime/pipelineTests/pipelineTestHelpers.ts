@@ -15,13 +15,13 @@ import {
   type BlockOptions,
   type OptionsArgs,
 } from "@/types/runtimeTypes";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/blockTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 const logger = new ConsoleLogger();
 
-export class ContextBlock extends Block {
+export class ContextBlock extends BrickABC {
   static contexts: UnknownObject[] = [];
 
   constructor() {
@@ -40,10 +40,10 @@ export class ContextBlock extends Block {
   }
 }
 
-export class EchoBlock extends Block {
+export class EchoBlock extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/echo");
   constructor() {
-    super(EchoBlock.BLOCK_ID, "Echo Block");
+    super(EchoBlock.BLOCK_ID, "Echo BrickABC");
   }
 
   inputSchema = propertiesToSchema({
@@ -57,7 +57,7 @@ export class EchoBlock extends Block {
   }
 }
 
-class RootAwareBlock extends Block {
+class RootAwareBlock extends BrickABC {
   constructor() {
     super("test/root-aware", "Root Aware");
   }
@@ -75,9 +75,9 @@ class RootAwareBlock extends Block {
  * A block that returns a `prop` 🫖
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418
  */
-class TeapotBlock extends Block {
+class TeapotBlock extends BrickABC {
   constructor() {
-    super("test/teapot", "Teapot Block");
+    super("test/teapot", "Teapot BrickABC");
   }
 
   inputSchema = propertiesToSchema({});
@@ -87,9 +87,9 @@ class TeapotBlock extends Block {
   }
 }
 
-class IdentityBlock extends Block {
+class IdentityBlock extends BrickABC {
   constructor() {
-    super("test/identity", "Identity Block");
+    super("test/identity", "Identity BrickABC");
   }
 
   inputSchema = propertiesToSchema({
@@ -101,9 +101,9 @@ class IdentityBlock extends Block {
   }
 }
 
-class ThrowBlock extends Block {
+class ThrowBlock extends BrickABC {
   constructor() {
-    super("test/throw", "Throw Block");
+    super("test/throw", "Throw BrickABC");
   }
 
   inputSchema = propertiesToSchema({
@@ -117,9 +117,9 @@ class ThrowBlock extends Block {
   }
 }
 
-class ArrayBlock extends Block {
+class ArrayBlock extends BrickABC {
   constructor() {
-    super("test/array", "Array Block");
+    super("test/array", "Array BrickABC");
   }
 
   inputSchema = propertiesToSchema({});
@@ -157,9 +157,9 @@ const pipelineSchema: Schema = {
 /**
  * A block for testing pipeline functionality. Returns the length of the provided pipeline block input.
  */
-class PipelineBlock extends Block {
+class PipelineBlock extends BrickABC {
   constructor() {
-    super("test/pipeline", "Pipeline Block");
+    super("test/pipeline", "Pipeline BrickABC");
   }
 
   inputSchema = propertiesToSchema({
@@ -176,9 +176,9 @@ class PipelineBlock extends Block {
 /**
  * Test block that renders an array of elements with a deferred expression
  */
-class DeferBlock extends Block {
+class DeferBlock extends BrickABC {
   constructor() {
-    super("test/defer", "Defer Block");
+    super("test/defer", "Defer BrickABC");
   }
 
   inputSchema = propertiesToSchema(

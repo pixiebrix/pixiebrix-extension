@@ -16,17 +16,17 @@
  */
 
 import { type BrickConfig } from "@/blocks/types";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type BlockArgs, type OutputKey } from "@/types/runtimeTypes";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**
- * A block configuration with the corresponding resolved IBlock and BlockType.
+ * A block configuration with the corresponding resolved Brick and BlockType.
  * @see BrickConfig
  * @see BlockType
  */
 export type ResolvedBlockConfig = {
-  block: IBlock;
+  block: Brick;
   config: BrickConfig;
   type: BlockType;
 };

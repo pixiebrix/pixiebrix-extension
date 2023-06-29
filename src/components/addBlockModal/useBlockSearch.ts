@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { useMemo } from "react";
 import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
@@ -26,7 +26,7 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { TAG_ALL } from "@/components/addBlockModal/addBlockModalConstants";
 
-function makeBlockOption(block: IBlock): BlockOption {
+function makeBlockOption(block: Brick): BlockOption {
   return {
     value: block.id,
     label: block.name,
@@ -37,7 +37,7 @@ function makeBlockOption(block: IBlock): BlockOption {
 const EMPTY_BLOCK_RESULTS: BlockOption[] = [];
 
 function useBlockSearch(
-  blocks: IBlock[],
+  blocks: Brick[],
   taggedBrickIds: Record<string, Set<string>>,
   query: string,
   searchTag: string | null
@@ -50,7 +50,7 @@ function useBlockSearch(
       };
     }
 
-    function blockHasTag(block: IBlock): boolean {
+    function blockHasTag(block: Brick): boolean {
       if (searchTag == null || searchTag === TAG_ALL) {
         return true;
       }

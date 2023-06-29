@@ -61,7 +61,7 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 
 export type QuickBarProviderConfig = {
   /**
@@ -133,7 +133,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
   async getBlocks(
     extension: ResolvedExtension<QuickBarProviderConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.generator);
   }
 

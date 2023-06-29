@@ -64,7 +64,7 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type ContextMenuTargetMode =
@@ -164,7 +164,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
   async getBlocks(
     extension: ResolvedExtension<ContextMenuConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 

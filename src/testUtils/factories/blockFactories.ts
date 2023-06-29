@@ -16,16 +16,16 @@
  */
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
-export const blockFactory = define<IBlock>({
+export const blockFactory = define<Brick>({
   id: (i: number) => validateRegistryId(`testing/block-${i}`),
-  name: derive<IBlock, string>((x: IBlock) => `Block ${x.id}`, "id"),
+  name: derive<Brick, string>((x: Brick) => `Block ${x.id}`, "id"),
   inputSchema: null as Schema,
   permissions: emptyPermissionsFactory(),
   run: jest.fn(),

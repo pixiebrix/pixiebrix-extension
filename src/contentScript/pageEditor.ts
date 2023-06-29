@@ -52,7 +52,7 @@ export type RunBlockArgs = {
    */
   apiVersion: ApiVersion;
   /**
-   * The IBlock configuration.
+   * The Brick configuration.
    */
   blockConfig: BrickConfig;
   /**

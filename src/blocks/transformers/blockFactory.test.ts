@@ -129,7 +129,7 @@ test("inner pipelines receive correct context", async () => {
   const pipeline = {
     id: block.id,
     config: {
-      customInput: "Block Environment",
+      customInput: "BrickABC Environment",
       body: {
         __type__: "pipeline",
         __value__: [{ id: "test/context", label: "Pipeline Arg Context" }],
@@ -150,7 +150,7 @@ test("inner pipelines receive correct context", async () => {
         __type__: "pipeline",
         __value__: expect.toBeArray(),
       },
-      customInput: "Block Environment",
+      customInput: "BrickABC Environment",
     },
     "@options": {},
   });

@@ -58,7 +58,7 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
@@ -117,7 +117,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
   async getBlocks(
     extension: ResolvedExtension<QuickBarConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 

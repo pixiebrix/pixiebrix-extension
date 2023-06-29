@@ -25,7 +25,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Run from "@/blocks/transformers/controlFlow/Run";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/blockTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
 import { type BlockArgs } from "@/types/runtimeTypes";
@@ -33,11 +33,11 @@ import pDefer from "p-defer";
 
 const runBlock = new Run();
 
-class DeferredEchoBlock extends Block {
+class DeferredEchoBlock extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/deferred");
   readonly promise: Promise<unknown>;
   constructor(promise: Promise<unknown>) {
-    super(DeferredEchoBlock.BLOCK_ID, "Deferred Block");
+    super(DeferredEchoBlock.BLOCK_ID, "Deferred BrickABC");
     this.promise = promise;
   }
 

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/blockTypes";
 import {
   type BlockArgs,
   type BlockOptions,
   type RendererOutput,
 } from "@/types/runtimeTypes";
 
-export abstract class Renderer extends Block {
+export abstract class Renderer extends BrickABC {
   abstract render(
     inputs: BlockArgs,
     options: BlockOptions

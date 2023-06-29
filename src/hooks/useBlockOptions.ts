@@ -25,10 +25,10 @@ import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock, isUserDefinedBlock } from "@/types/blockTypes";
+import { type Brick, isUserDefinedBlock } from "@/types/blockTypes";
 
 interface BlockState {
-  block?: IBlock | null;
+  block?: Brick | null;
   error?: string | null;
 }
 

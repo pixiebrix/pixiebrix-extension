@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block, type IBlock } from "@/types/blockTypes";
+import { BrickABC, type Brick } from "@/types/blockTypes";
 import { readerFactory } from "@/blocks/readers/factory";
 import {
   type Schema as ValidatorSchema,
@@ -87,9 +87,9 @@ function validateBrickDefinition(
 }
 
 /**
- * A non-native (i.e., non-JS) Block. Typically defined in YAML/JSON.
+ * A non-native (i.e., non-JS) BrickABC. Typically defined in YAML/JSON.
  */
-class ExternalBlock extends Block {
+class ExternalBlock extends BrickABC {
   public readonly component: BrickDefinition;
 
   readonly apiVersion: ApiVersion;
@@ -223,7 +223,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: UnknownObject): IBlock {
+export function fromJS(component: UnknownObject): Brick {
   if (component.kind == null) {
     throw new InvalidDefinitionError(
       "Component definition is missing a 'kind' property",

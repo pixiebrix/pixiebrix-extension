@@ -19,7 +19,7 @@ import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUt
 import { type EditablePackage } from "@/types/contract";
 
 describe("getKindDisplayName", () => {
-  it.each(["block", "Block", "reader"])(
+  it.each(["block", "BrickABC", "reader"])(
     "maps %s to Brick",
     (kind: EditablePackage["kind"]) => {
       expect(getKindDisplayName(kind)).toEqual("Brick");

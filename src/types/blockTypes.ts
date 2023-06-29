@@ -27,7 +27,7 @@ import { type BrickIcon } from "@/types/iconTypes";
  * An instance of a re-usable block.
  * @see BrickDefinition
  */
-export interface IBlock extends Metadata {
+export interface Brick extends Metadata {
   /** A JSON schema of the inputs for the block */
   inputSchema: Schema;
 
@@ -69,9 +69,9 @@ export interface IBlock extends Metadata {
    * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
    * the other blocks to resolve their purity).
    *
-   * FIXME: isPure is marked as optional because we're using IBlock to represent packages/bricks in some places, e.g.,
+   * FIXME: isPure is marked as optional because we're using Brick to represent packages/bricks in some places, e.g.,
    *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
-   *  take advantages the StarterBrick is compatible with the the IBlock interface even though they represent two
+   *  take advantages the StarterBrick is compatible with the the Brick interface even though they represent two
    *  different concepts
    *
    * Examples of impure actions:
@@ -112,9 +112,9 @@ export interface IBlock extends Metadata {
 }
 
 /**
- * Abstract base class for IBlock implementations.
+ * Abstract base class for Brick implementations.
  */
-export abstract class Block implements IBlock {
+export abstract class BrickABC implements Brick {
   readonly id: RegistryId;
 
   readonly name: string;
@@ -163,7 +163,7 @@ export abstract class Block implements IBlock {
  * @param block the block
  * @see ExternalBlock
  */
-export function isUserDefinedBlock(block: IBlock): boolean {
+export function isUserDefinedBlock(block: Brick): boolean {
   // YAML-defined blocks have a .component property added by the ExternalBlock class
   // We don't want to introduce circular dependency
   return block && "component" in block && Boolean(block.component);

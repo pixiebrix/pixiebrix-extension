@@ -20,7 +20,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -118,5 +118,5 @@ export type StarterBrick = Metadata & {
    *
    * @see PipelineExpression
    */
-  getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
+  getBlocks: (extension: ResolvedExtension) => Promise<Brick[]>;
 };

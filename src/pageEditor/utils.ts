@@ -39,7 +39,7 @@ import { type Target } from "@/types/messengerTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { inputProperties } from "@/helpers";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 
@@ -88,7 +88,7 @@ export function getRecipeById(
  * @param blockConfig the block configuration
  */
 export function getPipelinePropNames(
-  block: IBlock | null,
+  block: Brick | null,
   blockConfig: BrickConfig
 ): string[] {
   switch (blockConfig.id) {

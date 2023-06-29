@@ -351,7 +351,7 @@ describe("can add a node", () => {
       `icon-button-${jqNodeId}-add-brick`
     );
 
-    // The name of the block is "Teapot Block", searching for "Teapot" to get a single result in the Add Brick Dialog
+    // The name of the block is "Teapot BrickABC", searching for "Teapot" to get a single result in the Add Brick Dialog
     await addABlock(addButtonInSubPipeline, "Teapot");
     // Nodes. Root: Foundation, Echo, ForEach: JQ node, new Teapot node, Echo
     nodes = screen.getAllByTestId("editor-node");
@@ -872,7 +872,7 @@ describe("validation", () => {
   );
 });
 
-describe("block validation in Add Block Modal UI", () => {
+describe("block validation in Add BrickABC Modal UI", () => {
   const testCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,

@@ -70,7 +70,7 @@ import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -103,7 +103,7 @@ type SubPipeline = {
  * @param blockConfig the block config
  */
 function getSubPipelinesForBlock(
-  block: IBlock | null,
+  block: Brick | null,
   blockConfig: BrickConfig
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];

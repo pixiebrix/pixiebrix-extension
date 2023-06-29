@@ -55,7 +55,7 @@ import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
@@ -129,7 +129,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     },
   });
 
-  async getBlocks(extension: ResolvedExtension<TourConfig>): Promise<IBlock[]> {
+  async getBlocks(extension: ResolvedExtension<TourConfig>): Promise<Brick[]> {
     return selectAllBlocks(extension.config.tour);
   }
 

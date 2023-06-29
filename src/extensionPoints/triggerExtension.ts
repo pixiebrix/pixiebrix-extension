@@ -71,7 +71,7 @@ import CompositeReader from "@/blocks/readers/CompositeReader";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
@@ -276,7 +276,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   async getBlocks(
     extension: ResolvedExtension<TriggerConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 

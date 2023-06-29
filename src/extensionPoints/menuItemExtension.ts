@@ -74,7 +74,7 @@ import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type JsonObject } from "type-fest";
 import {
   type RunArgs,
@@ -403,7 +403,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   async getBlocks(
     extension: ResolvedExtension<MenuItemExtensionConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 

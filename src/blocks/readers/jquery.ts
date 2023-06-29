@@ -46,7 +46,7 @@ type CommonSelector = ChildrenSelector | SingleSelector;
 type Selector = CommonSelector & {
   selector?: string;
 
-  // Block until the element is available
+  // BrickABC until the element is available
   maxWaitMillis?: number;
 };
 

@@ -32,11 +32,11 @@ import {
   type Expression,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/blockTypes";
 
-class RootAwareBlock extends Block {
+class RootAwareBlock extends BrickABC {
   constructor() {
-    super("block/root-aware", "Root Aware Block");
+    super("block/root-aware", "Root Aware BrickABC");
   }
 
   inputSchema = propertiesToSchema({});

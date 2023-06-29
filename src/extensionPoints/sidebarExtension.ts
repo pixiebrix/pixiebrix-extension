@@ -59,7 +59,7 @@ import {
   type IExtension,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
@@ -127,7 +127,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
   async getBlocks(
     extension: ResolvedExtension<SidebarConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 

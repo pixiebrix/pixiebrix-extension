@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/blockTypes";
 import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
 
-export abstract class Effect extends Block {
+export abstract class Effect extends BrickABC {
   override async isRootAware(): Promise<boolean> {
     // Most effects don't use the root, so have them opt-in
     return false;

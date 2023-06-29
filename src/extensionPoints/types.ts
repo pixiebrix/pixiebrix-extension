@@ -26,7 +26,7 @@ import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -226,7 +226,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
     return this.defaultReader();
   }
 
-  abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<IBlock[]>;
+  abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<Brick[]>;
 
   abstract isAvailable(): Promise<boolean>;
 

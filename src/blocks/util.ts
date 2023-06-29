@@ -23,7 +23,7 @@ import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 
 export function isOfficial(id: RegistryId): boolean {
@@ -67,7 +67,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
 /** Return IBlocks for all blocks referenced in a pipeline, including any sub-pipelines. */
 export async function selectAllBlocks(
   config: BrickConfig | BlockPipeline
-): Promise<IBlock[]> {
+): Promise<Brick[]> {
   const ids = BlockIdVisitor.collectBlockIds(config);
   return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));
 }

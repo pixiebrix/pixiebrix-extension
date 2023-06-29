@@ -28,7 +28,7 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type SafeString } from "@/types/stringTypes";
 
 export function showOutputKey(blockType: BlockType): boolean {
@@ -41,7 +41,7 @@ export function showOutputKey(blockType: BlockType): boolean {
  * @param outputKeys existing outputKeys already being used
  */
 export async function generateFreshOutputKey(
-  block: IBlock,
+  block: Brick,
   outputKeys: OutputKey[]
 ): Promise<OutputKey | undefined> {
   const type = await getType(block);

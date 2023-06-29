@@ -24,19 +24,19 @@ import {
 import getType from "@/runtime/getType";
 import { type BrickConfig } from "@/blocks/types";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 
 /**
  * A block along with inferred/calculated information
  */
 export type TypedBlock = {
-  block: IBlock;
+  block: Brick;
   type: BlockType;
 };
 
 export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
-class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+class BlocksRegistry extends BaseRegistry<RegistryId, Brick> {
   constructor() {
     super(["block", "component", "effect", "reader"], fromJS);
 

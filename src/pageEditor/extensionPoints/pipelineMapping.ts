@@ -50,7 +50,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
 
     if (typedBlock == null) {
       console.warn(
-        "Block not found in block map: %s",
+        "BrickABC not found in block map: %s",
         blockConfig.id,
         this.blockMap
       );

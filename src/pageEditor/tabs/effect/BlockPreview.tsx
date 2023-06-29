@@ -44,7 +44,7 @@ import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/eleme
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 
@@ -64,7 +64,7 @@ function isTraceOptional(
 }
 
 type PreviewInfo = {
-  block: IBlock;
+  block: Brick;
   type: BlockType;
   isPure: boolean;
   isRootAware: boolean;

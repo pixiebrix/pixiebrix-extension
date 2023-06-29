@@ -56,7 +56,7 @@ import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type IReader } from "@/types/blocks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
@@ -157,9 +157,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     return "panel";
   }
 
-  async getBlocks(
-    extension: ResolvedExtension<PanelConfig>
-  ): Promise<IBlock[]> {
+  async getBlocks(extension: ResolvedExtension<PanelConfig>): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 

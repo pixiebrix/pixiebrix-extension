@@ -51,10 +51,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type IBrick } from "@/types/brickInstanceTypes";
 
-type BrickOption<T extends IBrick = IBlock> = {
+type BrickOption<T extends IBrick = Brick> = {
   data: T;
   value: RegistryId;
   label: string;
@@ -101,7 +101,7 @@ function useSearch<T extends IBrick>(
   );
 }
 
-type ModalProps<T extends IBrick = IBlock> = {
+type ModalProps<T extends IBrick = Brick> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;

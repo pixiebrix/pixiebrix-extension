@@ -34,7 +34,7 @@ import { $safeFind } from "@/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { isInnerDefinitionRegistryId, validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/blockTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
   type BlockArgsContext,
@@ -49,7 +49,7 @@ import { type IExtension } from "@/types/extensionTypes";
  */
 // Can't use TypeScript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
 export async function throwIfInvalidInput(
-  block: IBlock,
+  block: Brick,
   blockArgs: RenderedArgs
 ): Promise<void> {
   const validationResult = await validateInput(
@@ -78,7 +78,7 @@ export async function throwIfInvalidInput(
  * Log an error if `output` doesn't match the blocks outputSchema
  */
 export async function logIfInvalidOutput(
-  block: IBlock,
+  block: Brick,
   output: unknown,
   logger: Logger,
   { window }: { window: BlockWindow }
