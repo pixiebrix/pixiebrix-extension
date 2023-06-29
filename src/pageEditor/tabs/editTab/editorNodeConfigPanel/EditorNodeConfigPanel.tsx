@@ -65,12 +65,14 @@ const EditorNodeConfigPanel: React.FC = () => {
   return (
     <>
       <AnalysisResult />
-      <Row className={styles.topRow}>
+      <Row className={classNames(styles.brickInfo, "justify-content-between")}>
+        <Col>
+          <p>{blockInfo?.block.name}</p>
+        </Col>
         {isLoadingListing || (
-          <Col xl>
+          <Col xs="auto">
             <a
               href={`${MARKETPLACE_URL}${listings[blockId].id}/`}
-              className={classNames("text-info", styles.brickInfo)}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -78,11 +80,6 @@ const EditorNodeConfigPanel: React.FC = () => {
             </a>
           </Col>
         )}
-      </Row>
-      <Row className={styles.topRow}>
-        <Col xl>
-          <p className={styles.brickName}>{blockInfo?.block.name}</p>
-        </Col>
       </Row>
       <Row className={styles.topRow}>
         <Col xl>
