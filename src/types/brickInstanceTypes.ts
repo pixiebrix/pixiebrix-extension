@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type IService } from "@/types/serviceTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 

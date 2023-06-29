@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
@@ -55,7 +55,7 @@ export class TelemetryEffect extends Effect {
       eventName,
       data = {},
     }: BrickArgs<{ eventName: string; data: JsonObject }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<void> {
     if ("$eventName" in data) {
       throw new PropError(

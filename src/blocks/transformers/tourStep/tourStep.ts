@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -317,7 +317,7 @@ export class TourStepTransformer extends Transformer {
         context: { extensionId, blueprintId },
       },
       runRendererPipeline,
-    }: BlockOptions
+    }: BrickOptions
   ): Promise<unknown> {
     let counter = 0;
 
@@ -412,7 +412,7 @@ export class TourStepTransformer extends Transformer {
    */
   async locateElement(
     args: StepInputs,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<HTMLElement> {
     let $elements: JQuery<Document | HTMLElement> = $safeFind(
       args.selector,
@@ -464,7 +464,7 @@ export class TourStepTransformer extends Transformer {
 
   async transform(
     args: BrickArgs<StepInputs>,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<unknown> {
     const {
       root,

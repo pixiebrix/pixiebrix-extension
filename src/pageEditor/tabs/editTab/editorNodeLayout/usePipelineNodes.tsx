@@ -25,7 +25,7 @@ import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNo
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
   type BrickConfig,
-  type BlockPipeline,
+  type BrickPipeline,
   type Branch,
 } from "@/blocks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
@@ -70,7 +70,7 @@ import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -85,7 +85,7 @@ type SubPipeline = {
    */
   headerLabel: string;
 
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
 
   /**
    * Formik path to the pipeline
@@ -110,7 +110,7 @@ function getSubPipelinesForBlock(
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
     for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
       const path = joinPathParts(docPipelinePath, "__value__");
-      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
       const elementPathParts = docPipelinePath.split(".").slice(0, -2);
@@ -133,7 +133,7 @@ function getSubPipelinesForBlock(
   } else {
     for (const pipelinePropName of getPipelinePropNames(block, blockConfig)) {
       const path = joinName("config", pipelinePropName, "__value__");
-      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       const subPipeline: SubPipeline = {
         headerLabel: pipelinePropName,
@@ -529,7 +529,7 @@ const usePipelineNodes = (): {
     nestingLevel = 0,
     parentIsActive = false,
   }: {
-    pipeline: BlockPipeline;
+    pipeline: BrickPipeline;
     flavor: PipelineFlavor;
     pipelinePath?: string;
     nestingLevel?: number;

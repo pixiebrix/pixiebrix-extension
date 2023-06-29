@@ -51,7 +51,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type IBrick } from "@/types/brickInstanceTypes";
 
 type BrickOption<T extends IBrick = Brick> = {

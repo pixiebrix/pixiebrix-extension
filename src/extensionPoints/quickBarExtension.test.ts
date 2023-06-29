@@ -20,7 +20,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/types/registryTypes";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   getDocument,
   RootReader,
@@ -78,7 +78,7 @@ const extensionFactory = define<ResolvedExtension<QuickBarConfig>>({
   label: "Test Extension",
   config: define<QuickBarConfig>({
     title: "Test Action",
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
   }),
 });
 

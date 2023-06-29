@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import { inputProperties } from "@/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -352,8 +352,8 @@ async function upgradeValue({
  * Attempt to upgrade the blocks in a pipeline from api v2 to v3
  */
 export async function upgradePipelineToV3(
-  blockPipeline: BlockPipeline
-): Promise<BlockPipeline> {
+  blockPipeline: BrickPipeline
+): Promise<BrickPipeline> {
   const cloned = cloneDeep(blockPipeline);
   await Promise.all(
     cloned.map(async (block) => {

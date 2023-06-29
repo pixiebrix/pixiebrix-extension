@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -23,7 +23,7 @@ import {
   $safeFindElementsWithRootMode,
 } from "@/blocks/rootModeHelpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class DisableEffect extends Effect {
   constructor() {
@@ -51,7 +51,7 @@ export class DisableEffect extends Effect {
 
   async effect(
     args: BrickArgs<{ selector: string; isRootAware?: boolean }>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       ...args,

@@ -66,7 +66,7 @@ import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";

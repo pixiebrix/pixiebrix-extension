@@ -197,7 +197,7 @@ export type BrickConfig = {
 /**
  * A pipeline of blocks to execute sequentially
  */
-export type BlockPipeline = BrickConfig[];
+export type BrickPipeline = BrickConfig[];
 
 /**
  * A control flow branch, for tracing. The array of branches is used to correlate runs of the same block in a pipeline

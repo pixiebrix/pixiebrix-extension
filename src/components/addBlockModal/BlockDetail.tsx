@@ -1,5 +1,5 @@
 import React from "react";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";

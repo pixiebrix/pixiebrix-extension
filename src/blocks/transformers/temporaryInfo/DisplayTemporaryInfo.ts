@@ -51,9 +51,9 @@ import { AbortPanelAction, ClosePanelAction } from "@/blocks/errors";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type Except, type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Location } from "@/types/extensionPointTypes";
 
 // Match naming of the sidebar panel extension point triggers
@@ -385,7 +385,7 @@ class DisplayTemporaryInfo extends Transformer {
       runPipeline,
       runRendererPipeline,
       abortSignal,
-    }: BlockOptions
+    }: BrickOptions
   ): Promise<JsonObject | null> {
     expectContext("contentScript");
 

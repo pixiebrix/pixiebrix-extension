@@ -24,9 +24,9 @@ import { type PipelineExpression } from "@/runtime/mapArgs";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
 import {
-  blockConfigFactory,
+  brickConfigFactory,
   pipelineFactory,
-} from "@/testUtils/factories/blockFactories";
+} from "@/testUtils/factories/brickFactories";
 
 test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();
@@ -77,7 +77,7 @@ test("should invoke the callback for the pipeline bricks", () => {
 
 test("should invoke the callback for the sub pipeline bricks", () => {
   const subPipeline = pipelineFactory();
-  const forEachBrick = blockConfigFactory({
+  const forEachBrick = brickConfigFactory({
     id: ForEach.BLOCK_ID,
     config: {
       elements: toExpression("var", "@elements"),
@@ -155,10 +155,10 @@ test("should invoke the callback for the Document button pipeline", () => {
   const buttonElement = createNewElement("button");
   const subPipeline = (buttonElement.config.onClick as PipelineExpression)
     .__value__;
-  subPipeline.push(blockConfigFactory());
+  subPipeline.push(brickConfigFactory());
   const containerElement = createNewElement("container");
   containerElement.children[0].children[0].children.push(buttonElement);
-  const documentBrick = blockConfigFactory({
+  const documentBrick = brickConfigFactory({
     id: DocumentRenderer.BLOCK_ID,
     config: {
       body: [containerElement],

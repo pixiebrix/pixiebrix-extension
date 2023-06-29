@@ -16,7 +16,7 @@
  */
 
 import BaseRegistry from "@/baseRegistry";
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/blocks/transformers/brickFactory";
 import {
   type BrickType,
   type ResolvedBrickConfig,
@@ -24,7 +24,7 @@ import {
 import getType from "@/runtime/getType";
 import { type BrickConfig } from "@/blocks/types";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 /**
  * A block along with inferred/calculated information

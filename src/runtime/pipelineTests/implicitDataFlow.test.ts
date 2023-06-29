@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   arrayBlock,
@@ -44,7 +44,7 @@ beforeEach(() => {
 
 describe("apiVersion: v1", () => {
   test("pass input and block output on root intermediate state", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
         id: echoBlock.id,
         config: { message: "{{inputArg}}" },
@@ -63,7 +63,7 @@ describe("apiVersion: v1", () => {
   });
 
   test("pass block output in context to next block", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
         id: echoBlock.id,
         config: { message: "{{inputArg}}" },
@@ -90,7 +90,7 @@ describe("apiVersion: v1", () => {
     // See: https://github.com/pixiebrix/pixiebrix-extension/blob/release/1.4.4/src/blocks/combinators.ts#L455
     // See: https://github.com/pixiebrix/pixiebrix-extension/blob/release/1.4.4/src/blocks/combinators.ts#L175
 
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
         id: echoBlock.id,
         config: { message: "{{inputArg}}" },
@@ -155,7 +155,7 @@ describe("pass non-objects direct to next component", () => {
   // implicit data flow between bricks
 
   test("v1 only: pass array as context to next brick", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
         id: arrayBlock.id,
         config: {},
@@ -178,7 +178,7 @@ describe("pass non-objects direct to next component", () => {
   });
 
   test("v1 only: do not render args if previous brick produced array", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
         id: arrayBlock.id,
         config: {},
@@ -203,7 +203,7 @@ describe("pass non-objects direct to next component", () => {
     "apiVersion: %s",
     (apiVersion: ApiVersion) => {
       test("do not pass list directly to next brick", async () => {
-        const pipeline: BlockPipeline = [
+        const pipeline: BrickPipeline = [
           {
             id: arrayBlock.id,
             outputKey: "array" as OutputKey,

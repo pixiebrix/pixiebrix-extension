@@ -41,9 +41,9 @@ import { uuidv4 } from "@/types/helpers";
 import { Provider } from "react-redux";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
-  blockConfigFactory,
+  brickConfigFactory,
   pipelineFactory,
-} from "@/testUtils/factories/blockFactories";
+} from "@/testUtils/factories/brickFactories";
 
 jest.mock("@/components/form/FormErrorContext", () => ({
   useFormErrorSettings: jest.fn(),
@@ -92,7 +92,7 @@ describe("useFieldAnnotations", () => {
     const element = formStateFactory(
       undefined,
       pipelineFactory(
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             testField: "test value",
           },

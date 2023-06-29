@@ -19,7 +19,7 @@ import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermis
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 const containsMock = browser.permissions.contains as jest.MockedFunction<
@@ -29,7 +29,7 @@ const containsMock = browser.permissions.contains as jest.MockedFunction<
 function blockExtensionFactory(url: string) {
   const extension = triggerFormStateFactory();
   extension.extension.blockPipeline = [
-    blockConfigFactory({
+    brickConfigFactory({
       id: RemoteMethod.BLOCK_ID,
       config: {
         url: {

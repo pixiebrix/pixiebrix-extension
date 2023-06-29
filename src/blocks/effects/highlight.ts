@@ -16,8 +16,8 @@
  */
 /* eslint-disable unicorn/no-array-callback-reference -- $.find false positives */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
@@ -130,7 +130,7 @@ export class HighlightEffect extends Effect {
       rootSelector: string | undefined;
       elements: ColorRule[];
     }>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<void> {
     if (condition !== undefined && !boolean(condition)) {
       return;

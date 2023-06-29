@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
 import { getPageState, setPageState } from "@/contentScript/pageState";
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
@@ -73,7 +73,7 @@ export class SetPageState extends Transformer {
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
@@ -118,7 +118,7 @@ export class GetPageState extends Transformer {
 
   async transform(
     { namespace = "blueprint" }: BrickArgs<{ namespace?: Namespace }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
     return getPageState({ namespace, blueprintId, extensionId });

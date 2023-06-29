@@ -20,7 +20,7 @@ import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import {
   type BrickConfig,
-  type BlockPipeline,
+  type BrickPipeline,
   type BlockPosition,
 } from "@/blocks/types";
 import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
@@ -28,7 +28,7 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";
 
 export function showOutputKey(blockType: BrickType): boolean {
@@ -97,7 +97,7 @@ class PipelineMapVisitor extends PipelineVisitor {
   }
 }
 
-export function getPipelineMap(pipeline: BlockPipeline): PipelineMap {
+export function getPipelineMap(pipeline: BrickPipeline): PipelineMap {
   const visitor = new PipelineMapVisitor();
   visitor.visitRootPipeline(pipeline);
   return visitor.pipelineMap;

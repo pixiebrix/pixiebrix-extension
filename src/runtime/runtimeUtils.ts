@@ -34,10 +34,10 @@ import { $safeFind } from "@/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { isInnerDefinitionRegistryId, validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
-  type BlockArgsContext,
+  type BrickArgsContext,
   type ElementReference,
   type SelectorRoot,
   type RenderedArgs,
@@ -109,7 +109,7 @@ export async function logIfInvalidOutput(
  */
 async function renderConfigOption(
   blockConfig: BrickConfig,
-  context: BlockArgsContext,
+  context: BrickArgsContext,
   fieldName: keyof BrickConfig,
   {
     explicitRender,
@@ -136,7 +136,7 @@ async function renderConfigOption(
  */
 export async function shouldRunBlock(
   blockConfig: BrickConfig,
-  context: BlockArgsContext,
+  context: BrickArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
   if (blockConfig.if !== undefined) {
@@ -158,7 +158,7 @@ export async function shouldRunBlock(
 export async function selectBlockRootElement(
   blockConfig: BrickConfig,
   defaultRoot: SelectorRoot,
-  context: BlockArgsContext,
+  context: BrickArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<SelectorRoot> {
   const rootMode = blockConfig.rootMode ?? "inherit";

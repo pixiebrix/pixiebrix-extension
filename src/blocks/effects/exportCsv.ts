@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
 
@@ -57,7 +57,7 @@ export class ExportCsv extends Effect {
 
   async effect(
     { filename = "exported", useBOM = false, data }: BrickArgs,
-    { ctxt }: BlockOptions
+    { ctxt }: BrickOptions
   ): Promise<void> {
     const { ExportToCsv } = await import(
       /* webpackChunkName: "export-to-csv" */ "export-to-csv"

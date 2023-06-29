@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/blocks/transformers/url";

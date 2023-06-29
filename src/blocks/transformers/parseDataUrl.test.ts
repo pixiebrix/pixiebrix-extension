@@ -16,7 +16,7 @@
  */
 
 import { ParseDataUrl } from "@/blocks/transformers/parseDataUrl";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 const block = new ParseDataUrl();
 
@@ -31,7 +31,7 @@ describe("parseDataUrl", () => {
         url,
         decode: true,
       } as unknown as BrickArgs,
-      {} as BlockOptions
+      {} as BrickOptions
     );
 
     expect(result).toStrictEqual({
@@ -51,7 +51,7 @@ describe("parseDataUrl", () => {
         url,
         decodeText: false,
       } as unknown as BrickArgs,
-      {} as BlockOptions
+      {} as BrickOptions
     );
 
     expect(result).toStrictEqual({

@@ -32,7 +32,7 @@ import {
   partition,
 } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -55,7 +55,7 @@ import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
@@ -66,7 +66,7 @@ export type TourConfig = {
    * The tour pipeline to run
    * @since 1.7.19
    */
-  tour: BlockPipeline | BrickConfig;
+  tour: BrickPipeline | BrickConfig;
 };
 
 type TourDefinitionOptions = UnknownObject;

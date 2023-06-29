@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/blocks/readerTypes";
+import { Reader } from "@/types/bricks/readerTypes";
 import * as session from "@/contentScript/context";
 import { getExtensionAuth } from "@/auth/token";
 import { type JsonObject } from "type-fest";

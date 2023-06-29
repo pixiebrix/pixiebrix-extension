@@ -17,9 +17,9 @@
 
 import nytimes from "@contrib/blocks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/blocks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { isUserDefinedBlock } from "@/types/blockTypes";
+import { isUserDefinedBlock } from "@/types/brickTypes";
 import { MappingTransformer } from "./mapping";
 import blockRegistry from "@/blocks/registry";
 import {

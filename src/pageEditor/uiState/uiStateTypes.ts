@@ -19,7 +19,7 @@ import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 
 export type BlockInfo = {
   blockId: RegistryId;
@@ -44,7 +44,7 @@ export type BlockInfo = {
   /**
    * The block's pipeline
    */
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
 
   /**
    * Instance id of parent node

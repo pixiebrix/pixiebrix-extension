@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { boolean } from "@/utils";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { type JsonObject, type RequireExactlyOne } from "type-fest";
@@ -29,7 +29,7 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 import { isEmpty } from "lodash";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
 
@@ -209,7 +209,7 @@ export class SetInputValue extends Effect {
       inputs: Array<{ selector: string; value: unknown }>;
       isRootAware?: boolean;
     }>,
-    { logger, root }: BlockOptions
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const target = isRootAware ? root : document;
     for (const { selector, value } of inputs) {
@@ -293,7 +293,7 @@ export class FormFill extends Effect {
       submit: boolean;
       isRootAware: boolean;
     }>,
-    { logger, root }: BlockOptions
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const submitRoot = isRootAware ? root : document;
 

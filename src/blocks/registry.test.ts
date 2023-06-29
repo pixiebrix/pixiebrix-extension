@@ -20,7 +20,7 @@ import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { parsePackage } from "@/registry/localRegistry";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
-import { blockFactory } from "@/testUtils/factories/blockFactories";
+import { brickFactory } from "@/testUtils/factories/brickFactories";
 
 const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<
   typeof backgroundRegistry.getByKinds
@@ -41,7 +41,7 @@ describe("blocksMap", () => {
     bricksRegistry.TEST_reset();
   });
 
-  const createReaderBlock = () => blockFactory({ read: jest.fn() } as unknown);
+  const createReaderBlock = () => brickFactory({ read: jest.fn() } as unknown);
 
   test("can add and read a block", async () => {
     const block = createReaderBlock();

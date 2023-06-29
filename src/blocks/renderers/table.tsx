@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
 import makeDataTable, {
@@ -23,7 +23,7 @@ import makeDataTable, {
   type Row,
 } from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 // Type ColumnDefinition = {
@@ -97,7 +97,7 @@ export class TableRenderer extends Renderer {
       columns: Array<ColumnDefinition<Row> & { href: string }>;
       data: unknown;
     }>,
-    { ctxt = [] }: BlockOptions
+    { ctxt = [] }: BrickOptions
   ): Promise<SafeHTML> {
     let data = userData ?? ctxt;
 

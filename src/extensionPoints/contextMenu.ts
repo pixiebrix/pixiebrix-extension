@@ -48,7 +48,7 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -61,10 +61,10 @@ import {
 } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type ContextMenuTargetMode =
@@ -80,7 +80,7 @@ export type ContextMenuConfig = {
   /**
    * Action to perform on click.
    */
-  action: BrickConfig | BlockPipeline;
+  action: BrickConfig | BrickPipeline;
 
   /**
    * (Experimental) message to show on success when running the extension

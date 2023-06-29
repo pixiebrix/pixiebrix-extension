@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
@@ -67,7 +67,7 @@ export class ParseCsv extends Transformer {
 
   async transform(
     { content }: BrickArgs<{ content: string }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<unknown> {
     const { default: Papa } = await import(
       /* webpackChunkName: "papaparse" */ "papaparse"

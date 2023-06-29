@@ -23,9 +23,9 @@ import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
@@ -95,7 +95,7 @@ export class GoogleSheetsLookup extends Transformer {
       query: string | number | boolean;
       multi: boolean;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<UnknownObject | UnknownObject[]> {
     const spreadsheetId =
       typeof spreadsheetIdArg === "string"

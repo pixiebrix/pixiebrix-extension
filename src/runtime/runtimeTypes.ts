@@ -16,7 +16,7 @@
  */
 
 import { type BrickConfig } from "@/blocks/types";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
 
 export type BrickType = "reader" | "effect" | "transform" | "renderer";

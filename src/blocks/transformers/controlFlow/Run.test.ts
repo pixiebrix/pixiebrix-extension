@@ -25,7 +25,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Run from "@/blocks/transformers/controlFlow/Run";
-import { BrickABC } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs } from "@/types/runtimeTypes";

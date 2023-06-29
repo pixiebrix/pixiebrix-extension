@@ -69,7 +69,7 @@ import {
   formStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import {
   marketplaceListingFactory,
   marketplaceTagFactory,
@@ -149,12 +149,12 @@ afterEach(async () => clock.runAllAsync());
 
 const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
-    blockConfigFactory({
+    brickConfigFactory({
       id: echoBlock.id,
       outputKey: "echoOutput" as OutputKey,
       config: defaultBlockConfig(echoBlock.inputSchema),
     }),
-    blockConfigFactory({
+    brickConfigFactory({
       id: teapotBlock.id,
       outputKey: "teapotOutput" as OutputKey,
       config: defaultBlockConfig(teapotBlock.inputSchema),
@@ -163,19 +163,19 @@ const getPlainFormState = (): FormState =>
 
 const getFormStateWithSubPipelines = (): FormState =>
   formStateFactory(undefined, [
-    blockConfigFactory({
+    brickConfigFactory({
       id: echoBlock.id,
       outputKey: "echoOutput" as OutputKey,
       config: defaultBlockConfig(echoBlock.inputSchema),
     }),
-    blockConfigFactory({
+    brickConfigFactory({
       id: forEachBlock.id,
       outputKey: "forEachOutput" as OutputKey,
       config: {
         elements: makeTemplateExpression("var", "@input.elements"),
         elementKey: "element",
         body: makePipelineExpression([
-          blockConfigFactory({
+          brickConfigFactory({
             id: echoBlock.id,
             outputKey: "subEchoOutput" as OutputKey,
             config: {
@@ -745,7 +745,7 @@ describe("validation", () => {
   test("validates multiple renderers on add", async () => {
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
-      blockConfigFactory({
+      brickConfigFactory({
         id: MarkdownRenderer.BLOCK_ID,
         config: {
           markdown: makeTemplateExpression("nunjucks", "test"),
@@ -782,7 +782,7 @@ describe("validation", () => {
   test("validates that renderer is the last node on move", async () => {
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
-      blockConfigFactory({
+      brickConfigFactory({
         id: MarkdownRenderer.BLOCK_ID,
         config: {
           markdown: makeTemplateExpression("nunjucks", "test"),
@@ -831,7 +831,7 @@ describe("validation", () => {
     "validates a disallowed block in $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlock }) => {
       const formState = formFactory();
-      const disallowedBlockConfig = blockConfigFactory({
+      const disallowedBlockConfig = brickConfigFactory({
         id: disallowedBlock.id,
         config: defaultBlockConfig(disallowedBlock.inputSchema),
       });

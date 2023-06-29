@@ -23,9 +23,9 @@ import {
 } from "@/blocks/rootModeHelpers";
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class AttachAutocomplete extends Effect {
   constructor() {
@@ -67,7 +67,7 @@ export class AttachAutocomplete extends Effect {
       options: string[];
       isRootAware?: boolean;
     }>,
-    { logger, root }: BlockOptions
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

@@ -18,7 +18,7 @@
 import { type ApiVersion } from "@/types/runtimeTypes";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
@@ -35,7 +35,7 @@ beforeEach(() => {
 
 describe("apiVersion: v1", () => {
   test("pass data via output key", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
         id: echoBlock.id,
         outputKey: validateOutputKey("foo"),

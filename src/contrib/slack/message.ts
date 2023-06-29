@@ -16,7 +16,7 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { boolean } from "@/utils";

@@ -17,7 +17,7 @@
 
 import { castArray } from "lodash";
 import { type OutputUnit } from "@cfworker/json-schema";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { type JsonObject } from "type-fest";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -26,9 +26,9 @@ import { type Schema } from "@/types/schemaTypes";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
-  readonly config: BlockPipeline;
+  readonly config: BrickPipeline;
 
-  constructor(message: string, config: BrickConfig | BlockPipeline) {
+  constructor(message: string, config: BrickConfig | BrickPipeline) {
     super(message);
     this.config = castArray(config);
   }
@@ -54,7 +54,7 @@ export class HeadlessModeError extends Error {
   constructor(
     blockId: RegistryId,
     args: unknown, // BlockArg
-    ctxt: unknown, // BlockArgsContext
+    ctxt: unknown, // BrickArgsContext
     loggerContext: MessageContext
   ) {
     super(`${blockId} is a renderer`);

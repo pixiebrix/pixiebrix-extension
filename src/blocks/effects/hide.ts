@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -63,7 +63,7 @@ export class HideEffect extends Effect {
       mode?: "hide" | "remove";
       isRootAware: boolean;
     }>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

@@ -19,7 +19,7 @@ import { type BrickConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickIcon } from "@/types/iconTypes";
 
@@ -87,7 +87,7 @@ export interface Brick extends Metadata {
    * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
    * the other blocks to resolve their isRootAware status).
    *
-   * @see BlockOptions.root
+   * @see BrickOptions.root
    * @since 1.4.0
    */
   isRootAware?: () => Promise<boolean>;
@@ -108,7 +108,7 @@ export interface Brick extends Metadata {
    * @param value the rendered input values
    * @param options the runtime options for the block.
    */
-  run: (value: BrickArgs, options: BlockOptions) => Promise<unknown>;
+  run: (value: BrickArgs, options: BrickOptions) => Promise<unknown>;
 }
 
 /**
@@ -155,7 +155,7 @@ export abstract class BrickABC implements Brick {
     this.icon = icon;
   }
 
-  abstract run(value: BrickArgs, options: BlockOptions): Promise<unknown>;
+  abstract run(value: BrickArgs, options: BrickOptions): Promise<unknown>;
 }
 
 /**

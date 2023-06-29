@@ -17,13 +17,13 @@
 
 import { mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import blockRegistry from "@/blocks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 
 export function isOfficial(id: RegistryId): boolean {
@@ -66,7 +66,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
 
 /** Return IBlocks for all blocks referenced in a pipeline, including any sub-pipelines. */
 export async function selectAllBlocks(
-  config: BrickConfig | BlockPipeline
+  config: BrickConfig | BrickPipeline
 ): Promise<Brick[]> {
   const ids = BlockIdVisitor.collectBlockIds(config);
   return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));

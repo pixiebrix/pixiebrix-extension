@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { random } from "lodash";

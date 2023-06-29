@@ -35,9 +35,9 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import {
-  blockConfigFactory,
-  blockFactory,
-} from "@/testUtils/factories/blockFactories";
+  brickConfigFactory,
+  brickFactory,
+} from "@/testUtils/factories/brickFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -72,7 +72,7 @@ test("renders", async () => {
   const block = echoBlock;
   blockRegistry.register([block]);
   const initialState = formStateFactory({ apiVersion: "v3" }, [
-    blockConfigFactory({ id: block.id }),
+    brickConfigFactory({ id: block.id }),
   ]);
   const rendered = renderBlockConfiguration(
     <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
@@ -95,7 +95,7 @@ describe("shows root mode", () => {
     const block = echoBlock;
     blockRegistry.register([block]);
     const initialState = factory({ apiVersion: "v3" }, [
-      blockConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: block.id }),
     ]);
     renderBlockConfiguration(
       <BlockConfiguration
@@ -116,7 +116,7 @@ describe("shows root mode", () => {
     const block = echoBlock;
     blockRegistry.register([block]);
     const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
-      blockConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: block.id }),
     ]);
     renderBlockConfiguration(
       <BlockConfiguration
@@ -143,7 +143,7 @@ test.each`
 `(
   "$readableExpected show Condition and Target settings for $blockName",
   async ({ propertyName, expected }) => {
-    const block = blockFactory({
+    const block = brickFactory({
       [propertyName]: jest.fn(),
       inputSchema: propertiesToSchema({
         message: {
@@ -154,7 +154,7 @@ test.each`
 
     blockRegistry.register([block]);
     const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
-      blockConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: block.id }),
     ]);
     renderBlockConfiguration(
       <BlockConfiguration

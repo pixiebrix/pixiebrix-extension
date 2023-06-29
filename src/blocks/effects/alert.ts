@@ -20,7 +20,7 @@ import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
 

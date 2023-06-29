@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
-import useBlockOptions from "@/hooks/useBlockOptions";
+import useBrickOptions from "@/hooks/useBrickOptions";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
@@ -67,7 +67,7 @@ const BlockConfiguration: React.FunctionComponent<{
   );
   const blockErrors = getIn(context.errors, name);
 
-  const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+  const [{ block, error }, BlockOptions] = useBrickOptions(blockId);
 
   // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
   // If blockType is undefined, don't show the options.

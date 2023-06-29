@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import {
   type BrickArgs,
-  type BlockOptions,
+  type BrickOptions,
   type ElementReference,
 } from "@/types/runtimeTypes";
 
@@ -100,7 +100,7 @@ export class TraverseElements extends Transformer {
       selector: string;
       traversal: string;
     }>,
-    { ctxt, root }: BlockOptions
+    { ctxt, root }: BrickOptions
   ): Promise<{
     elements: ElementReference[];
     count: number;

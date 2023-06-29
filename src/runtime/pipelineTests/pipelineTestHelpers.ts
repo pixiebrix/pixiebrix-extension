@@ -12,10 +12,10 @@ import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import {
   type ApiVersion,
   type BrickArgs,
-  type BlockOptions,
+  type BrickOptions,
   type OptionsArgs,
 } from "@/types/runtimeTypes";
-import { BrickABC } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 
@@ -34,7 +34,7 @@ export class ContextBlock extends BrickABC {
 
   inputSchema = propertiesToSchema({});
 
-  async run(arg: BrickArgs, { ctxt }: BlockOptions) {
+  async run(arg: BrickArgs, { ctxt }: BrickOptions) {
     ContextBlock.contexts.push(ctxt);
     return ctxt;
   }
@@ -64,7 +64,7 @@ class RootAwareBlock extends BrickABC {
 
   inputSchema = propertiesToSchema({});
 
-  async run(_arg: BrickArgs, { root }: BlockOptions) {
+  async run(_arg: BrickArgs, { root }: BrickOptions) {
     return {
       tagName: (root as HTMLElement).tagName,
     };
@@ -208,7 +208,7 @@ class DeferBlock extends BrickABC {
       array: unknown[];
       elementKey?: string;
     }>,
-    { ctxt }: BlockOptions
+    { ctxt }: BrickOptions
   ) {
     return Promise.all(
       array.map(async (data) => {

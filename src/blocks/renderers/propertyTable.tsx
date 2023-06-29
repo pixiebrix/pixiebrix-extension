@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
 import { isValidUrl } from "@/utils";
 import { type SafeHTML } from "@/types/stringTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 interface Item {
   key: string;
@@ -115,7 +115,7 @@ export class PropertyTableRenderer extends Renderer {
     []
   );
 
-  async render({ data }: BrickArgs, { ctxt }: BlockOptions): Promise<SafeHTML> {
+  async render({ data }: BrickArgs, { ctxt }: BrickOptions): Promise<SafeHTML> {
     const PropertyTree = await import(
       /* webpackChunkName: "widgets" */
       "./PropertyTree"

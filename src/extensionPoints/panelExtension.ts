@@ -44,7 +44,7 @@ import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -56,15 +56,15 @@ import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type Brick } from "@/types/blockTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type PanelConfig = {
   heading?: string;
-  body: BrickConfig | BlockPipeline;
+  body: BrickConfig | BrickPipeline;
   icon?: IconConfig;
   collapsible?: boolean;
   shadowDOM?: boolean;

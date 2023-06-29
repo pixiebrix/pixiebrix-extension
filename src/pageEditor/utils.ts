@@ -39,7 +39,7 @@ import { type Target } from "@/types/messengerTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { inputProperties } from "@/helpers";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 

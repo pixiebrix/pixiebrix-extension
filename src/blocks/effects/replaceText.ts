@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { $safeFind } from "@/helpers";
 import { uniq } from "lodash";
@@ -113,7 +113,7 @@ class ReplaceTextEffect extends Effect {
       isRegex?: boolean;
       selector?: string;
     }>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<void> {
     // Don't make replacements outside the `body`, like in `title`
     const body = (root as Document).body ?? root.ownerDocument.body;

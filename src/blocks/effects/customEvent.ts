@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 
 class CustomEventEffect extends Effect {
   constructor() {
@@ -54,7 +54,7 @@ class CustomEventEffect extends Effect {
       eventName,
       data = {},
     }: BrickArgs<{ eventName: string; data?: JsonObject }>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<void> {
     const event = new CustomEvent(eventName, { detail: data, bubbles: true });
     root.dispatchEvent(event);

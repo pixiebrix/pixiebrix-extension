@@ -18,7 +18,7 @@
 import { uuidv4 } from "@/types/helpers";
 import {
   type BrickConfig,
-  type BlockPipeline,
+  type BrickPipeline,
   type BlockPosition,
 } from "@/blocks/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
@@ -78,14 +78,14 @@ class NormalizePipelineVisitor extends PipelineVisitor {
 }
 
 /**
- * Enrich a BlockPipeline with instanceIds for use in tracing
+ * Enrich a BrickPipeline with instanceIds for use in tracing
  * and normalize sub pipelines
  */
 export async function normalizePipelineForEditor(
-  pipeline: BlockPipeline
-): Promise<BlockPipeline> {
+  pipeline: BrickPipeline
+): Promise<BrickPipeline> {
   const blockMap = await blockRegistry.allTyped();
-  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+  return produce(pipeline, (pipeline: WritableDraft<BrickPipeline>) => {
     new NormalizePipelineVisitor(blockMap).visitPipeline(
       ROOT_POSITION,
       pipeline,
@@ -112,8 +112,8 @@ class OmitEditorMetadataVisitor extends PipelineVisitor {
 /**
  * Remove the automatically generated tracing ids.
  */
-export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
-  return produce(pipeline, (pipeline: WritableDraft<BlockPipeline>) => {
+export function omitEditorMetadata(pipeline: BrickPipeline): BrickPipeline {
+  return produce(pipeline, (pipeline: WritableDraft<BrickPipeline>) => {
     new OmitEditorMetadataVisitor().visitPipeline(ROOT_POSITION, pipeline, {
       flavor: PipelineFlavor.AllBlocks,
     });

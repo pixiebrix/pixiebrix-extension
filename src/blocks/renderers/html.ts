@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
 import { type BrickArgs } from "@/types/runtimeTypes";

@@ -25,8 +25,8 @@ import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 

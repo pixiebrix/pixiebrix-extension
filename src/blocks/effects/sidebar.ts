@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
@@ -61,7 +61,7 @@ export class ShowSidebar extends Effect {
       panelHeading?: string;
       forcePanel?: boolean;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar

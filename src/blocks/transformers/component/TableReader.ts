@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -92,7 +92,7 @@ export class TableReader extends Transformer {
       selector,
       orientation = "infer",
     }: BrickArgs<{ selector: string } & ParsingOptions>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<unknown> {
     const table = selector ? findSingleElement(selector, root) : root;
 
@@ -154,7 +154,7 @@ export class TablesReader extends Transformer {
     return true;
   }
 
-  async transform(_: BrickArgs, { root }: BlockOptions): Promise<unknown> {
+  async transform(_: BrickArgs, { root }: BrickOptions): Promise<unknown> {
     return Object.fromEntries([
       ...getAllTables(root).entries(),
       ...getAllDefinitionLists(root).entries(),

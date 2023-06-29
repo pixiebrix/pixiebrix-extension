@@ -17,7 +17,7 @@
 
 import { isEmpty } from "lodash";
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type Schema } from "@/types/schemaTypes";

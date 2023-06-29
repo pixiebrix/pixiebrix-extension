@@ -19,7 +19,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/blocks/errors";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   contextBlock,
   echoBlock,
@@ -144,7 +144,7 @@ describe("false mustache conditional", () => {
       },
     ];
     const result = await reducePipeline(
-      pipeline as BlockPipeline,
+      pipeline as BrickPipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
       testOptions("v3")
     );

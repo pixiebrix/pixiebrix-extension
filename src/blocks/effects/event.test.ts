@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { ElementEvent } from "@/blocks/effects/event";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -55,7 +55,7 @@ describe("ElementEvent", () => {
           isRootAware,
           event: "click",
         }),
-        { root: document, logger } as BlockOptions
+        { root: document, logger } as BrickOptions
       );
 
       expect(clickHandler).toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe("ElementEvent", () => {
       {
         root: document.querySelector("button"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     expect(clickHandler).toHaveBeenCalled();

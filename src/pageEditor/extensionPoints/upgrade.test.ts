@@ -21,7 +21,7 @@ import {
   upgradePipelineToV3,
 } from "@/pageEditor/extensionPoints/upgrade";
 import blockRegistry from "@/blocks/registry";
-import { BrickABC } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";

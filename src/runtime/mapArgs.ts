@@ -30,7 +30,7 @@ import {
 } from "@/types/runtimeTypes";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 
 const templateTypes: TemplateEngine[] = [
@@ -64,7 +64,7 @@ export function isExpression(value: unknown): value is Expression<unknown> {
   return false;
 }
 
-export type PipelineExpression = Expression<BlockPipeline, "pipeline">;
+export type PipelineExpression = Expression<BrickPipeline, "pipeline">;
 
 /**
  * A PipelineExpression with an attached lexical environment. Internal type used by the runtime

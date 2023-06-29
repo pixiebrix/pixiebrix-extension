@@ -36,7 +36,7 @@ import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 type TestAddBlockResult = {
   error?: string;

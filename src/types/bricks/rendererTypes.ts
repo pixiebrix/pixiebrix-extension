@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BrickABC } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import {
   type BrickArgs,
-  type BlockOptions,
+  type BrickOptions,
   type RendererOutput,
 } from "@/types/runtimeTypes";
 
 export abstract class Renderer extends BrickABC {
   abstract render(
     inputs: BrickArgs,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<RendererOutput>;
 
   override async isRootAware(): Promise<boolean> {
@@ -33,7 +33,7 @@ export abstract class Renderer extends BrickABC {
     return false;
   }
 
-  async run(value: BrickArgs, options: BlockOptions): Promise<RendererOutput> {
+  async run(value: BrickArgs, options: BrickOptions): Promise<RendererOutput> {
     return this.render(value, options);
   }
 }

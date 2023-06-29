@@ -39,7 +39,7 @@ import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
   selectBlockRootElement,
@@ -62,7 +62,7 @@ import { getLoggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgs,
-  type BlockArgsContext,
+  type BrickArgsContext,
   type SelectorRoot,
   type RenderedArgs,
   type ServiceContext,
@@ -168,20 +168,20 @@ export type IntermediateState = {
    * the previous bricks' output keys.
    * @see BrickConfig.outputKey
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
   /**
    * The document root for root-aware bricks
    * @see IBlock.isRootAware
    */
   root: SelectorRoot | null;
   /**
-   * The stage's position in the BlockPipeline. Used to improve logging and error messages
-   * @see BlockPipeline
+   * The stage's position in the BrickPipeline. Used to improve logging and error messages
+   * @see BrickPipeline
    */
   index: number;
   /**
    * `true` if the stage is the last stage in the pipeline, for logging and validation
-   * @see BlockPipeline
+   * @see BrickPipeline
    */
   isLastBlock: boolean;
 };
@@ -200,7 +200,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
   /**
    * The available context (The context used to render the args.)
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
 
   /**
    * The previous output
@@ -218,7 +218,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
 type BlockOutput = {
   /**
    * The output of the block to pass to the next block. If a block uses an outputKey, output will be the output of the
-   * previous block in the BlockPipeline.
+   * previous block in the BrickPipeline.
    */
   output: unknown;
 
@@ -232,7 +232,7 @@ type BlockOutput = {
    * The updated context, i.e., with the new outputKey.
    * @see BrickConfig.outputKey
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
 };
 
 type TraceMetadata = {
@@ -883,7 +883,7 @@ async function getStepLogger(
 
 /** Execute all the blocks of an extension. */
 export async function reduceExtensionPipeline(
-  pipeline: BrickConfig | BlockPipeline,
+  pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {}
 ): Promise<unknown> {
@@ -900,7 +900,7 @@ export async function reduceExtensionPipeline(
 
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
-  pipeline: BrickConfig | BlockPipeline,
+  pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions>
 ): Promise<unknown> {
@@ -910,12 +910,12 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
-  let context: BlockArgsContext = {
+  let context: BrickArgsContext = {
     // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
-  } as unknown as BlockArgsContext;
+  } as unknown as BrickArgsContext;
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;
@@ -969,7 +969,7 @@ export async function reducePipeline(
  * Returns the output of the last brick, even if that brick has an output key.
  */
 export async function reducePipelineExpression(
-  pipeline: BlockPipeline,
+  pipeline: BrickPipeline,
   context: UnknownObject,
   root: SelectorRoot,
   options: ReduceOptions
@@ -993,7 +993,7 @@ export async function reducePipelineExpression(
       isLastBlock: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: context as BlockArgsContext,
+      context: context as BrickArgsContext,
     };
 
     let nextValues: BlockOutput;

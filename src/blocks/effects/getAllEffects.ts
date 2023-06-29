@@ -49,7 +49,7 @@ import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
 import ToggleQuickbarEffect from "@/blocks/effects/ToggleQuickbarEffect";
 import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import PostMessageEffect from "@/blocks/effects/postMessage";
 
 function getAllEffects(): Brick[] {

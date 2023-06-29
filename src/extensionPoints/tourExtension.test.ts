@@ -20,7 +20,7 @@ import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   type TourConfig,
   type TourDefinition,
@@ -66,7 +66,7 @@ const extensionFactory = define<ResolvedExtension<TourConfig>>({
   _recipe: null,
   label: "Test Extension",
   config: define<TourConfig>({
-    tour: () => [] as BlockPipeline,
+    tour: () => [] as BrickPipeline,
   }),
 });
 

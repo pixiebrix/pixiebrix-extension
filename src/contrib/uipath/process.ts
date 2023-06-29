@@ -16,13 +16,13 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -135,7 +135,7 @@ export class RunProcess extends Transformer {
       maxWaitMillis: number;
       inputArguments: UnknownObject;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<unknown> {
     const responsePromise = proxyService<JobsResponse>(uipath, {
       url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",

@@ -33,7 +33,7 @@ import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
@@ -56,12 +56,12 @@ import {
   quickbarQueryReaderShim,
 } from "@/extensionPoints/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 export type QuickBarProviderConfig = {
   /**
@@ -87,7 +87,7 @@ export type QuickBarProviderConfig = {
   /**
    * Action generator pipeline.
    */
-  generator: BrickConfig | BlockPipeline;
+  generator: BrickConfig | BrickPipeline;
 };
 
 export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<QuickBarProviderConfig> {

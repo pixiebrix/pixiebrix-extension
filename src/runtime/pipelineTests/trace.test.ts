@@ -33,7 +33,7 @@ import {
 } from "@/telemetry/trace";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
@@ -269,7 +269,7 @@ describe("Trace normal execution", () => {
     const extensionId = uuidv4();
     const outputKey = "echo" as OutputKey;
 
-    const blockConfig: BlockPipeline = [
+    const blockConfig: BrickPipeline = [
       {
         id: echoBlock.id,
         config: { message: "{{@input.inputArg}}" },
@@ -322,7 +322,7 @@ describe("Trace normal execution", () => {
     const extensionId = uuidv4();
     const outputKey = "never" as OutputKey;
 
-    const blockConfig: BlockPipeline = [
+    const blockConfig: BrickPipeline = [
       {
         id: throwBlock.id,
         config: { message: "{{@input.inputArg}}" },

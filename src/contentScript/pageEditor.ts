@@ -42,7 +42,7 @@ import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
@@ -59,7 +59,7 @@ export type RunBlockArgs = {
    * Context to render the BlockArg, should include @input, @options, and service context
    * @see makeServiceContext
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
   /**
    * Root jQuery selector to determine the root if the rootMode is "inherit".
    * @see BrickConfig.rootMode

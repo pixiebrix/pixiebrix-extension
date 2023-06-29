@@ -18,7 +18,7 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { JSDOM } from "jsdom";
 import ReplaceTextEffect from "@/blocks/effects/replaceText";
 
@@ -47,7 +47,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toBe("<div>bar</div>");
@@ -61,7 +61,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toBe("<div>barbar</div>");
@@ -75,7 +75,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toBe("<div>FOO</div>");
@@ -88,7 +88,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>bar <span>bar</span></div>");
   });
@@ -101,7 +101,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "bar",
         selector: "span",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });
@@ -114,7 +114,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "foobar",
         selector: "div",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>foobar <div>foobar</div></div>");
   });
@@ -127,7 +127,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: span } as BlockOptions
+      { logger, root: span } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });
@@ -140,7 +140,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "###-###-####",
         isRegex: true,
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>###-###-####</div>");
   });
@@ -153,7 +153,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "$<numbers>",
         isRegex: true,
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>123</div>");
   });
@@ -165,7 +165,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
         replacement: "###-###-####",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
     expect(document.body.innerHTML).toBe("<div>123-456-7890</div>");
   });
@@ -181,7 +181,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "Sup",
         replacement: "Foo",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.head.innerHTML).toEqual("<title>Support page</title>");

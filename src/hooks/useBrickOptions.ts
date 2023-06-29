@@ -25,14 +25,14 @@ import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Brick, isUserDefinedBlock } from "@/types/blockTypes";
+import { type Brick, isUserDefinedBlock } from "@/types/brickTypes";
 
 interface BlockState {
   block?: Brick | null;
   error?: string | null;
 }
 
-function useBlockOptions(
+function useBrickOptions(
   id: RegistryId
 ): [BlockState, React.FunctionComponent<BlockOptionProps>] {
   const [{ block, error }, setBlock] = useState<BlockState>({
@@ -57,8 +57,8 @@ function useBlockOptions(
   );
 
   const BlockOptions = useMemo(() => {
-    // Only return the BlockOptions if 1) the block is available, 2) and it is actually the block with the requested id.
-    // Must not return the BlockOptions for the previous block (when id has changed but the state hasn't been updated yet),
+    // Only return the BrickOptions if 1) the block is available, 2) and it is actually the block with the requested id.
+    // Must not return the BrickOptions for the previous block (when id has changed but the state hasn't been updated yet),
     // or the config parameters of the past block will become part of the configuration of the new block.
     if (id === block?.id) {
       const registered = optionsRegistry.get(block.id);
@@ -77,4 +77,4 @@ function useBlockOptions(
   return [{ block, error }, BlockOptions];
 }
 
-export default useBlockOptions;
+export default useBrickOptions;

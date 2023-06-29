@@ -1,4 +1,4 @@
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type IService } from "@/types/serviceTypes";
 

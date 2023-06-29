@@ -24,15 +24,15 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { Reader } from "@/types/blocks/readerTypes";
+import { Reader } from "@/types/bricks/readerTypes";
 import {
   type ApiVersion,
   type BrickArgs,
-  type BlockOptions,
+  type BrickOptions,
   type Expression,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { BrickABC } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 
 class RootAwareBlock extends BrickABC {
   constructor() {
@@ -45,7 +45,7 @@ class RootAwareBlock extends BrickABC {
     return true;
   }
 
-  async run(arg: BrickArgs, { root }: BlockOptions) {
+  async run(arg: BrickArgs, { root }: BrickOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,

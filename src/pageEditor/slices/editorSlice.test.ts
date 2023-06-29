@@ -38,7 +38,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 function getTabState(
   state: EditorState,
@@ -51,13 +51,13 @@ function getTabState(
 
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
-const standardBrick = blockConfigFactory({
+const standardBrick = brickConfigFactory({
   id: teapotBlock.id,
   outputKey: "teapotOutput" as OutputKey,
   config: defaultBlockConfig(teapotBlock.inputSchema),
 });
 
-const brickWithService = blockConfigFactory({
+const brickWithService = brickConfigFactory({
   id: echoBlock.id,
   outputKey: "echoOutput" as OutputKey,
   config: {

@@ -28,7 +28,7 @@ import {
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
+import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
@@ -47,7 +47,7 @@ import {
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
-import { type Brick } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BrickArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export class JSONPathTransformer extends Transformer {
@@ -45,7 +45,7 @@ export class JSONPathTransformer extends Transformer {
 
   async transform(
     { path }: BrickArgs,
-    { ctxt }: BlockOptions
+    { ctxt }: BrickOptions
   ): Promise<unknown> {
     const { JSONPath } = await import(
       /* webpackChunkName: "jsonpath-plus" */ "jsonpath-plus"

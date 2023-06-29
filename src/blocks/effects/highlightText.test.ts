@@ -20,7 +20,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import HighlightText from "@/blocks/effects/highlightText";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 function getDocument(html: string): Document {
   return new JSDOM(html).window.document;
@@ -41,7 +41,7 @@ describe("ReplaceTextEffect", () => {
           pattern: "foo",
           color,
         }),
-        { logger, root: document } as BlockOptions
+        { logger, root: document } as BrickOptions
       );
 
       expect(document.body.innerHTML).toEqual(
@@ -57,7 +57,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "bar",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -72,7 +72,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "oba",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -90,7 +90,7 @@ describe("ReplaceTextEffect", () => {
         unsafeAssumeValidArg({
           pattern: "foo",
         }),
-        { logger, root: document } as BlockOptions
+        { logger, root: document } as BrickOptions
       );
     }
 
@@ -108,7 +108,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         selector: "div",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -125,7 +125,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -142,7 +142,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         color: "#A020F0",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -159,7 +159,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -176,7 +176,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -194,7 +194,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "Sup",
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.head.innerHTML).toEqual("<title>Support page</title>");
@@ -213,7 +213,7 @@ describe("ReplaceTextEffect", () => {
         isRegex: true,
         color: '"<script>alert("xss")</script>',
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(
@@ -232,7 +232,7 @@ describe("ReplaceTextEffect", () => {
         pattern: ".+",
         isRegex: true,
       }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     expect(document.body.innerHTML).toEqual(

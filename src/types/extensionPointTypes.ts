@@ -20,8 +20,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
-import { type Brick } from "@/types/blockTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 

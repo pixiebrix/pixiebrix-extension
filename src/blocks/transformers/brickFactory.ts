@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BrickABC, type Brick } from "@/types/blockTypes";
+import { BrickABC, type Brick } from "@/types/brickTypes";
 import { readerFactory } from "@/blocks/readers/factory";
 import {
   type Schema as ValidatorSchema,
@@ -26,7 +26,7 @@ import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { type BrickConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
@@ -34,7 +34,7 @@ import { InvalidDefinitionError } from "@/errors/businessErrors";
 import {
   type ApiVersion,
   type BrickArgs,
-  type BlockOptions,
+  type BrickOptions,
 } from "@/types/runtimeTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import {
@@ -51,7 +51,7 @@ type BrickDefinition = {
   kind: "component";
   metadata: Metadata;
   defaultOptions: Record<string, string>;
-  pipeline: BrickConfig | BlockPipeline;
+  pipeline: BrickConfig | BrickPipeline;
   inputSchema: Schema;
   /**
    * An optional RJSF uiSchema for inputs.
@@ -167,7 +167,7 @@ class ExternalBlock extends BrickABC {
    */
   private capturePipelineClosures(
     args: BrickArgs,
-    options: BlockOptions
+    options: BrickOptions
   ): BrickArgs {
     const pipelinePropertyNames = Object.keys(
       pickBy(
@@ -195,7 +195,7 @@ class ExternalBlock extends BrickABC {
     return args;
   }
 
-  async run(args: BrickArgs, options: BlockOptions): Promise<unknown> {
+  async run(args: BrickArgs, options: BrickOptions): Promise<unknown> {
     const argsWithClosures = this.capturePipelineClosures(args, options);
 
     options.logger.debug("Running component pipeline", {

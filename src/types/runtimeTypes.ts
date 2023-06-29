@@ -99,7 +99,7 @@ export type TemplateEngine =
  */
 export type ExpressionType =
   | TemplateEngine
-  // BlockPipeline with deferred execution
+  // BrickPipeline with deferred execution
   | "pipeline"
   // Raw section with deferred rendering (rendered by the brick that executes it)
   | "defer";
@@ -112,7 +112,7 @@ export type ExpressionType =
  */
 export type Expression<
   // The value. TemplateEngine ExpressionTypes, this will be a string containing the template. For `pipeline`
-  // ExpressionType this will be a BlockPipeline. (The loadBrickYaml method will currently accept any array for
+  // ExpressionType this will be a BrickPipeline. (The loadBrickYaml method will currently accept any array for
   // pipeline at this time, though.
   TTemplateOrPipeline = string,
   // The type tag (without the !-prefix of the YAML simple tag)
@@ -187,7 +187,7 @@ export type OptionsArgs = Record<string, Primitive>;
  * @see RenderedArgs
  * @see BrickConfig.outputKey
  */
-export type BlockArgsContext = UnknownObject & {
+export type BrickArgsContext = UnknownObject & {
   // Nominal typing
   _blockArgsContextBrand: never;
   "@input": UnknownObject;
@@ -200,8 +200,8 @@ export type BlockArgsContext = UnknownObject & {
  * Uses `any` for values so that bricks don't have to assert/cast all their argument types. The input values
  * are validated using JSON Schema in `reducePipeline`.
  *
- * @see IBlock.inputSchema
- * @see IBlock.run
+ * @see Brick.inputSchema
+ * @see Brick.run
  * @see reducePipeline
  */
 export type BrickArgs<
@@ -221,7 +221,7 @@ export type RenderedArgs = UnknownObject & {
 
 /**
  * Service context passed to blocks.
- * @see BlockArgsContext
+ * @see BrickArgsContext
  */
 export type ServiceContext = Record<
   ServiceVarRef,
@@ -231,16 +231,16 @@ export type ServiceContext = Record<
   }
 >;
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+// Using "any" for now so that bricks don't have to assert/cast all their argument types. We're checking
 // the inputs using yup/jsonschema, so the types should match what's expected.
-export type BlockOptions<
+export type BrickOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
   TCtxt extends Record<string, any> = Record<string, any>
 > = {
   /**
    * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
    *
-   * @see BlockArgsContext
+   * @see BrickArgsContext
    */
   ctxt: TCtxt;
 

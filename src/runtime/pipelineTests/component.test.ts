@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   contextBlock,
   echoBlock,
@@ -25,7 +25,7 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/blocks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
 
 beforeEach(() => {
@@ -74,7 +74,7 @@ describe("component block v1", () => {
           message: "{{@first.message}}",
         },
       },
-    ] as BlockPipeline;
+    ] as BrickPipeline;
 
     const result = await reducePipeline(
       pipeline,
@@ -108,7 +108,7 @@ describe("component block v1", () => {
           },
         },
       },
-    ] as BlockPipeline;
+    ] as BrickPipeline;
 
     const result = await reducePipeline(
       pipeline,
