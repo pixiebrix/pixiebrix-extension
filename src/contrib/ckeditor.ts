@@ -32,14 +32,18 @@ interface CKEditor5Instance {
 }
 
 /**
- * Returns true if the element appears to be a CKEditor instance based on its class name.
+ * Returns true if the element appears to be a CKEditor 5 instance based on its class name.
+ * Can be called from either the contentScript or web/pageScript context.
+ * @see isCKEditorElement
+ * @see CKEditor5Instance
  */
 export function hasCKEditorClass(element: HTMLElement): boolean {
   return element.classList.contains("ck-editor__editable");
 }
 
 /**
- * Returns true if the element is a CKEditor instance.
+ * Returns true if the element is a CKEditor instance. Can only be called from the web/pageScript context.
+ * @see hasCKEditorClass
  */
 export function isCKEditorElement(
   element: HTMLElement
@@ -51,13 +55,15 @@ export function isCKEditorElement(
 }
 
 /**
- * Sets the root value of a CKEEditor instance.
+ * Sets the root value of a CKEditor instance.
  */
-export function setCKEditorData(element: HTMLElement, value: string) {
+export function setCKEditorData(element: HTMLElement, value: string): void {
   expectContext("web", "Element properties only available in web context");
 
   if (!isCKEditorElement(element)) {
-    throw new BusinessError("Element is not a CKEditor instance");
+    throw new BusinessError(
+      "Element is not a CKEditor instance, or PixieBrix does not support setting the value for this version of CKEditor"
+    );
   }
 
   element.ckeditorInstance.setData(value);

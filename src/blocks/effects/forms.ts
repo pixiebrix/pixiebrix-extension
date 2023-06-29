@@ -66,6 +66,8 @@ async function setFieldValue(
   value: unknown,
   { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean }
 ): Promise<void> {
+  // For performance, use the contentScript-based call to determine if the element has the classname associate with
+  // CKEditor 5 instances. If it does, set the data (will error if it's not actually a CKEditor 5 instance).
   if (hasCKEditorClass(field)) {
     await setCKEditorData({
       selector: getSelectorForElement(field),
