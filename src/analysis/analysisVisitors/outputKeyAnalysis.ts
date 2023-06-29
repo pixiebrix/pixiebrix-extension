@@ -18,14 +18,14 @@
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type BrickType } from "@/runtime/runtimeTypes";
-import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
+import { AnalysisVisitorWithResolvedBricks } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/types/annotationTypes";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
 const blockTypesWithEmptyOutputKey: BrickType[] = ["effect", "renderer"];
 
-class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBlocks {
+class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBricks {
   get id() {
     return "outputKey";
   }

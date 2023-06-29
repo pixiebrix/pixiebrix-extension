@@ -84,7 +84,7 @@ export type ReaderConfig =
  * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
  * @see {@link BrickConfig.window}
  */
-export type BlockWindow = "self" | "opener" | "target" | "top" | "broadcast";
+export type BrickWindow = "self" | "opener" | "target" | "top" | "broadcast";
 
 /**
  * Condition expression written in templateEngine for deciding if the step should be run.
@@ -135,9 +135,9 @@ export type BrickConfig = {
 
   /**
    * Where to execute the brick (default=`self`)
-   * @see BlockWindow
+   * @see BrickWindow
    */
-  window?: BlockWindow;
+  window?: BrickWindow;
 
   /**
    * The output key (without the preceding "@") to assign the brick output to

@@ -17,7 +17,7 @@
 
 import styles from "./AdvancedLinks.module.scss";
 
-import { type BlockIf, type BlockWindow } from "@/blocks/types";
+import { type BlockIf, type BrickWindow } from "@/blocks/types";
 import { type TemplateEngine } from "@/types/runtimeTypes";
 import { joinName } from "@/utils";
 import { useField } from "formik";
@@ -27,7 +27,7 @@ import { Button } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
-export const DEFAULT_WINDOW_VALUE: BlockWindow = "self";
+export const DEFAULT_WINDOW_VALUE: BrickWindow = "self";
 
 type AdvancedLinksProps = {
   name: string;
@@ -41,7 +41,7 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
     configName("templateEngine")
   );
   const [{ value: ifFieldValue }] = useField<BlockIf>(configName("if"));
-  const [{ value: windowValue }] = useField<BlockWindow>(configName("window"));
+  const [{ value: windowValue }] = useField<BrickWindow>(configName("window"));
 
   const customTemplateEngineSet =
     templateEngineValue &&

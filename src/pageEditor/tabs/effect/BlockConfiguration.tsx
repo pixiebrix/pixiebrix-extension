@@ -29,7 +29,7 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BrickConfig, type BlockWindow } from "@/blocks/types";
+import { type BrickConfig, type BrickWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
@@ -46,7 +46,7 @@ const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
 ];
 
-const targetOptions: Array<Option<BlockWindow>> = [
+const targetOptions: Array<Option<BrickWindow>> = [
   { label: "Current Tab (self)", value: "self" },
   { label: "Opener Tab (opener)", value: "opener" },
   { label: "Target Tab (target)", value: "target" },
