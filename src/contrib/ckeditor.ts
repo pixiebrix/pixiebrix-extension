@@ -19,11 +19,17 @@ import { BusinessError } from "@/errors/businessErrors";
 import { expectContext } from "@/utils/expectContext";
 
 /**
+ * A CKEditor 5 instance.
  * https://ckeditor.com/docs/ckeditor5/latest/api/index.html
  */
-type CKEditor5Instance = {
-  setData: (value: string) => void;
-};
+interface CKEditor5Instance {
+  /**
+   * Sets the data in the editor.
+   * https://ckeditor.com/docs/ckeditor5/latest/api/module_core_editor_utils_dataapimixin-DataApi.html#function-setData
+   * @param data Input data.
+   */
+  setData: (data: string) => void;
+}
 
 /**
  * Returns true if the element appears to be a CKEditor instance based on its class name.
