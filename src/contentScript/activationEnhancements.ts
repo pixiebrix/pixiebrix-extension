@@ -82,13 +82,10 @@ export async function loadActivationEnhancements(): Promise<void> {
     return;
   }
 
-  console.log("*** loadActivationEnhancements", window.location.href);
   if (enhancementsLoaded) {
-    console.log("*** Enhancements already loaded!", window.location.href);
     return;
   }
 
-  console.log("*** Loading enhancements...", window.location.href);
   enhancementsLoaded = true;
 
   const activateButtonLinks = getActivateButtonLinks();
@@ -113,17 +110,9 @@ export async function loadActivationEnhancements(): Promise<void> {
       changeActivateButtonToActiveLabel(button);
     }
 
-    console.log(
-      "*** Adding activate button click listener",
-      window.location.href
-    );
     button.addEventListener("click", async (event) => {
       // Don't handle clicks if marketplace is handling them already
       if (isMarketplacePageLoaded()) {
-        console.log(
-          "*** Activate button click, but marketplace is handling",
-          window.location.href
-        );
         return;
       }
 
@@ -138,10 +127,6 @@ export async function loadActivationEnhancements(): Promise<void> {
       );
 
       if (isContentScriptReady) {
-        console.log(
-          "*** Dispatching window activate event",
-          window.location.href
-        );
         window.dispatchEvent(
           new CustomEvent("ActivateRecipe", {
             detail: { recipeId, activateUrl: button.href },

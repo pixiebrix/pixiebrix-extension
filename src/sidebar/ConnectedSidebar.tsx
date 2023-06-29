@@ -100,11 +100,6 @@ const ConnectedSidebar: React.VFC = () => {
   useAsyncEffect(async () => {
     const topFrame = await getTopLevelFrame();
 
-    console.log("*** ConnectedSidebar", {
-      topFrame,
-      href: window.location.href,
-    });
-
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
     await ensureExtensionPointsInstalled(topFrame);
 
