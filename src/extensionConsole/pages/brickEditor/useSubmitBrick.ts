@@ -38,7 +38,7 @@ import {
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
-import { type UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { type Definition } from "@/types/registryTypes";
 
 type SubmitOptions = {
@@ -92,7 +92,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
 
       const unsavedBrickJson = loadBrickYaml(String(config)) as
         | Definition
-        | UnsavedRecipeDefinition;
+        | UnsavedModDefinition;
       const { kind, metadata } = unsavedBrickJson;
 
       try {
@@ -108,7 +108,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
               // TypeScript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
               // Definition
               const unsavedRecipeDefinition =
-                unsavedBrickJson as UnsavedRecipeDefinition;
+                unsavedBrickJson as UnsavedModDefinition;
               await reinstall({
                 ...unsavedRecipeDefinition,
                 sharing: pick(data, ["organizations", "public"]),

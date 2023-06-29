@@ -29,7 +29,7 @@ import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
 import { type AnyObjectSchema } from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
@@ -48,7 +48,7 @@ const STEPS: WizardStep[] = [
     key: "options",
     label: "Configure Mod",
     Component: OptionsBody as React.FunctionComponent<{
-      blueprint: RecipeDefinition;
+      blueprint: ModDefinition;
     }>,
   },
   { key: "services", label: "Integrations", Component: ServicesBody },
@@ -66,7 +66,7 @@ export type UseActivateRecipeWizardResult = {
 };
 
 export function makeDatabasePreviewName(
-  recipe: RecipeDefinition,
+  recipe: ModDefinition,
   optionSchema: Schema,
   name: string
 ): string {
@@ -74,7 +74,7 @@ export function makeDatabasePreviewName(
 }
 
 function useActivateRecipeWizard(
-  recipe: RecipeDefinition,
+  recipe: ModDefinition,
   defaultAuthOptions: Record<RegistryId, AuthOption> = {}
 ): FetchableAsyncState<UseActivateRecipeWizardResult> {
   const installedExtensions = useSelector(selectExtensions);

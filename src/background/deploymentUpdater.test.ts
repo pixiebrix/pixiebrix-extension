@@ -19,7 +19,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { updateDeployments } from "@/background/deployment";
+import { updateDeployments } from "@/background/deploymentUpdater";
 import { reportEvent } from "@/telemetry/events";
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -388,11 +388,13 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    jest.doMock("@/background/deployment", () => ({
+    jest.doMock("@/background/deploymentUpdater", () => ({
       uninstallAllDeployments: jest.fn(),
     }));
 
-    const { uninstallAllDeployments } = await import("@/background/deployment");
+    const { uninstallAllDeployments } = await import(
+      "@/background/deploymentUpdater"
+    );
 
     await updateDeployments();
 

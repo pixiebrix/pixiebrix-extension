@@ -20,7 +20,7 @@ import type {
   PanelEntry,
   ActivatePanelOptions,
   TemporaryPanelEntry,
-  ActivateRecipePanelEntry,
+  ActivateModPanelEntry,
   SidebarEntry,
   SidebarState,
   StaticPanelEntry,
@@ -177,7 +177,7 @@ const sidebarSlice = createSlice({
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
         forms: FormPanelEntry[];
-        recipeToActivate: ActivateRecipePanelEntry | null;
+        recipeToActivate: ActivateModPanelEntry | null;
       }>
     ) {
       state.staticPanels = castDraft(action.payload.staticPanels);
@@ -333,7 +333,7 @@ const sidebarSlice = createSlice({
         state.activeKey = defaultEventKey(state);
       }
     },
-    showActivateRecipe(state, action: PayloadAction<ActivateRecipePanelEntry>) {
+    showActivateRecipe(state, action: PayloadAction<ActivateModPanelEntry>) {
       const entry = action.payload;
       state.recipeToActivate = entry;
       state.activeKey = eventKeyForEntry(entry);

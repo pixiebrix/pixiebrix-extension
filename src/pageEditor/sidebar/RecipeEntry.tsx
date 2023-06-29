@@ -38,12 +38,12 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 
 export type RecipeEntryProps = PropsWithChildren<{
-  recipe: RecipeDefinition | undefined;
+  recipe: ModDefinition | undefined;
   isActive?: boolean;
   installedVersion: SemVerString;
   onSave: () => Promise<void>;

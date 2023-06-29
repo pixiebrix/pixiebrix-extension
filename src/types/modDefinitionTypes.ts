@@ -29,8 +29,8 @@ import { type Permissions } from "webextension-polyfill";
 import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
 
 /**
- * A section defining which options are available during recipe activation
- * @see RecipeDefinition.options
+ * A section defining which options are available during mod activation
+ * @see ModDefinition.options
  */
 export type OptionsDefinition = {
   schema: Schema;
@@ -38,8 +38,8 @@ export type OptionsDefinition = {
 };
 
 /**
- * An extension defined in a recipe.
- * @see RecipeDefinition.extensionPoints
+ * An extension defined in a mod.
+ * @see ModDefinition.extensionPoints
  */
 export type ExtensionDefinition = {
   /**
@@ -88,15 +88,15 @@ export type ResolvedExtensionDefinition = ExtensionDefinition & {
 };
 
 /**
- * A version of RecipeDefinition without the metadata properties that should not be included with the submitted
- * YAML/JSON config for the recipe.
+ * A version of ModDefinition without the metadata properties that should not be included with the submitted
+ * YAML/JSON config for the mod.
  *
- * When creating a recipe definition locally, this is probably what you want.
+ * When creating a mod definition locally, this is probably what you want.
  *
- * @see RecipeDefinition
+ * @see ModDefinition
  * @see PackageUpsertResponse
  */
-export interface UnsavedRecipeDefinition extends Definition {
+export interface UnsavedModDefinition extends Definition {
   kind: "recipe";
   extensionPoints: ExtensionDefinition[];
   definitions?: InnerDefinitions;
@@ -104,10 +104,10 @@ export interface UnsavedRecipeDefinition extends Definition {
 }
 
 /**
- * Information about who a package has been shared with. Currently used only on recipes in the interface to indicate
+ * Information about who a package has been shared with. Currently used only on mods in the interface to indicate
  * which team they were shared from
  */
-// Not exported -- use RecipeDefinition["sharing"] instead to reference
+// Not exported -- use ModDefinition["sharing"] instead to reference
 type SharingDefinition = {
   /**
    * True fi the package has been shared publicly on PixieBrix
@@ -122,23 +122,23 @@ type SharingDefinition = {
 /**
  * Config of a Package returned from the PixieBrix API. Used to install extensions.
  *
- * If you are creating a recipe definition locally, you probably want UnsavedRecipeDefinition, which doesn't include
+ * If you are creating a mod definition locally, you probably want UnsavedModDefinition, which doesn't include
  * the `sharing` and `updated_at` fields which aren't stored on the YAML/JSON, but are added by the server on responses.
  *
  * There is no auto-generated swagger Type for this because config is saved in a single JSON field on the server.
  *
- * @see UnsavedRecipeDefinition
+ * @see UnsavedModDefinition
  */
-export interface RecipeDefinition extends UnsavedRecipeDefinition {
+export interface ModDefinition extends UnsavedModDefinition {
   /**
-   * Who the recipe is shared with. NOTE: does not appear in the recipe's YAML/JSON config -- the API endpoint's
+   * Who the mod is shared with. NOTE: does not appear in the mod's YAML/JSON config -- the API endpoint's
    * serializer adds it to the response.
    */
   sharing: SharingDefinition;
 
   /**
-   * When the recipe was last updated. Can be used to detect updates where the version number of the recipe was
-   * not bumped. NOTE: does not appear in the recipe's YAML/JSON config -- the API endpoint's
+   * When the mod was last updated. Can be used to detect updates where the version number of the mod was
+   * not bumped. NOTE: does not appear in the mod's YAML/JSON config -- the API endpoint's
    * serializer adds it to the response.
    */
   updated_at: Timestamp;

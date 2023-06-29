@@ -18,7 +18,7 @@
 import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type IExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -128,9 +128,7 @@ export function checkExtensionUpdateRequired(
 /**
  * Return service registry ids used by the blueprint.
  */
-export function extractRecipeServiceIds(
-  recipe: RecipeDefinition
-): RegistryId[] {
+export function extractRecipeServiceIds(recipe: ModDefinition): RegistryId[] {
   return sortBy(
     uniq(recipe.extensionPoints.flatMap((x) => Object.values(x.services ?? {})))
   );

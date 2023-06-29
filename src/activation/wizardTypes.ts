@@ -17,14 +17,14 @@
 
 import { type Primitive } from "type-fest";
 import type React from "react";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 
 export type WizardStep = {
   key: string;
   label: string;
   Component: React.FunctionComponent<{
-    blueprint: RecipeDefinition;
+    blueprint: ModDefinition;
     reinstall: boolean;
   }>;
 };
