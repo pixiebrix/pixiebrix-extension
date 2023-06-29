@@ -46,7 +46,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { inputProperties } from "@/helpers";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 
-type BlockDefinition = {
+type BrickDefinition = {
   apiVersion?: ApiVersion;
   kind: "component";
   metadata: Metadata;
@@ -69,7 +69,7 @@ type BlockDefinition = {
 
 function validateBlockDefinition(
   component: unknown
-): asserts component is BlockDefinition {
+): asserts component is BrickDefinition {
   const validator = new Validator(
     dereference(blockSchema as Schema) as ValidatorSchema
   );
@@ -90,7 +90,7 @@ function validateBlockDefinition(
  * A non-native (i.e., non-JS) Block. Typically defined in YAML/JSON.
  */
 class ExternalBlock extends Block {
-  public readonly component: BlockDefinition;
+  public readonly component: BrickDefinition;
 
   readonly apiVersion: ApiVersion;
 
@@ -100,7 +100,7 @@ class ExternalBlock extends Block {
 
   readonly version: SemVerString;
 
-  constructor(component: BlockDefinition) {
+  constructor(component: BrickDefinition) {
     const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
     this.apiVersion = component.apiVersion ?? "v1";

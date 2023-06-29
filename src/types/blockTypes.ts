@@ -25,7 +25,7 @@ import { type BlockIcon } from "@/types/iconTypes";
 
 /**
  * An instance of a re-usable block.
- * @see BlockDefinition
+ * @see BrickDefinition
  */
 export interface IBlock extends Metadata {
   /** A JSON schema of the inputs for the block */
