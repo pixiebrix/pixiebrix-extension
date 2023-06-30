@@ -53,7 +53,7 @@ export type RendererRunPayload = BaseRendererPayload & {
   /**
    * The BlockArg to pass to the renderer
    * @see BlockProps.args
-   * @see BlockArgs
+   * @see BrickArgs
    */
   args: unknown;
   /**

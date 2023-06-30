@@ -18,7 +18,7 @@
 import fs from "node:fs";
 // eslint-disable-next-line import/no-unassigned-import -- Until Node adds the global
 import "./cryptoNodePolyfill.js";
-import blockRegistry from "@/blocks/registry";
+import brickRegistry from "@/blocks/registry";
 
 // Import for side-effects (these modules register the blocks)
 // NOTE: we don't need to also include extensionPoints because we got rid of all the legacy hard-coded extension points
@@ -36,38 +36,38 @@ Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 
-const blockDefinitions = blockRegistry.builtins.map((block) => ({
+const brickDefinitions = brickRegistry.builtins.map((brick) => ({
   apiVersion: "v1",
   header: true,
-  kind: "read" in block ? "reader" : "component",
+  kind: "read" in brick ? "reader" : "component",
   metadata: {
-    id: block.id,
+    id: brick.id,
     version: process.env.NPM_PACKAGE_VERSION,
-    name: block.name,
-    description: block.description,
+    name: brick.name,
+    description: brick.description,
   },
-  inputSchema: block.inputSchema,
-  outputSchema: block.outputSchema,
+  inputSchema: brick.inputSchema,
+  outputSchema: brick.outputSchema,
 }));
 
-console.log(`Number of block headers: ${blockDefinitions.length}`);
+console.log(`Number of brick headers: ${brickDefinitions.length}`);
 
-if (blockDefinitions.length === 0) {
-  throw new Error("No block definitions generated");
+if (brickDefinitions.length === 0) {
+  throw new Error("No brick definitions generated");
 }
 
-if (blockDefinitions.length > EXPECTED_HEADER_COUNT) {
+if (brickDefinitions.length > EXPECTED_HEADER_COUNT) {
   throw new Error(
-    `Expected ${EXPECTED_HEADER_COUNT} block definitions. Actual: ${blockDefinitions.length}. Did you forget to bump the EXPECTED_HEADER_COUNT constant?`
+    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to bump the EXPECTED_HEADER_COUNT constant?`
   );
 }
 
-if (blockDefinitions.length < EXPECTED_HEADER_COUNT) {
+if (brickDefinitions.length < EXPECTED_HEADER_COUNT) {
   throw new Error(
-    `Expected ${EXPECTED_HEADER_COUNT} block definitions. Actual: ${blockDefinitions.length}. Did you forget to register a block definition?`
+    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to register a brick definition?`
   );
 }
 
-fs.writeFileSync("headers.json", JSON.stringify(blockDefinitions));
+fs.writeFileSync("headers.json", JSON.stringify(brickDefinitions));
 
 console.log("headers.json written to disk");
