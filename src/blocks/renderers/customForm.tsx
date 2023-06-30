@@ -47,6 +47,7 @@ import {
 import { Renderer } from "@/types/bricks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
+import cx from "classnames";
 
 const fields = {
   DescriptionField,
@@ -77,8 +78,23 @@ const CustomFormComponent: React.FunctionComponent<{
   formData: JsonObject;
   autoSave: boolean;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, submitCaption, formData, autoSave, onSubmit }) => (
-  <div className="CustomForm p-3">
+  className?: string;
+}> = ({
+  schema,
+  uiSchema,
+  submitCaption,
+  formData,
+  autoSave,
+  className,
+  onSubmit,
+}) => (
+  <div
+    className={cx("CustomForm", className, {
+      // Since 1.7.33, support a className prop to allow for adjusting margin/padding. To maintain the legacy
+      // behavior, apply the default only if the className prop is not provided.
+      "p-3": className === undefined,
+    })}
+  >
     <ErrorBoundary>
       <Stylesheets href={[bootstrap, custom]}>
         <JsonSchemaForm
@@ -201,6 +217,11 @@ export const customFormRendererSchema = {
       type: "object",
       additionalProperties: true,
     },
+    // Added in 1.7.33 to allow for adjusting the native margin/padding when used in the document builder
+    className: {
+      schema: { type: "string", format: "bootstrap-class" },
+      label: "Layout/Style",
+    },
   },
   required: ["schema"],
 };
@@ -226,6 +247,7 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
+      className,
     }: BrickArgs<{
       storage?: Storage;
       successMessage?: string;
@@ -234,6 +256,7 @@ export class CustomFormRenderer extends Renderer {
       submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
+      className?: string;
     }>,
     { logger }: BrickOptions
   ): Promise<ComponentRef> {
@@ -277,6 +300,7 @@ export class CustomFormRenderer extends Renderer {
         uiSchema,
         autoSave,
         submitCaption,
+        className,
         async onSubmit(values: JsonObject) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
