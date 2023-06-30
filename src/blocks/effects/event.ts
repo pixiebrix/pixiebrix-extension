@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
@@ -85,8 +85,8 @@ export class ElementEvent extends Effect {
       selector,
       isRootAware,
       event,
-    }: BlockArgs<{ selector: string; isRootAware: boolean; event: string }>,
-    { logger, root }: BlockOptions
+    }: BrickArgs<{ selector: string; isRootAware: boolean; event: string }>,
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

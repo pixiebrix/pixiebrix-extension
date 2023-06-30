@@ -20,8 +20,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
-import { type IBlock } from "@/types/blockTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -32,7 +32,7 @@ export type Location =
   // Sidebar panel. ephemeralForm uses `sidebar` as the location for the sidebar
   "panel" | "modal" | "popover";
 
-export type IExtensionPoint = Metadata & {
+export type StarterBrick = Metadata & {
   /**
    * The kind of extension point.
    */
@@ -57,7 +57,7 @@ export type IExtensionPoint = Metadata & {
    * Return the IReader used by the extension point. This method should only be called for calculating availability
    * and the schema, as it may include stub readers.
    *
-   * @see IExtensionPoint.previewReader
+   * @see StarterBrick.previewReader
    */
   defaultReader: () => Promise<IReader>;
 
@@ -118,5 +118,5 @@ export type IExtensionPoint = Metadata & {
    *
    * @see PipelineExpression
    */
-  getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
+  getBlocks: (extension: ResolvedExtension) => Promise<Brick[]>;
 };

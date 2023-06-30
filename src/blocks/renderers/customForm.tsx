@@ -40,11 +40,11 @@ import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 
@@ -226,7 +226,7 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
-    }: BlockArgs<{
+    }: BrickArgs<{
       storage?: Storage;
       successMessage?: string;
       recordId?: string | null;
@@ -235,7 +235,7 @@ export class CustomFormRenderer extends Renderer {
       schema: Schema;
       uiSchema?: UiSchema;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<ComponentRef> {
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");

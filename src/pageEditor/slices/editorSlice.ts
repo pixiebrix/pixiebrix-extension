@@ -22,7 +22,7 @@ import {
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import {
   type AddBlockLocation,
@@ -535,7 +535,7 @@ export const editorSlice = createSlice({
       ].activeElement = activeElement;
     },
 
-    copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
+    copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
       const copy = { ...action.payload };
       delete copy.instanceId;
       state.copiedBlock = copy;
@@ -733,7 +733,7 @@ export const editorSlice = createSlice({
     addNode(
       state,
       action: PayloadAction<{
-        block: BlockConfig;
+        block: BrickConfig;
         pipelinePath: string;
         pipelineIndex: number;
       }>

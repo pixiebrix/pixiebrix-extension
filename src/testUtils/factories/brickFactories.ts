@@ -16,32 +16,32 @@
  */
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
-import { type IBlock } from "@/types/blockTypes";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type Brick } from "@/types/brickTypes";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
-export const blockFactory = define<IBlock>({
+export const brickFactory = define<Brick>({
   id: (i: number) => validateRegistryId(`testing/block-${i}`),
-  name: derive<IBlock, string>((x: IBlock) => `Block ${x.id}`, "id"),
+  name: derive<Brick, string>((x: Brick) => `Block ${x.id}`, "id"),
   inputSchema: null as Schema,
   permissions: emptyPermissionsFactory(),
   run: jest.fn(),
 });
 
-export const blockConfigFactory = define<BlockConfig>({
+export const brickConfigFactory = define<BrickConfig>({
   instanceId: uuidSequence,
   id: (i: number) => validateRegistryId(`testing/block-${i}`),
   config: () => ({}),
 });
 
 export const pipelineFactory: (
-  blockConfigOverride?: FactoryConfig<BlockConfig>
-) => BlockPipeline = (blockConfigProps) => {
-  const blockConfig1 = blockConfigFactory(blockConfigProps);
-  const blockConfig2 = blockConfigFactory(blockConfigProps);
+  blockConfigOverride?: FactoryConfig<BrickConfig>
+) => BrickPipeline = (blockConfigProps) => {
+  const brickConfig1 = brickConfigFactory(blockConfigProps);
+  const brickConfig2 = brickConfigFactory(blockConfigProps);
 
-  return [blockConfig1, blockConfig2] as BlockPipeline;
+  return [brickConfig1, brickConfig2] as BrickPipeline;
 };

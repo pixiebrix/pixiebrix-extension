@@ -15,18 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block } from "@/types/blockTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { BrickABC } from "@/types/brickTypes";
+import {
+  type BrickArgs,
+  type BrickOptions,
+  type RendererOutput,
+} from "@/types/runtimeTypes";
 
-export abstract class Transformer extends Block {
+export abstract class Renderer extends BrickABC {
+  abstract render(
+    inputs: BrickArgs,
+    options: BrickOptions
+  ): Promise<RendererOutput>;
+
   override async isRootAware(): Promise<boolean> {
-    // Most transformers don't use the root, so have them opt-in
+    // Most renderers don't use the root, so have them opt-in
     return false;
   }
 
-  abstract transform(value: BlockArgs, options: BlockOptions): Promise<unknown>;
-
-  async run(value: BlockArgs, options: BlockOptions): Promise<unknown> {
-    return this.transform(value, options);
+  async run(value: BrickArgs, options: BrickOptions): Promise<RendererOutput> {
+    return this.render(value, options);
   }
 }

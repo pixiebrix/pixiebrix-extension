@@ -31,9 +31,9 @@ import ManifestReader from "./ManifestReader";
 import ProfileReader from "./ProfileReader";
 import SessionReader from "./SessionReader";
 import TimestampReader from "./TimestampReader";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
-function getAllReaders(): IBlock[] {
+function getAllReaders(): Brick[] {
   return [
     // Built-in readers
     new DocumentReader(),

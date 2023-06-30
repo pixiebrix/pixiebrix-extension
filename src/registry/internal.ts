@@ -28,7 +28,7 @@ import {
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
+import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
@@ -46,8 +46,8 @@ import {
   type IExtension,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type Brick } from "@/types/brickTypes";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
@@ -62,7 +62,7 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
   return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
 
-async function resolveBlockDefinition(
+async function resolveBrickDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinition
 ) {
@@ -112,7 +112,7 @@ async function resolveReaderDefinition(
         );
       }
 
-      const block = await resolveBlockDefinition(
+      const block = await resolveBrickDefinition(
         definitions,
         definition as InnerBlock<"component">
       );
@@ -148,7 +148,7 @@ async function resolveReaderDefinition(
 async function resolveExtensionPointDefinition(
   definitions: InnerDefinitions,
   originalInnerDefinition: InnerExtensionPoint
-): Promise<IExtensionPoint> {
+): Promise<StarterBrick> {
   const innerDefinition = cloneDeep(originalInnerDefinition);
 
   // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
@@ -190,7 +190,7 @@ async function resolveExtensionPointDefinition(
 async function resolveInnerDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinitions[string]
-): Promise<IBlock | IExtensionPoint> {
+): Promise<Brick | StarterBrick> {
   if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
   }
@@ -205,7 +205,7 @@ async function resolveInnerDefinition(
 
     case "reader":
     case "component": {
-      return resolveBlockDefinition(definitions, innerDefinition as InnerBlock);
+      return resolveBrickDefinition(definitions, innerDefinition as InnerBlock);
     }
 
     default: {

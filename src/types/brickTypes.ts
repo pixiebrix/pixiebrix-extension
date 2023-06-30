@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BlockIcon } from "@/types/iconTypes";
+import { type BrickIcon } from "@/types/iconTypes";
 
 /**
- * An instance of a re-usable block.
- * @see BlockDefinition
+ * An instance of a re-usable brick.
+ * @see BrickDefinition
  */
-export interface IBlock extends Metadata {
-  /** A JSON schema of the inputs for the block */
+export interface Brick extends Metadata {
+  /** A JSON schema of the inputs for the brick */
   inputSchema: Schema;
 
   /**
-   * An optional UiSchema for the inputs for the block
+   * An optional UiSchema for the inputs for the brick
    *
    * Currently only ui:order is supported.
    *
@@ -41,37 +41,37 @@ export interface IBlock extends Metadata {
   uiSchema?: UiSchema;
 
   /**
-   * An optional a JSON schema for the output of the block.
+   * An optional a JSON schema for the output of the brick.
    * @see getOutputSchema
    */
   outputSchema?: Schema;
 
   /**
-   * An optional method to generate a JSON output schema given a block configuration.
-   * @param config the block configuration
+   * An optional method to generate a JSON output schema given a brick configuration.
+   * @param config the brick configuration
    * @see outputSchema
    * @since 1.7.20
    */
-  getOutputSchema?: (config: BlockConfig) => Schema | undefined;
+  getOutputSchema?: (config: BrickConfig) => Schema | undefined;
 
   /**
-   * Returns the optional permissions required to run this block.
+   * Returns the optional permissions required to run this brick.
    *
-   * Only includes this block's permissions, not the permissions of any blocks passed as inputs to the block.
+   * Only includes this brick's permissions, not the permissions of any bricks passed as inputs to the brick.
    *
    * See https://developer.chrome.com/extensions/permission_warnings
    */
   permissions: Permissions.Permissions;
 
   /**
-   * Returns true iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   * Returns true iff the brick is guaranteed to be side-effect free, (i.e., it can be safely re-run).
    *
-   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
-   * the other blocks to resolve their purity).
+   * Defined as a promise to support bricks that refer to other bricks (and therefore need to look up the status of
+   * the other bricks to resolve their purity).
    *
-   * FIXME: isPure is marked as optional because we're using IBlock to represent packages/bricks in some places, e.g.,
+   * FIXME: isPure is marked as optional because we're using Brick to represent packages/bricks in some places, e.g.,
    *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
-   *  take advantages the IExtensionPoint is compatible with the the IBlock interface even though they represent two
+   *  take advantages the StarterBrick is compatible with the the Brick interface even though they represent two
    *  different concepts
    *
    * Examples of impure actions:
@@ -82,18 +82,18 @@ export interface IBlock extends Metadata {
   isPure?: () => Promise<boolean>;
 
   /**
-   * Returns `true` if the block can use the reader root from the block options
+   * Returns `true` if the brick can use the reader root from the brick options
    *
-   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
-   * the other blocks to resolve their isRootAware status).
+   * Defined as a promise to support bricks that refer to other bricks (and therefore need to look up the status of
+   * the other bricks to resolve their isRootAware status).
    *
-   * @see BlockOptions.root
+   * @see BrickOptions.root
    * @since 1.4.0
    */
   isRootAware?: () => Promise<boolean>;
 
   /**
-   * (Optional) default root output key to use when this block is added in the page editor.
+   * (Optional) default root output key to use when this brick is added in the page editor.
    *
    * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
    *
@@ -104,24 +104,24 @@ export interface IBlock extends Metadata {
   defaultOutputKey?: string;
 
   /**
-   * Run the block.
+   * Run the brick.
    * @param value the rendered input values
-   * @param options the runtime options for the block.
+   * @param options the runtime options for the brick.
    */
-  run: (value: BlockArgs, options: BlockOptions) => Promise<unknown>;
+  run: (value: BrickArgs, options: BrickOptions) => Promise<unknown>;
 }
 
 /**
- * Abstract base class for IBlock implementations.
+ * Abstract base class for Brick implementations.
  */
-export abstract class Block implements IBlock {
+export abstract class BrickABC implements Brick {
   readonly id: RegistryId;
 
   readonly name: string;
 
   readonly description: string;
 
-  readonly icon: BlockIcon;
+  readonly icon: BrickIcon;
 
   abstract readonly inputSchema: Schema;
 
@@ -139,7 +139,7 @@ export abstract class Block implements IBlock {
     return true;
   }
 
-  getOutputSchema(_config: BlockConfig): Schema | undefined {
+  getOutputSchema(_config: BrickConfig): Schema | undefined {
     return this.outputSchema;
   }
 
@@ -147,7 +147,7 @@ export abstract class Block implements IBlock {
     id: string,
     name: string,
     description?: string,
-    icon?: BlockIcon
+    icon?: BrickIcon
   ) {
     this.id = validateRegistryId(id);
     this.name = name;
@@ -155,16 +155,16 @@ export abstract class Block implements IBlock {
     this.icon = icon;
   }
 
-  abstract run(value: BlockArgs, options: BlockOptions): Promise<unknown>;
+  abstract run(value: BrickArgs, options: BrickOptions): Promise<unknown>;
 }
 
 /**
- * Returns `true` if block is a user-defined block (i.e., defined in YAML not JS).
- * @param block the block
+ * Returns `true` if brick is a user-defined brick (i.e., defined in YAML not JS).
+ * @param brick the brick
  * @see ExternalBlock
  */
-export function isUserDefinedBlock(block: IBlock): boolean {
-  // YAML-defined blocks have a .component property added by the ExternalBlock class
+export function isUserDefinedBrick(brick: Brick): boolean {
+  // YAML-defined bricks have a .component property added by the ExternalBlock class
   // We don't want to introduce circular dependency
-  return block && "component" in block && Boolean(block.component);
+  return brick && "component" in brick && Boolean(brick.component);
 }

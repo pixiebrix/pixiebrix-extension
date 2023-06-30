@@ -31,7 +31,7 @@ export type BlockOptionProps = {
 
   /**
    * The property name of the block configuration -- in general this should be "config"
-   * @see BlockConfig
+   * @see BrickConfig
    */
   configKey?: string;
 };

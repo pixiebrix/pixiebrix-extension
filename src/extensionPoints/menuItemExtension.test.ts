@@ -32,7 +32,7 @@ import {
   RootReader,
   tick,
 } from "@/extensionPoints/extensionPointTestUtils";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -88,7 +88,7 @@ const extensionFactory = define<ResolvedExtension>({
   label: "Test Extension",
   config: define<MenuItemExtensionConfig>({
     caption: "Hello World",
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
     synchronous: false,
   }),
 });

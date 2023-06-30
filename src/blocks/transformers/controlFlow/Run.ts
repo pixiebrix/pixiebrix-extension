@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type PipelineExpression } from "@/runtime/mapArgs";
@@ -72,11 +72,11 @@ class Run extends Transformer {
     {
       body: bodyPipeline,
       async = false,
-    }: BlockArgs<{
+    }: BrickArgs<{
       body: PipelineExpression;
       async?: boolean;
     }>,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<unknown> {
     const promise = options.runPipeline(bodyPipeline, {
       key: "body",

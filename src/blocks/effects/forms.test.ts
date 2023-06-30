@@ -34,7 +34,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { FormFill, SetInputValue } from "@/blocks/effects/forms";
 import { BusinessError, NoElementsFoundError } from "@/errors/businessErrors";
 
@@ -72,7 +72,7 @@ describe("SetInputValue", () => {
       unsafeAssumeValidArg({
         inputs: [{ selector: "[name='name']", value: "Bob Smith" }],
       }),
-      { root: document, logger } as unknown as BlockOptions
+      { root: document, logger } as unknown as BrickOptions
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -87,7 +87,7 @@ describe("SetInputValue", () => {
       {
         root: document.querySelector("#noForm"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     // Will have original value because root it on the other path
@@ -101,7 +101,7 @@ describe("SetInputValue", () => {
       {
         root: document.querySelector("#hasForm"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -116,7 +116,7 @@ describe("SetInputValue", () => {
       {
         root: document.querySelector("input"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -130,7 +130,7 @@ describe("SetInputValue", () => {
       }),
       {
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -145,7 +145,7 @@ describe("SetInputValue", () => {
       {
         logger,
         root: document.querySelector("div"),
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -178,7 +178,7 @@ describe("FormFill", () => {
         formSelector: "form",
         fieldNames: { name: "Bob Smith" },
       }),
-      { root: document, logger } as unknown as BlockOptions
+      { root: document, logger } as unknown as BrickOptions
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -194,7 +194,7 @@ describe("FormFill", () => {
       {
         root: document.querySelector("#noForm"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     await expect(promise).rejects.toThrow(NoElementsFoundError);
@@ -208,7 +208,7 @@ describe("FormFill", () => {
       {
         root: document.querySelector("#hasForm"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");

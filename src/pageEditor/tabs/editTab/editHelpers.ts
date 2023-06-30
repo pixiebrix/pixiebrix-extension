@@ -17,21 +17,21 @@
 
 import { freshIdentifier } from "@/utils";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import {
-  type BlockConfig,
-  type BlockPipeline,
-  type BlockPosition,
+  type BrickConfig,
+  type BrickPipeline,
+  type BrickPosition,
 } from "@/blocks/types";
 import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/blocks/PipelineVisitor";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";
 
-export function showOutputKey(blockType: BlockType): boolean {
+export function showOutputKey(blockType: BrickType): boolean {
   return blockType !== "effect" && blockType !== "renderer";
 }
 
@@ -41,7 +41,7 @@ export function showOutputKey(blockType: BlockType): boolean {
  * @param outputKeys existing outputKeys already being used
  */
 export async function generateFreshOutputKey(
-  block: IBlock,
+  block: Brick,
   outputKeys: OutputKey[]
 ): Promise<OutputKey | undefined> {
   const type = await getType(block);
@@ -79,8 +79,8 @@ class PipelineMapVisitor extends PipelineVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     this.pipelineMap[blockConfig.instanceId] = {
@@ -97,7 +97,7 @@ class PipelineMapVisitor extends PipelineVisitor {
   }
 }
 
-export function getPipelineMap(pipeline: BlockPipeline): PipelineMap {
+export function getPipelineMap(pipeline: BrickPipeline): PipelineMap {
   const visitor = new PipelineMapVisitor();
   visitor.visitRootPipeline(pipeline);
   return visitor.pipelineMap;

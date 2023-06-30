@@ -18,9 +18,9 @@
 import blockRegistry from "@/blocks/registry";
 import {
   simpleInput,
-  teapotBlock,
+  teapotBrick,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
@@ -30,7 +30,7 @@ const tryExceptBlock = new TryExcept();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([teapotBlock, throwBlock, tryExceptBlock]);
+  blockRegistry.register([teapotBrick, throwBrick, tryExceptBlock]);
 });
 
 describe("TryExcept", () => {
@@ -38,7 +38,7 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
+        try: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -53,8 +53,8 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
-        except: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
+        try: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
+        except: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -70,7 +70,7 @@ describe("TryExcept", () => {
       id: tryExceptBlock.id,
       config: {
         // Throw to make it more obvious if wrong branch taken
-        try: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+        try: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(

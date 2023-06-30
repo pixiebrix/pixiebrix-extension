@@ -18,9 +18,9 @@
 import { fromJS } from "@/extensionPoints/factory";
 import BaseRegistry from "@/baseRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
-const registry = new BaseRegistry<RegistryId, IExtensionPoint>(
+const registry = new BaseRegistry<RegistryId, StarterBrick>(
   ["foundation", "extensionPoint"],
   fromJS
 );

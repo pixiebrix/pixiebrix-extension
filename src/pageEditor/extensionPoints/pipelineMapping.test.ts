@@ -18,14 +18,14 @@
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import {
   isPipelineExpression,
   type PipelineExpression,
 } from "@/runtime/mapArgs";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { EMPTY_PIPELINE, toExpression } from "@/testUtils/testHelpers";
 import {
@@ -37,13 +37,13 @@ import blockRegistry from "@/blocks/registry";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 describe("normalizePipeline", () => {
-  let echoBlockConfig: BlockConfig;
-  let teapotBlockConfig: BlockConfig;
+  let echoBlockConfig: BrickConfig;
+  let teapotBlockConfig: BrickConfig;
 
   beforeAll(() => {
     blockRegistry.register([
-      echoBlock,
-      teapotBlock,
+      echoBrick,
+      teapotBrick,
       new ForEach(),
       new IfElse(),
       new TryExcept(),
@@ -52,14 +52,14 @@ describe("normalizePipeline", () => {
 
   beforeEach(() => {
     echoBlockConfig = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: {
         message: toExpression("nunjucks", "test"),
       },
     };
 
     teapotBlockConfig = {
-      id: teapotBlock.id,
+      id: teapotBrick.id,
       config: {},
     };
   });
@@ -74,7 +74,7 @@ describe("normalizePipeline", () => {
   });
 
   test("For-Each block", async () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: ForEach.BLOCK_ID,
         config: {
@@ -95,7 +95,7 @@ describe("normalizePipeline", () => {
   });
 
   test("If-Else block", async () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: IfElse.BLOCK_ID,
         config: {
@@ -124,7 +124,7 @@ describe("normalizePipeline", () => {
   });
 
   test("If-Else block with only If branch", async () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: IfElse.BLOCK_ID,
         config: {
@@ -150,7 +150,7 @@ describe("normalizePipeline", () => {
   });
 
   test("Try-Except block", async () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
         config: {
@@ -178,7 +178,7 @@ describe("normalizePipeline", () => {
   });
 
   test("Try-Except block with only Try branch", async () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
         config: {
@@ -203,7 +203,7 @@ describe("normalizePipeline", () => {
   });
 
   test("nested pipelines", async () => {
-    const createForEachBlock: (body: BlockConfig[]) => BlockConfig = (
+    const createForEachBlock: (body: BrickConfig[]) => BrickConfig = (
       body
     ) => ({
       id: ForEach.BLOCK_ID,
@@ -213,7 +213,7 @@ describe("normalizePipeline", () => {
       },
     });
 
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       createForEachBlock([
         createForEachBlock([echoBlockConfig, teapotBlockConfig]),
       ]),
@@ -242,12 +242,12 @@ describe("normalizePipeline", () => {
 });
 
 describe("omitEditorMetadata", () => {
-  let echoBlockConfig: BlockConfig;
-  let teapotBlockConfig: BlockConfig;
+  let echoBlockConfig: BrickConfig;
+  let teapotBlockConfig: BrickConfig;
 
   beforeEach(() => {
     echoBlockConfig = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       instanceId: uuidSequence(1),
       config: {
         message: toExpression("nunjucks", "test"),
@@ -255,7 +255,7 @@ describe("omitEditorMetadata", () => {
     };
 
     teapotBlockConfig = {
-      id: teapotBlock.id,
+      id: teapotBrick.id,
       instanceId: uuidSequence(2),
       config: {},
     };
@@ -271,7 +271,7 @@ describe("omitEditorMetadata", () => {
   });
 
   test("For-Each block", () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: ForEach.BLOCK_ID,
         instanceId: uuidSequence(3),
@@ -291,7 +291,7 @@ describe("omitEditorMetadata", () => {
   });
 
   test("If-Else block", () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: IfElse.BLOCK_ID,
         instanceId: uuidSequence(3),
@@ -319,7 +319,7 @@ describe("omitEditorMetadata", () => {
   });
 
   test("Try-Except block", () => {
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       {
         id: TryExcept.BLOCK_ID,
         instanceId: uuidSequence(3),
@@ -348,8 +348,8 @@ describe("omitEditorMetadata", () => {
   test("nested pipelines", () => {
     const createForEachBlock: (
       n: number,
-      body: BlockConfig[]
-    ) => BlockConfig = (n, body) => ({
+      body: BrickConfig[]
+    ) => BrickConfig = (n, body) => ({
       id: ForEach.BLOCK_ID,
       instanceId: uuidSequence(n),
       config: {
@@ -358,7 +358,7 @@ describe("omitEditorMetadata", () => {
       },
     });
 
-    const pipeline: BlockConfig[] = [
+    const pipeline: BrickConfig[] = [
       createForEachBlock(3, [
         createForEachBlock(4, [echoBlockConfig, teapotBlockConfig]),
       ]),

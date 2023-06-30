@@ -18,21 +18,21 @@
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  identityBlock,
-  pipelineBlock,
+  identityBrick,
+  pipelineBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([pipelineBlock, identityBlock]);
+  blockRegistry.register([pipelineBrick, identityBrick]);
 });
 
 describe("apiVersion: v3", () => {
   test("run block with pipeline arg", async () => {
     const pipeline = {
-      id: pipelineBlock.id,
+      id: pipelineBrick.id,
       config: {
         pipeline: {
           __type__: "pipeline",
@@ -50,7 +50,7 @@ describe("apiVersion: v3", () => {
 
   test("keep pipeline expression", async () => {
     const pipeline = {
-      id: identityBlock.id,
+      id: identityBrick.id,
       config: {
         data: {
           __type__: "pipeline",

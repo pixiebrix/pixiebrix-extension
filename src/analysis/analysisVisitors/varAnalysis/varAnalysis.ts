@@ -23,7 +23,7 @@ import {
   type VisitBlockExtra,
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import {
@@ -176,7 +176,7 @@ type SetVarsFromSchemaArgs = {
  *
  * Examples:
  * - Blueprint input schema
- * - Block output schema
+ * - Brick output schema
  * - Service configuration schema
  */
 function setVarsFromSchema({
@@ -379,7 +379,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * @param blockConfig the block configuration
    * @private
    */
-  private safeGetOutputSchema(blockConfig: BlockConfig): Schema {
+  private safeGetOutputSchema(blockConfig: BrickConfig): Schema {
     const block = this.allBlocks.get(blockConfig.id)?.block;
 
     if (!block) {
@@ -412,8 +412,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     // Create a new context frame with:
@@ -471,7 +471,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<unknown>
   ): void {
     if (isVarExpression(expression)) {
@@ -482,7 +482,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   private visitVarExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<string, "var">
   ) {
     const varName = expression.__value__;
@@ -496,7 +496,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   private visitNunjucksExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<string, "nunjucks">
   ) {
     let templateVariables: string[];
@@ -516,7 +516,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   private pushNotFoundVariableAnnotation(
-    position: BlockPosition,
+    position: BrickPosition,
     varName: string,
     expression: Expression<string, TemplateEngine>
   ) {
@@ -551,8 +551,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitPipeline(
-    position: BlockPosition,
-    pipeline: BlockConfig[],
+    position: BrickPosition,
+    pipeline: BrickConfig[],
     extra: VisitPipelineExtra
   ) {
     // Get variable provided to child pipeline if applicable (e.g. for a for-each, try-except, block)
@@ -681,8 +681,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitDocument(
-    position: BlockPosition,
-    blockConfig: BlockConfig
+    position: BrickPosition,
+    blockConfig: BrickConfig
   ): void {
     // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
     // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)

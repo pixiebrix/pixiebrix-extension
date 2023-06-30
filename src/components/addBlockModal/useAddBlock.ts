@@ -29,22 +29,22 @@ import {
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
 import { joinPathParts } from "@/utils";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 type TestAddBlockResult = {
   error?: string;
 };
 
 type AddBlock = {
-  testAddBlock: (block: IBlock) => Promise<TestAddBlockResult>;
-  addBlock: (block: IBlock) => Promise<void>;
+  testAddBlock: (block: Brick) => Promise<TestAddBlockResult>;
+  addBlock: (block: Brick) => Promise<void>;
 };
 
 function makeBlockLevelAnalyses(): Analysis[] {
@@ -64,7 +64,7 @@ function useAddBlock(): AddBlock {
   const addBlockLocation = useSelector(selectAddBlockLocation);
 
   const makeNewBlock = useCallback(
-    async (block: IBlock): Promise<BlockConfig> => {
+    async (block: Brick): Promise<BrickConfig> => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -90,7 +90,7 @@ function useAddBlock(): AddBlock {
    * with adding the particular block.
    */
   const testAddBlock = useCallback(
-    async (block: IBlock): Promise<TestAddBlockResult> => {
+    async (block: Brick): Promise<TestAddBlockResult> => {
       if (!addBlockLocation) {
         return {};
       }
@@ -131,7 +131,7 @@ function useAddBlock(): AddBlock {
   );
 
   const addBlock = useCallback(
-    async (block: IBlock) => {
+    async (block: Brick) => {
       if (!addBlockLocation) {
         return;
       }

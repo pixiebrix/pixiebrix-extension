@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig } from "@/blocks/types";
-import { type IBlock } from "@/types/blockTypes";
-import { type BlockArgs, type OutputKey } from "@/types/runtimeTypes";
+import { type BrickConfig } from "@/blocks/types";
+import { type Brick } from "@/types/brickTypes";
+import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
+export type BrickType = "reader" | "effect" | "transform" | "renderer";
 /**
- * A block configuration with the corresponding resolved IBlock and BlockType.
- * @see BlockConfig
- * @see BlockType
+ * A block configuration with the corresponding resolved Brick and BrickType.
+ * @see BrickConfig
+ * @see BrickType
  */
-export type ResolvedBlockConfig = {
-  block: IBlock;
-  config: BlockConfig;
-  type: BlockType;
+export type ResolvedBrickConfig = {
+  block: Brick;
+  config: BrickConfig;
+  type: BrickType;
 };
 
 /**
- * Assume that a value matches the expected arg for any block.
+ * Assume that a value matches the expected arg for any brick.
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
  */
-export function unsafeAssumeValidArg(value: unknown): BlockArgs {
-  return value as BlockArgs;
+export function unsafeAssumeValidArg(value: unknown): BrickArgs {
+  return value as BrickArgs;
 }
 
 const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;

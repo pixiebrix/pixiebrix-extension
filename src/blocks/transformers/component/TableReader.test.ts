@@ -17,12 +17,12 @@
 
 import { TableReader } from "@/blocks/transformers/component/TableReader";
 import blockRegistry from "@/blocks/registry";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import {
   unsafeAssumeValidArg,
   validateOutputKey,
 } from "@/runtime/runtimeTypes";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 const tableReaderBlock = new TableReader();
 
@@ -37,7 +37,7 @@ describe("TableReader", () => {
   });
 
   test("runs successfully", async () => {
-    const blockConfig: BlockConfig = {
+    const blockConfig: BrickConfig = {
       id: tableReaderBlock.id,
       config: {
         orientation: "infer",
@@ -64,14 +64,14 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      { root } as unknown as BlockOptions
+      { root } as unknown as BrickOptions
     );
 
     expect(result).toStrictEqual(expected);
   });
 
   test("throws an error when selector doesn't match a table/list", async () => {
-    const blockConfig: BlockConfig = {
+    const blockConfig: BrickConfig = {
       id: tableReaderBlock.id,
       config: {
         orientation: "infer",
@@ -91,13 +91,13 @@ describe("TableReader", () => {
     const getResult = async () =>
       tableReaderBlock.run(unsafeAssumeValidArg(blockConfig.config), {
         root,
-      } as unknown as BlockOptions);
+      } as unknown as BrickOptions);
 
     await expect(getResult).rejects.toThrow(TypeError);
   });
 
   test("selector is optional", async () => {
-    const blockConfig: BlockConfig = {
+    const blockConfig: BrickConfig = {
       id: tableReaderBlock.id,
       config: {},
       outputKey: validateOutputKey("table"),
@@ -116,7 +116,7 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      { root: document.querySelector("table") } as unknown as BlockOptions
+      { root: document.querySelector("table") } as unknown as BrickOptions
     );
 
     expect(result).toStrictEqual(expected);

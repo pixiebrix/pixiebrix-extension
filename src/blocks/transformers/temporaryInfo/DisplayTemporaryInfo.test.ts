@@ -19,9 +19,9 @@ import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTem
 import blockRegistry from "@/blocks/registry";
 import {
   simpleInput,
-  teapotBlock,
+  teapotBrick,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -93,8 +93,8 @@ describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
     blockRegistry.clear();
     blockRegistry.register([
-      teapotBlock,
-      throwBlock,
+      teapotBrick,
+      throwBrick,
       renderer,
       displayTemporaryInfoBlock,
     ]);
@@ -161,7 +161,7 @@ describe("DisplayTemporaryInfo", () => {
       config: {
         title: "Test Temp Panel",
         body: makePipelineExpression([
-          { id: throwBlock.id, config: { message } },
+          { id: throwBrick.id, config: { message } },
           { id: renderer.id, config: getExampleBlockConfig(renderer.id) },
         ]),
       },

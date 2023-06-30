@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type IService } from "@/types/serviceTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 /**
  * Represents a registry item that has been instantiated.
  */
-export type IBrick = IBlock | IService | IExtensionPoint;
+export type IBrick = Brick | IService | StarterBrick;

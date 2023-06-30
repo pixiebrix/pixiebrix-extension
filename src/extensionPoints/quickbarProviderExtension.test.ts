@@ -24,7 +24,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
 } from "@/extensionPoints/quickBarProviderExtension";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   getDocument,
   RootReader,
@@ -69,7 +69,7 @@ const extensionFactory = define<ResolvedExtension<QuickBarProviderConfig>>({
     rootAction: {
       title: "Test Root Action",
     },
-    generator: () => [] as BlockPipeline,
+    generator: () => [] as BrickPipeline,
   }),
 });
 
@@ -146,7 +146,7 @@ describe("quickBarProviderExtension", () => {
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
-          generator: [] as BlockPipeline,
+          generator: [] as BrickPipeline,
         },
       })
     );
