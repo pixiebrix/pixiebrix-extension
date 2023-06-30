@@ -47,10 +47,14 @@ describe("When rendered in panel", () => {
   });
 
   const renderDocument = (config: DocumentElement) => {
-    const { Component, props } = buildDocumentBranch(config, {
+    const branch = buildDocumentBranch(config, {
       staticId: "body",
       branches: [],
     });
+
+    const { Component, props } = branch ?? {};
+    const component = branch == null ? null : <Component {...props} />;
+
     return render(
       <DocumentContext.Provider
         value={{
@@ -61,7 +65,7 @@ describe("When rendered in panel", () => {
           },
         }}
       >
-        <Component {...props} />
+        {component}
       </DocumentContext.Provider>
     );
   };
@@ -106,6 +110,20 @@ describe("When rendered in panel", () => {
     expect(element).not.toBeNull();
     expect(element).toHaveClass("test-class");
     expect(element).toHaveTextContent("Test Paragraph");
+  });
+
+  test("does not render hidden element at root", () => {
+    const config: DocumentElement = {
+      type: "text",
+      config: {
+        text: "Test Paragraph",
+        className: "test-class",
+        hidden: true,
+      },
+    };
+    const { container } = renderDocument(config);
+    const element = container.querySelector("p");
+    expect(element).toBeNull();
   });
 
   test("renders markdown", () => {

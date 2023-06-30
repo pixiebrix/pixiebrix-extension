@@ -40,7 +40,7 @@ import List from "./elementsPreview/List";
 const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
 
 const allowedBootstrapPrefixes = ["text", "bg"];
-function filterCssClassesForPreview(props: UnknownObject | undefined) {
+function filterCssClassesForPreview(props: UnknownObject | undefined): void {
   // Never hide elements in the preview
   delete props.hidden;
 
@@ -57,10 +57,13 @@ function filterCssClassesForPreview(props: UnknownObject | undefined) {
 function getPreviewComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
-  // FIXME: need to handle the 'hidden' prop
+  const previewElement = produce(element, (draft) => {
+    // Don't hide elements in the preview
+    delete draft.config.hidden;
+  });
 
-  const componentType = String(element.type);
-  const config = get(element, "config", {} as UnknownObject);
+  const componentType = String(previewElement.type);
+  const config = get(previewElement, "config", {} as UnknownObject);
 
   switch (componentType) {
     case "header_1":
@@ -69,7 +72,7 @@ function getPreviewComponentDefinition(
     case "header":
     case "text": {
       const documentComponent = getComponentDefinition(
-        element,
+        previewElement,
         DUMMY_TRACE_PATH
       );
 
@@ -78,7 +81,7 @@ function getPreviewComponentDefinition(
       return {
         Component: Basic,
         props: {
-          elementType: element.type,
+          elementType: previewElement.type,
           documentComponent,
         },
       };
@@ -86,7 +89,7 @@ function getPreviewComponentDefinition(
 
     case "image": {
       const documentComponent = getComponentDefinition(
-        element,
+        previewElement,
         DUMMY_TRACE_PATH
       );
       filterCssClassesForPreview(documentComponent.props);
@@ -94,7 +97,7 @@ function getPreviewComponentDefinition(
       return {
         Component: Image,
         props: {
-          elementType: element.type,
+          elementType: previewElement.type,
           documentComponent,
         },
       };
@@ -104,7 +107,7 @@ function getPreviewComponentDefinition(
     case "row":
     case "column": {
       const documentComponent = getComponentDefinition(
-        element,
+        previewElement,
         DUMMY_TRACE_PATH
       );
       filterCssClassesForPreview(documentComponent.props);
@@ -112,19 +115,19 @@ function getPreviewComponentDefinition(
       return {
         Component: Container,
         props: {
-          element,
+          element: previewElement,
           documentComponent,
         },
       };
     }
 
     case "card": {
-      const previewElement = produce(element, (draft) => {
+      const cardPreviewElement = produce(previewElement, (draft) => {
         draft.config.bodyClassName = documentTreeStyles.container;
       });
 
       const documentComponent = getComponentDefinition(
-        previewElement,
+        cardPreviewElement,
         DUMMY_TRACE_PATH
       );
       filterCssClassesForPreview(documentComponent.props);
@@ -132,7 +135,7 @@ function getPreviewComponentDefinition(
       return {
         Component: Card,
         props: {
-          element,
+          element: previewElement,
           documentComponent,
         },
       };
@@ -142,7 +145,7 @@ function getPreviewComponentDefinition(
       return {
         Component: Pipeline,
         props: {
-          element,
+          element: previewElement,
         },
       };
     }
@@ -154,14 +157,14 @@ function getPreviewComponentDefinition(
       return {
         Component: Button,
         props: {
-          element,
+          element: previewElement,
           buttonProps,
         },
       };
     }
 
     case "list": {
-      return { Component: List, props: { element } };
+      return { Component: List, props: { element: previewElement } };
     }
 
     default: {
