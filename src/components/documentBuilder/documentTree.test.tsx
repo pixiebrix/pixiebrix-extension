@@ -53,7 +53,7 @@ describe("When rendered in panel", () => {
     });
 
     const { Component, props } = branch ?? {};
-    const component = branch == null ? null : <Component {...props} />;
+    const children = Component ? <Component {...props} /> : null;
 
     return render(
       <DocumentContext.Provider
@@ -65,7 +65,7 @@ describe("When rendered in panel", () => {
           },
         }}
       >
-        {component}
+        {children}
       </DocumentContext.Provider>
     );
   };
