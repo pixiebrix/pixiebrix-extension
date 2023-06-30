@@ -32,7 +32,7 @@ import {
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
-import { joinPathParts } from "@/utils";
+import { boolean, joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 
@@ -59,6 +59,11 @@ const UnknownType: React.FC<{ componentType: string }> = ({
 export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
   const { staticId, branches } = tracePath;
   const componentDefinition = getComponentDefinition(root, tracePath);
+
+  if (componentDefinition == null) {
+    return;
+  }
+
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, index) => {
       const { Component, props } = buildDocumentBranch(child, {
@@ -76,9 +81,19 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath
-): DocumentComponent {
+): DocumentComponent | null {
   const componentType = element.type;
   const config = get(element, "config", {} as UnknownObject);
+
+  const { hidden: rawHidden } = config;
+  const hidden = boolean(rawHidden);
+
+  // We're excluding hidden elements from the DOM completely. HTML does have an attribute 'hidden' and Boostrap has
+  // a `d-none` class, but those still include the element in the DOM. By excluding the element completely, we can
+  // avoid brick and list computations.
+  if (hidden) {
+    return null;
+  }
 
   switch (componentType) {
     // Provide backwards compatibility for old elements

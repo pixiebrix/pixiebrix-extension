@@ -36,7 +36,6 @@ import {
   faCaretDown,
   faCaretRight,
   faCheck,
-  faEyeSlash,
   faFill,
   faFont,
   faItalic,
@@ -83,10 +82,6 @@ const flags = {
   italic: {
     className: "font-italic",
     title: <FontAwesomeIcon icon={faItalic} />,
-  },
-  hide: {
-    className: "d-none",
-    title: <FontAwesomeIcon icon={faEyeSlash} />,
   },
 };
 
@@ -644,18 +639,6 @@ const CssClassWidget: React.VFC<
               />
             ))}
           </DropdownButton>
-        </ButtonGroup>
-
-        <ButtonGroup className="mx-2">
-          {[flags.hide].map((flag) => (
-            <FlagButton
-              key={flag.className}
-              {...flag}
-              disabled={disableControls}
-              classes={classes}
-              toggleClass={toggleClass}
-            />
-          ))}
         </ButtonGroup>
       </div>
 

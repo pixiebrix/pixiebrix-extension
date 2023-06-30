@@ -41,6 +41,9 @@ const DUMMY_TRACE_PATH: DynamicPath = { staticId: "preview", branches: [] };
 
 const allowedBootstrapPrefixes = ["text", "bg"];
 function filterCssClassesForPreview(props: UnknownObject | undefined) {
+  // Never hide elements in the preview
+  delete props.hidden;
+
   if (typeof props?.className === "string") {
     props.className = props.className
       .split(" ")
@@ -54,6 +57,8 @@ function filterCssClassesForPreview(props: UnknownObject | undefined) {
 function getPreviewComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
+  // FIXME: need to handle the 'hidden' prop
+
   const componentType = String(element.type);
   const config = get(element, "config", {} as UnknownObject);
 
@@ -67,6 +72,7 @@ function getPreviewComponentDefinition(
         element,
         DUMMY_TRACE_PATH
       );
+
       filterCssClassesForPreview(documentComponent.props);
 
       return {
