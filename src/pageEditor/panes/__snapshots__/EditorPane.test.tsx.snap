@@ -1921,7 +1921,7 @@ exports[`renders the first selected node 1`] = `
                 <p
                   class="brickName"
                 >
-                  Echo Block
+                  Echo Brick
                 </p>
               </div>
             </div>

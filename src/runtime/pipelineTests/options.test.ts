@@ -19,22 +19,22 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("implicit use @options", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: "@options.message",
         },
@@ -55,7 +55,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("pass @options to brick", async () => {
       const pipeline = [
         {
-          id: contextBlock.id,
+          id: contextBrick.id,
           config: {},
         },
       ];

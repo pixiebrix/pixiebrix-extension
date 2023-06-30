@@ -20,12 +20,12 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
-  arrayBlock,
-  contextBlock,
-  echoBlock,
-  identityBlock,
+  arrayBrick,
+  contextBrick,
+  echoBrick,
+  identityBrick,
   simpleInput,
-  teapotBlock,
+  teapotBrick,
   testOptions,
 } from "./pipelineTestHelpers";
 import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
@@ -34,11 +34,11 @@ import { type UnknownObject } from "@/types/objectTypes";
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([
-    echoBlock,
-    contextBlock,
-    teapotBlock,
-    arrayBlock,
-    identityBlock,
+    echoBrick,
+    contextBrick,
+    teapotBrick,
+    arrayBrick,
+    identityBrick,
   ]);
 });
 
@@ -46,11 +46,11 @@ describe("apiVersion: v1", () => {
   test("pass input and block output on root intermediate state", async () => {
     const pipeline: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "hello, {{message}}" },
       },
     ];
@@ -65,11 +65,11 @@ describe("apiVersion: v1", () => {
   test("pass block output in context to next block", async () => {
     const pipeline: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
       },
     ];
@@ -92,15 +92,15 @@ describe("apiVersion: v1", () => {
 
     const pipeline: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
       {
-        id: teapotBlock.id,
+        id: teapotBrick.id,
         config: {},
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
       },
     ];
@@ -122,14 +122,14 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("inputs only passed via @input", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         outputKey: validateOutputKey("first"),
         config: {
           message: "First block",
         },
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
       },
     ];
@@ -157,11 +157,11 @@ describe("pass non-objects direct to next component", () => {
   test("v1 only: pass array as context to next brick", async () => {
     const pipeline: BrickPipeline = [
       {
-        id: arrayBlock.id,
+        id: arrayBrick.id,
         config: {},
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
       },
     ];
@@ -171,7 +171,7 @@ describe("pass non-objects direct to next component", () => {
       testOptions("v1")
     );
     expect(result).toStrictEqual([
-      // The output from arrayBlock
+      // The output from arrayBrick
       { value: "foo" },
       { value: "bar" },
     ]);
@@ -180,11 +180,11 @@ describe("pass non-objects direct to next component", () => {
   test("v1 only: do not render args if previous brick produced array", async () => {
     const pipeline: BrickPipeline = [
       {
-        id: arrayBlock.id,
+        id: arrayBrick.id,
         config: {},
       },
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: {
           // Will not be rendered because the previous block returned an array
           data: "{{ foo }}",
@@ -205,12 +205,12 @@ describe("pass non-objects direct to next component", () => {
       test("do not pass list directly to next brick", async () => {
         const pipeline: BrickPipeline = [
           {
-            id: arrayBlock.id,
+            id: arrayBrick.id,
             outputKey: "array" as OutputKey,
             config: {},
           },
           {
-            id: contextBlock.id,
+            id: contextBrick.id,
             config: {},
           },
         ];

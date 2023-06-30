@@ -19,8 +19,8 @@ import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/blocks/types";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
@@ -30,7 +30,7 @@ import { validateSemVerString } from "@/types/helpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 const componentBlock = fromJS({
@@ -49,7 +49,7 @@ const componentBlock = fromJS({
   },
   pipeline: [
     {
-      id: echoBlock.id,
+      id: echoBrick.id,
       // Implicit application of mustache template referencing input without @input
       config: { message: "{{message}}" },
     },
@@ -69,7 +69,7 @@ describe("component block v1", () => {
         },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: "{{@first.message}}",
         },
@@ -100,7 +100,7 @@ describe("component block v1", () => {
         },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: {
             __type__: "mustache",

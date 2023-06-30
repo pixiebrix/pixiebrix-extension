@@ -18,11 +18,11 @@
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
 import { traces } from "@/background/messenger/api";
@@ -47,7 +47,7 @@ const addExitMock = traces.addExit as jest.MockedFunction<
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
+  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
 });
@@ -58,7 +58,7 @@ describe("Trace normal exit", () => {
 
     const result = await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
         },
@@ -95,7 +95,7 @@ describe("Trace render error", () => {
     await expect(async () =>
       reducePipeline(
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           config: {
             message: makeTemplateExpression("var", "@doesNotExist.bar"),
           },
@@ -131,7 +131,7 @@ describe("Trace render error", () => {
 
     await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: makeTemplateExpression("var", "@doesNotExist.bar") },
         outputKey: validateOutputKey("conditional"),
         if: "f",
@@ -165,7 +165,7 @@ describe("Trace conditional execution", () => {
     await reducePipeline(
       [
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           config: {
             message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
           },
@@ -174,7 +174,7 @@ describe("Trace conditional execution", () => {
           instanceId: uuidv4(),
         },
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           config: {
             message: makeTemplateExpression("var", "@conditional.property"),
           },
@@ -213,7 +213,7 @@ describe("Trace normal execution", () => {
     const extensionId = uuidv4();
 
     const blockConfig = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: { message: "{{@input.inputArg}}" },
       instanceId,
     };
@@ -232,7 +232,7 @@ describe("Trace normal execution", () => {
       runId,
       branches: [],
       blockInstanceId: instanceId,
-      blockId: echoBlock.id,
+      blockId: echoBrick.id,
     };
 
     const expectedEntry: TraceEntryData = {
@@ -271,13 +271,13 @@ describe("Trace normal execution", () => {
 
     const blockConfig: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{@input.inputArg}}" },
         outputKey,
         instanceId,
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
         instanceId: uuidv4(),
       },
@@ -297,7 +297,7 @@ describe("Trace normal execution", () => {
       runId,
       branches: [],
       blockInstanceId: instanceId,
-      blockId: echoBlock.id,
+      blockId: echoBrick.id,
     };
 
     const expectedExit: TraceExitData = {
@@ -324,13 +324,13 @@ describe("Trace normal execution", () => {
 
     const blockConfig: BrickPipeline = [
       {
-        id: throwBlock.id,
+        id: throwBrick.id,
         config: { message: "{{@input.inputArg}}" },
         outputKey,
         instanceId,
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
         instanceId: uuidv4(),
       },
@@ -351,7 +351,7 @@ describe("Trace normal execution", () => {
       runId,
       branches: [],
       blockInstanceId: instanceId,
-      blockId: throwBlock.id,
+      blockId: throwBrick.id,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
@@ -372,7 +372,7 @@ describe("Tracing disabled", () => {
   it("Does not call addEntry or addExit if tracing is disabled", async () => {
     const result = await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
         },
@@ -397,7 +397,7 @@ describe("Tracing disabled", () => {
 
     const result = await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: false,
         config: {
           message: makeTemplateExpression(

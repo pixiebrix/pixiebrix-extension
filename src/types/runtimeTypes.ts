@@ -95,7 +95,7 @@ export type TemplateEngine =
  * @see Expression
  * @see loadBrickYaml
  * @see TemplateEngine
- * @see BlockPipeline
+ * @see BrickPipeline
  */
 export type ExpressionType =
   | TemplateEngine
@@ -182,7 +182,7 @@ export type RunArgs = {
 export type OptionsArgs = Record<string, Primitive>;
 
 /**
- * Values available to a block to render its arguments.
+ * Values available to a brick to render its arguments.
  * @see BrickArgs
  * @see RenderedArgs
  * @see BrickConfig.outputKey
@@ -220,7 +220,7 @@ export type RenderedArgs = UnknownObject & {
 };
 
 /**
- * Service context passed to blocks.
+ * Service context passed to bricks.
  * @see BrickArgsContext
  */
 export type ServiceContext = Record<
@@ -245,7 +245,7 @@ export type BrickOptions<
   ctxt: TCtxt;
 
   /**
-   * Logger for block messages
+   * Logger for brick messages
    */
   logger: Logger;
 
@@ -291,7 +291,7 @@ export type BrickOptions<
   ) => Promise<unknown>; // Should be PanelPayload
 
   /**
-   * A signal to abort the current block's execution.
+   * A signal to abort the current brick's execution.
    * @since 1.7.19
    */
   abortSignal?: AbortSignal;

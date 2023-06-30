@@ -17,10 +17,10 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
@@ -55,7 +55,7 @@ class DeferredEchoBlock extends BrickABC {
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([throwBlock, echoBlock, runBlock]);
+  blockRegistry.register([throwBrick, echoBrick, runBlock]);
 });
 
 describe("Run", () => {
@@ -65,7 +65,7 @@ describe("Run", () => {
       config: {
         body: makePipelineExpression([
           {
-            id: throwBlock.id,
+            id: throwBrick.id,
             config: {
               message: "This is an error message!",
             },
@@ -85,7 +85,7 @@ describe("Run", () => {
       config: {
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: "Hello, world!",
             },

@@ -33,8 +33,8 @@ import {
   PipelineFlavor,
 } from "@/pageEditor/pageEditorTypes";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -103,8 +103,8 @@ beforeAll(async () => {
   brickRegistry.clear();
 
   brickRegistry.register([
-    echoBlock,
-    teapotBlock,
+    echoBrick,
+    teapotBrick,
     jqBrick,
     alertBrick,
     forEachBrick,
@@ -150,23 +150,23 @@ afterEach(async () => clock.runAllAsync());
 const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
     brickConfigFactory({
-      id: echoBlock.id,
+      id: echoBrick.id,
       outputKey: "echoOutput" as OutputKey,
-      config: defaultBlockConfig(echoBlock.inputSchema),
+      config: defaultBlockConfig(echoBrick.inputSchema),
     }),
     brickConfigFactory({
-      id: teapotBlock.id,
+      id: teapotBrick.id,
       outputKey: "teapotOutput" as OutputKey,
-      config: defaultBlockConfig(teapotBlock.inputSchema),
+      config: defaultBlockConfig(teapotBrick.inputSchema),
     }),
   ]);
 
 const getFormStateWithSubPipelines = (): FormState =>
   formStateFactory(undefined, [
     brickConfigFactory({
-      id: echoBlock.id,
+      id: echoBrick.id,
       outputKey: "echoOutput" as OutputKey,
-      config: defaultBlockConfig(echoBlock.inputSchema),
+      config: defaultBlockConfig(echoBrick.inputSchema),
     }),
     brickConfigFactory({
       id: forEachBrick.id,
@@ -176,7 +176,7 @@ const getFormStateWithSubPipelines = (): FormState =>
         elementKey: "element",
         body: makePipelineExpression([
           brickConfigFactory({
-            id: echoBlock.id,
+            id: echoBrick.id,
             outputKey: "subEchoOutput" as OutputKey,
             config: {
               message: makeTemplateExpression(

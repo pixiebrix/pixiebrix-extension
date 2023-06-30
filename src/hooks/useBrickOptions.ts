@@ -25,7 +25,7 @@ import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Brick, isUserDefinedBlock } from "@/types/brickTypes";
+import { type Brick, isUserDefinedBrick } from "@/types/brickTypes";
 
 interface BlockState {
   block?: Brick | null;
@@ -66,7 +66,7 @@ function useBrickOptions(
         registered ??
         genericOptionsFactory(block.inputSchema, block.uiSchema, {
           // Preserve order for JS-based bricks. We can trust the order because JS literals preserve dictionary order
-          preserveSchemaOrder: !isUserDefinedBlock(block),
+          preserveSchemaOrder: !isUserDefinedBrick(block),
         })
       );
     }

@@ -28,8 +28,8 @@ import {
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBlockConfig } from "@/blocks/util";
@@ -52,13 +52,13 @@ function getTabState(
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
 const standardBrick = brickConfigFactory({
-  id: teapotBlock.id,
+  id: teapotBrick.id,
   outputKey: "teapotOutput" as OutputKey,
-  config: defaultBlockConfig(teapotBlock.inputSchema),
+  config: defaultBlockConfig(teapotBrick.inputSchema),
 });
 
 const brickWithService = brickConfigFactory({
-  id: echoBlock.id,
+  id: echoBrick.id,
   outputKey: "echoOutput" as OutputKey,
   config: {
     spreadsheetId: makeVariableExpression("@google"),
@@ -140,7 +140,7 @@ describe("Add/Remove Bricks", () => {
 
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register([echoBlock, teapotBlock]);
+    blockRegistry.register([echoBrick, teapotBrick]);
 
     editor = editorSlice.reducer(initialState, actions.selectInstalled(source));
   });

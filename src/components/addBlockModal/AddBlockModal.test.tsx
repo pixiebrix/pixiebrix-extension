@@ -25,7 +25,7 @@ import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import bricksRegistry from "@/blocks/registry";
-import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
@@ -35,7 +35,7 @@ import {
 } from "@/testUtils/factories/marketplaceFactories";
 
 // Need at least one item so callers see the registry as initialized
-bricksRegistry.register([echoBlock]);
+bricksRegistry.register([echoBrick]);
 
 beforeAll(() => {
   const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });

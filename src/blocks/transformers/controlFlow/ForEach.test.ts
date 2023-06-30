@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -32,7 +32,7 @@ const forEachBlock = new ForEach();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, forEachBlock]);
+  blockRegistry.register([echoBrick, forEachBlock]);
 });
 
 describe("ForEach", () => {
@@ -43,7 +43,7 @@ describe("ForEach", () => {
         elements: makeTemplateExpression("var", "@input.elements"),
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: makeTemplateExpression(
                 "nunjucks",

@@ -29,7 +29,7 @@ import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
-import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
@@ -946,7 +946,7 @@ describe("Invalid template", () => {
 
   beforeEach(() => {
     const invalidEchoBlock = {
-      id: EchoBlock.BLOCK_ID,
+      id: EchoBrick.BLOCK_ID,
       config: {
         message: makeTemplateExpression(
           "nunjucks",
@@ -955,7 +955,7 @@ describe("Invalid template", () => {
       },
     };
     const validEchoBlock = {
-      id: EchoBlock.BLOCK_ID,
+      id: EchoBrick.BLOCK_ID,
       config: {
         message: makeTemplateExpression(
           "nunjucks",
@@ -992,7 +992,7 @@ describe("var expression annotations", () => {
         outputKey: validateOutputKey("foo"),
       }),
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("@foo"),
         },
@@ -1008,7 +1008,7 @@ describe("var expression annotations", () => {
   test("doesn't annotate empty variable", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression(""),
         },
@@ -1024,7 +1024,7 @@ describe("var expression annotations", () => {
   test("annotates variable which doesn't start with @", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("foo"),
         },
@@ -1044,7 +1044,7 @@ describe("var expression annotations", () => {
   test("annotates variable which is just whitespace", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("  "),
         },
@@ -1062,7 +1062,7 @@ describe("var expression annotations", () => {
   test("return a generic error message for a single @ character", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("@"),
         },
@@ -1082,7 +1082,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger event", async () => {
     const extension = triggerFormStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeTemplateExpression(
             "nunjucks",
@@ -1104,7 +1104,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger custom event", async () => {
     const extension = triggerFormStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeTemplateExpression(
             "nunjucks",
@@ -1126,7 +1126,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger selectionchange event", async () => {
     const extension = triggerFormStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeTemplateExpression(
             "nunjucks",

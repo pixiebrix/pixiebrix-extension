@@ -158,7 +158,7 @@ export type BrickConfig = {
   if?: BlockIf;
 
   /**
-   * (Optional) whether the block should inherit the current root element, or if it should use the document
+   * (Optional) whether the brick should inherit the current root element, or if it should use the document
    * (default=`inherit`)
    *
    * `element` rootMode added in 1.7.16
@@ -187,7 +187,7 @@ export type BrickConfig = {
   templateEngine?: TemplateEngine;
 
   /**
-   * A unique id for the configured block, used to correlate traces across runs when using the Page Editor.
+   * A unique id for the configured brick, used to correlate traces across runs when using the Page Editor.
    *
    * DO NOT SET: generated automatically by the Page Editor when configuring a dynamic element.
    */
@@ -195,12 +195,12 @@ export type BrickConfig = {
 };
 
 /**
- * A pipeline of blocks to execute sequentially
+ * A pipeline of bricks to execute sequentially
  */
 export type BrickPipeline = BrickConfig[];
 
 /**
- * A control flow branch, for tracing. The array of branches is used to correlate runs of the same block in a pipeline
+ * A control flow branch, for tracing. The array of branches is used to correlate runs of the same brick in a pipeline
  * @see TraceMetadata.blockInstanceId
  * @see TraceMetadata.branches
  */
@@ -210,13 +210,13 @@ export type Branch = {
 };
 
 /**
- * Defines the position of the block in the extension
- * ex. "extension.blockPipeline.0.config.body.__value__.0",
- * "extension.blockPipeline.0.config.body.0.children.0.config.onClick.__value__.0"
+ * Defines the position of the brick in the extension
+ * ex. "extension.brickPipeline.0.config.body.__value__.0",
+ * "extension.brickPipeline.0.config.body.0.children.0.config.onClick.__value__.0"
  */
 export type BrickPosition = {
   /**
-   * The path to the block relative to the root pipeline
+   * The path to the brick relative to the root pipeline
    */
   path: string;
 };

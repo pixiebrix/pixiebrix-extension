@@ -18,7 +18,7 @@
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
 import blockRegistry from "@/blocks/registry";
-import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
@@ -69,7 +69,7 @@ function renderBlockConfiguration(
 }
 
 test("renders", async () => {
-  const block = echoBlock;
+  const block = echoBrick;
   blockRegistry.register([block]);
   const initialState = formStateFactory({ apiVersion: "v3" }, [
     brickConfigFactory({ id: block.id }),
@@ -92,7 +92,7 @@ describe("shows root mode", () => {
     // `menuItem` must show root mode because root mode is used if the location matches multiple elements on the page
     ["menuItem", menuItemFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
-    const block = echoBlock;
+    const block = echoBrick;
     blockRegistry.register([block]);
     const initialState = factory({ apiVersion: "v3" }, [
       brickConfigFactory({ id: block.id }),
@@ -113,7 +113,7 @@ describe("shows root mode", () => {
   });
 
   test("don't show root mode for sidebar panel", async () => {
-    const block = echoBlock;
+    const block = echoBrick;
     blockRegistry.register([block]);
     const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
       brickConfigFactory({ id: block.id }),

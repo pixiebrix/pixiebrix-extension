@@ -24,8 +24,8 @@ import {
   type PipelineExpression,
 } from "@/runtime/mapArgs";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { EMPTY_PIPELINE, toExpression } from "@/testUtils/testHelpers";
 import {
@@ -42,8 +42,8 @@ describe("normalizePipeline", () => {
 
   beforeAll(() => {
     blockRegistry.register([
-      echoBlock,
-      teapotBlock,
+      echoBrick,
+      teapotBrick,
       new ForEach(),
       new IfElse(),
       new TryExcept(),
@@ -52,14 +52,14 @@ describe("normalizePipeline", () => {
 
   beforeEach(() => {
     echoBlockConfig = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: {
         message: toExpression("nunjucks", "test"),
       },
     };
 
     teapotBlockConfig = {
-      id: teapotBlock.id,
+      id: teapotBrick.id,
       config: {},
     };
   });
@@ -247,7 +247,7 @@ describe("omitEditorMetadata", () => {
 
   beforeEach(() => {
     echoBlockConfig = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       instanceId: uuidSequence(1),
       config: {
         message: toExpression("nunjucks", "test"),
@@ -255,7 +255,7 @@ describe("omitEditorMetadata", () => {
     };
 
     teapotBlockConfig = {
-      id: teapotBlock.id,
+      id: teapotBrick.id,
       instanceId: uuidSequence(2),
       config: {},
     };

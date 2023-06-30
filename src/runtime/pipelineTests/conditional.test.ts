@@ -21,22 +21,22 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/blocks/errors";
 import { type BrickPipeline } from "@/blocks/types";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
   test("true mustache conditional via implicit args", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: "{{# run }}true{{/ run }}",
         config: {
           message: "Ran block",
@@ -56,7 +56,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("true mustache conditional", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: "{{# @input.run }}true{{/ @input.run }}",
         config: {
           message: "Ran block",
@@ -76,7 +76,7 @@ describe("false mustache conditional", () => {
   test("v1", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: "{{# @input.run }}true{{/ @input.run }}",
         config: {
           message: "Ran block",
@@ -95,7 +95,7 @@ describe("false mustache conditional", () => {
   test("v2", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: "{{# @input.run }}true{{/ @input.run }}",
         config: {
           message: "Ran block",
@@ -114,7 +114,7 @@ describe("false mustache conditional", () => {
   test("v3 - implicit mustache interpreted as string", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: "{{# @input.run }}true{{/ @input.run }}",
         config: {
           message: "Ran block",
@@ -133,7 +133,7 @@ describe("false mustache conditional", () => {
   test("v3 - mustache provided", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: {
           __type__: "mustache",
           __value__: "{{# @input.run }}true{{/ @input.run }}",
@@ -156,7 +156,7 @@ describe("apiVersion: v2", () => {
   test("throws error on wrong input type", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
     ];

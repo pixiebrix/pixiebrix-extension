@@ -17,7 +17,7 @@
 
 import bricksRegistry from "@/blocks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
-import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { parsePackage } from "@/registry/localRegistry";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 import { brickFactory } from "@/testUtils/factories/brickFactories";
@@ -105,25 +105,25 @@ describe("bricksRegistry", () => {
   });
 
   test("reads single JS block", async () => {
-    bricksRegistry.register([echoBlock]);
-    await expect(bricksRegistry.all()).resolves.toEqual([echoBlock]);
-    expect(bricksRegistry.cached).toEqual([echoBlock]);
+    bricksRegistry.register([echoBrick]);
+    await expect(bricksRegistry.all()).resolves.toEqual([echoBrick]);
+    expect(bricksRegistry.cached).toEqual([echoBrick]);
   });
 
   test("preserves JS block on clear", async () => {
-    bricksRegistry.register([echoBlock]);
+    bricksRegistry.register([echoBrick]);
     bricksRegistry.clear();
-    await expect(bricksRegistry.all()).resolves.toEqual([echoBlock]);
-    expect(bricksRegistry.cached).toEqual([echoBlock]);
+    await expect(bricksRegistry.all()).resolves.toEqual([echoBrick]);
+    expect(bricksRegistry.cached).toEqual([echoBrick]);
 
     bricksRegistry.clear();
-    await expect(bricksRegistry.lookup(echoBlock.id)).resolves.toEqual(
-      echoBlock
+    await expect(bricksRegistry.lookup(echoBrick.id)).resolves.toEqual(
+      echoBrick
     );
   });
 
   test("throws on invalid cache", async () => {
-    bricksRegistry.register([echoBlock]);
+    bricksRegistry.register([echoBrick]);
     bricksRegistry.clear();
     expect(bricksRegistry.isCachedInitialized).toBe(false);
     expect(() => bricksRegistry.cached).toThrow("Cache not initialized");
@@ -137,7 +137,7 @@ describe("bricksRegistry", () => {
     getByKindsMock.mockResolvedValueOnce([brick]);
     findMock.mockResolvedValue(brick);
 
-    bricksRegistry.register([echoBlock]);
+    bricksRegistry.register([echoBrick]);
 
     await expect(
       bricksRegistry.lookup(value.metadata.id)
