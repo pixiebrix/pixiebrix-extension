@@ -35,14 +35,14 @@ import { BusinessError } from "@/errors/businessErrors";
 import { boolean, joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
+// Legacy header components, where each header type was a separate element
 const headerComponents = {
   header_1: "h1",
   header_2: "h2",
   header_3: "h3",
 } as const;
-
-const headingComponents = ["h1", "h2", "h3"];
 
 const gridComponents = {
   container: Container,
@@ -119,7 +119,7 @@ export function getComponentDefinition(
       props.children = title;
 
       return {
-        Component: headingComponents.includes(heading as string)
+        Component: VALID_HEADER_TAGS.includes(heading as string)
           ? (heading as ElementType)
           : "h1",
         props,

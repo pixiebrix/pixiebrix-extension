@@ -19,6 +19,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { joinName } from "@/utils";
 import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 import React from "react";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
 function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
@@ -76,7 +77,7 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "heading"),
         schema: {
           type: "string",
-          enum: ["h1", "h2", "h3"],
+          enum: VALID_HEADER_TAGS,
           format: "heading-style",
         },
         label: "Heading",
