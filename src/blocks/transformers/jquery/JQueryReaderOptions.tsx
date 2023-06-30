@@ -65,23 +65,26 @@ function normalizeShape(selectors: SelectorMap): SelectorItem[] {
   });
 }
 
+const ATTR_PREFIX = "attr:";
+const DATA_PREFIX = "data-";
+
 function inferActiveTypeOption(selector: Selector): string {
   if (isChildrenSelector(selector)) {
     return "element";
   }
 
   if (!isEmpty(selector.attr)) {
-    return `attr:${selector.attr}`;
+    return `${ATTR_PREFIX}:${selector.attr}`;
   }
 
   if (!isEmpty(selector.data)) {
-    return `attr:data-${selector.data}`;
+    return `${ATTR_PREFIX}:${DATA_PREFIX}-${selector.data}`;
   }
 
   return "text";
 }
 
-const TYPE_OPTIONS = [
+const BASE_TYPE_OPTIONS = [
   { value: "text", label: "Text" },
   { value: "element", label: "Element" },
 ];
@@ -127,7 +130,7 @@ const SelectorCard: React.FC<{
   );
 
   const typeOptions = [
-    ...TYPE_OPTIONS,
+    ...BASE_TYPE_OPTIONS,
     ...(attributeExamples || []).map((example) => ({
       value: `attr:${example.name}`,
       label: `${example.name} - ${truncate(example.value, {
@@ -136,6 +139,14 @@ const SelectorCard: React.FC<{
       })}`,
     })),
   ];
+
+  // Ensure the dropdown contains the active options
+  if (!typeOptions.some((option) => option.value === typeOption)) {
+    typeOptions.push({
+      value: typeOption,
+      label: typeOption.slice(ATTR_PREFIX.length),
+    });
+  }
 
   return (
     <Card className="my-2">
@@ -199,12 +210,12 @@ const SelectorCard: React.FC<{
                 // up the values in the alternative type.
                 const commonDraft = draft as SingleSelector & ChildrenSelector;
 
-                if (next.startsWith("attr:")) {
-                  const attributeName = next.slice("attr:".length);
-                  if (attributeName.startsWith("data-")) {
+                if (next.startsWith(ATTR_PREFIX)) {
+                  const attributeName = next.slice(ATTR_PREFIX.length);
+                  if (attributeName.startsWith(DATA_PREFIX)) {
                     delete commonDraft.attr;
                     delete commonDraft.find;
-                    commonDraft.data = attributeName.slice("data-".length);
+                    commonDraft.data = attributeName.slice(DATA_PREFIX.length);
                   } else {
                     delete commonDraft.data;
                     delete commonDraft.find;
