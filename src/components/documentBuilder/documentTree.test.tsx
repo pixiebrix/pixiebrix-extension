@@ -47,10 +47,14 @@ describe("When rendered in panel", () => {
   });
 
   const renderDocument = (config: DocumentElement) => {
-    const { Component, props } = buildDocumentBranch(config, {
+    const branch = buildDocumentBranch(config, {
       staticId: "body",
       branches: [],
     });
+
+    const { Component, props } = branch ?? {};
+    const children = Component ? <Component {...props} /> : null;
+
     return render(
       <DocumentContext.Provider
         value={{
@@ -61,7 +65,7 @@ describe("When rendered in panel", () => {
           },
         }}
       >
-        <Component {...props} />
+        {children}
       </DocumentContext.Provider>
     );
   };
@@ -91,6 +95,21 @@ describe("When rendered in panel", () => {
     }
   );
 
+  test.each([1, 2, 3, 4, 5, 6])("renders tag for h%d", (headerLevel) => {
+    const { container } = renderDocument({
+      type: "header",
+      config: {
+        title: "Test Header",
+        heading: `h${headerLevel}`,
+      },
+    });
+
+    const element = container.querySelector(`h${headerLevel}`);
+
+    expect(element).not.toBeNull();
+    expect(element).toHaveTextContent("Test Header");
+  });
+
   test("renders paragraph text", () => {
     const config: DocumentElement = {
       type: "text",
@@ -106,6 +125,20 @@ describe("When rendered in panel", () => {
     expect(element).not.toBeNull();
     expect(element).toHaveClass("test-class");
     expect(element).toHaveTextContent("Test Paragraph");
+  });
+
+  test("does not render hidden element at root", () => {
+    const config: DocumentElement = {
+      type: "text",
+      config: {
+        text: "Test Paragraph",
+        className: "test-class",
+        hidden: true,
+      },
+    };
+    const { container } = renderDocument(config);
+    const element = container.querySelector("p");
+    expect(element).toBeNull();
   });
 
   test("renders markdown", () => {

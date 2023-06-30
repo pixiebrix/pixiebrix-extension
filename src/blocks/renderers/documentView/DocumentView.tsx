@@ -46,10 +46,16 @@ const DocumentView: React.FC<DocumentViewProps> = ({
       <EmotionShadowRoot.div className="h-100">
         <Stylesheets href={bootstrap}>
           {body.map((documentElement, index) => {
-            const { Component, props } = buildDocumentBranch(documentElement, {
+            const documentBranch = buildDocumentBranch(documentElement, {
               staticId: joinPathParts("body", "children"),
               branches: [],
             });
+
+            if (documentBranch == null) {
+              return null;
+            }
+
+            const { Component, props } = documentBranch;
             return <Component key={index} {...props} />;
           })}
         </Stylesheets>

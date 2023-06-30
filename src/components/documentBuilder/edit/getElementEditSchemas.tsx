@@ -18,12 +18,31 @@
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
 import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
+import React from "react";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
 function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
     schema: { type: "string", format: "bootstrap-class" },
     label: "Layout/Style",
+  };
+}
+
+function getHiddenEdit(elementName: string): SchemaFieldProps {
+  return {
+    name: joinName(elementName, "config", "hidden"),
+    // Allow any to permit truthy values like for other conditional fields
+    schema: { type: ["string", "boolean", "null", "number"] },
+    label: "Hidden",
+    description: (
+      <p>
+        Condition determining whether to hide the element. Truthy string values
+        are&nbsp;
+        <code>true</code>, <code>t</code>, <code>yes</code>, <code>y</code>,{" "}
+        <code>on</code>, and <code>1</code> (case-insensitive)
+      </p>
+    ),
   };
 }
 
@@ -41,7 +60,11 @@ function getElementEditSchemas(
         schema: { type: "string" },
         label: "Title",
       };
-      return [titleEdit, getClassNameEdit(elementName)];
+      return [
+        titleEdit,
+        getHiddenEdit(elementName),
+        getClassNameEdit(elementName),
+      ];
     }
 
     case "header": {
@@ -54,13 +77,18 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "heading"),
         schema: {
           type: "string",
-          enum: ["h1", "h2", "h3"],
+          enum: VALID_HEADER_TAGS,
           format: "heading-style",
         },
         label: "Heading",
         isRequired: true,
       };
-      return [titleEdit, heading, getClassNameEdit(elementName)];
+      return [
+        titleEdit,
+        heading,
+        getHiddenEdit(elementName),
+        getClassNameEdit(elementName),
+      ];
     }
 
     case "text": {
@@ -75,7 +103,12 @@ function getElementEditSchemas(
         label: "Enable markdown",
         isRequired: true,
       };
-      return [textEdit, enableMarkdown, getClassNameEdit(elementName)];
+      return [
+        textEdit,
+        enableMarkdown,
+        getHiddenEdit(elementName),
+        getClassNameEdit(elementName),
+      ];
     }
 
     case "image": {
@@ -94,7 +127,13 @@ function getElementEditSchemas(
         schema: { type: ["string", "number"] },
         label: "Width",
       };
-      return [imageUrl, height, width, getClassNameEdit(elementName)];
+      return [
+        imageUrl,
+        height,
+        width,
+        getHiddenEdit(elementName),
+        getClassNameEdit(elementName),
+      ];
     }
 
     case "card": {
@@ -103,7 +142,11 @@ function getElementEditSchemas(
         schema: { type: "string" },
         label: "Heading",
       };
-      return [headingEdit, getClassNameEdit(elementName)];
+      return [
+        headingEdit,
+        getHiddenEdit(elementName),
+        getClassNameEdit(elementName),
+      ];
     }
 
     case "pipeline": {
@@ -160,6 +203,7 @@ function getElementEditSchemas(
         variantEdit,
         sizeEdit,
         disabledEdit,
+        getHiddenEdit(elementName),
         getClassNameEdit(elementName),
       ];
     }
@@ -169,7 +213,7 @@ function getElementEditSchemas(
     }
 
     default: {
-      return [getClassNameEdit(elementName)];
+      return [getHiddenEdit(elementName), getClassNameEdit(elementName)];
     }
   }
 }
