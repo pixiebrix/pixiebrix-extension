@@ -155,6 +155,7 @@ const SelectorCard: React.FC<{
           <div className={styles.nameInput}>
             <FormControl
               type="text"
+              aria-label="Property name"
               placeholder="Property name"
               value={name}
               onChange={(event) => {
@@ -304,10 +305,11 @@ const SelectorsOptions: React.FC<{ path: string }> = ({ path }) => {
   return (
     <div>
       {selectorItems.map(({ name, selector }, index) => (
-        // eslint-disable-next-line react/jsx-key -- can't use name because it will remount on name changes
         <SelectorCard
           name={name}
           selector={selector}
+          // eslint-disable-next-line react/jsx-key -- can't use name because it will remount on name changes
+          key={index}
           onChange={(item) => {
             setSelectorItems(
               produce(selectorItems, (draft) => {
