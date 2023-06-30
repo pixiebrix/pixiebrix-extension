@@ -24,6 +24,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 function baseStateFactory() {
   const baseFormState = menuItemFormStateFactory();
@@ -55,7 +56,22 @@ beforeAll(() => {
 
 describe("JQueryReaderOptions", () => {
   it("renders empty config without crashing", () => {
-    renderOptions();
+    const wrapper = renderOptions();
+    expect(wrapper.getByText("Add New Property")).toBeInTheDocument();
+  });
+
+  it("shows workshop message on variable", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      property: makeVariableExpression("@foo"),
+    };
+
+    const wrapper = renderOptions(state);
+
+    await waitForEffect();
+
+    expect(wrapper.queryByText("Add New Property")).not.toBeInTheDocument();
+    expect(wrapper.container.querySelector(".alert")).toBeInTheDocument();
   });
 
   it("normalizes primitive selectors", async () => {
@@ -69,6 +85,7 @@ describe("JQueryReaderOptions", () => {
     expect(wrapper.getByPlaceholderText("Property name")).toHaveValue(
       "property"
     );
+
     expect(wrapper.getByLabelText("Selector")).toHaveValue("h1");
   });
 });
