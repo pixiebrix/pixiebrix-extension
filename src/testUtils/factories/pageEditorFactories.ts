@@ -40,7 +40,7 @@ import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
@@ -52,7 +52,7 @@ import { type JsonObject } from "type-fest";
 import sidebar from "@/pageEditor/extensionPoints/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
 import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
-import { pipelineFactory } from "@/testUtils/factories/blockFactories";
+import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
 
 export const baseExtensionStateFactory = define<BaseExtensionState>({
@@ -84,7 +84,7 @@ const internalFormStateFactory = define<
 
 export const formStateFactory = (
   override?: FactoryConfig<FormState>,
-  pipelineOverride?: BlockPipeline
+  pipelineOverride?: BrickPipeline
 ): FormState => {
   if (pipelineOverride) {
     return internalFormStateFactory({
@@ -100,7 +100,7 @@ export const formStateFactory = (
 
 export const triggerFormStateFactory = (
   override?: FactoryConfig<TriggerFormState>,
-  pipelineOverride?: BlockPipeline
+  pipelineOverride?: BrickPipeline
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
@@ -122,7 +122,7 @@ export const triggerFormStateFactory = (
 
 export const sidebarPanelFormStateFactory = (
   override?: FactoryConfig<SidebarFormState>,
-  pipelineOverride?: BlockPipeline
+  pipelineOverride?: BrickPipeline
 ) => {
   const defaultTriggerProps = sidebar.fromNativeElement(
     "https://test.com",
@@ -145,7 +145,7 @@ export const sidebarPanelFormStateFactory = (
 
 export const contextMenuFormStateFactory = (
   override?: FactoryConfig<ContextMenuFormState>,
-  pipelineOverride?: BlockPipeline
+  pipelineOverride?: BrickPipeline
 ) => {
   const defaultTriggerProps = contextMenu.fromNativeElement(
     "https://test.com",
@@ -167,7 +167,7 @@ export const contextMenuFormStateFactory = (
 
 export const quickbarFormStateFactory = (
   override?: FactoryConfig<QuickBarFormState>,
-  pipelineOverride?: BlockPipeline
+  pipelineOverride?: BrickPipeline
 ) => {
   const defaultTriggerProps = quickBar.fromNativeElement(
     "https://test.com",
@@ -189,7 +189,7 @@ export const quickbarFormStateFactory = (
 
 export const menuItemFormStateFactory = (
   override?: FactoryConfig<ActionFormState>,
-  pipelineOverride?: BlockPipeline
+  pipelineOverride?: BrickPipeline
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",

@@ -16,16 +16,16 @@
  */
 
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { type BlockPosition, type BlockPipeline } from "@/blocks/types";
+import { type BrickPosition, type BrickPipeline } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 function getTestBlock() {
-  return blockConfigFactory({
+  return brickConfigFactory({
     config: {
       text: toExpression("nunjucks", "test"),
     },
@@ -34,12 +34,12 @@ function getTestBlock() {
 }
 
 test("should invoke the callback for a brick expression", () => {
-  const pipeline: BlockPipeline = [getTestBlock()];
+  const pipeline: BrickPipeline = [getTestBlock()];
 
   const visitExpression = jest.fn();
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
-      position: BlockPosition,
+      position: BrickPosition,
       expression: Expression<unknown>
     ) {
       visitExpression(position, expression);
@@ -77,7 +77,7 @@ test("should invoke the callback for a Document expression", () => {
   const containerElement = createNewElement("container");
   containerElement.children[0].children[0].children.push(textElement);
 
-  const documentBrick = blockConfigFactory({
+  const documentBrick = brickConfigFactory({
     id: DocumentRenderer.BLOCK_ID,
     config: {
       body: [containerElement],
@@ -88,7 +88,7 @@ test("should invoke the callback for a Document expression", () => {
   const visitExpression = jest.fn();
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
-      position: BlockPosition,
+      position: BrickPosition,
       expression: Expression<unknown>
     ) {
       visitExpression(position, expression);

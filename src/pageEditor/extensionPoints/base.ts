@@ -43,7 +43,7 @@ import {
   validateSemVerString,
 } from "@/types/helpers";
 import {
-  type BlockPipeline,
+  type BrickPipeline,
   type NormalizedAvailability,
   type ReaderConfig,
 } from "@/blocks/types";
@@ -443,7 +443,7 @@ export async function extensionWithNormalizedPipeline<
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
     blockPipeline: await normalizePipelineForEditor(
-      castArray(pipeline) as BlockPipeline
+      castArray(pipeline) as BrickPipeline
     ),
     ...defaults,
     ...rest,

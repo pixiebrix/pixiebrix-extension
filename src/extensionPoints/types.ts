@@ -20,13 +20,13 @@ import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { type BlockIcon } from "@/types/iconTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -121,7 +121,7 @@ export function assertExtensionPointConfig(
 }
 
 export abstract class ExtensionPoint<TConfig extends UnknownObject>
-  implements IExtensionPoint
+  implements StarterBrick
 {
   public readonly id: RegistryId;
 
@@ -132,7 +132,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
 
   public readonly name: string;
 
-  public readonly icon: BlockIcon;
+  public readonly icon: BrickIcon;
 
   public readonly description: string;
 
@@ -226,7 +226,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
     return this.defaultReader();
   }
 
-  abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<IBlock[]>;
+  abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<Brick[]>;
 
   abstract isAvailable(): Promise<boolean>;
 

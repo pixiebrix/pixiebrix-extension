@@ -17,27 +17,27 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Run from "@/blocks/transformers/controlFlow/Run";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import pDefer from "p-defer";
 
 const runBlock = new Run();
 
-class DeferredEchoBlock extends Block {
+class DeferredEchoBlock extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/deferred");
   readonly promise: Promise<unknown>;
   constructor(promise: Promise<unknown>) {
-    super(DeferredEchoBlock.BLOCK_ID, "Deferred Block");
+    super(DeferredEchoBlock.BLOCK_ID, "Deferred Brick");
     this.promise = promise;
   }
 
@@ -47,7 +47,7 @@ class DeferredEchoBlock extends Block {
     },
   });
 
-  async run({ message }: BlockArgs) {
+  async run({ message }: BrickArgs) {
     await this.promise;
     return { message };
   }
@@ -55,7 +55,7 @@ class DeferredEchoBlock extends Block {
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([throwBlock, echoBlock, runBlock]);
+  blockRegistry.register([throwBrick, echoBrick, runBlock]);
 });
 
 describe("Run", () => {
@@ -65,7 +65,7 @@ describe("Run", () => {
       config: {
         body: makePipelineExpression([
           {
-            id: throwBlock.id,
+            id: throwBrick.id,
             config: {
               message: "This is an error message!",
             },
@@ -85,7 +85,7 @@ describe("Run", () => {
       config: {
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: "Hello, world!",
             },

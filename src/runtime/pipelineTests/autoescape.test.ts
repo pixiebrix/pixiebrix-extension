@@ -17,19 +17,19 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { echoBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
+import { echoBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock]);
+  blockRegistry.register([echoBrick]);
 });
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("autoescape template expressions", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: "{{ @input.foo }}",
         },
@@ -48,7 +48,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("do not autoescape template expressions", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: {
             __type__: "nunjucks",

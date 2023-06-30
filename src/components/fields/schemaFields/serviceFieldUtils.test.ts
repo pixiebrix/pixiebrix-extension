@@ -27,17 +27,17 @@ import { type ListDocumentElement } from "@/components/documentBuilder/documentB
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: {
           data: false,
         },
       }),
-      blockConfigFactory({
+      brickConfigFactory({
         config: {
           input: toExpression("nunjucks", "foo: {{ @foo }}"),
         },
@@ -56,7 +56,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: serviceConfig,
       }),
     ]);
@@ -67,7 +67,7 @@ describe("selectVariables", () => {
 
   test("do not select variable with path seperator", () => {
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: {
           foo: toExpression("var", "@foo.bar"),
         },
@@ -104,7 +104,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: documentWithButtonConfig,
       }),
     ]);
@@ -136,7 +136,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: documentWithButtonConfig,
       }),
     ]);
@@ -183,7 +183,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: documentWithButtonConfig,
       }),
     ]);

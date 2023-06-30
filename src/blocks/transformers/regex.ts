@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
 
@@ -79,7 +79,7 @@ export class RegexTransformer extends Transformer {
     ],
   };
 
-  override getOutputSchema(config: BlockConfig): Schema | undefined {
+  override getOutputSchema(config: BrickConfig): Schema | undefined {
     const pattern = extractRegexLiteral(config);
     const { input } = config.config;
 
@@ -130,7 +130,7 @@ export class RegexTransformer extends Transformer {
   async transform({
     regex,
     input,
-  }: BlockArgs<{
+  }: BrickArgs<{
     regex: string | RegExp;
     input: string | null | Array<string | null>;
   }>): Promise<Record<string, string> | Array<Record<string, string>>> {

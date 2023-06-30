@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { useDebouncedCallback } from "use-debounce";
@@ -39,13 +39,13 @@ import { useField } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
-import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 
 /**
@@ -58,14 +58,14 @@ const HACK_TRACE_OPTIONAL = new Set([
 
 function isTraceOptional(
   blockId: RegistryId,
-  { type }: { type: BlockType }
+  { type }: { type: BrickType }
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
 }
 
 type PreviewInfo = {
-  block: IBlock;
-  type: BlockType;
+  block: Brick;
+  type: BrickType;
   isPure: boolean;
   isRootAware: boolean;
   traceOptional: boolean;
@@ -135,7 +135,7 @@ const previewSlice = createSlice({
 });
 
 const BlockPreview: React.FunctionComponent<{
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
   extensionPoint: BaseExtensionPointState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
@@ -151,11 +151,11 @@ const BlockPreview: React.FunctionComponent<{
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
-  // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
+  // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, context: BlockArgsContext) => {
+    async (blockConfig: BrickConfig, context: BrickArgsContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
 
@@ -184,7 +184,7 @@ const BlockPreview: React.FunctionComponent<{
 
   useEffect(() => {
     if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
-      void debouncedRun(blockConfig, context as unknown as BlockArgsContext);
+      void debouncedRun(blockConfig, context as unknown as BrickArgsContext);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
@@ -254,7 +254,7 @@ const BlockPreview: React.FunctionComponent<{
           size="sm"
           disabled={!traceRecord}
           onClick={() => {
-            void debouncedRun(blockConfig, context as BlockArgsContext);
+            void debouncedRun(blockConfig, context as BrickArgsContext);
           }}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh Preview

@@ -49,7 +49,7 @@ type FieldConfig = {
 
 /**
  * Return an array of fields
- * @param schema the inputSchema, e.g., IBlock.inputSchema
+ * @param schema the inputSchema, e.g., Brick.inputSchema
  * @param uiSchema an optional uiSchema
  * @param preserveSchemaOrder if true, use the inputSchema order if no explicit uiSchema is specified. Otherwise, apply
  * a default sorting based on type and optional fields

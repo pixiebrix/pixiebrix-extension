@@ -18,6 +18,7 @@
 import {
   getElementForReference,
   getReferenceForElement,
+  getSelectorForElement,
 } from "@/contentScript/elementReference";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
@@ -46,5 +47,12 @@ describe("elementReference", () => {
     expect(() => getElementForReference(uuidv4() as ElementReference)).toThrow(
       BusinessError
     );
+  });
+
+  test("get selector for element adds data attribute", () => {
+    const element = document.createElement("div");
+    document.body.append(element);
+    const selector = getSelectorForElement(element);
+    expect(document.querySelector(selector)).toEqual(element);
   });
 });

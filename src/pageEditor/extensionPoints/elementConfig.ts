@@ -24,7 +24,7 @@ import {
   type ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
-  type BlockPipeline,
+  type BrickPipeline,
   type NormalizedAvailability,
 } from "@/blocks/types";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
@@ -56,7 +56,7 @@ export type BaseExtensionPointState = {
 };
 
 export interface BaseExtensionState {
-  blockPipeline: BlockPipeline;
+  blockPipeline: BrickPipeline;
 }
 
 export interface BaseFormState<

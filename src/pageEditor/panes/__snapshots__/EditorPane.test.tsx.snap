@@ -246,7 +246,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                       class="text"
                     >
                       <div>
-                        Echo Block
+                        Echo Brick
                       </div>
                       <div
                         class="key outputKey"
@@ -502,7 +502,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                       class="text"
                     >
                       <div>
-                        Echo Block
+                        Echo Brick
                       </div>
                       <div
                         class="key outputKey"
@@ -1713,7 +1713,7 @@ exports[`renders the first selected node 1`] = `
                       class="text"
                     >
                       <div>
-                        Echo Block
+                        Echo Brick
                       </div>
                       <div
                         class="key outputKey"
@@ -1825,7 +1825,7 @@ exports[`renders the first selected node 1`] = `
                       class="text"
                     >
                       <div>
-                        Teapot Block
+                        Teapot Brick
                       </div>
                       <div
                         class="key outputKey"
@@ -1919,7 +1919,7 @@ exports[`renders the first selected node 1`] = `
                 class="col"
               >
                 <p>
-                  Echo Block
+                  Echo Brick
                 </p>
               </div>
             </div>
@@ -1945,7 +1945,7 @@ exports[`renders the first selected node 1`] = `
                       class="form-control"
                       id="extension.blockPipeline.0.label"
                       name="extension.blockPipeline.0.label"
-                      placeholder="Echo Block"
+                      placeholder="Echo Brick"
                       value=""
                     />
                   </div>

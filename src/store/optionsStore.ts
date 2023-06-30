@@ -27,9 +27,9 @@ import servicesSlice, {
   type ServicesRootState,
 } from "@/store/servicesSlice";
 import {
-  type BlueprintModalsRootState,
-  blueprintModalsSlice,
-} from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
+  type ModModalsRootState,
+  modModalsSlice,
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -41,14 +41,14 @@ import workshopSlice, {
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { type SettingsRootState } from "@/store/settingsTypes";
-import blueprintsSlice, {
-  persistBlueprintsConfig,
-} from "@/extensionConsole/pages/blueprints/blueprintsSlice";
+import modsPageSlice, {
+  persistModsConfig,
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type BlueprintsRootState } from "@/extensionConsole/pages/blueprints/blueprintsSelectors";
+import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import { recipesSlice } from "@/recipes/recipesSlice";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
@@ -68,12 +68,12 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export type RootState = AuthRootState &
   LogRootState &
-  BlueprintsRootState &
+  ModsPageRootState &
   ExtensionsRootState &
   ServicesRootState &
   SettingsRootState &
   WorkshopRootState &
-  BlueprintModalsRootState &
+  ModModalsRootState &
   SessionRootState &
   SessionChangesRootState;
 
@@ -97,15 +97,12 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    blueprints: persistReducer(
-      persistBlueprintsConfig,
-      blueprintsSlice.reducer
-    ),
+    modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    blueprintModals: blueprintModalsSlice.reducer,
+    modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
     recipes: recipesSlice.reducer,
     session: sessionSlice.reducer,

@@ -17,12 +17,9 @@
 import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
 
 import React from "react";
-import {
-  type Installable,
-  type InstallableViewItem,
-} from "@/installables/installableTypes";
+import { type Mod, type ModViewItem } from "@/types/modTypes";
 import { ListGroup, Row } from "react-bootstrap";
-import useInstallableViewItems from "@/installables/useInstallableViewItems";
+import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
@@ -30,7 +27,7 @@ import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
-const columns: Array<Column<InstallableViewItem>> = [
+const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Name",
     accessor: "name",
@@ -61,18 +58,15 @@ const NoActiveModsView: React.FunctionComponent = () => (
 );
 
 export const ActiveModsList: React.FunctionComponent<{
-  installables: Installable[];
-}> = ({ installables }) => {
-  const { installableViewItems, isLoading } =
-    useInstallableViewItems(installables);
+  mods: Mod[];
+}> = ({ mods }) => {
+  const { modViewItems, isLoading } = useModViewItems(mods);
 
-  const activeMods = installableViewItems.filter(
-    (installableViewItem) =>
-      installableViewItem.status === "Active" &&
-      !installableViewItem.unavailable
+  const activeMods = modViewItems.filter(
+    (modViewItem) => modViewItem.status === "Active" && !modViewItem.unavailable
   );
 
-  const tableInstance = useTable<InstallableViewItem>({
+  const tableInstance = useTable<ModViewItem>({
     columns,
     data: activeMods,
   });
@@ -89,7 +83,7 @@ export const ActiveModsList: React.FunctionComponent<{
             return (
               <ActiveModListItem
                 key={`${row.original.sharing.packageId}-${row.original.name}`}
-                installableItem={row.original}
+                modViewItem={row.original}
               />
             );
           })}

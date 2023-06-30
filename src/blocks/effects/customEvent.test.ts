@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import CustomEventEffect from "@/blocks/effects/customEvent";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -52,7 +52,7 @@ describe("CustomEventEffect", () => {
     await brick.run(unsafeAssumeValidArg({ eventName: "foo" }), {
       root: document.querySelector("button"),
       logger,
-    } as unknown as BlockOptions);
+    } as unknown as BrickOptions);
 
     expect(eventHandler).toHaveBeenCalled();
   });
@@ -64,7 +64,7 @@ describe("CustomEventEffect", () => {
     await brick.run(unsafeAssumeValidArg({ eventName: "foo" }), {
       root: document.querySelector("button"),
       logger,
-    } as unknown as BlockOptions);
+    } as unknown as BrickOptions);
 
     expect(eventHandler).toHaveBeenCalled();
   });

@@ -22,9 +22,9 @@ import { PropertyTableRenderer } from "./propertyTable";
 import { CustomFormRenderer } from "./customForm";
 import { TableRenderer } from "./table";
 import { DocumentRenderer } from "./document";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
-function getAllRenderers(): IBlock[] {
+function getAllRenderers(): Brick[] {
   return [
     new HtmlRenderer(),
     new IFrameRenderer(),

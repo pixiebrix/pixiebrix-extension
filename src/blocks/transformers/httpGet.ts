@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type AxiosRequestConfig } from "axios";
 
@@ -70,7 +70,7 @@ export class GetAPITransformer extends Transformer {
   async transform({
     service,
     ...requestProps
-  }: BlockArgs<{
+  }: BrickArgs<{
     service: SanitizedServiceConfiguration;
     requestConfig: AxiosRequestConfig;
     _blockArgBrand: never;

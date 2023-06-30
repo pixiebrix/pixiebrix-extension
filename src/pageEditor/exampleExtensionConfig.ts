@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -30,7 +30,7 @@ const tourStepBlockId = validateRegistryId("@pixiebrix/tour/step");
 
 export function getExampleBlockPipeline(
   type: ExtensionPointType
-): BlockPipeline {
+): BrickPipeline {
   if (type === "actionPanel") {
     const documentBuilderBlock = createNewBlock(documentBlockId);
     return [documentBuilderBlock];

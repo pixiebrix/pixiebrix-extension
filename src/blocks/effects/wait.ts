@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -23,8 +23,8 @@ import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/blocks/rootModeHelpers";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 
@@ -50,8 +50,8 @@ export class WaitEffect extends Effect {
   };
 
   async effect(
-    { timeMillis = 0 }: BlockArgs<{ timeMillis: number }>,
-    { logger }: BlockOptions
+    { timeMillis = 0 }: BrickArgs<{ timeMillis: number }>,
+    { logger }: BrickOptions
   ): Promise<void> {
     if (timeMillis > 0) {
       logger.debug(`Waiting/sleeping ${timeMillis} milliseconds`);
@@ -141,12 +141,12 @@ export class WaitElementEffect extends Effect {
       selector,
       maxWaitMillis = 0,
       isRootAware,
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector: string | string[];
       maxWaitMillis: number | undefined;
       isRootAware: boolean;
     }>,
-    { logger, root, abortSignal }: BlockOptions
+    { logger, root, abortSignal }: BrickOptions
   ): Promise<void> {
     // Single string for logging, the exact format isn't that important
     const combinedSelector = Array.isArray(selector)

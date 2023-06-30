@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -64,8 +64,8 @@ export class LogEffect extends Effect {
       message,
       level = "info",
       data,
-    }: BlockArgs<{ message: string; level: Level; data: unknown }>,
-    { ctxt }: BlockOptions
+    }: BrickArgs<{ message: string; level: Level; data: unknown }>,
+    { ctxt }: BrickOptions
   ): Promise<void> {
     const logMethod = LEVEL_MAP.get(level) ?? console.info;
     logMethod(message, data ?? ctxt);

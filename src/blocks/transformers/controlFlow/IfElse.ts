@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
@@ -68,12 +68,12 @@ class IfElse extends Transformer {
       condition: rawCondition,
       if: ifPipeline,
       else: elsePipeline,
-    }: BlockArgs<{
+    }: BrickArgs<{
       condition: unknown;
       if: PipelineExpression;
       else?: PipelineExpression;
     }>,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<unknown> {
     const condition = boolean(rawCondition);
 

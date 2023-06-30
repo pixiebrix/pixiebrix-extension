@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { type IBrick } from "@/types/brickInstanceTypes";
 
 export default async function getType(
-  // HACK: including IService and IExtensionPoint here is a hack to fix some call-sites. This method can only return
+  // HACK: including IService and StarterBrick here is a hack to fix some call-sites. This method can only return
   // block types
   block: IBrick
-): Promise<BlockType | null> {
+): Promise<BrickType | null> {
   if ("inferType" in block) {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
     // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have

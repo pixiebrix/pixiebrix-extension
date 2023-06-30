@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export class IdentityTransformer extends Transformer {
@@ -38,7 +38,7 @@ export class IdentityTransformer extends Transformer {
     additionalProperties: true,
   };
 
-  async transform(arg: BlockArgs): Promise<BlockArgs> {
+  async transform(arg: BrickArgs): Promise<BrickArgs> {
     return arg;
   }
 }

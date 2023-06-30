@@ -23,7 +23,7 @@ import {
 } from "@/testUtils/factories/stringFactories";
 import objectHash from "object-hash";
 import { type RenderedArgs } from "@/types/runtimeTypes";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { validateRegistryId } from "@/types/helpers";
 
 const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
@@ -46,7 +46,7 @@ export const traceRecordFactory = define<TraceRecord>({
     return {} as RenderedArgs;
   },
   renderError: null,
-  blockConfig(): BlockConfig {
+  blockConfig(): BrickConfig {
     return {
       id: TEST_BLOCK_ID,
       config: {},

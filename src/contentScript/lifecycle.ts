@@ -31,7 +31,7 @@ import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -48,7 +48,7 @@ let _initialLoad = true;
  * Promise to memoize fetching extension points and extensions from storage
  * @see loadPersistedExtensionsOnce
  */
-let pendingLoadPromise: Promise<IExtensionPoint[]> | null;
+let pendingLoadPromise: Promise<StarterBrick[]> | null;
 
 /**
  * Map from persisted extension IDs to their extension points.
@@ -57,7 +57,7 @@ let pendingLoadPromise: Promise<IExtensionPoint[]> | null;
  *
  * @see _editorExtensions
  */
-const _persistedExtensions = new Map<UUID, IExtensionPoint>();
+const _persistedExtensions = new Map<UUID, StarterBrick>();
 
 /**
  * Map from extension IDs currently being edited in the Page Editor to their extension points.
@@ -66,12 +66,12 @@ const _persistedExtensions = new Map<UUID, IExtensionPoint>();
  *
  * @see _persistedExtensions
  */
-const _editorExtensions = new Map<UUID, IExtensionPoint>();
+const _editorExtensions = new Map<UUID, StarterBrick>();
 
 /**
  * Extension points active/installed on the page.
  */
-const _activeExtensionPoints = new Set<IExtensionPoint>();
+const _activeExtensionPoints = new Set<StarterBrick>();
 
 /**
  * Mapping from frame ID to URL. Used to ignore navigation events that don't change the URL.
@@ -107,7 +107,7 @@ const injectPageScriptOnce = once(async (): Promise<void> => {
  * @param abortSignal abort signal to cancel the install/run
  */
 async function runExtensionPoint(
-  extensionPoint: IExtensionPoint,
+  extensionPoint: StarterBrick,
   {
     reason,
     extensionIds,
@@ -180,7 +180,7 @@ async function runExtensionPoint(
 }
 
 /**
- * Ensure all extension points are installed that have IExtensionPoint.syncInstall set to true.
+ * Ensure all extension points are installed that have StarterBrick.syncInstall set to true.
  *
  * Currently, includes:
  * - Sidebar Extension Points
@@ -188,7 +188,7 @@ async function runExtensionPoint(
  *
  * Used to ensure all sidebar extension points have had a chance to reserve panels before showing the sidebar.
  *
- * @see IExtensionPoint.syncInstall
+ * @see StarterBrick.syncInstall
  */
 export async function ensureInstalled(): Promise<void> {
   const extensionPoints = await loadPersistedExtensionsOnce();
@@ -221,7 +221,7 @@ function checkLifecycleInvariants(): void {
  * Returns all the extension points currently running on the page. Includes both persisted extensions and extensions
  * being edited in the Page Editor.
  */
-export function getActiveExtensionPoints(): IExtensionPoint[] {
+export function getActiveExtensionPoints(): StarterBrick[] {
   return [..._activeExtensionPoints];
 }
 
@@ -229,7 +229,7 @@ export function getActiveExtensionPoints(): IExtensionPoint[] {
  * Test helper to get internal persisted extension state
  * @constructor
  */
-export function TEST_getPersistedExtensions(): Map<UUID, IExtensionPoint> {
+export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
   return _persistedExtensions;
 }
 
@@ -237,7 +237,7 @@ export function TEST_getPersistedExtensions(): Map<UUID, IExtensionPoint> {
  * Test helper to get internal editor extension state
  * @constructor
  */
-export function TEST_getEditorExtensions(): Map<UUID, IExtensionPoint> {
+export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
   return _editorExtensions;
 }
 
@@ -344,7 +344,7 @@ function notifyNavigationListeners(): void {
  */
 export async function runEditorExtension(
   extensionId: UUID,
-  extensionPoint: IExtensionPoint
+  extensionPoint: StarterBrick
 ): Promise<void> {
   // Uninstall the installed extension point instance in favor of the dynamic extensionPoint
   if (_persistedExtensions.has(extensionId)) {
@@ -406,7 +406,7 @@ function cleanUpDeactivatedExtensionPoints(
  *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
  */
-async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
+async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   console.debug("lifecycle:loadPersistedExtensions");
   const options = await logPromiseDuration(
     "loadPersistedExtensions:loadOptions",
@@ -474,11 +474,11 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
 /**
  * Add the extensions to their respective extension points, and return the extension points with any extensions.
  *
- * Syncs the extensions, but does not call IExtensionPoint.install or IExtensionPoint.run.
+ * Syncs the extensions, but does not call StarterBrick.install or StarterBrick.run.
  *
  * @see runExtensionPoint
  */
-async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
+async function loadPersistedExtensionsOnce(): Promise<StarterBrick[]> {
   // Enforce fresh view for _reloadOnNextNavigate
   if (_initialLoad || _reloadOnNextNavigate) {
     _initialLoad = false;

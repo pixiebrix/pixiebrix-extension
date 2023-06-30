@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
-export type BlockResult = IBlock & {
+export type BlockResult = Brick & {
   isPopular?: boolean;
 };
 
@@ -31,8 +31,8 @@ export type BlockOption = {
 export type BlockGridData = {
   blockOptions: BlockOption[];
   invalidBlockMessages: Map<RegistryId, string>;
-  onSetDetailBlock: (block: IBlock) => void;
-  onSelectBlock: (block: IBlock) => void;
+  onSetDetailBlock: (block: Brick) => void;
+  onSelectBlock: (block: Brick) => void;
 };
 
 export type ItemKeyInput = {

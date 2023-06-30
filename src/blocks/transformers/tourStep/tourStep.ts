@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -317,7 +317,7 @@ export class TourStepTransformer extends Transformer {
         context: { extensionId, blueprintId },
       },
       runRendererPipeline,
-    }: BlockOptions
+    }: BrickOptions
   ): Promise<unknown> {
     let counter = 0;
 
@@ -412,7 +412,7 @@ export class TourStepTransformer extends Transformer {
    */
   async locateElement(
     args: StepInputs,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<HTMLElement> {
     let $elements: JQuery<Document | HTMLElement> = $safeFind(
       args.selector,
@@ -463,8 +463,8 @@ export class TourStepTransformer extends Transformer {
   inputSchema: Schema = StepSchema;
 
   async transform(
-    args: BlockArgs<StepInputs>,
-    options: BlockOptions
+    args: BrickArgs<StepInputs>,
+    options: BrickOptions
   ): Promise<unknown> {
     const {
       root,
@@ -534,7 +534,7 @@ export class TourStepTransformer extends Transformer {
       markTourStep(nonce, { step: title, context });
 
       // If passing markdown, wrap in Markdown brick
-      const modifiedArgs: BlockArgs<StepInputs> =
+      const modifiedArgs: BrickArgs<StepInputs> =
         typeof body === "string"
           ? { ...args, body: markdownPipeline(body) }
           : args;

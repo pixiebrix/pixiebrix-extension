@@ -29,6 +29,15 @@ const knownElementReferences = new WeakMap<
 const elementLookup = new Map<ElementReference, WeakRef<ElementOrDocument>>();
 
 /**
+ * Generate a selector to target the element across contexts. For example, when targeting elements with the page script.
+ */
+export function getSelectorForElement(element: HTMLElement): string {
+  const id = getReferenceForElement(element);
+  element.dataset.pbElementRef = id;
+  return `[data-pb-element-ref="${id}"]`;
+}
+
+/**
  * Returns a reference uuid for element. If a reference already exists, it is returned.
  * @param element the element to generate a reference for
  */

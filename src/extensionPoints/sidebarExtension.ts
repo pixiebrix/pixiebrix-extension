@@ -45,7 +45,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { cloneDeep, debounce, stubTrue } from "lodash";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
@@ -59,16 +59,16 @@ import {
   type IExtension,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
   heading: string;
-  body: BlockConfig | BlockPipeline;
+  body: BrickConfig | BrickPipeline;
 };
 
 export type Trigger =
@@ -127,7 +127,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
   async getBlocks(
     extension: ResolvedExtension<SidebarConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
@@ -497,7 +497,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   }
 }
 
-export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
+export function fromJS(config: ExtensionPointConfig): StarterBrick {
   const { type } = config.definition;
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);

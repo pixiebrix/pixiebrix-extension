@@ -17,11 +17,11 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
-  rootAwareBlock,
+  rootAwareBrick,
   simpleInput,
-  teapotBlock,
+  teapotBrick,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -33,9 +33,9 @@ const ifElseBlock = new IfElse();
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([
-    teapotBlock,
-    throwBlock,
-    rootAwareBlock,
+    teapotBrick,
+    throwBrick,
+    rootAwareBrick,
     ifElseBlock,
   ]);
 });
@@ -46,8 +46,8 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: true,
-        if: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
-        else: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+        if: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
+        else: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -65,14 +65,14 @@ describe("IfElse", () => {
         condition: true,
         if: makePipelineExpression([
           {
-            id: teapotBlock.id,
+            id: teapotBrick.id,
             config: {},
             outputKey: validateOutputKey("branchResult"),
           },
         ]),
         else: makePipelineExpression([
           {
-            id: throwBlock.id,
+            id: throwBrick.id,
             config: {},
             outputKey: validateOutputKey("branchResult"),
           },
@@ -93,8 +93,8 @@ describe("IfElse", () => {
       config: {
         condition: false,
         // Throw to make it more obvious if this branch was taken
-        if: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
-        else: makePipelineExpression([{ id: teapotBlock.id, config: {} }]),
+        if: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
+        else: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -111,7 +111,7 @@ describe("IfElse", () => {
       config: {
         condition: false,
         // Throw to make it more obvious if this branch was taken
-        if: makePipelineExpression([{ id: throwBlock.id, config: {} }]),
+        if: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -127,7 +127,7 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: true,
-        if: makePipelineExpression([{ id: rootAwareBlock.id, config: {} }]),
+        if: makePipelineExpression([{ id: rootAwareBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
