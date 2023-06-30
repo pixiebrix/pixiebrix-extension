@@ -19,7 +19,7 @@ import { TourEffect } from "@/blocks/effects/tourEffect";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { CancelError, PropError } from "@/errors/businessErrors";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 
@@ -40,7 +40,7 @@ describe("TourEffect", () => {
     const promise = brick.run(unsafeAssumeValidArg({}), {
       logger,
       root: document,
-    } as BlockOptions);
+    } as BrickOptions);
     await expect(promise).rejects.toThrow(PropError);
   });
 
@@ -49,7 +49,7 @@ describe("TourEffect", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ steps: [{ intro: "test content" }] }),
-      { logger, root: document } as BlockOptions
+      { logger, root: document } as BrickOptions
     );
 
     await tick();
@@ -73,7 +73,7 @@ describe("TourEffect", () => {
         logger,
         root: document,
         abortSignal: abortController.signal,
-      } as BlockOptions
+      } as BrickOptions
     );
 
     await tick();

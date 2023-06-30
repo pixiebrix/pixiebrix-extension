@@ -18,7 +18,7 @@
 import { type JsonObject } from "type-fest";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import objectHash from "object-hash";
 import { type ErrorObject } from "serialize-error";
 import { type UUID } from "@/types/stringTypes";
@@ -111,7 +111,7 @@ export type TraceEntryData = TraceRecordMeta & {
    */
   renderError: ErrorObject | null;
 
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
 };
 
 export type TraceExitData = TraceRecordMeta &

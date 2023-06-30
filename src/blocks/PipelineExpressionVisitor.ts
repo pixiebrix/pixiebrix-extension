@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
@@ -30,11 +30,11 @@ export type VisitDocumentElementArgs = {
   /**
    * The position of document builder block within the mod
    */
-  position: BlockPosition;
+  position: BrickPosition;
   /**
    * The document builder config
    */
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
   /**
    * The element at path `pathInBlock` within the document builder config
    */
@@ -50,8 +50,8 @@ export type VisitDocumentElementArgs = {
  */
 abstract class PipelineExpressionVisitor extends PipelineVisitor {
   override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     super.visitBlock(position, blockConfig, extra);
@@ -69,8 +69,8 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
   }
 
   public override visitDocument(
-    position: BlockPosition,
-    blockConfig: BlockConfig
+    position: BrickPosition,
+    blockConfig: BrickConfig
   ): void {
     super.visitDocument(position, blockConfig);
     for (const [index, element] of Object.entries(blockConfig.config.body)) {
@@ -142,7 +142,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
    * @param expression The expression to visit
    */
   abstract visitExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<unknown>
   ): void;
 }

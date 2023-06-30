@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { $safeFindElementsWithRootMode } from "@/blocks/rootModeHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -64,12 +64,12 @@ class PostMessageEffect extends Effect {
       selector,
       message,
       targetOrigin = "*",
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector?: string;
       message: UnknownObject;
       targetOrigin?: string;
     }>,
-    { logger, root }: BlockOptions
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

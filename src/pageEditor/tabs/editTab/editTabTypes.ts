@@ -19,7 +19,7 @@
  * FormikError.
  * It can be a string, a record of strings, or a record of records... i.e. it is dynamic and depends on the level of the state tree where the error happens.
  * It is never an array although we can get a nested error using index (number),
- * when the values state is represented by an array (ex. with the BlockPipeline, we'll do `PipelineErrors[0]`).
+ * when the values state is represented by an array (ex. with the BrickPipeline, we'll do `PipelineErrors[0]`).
  * Keep in mind that despite it looks like an array (the top-level may look like an array - have numbers for property names), it is an object.
  * For instance, it doesn't have a `length` property.
  */

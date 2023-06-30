@@ -40,10 +40,10 @@ import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { type IBrick } from "@/types/brickInstanceTypes";
 
-function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
+function getDefaultBrickIcon(brick: IBrick, blockType: BrickType): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }

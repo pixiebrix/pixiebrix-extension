@@ -17,20 +17,20 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/blocks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 const componentBlock = fromJS({
@@ -38,7 +38,7 @@ const componentBlock = fromJS({
   kind: "component",
   metadata: {
     id: "test/component",
-    name: "Component Block",
+    name: "Component Brick",
     version: validateSemVerString("1.0.0"),
     description: "Component block using v1 runtime",
   },
@@ -49,7 +49,7 @@ const componentBlock = fromJS({
   },
   pipeline: [
     {
-      id: echoBlock.id,
+      id: echoBrick.id,
       // Implicit application of mustache template referencing input without @input
       config: { message: "{{message}}" },
     },
@@ -69,12 +69,12 @@ describe("component block v1", () => {
         },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: "{{@first.message}}",
         },
       },
-    ] as BlockPipeline;
+    ] as BrickPipeline;
 
     const result = await reducePipeline(
       pipeline,
@@ -100,7 +100,7 @@ describe("component block v1", () => {
         },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: {
             __type__: "mustache",
@@ -108,7 +108,7 @@ describe("component block v1", () => {
           },
         },
       },
-    ] as BlockPipeline;
+    ] as BrickPipeline;
 
     const result = await reducePipeline(
       pipeline,

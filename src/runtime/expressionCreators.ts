@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 
@@ -30,7 +30,7 @@ export function makeTemplateExpression(
 }
 
 export function makePipelineExpression(
-  value: BlockPipeline
+  value: BrickPipeline
 ): PipelineExpression {
   return {
     __type__: "pipeline",

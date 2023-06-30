@@ -20,7 +20,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/types/registryTypes";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   getDocument,
   RootReader,
@@ -80,7 +80,7 @@ const extensionFactory = define<ResolvedExtension<TriggerConfig>>({
   _recipe: null,
   label: "Test Extension",
   config: define<TriggerConfig>({
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
   }),
 });
 

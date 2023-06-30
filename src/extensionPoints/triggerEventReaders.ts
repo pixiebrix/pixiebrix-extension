@@ -32,7 +32,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IReader, Reader } from "@/types/blocks/readerTypes";
+import { type IReader, Reader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";

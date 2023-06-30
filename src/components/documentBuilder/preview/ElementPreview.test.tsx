@@ -37,7 +37,7 @@ import {
   baseExtensionStateFactory,
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 const renderElementPreview = (
   element: DocumentElement,
@@ -57,7 +57,7 @@ const renderElementPreview = (
   const formState = formStateFactory({
     extension: baseExtensionStateFactory({
       blockPipeline: [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             body: [element],
           },
@@ -169,9 +169,9 @@ test.each(
 });
 
 test("can preview pipeline element with bricks", () => {
-  const testBlock = blockConfigFactory();
+  const testBlock = brickConfigFactory();
   const markdownBlock = new MarkdownRenderer();
-  const markdownConfig = blockConfigFactory({
+  const markdownConfig = brickConfigFactory({
     id: markdownBlock.id,
     config: defaultBlockConfig(markdownBlock.inputSchema),
   });

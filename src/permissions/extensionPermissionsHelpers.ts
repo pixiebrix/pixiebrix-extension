@@ -21,7 +21,7 @@ import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { containsPermissions } from "@/background/messenger/api";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -30,7 +30,7 @@ type PermissionOptions = {
   /**
    * If provided, used instead of the registry version of the referenced extensionPoint.
    */
-  extensionPoint?: IExtensionPoint;
+  extensionPoint?: StarterBrick;
 
   /**
    * True to include permissions for permissions declared on the extension point and it's default reader.
@@ -51,7 +51,7 @@ type PermissionOptions = {
  * - Extension point (optional, default=true)
  *
  * @see IExtension.permissions
- * @see IExtensionPoint.permissions
+ * @see StarterBrick.permissions
  * @see checkExtensionPermissions
  */
 export async function collectExtensionPermissions(

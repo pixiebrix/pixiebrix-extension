@@ -32,7 +32,7 @@ import {
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
-import { joinPathParts } from "@/utils";
+import { boolean, joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
@@ -58,13 +58,31 @@ const UnknownType: React.FC<{ componentType: string }> = ({
 
 export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
   const { staticId, branches } = tracePath;
+
+  const { hidden: rawHidden } = root.config ?? {};
+  const hidden = boolean(rawHidden);
+
+  // We're excluding hidden elements from the DOM completely. HTML does have an attribute 'hidden' and Boostrap has
+  // a `d-none` class, but those still include the element in the DOM. By excluding the element completely, we can
+  // avoid brick and list computations.
+  if (hidden) {
+    return null;
+  }
+
   const componentDefinition = getComponentDefinition(root, tracePath);
+
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, index) => {
-      const { Component, props } = buildDocumentBranch(child, {
+      const branch = buildDocumentBranch(child, {
         staticId: joinPathParts(staticId, root.type, "children"),
         branches: [...branches, { staticId, index }],
       });
+
+      if (branch == null) {
+        return null;
+      }
+
+      const { Component, props } = branch;
       return <Component key={index} {...props} />;
     });
   }
@@ -76,9 +94,10 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath
-): DocumentComponent {
+): DocumentComponent | null {
   const componentType = element.type;
-  const config = get(element, "config", {} as UnknownObject);
+  // Destructure hidden from config, so we don't spread it onto components
+  const { hidden, ...config } = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
     // Provide backwards compatibility for old elements

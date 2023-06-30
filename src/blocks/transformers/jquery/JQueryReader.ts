@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { mapValues } from "lodash";
 import { isExpression } from "@/runtime/mapArgs";
 
@@ -91,7 +91,7 @@ export class JQueryReader extends Transformer {
     additionalProperties: true,
   };
 
-  override getOutputSchema(config: BlockConfig): Schema | undefined {
+  override getOutputSchema(config: BrickConfig): Schema | undefined {
     const selectors = config.config.selectors as SelectorMap;
 
     if (isExpression(selectors)) {
@@ -123,8 +123,8 @@ export class JQueryReader extends Transformer {
   }
 
   async transform(
-    { selectors }: BlockArgs<{ selectors: SelectorMap }>,
-    { root }: BlockOptions
+    { selectors }: BrickArgs<{ selectors: SelectorMap }>,
+    { root }: BrickOptions
   ): Promise<unknown> {
     return readJQuery({ type: "jquery", selectors }, root);
   }

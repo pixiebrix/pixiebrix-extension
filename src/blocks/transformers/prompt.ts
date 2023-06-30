@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors/businessErrors";
@@ -58,7 +58,7 @@ export class Prompt extends Transformer {
   async transform({
     message,
     defaultValue,
-  }: BlockArgs<{ message: string; defaultValue: string }>): Promise<unknown> {
+  }: BrickArgs<{ message: string; defaultValue: string }>): Promise<unknown> {
     // eslint-disable-next-line no-alert -- purpose of this brick is to show an alert
     const value = window.prompt(message, defaultValue);
 

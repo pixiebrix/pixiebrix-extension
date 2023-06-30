@@ -18,7 +18,7 @@
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
 import blockRegistry from "@/blocks/registry";
-import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
@@ -35,9 +35,9 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import {
-  blockConfigFactory,
-  blockFactory,
-} from "@/testUtils/factories/blockFactories";
+  brickConfigFactory,
+  brickFactory,
+} from "@/testUtils/factories/brickFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -69,10 +69,10 @@ function renderBlockConfiguration(
 }
 
 test("renders", async () => {
-  const block = echoBlock;
+  const block = echoBrick;
   blockRegistry.register([block]);
   const initialState = formStateFactory({ apiVersion: "v3" }, [
-    blockConfigFactory({ id: block.id }),
+    brickConfigFactory({ id: block.id }),
   ]);
   const rendered = renderBlockConfiguration(
     <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
@@ -92,10 +92,10 @@ describe("shows root mode", () => {
     // `menuItem` must show root mode because root mode is used if the location matches multiple elements on the page
     ["menuItem", menuItemFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
-    const block = echoBlock;
+    const block = echoBrick;
     blockRegistry.register([block]);
     const initialState = factory({ apiVersion: "v3" }, [
-      blockConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: block.id }),
     ]);
     renderBlockConfiguration(
       <BlockConfiguration
@@ -113,10 +113,10 @@ describe("shows root mode", () => {
   });
 
   test("don't show root mode for sidebar panel", async () => {
-    const block = echoBlock;
+    const block = echoBrick;
     blockRegistry.register([block]);
     const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
-      blockConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: block.id }),
     ]);
     renderBlockConfiguration(
       <BlockConfiguration
@@ -143,7 +143,7 @@ test.each`
 `(
   "$readableExpected show Condition and Target settings for $blockName",
   async ({ propertyName, expected }) => {
-    const block = blockFactory({
+    const block = brickFactory({
       [propertyName]: jest.fn(),
       inputSchema: propertiesToSchema({
         message: {
@@ -154,7 +154,7 @@ test.each`
 
     blockRegistry.register([block]);
     const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
-      blockConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: block.id }),
     ]);
     renderBlockConfiguration(
       <BlockConfiguration

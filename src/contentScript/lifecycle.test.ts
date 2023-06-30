@@ -27,7 +27,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
@@ -68,7 +68,7 @@ const extensionFactory = define<PersistedExtension<TriggerConfig>>({
   _recipe: null,
   label: "Test Extension",
   config: define<TriggerConfig>({
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
   }),
   _unresolvedExtensionBrand: null,
   createTimestamp: new Date().toISOString(),

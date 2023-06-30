@@ -95,24 +95,24 @@ export type TemplateEngine =
  * @see Expression
  * @see loadBrickYaml
  * @see TemplateEngine
- * @see BlockPipeline
+ * @see BrickPipeline
  */
 export type ExpressionType =
   | TemplateEngine
-  // BlockPipeline with deferred execution
+  // BrickPipeline with deferred execution
   | "pipeline"
   // Raw section with deferred rendering (rendered by the brick that executes it)
   | "defer";
 
 /**
  * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)
- * @see BlockConfig
+ * @see BrickConfig
  * @see loadBrickYaml
  * @since 1.5.0
  */
 export type Expression<
   // The value. TemplateEngine ExpressionTypes, this will be a string containing the template. For `pipeline`
-  // ExpressionType this will be a BlockPipeline. (The loadBrickYaml method will currently accept any array for
+  // ExpressionType this will be a BrickPipeline. (The loadBrickYaml method will currently accept any array for
   // pipeline at this time, though.
   TTemplateOrPipeline = string,
   // The type tag (without the !-prefix of the YAML simple tag)
@@ -162,8 +162,8 @@ export enum RunReason {
 }
 
 /**
- * Arguments for running an IExtensionPoint
- * @see IExtensionPoint.run
+ * Arguments for running an StarterBrick
+ * @see StarterBrick.run
  */
 export type RunArgs = {
   /**
@@ -182,12 +182,12 @@ export type RunArgs = {
 export type OptionsArgs = Record<string, Primitive>;
 
 /**
- * Values available to a block to render its arguments.
- * @see BlockArgs
+ * Values available to a brick to render its arguments.
+ * @see BrickArgs
  * @see RenderedArgs
- * @see BlockConfig.outputKey
+ * @see BrickConfig.outputKey
  */
-export type BlockArgsContext = UnknownObject & {
+export type BrickArgsContext = UnknownObject & {
   // Nominal typing
   _blockArgsContextBrand: never;
   "@input": UnknownObject;
@@ -195,16 +195,16 @@ export type BlockArgsContext = UnknownObject & {
 };
 
 /**
- * The JSON Schema validated arguments to pass into the `run` method of an IBlock.
+ * The JSON Schema validated arguments to pass into the `run` method of an Brick.
  *
- * Uses `any` for values so that blocks don't have to assert/cast all their argument types. The input values
+ * Uses `any` for values so that bricks don't have to assert/cast all their argument types. The input values
  * are validated using JSON Schema in `reducePipeline`.
  *
- * @see IBlock.inputSchema
- * @see IBlock.run
+ * @see Brick.inputSchema
+ * @see Brick.run
  * @see reducePipeline
  */
-export type BlockArgs<
+export type BrickArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
   T extends Record<string, any> = Record<string, any>
 > = T & {
@@ -212,16 +212,16 @@ export type BlockArgs<
 };
 
 /**
- * The non-validated arguments to pass into the `run` method of an IBlock.
- * @see BlockArgs
+ * The non-validated arguments to pass into the `run` method of an Brick.
+ * @see BrickArgs
  */
 export type RenderedArgs = UnknownObject & {
   _renderedArgBrand: never;
 };
 
 /**
- * Service context passed to blocks.
- * @see BlockArgsContext
+ * Service context passed to bricks.
+ * @see BrickArgsContext
  */
 export type ServiceContext = Record<
   ServiceVarRef,
@@ -231,21 +231,21 @@ export type ServiceContext = Record<
   }
 >;
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+// Using "any" for now so that bricks don't have to assert/cast all their argument types. We're checking
 // the inputs using yup/jsonschema, so the types should match what's expected.
-export type BlockOptions<
+export type BrickOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
   TCtxt extends Record<string, any> = Record<string, any>
 > = {
   /**
    * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
    *
-   * @see BlockArgsContext
+   * @see BrickArgsContext
    */
   ctxt: TCtxt;
 
   /**
-   * Logger for block messages
+   * Logger for brick messages
    */
   logger: Logger;
 
@@ -291,7 +291,7 @@ export type BlockOptions<
   ) => Promise<unknown>; // Should be PanelPayload
 
   /**
-   * A signal to abort the current block's execution.
+   * A signal to abort the current brick's execution.
    * @since 1.7.19
    */
   abortSignal?: AbortSignal;

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
@@ -76,7 +76,7 @@ export class RemoteMethod extends Transformer {
   async transform({
     service,
     ...requestConfig
-  }: BlockArgs<{
+  }: BrickArgs<{
     service: SanitizedServiceConfiguration;
     requestConfig: AxiosRequestConfig;
     _blockArgBrand: never;

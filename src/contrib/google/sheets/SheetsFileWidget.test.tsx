@@ -26,7 +26,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import {
   isGAPISupported,
   isGoogleInitialized,
@@ -224,7 +224,7 @@ describe("SheetsFileWidget", () => {
         ],
       },
       [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             spreadsheetId: "abc123",
           },
@@ -257,7 +257,7 @@ describe("SheetsFileWidget", () => {
         services: [service],
       },
       [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             spreadsheetId: makeVariableExpression("@google"),
           },

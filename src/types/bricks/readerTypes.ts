@@ -16,14 +16,14 @@
  */
 
 import { type JsonObject } from "type-fest";
-import { Block, type IBlock } from "@/types/blockTypes";
-import { type BlockArgs, type SelectorRoot } from "@/types/runtimeTypes";
+import { BrickABC, type Brick } from "@/types/brickTypes";
+import { type BrickArgs, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A block that can read data from a page or part of the page.
  */
-export interface IReader extends IBlock {
+export interface IReader extends Brick {
   /** Return true if the Reader is for a page/element. */
   isAvailable: ($elements?: JQuery) => Promise<boolean>;
 
@@ -33,7 +33,7 @@ export interface IReader extends IBlock {
 /**
  * Abstract base class for Readers.
  */
-export abstract class Reader extends Block implements IReader {
+export abstract class Reader extends BrickABC implements IReader {
   readonly inputSchema: Schema = {};
 
   override outputSchema: Schema = undefined;
@@ -47,7 +47,7 @@ export abstract class Reader extends Block implements IReader {
 
   abstract read(root: SelectorRoot): Promise<JsonObject>;
 
-  async run({ root }: BlockArgs): Promise<JsonObject> {
+  async run({ root }: BrickArgs): Promise<JsonObject> {
     return this.read(root as SelectorRoot);
   }
 }

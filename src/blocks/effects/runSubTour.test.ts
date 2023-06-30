@@ -29,7 +29,7 @@ import {
   type IExtension,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 describe("runSubTour", () => {
   test("it runs a sub-tour", async () => {
@@ -56,7 +56,7 @@ describe("runSubTour", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ tour: "Test Extension" }),
-      { logger: new ConsoleLogger({ blueprintId }) } as BlockOptions
+      { logger: new ConsoleLogger({ blueprintId }) } as BrickOptions
     );
 
     await tick();

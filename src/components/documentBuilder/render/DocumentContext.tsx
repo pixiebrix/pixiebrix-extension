@@ -20,7 +20,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
-import { type BlockArgsContext, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgsContext, type BrickOptions } from "@/types/runtimeTypes";
 
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;
@@ -29,13 +29,13 @@ type DocumentState = {
     runId: UUID;
     extensionId: UUID;
   };
-  options: BlockOptions<BlockArgsContext>;
+  options: BrickOptions<BrickArgsContext>;
 };
 
 const blankContext = {
   "@input": {},
   "@options": {},
-} as BlockArgsContext;
+} as BrickArgsContext;
 
 export const initialValue: DocumentState = {
   onAction() {

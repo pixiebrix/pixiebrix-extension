@@ -21,22 +21,22 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/blocks/errors";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
   test("throws error on wrong input type", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
     ];
@@ -54,7 +54,7 @@ describe("apiVersion: v1", () => {
   test("throws error on missing input", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
     ];
@@ -70,7 +70,7 @@ describe("apiVersion: v2", () => {
   test("throws error on wrong input type", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         // FIXME: this will resolve to a the empty string, is it throwing an error for the wrong reason?
         config: { message: "{{inputArg}}" },
       },
@@ -91,14 +91,14 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("no implicit inputs", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         outputKey: validateOutputKey("first"),
         config: {
           message: "First block",
         },
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
       },
     ];

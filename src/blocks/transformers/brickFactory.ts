@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block, type IBlock } from "@/types/blockTypes";
+import { BrickABC, type Brick } from "@/types/brickTypes";
 import { readerFactory } from "@/blocks/readers/factory";
 import {
   type Schema as ValidatorSchema,
@@ -26,15 +26,15 @@ import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import {
   type ApiVersion,
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
 } from "@/types/runtimeTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import {
@@ -46,12 +46,12 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { inputProperties } from "@/helpers";
 import { isPipelineExpression } from "@/runtime/mapArgs";
 
-type BlockDefinition = {
+type BrickDefinition = {
   apiVersion?: ApiVersion;
   kind: "component";
   metadata: Metadata;
   defaultOptions: Record<string, string>;
-  pipeline: BlockConfig | BlockPipeline;
+  pipeline: BrickConfig | BrickPipeline;
   inputSchema: Schema;
   /**
    * An optional RJSF uiSchema for inputs.
@@ -67,9 +67,9 @@ type BlockDefinition = {
   services?: Record<string, RegistryId>;
 };
 
-function validateBlockDefinition(
+function validateBrickDefinition(
   component: unknown
-): asserts component is BlockDefinition {
+): asserts component is BrickDefinition {
   const validator = new Validator(
     dereference(blockSchema as Schema) as ValidatorSchema
   );
@@ -87,10 +87,10 @@ function validateBlockDefinition(
 }
 
 /**
- * A non-native (i.e., non-JS) Block. Typically defined in YAML/JSON.
+ * A non-native (i.e., non-JS) Brick. Typically defined in YAML/JSON.
  */
-class ExternalBlock extends Block {
-  public readonly component: BlockDefinition;
+class ExternalBlock extends BrickABC {
+  public readonly component: BrickDefinition;
 
   readonly apiVersion: ApiVersion;
 
@@ -100,7 +100,7 @@ class ExternalBlock extends Block {
 
   readonly version: SemVerString;
 
-  constructor(component: BlockDefinition) {
+  constructor(component: BrickDefinition) {
     const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
     this.apiVersion = component.apiVersion ?? "v1";
@@ -137,7 +137,7 @@ class ExternalBlock extends Block {
     return awareness.some(Boolean);
   }
 
-  async inferType(): Promise<BlockType | null> {
+  async inferType(): Promise<BrickType | null> {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline.at(-1);
 
@@ -166,9 +166,9 @@ class ExternalBlock extends Block {
    * @private
    */
   private capturePipelineClosures(
-    args: BlockArgs,
-    options: BlockOptions
-  ): BlockArgs {
+    args: BrickArgs,
+    options: BrickOptions
+  ): BrickArgs {
     const pipelinePropertyNames = Object.keys(
       pickBy(
         inputProperties(this.inputSchema),
@@ -195,7 +195,7 @@ class ExternalBlock extends Block {
     return args;
   }
 
-  async run(args: BlockArgs, options: BlockOptions): Promise<unknown> {
+  async run(args: BrickArgs, options: BrickOptions): Promise<unknown> {
     const argsWithClosures = this.capturePipelineClosures(args, options);
 
     options.logger.debug("Running component pipeline", {
@@ -223,7 +223,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: UnknownObject): IBlock {
+export function fromJS(component: UnknownObject): Brick {
   if (component.kind == null) {
     throw new InvalidDefinitionError(
       "Component definition is missing a 'kind' property",
@@ -235,6 +235,6 @@ export function fromJS(component: UnknownObject): IBlock {
     return readerFactory(component);
   }
 
-  validateBlockDefinition(component);
+  validateBrickDefinition(component);
   return new ExternalBlock(component);
 }

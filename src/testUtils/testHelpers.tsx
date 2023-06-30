@@ -41,7 +41,7 @@ import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type PipelineExpression } from "@/runtime/mapArgs";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   renderHook,
   act as actHook,
@@ -367,5 +367,5 @@ export function toExpression<
 }
 
 export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
-  toExpression("pipeline", [] as BlockPipeline)
+  toExpression("pipeline", [] as BrickPipeline)
 );

@@ -19,7 +19,7 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type BlockPosition } from "@/blocks/types";
+import { type BrickPosition } from "@/blocks/types";
 import { isNunjucksExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
@@ -32,7 +32,7 @@ const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
 
 type PushAnnotationArgs = {
-  position: BlockPosition;
+  position: BrickPosition;
   message: string;
   expression: Expression<unknown>;
 };
@@ -68,7 +68,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<unknown>
   ): void {
     if (!isTemplateExpression(expression)) {

@@ -23,10 +23,19 @@ import {
   type DeferExpression,
   type PipelineExpression,
 } from "@/runtime/mapArgs";
+import { validateRegistryId } from "@/types/helpers";
 
-export function createNewElement(elementType: DocumentElementType) {
+const elementExtras: Record<"form", DocumentElementType> = {
+  form: "pipeline",
+};
+
+export function createNewElement(
+  elementType: DocumentElementType | keyof typeof elementExtras
+): DocumentElement {
   const element: DocumentElement = {
-    type: elementType,
+    // Writing as map to make it easier to add similar shortcuts in the future
+    // eslint-disable-next-line security/detect-object-injection -- check for valid element type
+    type: elementType === "form" ? elementExtras[elementType] : elementType,
     config: {},
   };
 
@@ -66,6 +75,42 @@ export function createNewElement(elementType: DocumentElementType) {
     case "card": {
       element.config.heading = "Header";
       element.children = [];
+      break;
+    }
+
+    case "form": {
+      element.config.label = "Form";
+      element.config.pipeline = {
+        __type__: "pipeline",
+        __value__: [
+          {
+            id: validateRegistryId("@pixiebrix/form"),
+            config: {
+              storage: {
+                type: "state",
+                namespace: "blueprint",
+              },
+              submitCaption: "Save",
+              schema: {
+                type: "object",
+                properties: {
+                  notes: {
+                    title: "Example Notes Field",
+                    type: "string",
+                    description: "An example notes field",
+                  },
+                },
+              },
+              uiSchema: {
+                notes: {
+                  "ui:widget": "textarea",
+                },
+              },
+              className: "p-0",
+            },
+          },
+        ],
+      } as PipelineExpression;
       break;
     }
 

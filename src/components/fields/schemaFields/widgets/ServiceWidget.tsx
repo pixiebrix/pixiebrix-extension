@@ -252,7 +252,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
       ) {
         // This currently happens when a brick is copy-pasted into a separate extension
         // that does not yet have root.services configured, but already has the service
-        // key set up in the (copied) BlockConfig. Clearing the value here allows the
+        // key set up in the (copied) BrickConfig. Clearing the value here allows the
         // preceding if-branch to execute again, which runs the "detectDefault" logic
         // and then calls the service-select change handler, which in turn will configure
         // root.services properly for the extension.
