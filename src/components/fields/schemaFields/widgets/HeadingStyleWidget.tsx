@@ -23,16 +23,6 @@ import styles from "./HeadingStyleWidget.module.scss";
 import { useField } from "formik";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
-const headingTypes = Object.fromEntries(
-  VALID_HEADER_TAGS.map((heading) => [
-    heading,
-    {
-      heading,
-      title: heading.toUpperCase(),
-    },
-  ])
-);
-
 const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
   props
 ) => {
@@ -41,19 +31,19 @@ const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
   return (
     <div className="mt-2">
       <ButtonGroup>
-        {Object.values(headingTypes).map((headingType) => (
+        {VALID_HEADER_TAGS.map((headingTag) => (
           <Button
-            key={headingType.heading}
+            key={headingTag}
             className={cx(styles.button, {
-              active: value === headingType.heading,
+              active: value === headingTag,
             })}
             variant="light"
             size="sm"
             onClick={() => {
-              setValue(headingType.heading);
+              setValue(headingTag);
             }}
           >
-            {headingType.title}
+            {headingTag.toUpperCase()}
           </Button>
         ))}
       </ButtonGroup>
