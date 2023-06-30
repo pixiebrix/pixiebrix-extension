@@ -1913,14 +1913,12 @@ exports[`renders the first selected node 1`] = `
             class="configPanel"
           >
             <div
-              class="topRow row"
+              class="brickInfo justify-content-between row"
             >
               <div
-                class="col-xl"
+                class="col"
               >
-                <p
-                  class="brickName"
-                >
+                <p>
                   Echo Brick
                 </p>
               </div>
