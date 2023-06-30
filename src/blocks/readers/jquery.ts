@@ -25,7 +25,7 @@ import { type JsonObject } from "type-fest";
 
 type CastType = "string" | "boolean" | "number";
 
-interface SingleSelector {
+export interface SingleSelector {
   multi?: boolean;
   attr?: string;
   data?: string;
@@ -35,15 +35,21 @@ interface SingleSelector {
   type?: CastType;
 }
 
-interface ChildrenSelector {
+export interface ChildrenSelector {
   multi?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   find?: SelectorMap;
 }
 
-type CommonSelector = ChildrenSelector | SingleSelector;
+export type CommonSelector = ChildrenSelector | SingleSelector;
 
-type Selector = CommonSelector & {
+export function isChildrenSelector(
+  selector: CommonSelector
+): selector is ChildrenSelector {
+  return "find" in selector;
+}
+
+export type Selector = CommonSelector & {
   selector?: string;
 
   // Block until the element is available

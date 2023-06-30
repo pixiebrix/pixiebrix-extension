@@ -53,6 +53,8 @@ export const initRobot = getMethod("UIPATH_INIT");
 export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
 export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
 
+export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
+
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
 
