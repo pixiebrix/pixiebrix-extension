@@ -19,6 +19,7 @@ import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import JQueryReaderOptions from "@/blocks/transformers/jquery/JQueryReaderOptions";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+// eslint-disable-next-line no-restricted-imports -- using to simplify Formik state for test
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
@@ -60,7 +61,7 @@ describe("JQueryReaderOptions", () => {
     expect(wrapper.getByText("Add New Property")).toBeInTheDocument();
   });
 
-  it("shows workshop message on variable", async () => {
+  it("shows workshop message on variable selector", async () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = {
       property: makeVariableExpression("@foo"),

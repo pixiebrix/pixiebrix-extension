@@ -20,6 +20,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { freshIdentifier, joinName } from "@/utils";
@@ -97,7 +98,7 @@ const SelectorCard: React.FC<{
   /**
    * The selector definition.
    */
-  selector: Selector;
+  selectorDefinition: Selector;
   /**
    * Change handler, to handle changes to name and non-schema fields.
    * @param item
@@ -111,21 +112,22 @@ const SelectorCard: React.FC<{
    * The Formik path to selector configuration.
    */
   path: string;
-}> = ({ name, selector, onChange, onDelete, path }) => {
+}> = ({ name: initialName, selectorDefinition, onChange, onDelete, path }) => {
   const configName = partial(joinName, path);
+  const [name, setName] = useState(initialName);
 
-  const typeOption = inferActiveTypeOption(selector);
+  const typeOption = inferActiveTypeOption(selectorDefinition);
 
   const [{ value: multi }] = useField<boolean>(configName("multi"));
 
   const { data: attributeExamples } = fallbackValue(
     useAsyncState(async () => {
-      if (typeof selector.selector === "string") {
-        return getAttributeExamples(thisTab, selector.selector);
+      if (typeof selectorDefinition.selector === "string") {
+        return getAttributeExamples(thisTab, selectorDefinition.selector);
       }
 
       return [];
-    }, [selector.selector]),
+    }, [selectorDefinition.selector]),
     []
   );
 
@@ -159,7 +161,15 @@ const SelectorCard: React.FC<{
               placeholder="Property name"
               value={name}
               onChange={(event) => {
-                onChange({ name: event.target.value, selector });
+                setName(event.target.value);
+              }}
+              // Use onBlur instead of onChange for committing the change to prevent the field from being de-duped
+              // if the there's an intermediate state that has the same name as another field.
+              onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
+                onChange({
+                  name: event.target.value,
+                  selector: selectorDefinition,
+                });
               }}
             />
           </div>
@@ -206,7 +216,7 @@ const SelectorCard: React.FC<{
 
             onChange({
               name,
-              selector: produce(selector, (draft) => {
+              selector: produce(selectorDefinition, (draft) => {
                 // `draft` is either a SingleSelector or a ChildrenSelector. Cast as intersection type so we can clean
                 // up the values in the alternative type.
                 const commonDraft = draft as SingleSelector & ChildrenSelector;
@@ -249,7 +259,7 @@ const SelectorCard: React.FC<{
           }}
         />
 
-        {isChildrenSelector(selector) && (
+        {isChildrenSelector(selectorDefinition) && (
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- co-recursion
           <SelectorsOptions path={configName("find")} />
         )}
@@ -307,9 +317,9 @@ const SelectorsOptions: React.FC<{ path: string }> = ({ path }) => {
       {selectorItems.map(({ name, selector }, index) => (
         <SelectorCard
           name={name}
-          selector={selector}
-          // eslint-disable-next-line react/jsx-key -- can't use name because it will remount on name changes
-          key={index}
+          selectorDefinition={selector}
+          // It's safe to use name because the SelectorCard only commits name changes on blur.
+          key={name}
           onChange={(item) => {
             setSelectorItems(
               produce(selectorItems, (draft) => {
