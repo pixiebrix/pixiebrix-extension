@@ -89,13 +89,11 @@ const CustomFormComponent: React.FunctionComponent<{
   onSubmit,
 }) => (
   <div
-    className={
-      // Since 1.7.33, support a className prop to allow for adjusting margin/padding
-      cx("CustomForm", {
-        "p-3": className === undefined,
-        [className]: Boolean(className),
-      })
-    }
+    className={cx("CustomForm", className, {
+      // Since 1.7.33, support a className prop to allow for adjusting margin/padding. To maintain the legacy
+      // behavior, apply the default only if the className prop is not provided.
+      "p-3": className === undefined,
+    })}
   >
     <ErrorBoundary>
       <Stylesheets href={[bootstrap, custom]}>
