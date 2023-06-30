@@ -54,17 +54,17 @@ export type SelectorSelectorProps = {
   disabled?: boolean;
   initialElement?: ElementInfo;
   framework?: Framework;
+  /**
+   * True to default to selecting multiple elements.
+   * @since 1.7.33
+   */
+  isMulti?: boolean;
   selectMode?: SelectMode;
   traverseUp?: number;
   isClearable?: boolean;
   sort?: boolean;
   root?: string;
   placeholder?: string;
-  /**
-   * True to indicate that selection tool should start in multi-select mode
-   * @since 1.7.33
-   */
-  isMulti?: true;
 };
 
 /**
@@ -114,14 +114,12 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   initialElement,
   framework,
   selectMode = "element",
+  isMulti = false,
   traverseUp = 0,
   isClearable = false,
   root,
   disabled = false,
   placeholder = "Select an element",
-
-  isMulti = false,
-
   // By default, sort by preference in `element` selection mode. Don't sort in `container` mode because
   // the order is based on structure (because selectors for multiple elements are returned).
   sort = selectMode === "element",
@@ -135,6 +133,11 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     { settings: SettingsState },
     boolean
   >((x) => x.settings.excludeRandomClasses);
+
+  const enableSelectionTools = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.selectionTools);
 
   const suggestions: ElementSuggestion[] = useMemo(
     () =>
@@ -182,7 +185,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         root,
         excludeRandomClasses,
         isMulti,
-        enableSelectionTools: true,
+        enableSelectionTools,
       });
 
       if (isEmpty(selected)) {

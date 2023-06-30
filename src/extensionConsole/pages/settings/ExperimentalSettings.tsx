@@ -56,8 +56,12 @@ const ExperimentalFeature: React.FunctionComponent<{
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, excludeRandomClasses, varAutosuggest } =
-    useSelector(selectSettings);
+  const {
+    suggestElements,
+    excludeRandomClasses,
+    selectionTools,
+    varAutosuggest,
+  } = useSelector(selectSettings);
 
   return (
     <Card>
@@ -91,6 +95,20 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               dispatch(
                 settingsSlice.actions.setFlag({
                   flag: "excludeRandomClasses",
+                  value,
+                })
+              );
+            }}
+          />
+          <ExperimentalFeature
+            id="selectionTools"
+            label="Detect and Support Multi-Element Selection Tools:"
+            description="Toggle on to support multi-element selection tools"
+            isEnabled={selectionTools}
+            onChange={(value) => {
+              dispatch(
+                settingsSlice.actions.setFlag({
+                  flag: "selectionTools",
                   value,
                 })
               );
