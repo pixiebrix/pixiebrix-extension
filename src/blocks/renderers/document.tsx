@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -47,8 +47,8 @@ export class DocumentRenderer extends Renderer {
   };
 
   async render(
-    { body }: BlockArgs,
-    options: BlockOptions
+    { body }: BrickArgs,
+    options: BrickOptions
   ): Promise<ComponentRef> {
     return {
       Component: DocumentViewLazy,

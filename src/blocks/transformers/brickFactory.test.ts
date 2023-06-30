@@ -17,14 +17,14 @@
 
 import nytimes from "@contrib/blocks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/blocks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { isUserDefinedBlock } from "@/types/blockTypes";
+import { isUserDefinedBrick } from "@/types/brickTypes";
 import { MappingTransformer } from "./mapping";
 import blockRegistry from "@/blocks/registry";
 import {
-  ContextBlock,
-  contextBlock,
+  ContextBrick,
+  contextBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -33,8 +33,8 @@ import Run from "@/blocks/transformers/controlFlow/Run";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([contextBlock]);
-  ContextBlock.clearContexts();
+  blockRegistry.register([contextBrick]);
+  ContextBrick.clearContexts();
 });
 
 test("two plus two is four", () => {
@@ -73,13 +73,13 @@ test("reject invalid fixture fixture", async () => {
   }
 });
 
-describe("isUserDefinedBlock", () => {
+describe("isUserDefinedBrick", () => {
   test("is detected as user-defined block", () => {
-    expect(isUserDefinedBlock(fromJS(nytimes))).toBe(true);
+    expect(isUserDefinedBrick(fromJS(nytimes))).toBe(true);
   });
 
   test("is detected as built-in block", () => {
-    expect(isUserDefinedBlock(new MappingTransformer())).toBe(false);
+    expect(isUserDefinedBrick(new MappingTransformer())).toBe(false);
   });
 });
 
@@ -129,7 +129,7 @@ test("inner pipelines receive correct context", async () => {
   const pipeline = {
     id: block.id,
     config: {
-      customInput: "Block Environment",
+      customInput: "Brick Environment",
       body: {
         __type__: "pipeline",
         __value__: [{ id: "test/context", label: "Pipeline Arg Context" }],
@@ -143,19 +143,19 @@ test("inner pipelines receive correct context", async () => {
     testOptions("v3")
   );
 
-  expect(ContextBlock.contexts[0]).toStrictEqual({
+  expect(ContextBrick.contexts[0]).toStrictEqual({
     "@input": {
       body: {
         __env__: expect.toBeObject(),
         __type__: "pipeline",
         __value__: expect.toBeArray(),
       },
-      customInput: "Block Environment",
+      customInput: "Brick Environment",
     },
     "@options": {},
   });
 
-  expect(ContextBlock.contexts[1]).toStrictEqual({
+  expect(ContextBrick.contexts[1]).toStrictEqual({
     "@input": {
       customInput: "Closure Environment",
     },

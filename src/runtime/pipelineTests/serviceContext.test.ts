@@ -18,9 +18,9 @@
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
-  identityBlock,
+  contextBrick,
+  echoBrick,
+  identityBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
@@ -38,7 +38,7 @@ import {
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock, identityBlock]);
+  blockRegistry.register([echoBrick, contextBrick, identityBrick]);
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(
@@ -55,7 +55,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
       const result = await reducePipeline(
         {
-          id: contextBlock.id,
+          id: contextBrick.id,
           config: {},
         },
         {
@@ -87,7 +87,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: { data: "@pixiebrix" },
       },
       {
@@ -120,7 +120,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: { data: "@service.prop" },
       },
       {
@@ -147,7 +147,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: {
           data: {
             __type__: "var",
@@ -185,7 +185,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: {
           data: {
             __type__: "var",
@@ -229,7 +229,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
       const result = await reducePipeline(
         {
-          id: identityBlock.id,
+          id: identityBrick.id,
           config: {
             data: {
               __type__: templateEngine,

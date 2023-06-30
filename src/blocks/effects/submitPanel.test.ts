@@ -18,7 +18,7 @@
 import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import { SubmitPanelAction } from "@/blocks/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 
 describe("SubmitPanelEffect", () => {
@@ -27,7 +27,7 @@ describe("SubmitPanelEffect", () => {
 
     try {
       await brick.effect(
-        unsafeAssumeValidArg({ type: "submit" }) as BlockArgs<{
+        unsafeAssumeValidArg({ type: "submit" }) as BrickArgs<{
           type: string;
           detail: JsonObject;
         }>

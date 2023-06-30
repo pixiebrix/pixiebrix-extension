@@ -1,4 +1,4 @@
-import { type BlockPipeline, type Branch } from "@/blocks/types";
+import { type BrickPipeline, type Branch } from "@/blocks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
@@ -10,7 +10,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type BlockArgsContext,
+  type BrickArgsContext,
   type ServiceContext,
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -33,15 +33,15 @@ type RunMetadata = {
 
 type RunPipelineParams = {
   nonce: UUID;
-  pipeline: BlockPipeline;
-  context: BlockArgsContext;
+  pipeline: BrickPipeline;
+  context: BrickArgsContext;
   options: ApiVersionOptions;
   meta: RunMetadata;
   messageContext: MessageContext;
 };
 
 /**
- * Run a BlockPipeline in the contentScript, passing back the information required to run the renderer
+ * Run a BrickPipeline in the contentScript, passing back the information required to run the renderer
  * @param pipeline the block pipeline
  * @param context the context, including @input, @options, and services
  * @param nonce a nonce to help the caller correlate requests/responses. (This shouldn't be necessary in practice though

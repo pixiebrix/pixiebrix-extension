@@ -47,11 +47,11 @@ import Retry from "@/blocks/transformers/controlFlow/Retry";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import TraverseElements from "@/blocks/transformers/traverseElements";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { SelectElement } from "@/blocks/transformers/selectElement";
 import Run from "@/blocks/transformers/controlFlow/Run";
 
-function getAllTransformers(): IBlock[] {
+function getAllTransformers(): Brick[] {
   return [
     new JQTransformer(),
     new ParseJson(),

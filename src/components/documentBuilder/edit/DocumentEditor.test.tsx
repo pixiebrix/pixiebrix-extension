@@ -35,7 +35,7 @@ import {
   baseExtensionStateFactory,
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -49,7 +49,7 @@ describe("move element", () => {
     const formState = formStateFactory({
       extension: baseExtensionStateFactory({
         blockPipeline: [
-          blockConfigFactory({
+          brickConfigFactory({
             config: {
               body: documentElements,
             },
@@ -210,7 +210,7 @@ describe("remove element", () => {
       services,
       extension: baseExtensionStateFactory({
         blockPipeline: [
-          blockConfigFactory({ config: documentWithButtonConfig }),
+          brickConfigFactory({ config: documentWithButtonConfig }),
         ],
       }),
     });

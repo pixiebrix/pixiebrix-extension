@@ -28,8 +28,8 @@ import {
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBlockConfig } from "@/blocks/util";
@@ -38,7 +38,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { blockConfigFactory } from "@/testUtils/factories/blockFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 function getTabState(
   state: EditorState,
@@ -51,14 +51,14 @@ function getTabState(
 
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
-const standardBrick = blockConfigFactory({
-  id: teapotBlock.id,
+const standardBrick = brickConfigFactory({
+  id: teapotBrick.id,
   outputKey: "teapotOutput" as OutputKey,
-  config: defaultBlockConfig(teapotBlock.inputSchema),
+  config: defaultBlockConfig(teapotBrick.inputSchema),
 });
 
-const brickWithService = blockConfigFactory({
-  id: echoBlock.id,
+const brickWithService = brickConfigFactory({
+  id: echoBrick.id,
   outputKey: "echoOutput" as OutputKey,
   config: {
     spreadsheetId: makeVariableExpression("@google"),
@@ -140,7 +140,7 @@ describe("Add/Remove Bricks", () => {
 
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register([echoBlock, teapotBlock]);
+    blockRegistry.register([echoBrick, teapotBrick]);
 
     editor = editorSlice.reducer(initialState, actions.selectInstalled(source));
   });

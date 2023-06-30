@@ -18,25 +18,25 @@
 import { propertiesToSchema } from "@/validators/generic";
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { Reader } from "@/types/blocks/readerTypes";
+import { Reader } from "@/types/bricks/readerTypes";
 import {
   type ApiVersion,
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type Expression,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 
-class RootAwareBlock extends Block {
+class RootAwareBlock extends BrickABC {
   constructor() {
-    super("block/root-aware", "Root Aware Block");
+    super("block/root-aware", "Root Aware Brick");
   }
 
   inputSchema = propertiesToSchema({});
@@ -45,7 +45,7 @@ class RootAwareBlock extends Block {
     return true;
   }
 
-  async run(arg: BlockArgs, { root }: BlockOptions) {
+  async run(arg: BrickArgs, { root }: BrickOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,
@@ -81,7 +81,7 @@ const rootReader = new RootAwareReader();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([rootBlock, rootReader, echoBlock]);
+  blockRegistry.register([rootBlock, rootReader, echoBrick]);
   // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
   document.querySelectorAll("html")[0].innerHTML = "";
 });

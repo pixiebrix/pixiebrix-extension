@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useState } from "react";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
 import { runEffectPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
@@ -30,7 +30,7 @@ import { SubmitPanelAction } from "@/blocks/errors";
 import { boolean } from "@/utils";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
-  onClick: BlockPipeline;
+  onClick: BrickPipeline;
   elementName: string;
   tracePath: DynamicPath;
 };

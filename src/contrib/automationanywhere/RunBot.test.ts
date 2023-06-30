@@ -28,7 +28,7 @@ import {
   getCachedAuthData,
   getUserData,
 } from "@/background/messenger/api";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { type AuthData } from "@/types/serviceTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -95,7 +95,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -154,7 +154,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
@@ -218,7 +218,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
@@ -283,7 +283,7 @@ describe("Automation Anywhere - RunBot", () => {
         data: {},
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -348,7 +348,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -455,7 +455,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(

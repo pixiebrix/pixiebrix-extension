@@ -17,7 +17,7 @@
 
 import { createNewElement } from "./createNewElement";
 import { DOCUMENT_ELEMENT_TYPES } from "./documentBuilderTypes";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 
 test.each(
   DOCUMENT_ELEMENT_TYPES.filter(
@@ -78,7 +78,7 @@ test("sets default config for block", () => {
     label: "Brick",
     pipeline: {
       __type__: "pipeline",
-      __value__: [] as BlockPipeline,
+      __value__: [] as BrickPipeline,
     },
   };
   const actual = createNewElement("pipeline");
@@ -92,7 +92,7 @@ test("sets default config for button", () => {
     title: "Action",
     onClick: {
       __type__: "pipeline",
-      __value__: [] as BlockPipeline,
+      __value__: [] as BrickPipeline,
     },
   };
 

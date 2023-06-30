@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { runSubTour } from "@/extensionPoints/tourController";
@@ -43,14 +43,14 @@ export class RunSubTourEffect extends Effect {
   );
 
   async effect(
-    { tour }: BlockArgs<{ tour: string }>,
-    { logger }: BlockOptions
+    { tour }: BrickArgs<{ tour: string }>,
+    { logger }: BrickOptions
   ): Promise<void> {
     if (isEmpty(logger.context.blueprintId)) {
       throw new BusinessError("Can only run sub-tours in the same mod");
     }
 
-    // XXX: do we need affordance cancel this using abortSignal from BlockOptions? Probably not for now, because
+    // XXX: do we need affordance cancel this using abortSignal from BrickOptions? Probably not for now, because
     // manually running a tour will cancel all tours in progress (see tourController.ts)
     await runSubTour({
       tour,

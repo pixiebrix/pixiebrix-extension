@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
@@ -57,12 +57,12 @@ export class AddOrganization extends Effect {
       pipedrive,
       name,
       owner_id,
-    }: BlockArgs<{
+    }: BrickArgs<{
       name: string;
       owner_id: number;
       pipedrive: SanitizedServiceConfiguration;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<void> {
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/organizations/search",
@@ -135,14 +135,14 @@ export class AddPerson extends Effect {
       owner_id,
       email,
       phone,
-    }: BlockArgs<{
+    }: BrickArgs<{
       pipedrive: SanitizedServiceConfiguration;
       name: string;
       owner_id: number;
       email?: string;
       phone?: string;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<void> {
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",

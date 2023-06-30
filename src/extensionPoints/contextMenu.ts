@@ -48,7 +48,7 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -61,11 +61,11 @@ import {
 } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -80,7 +80,7 @@ export type ContextMenuConfig = {
   /**
    * Action to perform on click.
    */
-  action: BlockConfig | BlockPipeline;
+  action: BrickConfig | BrickPipeline;
 
   /**
    * (Experimental) message to show on success when running the extension
@@ -164,7 +164,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
   async getBlocks(
     extension: ResolvedExtension<ContextMenuConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 
@@ -449,7 +449,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<MenuDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {
     throw new Error(`Expected type=contextMenu, got ${type}`);

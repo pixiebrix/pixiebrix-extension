@@ -24,7 +24,7 @@ import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type FormState } from "./extensionPoints/formStateTypes";
@@ -135,7 +135,7 @@ export interface EditorState {
   /**
    * A clipboard-style-copy of a block ready to paste into an extension
    */
-  copiedBlock?: BlockConfig;
+  copiedBlock?: BrickConfig;
 
   /**
    * Are we currently showing the info message to users about upgrading from v2 to v3 of

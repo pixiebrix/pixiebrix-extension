@@ -20,7 +20,7 @@ import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { RootReader } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import {
@@ -65,7 +65,7 @@ const extensionFactory = define<ResolvedExtension<ContextMenuConfig>>({
   label: "Test Extension",
   config: define<ContextMenuConfig>({
     title: "Test Menu Item",
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
   }),
 });
 

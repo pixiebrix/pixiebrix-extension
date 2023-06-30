@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { random } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -68,7 +68,7 @@ export class RandomNumber extends Transformer {
     lower = 0,
     upper = 1,
     floating = false,
-  }: BlockArgs<{
+  }: BrickArgs<{
     lower?: number;
     upper?: number;
     floating?: boolean;

@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { ShowEffect } from "@/blocks/effects/show";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -50,7 +50,7 @@ describe("ShowEffect", () => {
 
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BlockOptions
+        { root: document, logger } as BrickOptions
       );
 
       expect(document.querySelector("button")).toBeVisible();
@@ -61,7 +61,7 @@ describe("ShowEffect", () => {
     await brick.run(unsafeAssumeValidArg({ isRootAware: true }), {
       root: document.querySelector("button"),
       logger,
-    } as unknown as BlockOptions);
+    } as unknown as BrickOptions);
 
     expect(document.querySelector("button")).toBeVisible();
   });

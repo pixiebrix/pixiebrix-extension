@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from "react";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
@@ -32,7 +32,7 @@ import { type PanelContext } from "@/types/sidebarTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 
 type BlockElementProps = {
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
   tracePath: DynamicPath;
 };
 

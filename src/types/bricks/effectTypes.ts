@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block } from "@/types/blockTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { BrickABC } from "@/types/brickTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
-export abstract class Effect extends Block {
+export abstract class Effect extends BrickABC {
   override async isRootAware(): Promise<boolean> {
     // Most effects don't use the root, so have them opt-in
     return false;
   }
 
-  abstract effect(inputs: BlockArgs, env?: BlockOptions): Promise<void>;
+  abstract effect(inputs: BrickArgs, env?: BrickOptions): Promise<void>;
 
-  async run(value: BlockArgs, options: BlockOptions): Promise<void> {
+  async run(value: BrickArgs, options: BrickOptions): Promise<void> {
     return this.effect(value, options);
   }
 }

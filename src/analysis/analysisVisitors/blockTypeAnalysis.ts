@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitorWithResolvedBlocks } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { AnalysisVisitorWithResolvedBricks } from "./baseAnalysisVisitors";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { TourEffect } from "@/blocks/effects/tourEffect";
 
-class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBlocks {
+class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBricks {
   get id() {
     return "blockType";
   }
 
   override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     super.visitBlock(position, blockConfig, extra);

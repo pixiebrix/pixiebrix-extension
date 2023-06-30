@@ -48,7 +48,7 @@ export abstract class AnalysisVisitor
   }
 }
 
-export abstract class AnalysisVisitorWithResolvedBlocks extends AnalysisVisitor {
+export abstract class AnalysisVisitorWithResolvedBricks extends AnalysisVisitor {
   protected allBlocks: TypedBlockMap;
 
   override async run(extension: FormState): Promise<void> {

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
@@ -83,13 +83,13 @@ class InsertHtml extends Effect {
       html,
       position = "append",
       replacementId,
-    }: BlockArgs<{
+    }: BrickArgs<{
       anchor: string;
       html: string;
       replacementId?: string;
       position?: Position;
     }>,
-    { root = document }: BlockOptions
+    { root = document }: BrickOptions
   ): Promise<void> {
     const sanitizedHTML = sanitize(html);
     const sanitizedElement = $(sanitizedHTML).get(0);

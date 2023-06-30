@@ -18,7 +18,7 @@
 import { EnableEffect } from "@/blocks/effects/enable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
@@ -44,7 +44,7 @@ describe("EnableEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BlockOptions
+        { root: document, logger } as BrickOptions
       );
 
       expect(document.querySelector("button")).not.toBeDisabled();
@@ -55,7 +55,7 @@ describe("EnableEffect", () => {
     await brick.run(unsafeAssumeValidArg({ isRootAware: true }), {
       root: document.querySelector("button"),
       logger,
-    } as unknown as BlockOptions);
+    } as unknown as BrickOptions);
 
     expect(document.querySelector("button")).not.toBeDisabled();
   });

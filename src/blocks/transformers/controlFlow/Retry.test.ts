@@ -17,10 +17,10 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
@@ -30,7 +30,7 @@ const retryBlock = new Retry();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([throwBlock, echoBlock, retryBlock]);
+  blockRegistry.register([throwBrick, echoBrick, retryBlock]);
 });
 
 describe("Retry", () => {
@@ -41,7 +41,7 @@ describe("Retry", () => {
         maxRetries: 2,
         body: makePipelineExpression([
           {
-            id: throwBlock.id,
+            id: throwBrick.id,
             config: {
               message: "This is an error message!",
             },
@@ -62,7 +62,7 @@ describe("Retry", () => {
         maxRetries: 2,
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: "Hello, world!",
             },

@@ -46,7 +46,7 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
 
   // This currently happens when a brick is copy-pasted into a separate extension
   // that does not yet have root.services configured, but already has the service
-  // key set up in the (copied) BlockConfig.
+  // key set up in the (copied) BrickConfig.
   const isBadValue =
     serviceOutputKey &&
     !root.services.some((service) =>

@@ -24,9 +24,9 @@ import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
@@ -64,8 +64,8 @@ export class PushZap extends Effect {
   override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
-    { pushKey, data }: BlockArgs<{ pushKey: string; data: UnknownObject }>,
-    options: BlockOptions
+    { pushKey, data }: BrickArgs<{ pushKey: string; data: UnknownObject }>,
+    options: BrickOptions
   ): Promise<void> {
     const { data: webhooks } = await proxyService<{
       new_push_fields: Webhook[];

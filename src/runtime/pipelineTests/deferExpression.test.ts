@@ -17,11 +17,11 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { deferBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
+import { deferBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([deferBlock]);
+  blockRegistry.register([deferBrick]);
 });
 
 describe("apiVersion: v3", () => {
@@ -33,9 +33,9 @@ describe("apiVersion: v3", () => {
     },
   };
 
-  test("deferBlock renders top-level deferred block", async () => {
+  test("deferBrick renders top-level deferred block", async () => {
     const pipeline = {
-      id: deferBlock.id,
+      id: deferBrick.id,
       config: {
         array: [1, 2],
         element: deferred,
@@ -48,15 +48,15 @@ describe("apiVersion: v3", () => {
       testOptions("v3")
     );
     expect(result).toStrictEqual([
-      // The deferBlock is set up to look for !defer expression as the top level expression
+      // The deferBrick is set up to look for !defer expression as the top level expression
       "1 - 42",
       "2 - 42",
     ]);
   });
 
-  test("deferBlock only renders top-level deferred block", async () => {
+  test("deferBrick only renders top-level deferred block", async () => {
     const pipeline = {
-      id: deferBlock.id,
+      id: deferBrick.id,
       config: {
         array: [1, 2],
         element: {
@@ -75,7 +75,7 @@ describe("apiVersion: v3", () => {
       testOptions("v3")
     );
     expect(result).toStrictEqual([
-      // The deferBlock is set up to look for !defer expression as the top level expression
+      // The deferBrick is set up to look for !defer expression as the top level expression
       { immediate: " - 42", deferred },
       { immediate: " - 42", deferred },
     ]);

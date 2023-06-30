@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { AttachAutocomplete } from "@/blocks/effects/attachAutocomplete";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -52,7 +52,7 @@ describe("AttachAutocomplete", () => {
     await brick.run(unsafeAssumeValidArg({ selector: "[name='name']" }), {
       root: document,
       logger,
-    } as unknown as BlockOptions);
+    } as unknown as BrickOptions);
 
     expect(
       document.querySelector("[name='name']").getAttribute("role")
@@ -65,7 +65,7 @@ describe("AttachAutocomplete", () => {
       {
         root: document.querySelector("#noForm"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     expect(
@@ -77,7 +77,7 @@ describe("AttachAutocomplete", () => {
       {
         root: document.querySelector("#hasForm"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     expect(

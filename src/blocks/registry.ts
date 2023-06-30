@@ -16,27 +16,27 @@
  */
 
 import BaseRegistry from "@/baseRegistry";
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/blocks/transformers/brickFactory";
 import {
-  type BlockType,
-  type ResolvedBlockConfig,
+  type BrickType,
+  type ResolvedBrickConfig,
 } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 /**
  * A block along with inferred/calculated information
  */
 export type TypedBlock = {
-  block: IBlock;
-  type: BlockType;
+  block: Brick;
+  type: BrickType;
 };
 
 export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
-class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+class BricksRegistry extends BaseRegistry<RegistryId, Brick> {
   constructor() {
     super(["block", "component", "effect", "reader"], fromJS);
 
@@ -64,7 +64,7 @@ class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     const typePromises = await Promise.allSettled(
       items.map(async (item) => {
         // XXX: will we run into problems with circular dependency between getType and the registry exported from
-        //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
+        //  this module? getType references the brickRegistry in order to calculate the type for composite bricks
         //  that are defined as a pipeline of other blocks.
         typeCache.set(item.id, {
           block: item,
@@ -99,13 +99,13 @@ class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   }
 }
 
-const registry = new BlocksRegistry();
+const registry = new BricksRegistry();
 
 export default registry;
 
 export async function resolveBlockConfig(
-  config: BlockConfig
-): Promise<ResolvedBlockConfig> {
+  config: BrickConfig
+): Promise<ResolvedBrickConfig> {
   const block = await registry.lookup(config.id);
   return {
     config,

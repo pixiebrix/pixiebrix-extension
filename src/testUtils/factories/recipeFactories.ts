@@ -30,7 +30,7 @@ import {
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   validateRegistryId,
@@ -69,7 +69,7 @@ export const extensionPointConfigFactory = define<ExtensionDefinition>({
   },
   config: () => ({
     caption: "Button",
-    action: [] as BlockPipeline,
+    action: [] as BrickPipeline,
   }),
 });
 
@@ -139,7 +139,7 @@ export const versionedExtensionPointRecipeFactory = ({
         permissions: emptyPermissionsFactory(),
         config: {
           caption: "Button",
-          action: [] as BlockPipeline,
+          action: [] as BrickPipeline,
         },
       },
     ],

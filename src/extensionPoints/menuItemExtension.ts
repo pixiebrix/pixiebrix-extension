@@ -48,7 +48,7 @@ import notify, {
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions, {
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
@@ -74,16 +74,16 @@ import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import {
   type RunArgs,
   RunReason,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 
 interface ShadowDOM {
@@ -119,13 +119,13 @@ export type MenuItemExtensionConfig = {
   /**
    * The action to perform when the button is clicked
    */
-  action: BlockConfig | BlockPipeline;
+  action: BrickConfig | BrickPipeline;
 
   /**
    * (Experimental) condition to determine whether to show the menu item
    * @see if
    */
-  if?: BlockConfig | BlockPipeline;
+  if?: BrickConfig | BrickPipeline;
 
   /**
    * (Experimental) re-install the menu if an off the selectors change.
@@ -403,7 +403,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   async getBlocks(
     extension: ResolvedExtension<MenuItemExtensionConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 
@@ -1165,7 +1165,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<MenuDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "menuItem") {
     // `type` is `never` here due to the if-statement

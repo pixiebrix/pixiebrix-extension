@@ -16,7 +16,7 @@
  */
 
 import { JSDOM } from "jsdom";
-import { Reader } from "@/types/blocks/readerTypes";
+import { Reader } from "@/types/bricks/readerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { type ElementReference } from "@/types/runtimeTypes";
