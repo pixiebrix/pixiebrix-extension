@@ -51,19 +51,25 @@ export class RegexTransformer extends Transformer {
   inputSchema: Schema = propertiesToSchema(
     {
       regex: {
+        title: "Regular Expression",
         type: "string",
         description:
           "A regular expression pattern. Supports [named capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group) to extract multiple properties.",
       },
       input: {
+        title: "Text Input(s)",
         oneOf: [
           { type: ["string", "null"] },
           { type: "array", items: { type: ["string", "null"] } },
         ],
+        description:
+          "The text to run the regular expression against. If an array is provided, the regular expression will be run against each item.",
       },
       ignoreCase: {
+        title: "Ignore Case",
         type: "boolean",
-        description: "True to ignore case when matching. Defaults to false.",
+        description:
+          "Toggle on perform a case-insensitive match. Defaults to false.",
         default: false,
       },
     },
