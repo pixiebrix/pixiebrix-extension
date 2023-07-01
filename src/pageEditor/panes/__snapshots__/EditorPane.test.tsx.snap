@@ -836,8 +836,10 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="root"
             >
-              <button
+              <div
                 class="header"
+                role="button"
+                tabindex="0"
               >
                 <svg
                   aria-hidden="true"
@@ -855,7 +857,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced
-              </button>
+              </div>
               <div
                 class="body collapse"
               >
@@ -1003,8 +1005,10 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="root"
             >
-              <button
+              <div
                 class="header"
+                role="button"
+                tabindex="0"
               >
                 <svg
                   aria-hidden="true"
@@ -1022,7 +1026,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Match Rules
-              </button>
+              </div>
               <div
                 class="body collapse"
               >
@@ -1137,8 +1141,10 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="root"
             >
-              <button
+              <div
                 class="header"
+                role="button"
+                tabindex="0"
               >
                 <svg
                   aria-hidden="true"
@@ -1156,7 +1162,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Extra Permissions
-              </button>
+              </div>
               <div
                 class="body collapse"
               >
@@ -2066,8 +2072,10 @@ exports[`renders the first selected node 1`] = `
             <div
               class="root"
             >
-              <button
+              <div
                 class="header"
+                role="button"
+                tabindex="0"
               >
                 <svg
                   aria-hidden="true"
@@ -2085,7 +2093,7 @@ exports[`renders the first selected node 1`] = `
                   />
                 </svg>
                 Advanced Options
-              </button>
+              </div>
               <div
                 class="body collapse"
               >
