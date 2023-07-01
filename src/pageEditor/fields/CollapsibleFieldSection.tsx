@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useRef } from "react";
 import { Collapse } from "react-bootstrap";
 import styles from "@/pageEditor/fields/CollapsibleFieldSection.module.scss";
 import cx from "classnames";
@@ -23,27 +23,42 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 const CollapsibleFieldSection: React.FC<{
-  title: string;
+  title: React.ReactNode;
   toggleExpanded: () => void;
   expanded?: boolean;
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
-}> = ({ title, toggleExpanded, expanded, children, bodyRef }) => (
-  <div className={styles.root}>
-    <button className={styles.header} onClick={toggleExpanded}>
-      <FontAwesomeIcon
-        icon={faChevronRight}
-        className={cx(styles.activeIndicator, {
-          [styles.active]: expanded,
-        })}
-      />
-      {title}
-    </button>
-    <Collapse in={expanded}>
-      <div className={styles.body} ref={bodyRef}>
-        {children}
-      </div>
-    </Collapse>
-  </div>
-);
+}> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
+  const headerRef = useRef(null);
+
+  const onToggle = (event: React.MouseEvent<HTMLElement>) => {
+    // Prevent toggle on titles that include other clickable elements, e.g., inputs/buttons when the title is passed
+    // as a ReactNode
+    if (
+      event.target === headerRef.current ||
+      (event.target as HTMLElement).tagName !== "INPUT"
+    ) {
+      toggleExpanded();
+    }
+  };
+
+  return (
+    <div className={styles.root}>
+      <button className={styles.header} onClick={onToggle} ref={headerRef}>
+        <FontAwesomeIcon
+          icon={faChevronRight}
+          className={cx(styles.activeIndicator, {
+            [styles.active]: expanded,
+          })}
+        />
+        {title}
+      </button>
+      <Collapse in={expanded}>
+        <div className={styles.body} ref={bodyRef}>
+          {children}
+        </div>
+      </Collapse>
+    </div>
+  );
+};
 
 export default CollapsibleFieldSection;

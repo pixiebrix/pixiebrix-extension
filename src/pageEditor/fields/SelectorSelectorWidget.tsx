@@ -207,7 +207,16 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     [disableSelector, enableSelector, setValue]
   );
 
-  const select = useCallback(async () => {
+  useEffect(
+    () => () => {
+      if (isSelecting) {
+        void cancelSelect(thisTab);
+      }
+    },
+    [isSelecting]
+  );
+
+  const select = async () => {
     setSelecting(true);
     try {
       const selected = await selectElement(thisTab, {
@@ -248,25 +257,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     } finally {
       setSelecting(false);
     }
-  }, [
-    sort,
-    framework,
-    setSelecting,
-    traverseUp,
-    selectMode,
-    setElement,
-    setValue,
-    root,
-  ]);
-
-  useEffect(
-    () => () => {
-      if (isSelecting) {
-        void cancelSelect(thisTab);
-      }
-    },
-    [isSelecting]
-  );
+  };
 
   return (
     // Do not replace this with `InputGroup` because that requires too many style overrides #2658 #2835

@@ -33,7 +33,7 @@ import {
   type SelectorMap,
   type SingleSelector,
 } from "@/blocks/readers/jquery";
-import { Button, Card, FormControl } from "react-bootstrap";
+import { Button, FormControl } from "react-bootstrap";
 import { type SafeString } from "@/types/stringTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -50,7 +50,9 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
-import { AttributeExample } from "@/contentScript/pageEditor/types";
+import { type AttributeExample } from "@/contentScript/pageEditor/types";
+import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
+import cx from "classnames";
 
 type SelectorItem = {
   name: string;
@@ -150,6 +152,10 @@ const SelectorCard: React.FC<{
    * A selector for the SelectorRoot, or null for the document or unknown.
    */
   rootSelector: string | null;
+  /**
+   * Depth of nested selectors, default 0.
+   */
+  nestingLevel?: number;
 }> = ({
   name: initialName,
   selectorDefinition,
@@ -157,9 +163,11 @@ const SelectorCard: React.FC<{
   onDelete,
   path,
   rootSelector,
+  nestingLevel = 0,
 }) => {
   const configName = partial(joinName, path);
   const [name, setName] = useState(initialName);
+  const [expanded, setExpanded] = useState(true);
 
   const [{ value: isMulti }] = useField<boolean>(configName("multi"));
 
@@ -178,9 +186,13 @@ const SelectorCard: React.FC<{
   const typeOptions = typeOptionsFactory(attributeExamples, typeOption);
 
   return (
-    <Card className="my-2">
-      <Card.Header>
-        <div className="d-flex justify-content-between">
+    <CollapsibleFieldSection
+      expanded={expanded}
+      toggleExpanded={() => {
+        setExpanded((expanded) => !expanded);
+      }}
+      title={
+        <div className="d-flex justify-content-between w-100">
           <div className={styles.nameInput}>
             <FormControl
               type="text"
@@ -204,8 +216,9 @@ const SelectorCard: React.FC<{
             <FontAwesomeIcon icon={faTrash} />
           </Button>
         </div>
-      </Card.Header>
-      <Card.Body>
+      }
+    >
+      <div>
         <SchemaField
           name={configName("selector")}
           isRequired
@@ -236,7 +249,7 @@ const SelectorCard: React.FC<{
           name="type"
           as={SelectWidget}
           label="Extract"
-          description="Extract text or an attribute. Or, choose element to add nested elements."
+          description="Extract Text or an attribute. Or, select Element to extract nested properties."
           value={typeOption}
           options={typeOptions}
           onChange={(event: ChangeEvent<SelectLike>) => {
@@ -295,6 +308,7 @@ const SelectorCard: React.FC<{
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- co-recursion
           <SelectorsOptions
             path={configName("find")}
+            nestingLevel={nestingLevel + 1}
             rootSelector={
               typeof selectorDefinition.selector === "string"
                 ? selectorDefinition.selector
@@ -302,18 +316,19 @@ const SelectorCard: React.FC<{
             }
           />
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </CollapsibleFieldSection>
   );
 };
 
 // FIXME: actual type can contain expressions. Write a SelectorMapConfiguration type
 type SelectorMapConfig = SelectorMap;
 
-const SelectorsOptions: React.FC<{ path: string; rootSelector: string }> = ({
-  path,
-  rootSelector,
-}) => {
+const SelectorsOptions: React.FC<{
+  path: string;
+  rootSelector: string;
+  nestingLevel: number;
+}> = ({ path, rootSelector, nestingLevel }) => {
   const configName = partial(joinName, path);
 
   const [{ value: rawSelectors }, , fieldHelpers] =
@@ -361,32 +376,6 @@ const SelectorsOptions: React.FC<{ path: string; rootSelector: string }> = ({
 
   return (
     <div>
-      {selectorItems.map(({ name, selector }, index) => (
-        <SelectorCard
-          name={name}
-          rootSelector={rootSelector}
-          selectorDefinition={selector}
-          // It's safe to use name because the SelectorCard only commits name changes on blur.
-          key={name}
-          onChange={(item) => {
-            setSelectorItems(
-              produce(selectorItems, (draft) => {
-                // eslint-disable-next-line security/detect-object-injection -- index is a number
-                draft[index] = item;
-              })
-            );
-          }}
-          onDelete={
-            selectorItems.length > 1
-              ? () => {
-                  setSelectorItems(selectorItems.filter((_, i) => i !== index));
-                }
-              : null
-          }
-          path={configName(name)}
-        />
-      ))}
-
       <Button
         className="mb-3"
         size="sm"
@@ -403,8 +392,38 @@ const SelectorsOptions: React.FC<{ path: string; rootSelector: string }> = ({
           ]);
         }}
       >
-        <FontAwesomeIcon icon={faPlus} /> Add New Property
+        <FontAwesomeIcon icon={faPlus} /> Add Property
       </Button>
+
+      <div className={cx({ "pl-2": nestingLevel > 0 })}>
+        {selectorItems.map(({ name, selector }, index) => (
+          <SelectorCard
+            name={name}
+            rootSelector={rootSelector}
+            selectorDefinition={selector}
+            // It's safe to use name because the SelectorCard only commits name changes on blur.
+            key={name}
+            onChange={(item) => {
+              setSelectorItems(
+                produce(selectorItems, (draft) => {
+                  // eslint-disable-next-line security/detect-object-injection -- index is a number
+                  draft[index] = item;
+                })
+              );
+            }}
+            onDelete={
+              selectorItems.length > 1
+                ? () => {
+                    setSelectorItems(
+                      selectorItems.filter((_, i) => i !== index)
+                    );
+                  }
+                : null
+            }
+            path={configName(name)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
@@ -415,7 +434,11 @@ const JQueryReaderOptions: React.FC<
   const basePath = joinName(name, configKey);
   const configName = partial(joinName, basePath);
   return (
-    <SelectorsOptions path={configName("selectors")} rootSelector={null} />
+    <SelectorsOptions
+      path={configName("selectors")}
+      rootSelector={null}
+      nestingLevel={0}
+    />
   );
 };
 
