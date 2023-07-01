@@ -126,6 +126,11 @@ export function createNewElement(
     case "button": {
       element.config.label = "Button";
       element.config.title = "Action";
+      element.config.size = "md";
+      element.config.variant = "primary";
+      element.config.fullWidth = false;
+      element.config.disabled = false;
+      element.config.hidden = false;
 
       element.config.onClick = {
         __type__: "pipeline",

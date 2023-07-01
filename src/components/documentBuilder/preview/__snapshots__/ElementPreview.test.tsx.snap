@@ -10,7 +10,7 @@ exports[`can preview default button 1`] = `
         class="root inlineWrapper"
       >
         <button
-          class="btn btn-primary"
+          class="btn btn-primary btn-md"
           type="button"
         >
           Action

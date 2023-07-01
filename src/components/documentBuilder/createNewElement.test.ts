@@ -90,6 +90,11 @@ test("sets default config for button", () => {
   const expectedConfig = {
     label: "Button",
     title: "Action",
+    size: "md",
+    hidden: false,
+    fullWidth: false,
+    variant: "primary",
+    disabled: false,
     onClick: {
       __type__: "pipeline",
       __value__: [] as BrickPipeline,
