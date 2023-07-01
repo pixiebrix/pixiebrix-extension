@@ -29,6 +29,13 @@ import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
+import { getAttributeExamples } from "@/contentScript/messenger/api";
+
+jest.mock("@/contentScript/messenger/api", () => ({
+  getAttributeExamples: jest.fn(),
+}));
+
+const getAttributeExamplesMock = jest.mocked(getAttributeExamples);
 
 function baseStateFactory() {
   const baseFormState = menuItemFormStateFactory();
@@ -56,6 +63,11 @@ function renderOptions(formState: FormState = baseStateFactory()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
+});
+
+beforeEach(() => {
+  getAttributeExamplesMock.mockClear();
+  getAttributeExamplesMock.mockResolvedValue([]);
 });
 
 describe("JQueryReaderOptions", () => {
@@ -104,6 +116,33 @@ describe("JQueryReaderOptions", () => {
     );
 
     expect(wrapper.getByLabelText("Selector")).toHaveValue("h1");
+  });
+
+  it("generates example attributes for nested selectors", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      outer: {
+        selector: "div",
+        find: {
+          inner: {
+            selector: "h1",
+          },
+        },
+      },
+    };
+
+    renderOptions(state);
+
+    await waitForEffect();
+
+    expect(getAttributeExamplesMock).toHaveBeenCalledWith(
+      { frameId: 0, tabId: 0 },
+      "div"
+    );
+    expect(getAttributeExamplesMock).toHaveBeenCalledWith(
+      { frameId: 0, tabId: 0 },
+      "div h1"
+    );
   });
 });
 

@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { freshIdentifier, joinName } from "@/utils";
-import { isEmpty, partial, truncate } from "lodash";
+import { compact, isEmpty, partial, truncate } from "lodash";
 import { useField } from "formik";
 import {
   type ChildrenSelector,
@@ -174,11 +174,14 @@ const SelectorCard: React.FC<{
   const { data: attributeExamples } = fallbackValue(
     useAsyncState(async () => {
       if (typeof selectorDefinition.selector === "string") {
-        return getAttributeExamples(thisTab, selectorDefinition.selector);
+        return getAttributeExamples(
+          thisTab,
+          compact([rootSelector, selectorDefinition.selector]).join(" ")
+        );
       }
 
       return [];
-    }, [selectorDefinition.selector]),
+    }, [selectorDefinition.selector, rootSelector]),
     []
   );
 

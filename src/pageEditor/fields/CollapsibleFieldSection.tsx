@@ -30,12 +30,12 @@ const CollapsibleFieldSection: React.FC<{
 }> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
   const headerRef = useRef(null);
 
-  const onToggle = (event: React.MouseEvent<HTMLElement>) => {
+  const onToggle = (event: React.MouseEvent | React.KeyboardEvent) => {
     // Prevent toggle on titles that include other clickable elements, e.g., inputs/buttons when the title is passed
     // as a ReactNode
     if (
       event.target === headerRef.current ||
-      (event.target as HTMLElement).tagName !== "INPUT"
+      !["BUTTON", "INPUT"].includes((event.target as HTMLElement).tagName)
     ) {
       toggleExpanded();
     }
@@ -43,7 +43,14 @@ const CollapsibleFieldSection: React.FC<{
 
   return (
     <div className={styles.root}>
-      <button className={styles.header} onClick={onToggle} ref={headerRef}>
+      <div
+        role="button"
+        tabIndex={0}
+        className={styles.header}
+        onClick={onToggle}
+        ref={headerRef}
+        onKeyPress={onToggle}
+      >
         <FontAwesomeIcon
           icon={faChevronRight}
           className={cx(styles.activeIndicator, {
@@ -51,7 +58,7 @@ const CollapsibleFieldSection: React.FC<{
           })}
         />
         {title}
-      </button>
+      </div>
       <Collapse in={expanded}>
         <div className={styles.body} ref={bodyRef}>
           {children}

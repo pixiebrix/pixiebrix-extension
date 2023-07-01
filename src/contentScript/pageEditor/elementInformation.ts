@@ -17,9 +17,16 @@
 
 import { uniqBy } from "lodash";
 import { type AttributeExample } from "@/contentScript/pageEditor/types";
+import { $safeFind } from "@/helpers";
 
+/**
+ * Returns attributes available an _any_ of the elements matching the selector. Returns the first example per attribute.
+ * @param selector the selector to query
+ */
 export function getAttributeExamples(selector: string): AttributeExample[] {
-  const elements = [...document.querySelectorAll(selector)];
+  console.debug("getAttributeExamples", { selector });
+
+  const elements = $safeFind(selector).get();
 
   const examples = elements.flatMap((element) => {
     const examples = [];
