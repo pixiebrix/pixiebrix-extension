@@ -274,6 +274,24 @@ describe("When rendered in panel", () => {
       expect(element).not.toBeDisabled();
     });
 
+    test("renders full width button", () => {
+      const config: DocumentElement = {
+        type: "button",
+        config: {
+          title: "Button under test",
+          fullWidth: true,
+          onClick: {
+            __type__: "pipeline",
+            __value__: jest.fn(),
+          },
+        },
+      };
+      const { container } = renderDocument(config);
+      const element = container.querySelector("button");
+
+      expect(element).toHaveClass("btn-block");
+    });
+
     test.each`
       variant        | className
       ${"primary"}   | ${"btn-primary"}
