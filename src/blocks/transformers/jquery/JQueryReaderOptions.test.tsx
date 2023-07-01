@@ -17,7 +17,10 @@
 
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import JQueryReaderOptions from "@/blocks/transformers/jquery/JQueryReaderOptions";
+import JQueryReaderOptions, {
+  inferActiveTypeOption,
+  typeOptionsFactory,
+} from "@/blocks/transformers/jquery/JQueryReaderOptions";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 // eslint-disable-next-line no-restricted-imports -- using to simplify Formik state for test
 import { Formik } from "formik";
@@ -75,6 +78,19 @@ describe("JQueryReaderOptions", () => {
     expect(wrapper.container.querySelector(".alert")).toBeInTheDocument();
   });
 
+  it("shows workshop message variable selectors", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors =
+      makeVariableExpression("@foo");
+
+    const wrapper = renderOptions(state);
+
+    await waitForEffect();
+
+    expect(wrapper.queryByText("Add New Property")).not.toBeInTheDocument();
+    expect(wrapper.container.querySelector(".alert")).toBeInTheDocument();
+  });
+
   it("normalizes primitive selectors", async () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = { property: "h1" };
@@ -88,5 +104,52 @@ describe("JQueryReaderOptions", () => {
     );
 
     expect(wrapper.getByLabelText("Selector")).toHaveValue("h1");
+  });
+});
+
+describe("type options", () => {
+  it("infers element", () => {
+    expect(
+      inferActiveTypeOption({
+        selector: "div",
+        find: {},
+      })
+    ).toEqual("element");
+  });
+
+  it("infers attribute", () => {
+    expect(
+      inferActiveTypeOption({
+        selector: "div",
+        attr: "foo",
+      })
+    ).toEqual("attr:foo");
+  });
+
+  it("infers data attribute", () => {
+    expect(
+      inferActiveTypeOption({
+        selector: "div",
+        data: "foo",
+      })
+    ).toEqual("attr:data-foo");
+  });
+
+  it("creates new option for unknown type", () => {
+    expect(typeOptionsFactory([], "attr:data-foo")).toEqual([
+      { label: "Text", value: "text" },
+      { label: "Element", value: "element" },
+      { label: "data-foo", value: "attr:data-foo" },
+    ]);
+  });
+
+  it("matches data attribute", () => {
+    expect(
+      typeOptionsFactory([{ name: "data-foo", value: "abc" }], "attr:data-foo")
+    ).toEqual([
+      { label: "Text", value: "text" },
+      { label: "Element", value: "element" },
+      { label: "data-foo - abc", value: "attr:data-foo" },
+    ]);
   });
 });

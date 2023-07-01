@@ -71,7 +71,7 @@ const SelectionToolPopover: React.FC<{
 
     <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
-        <Draggable>
+        <Draggable defaultPosition={{ x: 0, y: 0 }}>
           <div className="popover-wrapper">
             <div className="popover-wrapper-header">
               <FontAwesomeIcon icon={faGripHorizontal} size="1x" />

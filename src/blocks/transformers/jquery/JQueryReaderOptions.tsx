@@ -50,13 +50,16 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
+import { AttributeExample } from "@/contentScript/pageEditor/types";
 
 type SelectorItem = {
   name: string;
   selector: Selector;
 };
 
-function normalizeShape(selectors: SelectorMap): SelectorItem[] {
+function normalizeSelectorDefinitionShape(
+  selectors: SelectorMap
+): SelectorItem[] {
   return Object.entries(selectors).map(([name, selector]) => {
     if (typeof selector === "string") {
       return { name, selector: { selector } };
@@ -67,9 +70,15 @@ function normalizeShape(selectors: SelectorMap): SelectorItem[] {
 }
 
 const ATTRIBUTE_OPTION_VALUE_PREFIX = "attr:";
+
 const DATA_ATTRIBUTE_PREFIX = "data-";
 
-function inferActiveTypeOption(selectorDefinition: Selector): string {
+const BASE_TYPE_OPTIONS = [
+  { value: "text", label: "Text" },
+  { value: "element", label: "Element" },
+];
+
+export function inferActiveTypeOption(selectorDefinition: Selector): string {
   if (isChildrenSelector(selectorDefinition)) {
     return "element";
   }
@@ -82,17 +91,38 @@ function inferActiveTypeOption(selectorDefinition: Selector): string {
     return [
       ATTRIBUTE_OPTION_VALUE_PREFIX,
       DATA_ATTRIBUTE_PREFIX,
-      selectorDefinition.attr,
+      selectorDefinition.data,
     ].join("");
   }
 
   return "text";
 }
 
-const BASE_TYPE_OPTIONS = [
-  { value: "text", label: "Text" },
-  { value: "element", label: "Element" },
-];
+export function typeOptionsFactory(
+  attributeExamples: AttributeExample[],
+  currentValue: string
+) {
+  const typeOptions = [
+    ...BASE_TYPE_OPTIONS,
+    ...(attributeExamples ?? []).map((example) => ({
+      value: [ATTRIBUTE_OPTION_VALUE_PREFIX, example.name].join(""),
+      label: `${example.name} - ${truncate(example.value, {
+        length: 30,
+        omission: "...",
+      })}`,
+    })),
+  ];
+
+  // Ensure the dropdown contains the active options
+  if (!typeOptions.some((option) => option.value === currentValue)) {
+    typeOptions.push({
+      value: currentValue,
+      label: currentValue.slice(ATTRIBUTE_OPTION_VALUE_PREFIX.length),
+    });
+  }
+
+  return typeOptions;
+}
 
 const SelectorCard: React.FC<{
   /**
@@ -131,8 +161,6 @@ const SelectorCard: React.FC<{
   const configName = partial(joinName, path);
   const [name, setName] = useState(initialName);
 
-  const typeOption = inferActiveTypeOption(selectorDefinition);
-
   const [{ value: isMulti }] = useField<boolean>(configName("multi"));
 
   const { data: attributeExamples } = fallbackValue(
@@ -146,24 +174,8 @@ const SelectorCard: React.FC<{
     []
   );
 
-  const typeOptions = [
-    ...BASE_TYPE_OPTIONS,
-    ...(attributeExamples || []).map((example) => ({
-      value: [ATTRIBUTE_OPTION_VALUE_PREFIX, example.name].join(""),
-      label: `${example.name} - ${truncate(example.value, {
-        length: 30,
-        omission: "...",
-      })}`,
-    })),
-  ];
-
-  // Ensure the dropdown contains the active options
-  if (!typeOptions.some((option) => option.value === typeOption)) {
-    typeOptions.push({
-      value: typeOption,
-      label: typeOption.slice(ATTRIBUTE_OPTION_VALUE_PREFIX.length),
-    });
-  }
+  const typeOption = inferActiveTypeOption(selectorDefinition);
+  const typeOptions = typeOptionsFactory(attributeExamples, typeOption);
 
   return (
     <Card className="my-2">
@@ -217,7 +229,6 @@ const SelectorCard: React.FC<{
             type: "boolean",
             description:
               "True to match all elements as an array. If toggled off and multiple elements are found, the brick will raise an error.",
-            default: false,
           }}
         />
 
@@ -309,7 +320,7 @@ const SelectorsOptions: React.FC<{ path: string; rootSelector: string }> = ({
     useField<SelectorMapConfig>(path);
 
   const selectorItems = useMemo(
-    () => normalizeShape(rawSelectors),
+    () => normalizeSelectorDefinitionShape(rawSelectors),
     [rawSelectors]
   );
 
@@ -323,23 +334,28 @@ const SelectorsOptions: React.FC<{ path: string; rootSelector: string }> = ({
     []
   );
 
-  const containsVariable = Object.values(rawSelectors).some((x) =>
-    isVarExpression(x)
-  );
+  const containsUnsupportedVariable =
+    isVarExpression(rawSelectors) ||
+    Object.values(rawSelectors).some((x) => isVarExpression(x));
 
   // Normalize simple configuration to object to ensure Formik paths work
   useEffect(() => {
     if (
-      !containsVariable &&
+      !containsUnsupportedVariable &&
       Object.values(rawSelectors).some(
         (x) => typeof x === "string" || isTemplateExpression(x)
       )
     ) {
       setSelectorItems(selectorItems);
     }
-  }, [rawSelectors, selectorItems, setSelectorItems, containsVariable]);
+  }, [
+    rawSelectors,
+    selectorItems,
+    setSelectorItems,
+    containsUnsupportedVariable,
+  ]);
 
-  if (containsVariable) {
+  if (containsUnsupportedVariable) {
     return <WorkshopMessage />;
   }
 

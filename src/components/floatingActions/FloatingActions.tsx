@@ -31,6 +31,7 @@ import dragIcon from "@/icons/drag-handle.svg";
 import { reportEvent } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
+import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 
 // Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;
@@ -89,7 +90,7 @@ export async function initFloatingActions() {
     syncFlagOn("floating-quickbar-button")
   ) {
     const container = document.createElement("div");
-    container.id = "pixiebrix-floating-actions-container";
+    container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;
     document.body.prepend(container);
     ReactDOM.render(<FloatingActionsContainer />, container);
   }

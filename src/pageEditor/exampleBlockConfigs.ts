@@ -50,7 +50,10 @@ export function getExampleBlockConfig(
   if (blockId === "@pixiebrix/jquery-reader") {
     return {
       selectors: {
-        property: "",
+        property: {
+          selector: "",
+          isMulti: false,
+        },
       },
     };
   }

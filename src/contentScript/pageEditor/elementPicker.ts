@@ -38,6 +38,7 @@ import {
   NoElementsFoundError,
 } from "@/errors/businessErrors";
 import { $safeFind } from "@/helpers";
+import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.
@@ -392,9 +393,12 @@ export async function userSelectElement({
     }
 
     function addMultiSelectionTool(window: Window) {
-      const doc = window.document;
-      multiSelectionToolElement = doc.createElement("div");
-      doc.body.append(multiSelectionToolElement);
+      const windowDocument = window.document;
+      multiSelectionToolElement = windowDocument.createElement("div");
+      windowDocument.body.append(multiSelectionToolElement);
+
+      // Hide the FAB so it doesn't conflict with the selection tool. Is a NOP if the FAB is not on the page
+      $(`#${FLOATING_ACTION_BUTTON_CONTAINER_ID}`).hide();
 
       showSelectionToolPopover({
         rootElement: multiSelectionToolElement,
@@ -410,6 +414,8 @@ export async function userSelectElement({
     }
 
     function removeMultiSelectionTool() {
+      $(`#${FLOATING_ACTION_BUTTON_CONTAINER_ID}`).show();
+
       if (!multiSelectionToolElement) {
         return;
       }

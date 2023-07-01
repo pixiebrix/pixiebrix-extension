@@ -29,11 +29,12 @@ describe("getAttributeExamples", () => {
     document.body.innerHTML = '<div id="abc" data-foo="abc"></div>';
     expect(getAttributeExamples("#abc")).toEqual([
       { name: "id", value: "abc" },
+      // Includes the `data-` prefix
       { name: "data-foo", value: "abc" },
     ]);
   });
 
-  test("it takes first duplicate", () => {
+  test("it takes first duplicate for the example value", () => {
     document.body.innerHTML = '<div><a id="abc"></a><a id="def"></a></div>';
     expect(getAttributeExamples("a")).toEqual([{ name: "id", value: "abc" }]);
   });
