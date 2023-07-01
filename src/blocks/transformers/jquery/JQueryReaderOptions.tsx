@@ -66,20 +66,24 @@ function normalizeShape(selectors: SelectorMap): SelectorItem[] {
   });
 }
 
-const ATTR_PREFIX = "attr:";
-const DATA_PREFIX = "data-";
+const ATTRIBUTE_OPTION_VALUE_PREFIX = "attr:";
+const DATA_ATTRIBUTE_PREFIX = "data-";
 
-function inferActiveTypeOption(selector: Selector): string {
-  if (isChildrenSelector(selector)) {
+function inferActiveTypeOption(selectorDefinition: Selector): string {
+  if (isChildrenSelector(selectorDefinition)) {
     return "element";
   }
 
-  if (!isEmpty(selector.attr)) {
-    return `${ATTR_PREFIX}:${selector.attr}`;
+  if (!isEmpty(selectorDefinition.attr)) {
+    return [ATTRIBUTE_OPTION_VALUE_PREFIX, selectorDefinition.attr].join("");
   }
 
-  if (!isEmpty(selector.data)) {
-    return `${ATTR_PREFIX}:${DATA_PREFIX}-${selector.data}`;
+  if (!isEmpty(selectorDefinition.data)) {
+    return [
+      ATTRIBUTE_OPTION_VALUE_PREFIX,
+      DATA_ATTRIBUTE_PREFIX,
+      selectorDefinition.attr,
+    ].join("");
   }
 
   return "text";
@@ -112,13 +116,24 @@ const SelectorCard: React.FC<{
    * The Formik path to selector configuration.
    */
   path: string;
-}> = ({ name: initialName, selectorDefinition, onChange, onDelete, path }) => {
+  /**
+   * A selector for the SelectorRoot, or null for the document or unknown.
+   */
+  rootSelector: string | null;
+}> = ({
+  name: initialName,
+  selectorDefinition,
+  onChange,
+  onDelete,
+  path,
+  rootSelector,
+}) => {
   const configName = partial(joinName, path);
   const [name, setName] = useState(initialName);
 
   const typeOption = inferActiveTypeOption(selectorDefinition);
 
-  const [{ value: multi }] = useField<boolean>(configName("multi"));
+  const [{ value: isMulti }] = useField<boolean>(configName("multi"));
 
   const { data: attributeExamples } = fallbackValue(
     useAsyncState(async () => {
@@ -134,7 +149,7 @@ const SelectorCard: React.FC<{
   const typeOptions = [
     ...BASE_TYPE_OPTIONS,
     ...(attributeExamples || []).map((example) => ({
-      value: `attr:${example.name}`,
+      value: [ATTRIBUTE_OPTION_VALUE_PREFIX, example.name].join(""),
       label: `${example.name} - ${truncate(example.value, {
         length: 30,
         omission: "...",
@@ -146,7 +161,7 @@ const SelectorCard: React.FC<{
   if (!typeOptions.some((option) => option.value === typeOption)) {
     typeOptions.push({
       value: typeOption,
-      label: typeOption.slice(ATTR_PREFIX.length),
+      label: typeOption.slice(ATTRIBUTE_OPTION_VALUE_PREFIX.length),
     });
   }
 
@@ -183,7 +198,9 @@ const SelectorCard: React.FC<{
           name={configName("selector")}
           isRequired
           label="Selector"
-          multi={multi}
+          // @ts-expect-error -- known to be SelectorSelectorWidget and props are passed through
+          isMulti={isMulti}
+          root={rootSelector}
           schema={{
             type: "string",
             format: "selector",
@@ -195,11 +212,11 @@ const SelectorCard: React.FC<{
         <SchemaField
           name={configName("multi")}
           isRequired
-          label="Select Multiple"
+          label="Select All"
           schema={{
             type: "boolean",
             description:
-              "True to find multiple elements as an array. If toggled off and multiple elements are found, the brick will raise an error.",
+              "True to match all elements as an array. If toggled off and multiple elements are found, the brick will raise an error.",
             default: false,
           }}
         />
@@ -221,12 +238,16 @@ const SelectorCard: React.FC<{
                 // up the values in the alternative type.
                 const commonDraft = draft as SingleSelector & ChildrenSelector;
 
-                if (next.startsWith(ATTR_PREFIX)) {
-                  const attributeName = next.slice(ATTR_PREFIX.length);
-                  if (attributeName.startsWith(DATA_PREFIX)) {
+                if (next.startsWith(ATTRIBUTE_OPTION_VALUE_PREFIX)) {
+                  const attributeName = next.slice(
+                    ATTRIBUTE_OPTION_VALUE_PREFIX.length
+                  );
+                  if (attributeName.startsWith(DATA_ATTRIBUTE_PREFIX)) {
                     delete commonDraft.attr;
                     delete commonDraft.find;
-                    commonDraft.data = attributeName.slice(DATA_PREFIX.length);
+                    commonDraft.data = attributeName.slice(
+                      DATA_ATTRIBUTE_PREFIX.length
+                    );
                   } else {
                     delete commonDraft.data;
                     delete commonDraft.find;
@@ -261,7 +282,14 @@ const SelectorCard: React.FC<{
 
         {isChildrenSelector(selectorDefinition) && (
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- co-recursion
-          <SelectorsOptions path={configName("find")} />
+          <SelectorsOptions
+            path={configName("find")}
+            rootSelector={
+              typeof selectorDefinition.selector === "string"
+                ? selectorDefinition.selector
+                : null
+            }
+          />
         )}
       </Card.Body>
     </Card>
@@ -271,7 +299,10 @@ const SelectorCard: React.FC<{
 // FIXME: actual type can contain expressions. Write a SelectorMapConfiguration type
 type SelectorMapConfig = SelectorMap;
 
-const SelectorsOptions: React.FC<{ path: string }> = ({ path }) => {
+const SelectorsOptions: React.FC<{ path: string; rootSelector: string }> = ({
+  path,
+  rootSelector,
+}) => {
   const configName = partial(joinName, path);
 
   const [{ value: rawSelectors }, , fieldHelpers] =
@@ -317,6 +348,7 @@ const SelectorsOptions: React.FC<{ path: string }> = ({ path }) => {
       {selectorItems.map(({ name, selector }, index) => (
         <SelectorCard
           name={name}
+          rootSelector={rootSelector}
           selectorDefinition={selector}
           // It's safe to use name because the SelectorCard only commits name changes on blur.
           key={name}
@@ -366,7 +398,9 @@ const JQueryReaderOptions: React.FC<
 > = ({ name, configKey }) => {
   const basePath = joinName(name, configKey);
   const configName = partial(joinName, basePath);
-  return <SelectorsOptions path={configName("selectors")} />;
+  return (
+    <SelectorsOptions path={configName("selectors")} rootSelector={null} />
+  );
 };
 
 export default JQueryReaderOptions;

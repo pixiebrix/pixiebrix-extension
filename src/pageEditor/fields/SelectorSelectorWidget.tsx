@@ -50,20 +50,52 @@ interface ElementSuggestion extends SuggestionTypeBase {
 }
 
 export type SelectorSelectorProps = {
+  /**
+   * The name of the field.
+   */
   name: string;
+  /**
+   * True to disable the widget.
+   */
   disabled?: boolean;
+  /**
+   * The initial value for the widget.
+   */
   initialElement?: ElementInfo;
+  /**
+   * The framework to extract JS data from the associated React/Vue/AngularJS component.
+   * @deprecated
+   */
   framework?: Framework;
   /**
    * True to default to selecting multiple elements.
    * @since 1.7.33
    */
   isMulti?: boolean;
+  /**
+   * Mode to select a single element or a container (for placing a button/panel inline on the page).
+   */
   selectMode?: SelectMode;
+  /**
+   * The number of levels in the React/Vue/AngularJS component hierarchy to traverse up from the selected DOM element.
+   * @deprecated
+   */
   traverseUp?: number;
+  /**
+   * True to enable clearing the selector.
+   */
   isClearable?: boolean;
+  /**
+   * True to automatically sort the inferred selectors by length.
+   */
   sort?: boolean;
+  /**
+   * Root selector to infer selectors from. If not provided, document will be used as a root
+   */
   root?: string;
+  /**
+   * Placeholder for the text input
+   */
   placeholder?: string;
 };
 
