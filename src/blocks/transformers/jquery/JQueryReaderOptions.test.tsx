@@ -61,7 +61,7 @@ beforeAll(() => {
 describe("JQueryReaderOptions", () => {
   it("renders empty config without crashing", () => {
     const wrapper = renderOptions();
-    expect(wrapper.getByText("Add New Property")).toBeInTheDocument();
+    expect(wrapper.getByText("Add Property")).toBeInTheDocument();
   });
 
   it("shows workshop message on variable selector", async () => {
@@ -74,7 +74,7 @@ describe("JQueryReaderOptions", () => {
 
     await waitForEffect();
 
-    expect(wrapper.queryByText("Add New Property")).not.toBeInTheDocument();
+    expect(wrapper.queryByText("Add Property")).not.toBeInTheDocument();
     expect(wrapper.container.querySelector(".alert")).toBeInTheDocument();
   });
 
