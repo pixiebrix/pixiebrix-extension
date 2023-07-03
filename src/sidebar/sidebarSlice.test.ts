@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice, { fixActiveTabOnRemove } from "@/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/sidebar/utils";
 import {
   cancelForm,
@@ -26,6 +26,7 @@ import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -141,6 +142,37 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
       [activePanel.nonce]
     );
   });
+
+  it("sets activeKey to a panel with the same modId if it exists", () => {
+    const originalPanel = sidebarEntryFactory("panel", {
+      extensionId: uuidv4(),
+    });
+    const otherExistingPanel = sidebarEntryFactory("form", {
+      extensionId: uuidv4(),
+    });
+    const newPanel = sidebarEntryFactory("temporaryPanel", {
+      extensionId: originalPanel.extensionId,
+    });
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      forms: [otherExistingPanel],
+      panels: [originalPanel],
+      temporaryPanels: [],
+    } as SidebarState;
+
+    const intermediateState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel })
+    );
+
+    const newState = sidebarSlice.reducer(
+      intermediateState,
+      sidebarSlice.actions.removeTemporaryPanel(newPanel.nonce)
+    );
+
+    expect(newState.activeKey).toBe(eventKeyForEntry(originalPanel));
+  });
 });
 
 describe("sidebarSlice.addForm", () => {
@@ -175,6 +207,64 @@ describe("sidebarSlice.addForm", () => {
     expect(cancelFormMock).toHaveBeenCalledExactlyOnceWith({
       frameId: 0,
       tabId: 1,
+    });
+  });
+});
+
+describe("sidebarSlice.fixActiveTabOnRemove", () => {
+  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists", () => {
+    const originalPanel = sidebarEntryFactory("panel", {
+      extensionId: uuidv4(),
+    });
+    const otherExistingPanel = sidebarEntryFactory("form", {
+      extensionId: uuidv4(),
+    });
+    const newPanel = sidebarEntryFactory("temporaryPanel", {
+      extensionId: originalPanel.extensionId,
+    });
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      activeKey: eventKeyForEntry(newPanel),
+      forms: [otherExistingPanel],
+      panels: [originalPanel],
+      temporaryPanels: [],
+    } as SidebarState;
+
+    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+    fixActiveTabOnRemove(state, newPanel);
+
+    expect(state).toStrictEqual({
+      ...state,
+      activeKey: eventKeyForEntry(originalPanel),
+    });
+  });
+
+  it("sets activeKey to the defaultEventKey if no panel with the same modId as the removedEntry exists", () => {
+    const originalPanel = sidebarEntryFactory("panel", {
+      extensionId: uuidv4(),
+    });
+    const otherExistingPanel = sidebarEntryFactory("form", {
+      extensionId: uuidv4(),
+    });
+    const newPanel = sidebarEntryFactory("temporaryPanel", {
+      extensionId: uuidv4(),
+    });
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      activeKey: eventKeyForEntry(newPanel),
+      forms: [otherExistingPanel],
+      panels: [originalPanel],
+      temporaryPanels: [],
+    } as SidebarState;
+
+    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+    fixActiveTabOnRemove(state, newPanel);
+
+    expect(state).toStrictEqual({
+      ...state,
+      activeKey: eventKeyForEntry(otherExistingPanel),
     });
   });
 });

@@ -153,7 +153,7 @@ async function resolvePanel(
   resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
-function fixActiveTabOnRemove(
+export function fixActiveTabOnRemove(
   state: WritableDraft<SidebarState>,
   removedEntry: SidebarEntry | null
 ) {
@@ -170,6 +170,7 @@ function fixActiveTabOnRemove(
 
       return false;
     });
+
     state.activeKey = prevPanel
       ? // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
         // See: https://github.com/immerjs/immer/issues/839
