@@ -265,8 +265,8 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
@@ -286,8 +286,8 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
 
       expect(element).toHaveClass("btn-block");
     });
@@ -311,8 +311,8 @@ describe("When rendered in panel", () => {
             },
           },
         };
-        const { container } = renderDocument(config);
-        const element = container.querySelector("button");
+        const wrapper = renderDocument(config);
+        const element = wrapper.getByRole("button");
 
         expect(element).toHaveClass(className);
       }
@@ -331,8 +331,9 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
