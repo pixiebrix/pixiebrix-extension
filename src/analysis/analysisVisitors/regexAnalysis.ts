@@ -82,9 +82,6 @@ class RegexAnalysis extends AnalysisVisitor {
       compileError = error;
     }
 
-    // Create new regex on each analysis call to avoid state issues with test
-    const namedCapturedGroupRegex = /\(\?<\S+>.*?\)/g;
-
     if (compileError) {
       this.annotations.push({
         position: {
@@ -93,16 +90,6 @@ class RegexAnalysis extends AnalysisVisitor {
         message: getErrorMessage(compileError),
         analysisId: this.id,
         type: AnnotationType.Error,
-      });
-    } else if (!namedCapturedGroupRegex.test(pattern)) {
-      this.annotations.push({
-        position: {
-          path: joinPathParts(position.path, "config", "regex"),
-        },
-        message:
-          "Expected regular expression to contain at least one named capture group: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Groups_and_Backreferences",
-        analysisId: this.id,
-        type: AnnotationType.Warning,
       });
     }
   }

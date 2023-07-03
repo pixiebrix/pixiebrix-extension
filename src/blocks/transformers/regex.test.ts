@@ -47,6 +47,29 @@ test("matches name", async () => {
   expect(result).toEqual({ name: "ABC" });
 });
 
+test("ignore case", async () => {
+  const result = await transformer.transform(
+    // @ts-expect-error test data
+    unsafeAssumeValidArg({
+      regex: "ab",
+      input: "ABC",
+      ignoreCase: true,
+    })
+  );
+  expect(result).toEqual({ match: "AB" });
+});
+
+test("default case-sensitive", async () => {
+  const result = await transformer.transform(
+    // @ts-expect-error test data
+    unsafeAssumeValidArg({
+      regex: "ab",
+      input: "ABC",
+    })
+  );
+  expect(result).toEqual({});
+});
+
 test("handle multiple", async () => {
   const result = await transformer.transform(
     // @ts-expect-error test data
@@ -76,6 +99,49 @@ test("invalid regex is business error", async () => {
   );
 });
 
+test("unnamed match group", async () => {
+  const result = await transformer.transform(
+    // @ts-expect-error - test data
+    unsafeAssumeValidArg({
+      regex: "AB",
+      input: "ABC",
+    })
+  );
+
+  expect(result).toEqual({
+    match: "AB",
+  });
+});
+
+test("unmatched optional named match group", async () => {
+  const result = await transformer.transform(
+    // @ts-expect-error - test data
+    unsafeAssumeValidArg({
+      regex: "(?<foo>AZ)?BC",
+      input: "ABC",
+    })
+  );
+
+  expect(result).toEqual({
+    // The property is available groups because the overall regex matched
+    foo: undefined,
+  });
+});
+
+test("matched optional named match group", async () => {
+  const result = await transformer.transform(
+    // @ts-expect-error - test data
+    unsafeAssumeValidArg({
+      regex: "(?<foo>AZ)?BC",
+      input: "AZBC",
+    })
+  );
+
+  expect(result).toEqual({
+    foo: "AZ",
+  });
+});
+
 describe("getOutputSchema", () => {
   test("returns named groups in output schema", () => {
     const schema = transformer.getOutputSchema({
@@ -90,6 +156,23 @@ describe("getOutputSchema", () => {
       type: "object",
       properties: {
         name: { type: "string" },
+      },
+    });
+  });
+
+  test("handles no named groups", () => {
+    const schema = transformer.getOutputSchema({
+      id: transformer.id,
+      config: {
+        regex: "A",
+        input: "ABC",
+      },
+    });
+
+    expect(schema).toEqual({
+      type: "object",
+      properties: {
+        match: { type: "string" },
       },
     });
   });

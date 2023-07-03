@@ -82,25 +82,6 @@ describe("RegexAnalysis", () => {
     );
   });
 
-  test("warns on missing regex named capture group", () => {
-    const analysis = new RegexAnalysis();
-    analysis.visitBlock(
-      position,
-      {
-        id: validateRegistryId("@pixiebrix/regex"),
-        config: {
-          regex: {
-            __type__: "nunjucks",
-            __value__: "^bar$",
-          },
-        },
-      },
-      {} as VisitBlockExtra
-    );
-
-    expect(analysis.getAnnotations()).toHaveLength(1);
-  });
-
   test.each([
     ["^(?<foo>bar)$"],
     ["^(?<foo>bar)(?<bar>baz)$"],
