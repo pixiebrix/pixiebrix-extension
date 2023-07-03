@@ -140,7 +140,7 @@
     "redux-state-sync": "^3.1.4",
     "regenerator-runtime": "^0.13.9",
     "reselect": "^4.1.8",
-    "rollbar": "^2.26.1",
+    "rollbar": "^2.26.2",
     "schema-to-yup": "1.12.14",
     "semver": "^7.5.3",
     "serialize-error": "^11.0.0",
