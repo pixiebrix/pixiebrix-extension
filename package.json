@@ -220,7 +220,7 @@
     "@types/redux-state-sync": "^3.1.5",
     "@types/semver": "^7.5.0",
     "@types/sinonjs__fake-timers": "^8.1.2",
-    "@types/webextension-polyfill": "^0.10.0",
+    "@types/webextension-polyfill": "^0.10.1",
     "@types/webpack": "^5.28.1",
     "@types/webpack-env": "^1.18.1",
     "@types/whatwg-mimetype": "^3.0.0",
