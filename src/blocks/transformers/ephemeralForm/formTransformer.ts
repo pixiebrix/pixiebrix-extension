@@ -153,6 +153,7 @@ export class FormTransformer extends Transformer {
       extensionId: logger.context.extensionId,
       nonce: formNonce,
       definition: formDefinition,
+      blueprintId: logger.context.blueprintId,
     });
 
     if (location === "sidebar") {
@@ -161,6 +162,7 @@ export class FormTransformer extends Transformer {
 
       showSidebarForm({
         extensionId: logger.context.extensionId,
+        blueprintId: logger.context.blueprintId,
         nonce: formNonce,
         form: formDefinition,
       });

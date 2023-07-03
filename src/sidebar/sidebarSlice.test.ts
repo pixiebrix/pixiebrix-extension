@@ -26,7 +26,7 @@ import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -143,7 +143,7 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
     );
   });
 
-  it("sets activeKey to a panel with the same modId if it exists", () => {
+  it("sets activeKey to a panel with the same extensionId if it exists", () => {
     const originalPanel = sidebarEntryFactory("panel", {
       extensionId: uuidv4(),
     });
@@ -187,6 +187,7 @@ describe("sidebarSlice.addForm", () => {
         form: {
           type: "form",
           extensionId,
+          blueprintId: validateRegistryId("test/123"),
           nonce: autoUUIDSequence(),
           form: {
             schema: {
@@ -212,7 +213,7 @@ describe("sidebarSlice.addForm", () => {
 });
 
 describe("sidebarSlice.fixActiveTabOnRemove", () => {
-  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists", () => {
+  it("sets activeKey to the active key of any panel with the same extensionId as the removedEntry if it exists", () => {
     const originalPanel = sidebarEntryFactory("panel", {
       extensionId: uuidv4(),
     });
@@ -240,7 +241,44 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     });
   });
 
-  it("sets activeKey to the defaultEventKey if no panel with the same modId as the removedEntry exists", () => {
+  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists", () => {
+    const extensionId = uuidv4();
+    const modId = validateRegistryId("test/123");
+
+    const originalPanel = sidebarEntryFactory("panel", {
+      extensionId,
+      blueprintId: validateRegistryId("test/456"),
+    });
+    const firstFormPanel = sidebarEntryFactory("form", {
+      extensionId,
+    });
+    const matchingFormPanel = sidebarEntryFactory("form", {
+      extensionId,
+      blueprintId: modId,
+    });
+    const newPanel = sidebarEntryFactory("temporaryPanel", {
+      extensionId,
+      blueprintId: modId,
+    });
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      activeKey: eventKeyForEntry(newPanel),
+      forms: [firstFormPanel, matchingFormPanel],
+      panels: [originalPanel],
+      temporaryPanels: [],
+    } as SidebarState;
+
+    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+    fixActiveTabOnRemove(state, newPanel);
+
+    expect(state).toStrictEqual({
+      ...state,
+      activeKey: eventKeyForEntry(matchingFormPanel),
+    });
+  });
+
+  it("sets activeKey to the defaultEventKey if no panel with the same extensionId as the removedEntry exists", () => {
     const originalPanel = sidebarEntryFactory("panel", {
       extensionId: uuidv4(),
     });
