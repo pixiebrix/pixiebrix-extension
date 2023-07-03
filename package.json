@@ -242,7 +242,7 @@
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-extended": "^4.0.0",
-    "jest-location-mock": "^1.0.9",
+    "jest-location-mock": "^1.0.10",
     "jest-webextension-mock": "^3.8.9",
     "jsdom": "^22.1.0",
     "jsdom-testing-mocks": "^1.9.0",
