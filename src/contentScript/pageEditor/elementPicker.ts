@@ -32,10 +32,26 @@ import {
   type SelectionHandlerType,
   showSelectionToolPopover,
 } from "@/components/selectionToolPopover/SelectionToolPopover";
-import { CancelError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  NoElementsFoundError,
+} from "@/errors/businessErrors";
+import { $safeFind } from "@/helpers";
+import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 
+/**
+ * Primary overlay that moved with the user's mouse/selection.
+ */
 let overlay: Overlay | null = null;
+/**
+ * Overlay for similar elements. Shown as lighter color to differentiate what the user has explicitly clicked on.
+ */
 let expandOverlay: Overlay | null = null;
+/**
+ * Overlay for the root element.
+ */
+let rootOverlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
 let multiSelectionToolElement: HTMLElement = null;
 let selectionHandler: SelectionHandlerType;
@@ -50,6 +66,8 @@ function hideOverlay(): void {
   overlay = null;
   expandOverlay?.remove();
   expandOverlay = null;
+  rootOverlay?.remove();
+  rootOverlay = null;
 }
 
 export function stopInspectingNativeHandler(): void {
@@ -59,16 +77,37 @@ export function stopInspectingNativeHandler(): void {
 let _cancelSelect: () => void = null;
 
 interface UserSelection {
-  root?: HTMLElement;
-  /** CSS selector to limit the selection to */
+  /** Element(s) to limit the selection to. */
+  roots?: HTMLElement[];
+  /** CSS selector to limit the selection to. */
   filter?: string;
+  /**
+   * True to enable the popover selection tools.
+   */
   enableSelectionTools?: boolean;
+  /**
+   * True to enable multi-selection by default.
+   */
+  isMulti?: boolean;
 }
 
 export async function userSelectElement({
-  root,
+  /**
+   * If provided, root element the user can select inside.
+   */
+  roots = [],
+  /**
+   * Selector indicating elements that should be highlighted as elements to select from.
+   */
   filter,
+  /**
+   * Enable the floating selection tools.
+   */
   enableSelectionTools = false,
+  /**
+   * True to enable multi-selection by default.
+   */
+  isMulti: initialIsMulti = false,
 }: UserSelection = {}): Promise<{
   elements: HTMLElement[];
   isMulti: boolean;
@@ -80,11 +119,22 @@ export async function userSelectElement({
     shouldSelectSimilar: boolean;
   }>((resolve, reject) => {
     const targets = new Set<HTMLElement>();
-    let isMulti = false;
+    let isMulti = initialIsMulti;
     let shouldSelectSimilar = false;
+
     if (!overlay) {
       overlay = new Overlay();
+      // Themes are defined in contentScript.scss
+      rootOverlay = new Overlay("blue");
       expandOverlay = new Overlay("light");
+    }
+
+    function highlightRoots() {
+      // Highlight and scroll to root element so the user knows where they can click
+      if (roots.length > 0) {
+        roots[0].scrollTo({ behavior: "smooth" });
+        rootOverlay.inspect(roots);
+      }
     }
 
     function prehiglightItems() {
@@ -123,25 +173,33 @@ export async function userSelectElement({
       _cancelSelect = cancel;
       registerListenersOnWindow(window);
       addInspectingModeStyles(window);
-      if (enableSelectionTools) {
+
+      // As of 1.7.33, selection tool shows for all users if isMulti is true
+      if (isMulti || enableSelectionTools) {
         addMultiSelectionTool(window);
       }
 
+      highlightRoots();
       prehiglightItems();
     }
 
     function handleDone(target?: HTMLElement) {
       try {
         const result = uniq(compact([...targets, target]));
-        if (root && result.some((x) => !root.contains(x))) {
-          throw new Error(
-            "One or more selected elements are not contained within the root container"
+        if (
+          roots.length > 0 &&
+          result.some((result) => !roots.some((root) => root.contains(result)))
+        ) {
+          reject(
+            new BusinessError(
+              "One or more selected elements are not contained within a root element"
+            )
           );
         }
 
         resolve({ elements: result, isMulti, shouldSelectSimilar });
       } finally {
-        stopInspectingNative();
+        stopInspectingNative?.();
       }
     }
 
@@ -335,12 +393,16 @@ export async function userSelectElement({
     }
 
     function addMultiSelectionTool(window: Window) {
-      const doc = window.document;
-      multiSelectionToolElement = doc.createElement("div");
-      doc.body.append(multiSelectionToolElement);
+      const windowDocument = window.document;
+      multiSelectionToolElement = windowDocument.createElement("div");
+      windowDocument.body.append(multiSelectionToolElement);
+
+      // Hide the FAB so it doesn't conflict with the selection tool. Is a NOP if the FAB is not on the page
+      $(`#${FLOATING_ACTION_BUTTON_CONTAINER_ID}`).hide();
 
       showSelectionToolPopover({
         rootElement: multiSelectionToolElement,
+        isMulti,
         handleCancel: cancel,
         handleDone() {
           handleDone();
@@ -352,6 +414,8 @@ export async function userSelectElement({
     }
 
     function removeMultiSelectionTool() {
+      $(`#${FLOATING_ACTION_BUTTON_CONTAINER_ID}`).show();
+
       if (!multiSelectionToolElement) {
         return;
       }
@@ -370,9 +434,7 @@ export async function userSelectElement({
       _cancelSelect = null;
       removeListenersOnWindow(window);
       removeInspectingModeStyles();
-      if (enableSelectionTools) {
-        removeMultiSelectionTool();
-      }
+      removeMultiSelectionTool();
 
       stopInspectingNative = null;
     };
@@ -390,6 +452,7 @@ export async function selectElement({
   mode = "element",
   framework,
   root,
+  isMulti: initialIsMulti = false,
   excludeRandomClasses,
   enableSelectionTools = false,
 }: {
@@ -401,13 +464,20 @@ export async function selectElement({
   excludeRandomClasses?: boolean;
   enableSelectionTools?: boolean;
 }) {
-  const rootElement = root == null ? undefined : findSingleElement(root);
+  const rootElements = $safeFind(root).get();
+
+  if (root && rootElements.length === 0) {
+    throw new NoElementsFoundError(root);
+  }
+
   const { elements, isMulti, shouldSelectSimilar } = await userSelectElement({
-    root: rootElement,
+    roots: rootElements,
+    isMulti: initialIsMulti,
     enableSelectionTools,
   });
 
   console.debug("Selected elements", { elements, isMulti });
+
   switch (mode) {
     case "container": {
       if (root) {
@@ -426,10 +496,17 @@ export async function selectElement({
     }
 
     case "element": {
+      let activeRoot: HTMLElement | null = null;
+
       if (isMulti) {
+        // If there are rootElements, the elements must all be contained within the same root
+        activeRoot = rootElements?.find((rootElement) =>
+          elements.every((element) => rootElement.contains(element))
+        );
+
         return inferMultiElementSelector({
           elements,
-          root: rootElement,
+          root: activeRoot,
           excludeRandomClasses,
           shouldSelectSimilar,
         });
@@ -437,14 +514,20 @@ export async function selectElement({
 
       if (elements.length !== 1) {
         console.warn(
-          "Expected exactly one element to for single element selector generation"
+          "Expected exactly one element for single element selector generation"
         );
       }
 
+      const element = elements[0];
+      // At least one much match, otherwise userSelectElement would have thrown
+      activeRoot = rootElements?.find((rootElement) =>
+        rootElement.contains(element)
+      );
+
       return inferSingleElementSelector({
         traverseUp,
-        root: rootElement,
-        element: elements[0],
+        root: activeRoot,
+        element,
         excludeRandomClasses,
         framework,
       });

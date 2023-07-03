@@ -20,7 +20,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 const brick = new JQueryReader();
 
-describe("JQueryReader", () => {
+describe("JQueryReader output schema", () => {
   it("generates output schema for expression", () => {
     const schema = brick.getOutputSchema({
       id: brick.id,

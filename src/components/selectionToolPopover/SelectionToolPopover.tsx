@@ -36,19 +36,21 @@ export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
 
 const SelectionToolPopover: React.FC<{
+  isMulti: boolean;
   onCancel: () => void;
   onDone: () => void;
   onChangeMultiSelection: (value: boolean) => void;
   onChangeSimilarSelection: (value: boolean) => void;
   setSelectionHandler: SetSelectionHandlerType;
 }> = ({
+  isMulti,
   onCancel,
   onDone,
   onChangeMultiSelection,
   onChangeSimilarSelection,
   setSelectionHandler,
 }) => {
-  const [multiEnabled, setMultiEnabled] = useState(false);
+  const [multiEnabled, setMultiEnabled] = useState(isMulti);
   const [similarEnabled, setSimilarEnabled] = useState(false);
   const [matchingCount, setMatchingCount] = useState(0);
 
@@ -133,6 +135,7 @@ const SelectionToolPopover: React.FC<{
 
 export const showSelectionToolPopover = ({
   rootElement,
+  isMulti,
   handleCancel,
   handleDone,
   handleMultiChange,
@@ -140,6 +143,7 @@ export const showSelectionToolPopover = ({
   setSelectionHandler,
 }: {
   rootElement: HTMLElement;
+  isMulti: boolean;
   handleCancel: () => void;
   handleDone: () => void;
   handleMultiChange: (value: boolean) => void;
@@ -148,6 +152,7 @@ export const showSelectionToolPopover = ({
 }) => {
   ReactDOM.render(
     <SelectionToolPopover
+      isMulti={isMulti}
       onDone={handleDone}
       onCancel={handleCancel}
       onChangeMultiSelection={handleMultiChange}

@@ -77,6 +77,7 @@ import {
   stopWaitingForTemporaryPanels,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancements";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 expectContext("contentScript");
 
@@ -111,6 +112,7 @@ declare global {
     UIPATH_GET_PROCESSES: typeof getProcesses;
 
     DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
+    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     RUN_SINGLE_BLOCK: typeof runBlock;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
@@ -174,6 +176,7 @@ export default function registerMessenger(): void {
     UIPATH_GET_PROCESSES: getProcesses,
 
     DETECT_FRAMEWORKS: withDetectFrameworkVersions,
+    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     RUN_SINGLE_BLOCK: runBlock,
     RUN_RENDERER_BLOCK: runRendererBlock,
 

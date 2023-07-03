@@ -63,3 +63,8 @@ export type ButtonSelectionResult = {
   item: Pick<MenuItemExtensionConfig, "caption">;
   containerInfo: ElementInfo;
 };
+
+export type AttributeExample = {
+  name: string;
+  value: string;
+};

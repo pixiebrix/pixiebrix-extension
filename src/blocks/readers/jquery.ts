@@ -25,25 +25,55 @@ import { type JsonObject } from "type-fest";
 
 type CastType = "string" | "boolean" | "number";
 
-interface SingleSelector {
+export interface SingleSelector {
+  /**
+   * True if the selector should return an array. Defaults to false.
+   */
   multi?: boolean;
+  /**
+   * The attribute to read. Mutually exclusive with `data` and `contents`.
+   */
   attr?: string;
+  /**
+   * The data attribute to read without with `data-` prefix. Mutually exclusive with `attr` and `contents`.
+   */
   data?: string;
-  contents?: string;
-  // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText
+  /**
+   * The textual content to read. Mutually exclusive with `attr` and `data`. Default is `text`.
+   */
+  contents?: "text" | "comment";
+  /**
+   * True to output text more closely to what the user sees, e.g., with line breaks.
+   * See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText
+   */
   renderedText?: boolean;
+  /**
+   * The type to cast the result to. By default, all values are returned as strings.
+   */
   type?: CastType;
 }
 
-interface ChildrenSelector {
+export interface ChildrenSelector {
+  /**
+   * True if the selector should return an array. Defaults to false.
+   */
   multi?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  /**
+   * The sub-selectors to apply.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- this is a recursive type
   find?: SelectorMap;
 }
 
-type CommonSelector = ChildrenSelector | SingleSelector;
+export type CommonSelector = ChildrenSelector | SingleSelector;
 
-type Selector = CommonSelector & {
+export function isChildrenSelector(
+  selector: CommonSelector
+): selector is ChildrenSelector {
+  return "find" in selector;
+}
+
+export type Selector = CommonSelector & {
   selector?: string;
 
   // Block until the element is available

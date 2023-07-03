@@ -16,15 +16,17 @@
  */
 
 import React from "react";
-import SelectorSelectorWidget from "@/pageEditor/fields/SelectorSelectorWidget";
+import SelectorSelectorWidget, {
+  type SelectorSelectorProps,
+} from "@/pageEditor/fields/SelectorSelectorWidget";
 import { type Schema } from "@/types/schemaTypes";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
 
-const ClearableSelectorWidget: React.FunctionComponent<{
-  name: string;
-}> = ({ name }) => <SelectorSelectorWidget isClearable sort name={name} />;
+const ClearableSelectorWidget: React.FunctionComponent<
+  SelectorSelectorProps
+> = (props) => <SelectorSelectorWidget {...props} isClearable sort />;
 
 const isSelectorField = (schema: Schema) =>
   schema.type === "string" && schema.format === "selector";

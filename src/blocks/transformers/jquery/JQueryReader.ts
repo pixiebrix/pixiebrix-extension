@@ -22,11 +22,14 @@ import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
 import { type BrickConfig } from "@/blocks/types";
 import { mapValues } from "lodash";
 import { isExpression } from "@/runtime/mapArgs";
+import { validateRegistryId } from "@/types/helpers";
 
 export class JQueryReader extends Transformer {
+  public static BRICK_ID = validateRegistryId("@pixiebrix/jquery-reader");
+
   constructor() {
     super(
-      "@pixiebrix/jquery-reader",
+      JQueryReader.BRICK_ID,
       "Extract from Page",
       "Get data from the page using jQuery selectors"
     );
