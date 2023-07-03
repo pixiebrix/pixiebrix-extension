@@ -30,6 +30,9 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
+import { MARKETPLACE_URL } from "@/utils/strings";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import cx from "classnames";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
@@ -40,6 +43,13 @@ const EditorNodeConfigPanel: React.FC = () => {
       type: await getType(block),
     };
   }, [blockId]);
+
+  const { data: listings = {} } = useGetMarketplaceListingsQuery({
+    package__name: blockId,
+  });
+
+  const { instructions: listingInstructions, id: listingId } =
+    listings[blockId] ?? {};
 
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)
@@ -56,13 +66,26 @@ const EditorNodeConfigPanel: React.FC = () => {
     />
   );
 
+  const showDocumentationLink = listingInstructions && listingId;
+
   return (
     <>
       <AnalysisResult />
-      <Row className={styles.topRow}>
-        <Col xl>
-          <p className={styles.brickName}>{blockInfo?.block.name}</p>
+      <Row className={cx(styles.brickInfo, "justify-content-between")}>
+        <Col>
+          <p>{blockInfo?.block.name}</p>
         </Col>
+        {showDocumentationLink && (
+          <Col xs="auto">
+            <a
+              href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Documentation
+            </a>
+          </Col>
+        )}
       </Row>
       <Row className={styles.topRow}>
         <Col xl>

@@ -185,7 +185,7 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, variant, size, className, disabled } =
+      const { title, onClick, variant, size, fullWidth, className, disabled } =
         config as ButtonDocumentConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
@@ -200,6 +200,7 @@ export function getComponentDefinition(
         props: {
           children: title,
           onClick: onClick.__value__,
+          fullWidth,
           tracePath,
           variant,
           disabled,

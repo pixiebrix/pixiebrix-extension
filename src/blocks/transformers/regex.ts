@@ -25,6 +25,13 @@ import { type BrickConfig } from "@/blocks/types";
 import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
 import { isNunjucksExpression } from "@/runtime/mapArgs";
 
+export function extractNamedCaptureGroups(pattern: string): string[] {
+  // Create new regex on each analysis call to avoid state issues with test
+  const namedCapturedGroupRegex = /\(\?<(\S+)>.*?\)/g;
+
+  return [...pattern.matchAll(namedCapturedGroupRegex)].map((x) => x[1]);
+}
+
 export class RegexTransformer extends Transformer {
   override async isPure(): Promise<boolean> {
     return true;
@@ -44,16 +51,26 @@ export class RegexTransformer extends Transformer {
   inputSchema: Schema = propertiesToSchema(
     {
       regex: {
+        title: "Regular Expression",
         type: "string",
+        description:
+          "A regular expression pattern. Supports [named capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group) to extract multiple properties.",
       },
       input: {
+        title: "Text Input(s)",
         oneOf: [
           { type: ["string", "null"] },
           { type: "array", items: { type: ["string", "null"] } },
         ],
+        description:
+          "The text to run the regular expression against. If an array is provided, the regular expression will be run against each item.",
       },
       ignoreCase: {
+        title: "Ignore Case",
         type: "boolean",
+        description:
+          "Toggle on perform a case-insensitive match. Defaults to false.",
+        default: false,
       },
     },
     ["regex", "input"]
@@ -103,19 +120,22 @@ export class RegexTransformer extends Transformer {
       return this.outputSchema;
     }
 
-    // Create new regex on each analysis call to avoid state issues with test
-    const namedCapturedGroupRegex = /\(\?<(\S+)>.*?\)/g;
+    const namedGroups = extractNamedCaptureGroups(pattern);
 
-    const namedGroups: string[] = [
-      ...pattern.matchAll(namedCapturedGroupRegex),
-    ].map((x) => x[1]);
-
-    const itemSchema: Schema = {
-      type: "object",
-      properties: Object.fromEntries(
-        namedGroups.map((name) => [name, { type: "string" }])
-      ),
-    };
+    const itemSchema: Schema =
+      namedGroups.length > 0
+        ? {
+            type: "object",
+            properties: Object.fromEntries(
+              namedGroups.map((name) => [name, { type: "string" }])
+            ),
+          }
+        : {
+            type: "object",
+            properties: {
+              match: { type: "string" },
+            },
+          };
 
     if (isArray(input)) {
       return {
@@ -130,15 +150,17 @@ export class RegexTransformer extends Transformer {
   async transform({
     regex,
     input,
+    ignoreCase = false,
   }: BrickArgs<{
     regex: string | RegExp;
     input: string | null | Array<string | null>;
+    ignoreCase?: boolean;
   }>): Promise<Record<string, string> | Array<Record<string, string>>> {
     let compiled: RegExp;
 
     try {
       // eslint-disable-next-line security/detect-non-literal-regexp -- It's what the brick is about
-      compiled = new RegExp(regex);
+      compiled = new RegExp(regex, ignoreCase ? "i" : undefined);
     } catch (error) {
       if (error instanceof SyntaxError) {
         throw new PropError(error.message, this.id, "regex", regex);
@@ -147,13 +169,18 @@ export class RegexTransformer extends Transformer {
       throw error;
     }
 
-    const extract = (x: string | null) => {
-      if (x == null) {
+    const extract = (string: string | null) => {
+      if (string == null) {
         return null;
       }
 
-      const match = compiled.exec(x);
-      // Console.debug(`Search for ${regex} in ${x}`, match);
+      const match = compiled.exec(string);
+
+      if (match && match.groups == null) {
+        // No named groups, return the global match
+        return { match: match[0] };
+      }
+
       return match?.groups ?? {};
     };
 

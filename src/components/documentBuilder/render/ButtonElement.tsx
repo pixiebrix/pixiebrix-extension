@@ -28,17 +28,24 @@ import { getTopLevelFrame } from "webext-messenger";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/blocks/errors";
 import { boolean } from "@/utils";
+import cx from "classnames";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BrickPipeline;
   elementName: string;
   tracePath: DynamicPath;
+  /**
+   * True to expand the button to the full width of the container.
+   */
+  fullWidth?: boolean;
 };
 
 const ButtonElement: React.FC<ButtonElementProps> = ({
   onClick,
   tracePath,
   disabled: rawDisabled,
+  fullWidth = false,
+  className,
   ...restProps
 }) => {
   const {
@@ -94,6 +101,9 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     <AsyncButton
       onClick={handler}
       disabled={boolean(rawDisabled)}
+      // `btn-block` is the classname in Bootstrap 4
+      // Discussion: https://stackoverflow.com/questions/23183343/bootstrap-btn-block-not-working
+      className={cx(className, { "btn-block": fullWidth })}
       {...restProps}
     />
   );

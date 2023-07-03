@@ -85,9 +85,10 @@ export type ButtonDocumentConfig = {
   title: string | Expression;
   variant?: string | Expression;
   /**
-   * Default size type coming from Bootstrap Button
+   * Default size type coming from React Bootstrap Button
    */
   size?: "sm" | "lg" | Expression<"sm" | "lg">;
+  fullWidth?: boolean | Expression;
   disabled?: boolean | Expression;
   className?: string | Expression;
   onClick: PipelineExpression;
