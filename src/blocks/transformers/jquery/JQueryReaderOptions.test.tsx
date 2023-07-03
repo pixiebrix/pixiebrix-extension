@@ -30,6 +30,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
+import { screen } from "@testing-library/react";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getAttributeExamples: jest.fn(),
@@ -72,8 +73,8 @@ beforeEach(() => {
 
 describe("JQueryReaderOptions", () => {
   it("renders empty config without crashing", () => {
-    const wrapper = renderOptions();
-    expect(wrapper.getByText("Add Property")).toBeInTheDocument();
+    renderOptions();
+    expect(screen.getByText("Add Property")).toBeInTheDocument();
   });
 
   it("shows workshop message on variable selector", async () => {
@@ -82,12 +83,12 @@ describe("JQueryReaderOptions", () => {
       property: makeVariableExpression("@foo"),
     };
 
-    const wrapper = renderOptions(state);
+    const { container } = renderOptions(state);
 
     await waitForEffect();
 
-    expect(wrapper.queryByText("Add Property")).not.toBeInTheDocument();
-    expect(wrapper.container.querySelector(".alert")).toBeInTheDocument();
+    expect(screen.queryByText("Add Property")).not.toBeInTheDocument();
+    expect(container.querySelector(".alert")).toBeInTheDocument();
   });
 
   it("shows workshop message variable selectors", async () => {
@@ -95,27 +96,27 @@ describe("JQueryReaderOptions", () => {
     state.extension.blockPipeline[0].config.selectors =
       makeVariableExpression("@foo");
 
-    const wrapper = renderOptions(state);
+    const { container } = renderOptions(state);
 
     await waitForEffect();
 
-    expect(wrapper.queryByText("Add New Property")).not.toBeInTheDocument();
-    expect(wrapper.container.querySelector(".alert")).toBeInTheDocument();
+    expect(screen.queryByText("Add New Property")).not.toBeInTheDocument();
+    expect(container.querySelector(".alert")).toBeInTheDocument();
   });
 
   it("normalizes primitive selectors", async () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = { property: "h1" };
 
-    const wrapper = renderOptions(state);
+    renderOptions(state);
 
     await waitForEffect();
 
-    expect(wrapper.getByPlaceholderText("Property name")).toHaveValue(
+    expect(screen.getByPlaceholderText("Property name")).toHaveValue(
       "property"
     );
 
-    expect(wrapper.getByLabelText("Selector")).toHaveValue("h1");
+    expect(screen.getByLabelText("Selector")).toHaveValue("h1");
   });
 
   it("generates example attributes for nested selectors", async () => {
