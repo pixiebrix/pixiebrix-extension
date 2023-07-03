@@ -158,7 +158,7 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "title"),
         schema: { type: "string" },
         label: "Title",
-        description: "The text to display on the button.",
+        description: "The text to display on the button",
       };
       const variantEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "variant"),
@@ -185,23 +185,41 @@ function getElementEditSchemas(
             "outline-link",
           ],
         },
-        label: "Variant",
+        label: "Button Style",
+        description: "The style/variant of the button",
       };
       const sizeEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "size"),
         schema: { type: "string", enum: ["lg", "md", "sm"] },
-        label: "Size",
+        label: "Button Size",
+        description: "The size of the button: Small, Medium, or Large",
+      };
+      const fullWidthEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "fullWidth"),
+        schema: { type: "boolean" },
+        label: "Full Width",
+        description:
+          "Toggle on to expand the button to fit the width of the column",
       };
       const disabledEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "disabled"),
         // Allow any to permit truthy values like for other conditional fields
         schema: { type: ["string", "boolean", "null", "number"] },
         label: "Disabled",
+        description: (
+          <div>
+            Condition determining whether to disable the button. Truthy string
+            values are&nbsp;
+            <code>true</code>, <code>t</code>, <code>yes</code>, <code>y</code>,{" "}
+            <code>on</code>, and <code>1</code> (case-insensitive)
+          </div>
+        ),
       };
       return [
         titleEdit,
         variantEdit,
         sizeEdit,
+        fullWidthEdit,
         disabledEdit,
         getHiddenEdit(elementName),
         getClassNameEdit(elementName),

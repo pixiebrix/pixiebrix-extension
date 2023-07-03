@@ -132,11 +132,11 @@ const DocumentPreview = ({
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
       >
-        {bodyPreview.map((childElement, i) => (
+        {bodyPreview.map((childElement, childIndex) => (
           <ElementPreview
-            key={`${documentBodyName}.${i}`}
+            key={`${documentBodyName}.${childIndex}`}
             documentBodyName={documentBodyName}
-            elementName={String(i)}
+            elementName={String(childIndex)}
             previewElement={childElement}
             activeElement={activeElement}
             setActiveElement={setActiveElement}

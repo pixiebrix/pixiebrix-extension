@@ -265,13 +265,31 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
       expect(element).toHaveTextContent("Button under test");
       expect(element).not.toBeDisabled();
+    });
+
+    test("renders full width button", () => {
+      const config: DocumentElement = {
+        type: "button",
+        config: {
+          title: "Button under test",
+          fullWidth: true,
+          onClick: {
+            __type__: "pipeline",
+            __value__: jest.fn(),
+          },
+        },
+      };
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
+
+      expect(element).toHaveClass("btn-block");
     });
 
     test.each`
@@ -293,8 +311,8 @@ describe("When rendered in panel", () => {
             },
           },
         };
-        const { container } = renderDocument(config);
-        const element = container.querySelector("button");
+        const wrapper = renderDocument(config);
+        const element = wrapper.getByRole("button");
 
         expect(element).toHaveClass(className);
       }
@@ -313,8 +331,9 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
