@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   type PanelEntry,
   type TemporaryPanelEntry,
@@ -97,10 +97,23 @@ const Tabs: React.FC = () => {
   const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
   const staticPanels = useSelector(selectSidebarStaticPanels);
 
+  // Blueprint of the active panel for telemetry
+  const activePanel = useMemo(() => {
+    // XXX activeKey is namespaced. We use slice to only get the 32 characters and 4 dashes at the end
+    const activeUUID = activeKey.slice(-36);
+
+    const activePanel =
+      panels.find((panel) => panel.extensionId === activeUUID) ||
+      forms.find((panel) => panel.extensionId === activeUUID) ||
+      temporaryPanels.find((panel) => panel.nonce === activeUUID);
+
+    return activePanel;
+  }, [activeKey, panels, forms, temporaryPanels]);
+
   const onSelect = (eventKey: string) => {
     reportEvent("ViewSidePanelPanel", {
-      // FIXME: this was wrong, eventKey is not an extensionId
-      // ...selectEventData(lookup.get(extensionId)),
+      // TODO: Add missing extension data by calling selectEventData() with the extension
+      activeBlueprint: activePanel.blueprintId,
       initialLoad: false,
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
@@ -113,8 +126,8 @@ const Tabs: React.FC = () => {
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
-        // FIXME: this was wrong, eventKey is not an extensionId
-        // ...selectEventData(lookup.get(activeKey)),
+        // TODO: Add missing extension data by calling selectEventData() with the extension
+        activeBlueprint: activePanel.blueprintId,
         initialLoad: true,
       });
     },
