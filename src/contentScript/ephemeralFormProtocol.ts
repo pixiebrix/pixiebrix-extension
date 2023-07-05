@@ -30,7 +30,7 @@ export type RegisteredForm = {
   extensionId: UUID;
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
-  blueprintId: RegistryId;
+  blueprintId: RegistryId | null;
 };
 
 const forms = new Map<UUID, RegisteredForm>();
@@ -68,7 +68,7 @@ export async function registerForm({
   extensionId: UUID;
   nonce: UUID;
   definition: FormDefinition;
-  blueprintId: RegistryId;
+  blueprintId: RegistryId | null;
 }): Promise<unknown> {
   expectContext("contentScript");
 

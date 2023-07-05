@@ -77,6 +77,27 @@ describe("sidebarSlice.selectTab", () => {
     );
     expect(newState.activeKey).toBe(eventKeyForEntry(entry));
   });
+
+  it("does not select a new tab when called with a stale key", () => {
+    const firstPanel = sidebarEntryFactory("panel");
+    const secondPanel = sidebarEntryFactory("panel");
+    const activeKey = eventKeyForEntry(secondPanel);
+    const staleKey = validateRegistryId("test/123");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      activeKey,
+      panels: [firstPanel, secondPanel],
+    } as SidebarState;
+
+    expect(state.activeKey).toBe(activeKey);
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.selectTab(staleKey)
+    );
+    expect(newState.activeKey).toBe(activeKey);
+  });
 });
 
 describe("sidebarSlice.addTemporaryPanel", () => {
@@ -275,6 +296,41 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     expect(state).toStrictEqual({
       ...state,
       activeKey: eventKeyForEntry(matchingFormPanel),
+    });
+  });
+
+  it("does not set the activeKey to the active key of a panel when both modIds are null", () => {
+    const extensionId = uuidv4();
+
+    const originalPanel = sidebarEntryFactory("panel", {
+      extensionId,
+    });
+    const firstFormPanel = sidebarEntryFactory("form", {
+      extensionId,
+    });
+    const nullModId = sidebarEntryFactory("form", {
+      extensionId,
+      blueprintId: null,
+    });
+    const newPanel = sidebarEntryFactory("temporaryPanel", {
+      extensionId,
+      blueprintId: null,
+    });
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      activeKey: eventKeyForEntry(newPanel),
+      forms: [firstFormPanel, nullModId],
+      panels: [originalPanel],
+      temporaryPanels: [],
+    } as SidebarState;
+
+    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+    fixActiveTabOnRemove(state, newPanel);
+
+    expect(state).toStrictEqual({
+      ...state,
+      activeKey: eventKeyForEntry(firstFormPanel),
     });
   });
 

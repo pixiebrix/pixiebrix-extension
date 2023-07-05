@@ -195,7 +195,7 @@ export type FormPanelEntry = BasePanelEntry & {
    *
    * @since 1.7.33
    */
-  blueprintId: RegistryId;
+  blueprintId?: RegistryId;
   /**
    * Unique identifier for the form instance. Used to correlate form submission/cancellation.
    */
