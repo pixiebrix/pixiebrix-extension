@@ -297,7 +297,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     });
   });
 
-  it("does not set the activeKey to the active key of a panel when both modIds are null", () => {
+  it("does not set the activeKey to the active key of a panel with matching modId when both modIds are null", () => {
     const extensionId = uuidv4();
 
     const originalPanel = sidebarEntryFactory("panel", {
@@ -307,7 +307,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       extensionId,
     });
     const nullModId = sidebarEntryFactory("form", {
-      extensionId,
+      extensionId: uuidv4(),
       blueprintId: null,
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {

@@ -177,7 +177,8 @@ export function fixActiveTabOnRemove(
         ({ blueprintId }) =>
           "blueprintId" in removedEntry &&
           // Need to check for removedEntry.blueprintId to avoid switching between IExtensions that don't have blueprint ids
-          blueprintId === removedEntry.blueprintId
+          blueprintId === removedEntry.blueprintId &&
+          blueprintId
       );
 
       if (matchingMod) {
