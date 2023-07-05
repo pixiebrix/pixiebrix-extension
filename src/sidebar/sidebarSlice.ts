@@ -161,13 +161,11 @@ export function fixActiveTabOnRemove(
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
     const panels = [...state.forms, ...state.panels, ...state.temporaryPanels];
 
-    const matchingExtension = panels.find(({ extensionId }) => {
-      if ("extensionId" in removedEntry) {
-        return extensionId === removedEntry.extensionId;
-      }
-
-      return false;
-    });
+    const matchingExtension = panels.find(
+      ({ extensionId }) =>
+        "extensionId" in removedEntry &&
+        extensionId === removedEntry.extensionId
+    );
 
     if (matchingExtension) {
       // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
@@ -175,13 +173,12 @@ export function fixActiveTabOnRemove(
       // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
       state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
-      const matchingMod = panels.find(({ blueprintId }) => {
-        if ("blueprintId" in removedEntry && removedEntry.blueprintId) {
-          return blueprintId === removedEntry.blueprintId;
-        }
-
-        return false;
-      });
+      const matchingMod = panels.find(
+        ({ blueprintId }) =>
+          "blueprintId" in removedEntry &&
+          // Need to check for removedEntry.blueprintId to avoid switching between IExtensions that don't have blueprint ids
+          blueprintId === removedEntry.blueprintId
+      );
 
       if (matchingMod) {
         state.activeKey = eventKeyForEntry(matchingMod);
