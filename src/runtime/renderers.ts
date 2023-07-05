@@ -25,6 +25,7 @@ import {
   renderNunjucksTemplate,
 } from "@/sandbox/messenger/executor";
 import { type UnknownObject } from "@/types/objectTypes";
+import { containsTemplateExpression } from "@/utils/templateUtils";
 
 export type AsyncTemplateRenderer = (
   template: string,
@@ -35,14 +36,6 @@ export type TemplateRenderer = (template: string, context: unknown) => unknown;
 export type RendererOptions = {
   autoescape?: boolean;
 };
-
-/**
- * Returns true if `literalOrTemplate` includes any template expressions that would be replaced by `context`.
- * @param literalOrTemplate the string literal or Nunjucks/Handlebars template.
- */
-function containsTemplateExpression(literalOrTemplate: string): boolean {
-  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
-}
 
 export function engineRenderer(
   templateEngine: TemplateEngine,

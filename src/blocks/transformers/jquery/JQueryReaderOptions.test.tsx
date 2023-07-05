@@ -36,6 +36,7 @@ import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { screen } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getAttributeExamples: jest.fn(),
@@ -188,6 +189,32 @@ describe("JQueryReaderOptions", () => {
     ).toEqual("Selector");
 
     expect(screen.queryAllByText("Loading...")).toHaveLength(0);
+  });
+
+  it("allows rename of property", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      outer: {
+        selector: makeTemplateExpression("nunjucks", "div"),
+        find: {
+          inner: makeTemplateExpression("nunjucks", "h1"),
+        },
+      },
+    };
+
+    const { container } = renderOptions(state);
+
+    await waitForEffect();
+
+    const field = container.querySelector('[value="outer"]');
+
+    await userEvent.type(field, "property");
+    // Click away to blur the field
+    await userEvent.click(screen.getAllByText("Select All")[0]);
+
+    await waitForEffect();
+
+    expect(field).toHaveValue("outerproperty");
   });
 
   it("generates example attributes for nested selectors", async () => {
