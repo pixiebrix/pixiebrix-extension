@@ -28,9 +28,6 @@ import { compact, isEmpty, partial, truncate } from "lodash";
 import { useField } from "formik";
 import {
   type ChildrenSelector,
-  isChildrenSelector,
-  type Selector,
-  type SelectorMap,
   type SingleSelector,
 } from "@/blocks/readers/jquery";
 import { Button, FormControl } from "react-bootstrap";
@@ -53,21 +50,69 @@ import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AttributeExample } from "@/contentScript/pageEditor/types";
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import cx from "classnames";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+
+/**
+ * Version of SelectorConfig where fields may be expressions.
+ * @see SelectorConfig
+ */
+type SelectorDefinition = {
+  selector: string | Expression<string, TemplateEngine>;
+
+  multi: boolean | Expression<boolean, TemplateEngine>;
+
+  attr?: string | Expression<string, TemplateEngine>;
+
+  data?: string | Expression<string, TemplateEngine>;
+
+  find?: UnknownObject;
+};
+
+/**
+ * Version of SelectorDefinition where `find` is known to exist.
+ * @see ChildSelector
+ */
+type ChildSelectorDefinition = SelectorDefinition & {
+  find: UnknownObject;
+
+  attr?: never;
+
+  data?: never;
+};
+
+export function isChildrenSelectorDefinition(
+  selector: SelectorDefinition
+): selector is ChildSelectorDefinition {
+  return "find" in selector;
+}
+
+/**
+ * @see SelectorConfigMap
+ */
+type SelectorDefinitionMap = Record<
+  string,
+  string | Expression<string, TemplateEngine> | SelectorDefinition
+>;
 
 type SelectorItem = {
   name: string;
-  selector: Selector;
+  selector: SelectorDefinition;
 };
 
+/**
+ * Normalize the shape of the selector definition to use the object form the selector definition.
+ */
 function normalizeSelectorDefinitionShape(
-  selectors: SelectorMap
+  selectors: SelectorDefinitionMap
 ): SelectorItem[] {
   return Object.entries(selectors).map(([name, selector]) => {
-    if (typeof selector === "string") {
-      return { name, selector: { selector } };
+    if (typeof selector === "string" || isTemplateExpression(selector)) {
+      return { name, selector: { selector, multi: false } };
     }
 
-    return { name, selector };
+    // Fill in `multi` default to avoid SchemaField getting stuck in Loading... state
+    return { name, selector: { ...selector, multi: selector.multi ?? false } };
   });
 }
 
@@ -80,8 +125,10 @@ const BASE_TYPE_OPTIONS = [
   { value: "element", label: "Element" },
 ];
 
-export function inferActiveTypeOption(selectorDefinition: Selector): string {
-  if (isChildrenSelector(selectorDefinition)) {
+export function inferActiveTypeOption(
+  selectorDefinition: SelectorDefinition
+): string {
+  if (isChildrenSelectorDefinition(selectorDefinition)) {
     return "element";
   }
 
@@ -134,7 +181,7 @@ const SelectorCard: React.FC<{
   /**
    * The selector definition.
    */
-  selectorDefinition: Selector;
+  selectorDefinition: SelectorDefinition;
   /**
    * Change handler, to handle changes to name and non-schema fields.
    * @param item
@@ -307,7 +354,7 @@ const SelectorCard: React.FC<{
           }}
         />
 
-        {isChildrenSelector(selectorDefinition) && (
+        {isChildrenSelectorDefinition(selectorDefinition) && (
           // eslint-disable-next-line @typescript-eslint/no-use-before-define -- co-recursion
           <SelectorsOptions
             path={configName("find")}
@@ -324,9 +371,6 @@ const SelectorCard: React.FC<{
   );
 };
 
-// FIXME: actual type can contain expressions. Write a SelectorMapConfiguration type
-type SelectorMapConfig = SelectorMap;
-
 const SelectorsOptions: React.FC<{
   path: string;
   rootSelector: string;
@@ -335,7 +379,7 @@ const SelectorsOptions: React.FC<{
   const configName = partial(joinName, path);
 
   const [{ value: rawSelectors }, , fieldHelpers] =
-    useField<SelectorMapConfig>(path);
+    useField<SelectorDefinitionMap>(path);
 
   const selectorItems = useMemo(
     () => normalizeSelectorDefinitionShape(rawSelectors),
@@ -390,7 +434,7 @@ const SelectorsOptions: React.FC<{
                 "property" as SafeString,
                 selectorItems.map((x) => x.name)
               ),
-              selector: { selector: "" },
+              selector: { selector: "", multi: false },
             },
           ]);
         }}
