@@ -153,16 +153,39 @@ async function resolvePanel(
   resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
-function fixActiveTabOnRemove(
+export function fixActiveTabOnRemove(
   state: WritableDraft<SidebarState>,
   removedEntry: SidebarEntry | null
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
-    // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
-    // See: https://github.com/immerjs/immer/issues/839
-    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
-    state.activeKey = defaultEventKey(state);
+    const panels = [...state.forms, ...state.panels, ...state.temporaryPanels];
+
+    const matchingExtension = panels.find(
+      ({ extensionId }) =>
+        "extensionId" in removedEntry &&
+        extensionId === removedEntry.extensionId
+    );
+
+    if (matchingExtension) {
+      // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
+      // See: https://github.com/immerjs/immer/issues/839
+      // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+      state.activeKey = eventKeyForEntry(matchingExtension);
+    } else {
+      const matchingMod = panels.find(
+        ({ blueprintId }) =>
+          "blueprintId" in removedEntry &&
+          // Need to check for removedEntry.blueprintId to avoid switching between IExtensions that don't have blueprint ids
+          blueprintId === removedEntry.blueprintId
+      );
+
+      if (matchingMod) {
+        state.activeKey = eventKeyForEntry(matchingMod);
+      } else {
+        state.activeKey = defaultEventKey(state);
+      }
+    }
   }
 }
 
@@ -189,9 +212,10 @@ const sidebarSlice = createSlice({
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
+      // Calling selectTab with a stale event key shouldn't change the current tab
       state.activeKey = eventKeyExists(state, action.payload)
         ? action.payload
-        : defaultEventKey(state);
+        : state.activeKey;
 
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;

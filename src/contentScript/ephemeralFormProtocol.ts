@@ -21,6 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export type RegisteredForm = {
   /**
@@ -29,6 +30,7 @@ export type RegisteredForm = {
   extensionId: UUID;
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
+  blueprintId: RegistryId | null;
 };
 
 const forms = new Map<UUID, RegisteredForm>();
@@ -45,6 +47,7 @@ export function getFormPanelSidebarEntries(): FormPanelEntry[] {
       type: "form",
       nonce,
       extensionId: form.extensionId,
+      blueprintId: form.blueprintId,
       form: form.definition,
     }));
 }
@@ -54,15 +57,18 @@ export function getFormPanelSidebarEntries(): FormPanelEntry[] {
  * @param extensionId the id of the extension that created the form
  * @param nonce the form nonce
  * @param definition the form definition
+ * @param blueprintId the blueprint that contains the form
  */
 export async function registerForm({
   extensionId,
   nonce,
   definition,
+  blueprintId,
 }: {
   extensionId: UUID;
   nonce: UUID;
   definition: FormDefinition;
+  blueprintId: RegistryId | null;
 }): Promise<unknown> {
   expectContext("contentScript");
 
@@ -76,6 +82,7 @@ export async function registerForm({
     extensionId,
     definition,
     registration,
+    blueprintId,
   });
 
   return registration.promise;

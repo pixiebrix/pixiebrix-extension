@@ -50,6 +50,8 @@ const formDefinitionFactory = define<FormDefinition>({
 export const formEntryFactory = define<FormPanelEntry>({
   type: "form",
   extensionId: uuidSequence,
+  blueprintId: (n: number) =>
+    validateRegistryId(`@test/form-panel-recipe-test-${n}`),
   nonce: uuidSequence,
   form: formDefinitionFactory,
 });
@@ -72,30 +74,30 @@ const panelEntryFactory = define<PanelEntry>({
     validateRegistryId(`@test/panel-extension-point-test-${n}`),
 });
 
-export function sidebarEntryFactory(
+export function sidebarEntryFactory<T = PanelEntry>(
   type: "panel",
-  override?: FactoryConfig<PanelEntry>
+  override?: FactoryConfig<T>
 ): PanelEntry;
-export function sidebarEntryFactory(
+export function sidebarEntryFactory<T = TemporaryPanelEntry>(
   type: "temporaryPanel",
-  override?: FactoryConfig<TemporaryPanelEntry>
+  override?: FactoryConfig<T>
 ): TemporaryPanelEntry;
-export function sidebarEntryFactory(
+export function sidebarEntryFactory<T = FormPanelEntry>(
   type: "form",
-  override?: FactoryConfig<FormPanelEntry>
+  override?: FactoryConfig<T>
 ): FormPanelEntry;
-export function sidebarEntryFactory(
+export function sidebarEntryFactory<T = ActivateModPanelEntry>(
   type: "activateRecipe",
-  override?: FactoryConfig<ActivateModPanelEntry>
+  override?: FactoryConfig<T>
 ): ActivateModPanelEntry;
 
-export function sidebarEntryFactory(
+export function sidebarEntryFactory<T = StaticPanelEntry>(
   type: "staticPanel",
-  override?: FactoryConfig<StaticPanelEntry>
+  override?: FactoryConfig<T>
 ): StaticPanelEntry;
-export function sidebarEntryFactory(
+export function sidebarEntryFactory<T = SidebarEntry>(
   type: EntryType,
-  override?: FactoryConfig<SidebarEntry>
+  override?: FactoryConfig<T>
 ): SidebarEntry {
   if (type === "activateRecipe") {
     return activateRecipeEntryFactory(

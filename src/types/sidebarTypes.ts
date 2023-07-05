@@ -191,6 +191,12 @@ export type FormPanelEntry = BasePanelEntry & {
    */
   extensionId: UUID;
   /**
+   * The blueprint of the extension panel to show
+   *
+   * @since 1.7.33
+   */
+  blueprintId?: RegistryId;
+  /**
    * Unique identifier for the form instance. Used to correlate form submission/cancellation.
    */
   nonce: UUID;
