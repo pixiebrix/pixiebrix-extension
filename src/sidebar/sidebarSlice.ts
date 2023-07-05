@@ -159,11 +159,9 @@ export function fixActiveTabOnRemove(
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
-    const matchingExtensions = [
-      ...state.forms,
-      ...state.panels,
-      ...state.temporaryPanels,
-    ].filter(({ extensionId }) => {
+    const panels = [...state.forms, ...state.panels, ...state.temporaryPanels];
+
+    const matchingExtension = panels.find(({ extensionId }) => {
       if ("extensionId" in removedEntry) {
         return extensionId === removedEntry.extensionId;
       }
@@ -171,23 +169,25 @@ export function fixActiveTabOnRemove(
       return false;
     });
 
-    const matchingMod = matchingExtensions.find(({ blueprintId }) => {
-      if ("blueprintId" in removedEntry && removedEntry.blueprintId) {
-        return blueprintId === removedEntry.blueprintId;
-      }
-
-      return false;
-    });
-
-    if (matchingMod) {
+    if (matchingExtension) {
       // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
       // See: https://github.com/immerjs/immer/issues/839
       // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
-      state.activeKey = eventKeyForEntry(matchingMod);
-    } else if (matchingExtensions.length > 0) {
-      state.activeKey = eventKeyForEntry(matchingExtensions[0]);
+      state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
-      state.activeKey = defaultEventKey(state);
+      const matchingMod = panels.find(({ blueprintId }) => {
+        if ("blueprintId" in removedEntry && removedEntry.blueprintId) {
+          return blueprintId === removedEntry.blueprintId;
+        }
+
+        return false;
+      });
+
+      if (matchingMod) {
+        state.activeKey = eventKeyForEntry(matchingMod);
+      } else {
+        state.activeKey = defaultEventKey(state);
+      }
     }
   }
 }

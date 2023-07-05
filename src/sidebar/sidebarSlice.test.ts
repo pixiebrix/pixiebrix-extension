@@ -235,14 +235,18 @@ describe("sidebarSlice.addForm", () => {
 
 describe("sidebarSlice.fixActiveTabOnRemove", () => {
   it("sets activeKey to the active key of any panel with the same extensionId as the removedEntry if it exists", () => {
+    const modId = validateRegistryId("test/123");
     const originalPanel = sidebarEntryFactory("panel", {
       extensionId: uuidv4(),
+      blueprintId: modId,
     });
     const otherExistingPanel = sidebarEntryFactory("form", {
       extensionId: uuidv4(),
+      blueprintId: modId,
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       extensionId: originalPanel.extensionId,
+      blueprintId: modId,
     });
 
     const state = {
@@ -262,31 +266,25 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     });
   });
 
-  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists", () => {
-    const extensionId = uuidv4();
+  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists and there is no matching extensionId", () => {
     const modId = validateRegistryId("test/123");
 
-    const originalPanel = sidebarEntryFactory("panel", {
-      extensionId,
-      blueprintId: validateRegistryId("test/456"),
+    const firstPanel = sidebarEntryFactory("panel", {
+      extensionId: uuidv4(),
     });
-    const firstFormPanel = sidebarEntryFactory("form", {
-      extensionId,
-    });
-    const matchingFormPanel = sidebarEntryFactory("form", {
-      extensionId,
+    const matchingPanel = sidebarEntryFactory("panel", {
+      extensionId: uuidv4(),
       blueprintId: modId,
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId,
+      extensionId: uuidv4(),
       blueprintId: modId,
     });
 
     const state = {
       ...sidebarSlice.getInitialState(),
       activeKey: eventKeyForEntry(newPanel),
-      forms: [firstFormPanel, matchingFormPanel],
-      panels: [originalPanel],
+      panels: [firstPanel, matchingPanel],
       temporaryPanels: [],
     } as SidebarState;
 
@@ -295,7 +293,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
 
     expect(state).toStrictEqual({
       ...state,
-      activeKey: eventKeyForEntry(matchingFormPanel),
+      activeKey: eventKeyForEntry(matchingPanel),
     });
   });
 
