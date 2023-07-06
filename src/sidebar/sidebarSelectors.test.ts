@@ -1,6 +1,10 @@
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { type SidebarRootState } from "@/types/sidebarTypes";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
+import { settingsStateFactory } from "@/testUtils/factories/settingFactories";
+import { servicesStateFactory } from "@/testUtils/factories/serviceFactories";
+import { recipeStateFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("sidebarSelectors", () => {
   describe("selectSidebarHasModPanels", () => {
@@ -14,6 +18,11 @@ describe("sidebarSelectors", () => {
         recipeToActivate: null,
         pendingActivePanel: null,
       },
+      auth: authStateFactory(),
+      options: { extensions: [] },
+      settings: settingsStateFactory(),
+      services: servicesStateFactory(),
+      recipes: recipeStateFactory(),
     };
 
     it("returns false if there are no sidebar panels, forms, or temporaryPanels", () => {
