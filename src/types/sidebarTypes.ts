@@ -26,6 +26,9 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 import { type RecipesState } from "@/recipes/recipesTypes";
+import { type AuthState } from "@/auth/authTypes";
+import { type SettingsState } from "@/store/settingsTypes";
+import { type ServicesState } from "@/store/servicesSlice";
 
 /**
  * Entry types supported by the sidebar.
@@ -333,8 +336,11 @@ export type SidebarState = SidebarEntries & {
   pendingActivePanel: ActivatePanelOptions | null;
 };
 
-export type SidebarRootState = {
-  sidebar: SidebarState;
+export interface SidebarRootState {
+  auth: AuthState;
   options: ExtensionOptionsState;
+  sidebar: SidebarState;
+  settings: SettingsState;
+  services: ServicesState;
   recipes: RecipesState;
-};
+}
