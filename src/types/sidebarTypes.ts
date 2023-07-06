@@ -151,6 +151,12 @@ export type BaseExtensionPanelEntry = BasePanelEntry & {
   actions?: PanelButton[];
 };
 
+export function isBaseExtensionPanelEntry(
+  panel: any
+): panel is BaseExtensionPanelEntry {
+  return panel?.extensionId != null;
+}
+
 /**
  * A panel added by an extension attached to an SidebarExtensionPoint
  * @see SidebarExtensionPoint
@@ -163,6 +169,10 @@ export type PanelEntry = BaseExtensionPanelEntry & {
    */
   extensionPointId: RegistryId;
 };
+
+export function isPanelEntry(panel: any): panel is PanelEntry {
+  return panel?.type === "panel";
+}
 
 /**
  * An ephemeral panel to show in the sidebar. Only one temporary panel can be shown from an extension at a time.
@@ -179,6 +189,12 @@ export type TemporaryPanelEntry = BaseExtensionPanelEntry & {
    */
   showCloseButton?: boolean;
 };
+
+export function isTemporaryPanelEntry(
+  panel: any
+): panel is TemporaryPanelEntry {
+  return panel?.type === "temporaryPanel";
+}
 
 /**
  * An ephemeral form to show in the sidebar. Only one form can be shown from an extension at a time.
@@ -218,11 +234,21 @@ export type ActivateModPanelEntry = BasePanelEntry & {
   heading: string;
 };
 
+export function isActivateModPanelEntry(
+  panel: any
+): panel is ActivateModPanelEntry {
+  return panel?.type === "activateRecipe";
+}
+
 export type StaticPanelEntry = BasePanelEntry & {
   heading: string;
   type: "staticPanel";
   key: string;
 };
+
+export function isStaticPanelEntry(panel: any): panel is StaticPanelEntry {
+  return panel?.type === "staticPanel";
+}
 
 export type SidebarEntry =
   | PanelEntry

@@ -17,10 +17,15 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import {
+  isBaseExtensionPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
+import {
+  createSidebarEntryLookupMap,
+  eventKeyForEntry,
+  getBodyForStaticPanel,
+} from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
@@ -97,23 +102,25 @@ const Tabs: React.FC = () => {
   const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
   const staticPanels = useSelector(selectSidebarStaticPanels);
 
-  // Blueprint of the active panel for telemetry
-  const activePanel = useMemo(() => {
-    // XXX activeKey is namespaced. We use slice to only get the 32 characters and 4 dashes at the end
-    const activeUUID = activeKey.slice(-36);
-
-    const activePanel =
-      panels.find((panel) => panel.extensionId === activeUUID) ||
-      forms.find((panel) => panel.extensionId === activeUUID) ||
-      temporaryPanels.find((panel) => panel.nonce === activeUUID);
-
-    return activePanel;
-  }, [activeKey, panels, forms, temporaryPanels]);
+  // Lookup map for all the entries in the same format as the activeKey
+  const sidebarEntryLookupMap = useMemo(
+    () =>
+      createSidebarEntryLookupMap([
+        ...panels,
+        ...forms,
+        ...temporaryPanels,
+        ...staticPanels,
+        recipeToActivate,
+      ]),
+    [panels, forms, temporaryPanels, staticPanels, recipeToActivate]
+  );
 
   const onSelect = (eventKey: string) => {
+    const selectedEntry = sidebarEntryLookupMap.get(eventKey);
+
     reportEvent("ViewSidePanelPanel", {
-      // TODO: Add missing extension data by calling selectEventData() with the extension
-      activeBlueprint: activePanel.blueprintId,
+      activeMod:
+        isBaseExtensionPanelEntry(selectedEntry) && selectedEntry.blueprintId,
       initialLoad: false,
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
@@ -125,9 +132,11 @@ const Tabs: React.FC = () => {
 
   useEffect(
     () => {
+      const selectedEntry = sidebarEntryLookupMap.get(activeKey);
+
       reportEvent("ViewSidePanelPanel", {
-        // TODO: Add missing extension data by calling selectEventData() with the extension
-        activeBlueprint: activePanel.blueprintId,
+        activeMod:
+          isBaseExtensionPanelEntry(selectedEntry) && selectedEntry.blueprintId,
         initialLoad: true,
       });
     },
