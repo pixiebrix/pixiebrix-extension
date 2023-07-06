@@ -62,7 +62,7 @@ export interface ChildrenSelector {
    * The sub-selectors to apply.
    */
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- this is a recursive type
-  find?: SelectorMap;
+  find?: SelectorConfigMap;
 }
 
 export type CommonSelector = ChildrenSelector | SingleSelector;
@@ -73,14 +73,17 @@ export function isChildrenSelector(
   return "find" in selector;
 }
 
-export type Selector = CommonSelector & {
+export type SelectorConfig = CommonSelector & {
   selector?: string;
 
   // Block until the element is available
   maxWaitMillis?: number;
 };
 
-export type SelectorMap = Record<string, string | Selector>;
+/**
+ * Selector configuration by property name key. Assumes the values are already rendered via mapArgs.
+ */
+export type SelectorConfigMap = Record<string, string | SelectorConfig>;
 
 type Result =
   | string
@@ -93,7 +96,7 @@ type Result =
 
 export interface JQueryConfig {
   type: "jquery";
-  selectors: SelectorMap;
+  selectors: SelectorConfigMap;
 }
 
 function cleanValue(value: string): string {
@@ -174,7 +177,7 @@ function processElement($elements: JQuery, selector: SingleSelector) {
 }
 
 async function select(
-  selector: string | Selector,
+  selector: string | SelectorConfig,
   root?: HTMLElement | Document
 ): Promise<Result> {
   const normalizedSelector =

@@ -76,16 +76,22 @@ export type ServiceVarRef = string & {
 };
 
 /**
- * The tag of an available template engine for rendering an expression given a context.
- * @see mapArgs
+ * A text template engine.
  */
-export type TemplateEngine =
+export type TextTemplateEngine =
   // https://mustache.github.io/
   | "mustache"
   // https://mozilla.github.io/nunjucks/
   | "nunjucks"
   // https://handlebarsjs.com/
-  | "handlebars"
+  | "handlebars";
+
+/**
+ * The tag of an available template engine for rendering an expression given a context.
+ * @see mapArgs
+ */
+export type TemplateEngine =
+  | TextTemplateEngine
   // Variable, with support for ? operator
   | "var";
 

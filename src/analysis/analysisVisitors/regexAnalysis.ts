@@ -23,10 +23,7 @@ import { isTemplateExpression } from "@/runtime/mapArgs";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { joinPathParts } from "@/utils";
 import { AnnotationType } from "@/types/annotationTypes";
-
-function containsTemplateExpression(literalOrTemplate: string): boolean {
-  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
-}
+import { containsTemplateExpression } from "@/utils/templateUtils";
 
 /**
  * Returns the regex literal pattern, or null if the regex is a variable or template expression
