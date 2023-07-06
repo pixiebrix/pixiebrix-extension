@@ -21,7 +21,6 @@ import {
 } from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
 import { eventKeyForEntry } from "@/sidebar/utils";
-import { createLookupMap } from "@/utils/arrayUtils";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
@@ -56,26 +55,21 @@ export const selectSidebarRecipeToActivate = ({ sidebar }: SidebarRootState) =>
 export const selectExtensionFromEventKey =
   ({ options, sidebar }: SidebarRootState) =>
   (eventKey: string) => {
-    // Lookup map of all sidebar entries with the eventKeys as keys
-    const sidebarEntryLookupMap = createLookupMap(
-      [
-        ...sidebar.panels,
-        ...sidebar.forms,
-        ...sidebar.temporaryPanels,
-        ...sidebar.staticPanels,
-        sidebar.recipeToActivate,
-      ],
-      eventKeyForEntry
-    );
-
-    // Lookup map of extensions by id
-    const extensionLookupMap = createLookupMap(options.extensions, "id");
+    const sidebarEntries = [
+      ...sidebar.panels,
+      ...sidebar.forms,
+      ...sidebar.temporaryPanels,
+      ...sidebar.staticPanels,
+      sidebar.recipeToActivate,
+    ];
 
     // Get sidebar entry by event key
-    const sidebarEntry = sidebarEntryLookupMap.get(eventKey);
+    const sidebarEntry = sidebarEntries.find(
+      (entry) => eventKeyForEntry(entry) === eventKey
+    );
 
     const { extensionId } =
       isBaseExtensionPanelEntry(sidebarEntry) && sidebarEntry;
 
-    return extensionLookupMap.get(extensionId);
+    return options.extensions.find((extension) => extension.id === extensionId);
   };
