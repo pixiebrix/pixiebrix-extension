@@ -28,9 +28,15 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { screen } from "@testing-library/react";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getAttributeExamples: jest.fn(),
@@ -53,12 +59,14 @@ function baseStateFactory() {
 
 function renderOptions(formState: FormState = baseStateFactory()) {
   return render(
-    <Formik onSubmit={jest.fn()} initialValues={formState}>
-      <JQueryReaderOptions
-        name="extension.blockPipeline.0"
-        configKey="config"
-      />
-    </Formik>
+    <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
+      <Formik onSubmit={jest.fn()} initialValues={formState}>
+        <JQueryReaderOptions
+          name="extension.blockPipeline.0"
+          configKey="config"
+        />
+      </Formik>
+    </SchemaFieldContext.Provider>
   );
 }
 
@@ -116,7 +124,97 @@ describe("JQueryReaderOptions", () => {
       "property"
     );
 
-    expect(screen.getByLabelText("Selector")).toHaveValue("h1");
+    expect(
+      screen.getByTestId(
+        "toggle-extension.blockPipeline.0.config.selectors.property.selector"
+      ).dataset.testSelected
+    ).toEqual("Selector");
+
+    expect(screen.getByPlaceholderText("Select an element")).toHaveValue("h1");
+  });
+
+  it("normalizes nested selectors", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      outer: {
+        selector: "div",
+        find: {
+          inner: "h1",
+        },
+      },
+    };
+
+    renderOptions(state);
+
+    await waitForEffect();
+
+    expect(
+      screen.getByTestId(
+        "toggle-extension.blockPipeline.0.config.selectors.outer.selector"
+      ).dataset.testSelected
+    ).toEqual("Selector");
+    expect(
+      screen.getByTestId(
+        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector"
+      ).dataset.testSelected
+    ).toEqual("Selector");
+
+    expect(screen.queryAllByText("Loading...")).toHaveLength(0);
+  });
+
+  it("normalizes nunjucks literal selectors", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      outer: {
+        selector: makeTemplateExpression("nunjucks", "div"),
+        find: {
+          inner: makeTemplateExpression("nunjucks", "h1"),
+        },
+      },
+    };
+
+    renderOptions(state);
+
+    await waitForEffect();
+
+    expect(
+      screen.getByTestId(
+        "toggle-extension.blockPipeline.0.config.selectors.outer.selector"
+      ).dataset.testSelected
+    ).toEqual("Selector");
+    expect(
+      screen.getByTestId(
+        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector"
+      ).dataset.testSelected
+    ).toEqual("Selector");
+
+    expect(screen.queryAllByText("Loading...")).toHaveLength(0);
+  });
+
+  it("allows rename of property", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      outer: {
+        selector: makeTemplateExpression("nunjucks", "div"),
+        find: {
+          inner: makeTemplateExpression("nunjucks", "h1"),
+        },
+      },
+    };
+
+    const { container } = renderOptions(state);
+
+    await waitForEffect();
+
+    const field = container.querySelector('[value="outer"]');
+
+    await userEvent.type(field, "property");
+    // Click away to blur the field
+    await userEvent.click(screen.getAllByText("Select All")[0]);
+
+    await waitForEffect();
+
+    expect(field).toHaveValue("outerproperty");
   });
 
   it("generates example attributes for nested selectors", async () => {
@@ -152,6 +250,7 @@ describe("type options", () => {
     expect(
       inferActiveTypeOption({
         selector: "div",
+        multi: false,
         find: {},
       })
     ).toEqual("element");
@@ -161,6 +260,7 @@ describe("type options", () => {
     expect(
       inferActiveTypeOption({
         selector: "div",
+        multi: false,
         attr: "foo",
       })
     ).toEqual("attr:foo");
@@ -171,6 +271,7 @@ describe("type options", () => {
       inferActiveTypeOption({
         selector: "div",
         data: "foo",
+        multi: false,
       })
     ).toEqual("attr:data-foo");
   });

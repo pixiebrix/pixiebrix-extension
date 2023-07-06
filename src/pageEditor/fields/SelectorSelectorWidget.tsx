@@ -43,6 +43,12 @@ import { type SettingsState } from "@/store/settingsTypes";
 import { sortBySelector } from "@/utils/inference/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
+import { type Expression } from "@/types/runtimeTypes";
+import {
+  castTextLiteralOrThrow,
+  isTextLiteralOrNull,
+} from "@/utils/templateUtils";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -156,7 +162,9 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   // the order is based on structure (because selectors for multiple elements are returned).
   sort = selectMode === "element",
 }) => {
-  const [{ value }, , { setValue }] = useField<string>(name);
+  const [{ value: valueOrExpression }, , { setValue }] = useField<
+    string | Expression
+  >(name);
 
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
@@ -259,6 +267,10 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     }
   };
 
+  if (!isTextLiteralOrNull(valueOrExpression)) {
+    return <WorkshopMessageWidget />;
+  }
+
   return (
     // Do not replace this with `InputGroup` because that requires too many style overrides #2658 #2835
     <div className={styles.root}>
@@ -274,7 +286,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         isClearable={isClearable}
         isDisabled={isSelecting || disabled}
         suggestions={suggestions}
-        inputValue={value}
+        inputValue={castTextLiteralOrThrow(valueOrExpression)}
         inputPlaceholder={placeholder}
         renderSuggestion={renderSuggestion}
         onSuggestionHighlighted={onHighlighted}
