@@ -24,14 +24,14 @@ type KeyGetter<T> = ((obj: T) => string) | keyof T;
  *
  * @example
  * const people = [
- *     { name: 'John', age: 30 },
- *     { name: 'Jane', age: 25 },
- *     { name: 'Steve', age: 40 }
+ *     { name: 'Dan', age: 12 },
+ *     { name: 'Misha', age: 13 },
+ *     { name: 'Ben', age: 14 }
  * ];
  *
  * const nameLookup = createLookupMap(people, 'name');
  *
- * console.log(nameLookup.get('John')); // Outputs: { name: 'John', age: 30 }
+ * console.log(nameLookup.get('Dan')); // Outputs: { name: 'Dan', age: 12 }
  */
 
 export function createLookupMap<T>(

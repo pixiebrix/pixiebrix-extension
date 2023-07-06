@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
-  isBaseExtensionPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import {
-  createSidebarEntryLookupMap,
-  eventKeyForEntry,
-  getBodyForStaticPanel,
-} from "@/sidebar/utils";
+import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
@@ -41,6 +36,7 @@ import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectExtensionFromEventKey,
   selectSidebarActiveTabKey,
   selectSidebarForms,
   selectSidebarPanels,
@@ -49,6 +45,7 @@ import {
   selectSidebarTemporaryPanels,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
+import { selectEventData } from "@/telemetry/deployments";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -101,26 +98,11 @@ const Tabs: React.FC = () => {
   const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
   const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
   const staticPanels = useSelector(selectSidebarStaticPanels);
-
-  // Lookup map for all the entries in the same format as the activeKey
-  const sidebarEntryLookupMap = useMemo(
-    () =>
-      createSidebarEntryLookupMap([
-        ...panels,
-        ...forms,
-        ...temporaryPanels,
-        ...staticPanels,
-        recipeToActivate,
-      ]),
-    [panels, forms, temporaryPanels, staticPanels, recipeToActivate]
-  );
+  const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
 
   const onSelect = (eventKey: string) => {
-    const selectedEntry = sidebarEntryLookupMap.get(eventKey);
-
     reportEvent("ViewSidePanelPanel", {
-      activeMod:
-        isBaseExtensionPanelEntry(selectedEntry) && selectedEntry.blueprintId,
+      ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
@@ -132,11 +114,8 @@ const Tabs: React.FC = () => {
 
   useEffect(
     () => {
-      const selectedEntry = sidebarEntryLookupMap.get(activeKey);
-
       reportEvent("ViewSidePanelPanel", {
-        activeMod:
-          isBaseExtensionPanelEntry(selectedEntry) && selectedEntry.blueprintId,
+        ...selectEventData(getExtensionFromEventKey(activeKey)),
         initialLoad: true,
       });
     },

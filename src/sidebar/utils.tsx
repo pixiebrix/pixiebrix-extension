@@ -18,7 +18,6 @@
 import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 import React, { type ReactNode } from "react";
 import HomePanel from "@/sidebar/homePanel/HomePanel";
-import { createLookupMap } from "@/utils/arrayUtils";
 import {
   isActivateModPanelEntry,
   isPanelEntry,
@@ -91,8 +90,4 @@ export function defaultEventKey({
   }
 
   return null;
-}
-
-export function createSidebarEntryLookupMap(panels: SidebarEntry[]) {
-  return createLookupMap(panels, (entry) => eventKeyForEntry(entry));
 }
