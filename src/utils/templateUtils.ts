@@ -29,7 +29,13 @@ export function containsTemplateExpression(literalOrTemplate: string): boolean {
  * Returns true if the value is a string, or a literal string expression.
  * @see castTextLiteralOrThrow
  */
-export function isTextLiteral(literalOrTemplate: string | Expression): boolean {
+export function isTextLiteralOrNull(
+  literalOrTemplate: string | null | Expression
+): boolean {
+  if (literalOrTemplate == null) {
+    return true;
+  }
+
   if (typeof literalOrTemplate === "string") {
     return true;
   }
@@ -45,16 +51,16 @@ export function isTextLiteral(literalOrTemplate: string | Expression): boolean {
 
 /**
  * Returns the string value of a literal or expression with only literal text.
- * @see isTextLiteral
+ * @see isTextLiteralOrNull
  */
 export function castTextLiteralOrThrow(
-  literalOrTemplate: string | Expression
-): string {
-  if (typeof literalOrTemplate === "string") {
-    return literalOrTemplate;
+  literalOrTemplate: string | null | Expression
+): string | null {
+  if (literalOrTemplate == null || typeof literalOrTemplate === "string") {
+    return literalOrTemplate as string | null;
   }
 
-  if (!isTextLiteral(literalOrTemplate)) {
+  if (!isTextLiteralOrNull(literalOrTemplate)) {
     throw new TypeError("Expected literal, but found template expression");
   }
 

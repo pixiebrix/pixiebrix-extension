@@ -44,7 +44,10 @@ import { sortBySelector } from "@/utils/inference/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
 import { type Expression } from "@/types/runtimeTypes";
-import { castTextLiteralOrThrow, isTextLiteral } from "@/utils/templateUtils";
+import {
+  castTextLiteralOrThrow,
+  isTextLiteralOrNull,
+} from "@/utils/templateUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 interface ElementSuggestion extends SuggestionTypeBase {
@@ -264,7 +267,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     }
   };
 
-  if (!isTextLiteral(valueOrExpression)) {
+  if (!isTextLiteralOrNull(valueOrExpression)) {
     return <WorkshopMessageWidget />;
   }
 

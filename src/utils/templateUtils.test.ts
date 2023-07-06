@@ -18,7 +18,7 @@
 import {
   castTextLiteralOrThrow,
   containsTemplateExpression,
-  isTextLiteral,
+  isTextLiteralOrNull,
 } from "@/utils/templateUtils";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
@@ -38,23 +38,33 @@ describe("containsTemplateExpression", () => {
   });
 });
 
-describe("isTextLiteral", () => {
+describe("isTextLiteralOrNull", () => {
+  it("handles null", () => {
+    expect(isTextLiteralOrNull(null)).toBe(true);
+  });
+
   it("finds typeof string", () => {
-    expect(isTextLiteral("foo")).toBe(true);
+    expect(isTextLiteralOrNull("foo")).toBe(true);
   });
 
   it("finds template literal", () => {
-    expect(isTextLiteral(makeTemplateExpression("nunjucks", "foo"))).toBe(true);
+    expect(isTextLiteralOrNull(makeTemplateExpression("nunjucks", "foo"))).toBe(
+      true
+    );
   });
 
   it("finds simple template expressions", () => {
-    expect(isTextLiteral(makeTemplateExpression("nunjucks", "{{foo}}"))).toBe(
-      false
-    );
+    expect(
+      isTextLiteralOrNull(makeTemplateExpression("nunjucks", "{{foo}}"))
+    ).toBe(false);
   });
 });
 
 describe("castTextLiteralOrThrow", () => {
+  it("handles null", () => {
+    expect(castTextLiteralOrThrow(null)).toBe(null);
+  });
+
   it("finds literal", () => {
     expect(castTextLiteralOrThrow("foo")).toBe("foo");
   });
