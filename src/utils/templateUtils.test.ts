@@ -33,7 +33,7 @@ describe("containsTemplateExpression", () => {
     );
   });
 
-  it("ignores spaces between braces", () => {
+  it("require adjacent braces without spaces", () => {
     expect(containsTemplateExpression("{ {foo }}")).toBe(false);
   });
 });
