@@ -68,8 +68,11 @@ export const selectExtensionFromEventKey =
       (entry) => eventKeyForEntry(entry) === eventKey
     );
 
-    const { extensionId } =
-      isBaseExtensionPanelEntry(sidebarEntry) && sidebarEntry;
+    if (!isBaseExtensionPanelEntry(sidebarEntry)) {
+      return;
+    }
 
-    return options.extensions.find((extension) => extension.id === extensionId);
+    return options.extensions.find(
+      (extension) => extension.id === sidebarEntry.extensionId
+    );
   };
