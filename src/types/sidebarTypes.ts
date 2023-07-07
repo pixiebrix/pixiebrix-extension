@@ -24,6 +24,7 @@ import {
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
+import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -151,6 +152,12 @@ export type BaseExtensionPanelEntry = BasePanelEntry & {
   actions?: PanelButton[];
 };
 
+export function isBaseExtensionPanelEntry(
+  panel: unknown
+): panel is BaseExtensionPanelEntry {
+  return (panel as BaseExtensionPanelEntry)?.extensionId != null;
+}
+
 /**
  * A panel added by an extension attached to an SidebarExtensionPoint
  * @see SidebarExtensionPoint
@@ -163,6 +170,10 @@ export type PanelEntry = BaseExtensionPanelEntry & {
    */
   extensionPointId: RegistryId;
 };
+
+export function isPanelEntry(panel: unknown): panel is PanelEntry {
+  return (panel as PanelEntry)?.type === "panel";
+}
 
 /**
  * An ephemeral panel to show in the sidebar. Only one temporary panel can be shown from an extension at a time.
@@ -218,11 +229,21 @@ export type ActivateModPanelEntry = BasePanelEntry & {
   heading: string;
 };
 
+export function isActivateModPanelEntry(
+  panel: unknown
+): panel is ActivateModPanelEntry {
+  return (panel as ActivateModPanelEntry)?.type === "activateRecipe";
+}
+
 export type StaticPanelEntry = BasePanelEntry & {
   heading: string;
   type: "staticPanel";
   key: string;
 };
+
+export function isStaticPanelEntry(panel: unknown): panel is StaticPanelEntry {
+  return (panel as StaticPanelEntry)?.type === "staticPanel";
+}
 
 export type SidebarEntry =
   | PanelEntry
@@ -305,4 +326,7 @@ export type SidebarState = SidebarEntries & {
   pendingActivePanel: ActivatePanelOptions | null;
 };
 
-export type SidebarRootState = { sidebar: SidebarState };
+export interface SidebarRootState {
+  options: ExtensionOptionsState;
+  sidebar: SidebarState;
+}

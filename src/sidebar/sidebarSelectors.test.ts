@@ -14,6 +14,7 @@ describe("sidebarSelectors", () => {
         recipeToActivate: null,
         pendingActivePanel: null,
       },
+      options: { extensions: [] },
     };
 
     it("returns false if there are no sidebar panels, forms, or temporaryPanels", () => {

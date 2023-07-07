@@ -36,6 +36,7 @@ import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectExtensionFromEventKey,
   selectSidebarActiveTabKey,
   selectSidebarForms,
   selectSidebarPanels,
@@ -44,6 +45,7 @@ import {
   selectSidebarTemporaryPanels,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
+import { selectEventData } from "@/telemetry/deployments";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -96,11 +98,11 @@ const Tabs: React.FC = () => {
   const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
   const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
   const staticPanels = useSelector(selectSidebarStaticPanels);
+  const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
 
   const onSelect = (eventKey: string) => {
     reportEvent("ViewSidePanelPanel", {
-      // FIXME: this was wrong, eventKey is not an extensionId
-      // ...selectEventData(lookup.get(extensionId)),
+      ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
@@ -113,8 +115,7 @@ const Tabs: React.FC = () => {
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
-        // FIXME: this was wrong, eventKey is not an extensionId
-        // ...selectEventData(lookup.get(activeKey)),
+        ...selectEventData(getExtensionFromEventKey(activeKey)),
         initialLoad: true,
       });
     },

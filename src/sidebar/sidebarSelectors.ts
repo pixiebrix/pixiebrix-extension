@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarRootState } from "@/types/sidebarTypes";
+import {
+  isBaseExtensionPanelEntry,
+  type SidebarRootState,
+} from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
+import { eventKeyForEntry } from "@/sidebar/utils";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
@@ -47,3 +51,28 @@ export const selectSidebarStaticPanels = ({ sidebar }: SidebarRootState) =>
 
 export const selectSidebarRecipeToActivate = ({ sidebar }: SidebarRootState) =>
   sidebar.recipeToActivate;
+
+export const selectExtensionFromEventKey =
+  ({ options, sidebar }: SidebarRootState) =>
+  (eventKey: string) => {
+    const sidebarEntries = [
+      ...sidebar.panels,
+      ...sidebar.forms,
+      ...sidebar.temporaryPanels,
+      ...sidebar.staticPanels,
+      sidebar.recipeToActivate,
+    ];
+
+    // Get sidebar entry by event key
+    const sidebarEntry = sidebarEntries.find(
+      (entry) => eventKeyForEntry(entry) === eventKey
+    );
+
+    if (!isBaseExtensionPanelEntry(sidebarEntry)) {
+      return;
+    }
+
+    return options.extensions.find(
+      (extension) => extension.id === sidebarEntry.extensionId
+    );
+  };
