@@ -25,10 +25,6 @@ import {
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";
-import { type RecipesState } from "@/recipes/recipesTypes";
-import { type AuthState } from "@/auth/authTypes";
-import { type SettingsState } from "@/store/settingsTypes";
-import { type ServicesState } from "@/store/servicesSlice";
 
 /**
  * Entry types supported by the sidebar.
@@ -157,9 +153,9 @@ export type BaseExtensionPanelEntry = BasePanelEntry & {
 };
 
 export function isBaseExtensionPanelEntry(
-  panel: any
+  panel: unknown
 ): panel is BaseExtensionPanelEntry {
-  return panel?.extensionId != null;
+  return (panel as BaseExtensionPanelEntry)?.extensionId != null;
 }
 
 /**
@@ -175,8 +171,8 @@ export type PanelEntry = BaseExtensionPanelEntry & {
   extensionPointId: RegistryId;
 };
 
-export function isPanelEntry(panel: any): panel is PanelEntry {
-  return panel?.type === "panel";
+export function isPanelEntry(panel: unknown): panel is PanelEntry {
+  return (panel as PanelEntry)?.type === "panel";
 }
 
 /**
@@ -194,12 +190,6 @@ export type TemporaryPanelEntry = BaseExtensionPanelEntry & {
    */
   showCloseButton?: boolean;
 };
-
-export function isTemporaryPanelEntry(
-  panel: any
-): panel is TemporaryPanelEntry {
-  return panel?.type === "temporaryPanel";
-}
 
 /**
  * An ephemeral form to show in the sidebar. Only one form can be shown from an extension at a time.
@@ -240,9 +230,9 @@ export type ActivateModPanelEntry = BasePanelEntry & {
 };
 
 export function isActivateModPanelEntry(
-  panel: any
+  panel: unknown
 ): panel is ActivateModPanelEntry {
-  return panel?.type === "activateRecipe";
+  return (panel as ActivateModPanelEntry)?.type === "activateRecipe";
 }
 
 export type StaticPanelEntry = BasePanelEntry & {
@@ -251,8 +241,8 @@ export type StaticPanelEntry = BasePanelEntry & {
   key: string;
 };
 
-export function isStaticPanelEntry(panel: any): panel is StaticPanelEntry {
-  return panel?.type === "staticPanel";
+export function isStaticPanelEntry(panel: unknown): panel is StaticPanelEntry {
+  return (panel as StaticPanelEntry)?.type === "staticPanel";
 }
 
 export type SidebarEntry =
@@ -337,10 +327,6 @@ export type SidebarState = SidebarEntries & {
 };
 
 export interface SidebarRootState {
-  auth: AuthState;
   options: ExtensionOptionsState;
   sidebar: SidebarState;
-  settings: SettingsState;
-  services: ServicesState;
-  recipes: RecipesState;
 }

@@ -50,7 +50,6 @@ import {
   sanitizedAuthFactory,
   sanitizedAuthServiceFactory,
 } from "@/testUtils/factories/serviceFactories";
-import { type RecipesState } from "@/recipes/recipesTypes";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -266,19 +265,3 @@ export const getRecipeWithBuiltInServiceAuths = () => {
 
   return { recipe, builtInServiceAuths };
 };
-
-export const recipeStateFactory = define<RecipesState>({
-  data: undefined,
-  currentData: undefined,
-  isLoading: false,
-  isFetching: false,
-  isUninitialized: true,
-  isError: false,
-  isSuccess: false,
-  error: undefined,
-  isCacheUninitialized: true,
-  isLoadingFromCache: false,
-  isRemoteUninitialized: true,
-  isFetchingFromRemote: false,
-  isLoadingFromRemote: false,
-});

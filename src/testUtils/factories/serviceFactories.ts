@@ -26,7 +26,6 @@ import {
   type SanitizedAuth,
   type SanitizedAuthService,
 } from "@/types/contract";
-import { type ServicesState } from "@/store/servicesSlice";
 
 export const sanitizedServiceConfigurationFactory =
   define<SanitizedServiceConfiguration>({
@@ -52,8 +51,4 @@ export const sanitizedAuthFactory = define<SanitizedAuth>({
     _sanitizedConfigBrand: null,
   },
   service: sanitizedAuthServiceFactory,
-});
-
-export const servicesStateFactory = define<ServicesState>({
-  configured: {},
 });
