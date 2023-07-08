@@ -63,7 +63,7 @@ import {
   type RenderedArgs,
   type ServiceContext,
   type OptionsArgs,
-  PipelineExpression,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";

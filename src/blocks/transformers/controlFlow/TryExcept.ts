@@ -19,13 +19,13 @@ import { Transformer } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { serializeError } from "serialize-error";
-import { type PipelineExpression } from "@/types/runtimeTypes";
-import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
   type BrickOptions,
   type OutputKey,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 
 class TryExcept extends Transformer {

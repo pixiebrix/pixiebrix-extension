@@ -26,7 +26,7 @@ import {
   TourStepTransformer,
 } from "@/blocks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
-import { type Expression, PipelineExpression } from "@/types/runtimeTypes";
+import { type Expression, type PipelineExpression } from "@/types/runtimeTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import SwitchButtonWidget, {

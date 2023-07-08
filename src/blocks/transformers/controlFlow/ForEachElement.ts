@@ -16,10 +16,13 @@
  */
 
 import { Transformer } from "@/types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import {
+  type BrickArgs,
+  type BrickOptions,
+  type PipelineExpression,
+} from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type PipelineExpression } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { $safeFind } from "@/helpers";
 import { castArray } from "lodash";

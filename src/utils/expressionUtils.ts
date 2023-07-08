@@ -19,7 +19,7 @@ import {
   DeferExpression,
   type Expression,
   type ExpressionType,
-  PipelineExpression,
+  type PipelineExpression,
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";

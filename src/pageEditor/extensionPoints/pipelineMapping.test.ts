@@ -32,7 +32,7 @@ import blockRegistry from "@/blocks/registry";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { isPipelineExpression } from "@/utils/expressionUtils";
-import { PipelineExpression } from "@/types/runtimeTypes";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 
 describe("normalizePipeline", () => {
   let echoBlockConfig: BrickConfig;

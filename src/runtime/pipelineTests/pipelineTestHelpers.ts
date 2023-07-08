@@ -10,7 +10,7 @@ import {
   type BrickArgs,
   type BrickOptions,
   type OptionsArgs,
-  PipelineExpression,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";

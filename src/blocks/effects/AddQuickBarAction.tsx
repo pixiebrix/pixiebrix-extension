@@ -20,11 +20,14 @@ import { propertiesToSchema } from "@/validators/generic";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import React from "react";
-import { type PipelineExpression } from "@/types/runtimeTypes";
+import {
+  type BrickArgs,
+  type BrickOptions,
+  type PipelineExpression,
+} from "@/types/runtimeTypes";
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { Effect } from "@/types/bricks/effectTypes";
 
 type ActionConfig = {

@@ -47,7 +47,7 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { type PipelineExpression } from "@/types/runtimeTypes";
+import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { type EditablePackage } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
@@ -59,7 +59,6 @@ import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/re
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { type OutputKey } from "@/types/runtimeTypes";
 import { array } from "cooky-cutter";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { mockCachedUser } from "@/testUtils/userMock";
