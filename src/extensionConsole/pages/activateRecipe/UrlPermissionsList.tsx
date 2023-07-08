@@ -17,38 +17,43 @@
 
 import React, { useMemo } from "react";
 import { isEmpty, uniq } from "lodash";
-import { selectOptionalPermissions } from "@/utils/permissions";
-import Loader from "@/components/Loader";
+import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
 import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
-import { type Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { type AsyncState } from "@/types/sliceTypes";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { defaultInitialValue } from "@/utils/asyncStateUtils";
 
-const UrlPermissionsList: React.FunctionComponent<{
-  enabled: boolean;
-  isPending: boolean;
-  error: unknown;
-  permissions: Permissions.Permissions;
-}> = ({ error, enabled, isPending, permissions }) => {
-  useReportError(error);
+const noRequiredPermissions = {
+  hasPermissions: true,
+  permissionsList: [] as string[],
+};
 
-  const permissionsList = useMemo(() => {
-    if (permissions == null) {
-      return [];
-    }
+const UrlPermissionsList: React.FunctionComponent<
+  AsyncState<PermissionsStatus>
+> = (state) => {
+  useReportError(state.error);
 
-    // `selectOptionalPermissions` never returns any origins because we request *://*
-    return uniq([
-      ...selectOptionalPermissions(permissions.permissions),
-      ...permissions.origins,
-    ]);
-  }, [permissions]);
+  const { data, error } = defaultInitialValue(
+    useDeriveAsyncState(
+      state,
+      async ({ permissions, hasPermissions }: PermissionsStatus) => ({
+        hasPermissions,
+        // `selectOptionalPermissions` never returns any origins because we request *://*
+        permissionsList: uniq([
+          ...selectOptionalPermissions(permissions.permissions),
+          ...permissions.origins,
+        ]),
+      })
+    ),
+    noRequiredPermissions
+  );
+
+  const permissionsList = data?.permissionsList;
 
   const helpText = useMemo(() => {
-    if (isPending) {
-      return <Loader />;
-    }
-
     if (error) {
       return (
         <p className="text-danger">
@@ -62,7 +67,9 @@ const UrlPermissionsList: React.FunctionComponent<{
       return <p>No special permissions required</p>;
     }
 
-    if (enabled) {
+    const { hasPermissions } = data;
+
+    if (hasPermissions) {
       return (
         <p>
           PixieBrix already has the permissions required for the bricks
@@ -77,7 +84,7 @@ const UrlPermissionsList: React.FunctionComponent<{
         granted yet
       </p>
     );
-  }, [permissionsList, enabled, error, isPending]);
+  }, [permissionsList, data, error]);
 
   return (
     <>

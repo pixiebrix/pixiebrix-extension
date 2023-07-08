@@ -238,7 +238,7 @@ export default class Overlay {
   tip: OverlayTip;
   rects: Array<OverlayRect>;
 
-  constructor(theme?: string) {
+  constructor(theme?: "light" | "blue") {
     // Find the root window, because overlays are positioned relative to it.
     const currentWindow = window; // window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
     this.window = window;

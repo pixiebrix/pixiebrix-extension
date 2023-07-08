@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  blockConfigFactory,
-  formStateFactory,
-  installedRecipeMetadataFactory,
-  recipeFactory,
-  triggerFormStateFactory,
-} from "@/testUtils/factories";
 import VarAnalysis, {
   INVALID_VARIABLE_GENERIC_MESSAGE,
   VARIABLE_SHOULD_START_WITH_AT_MESSAGE,
@@ -36,7 +29,7 @@ import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
-import { EchoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
@@ -51,15 +44,21 @@ import {
   type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { services } from "@/background/messenger/api";
+import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
-jest.mock("@/background/messenger/api", () => ({
-  __esModule: true,
-  services: {
-    locate: jest.fn().mockResolvedValue({
-      serviceId: "@test/service",
-    }),
-  },
-}));
+jest.mocked(services.locate).mockResolvedValue(
+  sanitizedServiceConfigurationFactory({
+    serviceId: validateRegistryId("@test/service"),
+  })
+);
 
 jest.mock("@/blocks/registry", () => ({
   __esModule: true,
@@ -130,7 +129,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [blockConfigFactory()]
+        [brickConfigFactory()]
       );
 
       await analysis.run(extension);
@@ -152,10 +151,10 @@ describe("Collecting available vars", () => {
 
     test("collects the output key", async () => {
       const extension = formStateFactory(undefined, [
-        blockConfigFactory({
+        brickConfigFactory({
           outputKey: validateOutputKey("foo"),
         }),
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
 
       await analysis.run(extension);
@@ -178,11 +177,11 @@ describe("Collecting available vars", () => {
 
     test("collects the output key of a conditional block", async () => {
       const extension = formStateFactory(undefined, [
-        blockConfigFactory({
+        brickConfigFactory({
           if: true,
           outputKey: validateOutputKey("foo"),
         }),
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
 
       await analysis.run(extension);
@@ -218,7 +217,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [blockConfigFactory()]
+        [brickConfigFactory()]
       );
 
       await analysis.run(extension);
@@ -253,7 +252,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [blockConfigFactory()]
+        [brickConfigFactory()]
       );
 
       await analysis.run(extension);
@@ -289,7 +288,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [blockConfigFactory()]
+        [brickConfigFactory()]
       );
 
       await analysis.run(extension);
@@ -322,7 +321,7 @@ describe("Collecting available vars", () => {
             foo: "bar",
           },
         },
-        [blockConfigFactory()]
+        [brickConfigFactory()]
       );
 
       await analysis.run(extension);
@@ -342,10 +341,10 @@ describe("Collecting available vars", () => {
 
     async function runAnalysisWithOutputSchema(outputSchema: Schema) {
       const extension = formStateFactory(undefined, [
-        blockConfigFactory({
+        brickConfigFactory({
           outputKey,
         }),
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
       (blockRegistry.allTyped as jest.Mock).mockResolvedValue(
         new Map([
@@ -604,23 +603,23 @@ describe("Collecting available vars", () => {
         config: {
           condition: true,
           if: makePipelineExpression([
-            blockConfigFactory({
+            brickConfigFactory({
               outputKey: validateOutputKey("foo"),
             }),
-            blockConfigFactory(),
+            brickConfigFactory(),
           ]),
           else: makePipelineExpression([
-            blockConfigFactory({
+            brickConfigFactory({
               outputKey: validateOutputKey("bar"),
             }),
-            blockConfigFactory(),
+            brickConfigFactory(),
           ]),
         },
       };
 
       const extension = formStateFactory(undefined, [
         ifElseBlock,
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
 
       await analysis.run(extension);
@@ -729,7 +728,7 @@ describe("Collecting available vars", () => {
       rowElement.children[0].children.push(buttonElement);
 
       buttonElement.config.onClick = makePipelineExpression([
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             text: makeTemplateExpression("nunjucks", "{{ @foo }}"),
           },
@@ -785,14 +784,14 @@ describe("Collecting available vars", () => {
         outputKey: validateOutputKey("typeExcept"),
         config: {
           errorKey: "error",
-          try: makePipelineExpression([blockConfigFactory()]),
-          except: makePipelineExpression([blockConfigFactory()]),
+          try: makePipelineExpression([brickConfigFactory()]),
+          except: makePipelineExpression([brickConfigFactory()]),
         },
       };
 
       const extension = formStateFactory(undefined, [
         tryExceptBlock,
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
 
       analysis = new VarAnalysis([]);
@@ -826,13 +825,13 @@ describe("Collecting available vars", () => {
         config: {
           elementKey: "element",
           selector: "a",
-          body: makePipelineExpression([blockConfigFactory()]),
+          body: makePipelineExpression([brickConfigFactory()]),
         },
       };
 
       const extension = formStateFactory(undefined, [
         forEachBlock,
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
 
       analysis = new VarAnalysis([]);
@@ -858,17 +857,17 @@ describe("Collecting available vars", () => {
           elementKey: "element",
           elements: [makeTemplateExpression("nunjucks", "1")],
           body: makePipelineExpression([
-            blockConfigFactory({
+            brickConfigFactory({
               outputKey: validateOutputKey("foo"),
             }),
-            blockConfigFactory(),
+            brickConfigFactory(),
           ]),
         },
       };
 
       const extension = formStateFactory(undefined, [
         forEachBlock,
-        blockConfigFactory(),
+        brickConfigFactory(),
       ]);
 
       analysis = new VarAnalysis([]);
@@ -947,7 +946,7 @@ describe("Invalid template", () => {
 
   beforeEach(() => {
     const invalidEchoBlock = {
-      id: EchoBlock.BLOCK_ID,
+      id: EchoBrick.BLOCK_ID,
       config: {
         message: makeTemplateExpression(
           "nunjucks",
@@ -956,7 +955,7 @@ describe("Invalid template", () => {
       },
     };
     const validEchoBlock = {
-      id: EchoBlock.BLOCK_ID,
+      id: EchoBrick.BLOCK_ID,
       config: {
         message: makeTemplateExpression(
           "nunjucks",
@@ -989,11 +988,11 @@ describe("Invalid template", () => {
 describe("var expression annotations", () => {
   test("doesn't annotate valid expressions", async () => {
     const extension = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         outputKey: validateOutputKey("foo"),
       }),
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("@foo"),
         },
@@ -1009,7 +1008,7 @@ describe("var expression annotations", () => {
   test("doesn't annotate empty variable", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression(""),
         },
@@ -1025,7 +1024,7 @@ describe("var expression annotations", () => {
   test("annotates variable which doesn't start with @", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("foo"),
         },
@@ -1045,7 +1044,7 @@ describe("var expression annotations", () => {
   test("annotates variable which is just whitespace", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("  "),
         },
@@ -1063,7 +1062,7 @@ describe("var expression annotations", () => {
   test("return a generic error message for a single @ character", async () => {
     const extension = formStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeVariableExpression("@"),
         },
@@ -1083,7 +1082,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger event", async () => {
     const extension = triggerFormStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeTemplateExpression(
             "nunjucks",
@@ -1105,7 +1104,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger custom event", async () => {
     const extension = triggerFormStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeTemplateExpression(
             "nunjucks",
@@ -1127,7 +1126,7 @@ describe("var analysis integration tests", () => {
   it("should handle trigger selectionchange event", async () => {
     const extension = triggerFormStateFactory(undefined, [
       {
-        id: EchoBlock.BLOCK_ID,
+        id: EchoBrick.BLOCK_ID,
         config: {
           message: makeTemplateExpression(
             "nunjucks",

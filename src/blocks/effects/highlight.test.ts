@@ -16,10 +16,11 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { HighlightEffect } from "@/blocks/effects/highlight";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const logger = new ConsoleLogger({
   extensionId: uuidSequence(0),
@@ -41,7 +42,7 @@ describe("highlight", () => {
           rootSelector: ".a",
           color,
         }),
-        { logger, root: document } as BlockOptions
+        { logger, root: document } as BrickOptions
       );
 
       expect(document.body.innerHTML).toMatchSnapshot();
@@ -65,7 +66,7 @@ describe("highlight", () => {
         rootSelector: "span",
         rootMode: "inherit",
       }),
-      { logger, root: document.querySelector("#tree") } as BlockOptions
+      { logger, root: document.querySelector("#tree") } as BrickOptions
     );
 
     expect(document.body.innerHTML).toMatchSnapshot();
@@ -90,7 +91,7 @@ describe("highlight", () => {
           rootSelector: "span",
           rootMode,
         }),
-        { logger, root: document.querySelector("#tree") } as BlockOptions
+        { logger, root: document.querySelector("#tree") } as BrickOptions
       );
 
       expect(document.body.innerHTML).toMatchSnapshot();

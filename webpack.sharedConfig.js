@@ -87,20 +87,6 @@ const shared = {
         },
       },
       {
-        test: /bootstrap-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/bootstrap-icons/[name][ext]",
-        },
-      },
-      {
-        test: /simple-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/simple-icons/[name][ext]",
-        },
-      },
-      {
         test: /custom-icons\/.*\.svg$/,
         type: "asset/resource",
         generator: {

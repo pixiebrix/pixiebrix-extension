@@ -24,7 +24,8 @@ import {
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { uuidv4 } from "@/types/helpers";
 import { CancelError } from "@/errors/businessErrors";
-import { sidebarEntryFactory } from "@/testUtils/factories";
+
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 describe("temporaryPanelProtocol", () => {
   it("getPanelDefinition if panel is not defined", async () => {
@@ -37,7 +38,12 @@ describe("temporaryPanelProtocol", () => {
     const nonce = uuidv4();
     const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
-    const promise = waitForTemporaryPanel(nonce, definition);
+    const promise = waitForTemporaryPanel({
+      nonce,
+      location: "panel",
+      entry: definition,
+      extensionId: uuidv4(),
+    });
 
     await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
 
@@ -50,7 +56,12 @@ describe("temporaryPanelProtocol", () => {
     const nonce = uuidv4();
     const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
-    const promise = waitForTemporaryPanel(nonce, definition);
+    const promise = waitForTemporaryPanel({
+      nonce,
+      location: "panel",
+      entry: definition,
+      extensionId: uuidv4(),
+    });
 
     await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
 
@@ -65,7 +76,12 @@ describe("temporaryPanelProtocol", () => {
     const nonce = uuidv4();
     const definition = sidebarEntryFactory("temporaryPanel", { nonce });
 
-    const promise = waitForTemporaryPanel(nonce, definition);
+    const promise = waitForTemporaryPanel({
+      nonce,
+      location: "panel",
+      entry: definition,
+      extensionId: uuidv4(),
+    });
 
     await expect(getPanelDefinition(nonce)).resolves.toStrictEqual(definition);
 

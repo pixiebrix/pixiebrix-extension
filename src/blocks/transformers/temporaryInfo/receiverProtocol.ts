@@ -16,7 +16,7 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { remove } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 
@@ -82,8 +82,9 @@ function runListeners<Method extends keyof PanelListener>(
 
   for (const listener of listeners) {
     try {
+      // @ts-expect-error -- TODO: improve typings
       // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
-      listener[method](data as any);
+      listener[method](data);
     } catch (error) {
       reportError(error);
     }

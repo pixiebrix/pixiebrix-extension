@@ -18,11 +18,11 @@
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "./pipelineTestHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -33,7 +33,7 @@ import { ContextError } from "@/errors/genericErrors";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
+  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
   (sendDeploymentAlert as any).mockReset();
 });
 
@@ -44,7 +44,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       await expect(async () => {
         await reducePipeline(
           {
-            id: throwBlock.id,
+            id: throwBrick.id,
             config: {
               message: "Example input",
             },
@@ -68,7 +68,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
       const pipeline = reducePipeline(
         {
-          id: throwBlock.id,
+          id: throwBrick.id,
           config: {
             message: "Example input",
           },
@@ -88,7 +88,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       expect(sendDeploymentAlert).toHaveBeenCalledWith({
         deploymentId,
         data: {
-          id: throwBlock.id,
+          id: throwBrick.id,
           context: {
             "@input": {
               inputArg: "hello",

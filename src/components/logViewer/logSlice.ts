@@ -63,7 +63,7 @@ const pollLogs = createAsyncThunk<
     availableEntries = await getLog(activeContext);
   }
 
-  setTimeout(() => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
+  setTimeout(async () => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
 
   return availableEntries;
 });

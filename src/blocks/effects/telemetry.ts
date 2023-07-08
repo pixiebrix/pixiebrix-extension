@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
 import { PropError } from "@/errors/businessErrors";
+import { type JsonObject } from "type-fest";
 
 export class TelemetryEffect extends Effect {
   constructor() {
@@ -50,8 +51,11 @@ export class TelemetryEffect extends Effect {
   };
 
   async effect(
-    { eventName, data = {} }: BlockArgs,
-    { logger }: BlockOptions
+    {
+      eventName,
+      data = {},
+    }: BrickArgs<{ eventName: string; data: JsonObject }>,
+    { logger }: BrickOptions
   ): Promise<void> {
     if ("$eventName" in data) {
       throw new PropError(
@@ -63,9 +67,7 @@ export class TelemetryEffect extends Effect {
     }
 
     if (await getDNT()) {
-      const message = `Event ${
-        eventName as string
-      } will not be reported because the user has DNT enabled`;
+      const message = `Event ${eventName} will not be reported because the user has DNT enabled`;
       console.warn(message);
       logger.warn(message);
     }

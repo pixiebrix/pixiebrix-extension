@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
-import makeDataTable, { type Row } from "@/blocks/renderers/dataTable";
+import makeDataTable, {
+  type ColumnDefinition,
+  type Row,
+} from "@/blocks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 // Type ColumnDefinition = {
@@ -87,8 +90,14 @@ export class TableRenderer extends Renderer {
   );
 
   async render(
-    { columns, data: userData }: BlockArgs,
-    { ctxt = [] }: BlockOptions
+    {
+      columns,
+      data: userData,
+    }: BrickArgs<{
+      columns: Array<ColumnDefinition<Row> & { href: string }>;
+      data: unknown;
+    }>,
+    { ctxt = [] }: BrickOptions
   ): Promise<SafeHTML> {
     let data = userData ?? ctxt;
 
@@ -106,7 +115,7 @@ export class TableRenderer extends Renderer {
     }
 
     const table = makeDataTable(
-      columns.map(({ label, property, href }: any) => ({
+      columns.map(({ label, property, href }) => ({
         label,
         property,
         renderer: href ? makeLinkRenderer(href) : undefined,

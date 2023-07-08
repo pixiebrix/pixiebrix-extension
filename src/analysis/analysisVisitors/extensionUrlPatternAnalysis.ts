@@ -76,7 +76,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
   async run(extension: FormState): Promise<void> {
     for (const fieldName of urlPatternFields) {
-      const urlPatterns = get(extension, fieldName);
+      const urlPatterns: unknown[] = get(extension, fieldName);
       if (urlPatterns == null || urlPatterns.length === 0) {
         continue;
       }
@@ -86,7 +86,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
     const stringUrlsFieldAnalysisPromises: Array<Promise<void>> = [];
     for (const fieldName of stringUrlFields) {
-      const urls = get(extension, fieldName);
+      const urls: string[] = get(extension, fieldName);
       if (urls == null || urls.length === 0) {
         continue;
       }

@@ -44,25 +44,14 @@ import {
   ClientRequestError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
-import MockAdapter from "axios-mock-adapter";
 import { uuidv4 } from "@/types/helpers";
 import { renderHook } from "@testing-library/react-hooks";
 import { appApi, useGetPackageQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { getLinkedApiClient } from "@/services/apiClient";
 import React from "react";
-
-const axiosMock = new MockAdapter(axios);
-
-jest.mock("@/services/apiClient", () => ({
-  getLinkedApiClient: jest.fn(),
-}));
-
-const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
-
-getLinkedApiClientMock.mockResolvedValue(axios.create());
+import { appApiMock } from "@/testUtils/appApiMock";
 
 function testStore() {
   return configureStore({
@@ -201,6 +190,10 @@ describe("hasSpecificErrorCause BusinessError", () => {
 });
 
 describe("getErrorMessage", () => {
+  beforeEach(() => {
+    appApiMock.resetHandlers();
+  });
+
   test("handles string", () => {
     expect(getErrorMessage(TEST_MESSAGE)).toBe(TEST_MESSAGE);
   });
@@ -215,7 +208,7 @@ describe("getErrorMessage", () => {
   });
 
   test("handles axios error", async () => {
-    axiosMock
+    appApiMock
       .onGet()
       .reply(404, { detail: "These aren't the droids you're looking for" });
 
@@ -230,7 +223,7 @@ describe("getErrorMessage", () => {
   });
 
   test("handles serialized axios error", async () => {
-    axiosMock
+    appApiMock
       .onGet()
       .reply(404, { detail: "These aren't the droids you're looking for" });
 
@@ -248,7 +241,7 @@ describe("getErrorMessage", () => {
   });
 
   test("handles error message from RTK", async () => {
-    axiosMock
+    appApiMock
       .onGet()
       .reply(404, { detail: "These aren't the droids you're looking for" });
 

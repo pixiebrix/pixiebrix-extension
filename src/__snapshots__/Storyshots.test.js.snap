@@ -68,314 +68,6 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 </div>
 `;
 
-exports[`Storyshots Blueprints/GetStartedView Activate Blueprint 1`] = `
-<div
-  className="root"
-  style={
-    {
-      "height": "500px",
-      "width": "800px",
-    }
-  }
->
-  <div
-    className="infoRow row"
-  >
-    <div
-      className="col"
-    >
-      <h4>
-        Want to create a new mod?
-      </h4>
-      <ul>
-        <li>
-          Start by opening a new browser tab and navigating to the webpage you want to modify.
-        </li>
-        <li>
-          Open the Page Editor by selecting the PixieBrix tab via the
-           
-          <strong>
-            Chrome DevTools
-          </strong>
-           using
-           
-          <kbd>
-            Ctrl + Shift + C
-          </kbd>
-           
-          or 
-          <kbd>
-            F12
-          </kbd>
-           and start editing your page.
-        </li>
-        <li>
-          Save your mod in the Page Editor, and you'll see it here as a personal mod.
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div
-    className="infoRow row"
-  >
-    <div
-      className="col"
-    >
-      <h4>
-        Need more help?
-      </h4>
-      <p>
-        Visit the
-         
-        <span>
-          <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Quick Start Guide
-          </a>
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
-            data-icon="external-link-alt"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-        </span>
-         
-        or ask questions in the
-         
-        <span>
-          <a
-            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Slack Community
-          </a>
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
-            data-icon="external-link-alt"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-        </span>
-        .
-      </p>
-      <p>
-         
-        Visit the
-         
-        <span>
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            PixieBrix Marketplace
-          </a>
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
-            data-icon="external-link-alt"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-        </span>
-         
-        for ideas.
-      </p>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Storyshots Blueprints/GetStartedView Default 1`] = `
-<div
-  className="root"
-  style={
-    {
-      "height": "500px",
-      "width": "800px",
-    }
-  }
->
-  <div
-    className="infoRow row"
-  >
-    <div
-      className="col"
-    >
-      <h4>
-        Want to create a new mod?
-      </h4>
-      <ul>
-        <li>
-          Start by opening a new browser tab and navigating to the webpage you want to modify.
-        </li>
-        <li>
-          Open the Page Editor by selecting the PixieBrix tab via the
-           
-          <strong>
-            Chrome DevTools
-          </strong>
-           using
-           
-          <kbd>
-            Ctrl + Shift + C
-          </kbd>
-           
-          or 
-          <kbd>
-            F12
-          </kbd>
-           and start editing your page.
-        </li>
-        <li>
-          Save your mod in the Page Editor, and you'll see it here as a personal mod.
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div
-    className="infoRow row"
-  >
-    <div
-      className="col"
-    >
-      <h4>
-        Need more help?
-      </h4>
-      <p>
-        Visit the
-         
-        <span>
-          <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Quick Start Guide
-          </a>
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
-            data-icon="external-link-alt"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-        </span>
-         
-        or ask questions in the
-         
-        <span>
-          <a
-            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Slack Community
-          </a>
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
-            data-icon="external-link-alt"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-        </span>
-        .
-      </p>
-      <p>
-         
-        Visit the
-         
-        <span>
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            PixieBrix Marketplace
-          </a>
-          <svg
-            aria-hidden="true"
-            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
-            data-icon="external-link-alt"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            style={{}}
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
-              fill="currentColor"
-              style={{}}
-            />
-          </svg>
-        </span>
-         
-        for ideas.
-      </p>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
 <div
   style={
@@ -871,7 +563,13 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                The department to search
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The department to search",
+                    }
+                  }
+                />
               </td>
             </tr>
             <tr
@@ -933,7 +631,13 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                The search query
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The search query",
+                    }
+                  }
+                />
               </td>
             </tr>
           </tbody>
@@ -1183,7 +887,13 @@ exports[`Storyshots Components/BrickDetail Built In 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                Column labels and values to show
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "Column labels and values to show",
+                    }
+                  }
+                />
               </td>
             </tr>
             <tr
@@ -1227,7 +937,13 @@ exports[`Storyshots Components/BrickDetail Built In 1`] = `
                 className="SchemaTree__table_cell"
                 role="cell"
               >
-                The values to show in the table
+                <span
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "The values to show in the table",
+                    }
+                  }
+                />
               </td>
             </tr>
           </tbody>
@@ -2287,7 +2003,7 @@ exports[`Storyshots Components/SchemaTree Arrays 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
     <tr
@@ -2331,7 +2047,7 @@ exports[`Storyshots Components/SchemaTree Arrays 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
   </tbody>
@@ -2415,7 +2131,13 @@ exports[`Storyshots Components/SchemaTree Enum Type 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        Your favorite color in the rainbow
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Your favorite color in the rainbow",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2499,7 +2221,13 @@ exports[`Storyshots Components/SchemaTree Mixed Type Enum Type 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        Your favorite color in the rainbow
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Your favorite color in the rainbow",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2583,7 +2311,13 @@ exports[`Storyshots Components/SchemaTree Multiple Type Type 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        Body text description
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Body text description",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2684,7 +2418,7 @@ exports[`Storyshots Components/SchemaTree Nested Object 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
   </tbody>
@@ -2784,7 +2518,13 @@ exports[`Storyshots Components/SchemaTree One Of 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        A conveyance designed to carry an operator, passengers and/or cargo, over land.
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A conveyance designed to carry an operator, passengers and/or cargo, over land.",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2868,7 +2608,13 @@ exports[`Storyshots Components/SchemaTree Primitives 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        The person's age
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "The person&#39;s age",
+            }
+          }
+        />
       </td>
     </tr>
     <tr
@@ -2912,7 +2658,13 @@ exports[`Storyshots Components/SchemaTree Primitives 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        The first name of the person
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "The first name of the person",
+            }
+          }
+        />
       </td>
     </tr>
   </tbody>
@@ -2996,7 +2748,13 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        The person's email
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "The person&#39;s email",
+            }
+          }
+        />
       </td>
     </tr>
     <tr
@@ -3040,7 +2798,13 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        A valid url
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "A valid url",
+            }
+          }
+        />
       </td>
     </tr>
     <tr
@@ -3084,7 +2848,7 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
         className="SchemaTree__table_cell"
         role="cell"
       >
-        
+        <span />
       </td>
     </tr>
   </tbody>
@@ -4350,18 +4114,18 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
               className="css-1f43avz-a11yText-A11yText"
             />
             <div
-              className=" css-1s2u09g-control"
+              className=" css-13cymwt-control"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
               <div
-                className=" css-319lph-ValueContainer"
+                className=" css-1fdsijx-ValueContainer"
               >
                 <div
-                  className=" css-qc6sy-singleValue"
+                  className=" css-1dimb5e-singleValue"
                 />
                 <div
-                  className=" css-6j8wv5-Input"
+                  className=" css-qbdosj-Input"
                   data-value=""
                 >
                   <input
@@ -4406,7 +4170,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
               >
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -4424,11 +4188,11 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
                   </svg>
                 </div>
                 <span
-                  className=" css-1okebmr-indicatorSeparator"
+                  className=" css-1u9des2-indicatorSeparator"
                 />
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -5336,18 +5100,18 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
               className="css-1f43avz-a11yText-A11yText"
             />
             <div
-              className=" css-1s2u09g-control"
+              className=" css-13cymwt-control"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
               <div
-                className=" css-319lph-ValueContainer"
+                className=" css-1fdsijx-ValueContainer"
               >
                 <div
-                  className=" css-qc6sy-singleValue"
+                  className=" css-1dimb5e-singleValue"
                 />
                 <div
-                  className=" css-6j8wv5-Input"
+                  className=" css-qbdosj-Input"
                   data-value=""
                 >
                   <input
@@ -5392,7 +5156,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
               >
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -5410,11 +5174,11 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
                   </svg>
                 </div>
                 <span
-                  className=" css-1okebmr-indicatorSeparator"
+                  className=" css-1u9des2-indicatorSeparator"
                 />
                 <div
                   aria-hidden="true"
-                  className=" css-tlfecz-indicatorContainer"
+                  className=" css-1xc3v61-indicatorContainer"
                   onMouseDown={[Function]}
                   onTouchEnd={[Function]}
                 >
@@ -6129,20 +5893,20 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 className="css-1f43avz-a11yText-A11yText"
               />
               <div
-                className=" css-1s2u09g-control"
+                className=" css-13cymwt-control"
                 onMouseDown={[Function]}
                 onTouchEnd={[Function]}
               >
                 <div
-                  className=" css-319lph-ValueContainer"
+                  className=" css-1fdsijx-ValueContainer"
                 >
                   <div
-                    className=" css-qc6sy-singleValue"
+                    className=" css-1dimb5e-singleValue"
                   >
                     Single line text
                   </div>
                   <div
-                    className=" css-6j8wv5-Input"
+                    className=" css-qbdosj-Input"
                     data-value=""
                   >
                     <input
@@ -6186,11 +5950,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   className=" css-1hb7zxy-IndicatorsContainer"
                 >
                   <span
-                    className=" css-1okebmr-indicatorSeparator"
+                    className=" css-1u9des2-indicatorSeparator"
                   />
                   <div
                     aria-hidden="true"
-                    className=" css-tlfecz-indicatorContainer"
+                    className=" css-1xc3v61-indicatorContainer"
                     onMouseDown={[Function]}
                     onTouchEnd={[Function]}
                   >
@@ -6415,7 +6179,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           <div
             className="field-description"
             id="root-description"
-          />
+          >
+            <div
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "<p>A form example with <em>(you can use markdown)</em></p>
+",
+                }
+              }
+            />
+          </div>
           <div
             className="p-0 container-fluid"
           >
@@ -6466,7 +6239,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   <div
                     className="field-description text-muted"
                     id="root_firstName"
-                  />
+                  >
+                    <div
+                      dangerouslySetInnerHTML={
+                        {
+                          "__html": "<p>Your first name</p>
+",
+                        }
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -6517,7 +6299,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   <div
                     className="field-description text-muted"
                     id="root_age"
-                  />
+                  >
+                    <div
+                      dangerouslySetInnerHTML={
+                        {
+                          "__html": "<p><strong>integer number</strong>, please</p>
+",
+                        }
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -6873,21 +6664,21 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           className="css-1f43avz-a11yText-A11yText"
         />
         <div
-          className=" css-1s2u09g-control"
+          className=" css-13cymwt-control"
           onMouseDown={[Function]}
           onTouchEnd={[Function]}
         >
           <div
-            className=" css-319lph-ValueContainer"
+            className=" css-1fdsijx-ValueContainer"
           >
             <div
-              className=" css-14el2xx-placeholder"
+              className=" css-1jqq78o-placeholder"
               id="react-select-6-placeholder"
             >
               Select...
             </div>
             <div
-              className=" css-6j8wv5-Input"
+              className=" css-qbdosj-Input"
               data-value=""
             >
               <input
@@ -6932,11 +6723,11 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
             className=" css-1hb7zxy-IndicatorsContainer"
           >
             <span
-              className=" css-1okebmr-indicatorSeparator"
+              className=" css-1u9des2-indicatorSeparator"
             />
             <div
               aria-hidden="true"
-              className=" css-tlfecz-indicatorContainer"
+              className=" css-1xc3v61-indicatorContainer"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
@@ -7001,21 +6792,21 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           className="css-1f43avz-a11yText-A11yText"
         />
         <div
-          className=" css-1s2u09g-control"
+          className=" css-13cymwt-control"
           onMouseDown={[Function]}
           onTouchEnd={[Function]}
         >
           <div
-            className=" css-319lph-ValueContainer"
+            className=" css-1fdsijx-ValueContainer"
           >
             <div
-              className=" css-14el2xx-placeholder"
+              className=" css-1jqq78o-placeholder"
               id="react-select-7-placeholder"
             >
               Select...
             </div>
             <div
-              className=" css-6j8wv5-Input"
+              className=" css-qbdosj-Input"
               data-value=""
             >
               <input
@@ -7060,11 +6851,11 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
             className=" css-1hb7zxy-IndicatorsContainer"
           >
             <span
-              className=" css-1okebmr-indicatorSeparator"
+              className=" css-1u9des2-indicatorSeparator"
             />
             <div
               aria-hidden="true"
-              className=" css-tlfecz-indicatorContainer"
+              className=" css-1xc3v61-indicatorContainer"
               onMouseDown={[Function]}
               onTouchEnd={[Function]}
             >
@@ -7524,6 +7315,314 @@ exports[`Storyshots Layout/Page Load Error 1`] = `
 </div>
 `;
 
+exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
+<div
+  className="root"
+  style={
+    {
+      "height": "500px",
+      "width": "800px",
+    }
+  }
+>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Want to create a new mod?
+      </h4>
+      <ul>
+        <li>
+          Start by opening a new browser tab and navigating to the webpage you want to modify.
+        </li>
+        <li>
+          Open the Page Editor by selecting the PixieBrix tab via the
+           
+          <strong>
+            Chrome DevTools
+          </strong>
+           using
+           
+          <kbd>
+            Ctrl + Shift + C
+          </kbd>
+           
+          or 
+          <kbd>
+            F12
+          </kbd>
+           and start editing your page.
+        </li>
+        <li>
+          Save your mod in the Page Editor, and you'll see it here as a personal mod.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Need more help?
+      </h4>
+      <p>
+        Visit the
+         
+        <span>
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Quick Start Guide
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        or ask questions in the
+         
+        <span>
+          <a
+            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Slack Community
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+        .
+      </p>
+      <p>
+         
+        Visit the
+         
+        <span>
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            PixieBrix Marketplace
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        for ideas.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots ModsPage/GetStartedView Default 1`] = `
+<div
+  className="root"
+  style={
+    {
+      "height": "500px",
+      "width": "800px",
+    }
+  }
+>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Want to create a new mod?
+      </h4>
+      <ul>
+        <li>
+          Start by opening a new browser tab and navigating to the webpage you want to modify.
+        </li>
+        <li>
+          Open the Page Editor by selecting the PixieBrix tab via the
+           
+          <strong>
+            Chrome DevTools
+          </strong>
+           using
+           
+          <kbd>
+            Ctrl + Shift + C
+          </kbd>
+           
+          or 
+          <kbd>
+            F12
+          </kbd>
+           and start editing your page.
+        </li>
+        <li>
+          Save your mod in the Page Editor, and you'll see it here as a personal mod.
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div
+    className="infoRow row"
+  >
+    <div
+      className="col"
+    >
+      <h4>
+        Need more help?
+      </h4>
+      <p>
+        Visit the
+         
+        <span>
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Quick Start Guide
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        or ask questions in the
+         
+        <span>
+          <a
+            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Slack Community
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+        .
+      </p>
+      <p>
+         
+        Visit the
+         
+        <span>
+          <a
+            href="https://www.pixiebrix.com/marketplace/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            PixieBrix Marketplace
+          </a>
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-external-link-alt fa-w-16 fa-xs externalLinkIcon"
+            data-icon="external-link-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+        </span>
+         
+        for ideas.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Storyshots Onboarding/Setup/DefaultSetupCard Default 1`] = `
 <div>
   <h1
@@ -7646,6 +7745,494 @@ exports[`Storyshots Onboarding/Setup/DefaultSetupCard Default 1`] = `
                    Create/link PixieBrix account
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
+<div>
+  <h1
+    className="onboardingTitle"
+  >
+    Set up your account
+  </h1>
+  <div
+    className="checklistCard card"
+  >
+    <div
+      className="list-group"
+      onKeyDown={[Function]}
+    >
+      <div
+        className="checklistItem list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout inactive"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconSuccess"
+            >
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-check fa-w-16 "
+                data-icon="check"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                style={{}}
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </span>
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              1
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Browser Extension installed
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="checklistItem list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconActive"
+            />
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              2
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Connect your AARI account
+              </h3>
+              <div
+                className="stepBody"
+              >
+                <form
+                  className=""
+                  noValidate={true}
+                  onSubmit={[Function]}
+                >
+                  <div
+                    className="formGroup form-group row"
+                  >
+                    <label
+                      className="label form-label col-form-label col-xl-2 col-lg-3"
+                      htmlFor="controlRoomUrl"
+                    >
+                      Control Room URL
+                    </label>
+                    <div
+                      className="col-xl-10 col-lg-9"
+                    >
+                      <input
+                        className="form-control"
+                        id="controlRoomUrl"
+                        name="controlRoomUrl"
+                        onBlur={[Function]}
+                        onChange={[Function]}
+                        type="text"
+                        value="https://"
+                      />
+                      <small
+                        className="text-muted form-text"
+                      >
+                        <span
+                          dangerouslySetInnerHTML={
+                            {
+                              "__html": "Your Automation Anywhere Control Room URL, including https://",
+                            }
+                          }
+                        />
+                      </small>
+                    </div>
+                  </div>
+                  <div
+                    className="text-left"
+                  >
+                    <button
+                      className="btn btn-primary"
+                      disabled={false}
+                      type="submit"
+                    >
+                      Connect AARI
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Linked Extension) 1`] = `
+<div>
+  <h1
+    className="onboardingTitle"
+  >
+    Set up your account
+  </h1>
+  <div
+    className="checklistCard card"
+  >
+    <div
+      className="list-group"
+      onKeyDown={[Function]}
+    >
+      <div
+        className="checklistItem list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout inactive"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconSuccess"
+            >
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-check fa-w-16 "
+                data-icon="check"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                style={{}}
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </span>
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              1
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Browser Extension installed
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="checklistItem list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconActive"
+            />
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              2
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Link the extension to a PixieBrix account
+              </h3>
+              <div
+                className="stepBody"
+              >
+                <button
+                  className="btn btn-primary mt-2 btn btn-primary"
+                  data-testid="link-account-btn"
+                  disabled={false}
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="svg-inline--fa fa-link fa-w-16 "
+                    data-icon="link"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    style={{}}
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"
+                      fill="currentColor"
+                      style={{}}
+                    />
+                  </svg>
+                   Create/link PixieBrix account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="checklistItem futureStep list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout inactive"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconDefault"
+            />
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              3
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Connect your AARI account
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension) 1`] = `
+<div>
+  <h1
+    className="onboardingTitle"
+  >
+    Set up your account
+  </h1>
+  <div
+    className="checklistCard card"
+  >
+    <div
+      className="list-group"
+      onKeyDown={[Function]}
+    >
+      <div
+        className="checklistItem list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout inactive"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconSuccess"
+            >
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-check fa-w-16 "
+                data-icon="check"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                style={{}}
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </span>
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              1
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Browser Extension installed
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="checklistItem list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconActive"
+            />
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              2
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Link the extension to a PixieBrix account
+              </h3>
+              <div
+                className="stepBody"
+              >
+                <button
+                  className="btn btn-primary mt-2 btn btn-primary"
+                  data-testid="link-account-btn"
+                  disabled={false}
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="svg-inline--fa fa-link fa-w-16 "
+                    data-icon="link"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    style={{}}
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"
+                      fill="currentColor"
+                      style={{}}
+                    />
+                  </svg>
+                   Create/link PixieBrix account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="checklistItem futureStep list-group-item"
+        data-rb-event-key={null}
+        disabled={false}
+        onClick={[Function]}
+      >
+        <div
+          className="checklistItemLayout inactive"
+        >
+          <div>
+            <span
+              className="circleIcon circleIconDefault"
+            />
+          </div>
+          <div
+            className="stepDescription"
+          >
+            <div
+              className="stepNumber"
+            >
+              Step 
+              3
+            </div>
+            <div>
+              <h3
+                className="stepTitle"
+              >
+                Connect your AARI account
+              </h3>
             </div>
           </div>
         </div>
@@ -8764,35 +9351,6 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </button>
           </div>
         </div>
-        <div
-          className="mx-2 btn-group"
-          role="group"
-        >
-          <button
-            className="flagButton btn btn-light btn-sm"
-            disabled={false}
-            onClick={[Function]}
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-eye-slash fa-w-20 "
-              data-icon="eye-slash"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              style={{}}
-              viewBox="0 0 640 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-          </button>
-        </div>
       </div>
       <div
         className="d-flex my-2"
@@ -9223,35 +9781,6 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
               </svg>
             </button>
           </div>
-        </div>
-        <div
-          className="mx-2 btn-group"
-          role="group"
-        >
-          <button
-            className="flagButton btn btn-light btn-sm"
-            disabled={false}
-            onClick={[Function]}
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-eye-slash fa-w-20 "
-              data-icon="eye-slash"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              style={{}}
-              viewBox="0 0 640 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-          </button>
         </div>
       </div>
       <div
@@ -9684,35 +10213,6 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </button>
           </div>
         </div>
-        <div
-          className="mx-2 btn-group"
-          role="group"
-        >
-          <button
-            className="flagButton btn btn-light btn-sm"
-            disabled={false}
-            onClick={[Function]}
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-eye-slash fa-w-20 "
-              data-icon="eye-slash"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              style={{}}
-              viewBox="0 0 640 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-          </button>
-        </div>
       </div>
       <div
         className="d-flex my-2"
@@ -10142,35 +10642,6 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </button>
           </div>
         </div>
-        <div
-          className="mx-2 btn-group"
-          role="group"
-        >
-          <button
-            className="flagButton btn btn-light btn-sm"
-            disabled={true}
-            onClick={[Function]}
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-eye-slash fa-w-20 "
-              data-icon="eye-slash"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              style={{}}
-              viewBox="0 0 640 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-          </button>
-        </div>
       </div>
       <div
         className="d-flex my-2"
@@ -10346,21 +10817,21 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
         className="css-1f43avz-a11yText-A11yText"
       />
       <div
-        className=" css-1s2u09g-control"
+        className=" css-13cymwt-control"
         onMouseDown={[Function]}
         onTouchEnd={[Function]}
       >
         <div
-          className=" css-319lph-ValueContainer"
+          className=" css-1fdsijx-ValueContainer"
         >
           <div
-            className=" css-14el2xx-placeholder"
+            className=" css-1jqq78o-placeholder"
             id="react-select-4-placeholder"
           >
             Select...
           </div>
           <div
-            className=" css-6j8wv5-Input"
+            className=" css-qbdosj-Input"
             data-value=""
           >
             <input
@@ -10405,11 +10876,11 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
           className=" css-1hb7zxy-IndicatorsContainer"
         >
           <span
-            className=" css-1okebmr-indicatorSeparator"
+            className=" css-1u9des2-indicatorSeparator"
           />
           <div
             aria-hidden="true"
-            className=" css-tlfecz-indicatorContainer"
+            className=" css-1xc3v61-indicatorContainer"
             onMouseDown={[Function]}
             onTouchEnd={[Function]}
           >
@@ -10488,21 +10959,21 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
         className="css-1f43avz-a11yText-A11yText"
       />
       <div
-        className=" css-1s2u09g-control"
+        className=" css-13cymwt-control"
         onMouseDown={[Function]}
         onTouchEnd={[Function]}
       >
         <div
-          className=" css-319lph-ValueContainer"
+          className=" css-1fdsijx-ValueContainer"
         >
           <div
-            className=" css-14el2xx-placeholder"
+            className=" css-1jqq78o-placeholder"
             id="react-select-5-placeholder"
           >
             Select...
           </div>
           <div
-            className=" css-6j8wv5-Input"
+            className=" css-qbdosj-Input"
             data-value=""
           >
             <input
@@ -10547,11 +11018,11 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
           className=" css-1hb7zxy-IndicatorsContainer"
         >
           <span
-            className=" css-1okebmr-indicatorSeparator"
+            className=" css-1u9des2-indicatorSeparator"
           />
           <div
             aria-hidden="true"
-            className=" css-tlfecz-indicatorContainer"
+            className=" css-1xc3v61-indicatorContainer"
             onMouseDown={[Function]}
             onTouchEnd={[Function]}
           >

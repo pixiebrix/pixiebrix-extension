@@ -40,17 +40,13 @@ export function migrateExtensionsShape<T>(
   state: T & (LegacyExtensionObjectShapeState | LegacyExtensionObjectState)
 ): T & LegacyExtensionObjectState {
   if (state.extensions == null) {
-    console.info("Repairing redux state");
     return { ...state, extensions: [] };
   }
 
   if (Array.isArray(state.extensions)) {
     // Already migrated
-    console.debug("Redux extensions state already migrated");
     return state as T & LegacyExtensionObjectState;
   }
-
-  console.info("Migrating Redux state");
 
   return {
     ...state,

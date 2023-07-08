@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockIcon } from "@/types/iconTypes";
+import { type BrickIcon } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -27,6 +27,11 @@ export type RegistryId = string & {
   // Nominal subtyping
   _registryIdBrand: never;
 };
+
+/**
+ * Scope for inner definitions
+ */
+export const INNER_SCOPE = "@internal";
 
 /**
  * The kind of definition in the external registry
@@ -55,7 +60,7 @@ export interface Metadata {
   readonly id: RegistryId;
 
   /**
-   * Human-readably name
+   * Human-readable name
    */
   readonly name: string;
 
@@ -67,7 +72,7 @@ export interface Metadata {
   /**
    * @deprecated experimental prop that will likely be removed in the future
    */
-  readonly icon?: BlockIcon;
+  readonly icon?: BrickIcon;
 
   /**
    * PixieBrix extension version required to install the brick/run the extension
@@ -107,28 +112,10 @@ export interface Definition<K extends Kind = Kind> {
 export type InnerDefinitions = Record<string, UnknownObject>;
 
 /**
- * A reference to an entry in the recipe's `definitions` map.
+ * A reference to an entry in the recipe's `definitions` map. _Not a valid RegistryId_.
  * @see InnerDefinitions
  */
 export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
-};
-
-/**
- * A reference to a package in the registry that the user has edit permissions for.
- */
-export type EditablePackage = {
-  /**
-   * The surrogate key of the package on the backend.
-   */
-  id: UUID;
-
-  /**
-   * The registry id of the package
-   */
-  name: RegistryId;
-
-  // Nominal typing to help distinguish from registry Metadata
-  _editablePackageBrand: never;
 };

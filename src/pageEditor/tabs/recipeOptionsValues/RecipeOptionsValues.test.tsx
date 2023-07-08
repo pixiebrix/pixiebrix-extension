@@ -19,42 +19,35 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
-import { recipeFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
-import { type RecipeDefinition } from "@/types/recipeTypes";
-import { type Except } from "type-fest";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
+import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useOptionalRecipe: jest.fn(),
   useAllRecipes: jest.fn(),
 }));
 
-const mockFlags: Except<UseCachedQueryResult<RecipeDefinition[]>, "data"> = {
-  isFetchingFromCache: false,
-  isCacheUninitialized: false,
-  isFetching: false,
-  isLoading: false,
-  isUninitialized: false,
-  error: undefined,
-  refetch: jest.fn(),
-};
+jest.mock("@/contrib/google/initGoogle", () => ({
+  __esModule: true,
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn(),
+}));
 
-function mockRecipe(recipe: RecipeDefinition) {
-  (useAllRecipes as jest.Mock).mockReturnValue({
-    data: [recipe],
-    ...mockFlags,
-  });
-
-  (useRecipe as jest.Mock).mockReturnValue({
-    data: recipe,
-    ...mockFlags,
-  });
+function mockRecipe(recipe: ModDefinition) {
+  (useAllRecipes as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState([recipe])
+  );
+  (useOptionalRecipe as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState(recipe)
+  );
 }
 
 beforeEach(() => {
@@ -70,6 +63,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -127,6 +122,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -151,6 +148,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -189,6 +188,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -203,7 +204,7 @@ describe("ActivationOptions", () => {
     expect(allInputs).toStrictEqual([numInput, boolInput, strInput]);
   });
 
-  it("renders google sheets field type option", async () => {
+  it("renders google sheets field type option if gapi is loaded", async () => {
     const recipe = recipeFactory({
       options: {
         schema: {
@@ -223,6 +224,8 @@ describe("ActivationOptions", () => {
         extensionsSlice.actions.installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });

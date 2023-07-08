@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type AxiosRequestConfig } from "axios";
 
 export class GetAPITransformer extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/get");
@@ -65,7 +67,14 @@ export class GetAPITransformer extends Transformer {
     ["url"]
   );
 
-  async transform({ service, ...requestProps }: BlockArgs): Promise<unknown> {
+  async transform({
+    service,
+    ...requestProps
+  }: BrickArgs<{
+    service: SanitizedServiceConfiguration;
+    requestConfig: AxiosRequestConfig;
+    _blockArgBrand: never;
+  }>): Promise<unknown> {
     if (!isNullOrBlank(service) && typeof service !== "object") {
       throw new PropError(
         "Expected configured service",

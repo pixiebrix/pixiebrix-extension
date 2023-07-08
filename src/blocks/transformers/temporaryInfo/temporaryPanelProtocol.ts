@@ -18,19 +18,57 @@
 import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { expectContext } from "@/utils/expectContext";
-import { type PanelAction, type TemporaryPanelEntry } from "@/sidebar/types";
+import {
+  type PanelAction,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/blocks/errors";
 import { CancelError } from "@/errors/businessErrors";
 import { type Except } from "type-fest";
+import { type Location } from "@/types/extensionPointTypes";
 
-type RegisteredPanel = {
-  entry: Except<TemporaryPanelEntry, "type">;
+export type RegisteredPanel = {
+  /**
+   * The location of the panel. Used to determine which registered temporary panels to reserve space for in the
+   * sidebar when the sidebar opens.
+   */
+  location: Location;
+  /**
+   * The id of the extension that owns the panel.
+   *
+   * Should match RegisteredPanel.entry.extensionId if entry is defined.
+   */
+  extensionId: UUID;
+  /**
+   * The deferred promise that will be resolved when the panel is submitted/closed
+   */
   registration: DeferredPromise<PanelAction | null>;
+  /**
+   * The panel entry, or undefined for placeholder panels
+   */
+  entry?: Except<TemporaryPanelEntry, "type">;
 };
 
 const panels = new Map<UUID, RegisteredPanel>();
+
 // Mapping from extensionId to active panel nonces
 const extensionNonces = new Map<UUID, Set<UUID>>();
+
+/**
+ * Return all temporary panel entries.
+ */
+export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
+  expectContext("contentScript");
+
+  return [...panels.entries()]
+    .filter(([, panel]) => panel.location === "panel")
+    .map(([nonce, panel]) => ({
+      type: "temporaryPanel",
+      extensionId: panel.extensionId,
+      nonce,
+      ...panel.entry,
+    }));
+}
 
 /**
  * Get panel definition, or error if panel is not defined for nonce.
@@ -67,7 +105,8 @@ export function updatePanelDefinition(
     return;
   }
 
-  if (panel.entry.extensionId !== entry.extensionId) {
+  // Panel entry may be undefined if the panel was registered with registerEmptyTemporaryPanel
+  if (panel.entry && panel.entry.extensionId !== entry.extensionId) {
     throw new Error("extensionId mismatch");
   }
 
@@ -75,19 +114,67 @@ export function updatePanelDefinition(
 }
 
 /**
- * Register a temporary display panel
+ * Register an empty panel for a given nonce and extensionId. Use to pre-allocate a "loading" state while the panel
+ * content is being initialized.
+ * @param nonce the panel nonce
+ * @param extensionId the id of the extension that owns the panel
+ * @param location the location of the panel
+ */
+export function registerEmptyTemporaryPanel({
+  nonce,
+  extensionId,
+  location,
+}: {
+  nonce: UUID;
+  extensionId: UUID;
+  location: Location;
+}) {
+  expectContext("contentScript");
+
+  if (panels.has(nonce)) {
+    console.error(
+      `A temporary panel was already registered with nonce ${nonce}`
+    );
+    return;
+  }
+
+  const registration = pDefer<PanelAction | null>();
+
+  panels.set(nonce, {
+    extensionId,
+    registration,
+    location,
+  });
+
+  if (!extensionNonces.has(extensionId)) {
+    extensionNonces.set(extensionId, new Set());
+  }
+
+  extensionNonces.get(extensionId).add(nonce);
+}
+
+/**
+ * Register a temporary display panel and wait fot its deferred promise
  * @param nonce The instance nonce for the panel to register
+ * @param extensionId The extension id that owns the panel
+ * @param location The location of the panel
  * @param entry the panel definition
  * @param onRegister callback to run after the panel is registered
  */
-export async function waitForTemporaryPanel(
-  nonce: UUID,
-  entry: Except<TemporaryPanelEntry, "type">,
-  { onRegister }: { onRegister?: () => void } = {}
-): Promise<PanelAction | null> {
+export async function waitForTemporaryPanel({
+  nonce,
+  location,
+  entry,
+  extensionId,
+  onRegister,
+}: {
+  nonce: UUID;
+  extensionId: UUID;
+  location: Location;
+  entry: Except<TemporaryPanelEntry, "type">;
+  onRegister?: () => void;
+}): Promise<PanelAction | null> {
   expectContext("contentScript");
-
-  const registration = pDefer<PanelAction | null>();
 
   if (panels.has(nonce)) {
     console.warn(
@@ -95,8 +182,13 @@ export async function waitForTemporaryPanel(
     );
   }
 
+  const registration =
+    panels.get(nonce)?.registration ?? pDefer<PanelAction | null>();
+
   panels.set(nonce, {
     entry,
+    location,
+    extensionId,
     registration,
   });
 
@@ -112,7 +204,7 @@ export async function waitForTemporaryPanel(
 }
 
 /**
- * Helper method to remove panel from panels and extensionNonces.
+ * Private helper method to remove panel from panels and extensionNonces.
  * @param panelNonce
  */
 function removePanelEntry(panelNonce: UUID): void {

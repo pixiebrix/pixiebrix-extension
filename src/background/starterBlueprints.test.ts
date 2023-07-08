@@ -25,14 +25,6 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
-import {
-  extensionFactory,
-  extensionPointConfigFactory,
-  getRecipeWithBuiltInServiceAuths,
-  organizationFactory,
-  recipeFactory,
-  sanitizedAuthFactory,
-} from "@/testUtils/factories";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type IExtension,
@@ -41,6 +33,14 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  extensionPointConfigFactory,
+  getRecipeWithBuiltInServiceAuths,
+  recipeFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
+import { sanitizedAuthFactory } from "@/testUtils/factories/serviceFactories";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -81,7 +81,6 @@ describe("installStarterBlueprints", () => {
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -95,7 +94,7 @@ describe("installStarterBlueprints", () => {
       .onGet("/api/services/shared/?meta=1")
       .reply(200, [
         sanitizedAuthFactory(),
-        sanitizedAuthFactory({ organization: organizationFactory() }),
+        sanitizedAuthFactory({ organization: userOrganizationFactory() }),
         sanitizedAuthFactory({ user: uuidv4() }),
       ]);
 
@@ -165,11 +164,7 @@ describe("installStarterBlueprints", () => {
   test("starter blueprints request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -183,7 +178,6 @@ describe("installStarterBlueprints", () => {
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(500);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -201,8 +195,6 @@ describe("installStarterBlueprints", () => {
       .reply(200, builtInServiceAuths);
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [recipe]);
-
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -238,18 +230,12 @@ describe("installStarterBlueprints", () => {
       extensions: [extension],
     });
 
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
-
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
         extensionPoints: [extension],
         ...recipe,
       },
     ]);
-
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -268,13 +254,8 @@ describe("installStarterBlueprints", () => {
     });
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/install/")
-      .reply(200, { install_starter_blueprints: true });
-
-    axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [recipeFactory()]);
-    axiosMock.onPost("/api/onboarding/starter-blueprints/install/").reply(204);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();

@@ -30,6 +30,7 @@ import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { type UnknownObject } from "@/types/objectTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
+import { detectBrowser } from "@/vendors/mixpanel";
 
 const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -161,7 +162,8 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
 async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();
   const { version, version_name: versionName } = browser.runtime.getManifest();
-  // Getting browser information would require additional permissions
+  // Not supported on Chromium, and may require additional permissions
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getBrowserInfo
   // const {name: browserName} = await browser.runtime.getBrowserInfo();
   let numActiveExtensions: number = null;
   let numActiveExtensionPoints: number = null;
@@ -186,7 +188,9 @@ async function userSummary() {
     numActiveExtensionPoints,
     versionName,
     version,
+    // https://docs.mixpanel.com/docs/tracking/reference/default-properties#web
     $os: os,
+    $browser: detectBrowser(navigator.userAgent, navigator.vendor),
   };
 }
 

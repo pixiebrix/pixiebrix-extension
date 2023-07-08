@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -40,7 +40,7 @@ export class ErrorEffect extends Effect {
     },
   };
 
-  async effect({ message }: BlockArgs): Promise<void> {
+  async effect({ message }: BrickArgs<{ message: string }>): Promise<void> {
     throw new BusinessError(message ?? "Unknown business error");
   }
 }

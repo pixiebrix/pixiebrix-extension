@@ -15,22 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert } from "react-bootstrap";
-import useEnsurePermissions from "@/activation/useEnsurePermissions";
 import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
-import { resolveRecipe } from "@/registry/internal";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import { useAsyncState } from "@/hooks/common";
-import { allSettledValues } from "@/utils";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { type ServiceAuthPair } from "@/types/serviceTypes";
 import { useFormikContext } from "formik";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
+import useRecipePermissions from "./useRecipePermissions";
+import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import useAsyncState from "@/hooks/useAsyncState";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
@@ -63,29 +61,18 @@ const QuickBarAlert = () => (
 );
 
 const PermissionsBody: React.FunctionComponent<{
-  blueprint: RecipeDefinition;
+  blueprint: ModDefinition;
 }> = ({ blueprint }) => {
   const selectedAuths = useSelectedAuths();
 
-  const permissionsState = useEnsurePermissions(blueprint, selectedAuths);
+  const permissionsState = useRecipePermissions(blueprint, selectedAuths);
 
   const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 
-  const [hasQuickBar] = useAsyncState(
-    async () => {
-      const extensions = await resolveRecipe(
-        blueprint,
-        blueprint.extensionPoints
-      );
-      const extensionPoints = await allSettledValues(
-        extensions.map(async (config) =>
-          extensionPointRegistry.lookup(config.id)
-        )
-      );
-      return extensionPoints.some((x) => x.kind === "quickBar");
-    },
+  const { data: hasQuickBar } = useAsyncState(
+    async () => includesQuickBarExtensionPoint(blueprint),
     [],
-    false
+    { initialValue: false }
   );
 
   return (

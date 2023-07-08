@@ -26,7 +26,7 @@ import controlRoomOAuthService from "@contrib/services/automation-anywhere-oauth
 import { locator as serviceLocator } from "@/background/locator";
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
+  CONTROL_ROOM_TOKEN_SERVICE_ID,
 } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
@@ -136,7 +136,7 @@ describe("getPartnerPrincipals", () => {
     readRawConfigurationsMock.mockResolvedValue([
       {
         id: uuidv4(),
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
         config: {
           controlRoomUrl: "https://control-room.example.com",
           username: "bot_creator",

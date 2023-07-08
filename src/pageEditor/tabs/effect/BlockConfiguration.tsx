@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
-import useBlockOptions from "@/hooks/useBlockOptions";
+import useBrickOptions from "@/hooks/useBrickOptions";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
@@ -29,7 +29,7 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BlockConfig, type BlockWindow } from "@/blocks/types";
+import { type BrickConfig, type BrickWindow } from "@/blocks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
@@ -38,7 +38,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { inputProperties } from "@/helpers";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const rootModeOptions = [
   { label: "Document", value: "document" },
@@ -46,7 +46,7 @@ const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
 ];
 
-const targetOptions: Array<Option<BlockWindow>> = [
+const targetOptions: Array<Option<BrickWindow>> = [
   { label: "Current Tab (self)", value: "self" },
   { label: "Opener Tab (opener)", value: "opener" },
   { label: "Target Tab (target)", value: "target" },
@@ -61,13 +61,13 @@ const BlockConfiguration: React.FunctionComponent<{
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
-  const [config] = useField<BlockConfig>(name);
-  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BlockConfig>(
+  const [config] = useField<BrickConfig>(name);
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
     configName("root")
   );
   const blockErrors = getIn(context.errors, name);
 
-  const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+  const [{ block, error }, BlockOptions] = useBrickOptions(blockId);
 
   // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
   // If blockType is undefined, don't show the options.
@@ -177,7 +177,7 @@ const BlockConfiguration: React.FunctionComponent<{
           )}
         </SchemaFieldContext.Provider>
 
-        <AccordionFieldSection
+        <ConnectedCollapsibleFieldSection
           title="Advanced Options"
           bodyRef={advancedOptionsRef}
         >
@@ -212,7 +212,7 @@ const BlockConfiguration: React.FunctionComponent<{
           {noAdvancedOptions && (
             <small className="text-muted font-italic">No options to show</small>
           )}
-        </AccordionFieldSection>
+        </ConnectedCollapsibleFieldSection>
       </>
     </>
   );

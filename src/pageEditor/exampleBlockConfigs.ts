@@ -23,7 +23,7 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import TourStep from "@/blocks/transformers/tourStep/tourStep";
@@ -50,7 +50,10 @@ export function getExampleBlockConfig(
   if (blockId === "@pixiebrix/jquery-reader") {
     return {
       selectors: {
-        property: "",
+        property: {
+          selector: "",
+          isMulti: false,
+        },
       },
     };
   }
@@ -178,7 +181,7 @@ export function createNewBlock(
     parentBlockId,
     blockInputSchema,
   }: { parentBlockId?: RegistryId; blockInputSchema?: Schema } = {}
-): BlockConfig {
+): BrickConfig {
   return {
     id: blockId,
     instanceId: uuidv4(),

@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -30,7 +30,7 @@ const forEachBlock = new ForEachElement();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, forEachBlock]);
+  blockRegistry.register([echoBrick, forEachBlock]);
 });
 
 describe("ForEachElement", () => {
@@ -41,7 +41,7 @@ describe("ForEachElement", () => {
         selector: "table",
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: "This is a message",
             },
@@ -67,7 +67,7 @@ describe("ForEachElement", () => {
         selector: "body",
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: "This is a message",
             },
@@ -94,7 +94,7 @@ describe("ForEachElement", () => {
         elementKey: "element",
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: {
                 __type__: "nunjucks",
@@ -127,7 +127,7 @@ describe("ForEachElement", () => {
         // elementKey: "element",
         body: makePipelineExpression([
           {
-            id: echoBlock.id,
+            id: echoBrick.id,
             config: {
               message: {
                 __type__: "nunjucks",

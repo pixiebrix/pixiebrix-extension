@@ -67,6 +67,7 @@ function fromNativeElement(
         reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
         targetMode: "document",
+        attachMode: "once",
       },
       traits: {
         style: {
@@ -96,6 +97,7 @@ function selectExtensionPointConfig(
       reader,
       containerSelector,
       targetMode,
+      attachMode,
     },
   } = extensionPoint;
   return removeEmptyValues({
@@ -106,6 +108,7 @@ function selectExtensionPointConfig(
       isAvailable: pickBy(isAvailable, identity),
       containerSelector,
       targetMode,
+      attachMode,
       position,
       template,
     },

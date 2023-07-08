@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import {
+  INNER_SCOPE,
+  type Metadata,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
@@ -33,30 +37,27 @@ import {
 } from "@/pageEditor/extensionPoints/elementConfig";
 import { type Except } from "type-fest";
 import {
+  isInnerDefinitionRegistryId,
   uuidv4,
   validateRegistryId,
   validateSemVerString,
 } from "@/types/helpers";
 import {
-  type BlockPipeline,
+  type BrickPipeline,
   type NormalizedAvailability,
   type ReaderConfig,
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isExpression } from "@/runtime/mapArgs";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   getMinimalSchema,
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
-import {
-  hasInnerExtensionPoint,
-  INNER_SCOPE,
-  isInnerExtensionPoint,
-} from "@/registry/internal";
+import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
-import { makeEmptyPermissions } from "@/utils/permissions";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -122,7 +123,7 @@ export function baseFromExtension<T extends ExtensionPointType>(
 // Add the recipe options to the form state if the extension is a part of a recipe
 export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
   element: TElement,
-  recipes: RecipeDefinition[]
+  recipes: ModDefinition[]
 ) {
   if (element.recipe?.id) {
     const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);
@@ -185,7 +186,7 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
-    permissions: makeEmptyPermissions(),
+    permissions: emptyPermissionsFactory(),
     optionsArgs: {},
     extension: {
       blockPipeline: [],
@@ -271,7 +272,7 @@ export async function lookupExtensionPoint<
     throw new Error("config is required");
   }
 
-  if (hasInnerExtensionPoint(config)) {
+  if (hasInnerExtensionPointRef(config)) {
     const definition = config.definitions[config.extensionPointId];
     console.debug(
       "Converting extension definition to temporary extension point",
@@ -333,7 +334,7 @@ export function extensionWithInnerDefinitions(
   extension: IExtension,
   extensionPointDefinition: ExtensionPointDefinition
 ): IExtension {
-  if (isInnerExtensionPoint(extension.extensionPointId)) {
+  if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
       Object.keys(extension.definitions ?? {})
@@ -442,7 +443,7 @@ export async function extensionWithNormalizedPipeline<
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
     blockPipeline: await normalizePipelineForEditor(
-      castArray(pipeline) as BlockPipeline
+      castArray(pipeline) as BrickPipeline
     ),
     ...defaults,
     ...rest,

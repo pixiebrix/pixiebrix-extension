@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type RecipeDefinition } from "@/types/recipeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Form, {
   type RenderBody,
   type RenderSubmit,
@@ -34,10 +34,14 @@ import { type AnyObjectSchema } from "yup";
 import { useSelector } from "react-redux";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import { isEmpty } from "lodash";
+import { produce } from "immer";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isUUID } from "@/types/helpers";
+import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 
 type ActivateRecipeInputsProps = {
-  recipe: RecipeDefinition;
-  wizardSteps: WizardStep[];
+  recipe: ModDefinition;
+  optionsWizardStep: WizardStep;
   initialValues: WizardValues;
   onChange: (values: WizardValues) => void;
   validationSchema: AnyObjectSchema;
@@ -50,8 +54,8 @@ type ActivateRecipeInputsProps = {
 };
 
 const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
-  recipe,
-  wizardSteps,
+  recipe: inputRecipe,
+  optionsWizardStep,
   initialValues,
   onChange,
   validationSchema,
@@ -61,8 +65,28 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   onClickSubmit,
   activationError,
 }) => {
-  const optionsStep = wizardSteps.find(({ key }) => key === "options");
-  const servicesStep = wizardSteps.find(({ key }) => key === "services");
+  const recipe = inputRecipe.options?.schema?.properties
+    ? produce(inputRecipe, (draft) => {
+        for (const [name, optionSchema] of Object.entries(
+          inputRecipe.options.schema.properties
+        )) {
+          if (typeof optionSchema === "boolean") {
+            return;
+          }
+
+          // Hide database preview fields if the value is a preview database name string (not UUID)
+          const optionValue = initialValues.optionsArgs[name];
+          if (
+            isDatabaseField(optionSchema) &&
+            optionSchema.format === "preview" &&
+            typeof optionValue === "string" &&
+            !isUUID(optionValue)
+          ) {
+            delete draft.options.schema.properties[name];
+          }
+        }
+      })
+    : inputRecipe;
 
   const recipeExtensions = useSelector(
     selectExtensionsForRecipe(recipe?.metadata?.id)
@@ -73,10 +97,10 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
     <div className={cx("scrollable-area", styles.formBody)}>
       <Effect values={values} onChange={onChange} delayMillis={200} />
       {header}
-      {optionsStep && (
+      {optionsWizardStep && (
         <>
           <div>
-            <h4>{optionsStep.label}</h4>
+            <h4>{optionsWizardStep.label}</h4>
           </div>
           {/*
             Need to use Col for correct spacing here because the options
@@ -87,18 +111,18 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
             bring everything back in line.
           */}
           <Col className={styles.optionsBody}>
-            <optionsStep.Component blueprint={recipe} reinstall={isReinstall} />
+            <optionsWizardStep.Component
+              blueprint={recipe}
+              reinstall={isReinstall}
+            />
           </Col>
         </>
       )}
-      {servicesStep && (
-        <div className="mt-1">
-          <div>
-            <h4>{servicesStep.label}</h4>
-          </div>
-          <servicesStep.Component blueprint={recipe} reinstall={isReinstall} />
-        </div>
-      )}
+      <ServicesBody
+        blueprint={recipe}
+        hideBuiltInServiceIntegrations
+        showOwnTitle
+      />
       {needsPermissions && (
         <Alert variant="info" className="mt-3">
           <span className={styles.permissionsBold}>

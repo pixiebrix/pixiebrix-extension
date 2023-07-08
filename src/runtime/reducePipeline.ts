@@ -30,12 +30,16 @@ import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import { mapArgs } from "@/runtime/mapArgs";
+import {
+  isPipelineClosureExpression,
+  mapArgs,
+  type PipelineExpression,
+} from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
   selectBlockRootElement,
@@ -43,7 +47,7 @@ import {
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type ResolvedBlockConfig } from "@/runtime/runtimeTypes";
+import { type ResolvedBrickConfig } from "@/runtime/runtimeTypes";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
@@ -53,12 +57,12 @@ import {
   NoRendererError,
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { type PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/types/sidebarTypes";
 import { getLoggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type BlockArgs,
-  type BlockArgsContext,
+  type BrickArgs,
+  type BrickArgsContext,
   type SelectorRoot,
   type RenderedArgs,
   type ServiceContext,
@@ -71,7 +75,7 @@ import { type UnknownObject } from "@/types/objectTypes";
  */
 type CommonOptions = ApiVersionOptions & {
   /**
-   * `true` to log all block inputs to the context-aware logger.
+   * `true` to log all brick inputs to the context-aware logger.
    *
    * The user toggles this setting on the Settings page
    * @see SettingsPage
@@ -91,6 +95,23 @@ type CommonOptions = ApiVersionOptions & {
    * @since 1.7.19
    */
   abortSignal?: AbortSignal;
+};
+
+/**
+ * An execution branch (defer, pipeline, etc.).
+ * @since 1.7.0
+ */
+type Branch = {
+  /**
+   * A static identifier for the branch.
+   * @since 1.7.0
+   */
+  key: string;
+  /**
+   * A monotonically increasing counter for executions of branch with key
+   * @since 1.7.0
+   */
+  counter: number;
 };
 
 type RunMetadata = {
@@ -115,7 +136,7 @@ export type ReduceOptions = CommonOptions & RunMetadata;
 export type InitialValues = {
   /**
    * The inputs to the BrickPipeline, e.g., from the foundation's readers. Are placed under the `@input` key
-   * @see IExtensionPoint.defaultReader
+   * @see StarterBrick.defaultReader
    */
   input: UnknownObject;
   /**
@@ -137,7 +158,7 @@ export type InitialValues = {
 
 export type IntermediateState = {
   /**
-   * The data passed implicitly from the previous block in the pipeline
+   * The data passed implicitly from the previous brick in the pipeline
    * @see ApiVersionOptions.explicitDataFlow
    * @deprecated since `apiVersion: 2` data is passed explicitly via the context and outputKeys
    */
@@ -145,33 +166,33 @@ export type IntermediateState = {
   /**
    * The context available to the brick. Contains `@inputs`, `@options`, and the other entries accumulated so far from
    * the previous bricks' output keys.
-   * @see BlockConfig.outputKey
+   * @see BrickConfig.outputKey
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
   /**
    * The document root for root-aware bricks
    * @see IBlock.isRootAware
    */
   root: SelectorRoot | null;
   /**
-   * The stage's position in the BlockPipeline. Used to improve logging and error messages
-   * @see BlockPipeline
+   * The stage's position in the BrickPipeline. Used to improve logging and error messages
+   * @see BrickPipeline
    */
   index: number;
   /**
    * `true` if the stage is the last stage in the pipeline, for logging and validation
-   * @see BlockPipeline
+   * @see BrickPipeline
    */
   isLastBlock: boolean;
 };
 
 /**
- * All the data that determine the execution behavior of a block
- * @see IBlock.run
+ * All the data that determine the execution behavior of a brick
+ * @see Brick.run
  */
-type BlockProps<TArgs extends RenderedArgs | BlockArgs = RenderedArgs> = {
+type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
   /**
-   * The rendered args for the block, which may or may not have been already validated against the inputSchema depending
+   * The rendered args for the brick, which may or may not have been already validated against the inputSchema depending
    * on the static type.
    */
   args: TArgs;
@@ -179,7 +200,7 @@ type BlockProps<TArgs extends RenderedArgs | BlockArgs = RenderedArgs> = {
   /**
    * The available context (The context used to render the args.)
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
 
   /**
    * The previous output
@@ -188,47 +209,30 @@ type BlockProps<TArgs extends RenderedArgs | BlockArgs = RenderedArgs> = {
   previousOutput: unknown;
 
   /**
-   * The root for root-aware blocks
+   * The root for root-aware bricks
    * @see IBlock.isRootAware
    */
   root: SelectorRoot | null;
 };
 
-/**
- * An execution branch (defer, pipeline, etc.).
- * @since 1.7.0
- */
-type Branch = {
-  /**
-   * A static identifier for the branch.
-   * @since 1.7.0
-   */
-  key: string;
-  /**
-   * A monotonically increasing counter for executions of branch with key
-   * @since 1.7.0
-   */
-  counter: number;
-};
-
 type BlockOutput = {
   /**
-   * The output of the block to pass to the next block. If a block uses an outputKey, output will be the output of the
-   * previous block in the BlockPipeline.
+   * The output of the brick to pass to the next brick. If a brick uses an outputKey, output will be the output of the
+   * previous brick in the BrickPipeline.
    */
   output: unknown;
 
   /**
-   * The output of the block (even if it has an outputKey)
+   * The output of the brick (even if it has an outputKey)
    * @since 1.7.0
    */
   blockOutput: unknown;
 
   /**
    * The updated context, i.e., with the new outputKey.
-   * @see BlockConfig.outputKey
+   * @see BrickConfig.outputKey
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
 };
 
 type TraceMetadata = {
@@ -242,12 +246,12 @@ type TraceMetadata = {
    */
   extensionId: UUID;
   /**
-   * The instanceId of the configured block
-   * @see BlockConfig.instanceId
+   * The instanceId of the configured brick
+   * @see BrickConfig.instanceId
    */
   blockInstanceId: UUID;
   /**
-   * The branch information for the block run
+   * The branch information for the brick run
    * @since 1.7.0
    */
   branches: Branch[];
@@ -261,11 +265,39 @@ type RunBlockOptions = CommonOptions & {
 };
 
 /**
- * Execute/run the resolved block in the target (self, etc.) with the validated args.
+ * Get the lexical environment for running a pipeline. Currently, we're just tracking on the pipeline arg itself.
+ * https://en.wikipedia.org/wiki/Closure_(computer_programming)
+ *
+ * @see ExternalBlock.initPipelineClosures
+ */
+function getPipelineLexicalEnvironment({
+  pipeline,
+  ctxt,
+  extraContext,
+}: {
+  pipeline: PipelineExpression;
+  ctxt: UnknownObject;
+  extraContext: UnknownObject | null;
+}): UnknownObject {
+  if (isPipelineClosureExpression(pipeline)) {
+    return {
+      ...pipeline.__env__,
+      ...extraContext,
+    };
+  }
+
+  return {
+    ...ctxt,
+    ...extraContext,
+  };
+}
+
+/**
+ * Execute/run the resolved brick in the target (self, etc.) with the validated args.
  */
 async function executeBlockWithValidatedProps(
-  { config, block }: ResolvedBlockConfig,
-  { args, context, root, previousOutput }: BlockProps<BlockArgs>,
+  { config, block }: ResolvedBrickConfig,
+  { args, context, root, previousOutput }: BlockProps<BrickArgs>,
   options: RunBlockOptions
 ): Promise<unknown> {
   const commonOptions = {
@@ -314,11 +346,12 @@ async function executeBlockWithValidatedProps(
 
           const { runId, extensionId, branches } = options.trace;
           return reducePipelineExpression(
-            pipeline,
-            {
-              ...commonOptions.ctxt,
-              ...extraContext,
-            },
+            pipeline?.__value__ ?? [],
+            getPipelineLexicalEnvironment({
+              pipeline,
+              ctxt: commonOptions.ctxt,
+              extraContext,
+            }),
             rootOverride ?? root,
             {
               ...options,
@@ -350,11 +383,12 @@ async function executeBlockWithValidatedProps(
           let payload: PanelPayload;
           try {
             await reducePipelineExpression(
-              pipeline,
-              {
-                ...commonOptions.ctxt,
-                ...extraContext,
-              },
+              pipeline?.__value__ ?? [],
+              getPipelineLexicalEnvironment({
+                pipeline,
+                ctxt: commonOptions.ctxt,
+                extraContext,
+              }),
               rootOverride ?? root,
               {
                 ...options,
@@ -400,7 +434,7 @@ async function executeBlockWithValidatedProps(
 }
 
 async function renderBlockArg(
-  resolvedConfig: ResolvedBlockConfig,
+  resolvedConfig: ResolvedBrickConfig,
   state: IntermediateState,
   options: RunBlockOptions
 ): Promise<RenderedArgs> {
@@ -418,11 +452,11 @@ async function renderBlockArg(
     autoescape,
   } = options;
 
-  // Support YAML short-hand of leaving of `config:` directive for blocks that don't have parameters
+  // Support YAML shorthand of leaving of `config:` directive for bricks that don't have parameters
   const stageTemplate = config.config ?? {};
 
   if (type === "reader") {
-    // `reducePipeline` is responsible for passing the correct root into runStage based on the BlockConfig
+    // `reducePipeline` is responsible for passing the correct root into runStage based on the BrickConfig
     if ((config.window ?? "self") === "self") {
       return { root: state.root } as unknown as RenderedArgs;
     }
@@ -444,7 +478,7 @@ async function renderBlockArg(
     return config.config as RenderedArgs;
   }
 
-  // Match the override behavior in v1, where the output from previous block would override anything in the context
+  // Match the override behavior in v1, where the output from previous brick would override anything in the context
   const ctxt = explicitDataFlow
     ? state.context
     : { ...state.context, ...(state.previousOutput as UnknownObject) };
@@ -463,7 +497,7 @@ async function renderBlockArg(
 
   if (logValues) {
     logger.debug(
-      `Input for block ${config.id} (window=${config.window ?? "self"})`,
+      `Input for brick ${config.id} (window=${config.window ?? "self"})`,
       {
         id: config.id,
         template: stageTemplate,
@@ -477,7 +511,7 @@ async function renderBlockArg(
 }
 
 function selectTraceRecordMeta(
-  resolvedConfig: ResolvedBlockConfig,
+  resolvedConfig: ResolvedBrickConfig,
   options: RunBlockOptions
 ): TraceRecordMeta {
   return {
@@ -499,7 +533,7 @@ function selectTraceEnabled({
 }
 
 export async function runBlock(
-  resolvedConfig: ResolvedBlockConfig,
+  resolvedConfig: ResolvedBrickConfig,
   props: BlockProps,
   options: RunBlockOptions
 ): Promise<unknown> {
@@ -544,7 +578,7 @@ export async function runBlock(
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProps = props as unknown as BlockProps<BlockArgs>;
+    const validatedProps = props as unknown as BlockProps<BrickArgs>;
     return await executeBlockWithValidatedProps(
       resolvedConfig,
       validatedProps,
@@ -589,7 +623,7 @@ async function applyReduceDefaults({
 }
 
 export async function blockReducer(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   state: IntermediateState,
   options: ReduceOptions
 ): Promise<BlockOutput> {
@@ -597,7 +631,7 @@ export async function blockReducer(
   const { runId, extensionId, explicitDataFlow, logValues, logger, branches } =
     options;
 
-  // Match the override behavior in v1, where the output from previous block would override anything in the context
+  // Match the override behavior in v1, where the output from previous brick would override anything in the context
   const contextWithPreviousOutput =
     explicitDataFlow || !isPlainObject(previousOutput)
       ? context
@@ -648,7 +682,7 @@ export async function blockReducer(
   if (traceEnabled) {
     await lazyRenderArgs();
 
-    // Always add the trace entry, even if the block didn't run
+    // Always add the trace entry, even if the brick didn't run
     traces.addEntry({
       ...traceMeta,
       timestamp: new Date().toISOString(),
@@ -703,12 +737,12 @@ export async function blockReducer(
   const output = await runBlock(resolvedConfig, props, optionsWithTraceRef);
 
   if (logValues) {
-    console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
+    console.info(`Output for brick #${index + 1}: ${blockConfig.id}`, {
       output,
       outputKey: blockConfig.outputKey ? `@${blockConfig.outputKey}` : null,
     });
 
-    logger.debug(`Output for block #${index + 1}: ${blockConfig.id}`, {
+    logger.debug(`Output for brick #${index + 1}: ${blockConfig.id}`, {
       output,
       outputKey: blockConfig.outputKey ? `@${blockConfig.outputKey}` : null,
     });
@@ -754,7 +788,7 @@ export async function blockReducer(
   if (!isLastBlock && explicitDataFlow) {
     // Force correct use of outputKey in `apiVersion: v2` usage
     throw new BusinessError(
-      "outputKey is required for blocks that return data (since apiVersion: v2)"
+      "outputKey is required for bricks that return data (since apiVersion: v2)"
     );
   }
 
@@ -762,7 +796,7 @@ export async function blockReducer(
 }
 
 function throwBlockError(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   state: IntermediateState,
   error: unknown,
   options: ReduceOptions
@@ -817,10 +851,10 @@ function throwBlockError(
 }
 
 async function getStepLogger(
-  blockConfig: BlockConfig,
+  blockConfig: BrickConfig,
   pipelineLogger: Logger
 ): Promise<Logger> {
-  let resolvedConfig: ResolvedBlockConfig;
+  let resolvedConfig: ResolvedBrickConfig;
 
   try {
     resolvedConfig = await resolveBlockConfig(blockConfig);
@@ -847,9 +881,9 @@ async function getStepLogger(
   });
 }
 
-/** Execute all the blocks of an extension. */
+/** Execute all the bricks of an extension. */
 export async function reduceExtensionPipeline(
-  pipeline: BlockConfig | BlockPipeline,
+  pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {}
 ): Promise<unknown> {
@@ -864,9 +898,9 @@ export async function reduceExtensionPipeline(
   return reducePipeline(pipeline, initialValues, partialOptions);
 }
 
-/** Execute a pipeline of blocks and return the result. */
+/** Execute a pipeline of bricks and return the result. */
 export async function reducePipeline(
-  pipeline: BlockConfig | BlockPipeline,
+  pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions>
 ): Promise<unknown> {
@@ -876,14 +910,14 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
-  let context: BlockArgsContext = {
+  let context: BrickArgsContext = {
     // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
-  } as unknown as BlockArgsContext;
+  } as unknown as BrickArgsContext;
 
-  // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
+  // When using explicit data flow, the first brick (and other bricks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;
 
   const pipelineArray = castArray(pipeline);
@@ -935,7 +969,7 @@ export async function reducePipeline(
  * Returns the output of the last brick, even if that brick has an output key.
  */
 export async function reducePipelineExpression(
-  pipeline: BlockPipeline,
+  pipeline: BrickPipeline,
   context: UnknownObject,
   root: SelectorRoot,
   options: ReduceOptions
@@ -959,7 +993,7 @@ export async function reducePipelineExpression(
       isLastBlock: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: context as BlockArgsContext,
+      context: context as BrickArgsContext,
     };
 
     let nextValues: BlockOutput;

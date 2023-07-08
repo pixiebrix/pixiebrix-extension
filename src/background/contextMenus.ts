@@ -18,11 +18,9 @@
 import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
-import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
-import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
@@ -30,9 +28,8 @@ import {
   ContextMenuExtensionPoint,
 } from "@/extensionPoints/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
-import { CancelError } from "@/errors/businessErrors";
 import { type UUID } from "@/types/stringTypes";
 import {
   type IExtension,
@@ -71,11 +68,9 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
-  reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-
   console.time("ensureContentScript");
 
-  // Using the context menu gives temporary access to the page
+  // Browser will add at document_idle. But ensure it's ready before continuing
   await pTimeout(ensureContentScript(target), {
     milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
     message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
@@ -88,22 +83,13 @@ async function dispatchMenu(
       extensionId: info.menuItemId.slice(MENU_PREFIX.length) as UUID,
       args: info,
     });
-    notify.success(target, "Ran content menu item action");
   } catch (error) {
-    if (hasSpecificErrorCause(error, CancelError)) {
-      notify.info(target, "The action was cancelled");
-    } else {
-      // Report the original error here. The stack trace will point to this block anyway, but its origin will be
-      // better defined. Here it's called explicitly because the messaging API does not automatically serialize errors,
-      // especially deep inside other objects.
-      reportError(error);
-
-      notify.error(target, {
-        message: "Error handling context menu action",
-        error,
-        reportError: false,
-      });
-    }
+    // Handle internal/messenger errors here. The real error handling occurs in the contextMenu extension point
+    reportError(error);
+    notify.error(target, {
+      message: "Error handling context menu action",
+      reportError: false,
+    });
   }
 }
 
@@ -182,7 +168,7 @@ export async function preloadContextMenus(
   expectContext("background");
   await Promise.allSettled(
     extensions.map(async (definition) => {
-      const resolved = await resolveDefinitions(definition);
+      const resolved = await resolveExtensionInnerDefinitions(definition);
 
       const extensionPoint = await extensionPointRegistry.lookup(
         resolved.extensionPointId
@@ -199,7 +185,7 @@ export async function preloadContextMenus(
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await loadOptions();
   const resolved = await allSettledValues(
-    extensions.map(async (x) => resolveDefinitions(x))
+    extensions.map(async (x) => resolveExtensionInnerDefinitions(x))
   );
   await preloadContextMenus(resolved);
 }

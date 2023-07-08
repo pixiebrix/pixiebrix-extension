@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Brick } from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 
-export type EnrichedBrick = Brick & {
+export type EnrichedBrick = EditablePackage & {
   scope: string;
   collection: string;
   timestamp: number | null;

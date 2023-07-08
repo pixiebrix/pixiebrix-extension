@@ -16,11 +16,12 @@
  */
 
 import React from "react";
-import { authStateFactory, formStateFactory } from "@/testUtils/factories";
 import { render } from "@/pageEditor/testHelpers";
 import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ data: [], isLoading: false }),

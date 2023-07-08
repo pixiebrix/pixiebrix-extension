@@ -21,7 +21,7 @@ import {
   upgradePipelineToV3,
 } from "@/pageEditor/extensionPoints/upgrade";
 import blockRegistry from "@/blocks/registry";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -31,9 +31,9 @@ beforeEach(() => {
 });
 
 function defineBlock(schema: Schema): RegistryId {
-  class DefinedBlock extends Block {
+  class DefinedBlock extends BrickABC {
     constructor() {
-      super("test/block", "Test Block");
+      super("test/block", "Test Brick");
     }
 
     inputSchema = schema;

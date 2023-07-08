@@ -16,8 +16,11 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { type PanelEntry, type SidebarEntries } from "@/sidebar/types";
-import { eventKeyForEntry } from "@/sidebar/utils";
+import {
+  type PanelEntry,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
+import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
@@ -31,45 +34,88 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
-
-type SidebarTabsProps = SidebarEntries & {
-  activeKey: string;
-  onSelectTab: (eventKey: string) => void;
-  onCloseTemporaryTab: (nonce: UUID) => void;
-  onResolveTemporaryPanel: (nonce: UUID, action: SubmitPanelAction) => void;
-};
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectExtensionFromEventKey,
+  selectSidebarActiveTabKey,
+  selectSidebarForms,
+  selectSidebarPanels,
+  selectSidebarRecipeToActivate,
+  selectSidebarStaticPanels,
+  selectSidebarTemporaryPanels,
+} from "@/sidebar/sidebarSelectors";
+import sidebarSlice from "@/sidebar/sidebarSlice";
+import { selectEventData } from "@/telemetry/deployments";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
-const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
-  activeKey,
-  panels,
-  forms,
-  temporaryPanels,
-  recipeToActivate,
-  onSelectTab,
-  onCloseTemporaryTab,
-  onResolveTemporaryPanel,
-}) => {
-  const onSelect = useCallback(
-    (eventKey: string) => {
-      reportEvent("ViewSidePanelPanel", {
-        // FIXME: this was wrong, eventKey is not an extensionId
-        // ...selectEventData(lookup.get(extensionId)),
-        initialLoad: false,
-      });
-      onSelectTab(eventKey);
+// Need to memoize this to make sure it doesn't rerender unless its entry actually changes
+// This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
+const TemporaryPanelTabPane: React.FC<{
+  panel: TemporaryPanelEntry;
+}> = React.memo(({ panel }) => {
+  const dispatch = useDispatch();
+  const onAction = useCallback(
+    (action: SubmitPanelAction) => {
+      dispatch(
+        sidebarSlice.actions.resolveTemporaryPanel({
+          nonce: panel.nonce,
+          action,
+        })
+      );
     },
-    [onSelectTab]
+    [dispatch, panel.nonce]
   );
+
+  return (
+    <Tab.Pane
+      className={cx("full-height flex-grow", styles.paneOverrides)}
+      eventKey={eventKeyForEntry(panel)}
+    >
+      <ErrorBoundary>
+        <PanelBody
+          isRootPanel={false}
+          payload={panel.payload}
+          context={{
+            extensionId: panel.extensionId,
+            blueprintId: panel.blueprintId,
+          }}
+          onAction={onAction}
+        />
+      </ErrorBoundary>
+    </Tab.Pane>
+  );
+});
+TemporaryPanelTabPane.displayName = "TemporaryPanelTabPane";
+
+const Tabs: React.FC = () => {
+  const dispatch = useDispatch();
+  const activeKey = useSelector(selectSidebarActiveTabKey);
+  const panels = useSelector(selectSidebarPanels);
+  const forms = useSelector(selectSidebarForms);
+  const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
+  const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
+  const staticPanels = useSelector(selectSidebarStaticPanels);
+  const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
+
+  const onSelect = (eventKey: string) => {
+    reportEvent("ViewSidePanelPanel", {
+      ...selectEventData(getExtensionFromEventKey(eventKey)),
+      initialLoad: false,
+    });
+    dispatch(sidebarSlice.actions.selectTab(eventKey));
+  };
+
+  const onCloseTemporaryTab = (nonce: UUID) => {
+    dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+  };
 
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
-        // FIXME: this was wrong, eventKey is not an extensionId
-        // ...selectEventData(lookup.get(activeKey)),
+        ...selectEventData(getExtensionFromEventKey(activeKey)),
         initialLoad: true,
       });
     },
@@ -85,6 +131,15 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
     >
       <div className="full-height bg-white">
         <Nav fill variant="tabs" onSelect={onSelect}>
+          {staticPanels.map((staticPanel) => (
+            <Nav.Link
+              key={staticPanel.key}
+              className={styles.tabHeader}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <span className={styles.tabTitle}>{staticPanel.heading}</span>
+            </Nav.Link>
+          ))}
           {panels.map((panel) => (
             <Nav.Link
               key={panel.extensionId}
@@ -134,6 +189,17 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
           )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height">
+          {staticPanels.map((staticPanel) => (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={staticPanel.key}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <ErrorBoundary>
+                {getBodyForStaticPanel(staticPanel.key)}
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}
@@ -166,25 +232,7 @@ const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
             </Tab.Pane>
           ))}
           {temporaryPanels.map((panel) => (
-            <Tab.Pane
-              className={cx("full-height flex-grow", styles.paneOverrides)}
-              key={panel.nonce}
-              eventKey={eventKeyForEntry(panel)}
-            >
-              <ErrorBoundary>
-                <PanelBody
-                  isRootPanel={false}
-                  payload={panel.payload}
-                  context={{
-                    extensionId: panel.extensionId,
-                    blueprintId: panel.blueprintId,
-                  }}
-                  onAction={(action: SubmitPanelAction) => {
-                    onResolveTemporaryPanel(panel.nonce, action);
-                  }}
-                />
-              </ErrorBoundary>
-            </Tab.Pane>
+            <TemporaryPanelTabPane panel={panel} key={panel.nonce} />
           ))}
           {recipeToActivate && (
             <Tab.Pane

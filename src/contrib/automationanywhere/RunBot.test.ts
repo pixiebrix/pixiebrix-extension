@@ -19,18 +19,19 @@ import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
-import { uuidSequence } from "@/testUtils/factories";
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
+  CONTROL_ROOM_TOKEN_SERVICE_ID,
 } from "@/services/constants";
 import {
   proxyService,
   getCachedAuthData,
   getUserData,
 } from "@/background/messenger/api";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { type AuthData } from "@/types/serviceTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn().mockResolvedValue({
@@ -42,13 +43,9 @@ jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
-const proxyServiceMock = proxyService as jest.MockedFunction<
-  typeof proxyService
->;
-const getCachedAuthDataMock = getCachedAuthData as jest.MockedFunction<
-  typeof getCachedAuthData
->;
-const getUserDataMock = getUserData as jest.MockedFunction<typeof getUserData>;
+const proxyServiceMock = jest.mocked(proxyService);
+const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
+const getUserDataMock = jest.mocked(getUserData);
 
 const brick = new RunBot();
 
@@ -88,7 +85,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
           config: {
             controlRoomUrl: CE_CONTROL_ROOM_URL,
           },
@@ -98,7 +95,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -108,7 +105,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
       },
       {
         data: {
@@ -146,7 +143,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -157,7 +154,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
@@ -169,7 +166,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
       },
       {
         data: {
@@ -211,7 +208,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -221,7 +218,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
@@ -233,7 +230,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
       },
       {
         data: {
@@ -275,7 +272,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -286,7 +283,7 @@ describe("Automation Anywhere - RunBot", () => {
         data: {},
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -296,7 +293,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
       },
       {
         data: {
@@ -351,7 +348,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -446,7 +443,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -458,7 +455,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     expect(proxyServiceMock).toHaveBeenCalledWith(
@@ -468,7 +465,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
       },
       {
         data: {

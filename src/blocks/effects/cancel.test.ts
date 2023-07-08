@@ -18,14 +18,14 @@
 import { CancelEffect } from "@/blocks/effects/cancel";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { CancelError } from "@/errors/businessErrors";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 const brick = new CancelEffect();
 
 describe("CancelEffect", () => {
   test("it throws CancelError", async () => {
     await expect(
-      brick.run(unsafeAssumeValidArg({}), {} as BlockOptions)
+      brick.run(unsafeAssumeValidArg({}), {} as BrickOptions)
     ).rejects.toThrow(CancelError);
   });
 });

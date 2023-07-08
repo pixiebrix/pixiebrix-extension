@@ -31,7 +31,7 @@ import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -68,7 +68,7 @@ const MenuItemConfiguration: React.FC<{
         {...makeLockableFieldProps("Sites", isLocked)}
       />
 
-      <AccordionFieldSection title="Advanced: Item Options">
+      <ConnectedCollapsibleFieldSection title="Advanced: Item Options">
         <ConnectedFieldTemplate
           name="extension.icon"
           label="Icon"
@@ -92,6 +92,23 @@ const MenuItemConfiguration: React.FC<{
           snippets={menuSnippets}
           {...makeLockableFieldProps("Template", isLocked)}
         />
+
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.attachMode"
+          as="select"
+          title="Attach Mode"
+          description={
+            <p>
+              Use&nbsp;<code>once</code> to add the buttons once the menu
+              becomes available. Use&nbsp;
+              <code>watch</code> to continue to watch the page for new menus.
+            </p>
+          }
+          {...makeLockableFieldProps("Attach Mode", isLocked)}
+        >
+          <option value="once">once</option>
+          <option value="watch">watch</option>
+        </ConnectedFieldTemplate>
 
         <ConnectedFieldTemplate
           name="extensionPoint.definition.targetMode"
@@ -118,6 +135,7 @@ const MenuItemConfiguration: React.FC<{
           description="Prevent button to be clicked again while action is in progress"
           blankValue={false}
         />
+
         {(typeof onSuccess === "boolean" || onSuccess == null) && (
           // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
           // If they want a custom message they can add an alert brick.
@@ -129,8 +147,7 @@ const MenuItemConfiguration: React.FC<{
             blankValue={true}
           />
         )}
-      </AccordionFieldSection>
-
+      </ConnectedCollapsibleFieldSection>
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />

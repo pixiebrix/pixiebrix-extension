@@ -41,7 +41,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeList as LazyList } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BrickResult from "./BrickResult";
 import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModalNoTags/QuickAdd";
@@ -51,10 +51,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type IBrick } from "@/types/brickInstanceTypes";
 
-type BrickOption<T extends IBrick = IBlock> = {
+type BrickOption<T extends IBrick = Brick> = {
   data: T;
   value: RegistryId;
   label: string;
@@ -101,7 +101,7 @@ function useSearch<T extends IBrick>(
   );
 }
 
-type ModalProps<T extends IBrick = IBlock> = {
+type ModalProps<T extends IBrick = Brick> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;
@@ -254,7 +254,7 @@ function ActualModal<T extends IBrick>({
               </Form>
               <div>
                 <AutoSizer>
-                  {({ height, width }) => (
+                  {({ height, width }: Size) => (
                     <LazyList
                       height={height}
                       width={width}

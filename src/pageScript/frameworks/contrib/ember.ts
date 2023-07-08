@@ -140,7 +140,7 @@ function getProp(value: any, prop: string | number): unknown {
       return getProp(value.content, prop);
     }
 
-    if (typeof prop === "string" && isGetter(value, prop)) {
+    if (typeof prop === "string" && isGetter(value as UnknownObject, prop)) {
       return value[prop]();
     }
 
@@ -150,6 +150,17 @@ function getProp(value: any, prop: string | number): unknown {
   // ignore functions and symbols
   return undefined;
 }
+
+const EMBER_INTERNAL_PROPS = new Set([
+  "renderer",
+  "parentView",
+  "store",
+  "localStorage",
+  "childViews",
+  "elementId",
+  "args",
+  "_router",
+]);
 
 function pickExternalProps(obj: UnknownObject): UnknownObject {
   // Lodash's pickby was having issues with some getters
@@ -198,7 +209,7 @@ function readEmberValueFromCache(
       return value.content.map((x: any) => traverse(x));
     }
 
-    return mapValues(pickExternalProps(value), recurse);
+    return mapValues(pickExternalProps(value as UnknownObject), recurse);
   }
 
   // ignore functions and symbols
@@ -213,17 +224,6 @@ function isManaged(node: Node): boolean {
 
   return Boolean(ignoreNotFound(() => getEmberComponentById(elt.id)));
 }
-
-const EMBER_INTERNAL_PROPS = new Set([
-  "renderer",
-  "parentView",
-  "store",
-  "localStorage",
-  "childViews",
-  "elementId",
-  "args",
-  "_router",
-]);
 
 /**
  * Returns the "target" of a (classic) component.

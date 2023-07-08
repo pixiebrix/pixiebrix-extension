@@ -23,10 +23,10 @@ import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
 import pTimeout from "p-timeout";
 import { type RegistryId } from "@/types/registryTypes";
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeHTML } from "@/types/stringTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 interface RunDetails {
@@ -122,14 +122,14 @@ export class UiPathAppRenderer extends Renderer {
       title = "UiPath App",
       height = 400,
       width = "100%",
-    }: BlockArgs,
-    { logger }: BlockOptions
+    }: BrickArgs,
+    { logger }: BrickOptions
   ): Promise<SafeHTML> {
     const nonce = uuidv4();
 
     // Use extension iframe to get around the host’s CSP limitations
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const subframeUrl = new URL(url);
+    const subframeUrl = new URL(String(url));
     subframeUrl.searchParams.set("_pb", nonce);
 
     const localFrame = new URL(browser.runtime.getURL("frame.html"));

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivateRecipePanel it activates basic recipe automatically and renders well-done page 1`] = `
+exports[`ActivateRecipePanel activates basic recipe automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -22,7 +22,7 @@ exports[`ActivateRecipePanel it activates basic recipe automatically and renders
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -47,7 +47,7 @@ exports[`ActivateRecipePanel it activates basic recipe automatically and renders
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it activates recipe with built-in services automatically and renders well-done page 1`] = `
+exports[`ActivateRecipePanel activates basic recipe with empty options structure automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -69,7 +69,7 @@ exports[`ActivateRecipePanel it activates recipe with built-in services automati
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -94,7 +94,7 @@ exports[`ActivateRecipePanel it activates recipe with built-in services automati
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcut is configured on MacOS 1`] = `
+exports[`ActivateRecipePanel activates recipe with built-in services automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -116,7 +116,101 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
+        </div>
+        <div>
+          is ready to use!
+        </div>
+        <br />
+        <div>
+          Go try it out now, or activate another mod.
+        </div>
+      </div>
+    </div>
+    <div
+      class="footer"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Ok
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ActivateRecipePanel activates recipe with database preview automatically and renders well-done page 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="scrollable-area content"
+    >
+      <h1>
+        Well done!
+      </h1>
+      <img
+        alt=""
+        src="test-file-stub"
+        width="300"
+      />
+      <div
+        class="textContainer"
+      >
+        <div
+          class="recipeName"
+        >
+          Test Mod
+        </div>
+        <div>
+          is ready to use!
+        </div>
+        <br />
+        <div>
+          Go try it out now, or activate another mod.
+        </div>
+      </div>
+    </div>
+    <div
+      class="footer"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Ok
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut is configured on MacOS 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="scrollable-area content"
+    >
+      <h1>
+        Well done!
+      </h1>
+      <img
+        alt=""
+        src="test-file-stub"
+        width="300"
+      />
+      <div
+        class="textContainer"
+      >
+        <div
+          class="recipeName"
+        >
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -164,7 +258,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcut is configured on Windows 1`] = `
+exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut is configured on Windows 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -186,7 +280,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -234,7 +328,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcut not configured 1`] = `
+exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut not configured 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -256,7 +350,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <div>
           is ready to use!
@@ -288,7 +382,7 @@ exports[`ActivateRecipePanel it renders well-done page for quick bar mod shortcu
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it renders with options, permissions info 1`] = `
+exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -303,7 +397,7 @@ exports[`ActivateRecipePanel it renders with options, permissions info 1`] = `
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <p>
           We're almost there. This mod has a few settings to configure before using. You can always change these later.
@@ -348,19 +442,19 @@ exports[`ActivateRecipePanel it renders with options, permissions info 1`] = `
                       class="css-1f43avz-a11yText-A11yText"
                     />
                     <div
-                      class=" css-1s2u09g-control"
+                      class=" css-13cymwt-control"
                     >
                       <div
-                        class=" css-319lph-ValueContainer"
+                        class=" css-1fdsijx-ValueContainer"
                       >
                         <div
-                          class=" css-14el2xx-placeholder"
+                          class=" css-1jqq78o-placeholder"
                           id="react-select-2-placeholder"
                         >
                           Select...
                         </div>
                         <div
-                          class=" css-6j8wv5-Input"
+                          class=" css-qbdosj-Input"
                           data-value=""
                         >
                           <input
@@ -386,11 +480,11 @@ exports[`ActivateRecipePanel it renders with options, permissions info 1`] = `
                         class=" css-1hb7zxy-IndicatorsContainer"
                       >
                         <span
-                          class=" css-1okebmr-indicatorSeparator"
+                          class=" css-1u9des2-indicatorSeparator"
                         />
                         <div
                           aria-hidden="true"
-                          class=" css-tlfecz-indicatorContainer"
+                          class=" css-1xc3v61-indicatorContainer"
                         >
                           <svg
                             aria-hidden="true"
@@ -613,7 +707,7 @@ exports[`ActivateRecipePanel it renders with options, permissions info 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel it renders with service configuration if no built-in service configs available 1`] = `
+exports[`ActivateRecipePanel renders with service configuration if no built-in service configs available 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -628,7 +722,7 @@ exports[`ActivateRecipePanel it renders with service configuration if no built-i
         <div
           class="recipeName"
         >
-          My Test Listing
+          Test Mod
         </div>
         <p>
           We're almost there. This mod has a few settings to configure before using. You can always change these later.
@@ -636,135 +730,131 @@ exports[`ActivateRecipePanel it renders with service configuration if no built-i
         <div
           class="mt-1"
         >
-          <div>
-            <h4>
-              Integrations
-            </h4>
-          </div>
-          <div>
+          <h4>
+            Integrations
+          </h4>
+        </div>
+        <div>
+          <div
+            class="serviceCard card"
+          >
             <div
-              class="serviceCard card"
+              class="serviceCardHeader"
             >
-              <div
-                class="serviceCardHeader"
+              <code
+                class="serviceId"
               >
-                <code
-                  class="serviceId"
-                >
-                  @pixiebrix/service1
-                </code>
-              </div>
-              <div
-                class="d-inline-flex justify-content-end"
+                @pixiebrix/service1
+              </code>
+            </div>
+            <div
+              class="d-inline-flex justify-content-end"
+            >
+              <button
+                class="actionButton btn btn-info btn-sm"
+                type="button"
               >
-                <button
-                  class="actionButton btn btn-info btn-sm"
-                  disabled=""
-                  type="button"
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-plus fa-w-14 "
+                  data-icon="plus"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-plus fa-w-14 "
-                    data-icon="plus"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 448 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                   Configure
-                </button>
-                <button
-                  class="actionButton btn btn-info btn-sm"
-                  title="Refresh integration configurations"
-                  type="button"
+                  <path
+                    d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Configure
+              </button>
+              <button
+                class="actionButton btn btn-info btn-sm"
+                title="Refresh integration configurations"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-sync fa-w-16 "
+                  data-icon="sync"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-sync fa-w-16 "
-                    data-icon="sync"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M440.65 12.57l4 82.77A247.16 247.16 0 0 0 255.83 8C134.73 8 33.91 94.92 12.29 209.82A12 12 0 0 0 24.09 224h49.05a12 12 0 0 0 11.67-9.26 175.91 175.91 0 0 1 317-56.94l-101.46-4.86a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12H500a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12h-47.37a12 12 0 0 0-11.98 12.57zM255.83 432a175.61 175.61 0 0 1-146-77.8l101.8 4.87a12 12 0 0 0 12.57-12v-47.4a12 12 0 0 0-12-12H12a12 12 0 0 0-12 12V500a12 12 0 0 0 12 12h47.35a12 12 0 0 0 12-12.6l-4.15-82.57A247.17 247.17 0 0 0 255.83 504c121.11 0 221.93-86.92 243.55-201.82a12 12 0 0 0-11.8-14.18h-49.05a12 12 0 0 0-11.67 9.26A175.86 175.86 0 0 1 255.83 432z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                   Refresh
-                </button>
-              </div>
+                  <path
+                    d="M440.65 12.57l4 82.77A247.16 247.16 0 0 0 255.83 8C134.73 8 33.91 94.92 12.29 209.82A12 12 0 0 0 24.09 224h49.05a12 12 0 0 0 11.67-9.26 175.91 175.91 0 0 1 317-56.94l-101.46-4.86a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12H500a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12h-47.37a12 12 0 0 0-11.98 12.57zM255.83 432a175.61 175.61 0 0 1-146-77.8l101.8 4.87a12 12 0 0 0 12.57-12v-47.4a12 12 0 0 0-12-12H12a12 12 0 0 0-12 12V500a12 12 0 0 0 12 12h47.35a12 12 0 0 0 12-12.6l-4.15-82.57A247.17 247.17 0 0 0 255.83 504c121.11 0 221.93-86.92 243.55-201.82a12 12 0 0 0-11.8-14.18h-49.05a12 12 0 0 0-11.67 9.26A175.86 175.86 0 0 1 255.83 432z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Refresh
+              </button>
             </div>
           </div>
-          <div>
+        </div>
+        <div>
+          <div
+            class="serviceCard card"
+          >
             <div
-              class="serviceCard card"
+              class="serviceCardHeader"
             >
-              <div
-                class="serviceCardHeader"
+              <code
+                class="serviceId"
               >
-                <code
-                  class="serviceId"
-                >
-                  @pixiebrix/service2
-                </code>
-              </div>
-              <div
-                class="d-inline-flex justify-content-end"
+                @pixiebrix/service2
+              </code>
+            </div>
+            <div
+              class="d-inline-flex justify-content-end"
+            >
+              <button
+                class="actionButton btn btn-info btn-sm"
+                type="button"
               >
-                <button
-                  class="actionButton btn btn-info btn-sm"
-                  disabled=""
-                  type="button"
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-plus fa-w-14 "
+                  data-icon="plus"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 448 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-plus fa-w-14 "
-                    data-icon="plus"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 448 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                   Configure
-                </button>
-                <button
-                  class="actionButton btn btn-info btn-sm"
-                  title="Refresh integration configurations"
-                  type="button"
+                  <path
+                    d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Configure
+              </button>
+              <button
+                class="actionButton btn btn-info btn-sm"
+                title="Refresh integration configurations"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-sync fa-w-16 "
+                  data-icon="sync"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-sync fa-w-16 "
-                    data-icon="sync"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M440.65 12.57l4 82.77A247.16 247.16 0 0 0 255.83 8C134.73 8 33.91 94.92 12.29 209.82A12 12 0 0 0 24.09 224h49.05a12 12 0 0 0 11.67-9.26 175.91 175.91 0 0 1 317-56.94l-101.46-4.86a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12H500a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12h-47.37a12 12 0 0 0-11.98 12.57zM255.83 432a175.61 175.61 0 0 1-146-77.8l101.8 4.87a12 12 0 0 0 12.57-12v-47.4a12 12 0 0 0-12-12H12a12 12 0 0 0-12 12V500a12 12 0 0 0 12 12h47.35a12 12 0 0 0 12-12.6l-4.15-82.57A247.17 247.17 0 0 0 255.83 504c121.11 0 221.93-86.92 243.55-201.82a12 12 0 0 0-11.8-14.18h-49.05a12 12 0 0 0-11.67 9.26A175.86 175.86 0 0 1 255.83 432z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                   Refresh
-                </button>
-              </div>
+                  <path
+                    d="M440.65 12.57l4 82.77A247.16 247.16 0 0 0 255.83 8C134.73 8 33.91 94.92 12.29 209.82A12 12 0 0 0 24.09 224h49.05a12 12 0 0 0 11.67-9.26 175.91 175.91 0 0 1 317-56.94l-101.46-4.86a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12H500a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12h-47.37a12 12 0 0 0-11.98 12.57zM255.83 432a175.61 175.61 0 0 1-146-77.8l101.8 4.87a12 12 0 0 0 12.57-12v-47.4a12 12 0 0 0-12-12H12a12 12 0 0 0-12 12V500a12 12 0 0 0 12 12h47.35a12 12 0 0 0 12-12.6l-4.15-82.57A247.17 247.17 0 0 0 255.83 504c121.11 0 221.93-86.92 243.55-201.82a12 12 0 0 0-11.8-14.18h-49.05a12 12 0 0 0-11.67 9.26A175.86 175.86 0 0 1 255.83 432z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 Refresh
+              </button>
             </div>
           </div>
         </div>

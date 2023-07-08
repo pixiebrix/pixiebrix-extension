@@ -19,6 +19,7 @@ import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "reselect";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { isEmpty } from "lodash";
 
 export function selectExtensions({
   options,
@@ -43,3 +44,7 @@ const extensionsForRecipeSelector = createSelector(
 export const selectExtensionsForRecipe =
   (recipeId: RegistryId) => (state: ExtensionsRootState) =>
     extensionsForRecipeSelector(state, recipeId);
+
+export const selectRecipeHasAnyExtensionsInstalled =
+  (recipeId: RegistryId) => (state: ExtensionsRootState) =>
+    !isEmpty(extensionsForRecipeSelector(state, recipeId));

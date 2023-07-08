@@ -36,7 +36,7 @@ import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { fetch } from "@/hooks/fetch";
-import { type Brick } from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
 import { type ReferenceEntry } from "./brickEditorTypes";
@@ -74,7 +74,8 @@ interface OwnProps {
 
 function useOpenEditorTab() {
   return useCallback(async (id: string) => {
-    const available = await fetch<Brick[]>("/api/bricks/");
+    // Call to translate the brick registry id into the editable package id
+    const available = await fetch<EditablePackage[]>("/api/bricks/");
     const brick = available.find((x) => x.name === id);
     if (brick) {
       console.debug("Open editor for brick: %s", id, { brick });
@@ -88,7 +89,7 @@ function useOpenEditorTab() {
 
 const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
   const [activeTab, setTab] = useState("edit");
-  const [editorWidth, setEditorWidth] = useState();
+  const [editorWidth, setEditorWidth] = useState<number>();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
   const { id: brickId } = useParams<{ id: UUID }>();
@@ -121,7 +122,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
 
   const openEditorTab = useOpenEditorTab();
 
-  const editorRef = useRef(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editorRef.current) {

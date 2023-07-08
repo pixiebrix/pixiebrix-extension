@@ -31,20 +31,24 @@ import {
   type ExtensionPointConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray, cloneDeep, compact, isEmpty, uniq } from "lodash";
+import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
   ensureContextMenu,
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
-import { isErrorObject } from "@/errors/errorHelpers";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import notify from "@/utils/notify";
+import notify, {
+  DEFAULT_ACTION_RESULTS,
+  type MessageConfig,
+  showNotification,
+} from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -56,20 +60,33 @@ import {
   contextMenuReaderShim,
 } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { BusinessError } from "@/errors/businessErrors";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
   "legacy" | "document" | "eventTarget";
 
 export type ContextMenuConfig = {
+  /**
+   * The title of the context menu item.
+   */
   title: string;
-  action: BlockConfig | BlockPipeline;
+
+  /**
+   * Action to perform on click.
+   */
+  action: BrickConfig | BrickPipeline;
+
+  /**
+   * (Experimental) message to show on success when running the extension
+   * @since 1.7.27
+   */
+  onSuccess?: MessageConfig | boolean;
 };
 
 /**
@@ -147,7 +164,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
   async getBlocks(
     extension: ResolvedExtension<ContextMenuConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 
@@ -284,7 +301,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   private async registerExtension(
     extension: ResolvedExtension<ContextMenuConfig>
   ): Promise<void> {
-    const { action: actionConfig } = extension.config;
+    const { action: actionConfig, onSuccess = {} } = extension.config;
 
     await this.ensureMenu(extension);
 
@@ -330,15 +347,24 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
-      } catch (error) {
-        if (isErrorObject(error)) {
-          reportError(error);
-          extensionLogger.error(error);
-        } else {
-          extensionLogger.warn(error as any);
-        }
 
-        throw error;
+        if (onSuccess) {
+          if (typeof onSuccess === "boolean" && onSuccess) {
+            showNotification(DEFAULT_ACTION_RESULTS.success);
+          } else {
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.success,
+              ...pick(onSuccess, "message", "type"),
+            });
+          }
+        }
+      } catch (error) {
+        if (hasSpecificErrorCause(error, CancelError)) {
+          showNotification(DEFAULT_ACTION_RESULTS.cancel);
+        } else {
+          extensionLogger.error(error);
+          showNotification(DEFAULT_ACTION_RESULTS.error);
+        }
       }
     });
   }
@@ -423,7 +449,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<MenuDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {
     throw new Error(`Expected type=contextMenu, got ${type}`);

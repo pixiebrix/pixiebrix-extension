@@ -22,13 +22,11 @@ import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
 import { memoizeUntilSettled } from "@/utils";
 import { deleteDatabase } from "@/utils/idbUtils";
+import { PACKAGE_REGEX } from "@/types/helpers";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
-
-export const PACKAGE_NAME_REGEX =
-  /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
 export type Version = {
   major: number;
@@ -146,6 +144,28 @@ export async function clear(): Promise<void> {
 }
 
 /**
+ * Replace the local database with the packages from the registry.
+ *
+ * Memoized to avoid multiple network requests across tabs.
+ */
+export const syncPackages = memoizeUntilSettled(async () => {
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+  const timestamp = new Date();
+
+  // In the future, use the paginated endpoint?
+  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
+
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
+
+  await replaceAll(packages);
+});
+
+/**
  * Deletes and recreates the brick definition database.
  */
 export async function recreateDB(): Promise<void> {
@@ -167,16 +187,15 @@ export async function count(): Promise<number> {
 }
 
 /**
- * Put all the packages in the local database.
+ * Replace all packages in the local database.
  * @param packages the packages to put in the database
  */
-async function putAll(packages: Package[]): Promise<void> {
+async function replaceAll(packages: Package[]): Promise<void> {
   const db = await getBrickDB();
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
-  for (const obj of packages) {
-    void tx.store.put(obj);
-  }
+  await tx.store.clear();
+  await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
 
   await tx.done;
 }
@@ -188,7 +207,7 @@ export function parsePackage(
     .split(".")
     .map((x) => Number.parseInt(x, 10));
 
-  const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
+  const match = PACKAGE_REGEX.exec(item.metadata.id);
 
   return {
     id: item.metadata.id,
@@ -200,32 +219,6 @@ export function parsePackage(
     rawConfig: undefined,
   };
 }
-
-/**
- * Replace the local database with the packages from the registry.
- *
- * Memoized to avoid multiple network requests across tabs.
- */
-export const syncPackages = memoizeUntilSettled(async () => {
-  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
-  const timestamp = new Date();
-
-  // In the future, use the paginated endpoint?
-  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
-
-  const packages = data.map((x) => ({
-    ...parsePackage(x),
-    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
-    // that were made during the call.
-    timestamp,
-  }));
-
-  const db = await getBrickDB();
-  const tx = db.transaction(BRICK_STORE, "readwrite");
-  await clear();
-  await putAll(packages);
-  await tx.done;
-});
 
 /**
  * Return the latest version of a brick, or null if it's not found.

@@ -37,7 +37,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 import { lt } from "semver";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/recipes/recipesHooks";
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
@@ -64,7 +64,7 @@ const selectFirstExtension = createSelector(
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isFetching, error } = useRecipe(recipeId);
+  const { data: recipe, isFetching, error } = useOptionalRecipe(recipeId);
 
   // Select a single extension for the recipe to check the installed version.
   // We rely on the assumption that every extension in the recipe has the same version.

@@ -24,7 +24,7 @@ import {
   type ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
-  type BlockPipeline,
+  type BrickPipeline,
   type NormalizedAvailability,
 } from "@/blocks/types";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
@@ -33,7 +33,7 @@ import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { type IExtension } from "@/types/extensionTypes";
-import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
 
 /**
@@ -56,7 +56,7 @@ export type BaseExtensionPointState = {
 };
 
 export interface BaseExtensionState {
-  blockPipeline: BlockPipeline;
+  blockPipeline: BrickPipeline;
 }
 
 export interface BaseFormState<
@@ -223,9 +223,4 @@ export interface ElementConfig<
    * @see extensionWithInnerDefinitions
    */
   readonly selectExtension: (element: TState) => IExtension;
-
-  /**
-   * Help text to show in the generic insertion-mode pane
-   */
-  readonly InsertModeHelpText?: React.VoidFunctionComponent;
 }

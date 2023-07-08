@@ -19,12 +19,12 @@ import React, { useState } from "react";
 import Centered from "@/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import useUserAction from "@/hooks/useUserAction";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 function getLabel(url: string): string {
   const { hostname } = safeParseUrl(url);
@@ -42,7 +42,9 @@ const PermissionsPane: React.FunctionComponent = () => {
 
   const onRequestPermission = useUserAction(
     async () => {
-      const wasApproved = await requestPermissions({ origins: [url] });
+      const wasApproved = await ensurePermissionsFromUserGesture({
+        origins: [url],
+      });
       setRejected(!wasApproved);
     },
     { errorMessage: "Error enabling permissions" },

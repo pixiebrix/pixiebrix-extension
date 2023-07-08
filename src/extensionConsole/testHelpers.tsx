@@ -19,13 +19,16 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
-import { blueprintModalsSlice } from "@/extensionConsole/pages/blueprints/modals/blueprintModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import blueprintsSlice from "@/extensionConsole/pages/blueprints/blueprintsSlice";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { recipesSlice } from "@/recipes/recipesSlice";
+import { appApi } from "@/services/api";
+import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import servicesSlice from "@/store/servicesSlice";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -33,9 +36,18 @@ const configureStoreForTests = () =>
       auth: authSlice.reducer,
       settings: settingsSlice.reducer,
       options: extensionsSlice.reducer,
-      blueprintModals: blueprintModalsSlice.reducer,
-      blueprints: blueprintsSlice.reducer,
+      modModals: modModalsSlice.reducer,
+      modsPage: modsPageSlice.reducer,
       recipes: recipesSlice.reducer,
+      services: servicesSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(recipesMiddleware);
+      /* eslint-enable unicorn/prefer-spread */
     },
   });
 

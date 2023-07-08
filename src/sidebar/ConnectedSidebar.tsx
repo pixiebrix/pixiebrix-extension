@@ -15,92 +15,144 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type Dispatch, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   addListener,
   removeListener,
   type SidebarListener,
 } from "@/sidebar/protocol";
-import DefaultPanel from "@/sidebar/DefaultPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
-  type ActivateRecipeEntry,
-  type FormEntry,
+  type ActivateModPanelEntry,
+  type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice, { type SidebarState } from "./sidebarSlice";
-import { type AnyAction } from "redux";
+import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
-import DelayedRender from "@/components/DelayedRender";
-import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
+import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
+import useFlags from "@/hooks/useFlags";
+import DelayedRender from "@/components/DelayedRender";
+import DefaultPanel from "@/sidebar/DefaultPanel";
+import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
+import {
+  ensureExtensionPointsInstalled,
+  getReservedSidebarEntries,
+} from "@/contentScript/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
+import useAsyncEffect from "use-async-effect";
+import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
  */
-function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
-  return {
-    onRenderPanels(panels: PanelEntry[]) {
-      dispatch(sidebarSlice.actions.setPanels({ panels }));
-    },
-    onShowForm(form: FormEntry) {
-      dispatch(sidebarSlice.actions.addForm({ form }));
-    },
-    onHideForm({ nonce }: Partial<FormEntry>) {
-      dispatch(sidebarSlice.actions.removeForm(nonce));
-    },
-    onActivatePanel(options: ActivatePanelOptions) {
-      dispatch(sidebarSlice.actions.activatePanel(options));
-    },
-    onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
-      dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
-    },
-    onShowTemporaryPanel(panel: TemporaryPanelEntry) {
-      dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
-    },
-    onHideTemporaryPanel({ nonce }) {
-      dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-    },
-    onShowActivateRecipe(activateRecipeEntry: ActivateRecipeEntry) {
-      dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
-    },
-    onHideActivateRecipe(recipeId: RegistryId) {
-      dispatch(sidebarSlice.actions.hideActivateRecipe());
-    },
-  };
-}
-
-const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
-
-const ConnectedSidebar: React.VFC = () => {
+function useConnectedListener(): SidebarListener {
   const dispatch = useDispatch();
-  const sidebarState = useSelector(selectState);
-
-  const listener: SidebarListener = useMemo(
-    () => getConnectedListener(dispatch),
+  return useMemo(
+    () => ({
+      onRenderPanels(panels: PanelEntry[]) {
+        dispatch(sidebarSlice.actions.setPanels({ panels }));
+      },
+      onShowForm(form: FormPanelEntry) {
+        dispatch(sidebarSlice.actions.addForm({ form }));
+      },
+      onHideForm({ nonce }: Partial<FormPanelEntry>) {
+        dispatch(sidebarSlice.actions.removeForm(nonce));
+      },
+      onActivatePanel(options: ActivatePanelOptions) {
+        dispatch(sidebarSlice.actions.activatePanel(options));
+      },
+      onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
+        dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
+      },
+      onShowTemporaryPanel(panel: TemporaryPanelEntry) {
+        dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
+      },
+      onHideTemporaryPanel({ nonce }) {
+        dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+      },
+      onShowActivateRecipe(activateRecipeEntry: ActivateModPanelEntry) {
+        dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
+      },
+      onHideActivateRecipe(recipeId: RegistryId) {
+        dispatch(sidebarSlice.actions.hideActivateRecipe());
+      },
+    }),
     [dispatch]
   );
+}
 
-  // `effect` will run once on component mount since listener and formsRef don't change on renders
-  useEffect(() => {
+const ConnectedSidebar: React.VFC = () => {
+  const { flagOn, permit } = useFlags();
+  const dispatch = useDispatch();
+  const listener = useConnectedListener();
+  const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
+  const showHomePanel = flagOn("sidebar-home-tab") && permit("marketplace");
+
+  // `useAsyncEffect` will run once on component mount since listener and formsRef don't change on renders.
+  // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
+  // initial state to the sidebarSlice reducer.
+  useAsyncEffect(async () => {
+    const topFrame = await getTopLevelFrame();
+
+    // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
+    await ensureExtensionPointsInstalled(topFrame);
+
+    const { panels, temporaryPanels, forms, recipeToActivate } =
+      await getReservedSidebarEntries(topFrame);
+
+    const staticPanels = showHomePanel ? [HOME_PANEL] : [];
+
+    // Log to help debug race conditions with lifecycle
+    console.debug("ConnectedSidebar:sidebarSlice.actions.setInitialPanels", {
+      panels,
+      temporaryPanels,
+      forms,
+      staticPanels,
+      recipeToActivate,
+    });
+
+    dispatch(
+      sidebarSlice.actions.setInitialPanels({
+        panels,
+        temporaryPanels,
+        forms,
+        staticPanels,
+        recipeToActivate,
+      })
+    );
+
+    // To avoid races with panel registration, listen after reserving the initial panels.
     addListener(listener);
+
     return () => {
       // NOTE: we don't need to cancel any outstanding forms on unmount because the FormTransformer is set up to watch
       // for PANEL_HIDING_EVENT. (and the only time this SidebarApp would unmount is if the sidebar was closing)
       removeListener(listener);
     };
+    // Excluding showHomePanel from deps. The flags detect shouldn't change after initial mount. And if they somehow do,
+    // we don't want to attempt to change home panel visibility after initial mount.
   }, [listener]);
 
-  const showTabs =
-    !isEmpty(sidebarState.panels) ||
-    !isEmpty(sidebarState.forms) ||
-    !isEmpty(sidebarState.temporaryPanels) ||
-    sidebarState.recipeToActivate != null;
+  // Wire up a click handler on the document to handle activate link clicks
+  useEffect(() => {
+    const listener = (event: MouseEvent) => {
+      activateLinkClickHandler(event, (entry) => {
+        dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+      });
+    };
+
+    document.addEventListener("click", listener);
+    return () => {
+      document.removeEventListener("click", listener);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
+  }, []);
 
   return (
     <div className="full-height">
@@ -110,25 +162,12 @@ const ConnectedSidebar: React.VFC = () => {
           // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
           ignoreApiError
         >
-          {showTabs ? (
-            <Tabs
-              {...sidebarState}
-              onSelectTab={(eventKey: string) => {
-                dispatch(sidebarSlice.actions.selectTab(eventKey));
-              }}
-              onCloseTemporaryTab={(nonce) => {
-                dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-              }}
-              onResolveTemporaryPanel={(nonce, action) => {
-                dispatch(
-                  sidebarSlice.actions.resolveTemporaryPanel({ nonce, action })
-                );
-              }}
-            />
-          ) : (
+          {sidebarIsEmpty ? (
             <DelayedRender millis={300}>
               <DefaultPanel />
             </DelayedRender>
+          ) : (
+            <Tabs />
           )}
         </RequireAuth>
       </ErrorBoundary>

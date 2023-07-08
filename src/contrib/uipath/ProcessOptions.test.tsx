@@ -19,7 +19,6 @@ import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
@@ -30,13 +29,13 @@ import useDependency from "@/services/useDependency";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IService } from "@/types/serviceTypes";
+import { useAuthOptions } from "@/hooks/auth";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { setContext } from "@/testUtils/detectPageMock";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
+setContext("devToolsPage");
+
 // Default mock to return missing dependency
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({
@@ -47,9 +46,7 @@ jest.mock("@/services/useDependency", () =>
   })
 );
 jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest
-    .fn()
-    .mockReturnValue({ authOptions: [], refresh: jest.fn(), isLoading: false }),
+  useAuthOptions: jest.fn(),
 }));
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
@@ -108,6 +105,7 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
+  (useAuthOptions as jest.Mock).mockReturnValue(valueToAsyncState([]));
 });
 
 describe("UiPath Options", () => {

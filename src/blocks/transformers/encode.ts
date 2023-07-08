@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {
@@ -45,7 +45,9 @@ export class Base64Encode extends Transformer {
     ["stringToEncode"]
   );
 
-  async transform({ stringToEncode }: BlockArgs): Promise<string> {
+  async transform({
+    stringToEncode,
+  }: BrickArgs<{ stringToEncode: string }>): Promise<string> {
     return btoa(stringToEncode);
   }
 }
@@ -72,7 +74,9 @@ export class Base64Decode extends Transformer {
     ["encodedData"]
   );
 
-  async transform({ encodedData }: BlockArgs): Promise<string> {
+  async transform({
+    encodedData,
+  }: BrickArgs<{ encodedData: string }>): Promise<string> {
     return btoa(encodedData);
   }
 }

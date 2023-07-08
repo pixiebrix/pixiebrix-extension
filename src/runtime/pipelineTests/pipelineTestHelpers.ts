@@ -11,32 +11,39 @@ import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import {
   type ApiVersion,
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type OptionsArgs,
 } from "@/types/runtimeTypes";
-import { Block } from "@/types/blockTypes";
+import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 const logger = new ConsoleLogger();
 
-class ContextBlock extends Block {
+export class ContextBrick extends BrickABC {
+  static contexts: UnknownObject[] = [];
+
   constructor() {
     super("test/context", "Return Context");
   }
 
+  static clearContexts() {
+    ContextBrick.contexts = [];
+  }
+
   inputSchema = propertiesToSchema({});
 
-  async run(arg: BlockArgs, { ctxt }: BlockOptions) {
+  async run(arg: BrickArgs, { ctxt }: BrickOptions) {
+    ContextBrick.contexts.push(ctxt);
     return ctxt;
   }
 }
 
-export class EchoBlock extends Block {
+export class EchoBrick extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/echo");
   constructor() {
-    super(EchoBlock.BLOCK_ID, "Echo Block");
+    super(EchoBrick.BLOCK_ID, "Echo Brick");
   }
 
   inputSchema = propertiesToSchema({
@@ -45,19 +52,19 @@ export class EchoBlock extends Block {
     },
   });
 
-  async run({ message }: BlockArgs) {
+  async run({ message }: BrickArgs) {
     return { message };
   }
 }
 
-class RootAwareBlock extends Block {
+class RootAwareBrick extends BrickABC {
   constructor() {
     super("test/root-aware", "Root Aware");
   }
 
   inputSchema = propertiesToSchema({});
 
-  async run(_arg: BlockArgs, { root }: BlockOptions) {
+  async run(_arg: BrickArgs, { root }: BrickOptions) {
     return {
       tagName: (root as HTMLElement).tagName,
     };
@@ -65,12 +72,12 @@ class RootAwareBlock extends Block {
 }
 
 /**
- * A block that returns a `prop` 🫖
+ * A brick that returns a `prop` 🫖
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418
  */
-class TeapotBlock extends Block {
+class TeapotBrick extends BrickABC {
   constructor() {
-    super("test/teapot", "Teapot Block");
+    super("test/teapot", "Teapot Brick");
   }
 
   inputSchema = propertiesToSchema({});
@@ -80,23 +87,23 @@ class TeapotBlock extends Block {
   }
 }
 
-class IdentityBlock extends Block {
+class IdentityBrick extends BrickABC {
   constructor() {
-    super("test/identity", "Identity Block");
+    super("test/identity", "Identity Brick");
   }
 
   inputSchema = propertiesToSchema({
     data: {},
   });
 
-  async run(arg: BlockArgs) {
+  async run(arg: BrickArgs) {
     return arg;
   }
 }
 
-class ThrowBlock extends Block {
+class ThrowBrick extends BrickABC {
   constructor() {
-    super("test/throw", "Throw Block");
+    super("test/throw", "Throw Brick");
   }
 
   inputSchema = propertiesToSchema({
@@ -105,14 +112,14 @@ class ThrowBlock extends Block {
     },
   });
 
-  async run({ message }: BlockArgs<{ message: string }>) {
+  async run({ message }: BrickArgs<{ message: string }>) {
     throw new BusinessError(message);
   }
 }
 
-class ArrayBlock extends Block {
+class ArrayBrick extends BrickABC {
   constructor() {
-    super("test/array", "Array Block");
+    super("test/array", "Array Brick");
   }
 
   inputSchema = propertiesToSchema({});
@@ -147,16 +154,19 @@ const pipelineSchema: Schema = {
   },
 };
 
-class PipelineBlock extends Block {
+/**
+ * A brick for testing pipeline functionality. Returns the length of the provided pipeline brick input.
+ */
+class PipelineBrick extends BrickABC {
   constructor() {
-    super("test/pipeline", "Pipeline Block");
+    super("test/pipeline", "Pipeline Brick");
   }
 
   inputSchema = propertiesToSchema({
     pipeline: pipelineSchema,
   });
 
-  async run({ pipeline }: BlockArgs<{ pipeline: PipelineExpression }>) {
+  async run({ pipeline }: BrickArgs<{ pipeline: PipelineExpression }>) {
     return {
       length: pipeline.__value__.length,
     };
@@ -164,11 +174,11 @@ class PipelineBlock extends Block {
 }
 
 /**
- * Test block that renders an array of elements with a deferred expression
+ * Test brick that renders an array of elements with a deferred expression
  */
-class DeferBlock extends Block {
+class DeferBrick extends BrickABC {
   constructor() {
-    super("test/defer", "Defer Block");
+    super("test/defer", "Defer Brick");
   }
 
   inputSchema = propertiesToSchema(
@@ -193,12 +203,12 @@ class DeferBlock extends Block {
       element,
       array = [],
       elementKey = "element",
-    }: BlockArgs<{
+    }: BrickArgs<{
       element: UnknownObject;
       array: unknown[];
       elementKey?: string;
     }>,
-    { ctxt }: BlockOptions
+    { ctxt }: BrickOptions
   ) {
     return Promise.all(
       array.map(async (data) => {
@@ -220,15 +230,15 @@ class DeferBlock extends Block {
   }
 }
 
-export const echoBlock = new EchoBlock();
-export const contextBlock = new ContextBlock();
-export const identityBlock = new IdentityBlock();
-export const throwBlock = new ThrowBlock();
-export const teapotBlock = new TeapotBlock();
-export const arrayBlock = new ArrayBlock();
-export const pipelineBlock = new PipelineBlock();
-export const deferBlock = new DeferBlock();
-export const rootAwareBlock = new RootAwareBlock();
+export const echoBrick = new EchoBrick();
+export const contextBrick = new ContextBrick();
+export const identityBrick = new IdentityBrick();
+export const throwBrick = new ThrowBrick();
+export const teapotBrick = new TeapotBrick();
+export const arrayBrick = new ArrayBrick();
+export const pipelineBrick = new PipelineBrick();
+export const deferBrick = new DeferBrick();
+export const rootAwareBrick = new RootAwareBrick();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

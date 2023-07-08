@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -30,11 +30,11 @@ import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";
 import {
   displayTemporaryInfo,
-  type GetPanelEntry,
   type RefreshTrigger,
   type TemporaryDisplayInputs,
+  type TemporaryPanelEntryMetadata,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type PanelButton, type PanelPayload } from "@/sidebar/types";
+import { type PanelButton, type PanelPayload } from "@/types/sidebarTypes";
 import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
 import { $safeFind } from "@/helpers";
 import { addOverlay } from "@/blocks/transformers/tourStep/overlay";
@@ -317,7 +317,7 @@ export class TourStepTransformer extends Transformer {
         context: { extensionId, blueprintId },
       },
       runRendererPipeline,
-    }: BlockOptions
+    }: BrickOptions
   ): Promise<unknown> {
     let counter = 0;
 
@@ -330,35 +330,36 @@ export class TourStepTransformer extends Transformer {
       removeOverlay = addOverlay(element as HTMLElement);
     }
 
-    const getPanelEntry: GetPanelEntry = async () => {
-      const payload = (await runRendererPipeline(
-        (body as PipelineExpression)?.__value__ ?? [],
+    const actions: PanelButton[] = appearance?.controls?.actions ?? [
+      {
+        caption: isLastStep ? "Done" : "Next",
+        type: "submit",
+        variant: "light",
+      },
+    ];
+
+    const panelEntryMetadata: TemporaryPanelEntryMetadata = {
+      extensionId,
+      blueprintId,
+      heading: title,
+      actions,
+      showCloseButton: appearance?.controls?.closeButton !== "none",
+    };
+
+    const getPayload = async () => {
+      const result = await runRendererPipeline(
+        body as PipelineExpression,
         {
           key: "body",
           counter,
         },
         {},
         element
-      )) as PanelPayload;
+      );
 
       counter++;
 
-      const actions: PanelButton[] = appearance?.controls?.actions ?? [
-        {
-          caption: isLastStep ? "Done" : "Next",
-          type: "submit",
-          variant: "light",
-        },
-      ];
-
-      return {
-        extensionId,
-        blueprintId,
-        heading: title,
-        payload,
-        actions,
-        showCloseButton: appearance?.controls?.closeButton !== "none",
-      };
+      return result as PanelPayload;
     };
 
     // Outside click handler
@@ -386,7 +387,8 @@ export class TourStepTransformer extends Transformer {
 
     try {
       return await displayTemporaryInfo({
-        getPanelEntry,
+        panelEntryMetadata,
+        getPayload,
         target: element,
         location,
         signal: abortSignal,
@@ -410,7 +412,7 @@ export class TourStepTransformer extends Transformer {
    */
   async locateElement(
     args: StepInputs,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<HTMLElement> {
     let $elements: JQuery<Document | HTMLElement> = $safeFind(
       args.selector,
@@ -461,8 +463,8 @@ export class TourStepTransformer extends Transformer {
   inputSchema: Schema = StepSchema;
 
   async transform(
-    args: BlockArgs<StepInputs>,
-    options: BlockOptions
+    args: BrickArgs<StepInputs>,
+    options: BrickOptions
   ): Promise<unknown> {
     const {
       root,
@@ -516,7 +518,7 @@ export class TourStepTransformer extends Transformer {
     try {
       if (!isEmpty(onBeforeShow?.__value__)) {
         await options.runPipeline(
-          onBeforeShow.__value__ ?? [],
+          onBeforeShow,
           {
             key: "onBeforeShow",
             counter: 0,
@@ -532,7 +534,7 @@ export class TourStepTransformer extends Transformer {
       markTourStep(nonce, { step: title, context });
 
       // If passing markdown, wrap in Markdown brick
-      const modifiedArgs: BlockArgs<StepInputs> =
+      const modifiedArgs: BrickArgs<StepInputs> =
         typeof body === "string"
           ? { ...args, body: markdownPipeline(body) }
           : args;
@@ -541,7 +543,7 @@ export class TourStepTransformer extends Transformer {
 
       if (!isEmpty(onAfterShow?.__value__)) {
         await options.runPipeline(
-          onAfterShow.__value__ ?? [],
+          onAfterShow,
           {
             key: "onAfterShow",
             counter: 0,

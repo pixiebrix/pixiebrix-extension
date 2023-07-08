@@ -45,7 +45,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { cloneDeep, debounce, stubTrue } from "lodash";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
@@ -59,16 +59,16 @@ import {
   type IExtension,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
   heading: string;
-  body: BlockConfig | BlockPipeline;
+  body: BrickConfig | BrickPipeline;
 };
 
 export type Trigger =
@@ -127,7 +127,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
 
   async getBlocks(
     extension: ResolvedExtension<SidebarConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
@@ -138,6 +138,9 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public override uninstall(): void {
     this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id);
+    console.debug(
+      "SidebarExtensionPoint:uninstall: stop listening for sidebarShowEvents"
+    );
     sidebarShowEvents.remove(this.run);
     this.cancelListeners();
   }
@@ -150,6 +153,9 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
+    console.debug(
+      "SidebarExtensionPoint:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
+    );
     sidebarShowEvents.remove(this.run);
   }
 
@@ -320,29 +326,30 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     });
   }
 
+  // Use arrow syntax to avoid having to bind when passing as listener to `sidebarShowEvents.add`
   run = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
-      // Keep sidebar up-to-date regardless of trigger policy
+      console.debug(
+        "SidebarExtensionPoint:run calling sidebarController:removeExtensionPoint because extension point is not available for URL",
+        this.id
+      );
+
+      // Keep sidebar entries up-to-date regardless of trigger policy
       removeExtensionPoint(this.id);
       return;
     }
 
     if (this.extensions.length === 0) {
       console.debug(
-        "Sidebar extension point %s has no installed extensions",
+        "SidebarExtensionPoint:run Sidebar extension point %s has no installed extensions",
         this.id
       );
+
       return;
     }
 
-    if (!isSidebarFrameVisible()) {
-      console.debug(
-        "Skipping run for %s because sidebar is not visible",
-        this.id
-      );
-      return;
-    }
-
+    // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
+    // the sidebar won't be visible yet on initial page load.
     reservePanels(
       this.extensions.map((extension) => ({
         extensionId: extension.id,
@@ -350,6 +357,14 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
         blueprintId: extension._recipe?.id,
       }))
     );
+
+    if (!isSidebarFrameVisible()) {
+      console.debug(
+        "SidebarExtensionPoint:run Skipping run for %s because sidebar is not visible",
+        this.id
+      );
+      return;
+    }
 
     // On the initial run or a manual run, run directly
     if (
@@ -385,6 +400,21 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
+      // Reserve the panels, so the sidebarController knows about them prior to the sidebar showing.
+      // Previously we were just relying on the sidebarShowEvents event listeners, but that caused race conditions
+      // with how other content is loaded in the sidebar
+      reservePanels(
+        this.extensions.map((extension) => ({
+          extensionId: extension.id,
+          extensionPointId: this.id,
+          blueprintId: extension._recipe?.id,
+        }))
+      );
+
+      // Add event listener so content for the panel is calculated/loaded when the sidebar opens
+      console.debug(
+        "SidebarExtensionPoint:install: listen for sidebarShowEvents"
+      );
       sidebarShowEvents.add(this.run);
     } else {
       removeExtensionPoint(this.id);
@@ -439,6 +469,12 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
     this.definition = cloned.definition;
   }
 
+  public override get syncInstall() {
+    // Panels must be reserved for the page to be considered ready. Otherwise, there are race conditions with whether
+    // the sidebar panels have been reserved by the time the user clicks the browserAction.
+    return true;
+  }
+
   override async defaultReader(): Promise<IReader> {
     return mergeReaders(this.definition.reader);
   }
@@ -461,7 +497,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   }
 }
 
-export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
+export function fromJS(config: ExtensionPointConfig): StarterBrick {
   const { type } = config.definition;
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);

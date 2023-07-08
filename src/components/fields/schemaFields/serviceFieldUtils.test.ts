@@ -18,25 +18,26 @@
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
-import { makeEmptyPermissions } from "@/utils/permissions";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: {
           data: false,
         },
       }),
-      blockConfigFactory({
+      brickConfigFactory({
         config: {
           input: toExpression("nunjucks", "foo: {{ @foo }}"),
         },
@@ -55,7 +56,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: serviceConfig,
       }),
     ]);
@@ -66,7 +67,7 @@ describe("selectVariables", () => {
 
   test("do not select variable with path seperator", () => {
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: {
           foo: toExpression("var", "@foo.bar"),
         },
@@ -103,7 +104,39 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
+        config: documentWithButtonConfig,
+      }),
+    ]);
+
+    const actual = selectServiceVariables(formState);
+    expect(actual).toEqual(new Set(["@foo"]));
+  });
+
+  test("handles list elements", () => {
+    const button = createNewElement("button");
+    button.config.onClick = toExpression("pipeline", [
+      {
+        id: "@test/service",
+        instanceId: uuidSequence(2),
+        config: {
+          input: toExpression("var", "@foo"),
+        },
+      },
+    ]);
+    const listElement = createNewElement("list") as ListDocumentElement;
+    listElement.config.element.__value__ = button;
+
+    const documentWithButtonConfig = {
+      id: "@test/document",
+      config: {
+        body: [listElement],
+      },
+      instanceId: uuidSequence(1),
+    };
+
+    const formState = formStateFactory(undefined, [
+      brickConfigFactory({
         config: documentWithButtonConfig,
       }),
     ]);
@@ -150,7 +183,7 @@ describe("selectVariables", () => {
     };
 
     const formState = formStateFactory(undefined, [
-      blockConfigFactory({
+      brickConfigFactory({
         config: documentWithButtonConfig,
       }),
     ]);
@@ -173,7 +206,7 @@ describe("selectVariables", () => {
           config: null,
         },
       ],
-      permissions: makeEmptyPermissions(),
+      permissions: emptyPermissionsFactory(),
       optionsArgs: {},
       type: "actionPanel",
       recipe: null,

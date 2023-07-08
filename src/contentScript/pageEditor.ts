@@ -21,7 +21,7 @@ import {
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
@@ -35,14 +35,14 @@ import {
   NoRendererError,
 } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
-import { type PanelPayload } from "@/sidebar/types";
+import { type PanelPayload } from "@/types/sidebarTypes";
 import { HeadlessModeError } from "@/blocks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { type ApiVersion, type BlockArgsContext } from "@/types/runtimeTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
@@ -52,17 +52,17 @@ export type RunBlockArgs = {
    */
   apiVersion: ApiVersion;
   /**
-   * The IBlock configuration.
+   * The Brick configuration.
    */
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
   /**
    * Context to render the BlockArg, should include @input, @options, and service context
    * @see makeServiceContext
    */
-  context: BlockArgsContext;
+  context: BrickArgsContext;
   /**
    * Root jQuery selector to determine the root if the rootMode is "inherit".
-   * @see BlockConfig.rootMode
+   * @see BrickConfig.rootMode
    */
   rootSelector: string | undefined;
 };
@@ -206,12 +206,17 @@ export async function runRendererBlock({
       showModal({ url, controller });
 
       try {
-        await waitForTemporaryPanel(nonce, {
-          extensionId,
-          blueprintId,
+        await waitForTemporaryPanel({
           nonce,
-          heading: title,
-          payload,
+          location,
+          extensionId,
+          entry: {
+            extensionId,
+            blueprintId,
+            nonce,
+            heading: title,
+            payload,
+          },
         });
       } catch (error) {
         // Match behavior of Display Temporary Info

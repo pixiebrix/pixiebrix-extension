@@ -34,6 +34,7 @@ module.exports = mergeWithShared({
     "webextension-polyfill": "{}",
     rollbar: "{init(){}}",
     "@/vendors/hoverintent/hoverintent": "{}",
+    nunjucks: "{}",
   },
   resolve: {
     // Mock any modules that appear in __mocks__
@@ -71,7 +72,7 @@ module.exports = mergeWithShared({
     // Don't fail on import of styles.
     // Using an identity object instead of actual style sheet because styles are not needed for headers generations
     new webpack.NormalModuleReplacementPlugin(
-      /\.module\.(css|scss)$/,
+      /.(css|scss)$/,
       "identity-obj-proxy"
     ),
   ],

@@ -30,13 +30,12 @@ import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
 import { render } from "@/pageEditor/testHelpers";
-import {
-  sanitizedServiceConfigurationFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
 import { selectSchemaFieldType } from "@/testUtils/formHelpers";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const OTHER_TEST_SPREADSHEET_ID = uuidSequence(2);
@@ -48,7 +47,7 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGoogleSupported: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
@@ -57,17 +56,9 @@ jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),
 }));
 
-const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
-  typeof sheets.getSheetProperties
->;
-
-const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
-  typeof sheets.getTabNames
->;
-
-const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
-  typeof sheets.getHeaders
->;
+const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
+const getTabNamesMock = jest.mocked(sheets.getTabNames);
+const getHeadersMock = jest.mocked(sheets.getHeaders);
 
 beforeAll(() => {
   registerDefaultWidgets();

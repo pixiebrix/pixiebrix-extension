@@ -16,110 +16,52 @@
  */
 
 import React from "react";
-import { useRecipe } from "@/recipes/recipesHooks";
-import * as api from "@/services/api";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
-import {
-  getRecipeWithBuiltInServiceAuths,
-  marketplaceListingFactory,
-  recipeDefinitionFactory,
-  sidebarEntryFactory,
-} from "@/testUtils/factories";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
-import { uuidv4 } from "@/types/helpers";
-import { render } from "@/sidebar/testHelpers";
+import { useRequiredRecipe } from "@/recipes/recipesHooks";
+import { render, screen } from "@/sidebar/testHelpers";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { type RecipeDefinition } from "@/types/recipeTypes";
-import { containsPermissions } from "@/background/messenger/api";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { validateRegistryId } from "@/types/helpers";
+import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
+import {
+  getRecipeWithBuiltInServiceAuths,
+  recipeDefinitionFactory,
+} from "@/testUtils/factories/recipeFactories";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import {
+  marketplaceListingFactory,
+  recipeToMarketplacePackage,
+} from "@/testUtils/factories/marketplaceFactories";
+import * as messengerApi from "@/contentScript/messenger/api";
+import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
+  useRequiredRecipe: jest.fn(),
 }));
 
-const useRecipeMock = useRecipe as jest.MockedFunction<typeof useRecipe>;
-
-jest.mock("@/services/api", () => ({
-  useGetMarketplaceListingsQuery: jest.fn(),
-  useGetDatabasesQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoadingDatabases: false,
-  }),
-  useGetOrganizationsQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoadingOrganizations: false,
-  }),
-  useCreateDatabaseMutation: jest.fn().mockReturnValue([jest.fn()]),
-  useAddDatabaseToGroupMutation: jest.fn().mockReturnValue([jest.fn()]),
-  useGetServiceAuthsQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoading: false,
-    isFetching: false,
-  }),
-  useGetServicesQuery: jest.fn().mockReturnValue({
-    data: [],
-    isLoading: false,
-  }),
-  appApi: {
-    reducerPath: "appApi",
-    endpoints: {
-      getMarketplaceListings: {
-        useQueryState: jest.fn(),
-      },
-    },
-  },
+jest.mock("@/sidebar/sidebarSelectors", () => ({
+  selectSidebarHasModPanels: jest.fn(),
 }));
 
-const useGetMarketplaceListingsQueryMock =
-  useGetMarketplaceListingsQuery as jest.MockedFunction<
-    typeof useGetMarketplaceListingsQuery
-  >;
-
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
-jest.mock("@/sidebar/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
+const useRequiredRecipeMock = jest.mocked(useRequiredRecipe);
+const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
+const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
+const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
 jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue(true),
 }));
 
-const includesQuickBarMock =
-  includesQuickBarExtensionPoint as jest.MockedFunction<
-    typeof includesQuickBarExtensionPoint
-  >;
-
-jest.mock("@/permissions/index", () => ({
-  collectPermissions: jest.fn().mockReturnValue({
-    permissions: [],
-    origins: [],
-  }),
-}));
-
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn(),
-}));
-
-const containsPermissionsMock = containsPermissions as jest.MockedFunction<
-  typeof containsPermissions
->;
-
-function setNeedsPermissions(needsPermissions: boolean) {
-  containsPermissionsMock.mockResolvedValue(!needsPermissions);
-}
+const includesQuickBarMock = jest.mocked(includesQuickBarExtensionPoint);
 
 jest.mock("@/registry/internal", () => ({
   // We're also mocking all the functions that this output is passed to, so we can return empty array
@@ -128,70 +70,38 @@ jest.mock("@/registry/internal", () => ({
 
 jest.mock("@/hooks/useQuickbarShortcut", () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue({
-    shortcut: null,
-    isConfigured: false,
-  }),
-}));
-
-jest.mock("@/sidebar/activateRecipe/useMarketplaceActivateRecipe", () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(async () => ({ success: true })),
-}));
-
-jest.mock("@/hooks/useQuickbarShortcut", () => ({
-  __esModule: true,
   default: jest.fn(),
 }));
 
-const useQuickbarShortcutMock = useQuickbarShortcut as jest.MockedFunction<
-  typeof useQuickbarShortcut
->;
+const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
-function getMockCacheResult<T>(data: T): UseCachedQueryResult<T> {
-  return {
-    data,
-    isFetchingFromCache: false,
-    isCacheUninitialized: false,
-    isFetching: false,
-    isLoading: false,
-    isUninitialized: false,
-    error: null,
-    refetch: jest.fn(),
-  };
-}
+jest.mock("@/activation/useActivateRecipe", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(async () => ({ success: true })),
+}));
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
-function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
-  const recipe = recipeDefinitionFactory(recipeOverride);
-  useRecipeMock.mockReturnValue(getMockCacheResult(recipe));
+function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
+  const recipe = recipeDefinitionFactory({
+    ...recipeOverride,
+    metadata: {
+      id: validateRegistryId("test-recipe"),
+      name: "Test Mod",
+    },
+  });
+  useRequiredRecipeMock.mockReturnValue(valueToAsyncCacheState(recipe));
   const listing = marketplaceListingFactory({
-    package: {
-      id: uuidv4(),
-      name: recipe.metadata.id,
-      kind: "recipe",
-      description: "This is a test listing",
-      verbose_name: "My Test Listing",
-      config: {},
-      author: {
-        scope: "@testAuthor",
-      },
-      organization: {
-        scope: "@testOrg",
-      },
-    },
+    // Consistent user-visible name for snapshots
+    package: recipeToMarketplacePackage(recipe),
   });
-  useGetMarketplaceListingsQueryMock.mockReturnValue({
-    data: {
-      [listing.package.name]: listing,
-    },
-    isLoading: false,
-    error: null,
-    refetch: jest.fn(),
-  });
+
+  // Tests can override by calling before setupMocksAndRender
+  appApiMock.onGet("/api/marketplace/listings/").reply(200, [listing]);
+  appApiMock.onGet().reply(200, []);
+
   const entry = sidebarEntryFactory("activateRecipe", {
     recipeId: recipe.metadata.id,
     heading: "Activate Mod",
@@ -205,23 +115,29 @@ function setupMocksAndRender(recipeOverride?: Partial<RecipeDefinition>) {
 }
 
 beforeEach(() => {
+  appApiMock.reset();
+  selectSidebarHasModPanelsMock.mockReset();
+  hideSidebarSpy.mockReset();
+
   includesQuickBarMock.mockResolvedValue(false);
-  setNeedsPermissions(false);
+
   useQuickbarShortcutMock.mockReturnValue({
     shortcut: null,
     isConfigured: false,
   });
 
-  (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-    data: [],
-    isLoading: false,
-    isFetching: false,
+  checkRecipePermissionsMock.mockResolvedValue({
+    hasPermissions: true,
+    permissions: {},
   });
 });
 
 describe("ActivateRecipePanel", () => {
-  test("it renders with options, permissions info", async () => {
-    setNeedsPermissions(true);
+  it("renders with options, permissions info", async () => {
+    jest.mocked(checkRecipePermissions).mockResolvedValue({
+      hasPermissions: false,
+      permissions: { origins: ["https://newurl.com"] },
+    });
 
     const rendered = setupMocksAndRender({
       options: {
@@ -242,10 +158,12 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
+    rendered.debug();
+
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it activates basic recipe automatically and renders well-done page", async () => {
+  it("activates basic recipe automatically and renders well-done page", async () => {
     const rendered = setupMocksAndRender();
 
     await waitForEffect();
@@ -253,7 +171,37 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut not configured", async () => {
+  it("activates basic recipe with empty options structure automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: {},
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("activates recipe with database preview automatically and renders well-done page", async () => {
+    const rendered = setupMocksAndRender({
+      options: {
+        schema: propertiesToSchema({
+          testDatabase: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+            title: "Database",
+            format: "preview",
+          },
+        }),
+      },
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("renders well-done page for quick bar mod shortcut not configured", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     const rendered = setupMocksAndRender();
@@ -263,7 +211,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
+  it("renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
@@ -278,7 +226,7 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
+  it("renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
     useQuickbarShortcutMock.mockReturnValue({
@@ -293,28 +241,23 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with service configuration if no built-in service configs available", async () => {
+  it("renders with service configuration if no built-in service configs available", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
-
-    (api.useGetServicesQuery as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: false,
-    });
 
     const rendered = setupMocksAndRender(recipe);
 
     await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
+    expect(
+      rendered.container.querySelector(".actionButton")
+    ).not.toBeDisabled();
   });
 
-  test("it activates recipe with built-in services automatically and renders well-done page", async () => {
+  it("activates recipe with built-in services automatically and renders well-done page", async () => {
     const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-      data: builtInServiceAuths,
-      isLoading: false,
-    });
+    appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
 
     const rendered = setupMocksAndRender(recipe);
 
@@ -323,19 +266,37 @@ describe("ActivateRecipePanel", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it doesn't flicker while built-in auths are loading", async () => {
+  it("doesn't flicker while built-in auths are loading", async () => {
     const { recipe } = getRecipeWithBuiltInServiceAuths();
 
-    (api.useGetServiceAuthsQuery as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: true,
-      isFetching: true,
-    });
+    onDeferredGet("/api/services/shared/");
 
     const rendered = setupMocksAndRender(recipe);
 
     await waitForEffect();
 
     expect(rendered.getByTestId("loader")).not.toBeNull();
+  });
+
+  it("activating a mod closes the sidebar when there are no other mod panels to show", async () => {
+    selectSidebarHasModPanelsMock.mockImplementation(() => false);
+
+    setupMocksAndRender();
+    await waitForEffect();
+
+    await userEvent.click(screen.getByRole("button", { name: /ok/i }));
+
+    expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("activating a mod leaves the sidebar open when there are other mod panels to show", async () => {
+    selectSidebarHasModPanelsMock.mockImplementation(() => true);
+
+    setupMocksAndRender();
+    await waitForEffect();
+
+    await userEvent.click(screen.getByRole("button", { name: /ok/i }));
+
+    expect(hideSidebarSpy).toHaveBeenCalledTimes(0);
   });
 });

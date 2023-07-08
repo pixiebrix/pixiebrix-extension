@@ -19,7 +19,6 @@ import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Args, isDeferExpression } from "@/runtime/mapArgs";
-import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import {
   type BuildDocumentBranch,
@@ -33,6 +32,8 @@ import { runMapArgs } from "@/contentScript/messenger/api";
 import { isNullOrBlank, joinPathParts } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getTopLevelFrame } from "webext-messenger";
+import useAsyncState from "@/hooks/useAsyncState";
+import DelayedRender from "@/components/DelayedRender";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -58,14 +59,18 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
   const documentContext = useContext(DocumentContext);
 
-  const [rootDefinitions, isLoading, error] = useAsyncState(async () => {
+  const {
+    data: rootDefinitions,
+    isLoading,
+    error,
+  } = useAsyncState(async () => {
     const topLevelFrame = await getTopLevelFrame();
 
-    const key = `@${elementKey}`;
+    const elementVariableReference = `@${elementKey}`;
 
-    if (Object.hasOwn(documentContext.options.ctxt, key)) {
+    if (Object.hasOwn(documentContext.options.ctxt, elementVariableReference)) {
       documentContext.options.logger.warn(
-        `List key ${key} shadows an existing key`
+        `List key ${elementVariableReference} shadows an existing variable name`
       );
     }
 
@@ -73,7 +78,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
       array.map(async (itemData) => {
         const elementContext = produce(documentContext, (draft) => {
           // eslint-disable-next-line security/detect-object-injection -- we appended a @ to the front of key and are using immer
-          draft.options.ctxt[key] = itemData;
+          draft.options.ctxt[elementVariableReference] = itemData;
         });
 
         let documentElement: unknown;
@@ -102,7 +107,13 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   }, [array, elementKey, config, documentContext]);
 
   if (isLoading) {
-    return <Loader />;
+    // Use isLoading instead of isFetching because we want to show old content until the new content is ready.
+    // Add DelayedRender to avoid flickering the loading indicator. Rendering the DeferredExpression is fast
+    return (
+      <DelayedRender millis={600}>
+        <Loader />
+      </DelayedRender>
+    );
   }
 
   if (error) {

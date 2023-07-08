@@ -53,9 +53,12 @@ export function moveElement(
 ): DocumentElement[] {
   return produce(body, (draft) => {
     const sourceParent = getIn(draft, source.parentId as string);
-    const destinationParent = getIn(draft, destination.parentId as string);
+    const destinationParent: DocumentElement = getIn(
+      draft,
+      destination.parentId as string
+    );
 
-    const element = sourceParent.children[source.index];
+    const element: DocumentElement = sourceParent.children[source.index];
 
     if (!acceptDrop(element, destinationParent)) {
       console.warn(

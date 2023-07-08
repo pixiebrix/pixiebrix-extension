@@ -45,6 +45,14 @@
     ) !important;
   }
 
+  &.blue [style*="rgba(255, 200, 50, 0.3)"] {
+    background: linear-gradient(
+      20deg,
+      rgba(194, 208, 252, 0.3),
+      rgba(170, 181, 255, 0.1)
+    ) !important;
+  }
+
   [style*="rgba(255, 200, 50, 0.3)"] {
     border-color: transparent !important;
     background: linear-gradient(

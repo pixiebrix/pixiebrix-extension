@@ -32,7 +32,7 @@ import {
   partition,
 } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -55,18 +55,37 @@ import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type TourConfig = {
   /**
    * The tour pipeline to run
    * @since 1.7.19
    */
-  tour: BlockPipeline | BlockConfig;
+  tour: BrickPipeline | BrickConfig;
 };
+
+type TourDefinitionOptions = UnknownObject;
+
+export interface TourDefinition extends ExtensionPointDefinition {
+  defaultOptions?: TourDefinitionOptions;
+
+  /**
+   * Automatically run the tour on matching pages.
+   * @since 1.7.19
+   */
+  autoRunSchedule?: "never" | "once" | "always";
+
+  /**
+   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
+   * @since 1.7.19
+   */
+  allowUserRun?: boolean;
+}
 
 export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   public get kind(): "tour" {
@@ -110,7 +129,7 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
     },
   });
 
-  async getBlocks(extension: ResolvedExtension<TourConfig>): Promise<IBlock[]> {
+  async getBlocks(extension: ResolvedExtension<TourConfig>): Promise<Brick[]> {
     return selectAllBlocks(extension.config.tour);
   }
 
@@ -249,24 +268,6 @@ export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
   }
 }
 
-type TourDefinitionOptions = Record<string, unknown>;
-
-export interface TourDefinition extends ExtensionPointDefinition {
-  defaultOptions?: TourDefinitionOptions;
-
-  /**
-   * Automatically run the tour on matching pages.
-   * @since 1.7.19
-   */
-  autoRunSchedule?: "never" | "once" | "always";
-
-  /**
-   * Allow the user to manually run the tour. Causes the tour to be available in the Quick Bar.
-   * @since 1.7.19
-   */
-  allowUserRun?: boolean;
-}
-
 class RemoteTourExtensionPoint extends TourExtensionPoint {
   private readonly _definition: TourDefinition;
 
@@ -310,7 +311,7 @@ class RemoteTourExtensionPoint extends TourExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<TourDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "tour") {
     throw new Error(`Expected type=tour, got ${type}`);

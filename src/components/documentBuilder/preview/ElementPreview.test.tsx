@@ -27,17 +27,17 @@ import ElementPreview, {
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import {
-  baseExtensionStateFactory,
-  blockConfigFactory,
-  formStateFactory,
-} from "@/testUtils/factories";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
+import {
+  baseExtensionStateFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 const renderElementPreview = (
   element: DocumentElement,
@@ -57,7 +57,7 @@ const renderElementPreview = (
   const formState = formStateFactory({
     extension: baseExtensionStateFactory({
       blockPipeline: [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             body: [element],
           },
@@ -169,9 +169,9 @@ test.each(
 });
 
 test("can preview pipeline element with bricks", () => {
-  const testBlock = blockConfigFactory();
+  const testBlock = brickConfigFactory();
   const markdownBlock = new MarkdownRenderer();
-  const markdownConfig = blockConfigFactory({
+  const markdownConfig = brickConfigFactory({
     id: markdownBlock.id,
     config: defaultBlockConfig(markdownBlock.inputSchema),
   });

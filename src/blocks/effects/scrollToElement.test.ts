@@ -17,9 +17,10 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import ScrollIntoViewEffect from "@/blocks/effects/scrollIntoView";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const brick = new ScrollIntoViewEffect();
 
@@ -57,7 +58,7 @@ describe("ScrollToElementEffect", () => {
     await brick.run(unsafeAssumeValidArg({ selector: "button" }), {
       root: document,
       logger,
-    } as BlockOptions);
+    } as BrickOptions);
 
     expect(scrollIntoViewMock).toHaveBeenCalled();
   });
@@ -66,7 +67,7 @@ describe("ScrollToElementEffect", () => {
     await brick.run(unsafeAssumeValidArg({}), {
       root: document.querySelector("button"),
       logger,
-    } as unknown as BlockOptions);
+    } as unknown as BrickOptions);
 
     expect(scrollIntoViewMock).toHaveBeenCalled();
   });

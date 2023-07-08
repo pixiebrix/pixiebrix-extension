@@ -22,7 +22,7 @@ import {
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import {
   type AddBlockLocation,
@@ -48,6 +48,7 @@ import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
   selectActiveElementUIState,
+  selectActiveNodeUIState,
   selectNotDeletedElements,
   selectNotDeletedExtensions,
 } from "./editorSelectors";
@@ -75,7 +76,7 @@ import {
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
@@ -90,7 +91,7 @@ import {
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
@@ -120,6 +121,8 @@ export const initialState: EditorState = {
   availableDynamicIds: [],
   unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
 };
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
@@ -144,6 +147,7 @@ const cloneActiveExtension = createAsyncThunk<
     }
   );
   // Add the cloned extension
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   thunkAPI.dispatch(actions.addElement(newElement));
 });
 
@@ -164,7 +168,9 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
   );
   const resolved = await Promise.all(
-    extensions.map(async (extension) => resolveDefinitions(extension))
+    extensions.map(async (extension) =>
+      resolveExtensionInnerDefinitions(extension)
+    )
   );
   const tabUrl = await getCurrentURL();
   const availableExtensionPointIds = resolved
@@ -529,7 +535,7 @@ export const editorSlice = createSlice({
       ].activeElement = activeElement;
     },
 
-    copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
+    copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
       const copy = { ...action.payload };
       delete copy.instanceId;
       state.copiedBlock = copy;
@@ -727,7 +733,7 @@ export const editorSlice = createSlice({
     addNode(
       state,
       action: PayloadAction<{
-        block: BlockConfig;
+        block: BrickConfig;
         pipelinePath: string;
         pipelineIndex: number;
       }>
@@ -846,6 +852,32 @@ export const editorSlice = createSlice({
         element.optionsArgs = action.payload;
         state.dirty[element.uuid] = true;
       }
+    },
+    setExpandedFieldSections(
+      state,
+      { payload }: PayloadAction<{ id: string; isExpanded: boolean }>
+    ) {
+      const uiState = selectActiveNodeUIState({
+        editor: state,
+      });
+      if (uiState.expandedFieldSections === undefined) {
+        uiState.expandedFieldSections = {};
+      }
+
+      const { id, isExpanded } = payload;
+      uiState.expandedFieldSections[id] = isExpanded;
+    },
+    setDataSectionExpanded(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      state.isDataPanelExpanded = payload.isExpanded;
+    },
+    setModListExpanded(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      state.isModListExpanded = payload.isExpanded;
     },
   },
   extraReducers(builder) {

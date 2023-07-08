@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFindElementsWithRootMode } from "@/blocks/rootModeHelpers";
@@ -71,13 +71,13 @@ export class ScrollIntoViewEffect extends Effect {
       behavior = "auto",
       block = "start",
       inline = "nearest",
-    }: BlockArgs<{
+    }: BrickArgs<{
       selector?: string;
       behavior?: "auto" | "smooth";
       block?: "start" | "center" | "end" | "nearest";
       inline?: "start" | "center" | "end" | "nearest";
     }>,
-    { root }: BlockOptions
+    { root }: BrickOptions
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

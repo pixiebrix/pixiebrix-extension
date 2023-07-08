@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPosition } from "@/blocks/types";
+import { type BrickPosition } from "@/blocks/types";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 
-const position: BlockPosition = {
+const position: BrickPosition = {
   path: "test.path",
 };
 
@@ -80,25 +80,6 @@ describe("RegexAnalysis", () => {
     expect(analysis.getAnnotations()[0].message).toEqual(
       "Invalid regular expression: /(?<foo>abc/: Unterminated group"
     );
-  });
-
-  test("warns on missing regex named capture group", () => {
-    const analysis = new RegexAnalysis();
-    analysis.visitBlock(
-      position,
-      {
-        id: validateRegistryId("@pixiebrix/regex"),
-        config: {
-          regex: {
-            __type__: "nunjucks",
-            __value__: "^bar$",
-          },
-        },
-      },
-      {} as VisitBlockExtra
-    );
-
-    expect(analysis.getAnnotations()).toHaveLength(1);
   });
 
   test.each([

@@ -17,13 +17,12 @@
 
 import { renderHook } from "@/sidebar/testHelpers";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
-import {
-  sanitizedServiceConfigurationFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");

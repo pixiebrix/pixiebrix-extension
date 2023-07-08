@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type SidebarEntries,
-  type FormEntry,
-  type PanelEntry,
-  type ActivatePanelOptions,
-  type TemporaryPanelEntry,
-  type ActivateRecipeEntry,
-  type SidebarEntry,
-} from "@/sidebar/types";
+import type {
+  FormPanelEntry,
+  PanelEntry,
+  ActivatePanelOptions,
+  TemporaryPanelEntry,
+  ActivateModPanelEntry,
+  SidebarEntry,
+  SidebarState,
+  StaticPanelEntry,
+} from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
@@ -37,23 +38,13 @@ import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/blocks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
-
-export type SidebarState = SidebarEntries & {
-  activeKey: string;
-
-  /**
-   * Pending panel activation request.
-   *
-   * Because there's a race condition between activatePanel and setPanels, etc. we need to keep track of the activation
-   * request in order to fulfill it once the panel is registered.
-   */
-  pendingActivePanel: ActivatePanelOptions | null;
-};
+import { castDraft } from "immer";
 
 const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],
+  staticPanels: [],
   recipeToActivate: null,
   activeKey: null,
   pendingActivePanel: null,
@@ -68,6 +59,7 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
     state.forms.some((x) => eventKeyForEntry(x) === query) ||
     state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
     state.panels.some((x) => eventKeyForEntry(x) === query) ||
+    state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
     eventKeyForEntry(state.recipeToActivate) === query
   );
 }
@@ -121,6 +113,11 @@ function findNextActiveKey(
     }
   }
 
+  // Return the first static panel, if it exists
+  if (state.staticPanels.length > 0) {
+    return eventKeyForEntry(state.staticPanels[0]);
+  }
+
   return null;
 }
 
@@ -156,13 +153,40 @@ async function resolvePanel(
   resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
-function fixActiveTabOnRemove(
+export function fixActiveTabOnRemove(
   state: WritableDraft<SidebarState>,
   removedEntry: SidebarEntry | null
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
-    state.activeKey = defaultEventKey(state);
+    const panels = [...state.forms, ...state.panels, ...state.temporaryPanels];
+
+    const matchingExtension = panels.find(
+      ({ extensionId }) =>
+        "extensionId" in removedEntry &&
+        extensionId === removedEntry.extensionId
+    );
+
+    if (matchingExtension) {
+      // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
+      // See: https://github.com/immerjs/immer/issues/839
+      // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+      state.activeKey = eventKeyForEntry(matchingExtension);
+    } else {
+      const matchingMod = panels.find(
+        ({ blueprintId }) =>
+          "blueprintId" in removedEntry &&
+          // Need to check for removedEntry.blueprintId to avoid switching between IExtensions that don't have blueprint ids
+          blueprintId === removedEntry.blueprintId &&
+          blueprintId
+      );
+
+      if (matchingMod) {
+        state.activeKey = eventKeyForEntry(matchingMod);
+      } else {
+        state.activeKey = defaultEventKey(state);
+      }
+    }
   }
 }
 
@@ -170,17 +194,41 @@ const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
   reducers: {
+    setInitialPanels(
+      state,
+      action: PayloadAction<{
+        staticPanels: StaticPanelEntry[];
+        panels: PanelEntry[];
+        temporaryPanels: TemporaryPanelEntry[];
+        forms: FormPanelEntry[];
+        recipeToActivate: ActivateModPanelEntry | null;
+      }>
+    ) {
+      state.staticPanels = castDraft(action.payload.staticPanels);
+      state.forms = castDraft(action.payload.forms);
+      state.panels = castDraft(action.payload.panels);
+      state.temporaryPanels = castDraft(action.payload.temporaryPanels);
+      state.recipeToActivate = castDraft(action.payload.recipeToActivate);
+      state.activeKey = defaultEventKey(state);
+    },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
+      // Calling selectTab with a stale event key shouldn't change the current tab
       state.activeKey = eventKeyExists(state, action.payload)
         ? action.payload
-        : defaultEventKey(state);
+        : state.activeKey;
 
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
     },
-    addForm(state, action: PayloadAction<{ form: FormEntry }>) {
+    addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
       const { form } = action.payload;
+
+      if (state.forms.some((x) => x.nonce === form.nonce)) {
+        // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
+        // loading state for forms.)
+        return;
+      }
 
       const [thisExtensionForms, otherForms] = partition(
         state.forms,
@@ -195,6 +243,7 @@ const sidebarSlice = createSlice({
         // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
         form,
       ];
+
       state.activeKey = eventKeyForEntry(form);
     },
     removeForm(state, action: PayloadAction<UUID>) {
@@ -214,7 +263,8 @@ const sidebarSlice = createSlice({
         (x) => x.nonce === panel.nonce
       );
       if (index >= 0) {
-        state.temporaryPanels[index] = panel;
+        // eslint-disable-next-line security/detect-object-injection -- index from findIndex
+        state.temporaryPanels[index] = castDraft(panel);
       }
     },
     addTemporaryPanel(
@@ -229,11 +279,14 @@ const sidebarSlice = createSlice({
           (x) => x.extensionId === panel.extensionId
         );
 
+      // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels
       void cancelPanels(
-        existingExtensionTemporaryPanels.map((panel) => panel.nonce)
+        existingExtensionTemporaryPanels
+          .filter((x) => x.nonce !== panel.nonce)
+          .map(({ nonce }) => nonce)
       );
 
-      state.temporaryPanels = [...otherTemporaryPanels, panel];
+      state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
       state.activeKey = eventKeyForEntry(panel);
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
@@ -286,9 +339,8 @@ const sidebarSlice = createSlice({
     },
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
-      state.panels = sortBy(
-        action.payload.panels,
-        (panel) => panel.extensionId
+      state.panels = castDraft(
+        sortBy(action.payload.panels, (panel) => panel.extensionId)
       );
 
       // Try fulfilling the pendingActivePanel request
@@ -301,12 +353,12 @@ const sidebarSlice = createSlice({
         }
       }
 
-      // If a panel is no longer available, reset the current tab to a valid tab
+      // If a panel is no longer available, reset the current tab to a valid tab.
       if (!eventKeyExists(state, state.activeKey)) {
         state.activeKey = defaultEventKey(state);
       }
     },
-    showActivateRecipe(state, action: PayloadAction<ActivateRecipeEntry>) {
+    showActivateRecipe(state, action: PayloadAction<ActivateModPanelEntry>) {
       const entry = action.payload;
       state.recipeToActivate = entry;
       state.activeKey = eventKeyForEntry(entry);

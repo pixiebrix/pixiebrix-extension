@@ -62,6 +62,11 @@ const imageForCroppingSourceSchema: Schema = {
     "The source image data URI: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
 };
 
+const UNKNOWN_OPTION: SelectStringOption = {
+  label: "unknown",
+  value: null,
+};
+
 const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
@@ -142,10 +147,12 @@ const FieldEditor: React.FC<{
 
   const getSelectedUiTypeOption = () => {
     const fieldSchema = schema.properties[propertyName];
-    const isDatabaseFieldType =
-      typeof fieldSchema !== "boolean" && isDatabaseField(fieldSchema);
-    const isGoogleSheetFieldType =
-      typeof fieldSchema !== "boolean" && isGoogleSheetIdField(fieldSchema);
+    if (typeof fieldSchema === "boolean") {
+      return UNKNOWN_OPTION;
+    }
+
+    const isDatabaseFieldType = isDatabaseField(fieldSchema);
+    const isGoogleSheetFieldType = isGoogleSheetIdField(fieldSchema);
 
     const propertyType =
       isDatabaseFieldType || isGoogleSheetFieldType
@@ -173,12 +180,7 @@ const FieldEditor: React.FC<{
 
     const selected = fieldTypes.find((option) => option.value === uiType);
 
-    return (
-      selected ?? {
-        label: "unknown",
-        value: null,
-      }
-    );
+    return selected ?? UNKNOWN_OPTION;
   };
 
   const onRequiredChange = ({

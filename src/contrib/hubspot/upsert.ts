@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
 function makeProperties(
   obj: Record<string, unknown>,
@@ -99,7 +99,7 @@ export class AddUpdateContact extends Effect {
     lastname,
     company,
     ...otherValues
-  }: BlockArgs): Promise<void> {
+  }: BrickArgs): Promise<void> {
     const proxyHubspot = partial(proxyService, service);
 
     const properties = makeProperties({
@@ -186,7 +186,7 @@ export class AddUpdateCompany extends Effect {
     required: ["website"],
   };
 
-  async effect(config: BlockArgs): Promise<void> {
+  async effect(config: BrickArgs): Promise<void> {
     const { hubspot, website } = config;
 
     const proxyHubspot = partial(proxyService, hubspot);
@@ -198,7 +198,7 @@ export class AddUpdateCompany extends Effect {
 
     const properties = makeProperties(config, "name");
 
-    const hostName = new URL(website).hostname;
+    const hostName = new URL(String(website)).hostname;
 
     // @ts-expect-error come back and define types for the hubspot API
     const { results } = await proxyHubspot({

@@ -22,16 +22,6 @@ import {
   replaceRecipeExtension,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
-import {
-  extensionPointDefinitionFactory,
-  innerExtensionPointRecipeFactory,
-  versionedExtensionPointRecipeFactory,
-  extensionPointConfigFactory,
-  recipeFactory,
-  versionedRecipeWithResolvedExtensions,
-  extensionFactory,
-  typedBlockFactory,
-} from "@/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
@@ -55,28 +45,24 @@ import {
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  type EditablePackage,
-  type InnerDefinitionRef,
-} from "@/types/registryTypes";
+import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
   type OptionsDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type EditablePackage } from "@/types/contract";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import {
+  extensionPointConfigFactory,
+  extensionPointDefinitionFactory,
+  innerExtensionPointRecipeFactory,
+  recipeFactory,
+  versionedExtensionPointRecipeFactory,
+  versionedRecipeWithResolvedExtensions,
+} from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/background/contextMenus");
-jest.mock("@/telemetry/events");
-jest.mock("@/blocks/registry", () => ({
-  __esModule: true,
-  default: {
-    async allTyped() {
-      return {
-        get: jest.fn().mockReturnValue(typedBlockFactory()),
-      };
-    },
-  },
-}));
 
 jest.mock("@/pageEditor/extensionPoints/base", () => ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
@@ -114,6 +100,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -158,6 +146,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -193,6 +183,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -243,6 +235,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -303,6 +297,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -360,6 +356,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -409,6 +407,8 @@ describe("replaceRecipeExtension round trip", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -447,6 +447,8 @@ describe("blueprint options", () => {
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
+        screen: "pageEditor",
+        isReinstall: false,
       })
     );
 
@@ -604,7 +606,7 @@ describe("isRecipeEditable", () => {
 });
 
 function selectExtensionPoints(
-  recipe: UnsavedRecipeDefinition
+  recipe: UnsavedModDefinition
 ): ExtensionPointConfig[] {
   return recipe.extensionPoints.map(({ id }) => {
     const definition = recipe.definitions[id]
@@ -780,6 +782,8 @@ describe("buildRecipe", () => {
           recipe,
           services: {},
           extensionPoints: recipe.extensionPoints,
+          screen: "pageEditor",
+          isReinstall: false,
         })
       );
 

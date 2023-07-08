@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/blocks/transformers/url";
 import { LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT, makeURL } from "@/utils";
@@ -37,7 +37,11 @@ export class NavigateURLEffect extends Effect {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArgs): Promise<void> {
+  }: BrickArgs<{
+    url: string;
+    params?: Record<string, string | number | boolean>;
+    spaceEncoding?: "plus" | "percent";
+  }>): Promise<void> {
     document.location.href = makeURL(url, params, spaceEncoding);
   }
 }
@@ -58,7 +62,11 @@ export class OpenURLEffect extends Effect {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArgs): Promise<void> {
+  }: BrickArgs<{
+    url: string;
+    params?: Record<string, string | number | boolean>;
+    spaceEncoding?: "plus" | "percent";
+  }>): Promise<void> {
     await openTab({
       url: makeURL(url, params, spaceEncoding),
     });

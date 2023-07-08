@@ -16,12 +16,11 @@
  */
 
 import * as Yup from "yup";
-import React from "react";
+import React, { useContext } from "react";
 import servicesSlice from "@/store/servicesSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
-import { persistor } from "@/store/optionsStore";
 import { services } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
@@ -29,9 +28,13 @@ import Form, {
 } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
-import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_TOKEN_SERVICE_ID } from "@/services/constants";
 import { useHistory } from "react-router";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
+import { selectConfiguredServices } from "@/store/servicesSelectors";
+import { selectSettings } from "@/store/settingsSelectors";
+import { isEmpty } from "lodash";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -54,12 +57,32 @@ const ControlRoomTokenForm: React.FunctionComponent<{
   const { updateServiceConfig } = servicesSlice.actions;
   const dispatch = useDispatch();
   const history = useHistory();
+  const configuredServices = useSelector(selectConfiguredServices);
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
+
+  const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
+
+  // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
+  const authServiceId = isEmpty(authServiceIdOverride)
+    ? CONTROL_ROOM_TOKEN_SERVICE_ID
+    : authServiceIdOverride;
 
   const handleSubmit = async (formValues: ControlRoomConfiguration) => {
+    // In theory, this ControlRoomTokenForm should only be shown if there's not already a configured service.
+    // In practice, the Extension Console has gotten into a state where it's shown this form even when there's already
+    // an integration configured.
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/5762
+    const configuredService = configuredServices.find(
+      (x) => x.serviceId === authServiceId
+    );
+
+    const configurationId = configuredService?.id;
+
     dispatch(
       updateServiceConfig({
-        id: uuidv4(),
-        serviceId: CONTROL_ROOM_SERVICE_ID,
+        // Use existing if available, otherwise generate a new ID
+        id: configurationId ?? uuidv4(),
+        serviceId: authServiceId,
         label: "Primary AA Control Room",
         config: {
           ...formValues,
@@ -70,7 +93,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
 
     notify.success("Successfully connected Automation Anywhere!");
 
-    await persistor.flush();
+    await flushReduxPersistence();
 
     try {
       await services.refresh();
@@ -114,7 +137,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
       <Button
         type="submit"
         disabled={isSubmitting || !isValid}
-        data-testid="connect-aari-btn"
+        data-testid="connect-aari-token-btn"
       >
         Connect AARI
       </Button>

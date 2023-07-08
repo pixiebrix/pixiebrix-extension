@@ -20,8 +20,7 @@ import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { uuidSequence } from "@/testUtils/factories";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { RootReader } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import {
@@ -30,6 +29,10 @@ import {
   type MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import { type ResolvedExtension } from "@/types/extensionTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+
+const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
   define<ExtensionPointConfig<MenuDefinition>>({
@@ -62,11 +65,9 @@ const extensionFactory = define<ResolvedExtension<ContextMenuConfig>>({
   label: "Test Extension",
   config: define<ContextMenuConfig>({
     title: "Test Menu Item",
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
   }),
 });
-
-const rootReader = new RootReader();
 
 beforeEach(() => {
   window.document.body.innerHTML = "";

@@ -74,6 +74,10 @@ type ActionExtensionPointState = BaseExtensionPointState & {
      * @since 1.7.16
      */
     targetMode?: "document" | "eventTarget";
+    /**
+     * @since 1.7.28
+     */
+    attachMode?: "once" | "watch";
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
   };

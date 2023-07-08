@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { CancelError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
 export class CancelEffect extends Effect {
   constructor() {
@@ -40,7 +40,7 @@ export class CancelEffect extends Effect {
     },
   };
 
-  async effect({ message }: BlockArgs): Promise<void> {
+  async effect({ message }: BrickArgs<{ message: string }>): Promise<void> {
     throw new CancelError(message ?? "Action cancelled");
   }
 }

@@ -20,15 +20,18 @@ import SidebarApp from "@/sidebar/SidebarApp";
 import { render } from "@testing-library/react";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
 jest.mock("@/hooks/useContextInvalidated", () => ({
   __esModule: true,
   default: jest.fn(),
+}));
+
+jest.mock("@/contentScript/messenger/api", () => ({
+  ensureExtensionPointsInstalled: jest.fn().mockResolvedValue(undefined),
+  getReservedSidebarEntries: jest.fn().mockResolvedValue({
+    panels: [],
+    forms: [],
+    temporaryPanels: [],
+  }),
 }));
 
 describe("SidebarApp", () => {

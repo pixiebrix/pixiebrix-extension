@@ -20,8 +20,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/types/registryTypes";
-import { uuidSequence } from "@/testUtils/factories";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import {
   getDocument,
   RootReader,
@@ -41,6 +40,8 @@ import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -77,7 +78,7 @@ const extensionFactory = define<ResolvedExtension<QuickBarConfig>>({
   label: "Test Extension",
   config: define<QuickBarConfig>({
     title: "Test Action",
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
   }),
 });
 

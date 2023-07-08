@@ -60,21 +60,26 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
  * Does not resolve the variables against a context.
  * Mutates the given object.
  */
-export function unwrapTemplateExpressions(mutableObj: Draft<any>) {
+export function unwrapTemplateExpressions<
+  T extends UnknownObject | ArrayLike<unknown>
+>(mutableObj: Draft<T | null>) {
   if (mutableObj === null || typeof mutableObj !== "object") {
     return;
   }
 
   for (const [key, value] of Object.entries(mutableObj)) {
     if (isTemplateExpression(value)) {
+      // @ts-expect-error -- typings need to be improved
       mutableObj[key] = value.__value__;
     } else if (typeof value === "object") {
-      unwrapTemplateExpressions(value);
+      unwrapTemplateExpressions(value as UnknownObject);
     }
   }
 }
 
-export function getPreviewValues<TObj = UnknownObject>(obj: TObj): TObj {
+export function getPreviewValues<
+  T extends UnknownObject | ArrayLike<unknown> = UnknownObject
+>(obj: T): T {
   return produce(obj, (draft) => {
     unwrapTemplateExpressions(draft);
   });

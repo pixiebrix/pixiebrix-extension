@@ -23,7 +23,7 @@ import {
 import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { isEmpty } from "lodash";
-import { type BlockConfig, type BlockWindow } from "@/blocks/types";
+import { type BrickConfig, type BrickWindow } from "@/blocks/types";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -31,14 +31,13 @@ import {
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { $safeFind } from "@/helpers";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import { BusinessError } from "@/errors/businessErrors";
-import { validateUUID } from "@/types/helpers";
+import { isInnerDefinitionRegistryId, validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
-  type BlockArgsContext,
+  type BrickArgsContext,
   type ElementReference,
   type SelectorRoot,
   type RenderedArgs,
@@ -46,57 +45,57 @@ import {
 import { type IExtension } from "@/types/extensionTypes";
 
 /**
- * @throws InputValidationError if blockArgs does not match the input schema for block
+ * @throws InputValidationError if brickArgs does not match the input schema for brick
  */
 // Can't use TypeScript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
 export async function throwIfInvalidInput(
-  block: IBlock,
-  blockArgs: RenderedArgs
+  brick: Brick,
+  brickArgs: RenderedArgs
 ): Promise<void> {
   const validationResult = await validateInput(
-    castSchema(block.inputSchema),
-    excludeUndefined(blockArgs)
+    castSchema(brick.inputSchema),
+    excludeUndefined(brickArgs)
   );
   if (!validationResult.valid) {
     // Don't need to check logValues here because this is logging to the console, not the provided logger
     // so the values won't be persisted
-    console.debug("Invalid inputs for block", {
+    console.debug("Invalid inputs for brick", {
       errors: validationResult.errors,
-      schema: block.inputSchema,
-      blockArgs,
+      schema: brick.inputSchema,
+      brickArgs,
     });
 
     throw new InputValidationError(
-      "Invalid inputs for block",
-      block.inputSchema,
-      blockArgs,
+      "Invalid inputs for brick",
+      brick.inputSchema,
+      brickArgs,
       validationResult.errors
     );
   }
 }
 
 /**
- * Log an error if `output` doesn't match the blocks outputSchema
+ * Log an error if `output` doesn't match the bricks outputSchema
  */
 export async function logIfInvalidOutput(
-  block: IBlock,
+  brick: Brick,
   output: unknown,
   logger: Logger,
-  { window }: { window: BlockWindow }
+  { window }: { window: BrickWindow }
 ): Promise<void> {
-  if (!isEmpty(block.outputSchema)) {
-    const baseSchema = castSchema(block.outputSchema);
+  if (!isEmpty(brick.outputSchema)) {
+    const baseSchema = castSchema(brick.outputSchema);
     const validationResult = await validateOutput(
       window === "broadcast" ? arraySchema(baseSchema) : baseSchema,
       excludeUndefined(output)
     );
     if (!validationResult.valid) {
       // For now, don't halt execution on output schema violation. If the output is malformed in a way that
-      // prevents the next block from executing, the input validation check will fail
+      // prevents the next brick from executing, the input validation check will fail
       logger.error(
         new OutputValidationError(
-          "Invalid outputs for block",
-          block.outputSchema,
+          "Invalid outputs for brick",
+          brick.outputSchema,
           output,
           validationResult.errors
         )
@@ -106,12 +105,12 @@ export async function logIfInvalidOutput(
 }
 
 /**
- * Helper method to render a top-level field of blockConfig.
+ * Helper method to render a top-level field of brickConfig.
  */
 async function renderConfigOption(
-  blockConfig: BlockConfig,
-  context: BlockArgsContext,
-  fieldName: keyof BlockConfig,
+  brickConfig: BrickConfig,
+  context: BrickArgsContext,
+  fieldName: keyof BrickConfig,
   {
     explicitRender,
     autoescape,
@@ -120,11 +119,11 @@ async function renderConfigOption(
   const render = explicitRender
     ? null
     : engineRenderer(
-        blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+        brickConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
         { autoescape }
       );
 
-  const { value } = (await mapArgs({ value: blockConfig[fieldName] }, context, {
+  const { value } = (await mapArgs({ value: brickConfig[fieldName] }, context, {
     implicitRender: render,
     autoescape,
   })) as { value: unknown };
@@ -136,12 +135,12 @@ async function renderConfigOption(
  * Return true if the stage should be run given the current context
  */
 export async function shouldRunBlock(
-  blockConfig: BlockConfig,
-  context: BlockArgsContext,
+  brickConfig: BrickConfig,
+  context: BrickArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
-  if (blockConfig.if !== undefined) {
-    const condition = await renderConfigOption(blockConfig, context, "if", {
+  if (brickConfig.if !== undefined) {
+    const condition = await renderConfigOption(brickConfig, context, "if", {
       explicitRender,
       autoescape,
     });
@@ -152,17 +151,17 @@ export async function shouldRunBlock(
 }
 
 /**
- * Select the root element (or document) for a block based on the current root and the block's rootMode
- * @see BlockConfig.rootMode
- * @see BlockConfig.root
+ * Select the root element (or document) for a brick based on the current root and the brick's rootMode
+ * @see BrickConfig.rootMode
+ * @see BrickConfig.root
  */
 export async function selectBlockRootElement(
-  blockConfig: BlockConfig,
+  brickConfig: BrickConfig,
   defaultRoot: SelectorRoot,
-  context: BlockArgsContext,
+  context: BrickArgsContext,
   { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<SelectorRoot> {
-  const rootMode = blockConfig.rootMode ?? "inherit";
+  const rootMode = brickConfig.rootMode ?? "inherit";
 
   let root;
 
@@ -178,12 +177,12 @@ export async function selectBlockRootElement(
     }
 
     case "element": {
-      if (blockConfig.root == null) {
+      if (brickConfig.root == null) {
         throw new BusinessError("No element reference provided");
       }
 
       const unvalidatedRootReference = await renderConfigOption(
-        blockConfig,
+        brickConfig,
         context,
         "root",
         { explicitRender, autoescape }
@@ -195,7 +194,7 @@ export async function selectBlockRootElement(
       } catch {
         console.warn(
           "Invalid element reference provided: %s",
-          blockConfig.root
+          brickConfig.root
         );
         throw new BusinessError("Invalid element reference provided");
       }
@@ -214,20 +213,20 @@ export async function selectBlockRootElement(
 
   // Passing a selector for root is an old behavior from when the rootModes were just inherit and document
   if (
-    typeof blockConfig.root === "string" &&
-    blockConfig.rootMode !== "element"
+    typeof brickConfig.root === "string" &&
+    brickConfig.rootMode !== "element"
   ) {
-    const $stageRoot = $safeFind(blockConfig.root, $root);
+    const $stageRoot = $safeFind(brickConfig.root, $root);
 
     if ($stageRoot.length > 1) {
-      throw new BusinessError(`Multiple roots found for ${blockConfig.root}`);
+      throw new BusinessError(`Multiple roots found for ${brickConfig.root}`);
     }
 
     if ($stageRoot.length === 0) {
       const rootDescriptor =
         (defaultRoot as HTMLElement)?.tagName ?? "document";
       throw new BusinessError(
-        `No roots found for ${blockConfig.root} (root=${rootDescriptor})`
+        `No roots found for ${brickConfig.root} (root=${rootDescriptor})`
       );
     }
 
@@ -242,7 +241,7 @@ export function assertExtensionNotResolved<T extends IExtension>(
 ): asserts extension is T & {
   _unresolvedExtensionBrand: never;
 } {
-  if (isInnerExtensionPoint(extension.extensionPointId)) {
+  if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     throw new Error("Expected UnresolvedExtension");
   }
 }

@@ -17,30 +17,24 @@
 
 import { renderHook } from "@/pageEditor/testHelpers";
 import useDependency from "@/services/useDependency";
-import { waitForEffect } from "@/testUtils/testHelpers";
-import { act } from "@testing-library/react-hooks";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
-import { type Service } from "@/types/serviceTypes";
-import { requestPermissions } from "@/utils/permissions";
+import {
+  type SanitizedServiceConfiguration,
+  type Service,
+} from "@/types/serviceTypes";
+import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
+import * as backgroundApi from "@/background/messenger/api";
 
-// Not currently test:
+// Not currently testing:
 // - Listening for permissions changes
 // - requestPermissions callback
 
-jest.mock("@/utils/permissions", () => ({
-  requestPermissions: jest.fn().mockResolvedValue(true),
-}));
+jest.mocked(backgroundApi.services.locate).mockResolvedValue({
+  serviceId: "google/sheet",
+} as SanitizedServiceConfiguration);
 
-jest.mock("@/background/messenger/api", () => ({
-  __esModule: true,
-  containsPermissions: jest.fn().mockResolvedValue(false),
-  services: {
-    locate: jest.fn().mockResolvedValue({
-      serviceId: "google/sheet",
-    }),
-  },
-}));
+const requestPermissionsMock = jest.mocked(browser.permissions.request);
 
 jest.mock("@/services/registry", () => {
   const actual = jest.requireActual("@/services/registry");
@@ -49,7 +43,11 @@ jest.mock("@/services/registry", () => {
     __esModule: true,
     ...actual,
     default: {
-      lookup: jest.fn().mockRejectedValue(new Error("Mock not implemented")),
+      lookup: jest
+        .fn()
+        .mockRejectedValue(
+          new Error("Mock not implemented, implement in the test case")
+        ),
     },
   };
 });
@@ -58,35 +56,37 @@ const serviceRegistryMock = serviceRegistry as jest.Mocked<
   typeof serviceRegistry
 >;
 
-const requestPermissionsMock = requestPermissions as jest.MockedFunction<
-  typeof requestPermissions
->;
-
 describe("useDependency", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line new-cap -- test helper method
+    INTERNAL_reset();
+  });
+
   it.each([null, []])("handles %s", async () => {
-    const hookish = renderHook(() => useDependency(null), {
+    const wrapper = renderHook(() => useDependency(null), {
       initialValues: { services: [] },
     });
 
-    await act(async () => {
-      await waitForEffect();
-    });
+    await wrapper.waitForEffect();
 
-    expect(hookish.result.current).toBeNull();
+    expect(wrapper.result.current).toEqual({
+      config: undefined,
+      hasPermissions: false,
+      requestPermissions: expect.toBeFunction(),
+      service: undefined,
+    });
   });
 
   it("handles single registry id when not configured", async () => {
     const registryId = validateRegistryId("google/sheet");
 
-    const hookish = renderHook(() => useDependency(registryId), {
+    const wrapper = renderHook(() => useDependency(registryId), {
       initialValues: { services: [] },
     });
 
-    await act(async () => {
-      await waitForEffect();
-    });
+    await wrapper.waitForEffect();
 
-    expect(hookish.result.current).toEqual({
+    expect(wrapper.result.current).toEqual({
       config: undefined,
       hasPermissions: false,
       requestPermissions: expect.toBeFunction(),
@@ -103,19 +103,18 @@ describe("useDependency", () => {
       getOrigins: () => [] as any,
     } as unknown as Service);
 
-    const hookish = renderHook(() => useDependency(registryId), {
+    const wrapper = renderHook(() => useDependency(registryId), {
       initialValues: {
         services: [{ id: registryId, outputKey: "sheet", config: configId }],
       },
     });
 
-    await act(async () => {
-      await waitForEffect();
-    });
+    await wrapper.waitForEffect();
 
-    expect(hookish.result.current).toEqual({
+    expect(wrapper.result.current).toEqual({
       config: { serviceId: registryId },
-      hasPermissions: false,
+      // Has permissions because we mocked service to have no origins
+      hasPermissions: true,
       requestPermissions: expect.toBeFunction(),
       service: {
         getOrigins: expect.toBeFunction(),
@@ -133,7 +132,7 @@ describe("useDependency", () => {
       getOrigins: () => [] as any,
     } as unknown as Service);
 
-    const hookish = renderHook(
+    const wrapper = renderHook(
       () => [useDependency(registryId), useDependency(registryId)] as const,
       {
         initialValues: {
@@ -142,16 +141,16 @@ describe("useDependency", () => {
       }
     );
 
-    await act(async () => {
-      await waitForEffect();
-      hookish.result.current[0].requestPermissions();
-      await waitForEffect();
+    await wrapper.act(async () => {
+      await wrapper.waitForEffect();
+      wrapper.result.current[0].requestPermissions();
+      await wrapper.waitForEffect();
     });
 
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     // Check the other one now has permissions because it was listening
-    expect(hookish.result.current[1]).toEqual({
+    expect(wrapper.result.current[1]).toEqual({
       config: { serviceId: registryId },
       hasPermissions: true,
       requestPermissions: expect.toBeFunction(),

@@ -24,7 +24,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import ServicesEditor from "@/extensionConsole/pages/services/ServicesEditor";
 import BrickCreatePage from "@/extensionConsole/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/extensionConsole/pages/brickEditor/EditPage";
-import BlueprintsPage from "@/extensionConsole/pages/blueprints/BlueprintsPage";
+import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
 import SettingsPage from "@/extensionConsole/pages/settings/SettingsPage";
 import Navbar from "@/extensionConsole/Navbar";
 import Footer from "@/layout/Footer";
@@ -32,8 +32,8 @@ import Sidebar from "@/extensionConsole/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
-import ActivateBlueprintPage from "@/extensionConsole/pages/activateRecipe/ActivateBlueprintPage";
-import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivatePage";
+import ActivateRecipePage from "@/extensionConsole/pages/activateRecipe/ActivateRecipePage";
+import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivateExtensionPage";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
@@ -54,6 +54,7 @@ import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
+import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 // Register the built-in bricks
 registerEditors();
@@ -86,61 +87,70 @@ const Layout = () => {
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
           <RequireAuth LoginPage={SetupPage}>
-            <RefreshBricks />
-            <Sidebar />
-            <div className="main-panel">
-              <BrowserBanner />
-              <EnvironmentBanner />
-              <UpdateBanner />
-              <DeploymentBanner />
-              <InvitationBanner />
-              <div className="content-wrapper">
-                <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
-                  <Switch>
-                    <Route
-                      exact
-                      path="/extensions/install/:extensionId"
-                      component={ActivateExtensionPage}
-                    />
-                    <Route
-                      exact
-                      path="/:sourcePage/activate/:blueprintId"
-                      component={ActivateBlueprintPage}
-                    />
-
-                    <Route exact path="/settings" component={SettingsPage} />
-
-                    {permit("services") && (
-                      <Route path="/services/:id?" component={ServicesEditor} />
-                    )}
-
-                    {/* Switch does not support consolidating Routes using a React fragment */}
-                    {permit("workshop") && (
-                      <Route exact path="/workshop" component={WorkshopPage} />
-                    )}
-
-                    {permit("workshop") && (
+            <DeploymentsProvider>
+              <RefreshBricks />
+              <Sidebar />
+              <div className="main-panel">
+                <BrowserBanner />
+                <EnvironmentBanner />
+                <UpdateBanner />
+                <DeploymentBanner />
+                <InvitationBanner />
+                <div className="content-wrapper">
+                  <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
+                    <Switch>
                       <Route
                         exact
-                        path="/workshop/create/"
-                        component={BrickCreatePage}
+                        path="/extensions/install/:extensionId"
+                        component={ActivateExtensionPage}
                       />
-                    )}
-
-                    {permit("workshop") && (
                       <Route
                         exact
-                        path="/workshop/bricks/:id/"
-                        component={BrickEditPage}
+                        path="/:sourcePage/activate/:recipeId"
+                        component={ActivateRecipePage}
                       />
-                    )}
 
-                    <Route component={BlueprintsPage} />
-                  </Switch>
-                </ErrorBoundary>
+                      <Route exact path="/settings" component={SettingsPage} />
+
+                      {permit("services") && (
+                        <Route
+                          path="/services/:id?"
+                          component={ServicesEditor}
+                        />
+                      )}
+
+                      {/* Switch does not support consolidating Routes using a React fragment */}
+                      {permit("workshop") && (
+                        <Route
+                          exact
+                          path="/workshop"
+                          component={WorkshopPage}
+                        />
+                      )}
+
+                      {permit("workshop") && (
+                        <Route
+                          exact
+                          path="/workshop/create/"
+                          component={BrickCreatePage}
+                        />
+                      )}
+
+                      {permit("workshop") && (
+                        <Route
+                          exact
+                          path="/workshop/bricks/:id/"
+                          component={BrickEditPage}
+                        />
+                      )}
+
+                      <Route component={ModsPage} />
+                    </Switch>
+                  </ErrorBoundary>
+                </div>
+                <Footer />
               </div>
-              <Footer />
-            </div>
+            </DeploymentsProvider>
           </RequireAuth>
         </ErrorBoundary>
       </Container>
@@ -148,7 +158,7 @@ const Layout = () => {
   );
 };
 
-const authPersistenceContext: ReduxPersistenceContextType = {
+const persistorContext: ReduxPersistenceContextType = {
   async flush() {
     await persistor.flush();
   },
@@ -157,7 +167,7 @@ const authPersistenceContext: ReduxPersistenceContextType = {
 const App: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <ReduxPersistenceContext.Provider value={authPersistenceContext}>
+      <ReduxPersistenceContext.Provider value={persistorContext}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
             <Layout />

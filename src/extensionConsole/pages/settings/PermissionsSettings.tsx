@@ -19,7 +19,8 @@ import React, { useCallback } from "react";
 import notify from "@/utils/notify";
 import { type Manifest } from "webextension-polyfill";
 import { Badge, Button, Card, ListGroup } from "react-bootstrap";
-import useExtensionPermissions from "@/hooks/useExtensionPermissions";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 
 type OptionalPermission = Manifest.OptionalPermission;
 
@@ -54,7 +55,7 @@ const PermissionRow: React.FunctionComponent<{
 );
 
 const PermissionsSettings: React.FunctionComponent = () => {
-  const permissions = useExtensionPermissions();
+  const state = useExtensionPermissions();
 
   const removeOrigin = useCallback(async (origin: string) => {
     await browser.permissions.remove({ origins: [origin] });
@@ -74,27 +75,35 @@ const PermissionsSettings: React.FunctionComponent = () => {
   return (
     <Card>
       <Card.Header>Additional Permissions</Card.Header>
-      <ListGroup variant="flush">
-        {permissions.map(
-          ({ name, isUnique, isOrigin, isAdditional }) =>
-            // Only show removable permissions
-            isAdditional &&
-            // Exclude overlapping permissions, unless it's a dev build
-            (isUnique || IS_DEV) && (
-              <PermissionRow
-                key={name}
-                value={name}
-                remove={
-                  // Removing a non-unique permission does nothing, so don't show the button
-                  isUnique ? (isOrigin ? removeOrigin : removePermission) : null
-                }
-              />
-            )
+      <AsyncStateGate state={state} renderError={StandardError}>
+        {({ data: permissions }) => (
+          <ListGroup variant="flush">
+            {permissions.map(
+              ({ name, isUnique, isOrigin, isAdditional }) =>
+                // Only show removable permissions
+                isAdditional &&
+                // Exclude overlapping permissions, unless it's a dev build
+                (isUnique || IS_DEV) && (
+                  <PermissionRow
+                    key={name}
+                    value={name}
+                    remove={
+                      // Removing a non-unique permission does nothing, so don't show the button
+                      isUnique
+                        ? isOrigin
+                          ? removeOrigin
+                          : removePermission
+                        : null
+                    }
+                  />
+                )
+            )}
+            {permissions.filter((p) => p.isAdditional).length === 0 && (
+              <ListGroup.Item>No active permissions</ListGroup.Item>
+            )}
+          </ListGroup>
         )}
-        {permissions.filter((p) => p.isAdditional).length === 0 && (
-          <ListGroup.Item>No active permissions</ListGroup.Item>
-        )}
-      </ListGroup>
+      </AsyncStateGate>
     </Card>
   );
 };

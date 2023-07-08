@@ -40,17 +40,21 @@ import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
+import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
+import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
+import cx from "classnames";
 
 const fields = {
   DescriptionField,
 };
 const uiWidgets = {
   imageCrop: ImageCropWidget,
+  SelectWidget: RjsfSelectWidget,
 };
 
 interface DatabaseResult {
@@ -74,8 +78,23 @@ const CustomFormComponent: React.FunctionComponent<{
   formData: JsonObject;
   autoSave: boolean;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, submitCaption, formData, autoSave, onSubmit }) => (
-  <div className="CustomForm p-3">
+  className?: string;
+}> = ({
+  schema,
+  uiSchema,
+  submitCaption,
+  formData,
+  autoSave,
+  className,
+  onSubmit,
+}) => (
+  <div
+    className={cx("CustomForm", className, {
+      // Since 1.7.33, support a className prop to allow for adjusting margin/padding. To maintain the legacy
+      // behavior, apply the default only if the className prop is not provided.
+      "p-3": className === undefined,
+    })}
+  >
     <ErrorBoundary>
       <Stylesheets href={[bootstrap, custom]}>
         <JsonSchemaForm
@@ -85,12 +104,12 @@ const CustomFormComponent: React.FunctionComponent<{
           fields={fields}
           widgets={uiWidgets}
           FieldTemplate={FieldTemplate}
-          onChange={async ({ formData }) => {
+          onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
             if (autoSave) {
               await onSubmit(formData);
             }
           }}
-          onSubmit={async ({ formData }) => {
+          onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
             await onSubmit(formData);
           }}
         >
@@ -116,111 +135,6 @@ function assertObject(value: unknown): asserts value is UnknownObject {
 }
 
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
-
-async function getInitialData(
-  storage: Storage,
-  recordId: string,
-  { blueprintId, extensionId }: Context
-): Promise<UnknownObject> {
-  switch (storage.type) {
-    case "localStorage": {
-      const data = await dataStore.get(recordId);
-      assertObject(data);
-      return data;
-    }
-
-    case "state": {
-      const namespace = storage.namespace ?? "blueprint";
-      const topLevelFrame = await getTopLevelFrame();
-      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
-      // sidebar which runs in the context of the top-level frame
-      return getPageState(topLevelFrame, {
-        namespace,
-        blueprintId,
-        extensionId,
-      });
-    }
-
-    case "database": {
-      const {
-        data: { data },
-      } = await proxyService<DatabaseResult>(storage.service, {
-        url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
-          recordId
-        )}/`,
-        params: {
-          missing_key: "blank",
-        },
-      });
-      assertObject(data);
-      return data;
-    }
-
-    default: {
-      throw new PropError(
-        "Invalid storage type",
-        CustomFormRenderer.BLOCK_ID,
-        "storage",
-        storage
-      );
-    }
-  }
-}
-
-async function setData(
-  storage: Storage,
-  recordId: string,
-  values: UnknownObject,
-  { blueprintId, extensionId }: Context
-): Promise<void> {
-  const cleanValues = JSON.parse(safeJsonStringify(values));
-
-  switch (storage.type) {
-    case "localStorage": {
-      await dataStore.set(recordId, cleanValues);
-      return;
-    }
-
-    case "database": {
-      await proxyService(storage.service, {
-        url: `/api/databases/${storage.databaseId}/records/`,
-        method: "put",
-        data: {
-          id: recordId,
-          data: cleanValues,
-          // Using shallow strategy to support partial data forms
-          // In case when a form contains (and submits) only a subset of all the fields of a record,
-          // the fields missing in the form will not be removed from the DB record
-          merge_strategy: "shallow",
-        },
-      });
-      return;
-    }
-
-    case "state": {
-      const topLevelFrame = await getTopLevelFrame();
-      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
-      // sidebar which runs in the context of the top-level frame
-      await setPageState(topLevelFrame, {
-        namespace: storage.namespace ?? "blueprint",
-        data: cleanValues,
-        mergeStrategy: "shallow",
-        extensionId,
-        blueprintId,
-      });
-      return;
-    }
-
-    default: {
-      throw new PropError(
-        "Invalid storage type",
-        CustomFormRenderer.BLOCK_ID,
-        "storage",
-        storage
-      );
-    }
-  }
-}
 
 export const customFormRendererSchema = {
   type: "object",
@@ -303,40 +217,14 @@ export const customFormRendererSchema = {
       type: "object",
       additionalProperties: true,
     },
+    // Added in 1.7.33 to allow for adjusting the native margin/padding when used in the document builder
+    className: {
+      schema: { type: "string", format: "bootstrap-class" },
+      label: "Layout/Style",
+    },
   },
   required: ["schema"],
 };
-
-// Server can send null or undefined for an empty field.
-// In order for RJSF to handle an absence of value properly,
-// the field must not be present on the data object at all
-// (not event undefined - this prevents setting the default value properly)
-export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
-  const normalizedData: UnknownObject = {};
-  for (const key of Object.keys(schema.properties)) {
-    // eslint-disable-next-line security/detect-object-injection -- iterating over object keys
-    const fieldValue = data[key];
-
-    if (fieldValue != null) {
-      set(normalizedData, key, fieldValue);
-    }
-  }
-
-  return normalizedData;
-}
-
-// The server uses a shallow merge strategy that ignores undefined values,
-// so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
-export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
-  const normalizedData = { ...data };
-  for (const key of Object.keys(schema.properties)) {
-    if (normalizedData[key] === undefined) {
-      normalizedData[key] = null;
-    }
-  }
-
-  return normalizedData;
-}
 
 export class CustomFormRenderer extends Renderer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
@@ -359,7 +247,8 @@ export class CustomFormRenderer extends Renderer {
       autoSave = false,
       successMessage,
       submitCaption = "Submit",
-    }: BlockArgs<{
+      className,
+    }: BrickArgs<{
       storage?: Storage;
       successMessage?: string;
       recordId?: string | null;
@@ -367,8 +256,9 @@ export class CustomFormRenderer extends Renderer {
       submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
+      className?: string;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<ComponentRef> {
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");
@@ -410,6 +300,7 @@ export class CustomFormRenderer extends Renderer {
         uiSchema,
         autoSave,
         submitCaption,
+        className,
         async onSubmit(values: JsonObject) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
@@ -431,4 +322,140 @@ export class CustomFormRenderer extends Renderer {
       },
     };
   }
+}
+
+async function getInitialData(
+  storage: Storage,
+  recordId: string,
+  { blueprintId, extensionId }: Context
+): Promise<UnknownObject> {
+  switch (storage.type) {
+    case "localStorage": {
+      const data = await dataStore.get(recordId);
+      assertObject(data);
+      return data;
+    }
+
+    case "state": {
+      const namespace = storage.namespace ?? "blueprint";
+      const topLevelFrame = await getTopLevelFrame();
+      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      // sidebar which runs in the context of the top-level frame
+      return getPageState(topLevelFrame, {
+        namespace,
+        blueprintId,
+        extensionId,
+      });
+    }
+
+    case "database": {
+      const {
+        data: { data },
+      } = await proxyService<DatabaseResult>(storage.service, {
+        url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
+          recordId
+        )}/`,
+        params: {
+          missing_key: "blank",
+        },
+      });
+      assertObject(data);
+      return data;
+    }
+
+    default: {
+      throw new PropError(
+        "Invalid storage type",
+        CustomFormRenderer.BLOCK_ID,
+        "storage",
+        storage
+      );
+    }
+  }
+}
+
+async function setData(
+  storage: Storage,
+  recordId: string,
+  values: UnknownObject,
+  { blueprintId, extensionId }: Context
+): Promise<void> {
+  const cleanValues: JsonObject = JSON.parse(safeJsonStringify(values));
+
+  switch (storage.type) {
+    case "localStorage": {
+      await dataStore.set(recordId, cleanValues);
+      return;
+    }
+
+    case "database": {
+      await proxyService(storage.service, {
+        url: `/api/databases/${storage.databaseId}/records/`,
+        method: "put",
+        data: {
+          id: recordId,
+          data: cleanValues,
+          // Using shallow strategy to support partial data forms
+          // In case when a form contains (and submits) only a subset of all the fields of a record,
+          // the fields missing in the form will not be removed from the DB record
+          merge_strategy: "shallow",
+        },
+      });
+      return;
+    }
+
+    case "state": {
+      const topLevelFrame = await getTopLevelFrame();
+      // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
+      // sidebar which runs in the context of the top-level frame
+      await setPageState(topLevelFrame, {
+        namespace: storage.namespace ?? "blueprint",
+        data: cleanValues,
+        mergeStrategy: "shallow",
+        extensionId,
+        blueprintId,
+      });
+      return;
+    }
+
+    default: {
+      throw new PropError(
+        "Invalid storage type",
+        CustomFormRenderer.BLOCK_ID,
+        "storage",
+        storage
+      );
+    }
+  }
+}
+
+// Server can send null or undefined for an empty field.
+// In order for RJSF to handle an absence of value properly,
+// the field must not be present on the data object at all
+// (not event undefined - this prevents setting the default value properly)
+export function normalizeIncomingFormData(schema: Schema, data: UnknownObject) {
+  const normalizedData: UnknownObject = {};
+  for (const key of Object.keys(schema.properties)) {
+    // eslint-disable-next-line security/detect-object-injection -- iterating over object keys
+    const fieldValue = data[key];
+
+    if (fieldValue != null) {
+      set(normalizedData, key, fieldValue);
+    }
+  }
+
+  return normalizedData;
+}
+
+// The server uses a shallow merge strategy that ignores undefined values,
+// so we need to make all the undefined field values null instead, so that the server will clear those fields instead of ignoring them
+export function normalizeOutgoingFormData(schema: Schema, data: UnknownObject) {
+  const normalizedData = { ...data };
+  for (const key of Object.keys(schema.properties)) {
+    if (normalizedData[key] === undefined) {
+      normalizedData[key] = null;
+    }
+  }
+
+  return normalizedData;
 }

@@ -33,7 +33,7 @@ import { uuidv4 } from "@/types/helpers";
 
 import { dataStore } from "@/background/messenger/api";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 const dataStoreGetMock = dataStore.get as jest.MockedFunction<
   typeof dataStore.get
@@ -209,6 +209,7 @@ describe("CustomFormRenderer", () => {
     dataStoreGetMock.mockResolvedValue({});
 
     const { Component, props } = await brick.render(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       {
         storage: { type: "localStorage" },
         autoSave: true,
@@ -224,7 +225,7 @@ describe("CustomFormRenderer", () => {
         logger: new ConsoleLogger({
           extensionId: uuidv4(),
         }),
-      } as BlockOptions
+      } as BrickOptions
     );
 
     const rendered = render(<Component {...props} />);

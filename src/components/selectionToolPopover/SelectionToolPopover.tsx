@@ -17,10 +17,9 @@
 
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import ReactShadowRoot from "react-shadow-root";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import Draggable from "react-draggable";
-
+import EmotionShadowRoot from "react-shadow/emotion";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -37,19 +36,21 @@ export type SelectionHandlerType = (count: number) => void;
 type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
 
 const SelectionToolPopover: React.FC<{
+  isMulti: boolean;
   onCancel: () => void;
   onDone: () => void;
   onChangeMultiSelection: (value: boolean) => void;
   onChangeSimilarSelection: (value: boolean) => void;
   setSelectionHandler: SetSelectionHandlerType;
 }> = ({
+  isMulti,
   onCancel,
   onDone,
   onChangeMultiSelection,
   onChangeSimilarSelection,
   setSelectionHandler,
 }) => {
-  const [multiEnabled, setMultiEnabled] = useState(false);
+  const [multiEnabled, setMultiEnabled] = useState(isMulti);
   const [similarEnabled, setSimilarEnabled] = useState(false);
   const [matchingCount, setMatchingCount] = useState(0);
 
@@ -65,7 +66,10 @@ const SelectionToolPopover: React.FC<{
   }, [setSelectionHandler]);
 
   return (
-    <ReactShadowRoot mode="closed">
+    // To support react-select and any future potential emotion components we used the
+    // emotion variant of the react-shadow library.
+
+    <EmotionShadowRoot.div>
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>
           <div className="popover-wrapper">
@@ -125,12 +129,13 @@ const SelectionToolPopover: React.FC<{
           </div>
         </Draggable>
       </Stylesheets>
-    </ReactShadowRoot>
+    </EmotionShadowRoot.div>
   );
 };
 
 export const showSelectionToolPopover = ({
   rootElement,
+  isMulti,
   handleCancel,
   handleDone,
   handleMultiChange,
@@ -138,6 +143,7 @@ export const showSelectionToolPopover = ({
   setSelectionHandler,
 }: {
   rootElement: HTMLElement;
+  isMulti: boolean;
   handleCancel: () => void;
   handleDone: () => void;
   handleMultiChange: (value: boolean) => void;
@@ -146,6 +152,7 @@ export const showSelectionToolPopover = ({
 }) => {
   ReactDOM.render(
     <SelectionToolPopover
+      isMulti={isMulti}
       onDone={handleDone}
       onCancel={handleCancel}
       onChangeMultiSelection={handleMultiChange}

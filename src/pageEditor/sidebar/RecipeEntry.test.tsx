@@ -17,7 +17,6 @@
 
 import React from "react";
 import extensionsSlice from "@/store/extensionsSlice";
-import { recipeFactory, recipeMetadataFactory } from "@/testUtils/factories";
 import {
   createRenderFunctionWithRedux,
   type RenderFunctionWithRedux,
@@ -30,6 +29,10 @@ import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionOptionsState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
+import {
+  recipeFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
 
 let renderRecipeEntry: RenderFunctionWithRedux<
   {

@@ -25,7 +25,8 @@ import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
-import { sidebarEntryFactory } from "@/testUtils/factories";
+
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 jest.mock(
   "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition",

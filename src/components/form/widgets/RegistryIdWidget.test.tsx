@@ -23,7 +23,10 @@ import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
-import { authStateFactory, organizationFactory } from "@/testUtils/factories";
+import {
+  authStateFactory,
+  organizationStateFactory,
+} from "@/testUtils/factories/authFactories";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
@@ -135,7 +138,7 @@ describe("RegistryIdWidget", () => {
     const authState = authStateFactory({
       scope: testUserScope,
       organizations: [
-        organizationFactory({
+        organizationStateFactory({
           scope: null,
         }),
       ],

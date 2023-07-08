@@ -20,11 +20,7 @@ import styles from "@/extensionConsole/pages/activateRecipe/ServicesBody.module.
 import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import useFetch from "@/hooks/useFetch";
-import {
-  type ServiceDefinition,
-  type ServiceDependency,
-} from "@/types/serviceTypes";
+import { type ServiceDependency } from "@/types/serviceTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
@@ -33,6 +29,7 @@ import { joinName } from "@/utils";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
+import { useGetServicesQuery } from "@/services/api";
 
 const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];
@@ -40,8 +37,7 @@ const ServicesRow: React.FunctionComponent<{
 }> = ({ authOptions, refreshAuthOptions }) => {
   const [field, { error }] = useField<ServiceDependency[]>("services");
 
-  const { data: serviceConfigs } =
-    useFetch<ServiceDefinition[]>("/api/services/");
+  const { data: serviceConfigs } = useGetServicesQuery();
 
   const values = field.value.map((dependency, index) => ({
     dependency,

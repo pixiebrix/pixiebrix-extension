@@ -35,12 +35,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { sleep } from "@/utils";
-import { useAsyncState } from "@/hooks/common";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { expectContext } from "@/utils/expectContext";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { round } from "lodash";
 import { reportEvent } from "@/telemetry/events";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
   errorMessage,
@@ -137,8 +137,8 @@ const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
             reportEvent("IDBReclaimQuota", {
               errorContext,
               errorMessage,
-              usage: state[0]?.storageEstimate.usage,
-              quota: state[0]?.storageEstimate.quota,
+              usage: state.data?.storageEstimate.usage,
+              quota: state.data?.storageEstimate.quota,
             });
             // Put outside the action so user can see the success message before the page reloads.
             await sleep(250);

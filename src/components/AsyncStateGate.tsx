@@ -16,76 +16,82 @@
  */
 
 import React, { type PropsWithoutRef } from "react";
-import { type AsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import AsyncButton from "@/components/AsyncButton";
+import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
+import { Button } from "react-bootstrap";
+import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
- * @param error
- * @param recalculate
  * @constructor
  */
 export const StandardError = ({
   error,
-  recalculate,
+  refetch,
 }: {
   error: unknown;
-  recalculate: () => Promise<void>;
+  refetch?: () => void;
 }) => (
   <div>
     <div className="text-danger">
       Error fetching data: {getErrorMessage(error)}
     </div>
-    <div>
-      <AsyncButton variant="info" onClick={recalculate}>
-        Try again
-      </AsyncButton>
-    </div>
+    {refetch && (
+      <div>
+        <Button variant="info" onClick={refetch}>
+          Try again
+        </Button>
+      </div>
+    )}
   </div>
 );
+
+type AsyncStateGateProps<Data> = PropsWithoutRef<{
+  /**
+   * FetchableAsyncState or AsyncState from useAsyncState
+   * @see useAsyncState
+   */
+  state: AsyncState<Data> | FetchableAsyncState<Data>;
+  /**
+   * Children to render once the state is loaded
+   * @param args
+   */
+  children: (args: { data: Data }) => React.ReactElement;
+  /**
+   * If provided, the loader will be rendered instead of the default loader
+   */
+  renderLoader?: () => React.ReactElement;
+  /**
+   * If provided, the error will be rendered instead of throwing it
+   * @see StandardError
+   */
+  renderError?: (args: {
+    error: unknown;
+    refetch?: () => void;
+  }) => React.ReactElement;
+}>;
 
 /**
  * Renders the children if the state is not loading or errored
  * @see useAsyncState
  */
 const AsyncStateGate = <Data,>(
-  props: PropsWithoutRef<{
-    /**
-     * AsyncState from useAsyncState
-     * @see useAsyncState
-     */
-    state: AsyncState<Data>;
-    /**
-     * Children to render once the state is loaded
-     * @param args
-     */
-    children: (args: { data: Data }) => React.ReactElement;
-    /**
-     * If provided, the loader will be rendered instead of the default loader
-     */
-    renderLoader?: () => React.ReactElement;
-    /**
-     * If provided, the error will be rendered instead of throwing it
-     * @see StandardError
-     */
-    renderError?: (args: {
-      error: unknown;
-      recalculate: () => Promise<void>;
-    }) => React.ReactElement;
-  }>
+  props: AsyncStateGateProps<Data>
 ): React.ReactElement => {
   const { children, state, renderError, renderLoader } = props;
-  const [data, isLoading, error, recalculate] = state;
+  const { data, isLoading, isUninitialized, isFetching, isError, error } =
+    state;
 
-  if (isLoading) {
+  const refetch = isFetchableAsyncState(state) ? state.refetch : undefined;
+
+  if (isUninitialized || isLoading || (isError && isFetching)) {
     return renderLoader ? renderLoader() : <Loader />;
   }
 
-  if (error) {
+  if (isError) {
     if (renderError) {
-      return renderError({ error, recalculate });
+      return renderError({ error, refetch });
     }
 
     throw error;

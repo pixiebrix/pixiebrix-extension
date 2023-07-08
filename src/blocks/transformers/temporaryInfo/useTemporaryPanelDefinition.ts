@@ -18,7 +18,7 @@
 import { useAsyncState } from "@/hooks/common";
 import { getPanelDefinition } from "@/contentScript/messenger/api";
 import { type UUID } from "@/types/stringTypes";
-import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { type Target } from "@/types/messengerTypes";
 import { useEffect, useState } from "react";
 import {

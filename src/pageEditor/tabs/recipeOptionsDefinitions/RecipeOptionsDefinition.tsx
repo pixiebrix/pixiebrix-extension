@@ -43,11 +43,11 @@ import {
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/recipes/recipesHooks";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -59,7 +59,11 @@ const fieldTypes = [
   },
   {
     label: "Database automatically created at activation",
-    value: stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+    value: stringifyUiType({
+      propertyType: "string",
+      uiWidget: "database",
+      propertyFormat: "preview",
+    }),
   },
   {
     label: "Google Sheet",
@@ -83,7 +87,7 @@ export const EMPTY_RECIPE_OPTIONS_DEFINITION: OptionsDefinition = {
 const RecipeOptionsDefinition: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isFetching, error } = useRecipe(recipeId);
+  const { data: recipe, isFetching, error } = useOptionalRecipe(recipeId);
 
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(

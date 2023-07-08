@@ -27,19 +27,14 @@ import {
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import brickRegistry from "@/blocks/registry";
 import {
-  blockConfigFactory,
-  formStateFactory,
-  marketplaceListingFactory,
-  marketplaceTagFactory,
-  triggerFormStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
-import blockRegistry from "@/blocks/registry";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+  type EditorRootState,
+  PipelineFlavor,
+} from "@/pageEditor/pageEditorTypes";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { defaultBlockConfig } from "@/blocks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -54,23 +49,32 @@ import {
 } from "@/runtime/expressionCreators";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
-import * as api from "@/services/api";
-import { type MarketplaceListing } from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
-import { useAsyncIcon } from "@/components/asyncIcon";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
-import { useGetTheme } from "@/hooks/useTheme";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { type EditablePackage, type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
+import { array } from "cooky-cutter";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { mockCachedUser } from "@/testUtils/userMock";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import {
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+} from "@/testUtils/factories/marketplaceFactories";
+import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -81,55 +85,14 @@ async function tickAsyncEffects() {
   });
 }
 
-jest.mock("@/services/api", () => {
-  const originalModule = jest.requireActual("@/services/api");
-
-  return {
-    appApi: {
-      ...originalModule.appApi,
-      endpoints: {
-        ...originalModule.appApi.endpoints,
-        getMarketplaceListings: {
-          useQueryState: jest.fn(),
-        },
-      },
-    },
-    useGetMarketplaceTagsQuery: jest.fn(),
-    useGetMarketplaceListingsQuery: jest.fn(),
-    useGetEditablePackagesQuery: jest.fn(),
-    useCreateRecipeMutation: jest.fn(),
-    useUpdateRecipeMutation: jest.fn(),
-  };
-});
-jest.mock("@/components/asyncIcon", () => ({
-  useAsyncIcon: jest.fn(),
-}));
-jest.mock("@/telemetry/events", () => ({
-  reportEvent: jest.fn(),
-}));
-jest.mock("@/permissions", () => {
-  const permissions = {};
-  return {
-    extensionPermissions: jest.fn().mockResolvedValue(permissions),
-  };
-});
-jest.mock("@/background/messenger/api", () => ({
-  containsPermissions: jest.fn().mockResolvedValue(true),
-  registry: {
-    getByKinds: jest.fn().mockResolvedValue([]),
-  },
-}));
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
-jest.mock("@/hooks/useTheme", () => ({
-  useGetTheme: jest.fn(),
-}));
 
-const jqBlock = new JQTransformer();
-const alertBlock = new AlertEffect();
-const forEachBlock = new ForEach();
-const markdownBlock = new MarkdownRenderer();
-const uiPathBlock = new RunProcess();
+const jqBrick = new JQTransformer();
+const alertBrick = new AlertEffect();
+const forEachBrick = new ForEach();
+const markdownBrick = new MarkdownRenderer();
+const uiPathBrick = new RunProcess();
 
 // Using events without delays with jest fake timers
 const immediateUserEvent = userEvent.setup({ delay: null });
@@ -137,61 +100,40 @@ const immediateUserEvent = userEvent.setup({ delay: null });
 beforeAll(async () => {
   registerDefaultWidgets();
 
-  blockRegistry.clear();
+  brickRegistry.clear();
 
-  blockRegistry.register([
-    echoBlock,
-    teapotBlock,
-    jqBlock,
-    alertBlock,
-    forEachBlock,
-    markdownBlock,
-    uiPathBlock,
+  brickRegistry.register([
+    echoBrick,
+    teapotBrick,
+    jqBrick,
+    alertBrick,
+    forEachBrick,
+    markdownBrick,
+    uiPathBrick,
   ]);
 
   // Force block map to be created
-  await blockRegistry.allTyped();
+  await brickRegistry.allTyped();
 
   const tags = [
     marketplaceTagFactory({ subtype: "role" }),
     marketplaceTagFactory({ subtype: "role" }),
     marketplaceTagFactory({ subtype: "role" }),
   ];
-  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
-    data: tags,
-    isLoading: false,
-  });
 
-  const listings: Record<RegistryId, MarketplaceListing> = {};
-  const packages: EditablePackage[] = [];
-  for (let i = 0; i < 10; i++) {
-    const listing = marketplaceListingFactory({ tags });
-    const registryId = listing.id as RegistryId;
-    listings[registryId] = listing;
-    packages.push({
-      id: uuidSequence(i),
-      name: registryId,
-    } as EditablePackage);
-  }
+  const listings = array(marketplaceListingFactory, 10)({ tags });
 
-  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
-    data: listings,
-    isLoading: false,
-  });
-  (
-    api.appApi.endpoints.getMarketplaceListings.useQueryState as jest.Mock
-  ).mockReturnValue({
-    data: listings,
-    isLoading: false,
-  });
-  (api.useGetEditablePackagesQuery as jest.Mock).mockReturnValue({
-    data: packages,
-    isLoading: false,
-  });
-  (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
-  (api.useUpdateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
+  const packages = listings.map(
+    (listing, index) =>
+      ({
+        id: uuidSequence(index),
+        name: listing.id,
+      } as EditablePackage)
+  );
 
-  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
+  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
+  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
+  appApiMock.onGet("/api/bricks/").reply(200, packages);
 
   clock = sinonTimers.install();
 });
@@ -207,34 +149,34 @@ afterEach(async () => clock.runAllAsync());
 
 const getPlainFormState = (): FormState =>
   formStateFactory(undefined, [
-    blockConfigFactory({
-      id: echoBlock.id,
+    brickConfigFactory({
+      id: echoBrick.id,
       outputKey: "echoOutput" as OutputKey,
-      config: defaultBlockConfig(echoBlock.inputSchema),
+      config: defaultBlockConfig(echoBrick.inputSchema),
     }),
-    blockConfigFactory({
-      id: teapotBlock.id,
+    brickConfigFactory({
+      id: teapotBrick.id,
       outputKey: "teapotOutput" as OutputKey,
-      config: defaultBlockConfig(teapotBlock.inputSchema),
+      config: defaultBlockConfig(teapotBrick.inputSchema),
     }),
   ]);
 
 const getFormStateWithSubPipelines = (): FormState =>
   formStateFactory(undefined, [
-    blockConfigFactory({
-      id: echoBlock.id,
+    brickConfigFactory({
+      id: echoBrick.id,
       outputKey: "echoOutput" as OutputKey,
-      config: defaultBlockConfig(echoBlock.inputSchema),
+      config: defaultBlockConfig(echoBrick.inputSchema),
     }),
-    blockConfigFactory({
-      id: forEachBlock.id,
+    brickConfigFactory({
+      id: forEachBrick.id,
       outputKey: "forEachOutput" as OutputKey,
       config: {
         elements: makeTemplateExpression("var", "@input.elements"),
         elementKey: "element",
         body: makePipelineExpression([
-          blockConfigFactory({
-            id: echoBlock.id,
+          brickConfigFactory({
+            id: echoBrick.id,
             outputKey: "subEchoOutput" as OutputKey,
             config: {
               message: makeTemplateExpression(
@@ -399,7 +341,7 @@ describe("can add a node", () => {
     expect(jqNode).toHaveTextContent(/jq - json processor/i);
 
     // Adding a node in the middle of the sub pipeline, between JQ and Echo nodes
-    const reduxState = getReduxStore().getState() as any;
+    const reduxState = getReduxStore().getState() as EditorRootState;
     const currentElement = selectActiveElement(reduxState);
     const jqNodeId = (
       currentElement.extension.blockPipeline[1].config
@@ -409,7 +351,7 @@ describe("can add a node", () => {
       `icon-button-${jqNodeId}-add-brick`
     );
 
-    // The name of the block is "Teapot Block", searching for "Teapot" to get a single result in the Add Brick Dialog
+    // The name of the brick is "Teapot Brick", searching for "Teapot" to get a single result in the Add Brick Dialog
     await addABlock(addButtonInSubPipeline, "Teapot");
     // Nodes. Root: Foundation, Echo, ForEach: JQ node, new Teapot node, Echo
     nodes = screen.getAllByTestId("editor-node");
@@ -418,7 +360,7 @@ describe("can add a node", () => {
     // Selecting the Teapot node
     const teapotNode = nodes[4];
     expect(teapotNode).toHaveClass("active");
-    expect(teapotNode).toHaveTextContent(/teapot block/i);
+    expect(teapotNode).toHaveTextContent(/teapot brick/i);
   });
 });
 
@@ -447,7 +389,7 @@ describe("can remove a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the first Echo block
+    // Select the first Echo brick
     await immediateUserEvent.click(screen.getAllByText(/echo/i)[0]);
 
     // Click the remove button
@@ -467,7 +409,7 @@ describe("can remove a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the second Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[1]);
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[1]);
 
     // Click the remove button
     await immediateUserEvent.click(
@@ -589,8 +531,8 @@ describe("can copy and paste a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the first Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+    // Select the first Echo brick
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -614,8 +556,8 @@ describe("can copy and paste a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the first Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo block/i)[0]);
+    // Select the first Echo brick
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -639,7 +581,7 @@ describe("can copy and paste a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the ForEach block
+    // Select the ForEach brick
     await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]);
 
     // Click the copy button
@@ -709,11 +651,11 @@ describe("validation", () => {
     // Going back to extension 1.
     // See the 2 error badges in the Node Layout.
     // Select the Markdown node and check the error.
-    // Select the Echo block and check the error.
+    // Select the Echo brick and check the error.
     const extension1 = getPlainFormState();
     const extension2 = getPlainFormState();
 
-    // Selecting the Echo block in the first extension
+    // Selecting the Echo brick in the first extension
     const { instanceId: echoBlockInstanceId } =
       extension1.extension.blockPipeline[0];
     const rendered = render(
@@ -786,12 +728,12 @@ describe("validation", () => {
 
     const editorNodes = rendered.queryAllByTestId("editor-node");
 
-    // Selecting the markdown block in the first extension
+    // Selecting the markdown brick in the first extension
     await immediateUserEvent.click(editorNodes[1]);
 
     expectEditorError(rendered.container, "A renderer must be the last brick.");
 
-    // Selecting the echo block
+    // Selecting the echo brick
     await immediateUserEvent.click(editorNodes[2]);
 
     expectEditorError(
@@ -803,7 +745,7 @@ describe("validation", () => {
   test("validates multiple renderers on add", async () => {
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
-      blockConfigFactory({
+      brickConfigFactory({
         id: MarkdownRenderer.BLOCK_ID,
         config: {
           markdown: makeTemplateExpression("nunjucks", "test"),
@@ -840,7 +782,7 @@ describe("validation", () => {
   test("validates that renderer is the last node on move", async () => {
     const formState = getPlainFormState();
     formState.extension.blockPipeline.push(
-      blockConfigFactory({
+      brickConfigFactory({
         id: MarkdownRenderer.BLOCK_ID,
         config: {
           markdown: makeTemplateExpression("nunjucks", "test"),
@@ -876,20 +818,20 @@ describe("validation", () => {
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
       formFactory: triggerFormStateFactory,
-      disallowedBlock: markdownBlock,
+      disallowedBlock: markdownBrick,
     },
     {
       pipelineFlavor: PipelineFlavor.NoEffect,
       formFactory: formStateFactory,
-      disallowedBlock: alertBlock,
+      disallowedBlock: alertBrick,
     },
   ];
 
   test.each(disallowedBlockValidationTestCases)(
-    "validates a disallowed block in $pipelineFlavor pipeline",
+    "validates a disallowed brick in $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlock }) => {
       const formState = formFactory();
-      const disallowedBlockConfig = blockConfigFactory({
+      const disallowedBlockConfig = brickConfigFactory({
         id: disallowedBlock.id,
         config: defaultBlockConfig(disallowedBlock.inputSchema),
       });
@@ -921,16 +863,16 @@ describe("validation", () => {
 
       await tickAsyncEffects();
 
-      const blockType = await getType(disallowedBlock);
+      const brickType = await getType(disallowedBlock);
       expectEditorError(
         rendered.container,
-        `Brick of type "${blockType}" is not allowed in this pipeline`
+        `Brick of type "${brickType}" is not allowed in this pipeline`
       );
     }
   );
 });
 
-describe("block validation in Add Block Modal UI", () => {
+describe("brick validation in Add Brick Modal UI", () => {
   const testCases = [
     {
       pipelineFlavor: PipelineFlavor.NoRenderer,
@@ -945,7 +887,7 @@ describe("block validation in Add Block Modal UI", () => {
   ];
 
   test.each(testCases)(
-    "shows alert on blocks for $pipelineFlavor pipeline",
+    "shows alert on bricks for $pipelineFlavor pipeline",
     async ({ formFactory, disallowedBlockName }) => {
       const formState = formFactory();
       render(
@@ -969,7 +911,7 @@ describe("block validation in Add Block Modal UI", () => {
 
       await immediateUserEvent.click(addBrickButton);
 
-      // Try to find the disallowed block and make sure it's not there
+      // Try to find the disallowed brick and make sure it's not there
       await immediateUserEvent.type(
         screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
         disallowedBlockName
@@ -987,7 +929,7 @@ describe("block validation in Add Block Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    (useGetTheme as jest.Mock).mockReturnValue(AUTOMATION_ANYWHERE_PARTNER_KEY);
+    mockCachedUser(partnerUserFactory());
     const formState = formStateFactory();
     render(
       <>
@@ -1010,7 +952,7 @@ describe("block validation in Add Block Modal UI", () => {
 
     await immediateUserEvent.click(addBrickButton);
 
-    // Try to find the disallowed block and make sure it's not there
+    // Try to find the disallowed brick and make sure it's not there
     await immediateUserEvent.type(
       screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
       "uipath"
@@ -1021,10 +963,10 @@ describe("block validation in Add Block Modal UI", () => {
 
     const addButtons = screen.queryAllByRole("button", { name: /add/i });
 
-    // Assert that no UiPath blocks are available
+    // Assert that no UiPath bricks are available
     for (const button of addButtons) {
-      const block = button.parentElement;
-      expect(block).not.toHaveTextContent("uipath");
+      const brick = button.parentElement;
+      expect(brick).not.toHaveTextContent("uipath");
     }
   });
 });

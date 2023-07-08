@@ -18,9 +18,17 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
-import { type RecipeDefinition } from "@/types/recipeTypes";
-import { uniq } from "lodash";
+import {
+  type ExtensionDefinition,
+  type ModDefinition,
+} from "@/types/modDefinitionTypes";
+import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import type {
+  ExtensionPointDefinition,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 /**
  * Return a valid recipe id, or empty string in case of error.
@@ -45,10 +53,46 @@ export function generateRecipeId(
  * in order to install this recipe, excluding the PixieBrix service.
  * @param recipe the recipe from which to extract service ids
  */
-export const getRequiredServiceIds = (recipe: RecipeDefinition): RegistryId[] =>
+export const getRequiredServiceIds = (recipe: ModDefinition): RegistryId[] =>
   uniq(
     (recipe.extensionPoints ?? [])
       .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
       // The PixieBrix service gets automatically configured, so no need to include it
       .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
   );
+
+const getExtensionPointType = async (
+  extensionPoint: ExtensionDefinition,
+  recipe: ModDefinition
+): Promise<ExtensionPointType | null> => {
+  // Look up the extension point in recipe inner definitions first
+  if (recipe.definitions?.[extensionPoint.id]) {
+    const definition: ExtensionPointDefinition = recipe.definitions[
+      extensionPoint.id
+    ].definition as ExtensionPointDefinition;
+    const extensionPointType = definition?.type;
+
+    if (extensionPointType) {
+      return extensionPointType;
+    }
+  }
+
+  // If no inner definitions, look up the extension point in the registry
+  const extensionPointFromRegistry = await extensionPointRegistry.lookup(
+    extensionPoint.id as RegistryId
+  );
+
+  return (extensionPointFromRegistry?.kind as ExtensionPointType) ?? null;
+};
+
+export const getContainedExtensionPointTypes = async (
+  recipe: ModDefinition
+): Promise<ExtensionPointType[]> => {
+  const extensionPointTypes = await Promise.all(
+    recipe.extensionPoints.map(async (extensionPoint) =>
+      getExtensionPointType(extensionPoint, recipe)
+    )
+  );
+
+  return uniq(compact(extensionPointTypes));
+};

@@ -24,8 +24,8 @@ import { type PipelineExpression } from "@/runtime/mapArgs";
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
-import { Effect } from "@/types/blocks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 
 type ActionConfig = {
   /**
@@ -122,8 +122,8 @@ class AddQuickBarAction extends Effect {
       action: actionPipeline,
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
-    }: BlockArgs<ActionConfig>,
-    { root, logger, runPipeline, abortSignal }: BlockOptions
+    }: BrickArgs<ActionConfig>,
+    { root, logger, runPipeline, abortSignal }: BrickOptions
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
     if (abortSignal.aborted) {
@@ -158,7 +158,7 @@ class AddQuickBarAction extends Effect {
       ),
       async perform() {
         const pipelinePromise = runPipeline(
-          actionPipeline.__value__ ?? [],
+          actionPipeline,
           {
             key: "action",
             counter,

@@ -20,9 +20,12 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/runtime/mapArgs";
-import { blockConfigFactory, pipelineFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import { getPipelineMap } from "./editHelpers";
+import {
+  brickConfigFactory,
+  pipelineFactory,
+} from "@/testUtils/factories/brickFactories";
 
 describe("getPipelineMap", () => {
   test("should map plain pipeline", () => {
@@ -56,7 +59,7 @@ describe("getPipelineMap", () => {
 
   test("should map pipeline with sub pipeline", () => {
     const subPipeline = pipelineFactory();
-    const forEachBrick = blockConfigFactory({
+    const forEachBrick = brickConfigFactory({
       id: ForEach.BLOCK_ID,
       config: {
         elements: toExpression("var", "@elements"),
@@ -100,7 +103,7 @@ describe("getPipelineMap", () => {
       subPipeline;
     const containerElement = createNewElement("container");
     containerElement.children[0].children[0].children.push(buttonElement);
-    const documentBrick = blockConfigFactory({
+    const documentBrick = brickConfigFactory({
       id: DocumentRenderer.BLOCK_ID,
       config: {
         body: [containerElement],

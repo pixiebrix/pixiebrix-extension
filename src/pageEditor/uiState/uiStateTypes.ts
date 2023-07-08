@@ -19,7 +19,7 @@ import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 
 export type BlockInfo = {
   blockId: RegistryId;
@@ -29,7 +29,7 @@ export type BlockInfo = {
    */
   path: string;
 
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
 
   /**
    * Index of the block in its pipeline
@@ -44,7 +44,7 @@ export type BlockInfo = {
   /**
    * The block's pipeline
    */
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
 
   /**
    * Instance id of parent node
@@ -89,6 +89,11 @@ export type NodeUIState = {
      */
     activeTabKey: DataPanelTabKey | null;
   };
+
+  /**
+   * Which fields are expanded or collapsed
+   */
+  expandedFieldSections: Record<string, boolean>;
 };
 
 export type ElementUIState = {

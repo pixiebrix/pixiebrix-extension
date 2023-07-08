@@ -17,7 +17,7 @@
 
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { Reader } from "@/types/blocks/readerTypes";
+import { Reader } from "@/types/bricks/readerTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 

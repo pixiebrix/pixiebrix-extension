@@ -60,7 +60,7 @@ const AddExtensionPointButton: React.FunctionComponent = () => {
   const [entries] = useAsyncState<React.ReactNode>(
     async () => {
       const results = await Promise.all(
-        sortedExtensionPoints.map((config) => {
+        sortedExtensionPoints.map(async (config) => {
           if (!config.flag) {
             return true;
           }

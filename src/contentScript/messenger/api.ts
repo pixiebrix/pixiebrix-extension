@@ -27,15 +27,21 @@ export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
 export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
+export const ensureExtensionPointsInstalled = getMethod(
+  "ENSURE_EXTENSION_POINTS_INSTALLED"
+);
 export const removeInstalledExtension = getNotifier(
   "REMOVE_INSTALLED_EXTENSION"
 );
-
 export const resetTab = getNotifier("RESET_TAB");
 
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");
+
+export const getReservedSidebarEntries = getMethod(
+  "GET_RESERVED_SIDEBAR_ENTRIES"
+);
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
@@ -46,6 +52,8 @@ export const insertButton = getMethod("INSERT_BUTTON");
 export const initRobot = getMethod("UIPATH_INIT");
 export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
 export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
+
+export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");

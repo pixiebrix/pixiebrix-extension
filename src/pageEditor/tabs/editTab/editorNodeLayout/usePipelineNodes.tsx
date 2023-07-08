@@ -24,8 +24,8 @@ import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNo
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
-  type BlockConfig,
-  type BlockPipeline,
+  type BrickConfig,
+  type BrickPipeline,
   type Branch,
 } from "@/blocks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
@@ -70,6 +70,7 @@ import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { type Brick } from "@/types/brickTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -84,7 +85,7 @@ type SubPipeline = {
    */
   headerLabel: string;
 
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
 
   /**
    * Formik path to the pipeline
@@ -96,12 +97,20 @@ type SubPipeline = {
   inputKey?: string;
 };
 
-function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
+/**
+ *
+ * @param block the block, or null if the resolved block is not available yet
+ * @param blockConfig the block config
+ */
+function getSubPipelinesForBlock(
+  block: Brick | null,
+  blockConfig: BrickConfig
+): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
     for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
       const path = joinPathParts(docPipelinePath, "__value__");
-      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
       const elementPathParts = docPipelinePath.split(".").slice(0, -2);
@@ -122,9 +131,9 @@ function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
       });
     }
   } else {
-    for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
+    for (const pipelinePropName of getPipelinePropNames(block, blockConfig)) {
       const path = joinName("config", pipelinePropName, "__value__");
-      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       const subPipeline: SubPipeline = {
         headerLabel: pipelinePropName,
@@ -244,7 +253,7 @@ const usePipelineNodes = (): {
     extensionHasTraces: extensionHasTracesInput,
   }: {
     index: number;
-    blockConfig: BlockConfig;
+    blockConfig: BrickConfig;
     latestPipelineCall: Branch[];
     flavor: PipelineFlavor;
     pipelinePath: string;
@@ -285,7 +294,7 @@ const usePipelineNodes = (): {
       extensionHasTraces = true;
     }
 
-    const subPipelines = getSubPipelinesForBlock(blockConfig);
+    const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
     const collapsed = collapsedState[blockConfig.instanceId];
     const expanded = hasSubPipelines && !collapsed;
@@ -520,7 +529,7 @@ const usePipelineNodes = (): {
     nestingLevel = 0,
     parentIsActive = false,
   }: {
-    pipeline: BlockPipeline;
+    pipeline: BrickPipeline;
     flavor: PipelineFlavor;
     pipelinePath?: string;
     nestingLevel?: number;

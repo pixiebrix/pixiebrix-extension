@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
   type FrameworkConfig,
@@ -75,7 +75,10 @@ export class ComponentReader extends Transformer {
     return true;
   }
 
-  async transform(args: BlockArgs, { root }: BlockOptions): Promise<unknown> {
+  async transform(
+    args: BrickArgs<FrameworkConfig>,
+    { root }: BrickOptions
+  ): Promise<unknown> {
     return frameworkReadFactory(args.framework)(
       args as unknown as FrameworkConfig,
       root

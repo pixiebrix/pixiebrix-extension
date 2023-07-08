@@ -15,29 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipeDefinition } from "@/types/recipeTypes";
-import { type Except } from "type-fest";
 import { type RecipesRootState } from "./recipesTypes";
-import { type UseCachedQueryResult } from "@/types/sliceTypes";
-
-type AllRecipesSelector = Except<
-  UseCachedQueryResult<RecipeDefinition[]>,
-  "refetch"
->;
 
 export function selectAllRecipes({
   recipes,
-}: RecipesRootState): AllRecipesSelector {
-  return {
-    data: recipes.recipes,
-
-    isFetchingFromCache: recipes.isFetchingFromCache,
-    isCacheUninitialized: recipes.isCacheUninitialized,
-
-    isFetching: recipes.isFetching,
-    isLoading: recipes.isLoading,
-    isUninitialized: recipes.isUninitialized,
-
-    error: recipes.error,
-  };
+}: RecipesRootState): RecipesRootState["recipes"] {
+  return recipes;
 }

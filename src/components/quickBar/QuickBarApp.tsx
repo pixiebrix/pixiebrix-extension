@@ -26,7 +26,7 @@ import {
   useKBar,
   VisualState,
 } from "kbar";
-import ReactShadowRoot from "react-shadow-root";
+import EmotionShadowRoot from "react-shadow/emotion";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
@@ -113,21 +113,25 @@ const KBarComponent: React.FC = () => {
     <KBarPortal>
       <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
         <KBarAnimator style={animatorStyle}>
-          <div
+          {/*
+              Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
+              whichever website it's rendering on.
+              To support react-select and any future potential emotion components we used the
+              emotion variant of the react-shadow library.
+            */}
+          <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
             contentEditable
             suppressContentEditableWarning
           >
-            <ReactShadowRoot mode="closed">
-              <Stylesheets href={faStyleSheet} mountOnLoad>
-                <FocusLock>
-                  <KBarSearch style={searchStyle} />
-                  <QuickBarResults />
-                </FocusLock>
-              </Stylesheets>
-            </ReactShadowRoot>
-          </div>
+            <Stylesheets href={faStyleSheet} mountOnLoad>
+              <FocusLock>
+                <KBarSearch style={searchStyle} />
+                <QuickBarResults />
+              </FocusLock>
+            </Stylesheets>
+          </EmotionShadowRoot.div>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
@@ -165,6 +169,17 @@ export const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
+export const initQuickBarApp = once(() => {
+  expectContext("contentScript");
+
+  const container = document.createElement("div");
+  container.id = "pixiebrix-quickbar-container";
+  document.body.prepend(container);
+  ReactDOM.render(<QuickBarApp />, container);
+
+  console.debug("Initialized quick bar");
+});
+
 /**
  * Show the quick bar.
  */
@@ -177,14 +192,3 @@ export const toggleQuickBar = () => {
 
   window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
 };
-
-export const initQuickBarApp = once(() => {
-  expectContext("contentScript");
-
-  const container = document.createElement("div");
-  container.id = "pixiebrix-quickbar-container";
-  document.body.prepend(container);
-  ReactDOM.render(<QuickBarApp />, container);
-
-  console.debug("Initialized quick bar");
-});

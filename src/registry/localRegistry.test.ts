@@ -21,48 +21,39 @@ import {
   syncPackages,
   find,
 } from "@/registry/localRegistry";
-import { getApiClient } from "@/services/apiClient";
-import { recipeDefinitionFactory } from "@/testUtils/factories";
 import { produce } from "immer";
 import { type SemVerString } from "@/types/registryTypes";
-
-jest.mock("@/services/apiClient");
-const getApiClientMock = getApiClient as jest.Mock;
+import { appApiMock } from "@/testUtils/appApiMock";
+import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("localRegistry", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+  });
+
   afterEach(async () => {
     await clear();
   });
 
-  it("should fetch new packages for empty db", async () => {
-    getApiClientMock.mockResolvedValue({
-      get: jest.fn().mockResolvedValue({ data: [recipeDefinitionFactory()] }),
-    });
-    await syncPackages();
-    const recipes = await getByKinds(["recipe"]);
-    expect(recipes).toHaveLength(1);
-  });
-
   it("should sync packages for empty db", async () => {
-    getApiClientMock.mockResolvedValue({
-      get: jest.fn().mockResolvedValue({ data: [recipeDefinitionFactory()] }),
-    });
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [recipeDefinitionFactory()]);
     await syncPackages();
     const recipes = await getByKinds(["recipe"]);
     expect(recipes).toHaveLength(1);
-    const client = await getApiClientMock();
-    expect(client.get).toHaveBeenCalledWith("/api/registry/bricks/");
+    expect(appApiMock.history.get[0].url).toEqual("/api/registry/bricks/");
   });
 
   it("should sync packages", async () => {
-    getApiClientMock.mockResolvedValue({
-      get: jest.fn().mockResolvedValue({ data: [recipeDefinitionFactory()] }),
-    });
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .replyOnce(200, [recipeDefinitionFactory()]);
+
     await syncPackages();
 
-    getApiClientMock.mockResolvedValue({
-      get: jest.fn().mockResolvedValue({ data: [] }),
-    });
+    appApiMock.onGet("/api/registry/bricks/").replyOnce(200, []);
+
     await syncPackages();
 
     const recipes = await getByKinds(["recipe"]);
@@ -75,9 +66,7 @@ describe("localRegistry", () => {
       draft.metadata.version = "9.9.9" as SemVerString;
     });
 
-    getApiClientMock.mockResolvedValue({
-      get: jest.fn().mockResolvedValue({ data: [updated, definition] }),
-    });
+    appApiMock.onGet("/api/registry/bricks/").reply(200, [updated, definition]);
 
     await syncPackages();
 

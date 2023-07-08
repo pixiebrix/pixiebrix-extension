@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/blocks/effectTypes";
+import { Effect } from "@/types/bricks/effectTypes";
 import { boolean } from "@/utils";
 import { findSingleElement } from "@/utils/requireSingleElement";
-import { type RequireExactlyOne } from "type-fest";
+import { type JsonObject, type RequireExactlyOne } from "type-fest";
 import {
   BusinessError,
   MultipleElementsFoundError,
@@ -29,9 +29,12 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 import { isEmpty } from "lodash";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
+import { setCKEditorData } from "@/pageScript/messenger/api";
+import { getSelectorForElement } from "@/contentScript/elementReference";
+import { hasCKEditorClass } from "@/contrib/ckeditor";
 
 type SetValueData = RequireExactlyOne<
   {
@@ -58,11 +61,21 @@ function isFieldElement(element: HTMLElement): boolean {
   );
 }
 
-function setFieldValue(
+async function setFieldValue(
   field: FieldElement,
   value: unknown,
   { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean }
-): void {
+): Promise<void> {
+  // For performance, use the contentScript-based call to determine if the element has the classname associate with
+  // CKEditor 5 instances. If it does, set the data (will error if it's not actually a CKEditor 5 instance).
+  if (hasCKEditorClass(field)) {
+    await setCKEditorData({
+      selector: getSelectorForElement(field),
+      value: String(value),
+    });
+    return;
+  }
+
   if (field.isContentEditable) {
     // Field needs to be focused first
     field.focus();
@@ -112,7 +125,7 @@ function setFieldValue(
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
-function setValue({
+async function setValue({
   form = document,
   value,
   logger,
@@ -153,9 +166,11 @@ function setValue({
       (field) => field.value === value && optionFields.includes(field.type)
     );
 
-  for (const field of fields) {
-    setFieldValue(field, value, { dispatchEvent, isOption });
-  }
+  return Promise.all(
+    fields.map(async (field) =>
+      setFieldValue(field, value, { dispatchEvent, isOption })
+    )
+  );
 }
 
 export class SetInputValue extends Effect {
@@ -205,40 +220,45 @@ export class SetInputValue extends Effect {
     {
       inputs,
       isRootAware,
-    }: BlockArgs<{
+    }: BrickArgs<{
       inputs: Array<{ selector: string; value: unknown }>;
       isRootAware?: boolean;
     }>,
-    { logger, root }: BlockOptions
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const target = isRootAware ? root : document;
-    for (const { selector, value } of inputs) {
-      if (isEmpty(selector)) {
-        if (target == null || target === document) {
-          throw new BusinessError("Selector required when called on document");
-        }
 
-        if (!isFieldElement(target as HTMLElement)) {
-          throw new BusinessError(
-            "Field is not a input field or editable element"
-          );
-        }
+    await Promise.all(
+      inputs.map(async ({ selector, value }) => {
+        if (isEmpty(selector)) {
+          if (target == null || target === document) {
+            throw new BusinessError(
+              "Selector required when called on document"
+            );
+          }
 
-        setFieldValue(target as FieldElement, value, {
-          dispatchEvent: true,
-          isOption: false,
-        });
-      } else {
-        // `setValue` works on any element that contains fields, not just forms
-        setValue({
-          selector,
-          value,
-          logger,
-          dispatchEvent: true,
-          form: target,
-        });
-      }
-    }
+          if (!isFieldElement(target as HTMLElement)) {
+            throw new BusinessError(
+              "Field is not a input field or editable element"
+            );
+          }
+
+          await setFieldValue(target as FieldElement, value, {
+            dispatchEvent: true,
+            isOption: false,
+          });
+        } else {
+          // `setValue` works on any element that contains fields, not just forms
+          await setValue({
+            selector,
+            value,
+            logger,
+            dispatchEvent: true,
+            form: target,
+          });
+        }
+      })
+    );
   }
 }
 
@@ -286,8 +306,14 @@ export class FormFill extends Effect {
       fieldSelectors = {},
       submit = false,
       isRootAware = false,
-    }: BlockArgs,
-    { logger, root }: BlockOptions
+    }: BrickArgs<{
+      formSelector: string;
+      fieldNames: JsonObject;
+      fieldSelectors: JsonObject;
+      submit: boolean;
+      isRootAware: boolean;
+    }>,
+    { logger, root }: BrickOptions
   ): Promise<void> {
     const submitRoot = isRootAware ? root : document;
 
@@ -307,13 +333,14 @@ export class FormFill extends Effect {
       throw new MultipleElementsFoundError(formSelector);
     }
 
-    for (const [name, value] of Object.entries(fieldNames)) {
-      setValue({ name, value, logger, dispatchEvent: true });
-    }
-
-    for (const [selector, value] of Object.entries(fieldSelectors)) {
-      setValue({ selector, value, logger, dispatchEvent: true });
-    }
+    await Promise.all([
+      ...Object.entries(fieldNames).map(async ([name, value]) =>
+        setValue({ name, value, logger, dispatchEvent: true })
+      ),
+      ...Object.entries(fieldSelectors).map(async ([selector, value]) =>
+        setValue({ selector, value, logger, dispatchEvent: true })
+      ),
+    ]);
 
     if (typeof submit === "boolean") {
       if (submit) {

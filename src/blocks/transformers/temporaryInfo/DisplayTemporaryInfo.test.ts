@@ -19,9 +19,9 @@ import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTem
 import blockRegistry from "@/blocks/registry";
 import {
   simpleInput,
-  teapotBlock,
+  teapotBrick,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -29,16 +29,18 @@ import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {
+  isRendererErrorPayload,
   type PanelPayload,
-  type RendererError,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
+} from "@/types/sidebarTypes";
 import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
 import {
   cancelTemporaryPanelsForExtension,
+  registerEmptyTemporaryPanel,
+  updatePanelDefinition,
   waitForTemporaryPanel,
 } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
@@ -46,7 +48,8 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import pDefer from "p-defer";
-import { registryIdFactory } from "@/testUtils/factories";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { type RendererErrorPayload } from "@/types/rendererTypes";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
@@ -55,36 +58,33 @@ import { registryIdFactory } from "@/testUtils/factories";
 jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
   showModal: jest.fn(),
 }));
+const showModalMock = jest.mocked(showModal);
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
   showTemporarySidebarPanel: jest.fn(),
   updateTemporarySidebarPanel: jest.fn(),
 }));
+const showTemporarySidebarPanelMock = jest.mocked(showTemporarySidebarPanel);
+const updateTemporarySidebarPanelMock = jest.mocked(
+  updateTemporarySidebarPanel
+);
 
 jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
+  registerEmptyTemporaryPanel: jest.fn(),
   waitForTemporaryPanel: jest.fn(),
   stopWaitingForTemporaryPanels: jest.fn(),
   cancelTemporaryPanelsForExtension: jest.fn(),
   updatePanelDefinition: jest.fn(),
 }));
-
-const showTemporarySidebarPanelMock =
-  showTemporarySidebarPanel as jest.MockedFunction<
-    typeof showTemporarySidebarPanel
-  >;
-const showModalMock = showModal as jest.MockedFunction<typeof showModal>;
-const waitForTemporaryPanelMock = waitForTemporaryPanel as jest.MockedFunction<
-  typeof waitForTemporaryPanel
->;
-const cancelTemporaryPanelsForExtensionMock =
-  cancelTemporaryPanelsForExtension as jest.MockedFunction<
-    typeof cancelTemporaryPanelsForExtension
-  >;
-const updateTemporarySidebarPanelMock =
-  updateTemporarySidebarPanel as jest.MockedFunction<
-    typeof updateTemporarySidebarPanel
-  >;
+const registerEmptyTemporaryPanelMock = jest.mocked(
+  registerEmptyTemporaryPanel
+);
+const waitForTemporaryPanelMock = jest.mocked(waitForTemporaryPanel);
+const cancelTemporaryPanelsForExtensionMock = jest.mocked(
+  cancelTemporaryPanelsForExtension
+);
+const updatePanelDefinitionMock = jest.mocked(updatePanelDefinition);
 
 describe("DisplayTemporaryInfo", () => {
   const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
@@ -93,8 +93,8 @@ describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
     blockRegistry.clear();
     blockRegistry.register([
-      teapotBlock,
-      throwBlock,
+      teapotBrick,
+      throwBrick,
       renderer,
       displayTemporaryInfoBlock,
     ]);
@@ -103,13 +103,14 @@ describe("DisplayTemporaryInfo", () => {
     showModalMock.mockReset();
     cancelTemporaryPanelsForExtensionMock.mockReset();
     updateTemporarySidebarPanelMock.mockReset();
+    registerEmptyTemporaryPanelMock.mockReset();
   });
 
   test("isRootAware", async () => {
     await expect(displayTemporaryInfoBlock.isRootAware()).resolves.toBe(true);
   });
 
-  test("it returns payload", async () => {
+  test("it returns run payload for sidebar panel", async () => {
     const extensionId = uuidv4();
     const blueprintId = registryIdFactory();
 
@@ -121,34 +122,34 @@ describe("DisplayTemporaryInfo", () => {
         body: makePipelineExpression([{ id: renderer.id, config }]),
       },
     };
-    let payload: PanelPayload;
-    showTemporarySidebarPanelMock.mockImplementation(
-      (entry: TemporaryPanelEntry) => {
-        payload = entry.payload;
-      }
-    );
 
     await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
       logger: new ConsoleLogger({ extensionId, blueprintId }),
     });
 
-    expect(showTemporarySidebarPanelMock).toHaveBeenCalledOnceWith({
+    // Show function will be called with a "loading" payload
+    expect(showTemporarySidebarPanelMock).toHaveBeenCalledExactlyOnceWith({
       blueprintId,
       extensionId,
       nonce: expect.toBeString(),
       heading: expect.toBeString(),
-      payload: expect.toBeObject(),
+      payload: expect.objectContaining({
+        loadingMessage: expect.toBeString(),
+      }),
     });
 
-    // Check structure for RendererPayload
-    expect(payload).toStrictEqual({
-      extensionId: expect.toBeString(),
-      key: expect.toBeString(),
-      runId: expect.toBeString(),
-      blockId: renderer.id,
-      args: expect.toBeObject(),
-      ctxt: expect.toBeObject(),
+    // Panel will be updated when the real payload is ready
+    expect(updatePanelDefinitionMock).toHaveBeenCalledExactlyOnceWith({
+      blueprintId,
+      extensionId,
+      nonce: expect.toBeString(),
+      heading: expect.toBeString(),
+      payload: expect.objectContaining({
+        blockId: renderer.id,
+        args: expect.anything(),
+        ctxt: expect.anything(),
+      }),
     });
   });
 
@@ -160,7 +161,7 @@ describe("DisplayTemporaryInfo", () => {
       config: {
         title: "Test Temp Panel",
         body: makePipelineExpression([
-          { id: throwBlock.id, config: { message } },
+          { id: throwBrick.id, config: { message } },
           { id: renderer.id, config: getExampleBlockConfig(renderer.id) },
         ]),
       },
@@ -172,12 +173,16 @@ describe("DisplayTemporaryInfo", () => {
         payload = entry.payload;
       }
     );
+    updatePanelDefinitionMock.mockImplementation(
+      (entry: TemporaryPanelEntry) => {
+        payload = entry.payload;
+      }
+    );
 
     await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
 
-    // Check structure for RendererError
-    expect(payload).toHaveProperty("error");
-    const error = payload as RendererError;
+    expect(isRendererErrorPayload(payload)).toBe(true);
+    const error = payload as RendererErrorPayload;
     const errorMessage = (error.error as BusinessError).message;
     expect(errorMessage).toStrictEqual(message);
   });
@@ -207,17 +212,17 @@ describe("DisplayTemporaryInfo", () => {
     expect(showModalMock).toHaveBeenCalled();
     expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
 
-    expect(waitForTemporaryPanelMock).toHaveBeenCalledWith(
-      // First argument is nonce
-      expect.toBeString(),
-      expect.objectContaining({
+    expect(waitForTemporaryPanelMock).toHaveBeenCalledWith({
+      nonce: expect.toBeString(),
+      extensionId,
+      location: "modal",
+      entry: expect.objectContaining({
         extensionId,
         heading: "Test Temp Panel",
         nonce: expect.toBeString(),
         payload: expect.toBeObject(),
       }),
-      { onRegister: undefined }
-    );
+    });
   });
 
   test("requires target for popover", async () => {

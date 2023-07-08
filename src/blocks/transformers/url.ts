@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
   makeURL,
@@ -86,7 +86,11 @@ export class UrlParams extends Transformer {
     url,
     params,
     spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-  }: BlockArgs): Promise<{ url: string }> {
+  }: BrickArgs<{
+    url: string;
+    params?: Record<string, string | number | boolean>;
+    spaceEncoding?: "percent" | "plus";
+  }>): Promise<{ url: string }> {
     return {
       url: makeURL(url, params, spaceEncoding),
     };

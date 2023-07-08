@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import Select, { type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, sortBy, uniq } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";
 import { isExpression } from "@/runtime/mapArgs";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
 type StringOption = {
   value: string;
@@ -32,9 +33,13 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
   name,
   schema,
   isRequired,
+  focusInput,
 }) => {
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
+
+  const elementRef = useRef();
+  useAutoFocusConfiguration({ elementRef, focus: focusInput });
 
   // Need to handle expressions because this field could be toggled to "var"
   // and the Widget won't change until the input mode can be inferred again
@@ -81,6 +86,8 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
       }}
       value={selectedValue}
       onChange={selectOnChange}
+      ref={elementRef}
+      openMenuOnFocus={true}
     />
   ) : (
     <Select
@@ -89,6 +96,8 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
       options={options}
       value={selectedValue}
       onChange={selectOnChange}
+      ref={elementRef}
+      openMenuOnFocus={true}
     />
   );
 };

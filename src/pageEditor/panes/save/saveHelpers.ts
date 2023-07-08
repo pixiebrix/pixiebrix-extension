@@ -16,19 +16,21 @@
  */
 
 import {
-  type EditablePackage,
   type InnerDefinitionRef,
   type Metadata,
   type RegistryId,
   type InnerDefinitions,
 } from "@/types/registryTypes";
-import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
+import {
+  isInnerDefinitionRegistryId,
+  PACKAGE_REGEX,
+  validateRegistryId,
+} from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -37,15 +39,16 @@ import { type Except } from "type-fest";
 import {
   type ExtensionDefinition,
   type OptionsDefinition,
-  type RecipeDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import {
   type IExtension,
   type UnresolvedExtension,
 } from "@/types/extensionTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type EditablePackage } from "@/types/contract";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -64,7 +67,7 @@ export function generateScopeBrickId(
 
 export function isRecipeEditable(
   editablePackages: EditablePackage[],
-  recipe: RecipeDefinition
+  recipe: ModDefinition
 ): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
@@ -82,7 +85,7 @@ export function isRecipeEditable(
  * For now, we'll just handle the normal case and send people to the workshop for the corner cases.
  */
 function findRecipeIndex(
-  sourceRecipe: RecipeDefinition,
+  sourceRecipe: ModDefinition,
   extension: IExtension
 ): number {
   if (sourceRecipe.metadata.version !== extension._recipe.version) {
@@ -132,11 +135,11 @@ function findRecipeIndex(
  * @param element the new extension state (i.e., submitted via Formik)
  */
 export function replaceRecipeExtension(
-  sourceRecipe: RecipeDefinition,
+  sourceRecipe: ModDefinition,
   metadata: Metadata,
   installedExtensions: IExtension[],
   element: FormState
-): UnsavedRecipeDefinition {
+): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
     (x) => x.id === element.uuid
   );
@@ -181,7 +184,8 @@ export function replaceRecipeExtension(
     const adapter = ADAPTERS.get(element.type);
     const rawExtension = adapter.selectExtension(element);
     const extensionPointId = element.extensionPoint.metadata.id;
-    const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
+    const hasInnerExtensionPoint =
+      isInnerDefinitionRegistryId(extensionPointId);
 
     const commonExtensionConfig: Except<ExtensionDefinition, "id"> = {
       ...pick(rawExtension, [
@@ -284,14 +288,14 @@ function selectExtensionPointConfig(
 }
 
 type RecipeParts = {
-  sourceRecipe?: RecipeDefinition;
+  sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedExtension[];
   dirtyRecipeElements: FormState[];
   options?: OptionsDefinition;
   metadata?: RecipeMetadataFormState;
 };
 
-const emptyRecipe: UnsavedRecipeDefinition = {
+const emptyRecipe: UnsavedModDefinition = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   kind: "recipe",
   metadata: {
@@ -324,10 +328,10 @@ export function buildRecipe({
   dirtyRecipeElements,
   options,
   metadata,
-}: RecipeParts): UnsavedRecipeDefinition {
+}: RecipeParts): UnsavedModDefinition {
   // If there's no source recipe, then we're creating a new one, so we
   // start with an empty recipe definition that will be filled in
-  const recipe: UnsavedRecipeDefinition = sourceRecipe ?? emptyRecipe;
+  const recipe: UnsavedModDefinition = sourceRecipe ?? emptyRecipe;
 
   return produce(recipe, (draft) => {
     // Options dirty state is only populated if a change is made
@@ -364,7 +368,7 @@ export function buildRecipe({
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
 
-        if (isInnerExtensionPoint(extension.extensionPointId)) {
+        if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
           extension.definitions = {
@@ -419,7 +423,7 @@ function buildExtensionPoints(
       let isDefinitionAlreadyAdded = false;
       let needsFreshExtensionPointId = false;
 
-      if (isInnerExtensionPoint(extensionPointId)) {
+      if (isInnerDefinitionRegistryId(extensionPointId)) {
         // Always replace inner ids
         needsFreshExtensionPointId = true;
 

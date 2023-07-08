@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { ErrorEffect } from "@/blocks/effects/error";
 
 const brick = new ErrorEffect();
@@ -25,7 +25,7 @@ const brick = new ErrorEffect();
 describe("ErrorEffect", () => {
   test("it throws BusinessError", async () => {
     await expect(
-      brick.run(unsafeAssumeValidArg({}), {} as BlockOptions)
+      brick.run(unsafeAssumeValidArg({}), {} as BrickOptions)
     ).rejects.toThrow(BusinessError);
   });
 });

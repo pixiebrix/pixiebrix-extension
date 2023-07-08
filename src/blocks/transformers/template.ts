@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import {
+  type TemplateEngine,
+  type BrickArgs,
+  type BrickOptions,
+} from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import Mustache from "mustache";
@@ -57,8 +61,11 @@ export class TemplateTransformer extends Transformer {
   );
 
   async transform(
-    { template, templateEngine = "mustache" }: BlockArgs,
-    { ctxt }: BlockOptions
+    {
+      template,
+      templateEngine = "mustache",
+    }: BrickArgs<{ template: string; templateEngine: TemplateEngine }>,
+    { ctxt }: BrickOptions
   ): Promise<unknown> {
     if (templateEngine !== "mustache") {
       throw new BusinessError(

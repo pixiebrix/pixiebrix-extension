@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
@@ -61,7 +62,11 @@ export class ResolvePerson extends Transformer {
     pipedriveService,
     name,
     organization,
-  }: BlockArgs): Promise<unknown> {
+  }: BrickArgs<{
+    pipedriveService: SanitizedServiceConfiguration;
+    name: string;
+    organization?: number;
+  }>): Promise<unknown> {
     let organization_id;
 
     if (organization) {

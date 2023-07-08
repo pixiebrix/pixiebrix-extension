@@ -18,7 +18,7 @@
 import { type JsonObject } from "type-fest";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import objectHash from "object-hash";
 import { type ErrorObject } from "serialize-error";
 import { type UUID } from "@/types/stringTypes";
@@ -111,7 +111,7 @@ export type TraceEntryData = TraceRecordMeta & {
    */
   renderError: ErrorObject | null;
 
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
 };
 
 export type TraceExitData = TraceRecordMeta &
@@ -252,12 +252,9 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-  const data = await tx.store.get([
-    record.runId,
-    record.blockInstanceId,
-    callId,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- types are wrong in idb?
-  ] as any);
+  const data = await tx.store.get(
+    IDBKeyRange.only([record.runId, record.blockInstanceId, callId])
+  );
 
   if (data) {
     await tx.store.put({

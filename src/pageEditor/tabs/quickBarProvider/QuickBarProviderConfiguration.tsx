@@ -28,7 +28,7 @@ import { type QuickBarProviderFormState } from "@/pageEditor/extensionPoints/for
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import AccordionFieldSection from "@/pageEditor/fields/AccordionFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const QuickBarProviderConfiguration: React.FC<{
   isLocked: boolean;
@@ -65,15 +65,15 @@ const QuickBarProviderConfiguration: React.FC<{
         as={SwitchButtonWidget}
         value={Boolean(rootActionField.value)}
         description="Toggle on to show a parent action that contains child actions when selected"
-        onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+        onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
           if (target.value) {
-            setFieldValue("extension.rootAction", {
+            await setFieldValue("extension.rootAction", {
               title: null,
               icon: null,
               requireActiveRoot: false,
             });
           } else {
-            setFieldValue("extension.rootAction", null);
+            await setFieldValue("extension.rootAction", null);
           }
         }}
       />
@@ -101,8 +101,7 @@ const QuickBarProviderConfiguration: React.FC<{
           />
         </>
       )}
-
-      <AccordionFieldSection title="Advanced">
+      <ConnectedCollapsibleFieldSection title="Advanced">
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
           description={
@@ -115,7 +114,7 @@ const QuickBarProviderConfiguration: React.FC<{
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
         />
-      </AccordionFieldSection>
+      </ConnectedCollapsibleFieldSection>
 
       <ExtraPermissionsSection />
     </>

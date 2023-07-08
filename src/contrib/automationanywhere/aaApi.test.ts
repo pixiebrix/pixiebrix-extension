@@ -29,9 +29,7 @@ jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn(),
 }));
 
-const proxyServiceMock = proxyService as jest.MockedFunction<
-  typeof proxyService
->;
+const proxyServiceMock = jest.mocked(proxyService);
 
 describe("aaApi", () => {
   it("should vary bot cache on workspace type", async () => {

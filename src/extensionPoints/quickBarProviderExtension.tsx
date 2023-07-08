@@ -33,7 +33,7 @@ import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
@@ -56,12 +56,12 @@ import {
   quickbarQueryReaderShim,
 } from "@/extensionPoints/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 
 export type QuickBarProviderConfig = {
   /**
@@ -87,14 +87,14 @@ export type QuickBarProviderConfig = {
   /**
    * Action generator pipeline.
    */
-  generator: BlockConfig | BlockPipeline;
+  generator: BrickConfig | BrickPipeline;
 };
 
 export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<QuickBarProviderConfig> {
   static isQuickBarProviderExtensionPoint(
-    extensionPoint: IExtensionPoint
+    extensionPoint: StarterBrick
   ): extensionPoint is QuickBarProviderExtensionPoint {
-    // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (IExtensionPoint)
+    // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (StarterBrick)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (extensionPoint as any)?._definition?.type === "quickBarProvider";
   }
@@ -133,7 +133,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
   async getBlocks(
     extension: ResolvedExtension<QuickBarProviderConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.generator);
   }
 
@@ -373,7 +373,7 @@ export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderExtens
 
 export function fromJS(
   config: ExtensionPointConfig<QuickBarProviderDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBarProvider") {
     throw new Error(`Expected type=quickBarProvider, got ${type}`);

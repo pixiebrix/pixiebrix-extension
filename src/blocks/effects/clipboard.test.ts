@@ -19,6 +19,7 @@ import { CopyToClipboard } from "@/blocks/effects/clipboard";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 import userEvent from "@testing-library/user-event";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 const brick = new CopyToClipboard();
 
@@ -50,14 +51,14 @@ describe("CopyToClipboard", () => {
 
   it("copies to clipboard", async () => {
     const text = "Hello, world!";
-    await brick.run(unsafeAssumeValidArg({ text }), {} as any);
+    await brick.run(unsafeAssumeValidArg({ text }), {} as BrickOptions);
     expect(writeTextMock).toHaveBeenCalledWith(text);
   });
 
   it("copies null to clipboard", async () => {
     await brick.run(
       unsafeAssumeValidArg({ text: null, contentType: "infer" }),
-      {} as any
+      {} as BrickOptions
     );
     expect(writeTextMock).toHaveBeenCalledWith("null");
   });
@@ -65,7 +66,7 @@ describe("CopyToClipboard", () => {
   it("copies boolean clipboard", async () => {
     await brick.run(
       unsafeAssumeValidArg({ text: false, contentType: "infer" }),
-      {} as any
+      {} as BrickOptions
     );
     expect(writeTextMock).toHaveBeenCalledWith("false");
   });
@@ -73,7 +74,7 @@ describe("CopyToClipboard", () => {
   it("copies image to clipboard", async () => {
     await brick.run(
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "infer" }),
-      {} as any
+      {} as BrickOptions
     );
     expect(writeTextMock).not.toHaveBeenCalled();
     expect(writeMock).toHaveBeenCalled();
@@ -86,7 +87,7 @@ describe("CopyToClipboard", () => {
     await expect(async () =>
       brick.run(
         unsafeAssumeValidArg({ text: false, contentType: "image" }),
-        {} as any
+        {} as BrickOptions
       )
     ).rejects.toThrow(PropError);
   });
@@ -96,7 +97,7 @@ describe("CopyToClipboard", () => {
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "image" }),
-      {} as any
+      {} as BrickOptions
     );
 
     writeMock.mockResolvedValue();
@@ -114,7 +115,7 @@ describe("CopyToClipboard", () => {
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "image" }),
-      {} as any
+      {} as BrickOptions
     );
 
     await userEvent.click(document.body);

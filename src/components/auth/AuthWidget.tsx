@@ -61,7 +61,7 @@ const AuthWidget: React.FunctionComponent<{
 
   const [showServiceModal, setShowServiceModal] = useState(false);
 
-  const [serviceDefinition, isPending, error] = useAsyncState(async () => {
+  const [serviceDefinition, isFetching, error] = useAsyncState(async () => {
     const serviceDefinitions = await registry.all();
     return serviceDefinitions.find((x) => x.id === serviceId);
   }, [serviceId]);
@@ -110,7 +110,14 @@ const AuthWidget: React.FunctionComponent<{
 
       setShowServiceModal(false);
     },
-    [helpers, dispatch, setShowServiceModal, serviceId, onRefresh]
+    [
+      flushReduxPersistence,
+      helpers,
+      dispatch,
+      setShowServiceModal,
+      serviceId,
+      onRefresh,
+    ]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
@@ -194,7 +201,7 @@ const AuthWidget: React.FunctionComponent<{
 
                 setShowServiceModal(true);
               }}
-              disabled={isPending || error != null}
+              disabled={isFetching || error != null}
             >
               <FontAwesomeIcon icon={faPlus} /> Configure
             </Button>

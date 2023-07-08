@@ -16,29 +16,30 @@
  */
 
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { type BlockPosition, type BlockPipeline } from "@/blocks/types";
+import { type BrickPosition, type BrickPipeline } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { blockConfigFactory } from "@/testUtils/factories";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 function getTestBlock() {
-  return blockConfigFactory({
+  return brickConfigFactory({
     config: {
       text: toExpression("nunjucks", "test"),
     },
+    if: toExpression("var", "@foo"),
   });
 }
 
 test("should invoke the callback for a brick expression", () => {
-  const pipeline: BlockPipeline = [getTestBlock()];
+  const pipeline: BrickPipeline = [getTestBlock()];
 
   const visitExpression = jest.fn();
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
-      position: BlockPosition,
+      position: BrickPosition,
       expression: Expression<unknown>
     ) {
       visitExpression(position, expression);
@@ -48,7 +49,7 @@ test("should invoke the callback for a brick expression", () => {
   const visitor = new Visitor();
   visitor.visitRootPipeline(pipeline);
 
-  expect(visitExpression).toHaveBeenCalledTimes(pipeline.length);
+  expect(visitExpression).toHaveBeenCalledTimes(2);
   expect(visitExpression).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.text`,
@@ -56,6 +57,15 @@ test("should invoke the callback for a brick expression", () => {
     {
       __type__: "nunjucks",
       __value__: "test",
+    }
+  );
+  expect(visitExpression).toHaveBeenCalledWith(
+    {
+      path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.if`,
+    },
+    {
+      __type__: "var",
+      __value__: "@foo",
     }
   );
 });
@@ -67,7 +77,7 @@ test("should invoke the callback for a Document expression", () => {
   const containerElement = createNewElement("container");
   containerElement.children[0].children[0].children.push(textElement);
 
-  const documentBrick = blockConfigFactory({
+  const documentBrick = brickConfigFactory({
     id: DocumentRenderer.BLOCK_ID,
     config: {
       body: [containerElement],
@@ -78,7 +88,7 @@ test("should invoke the callback for a Document expression", () => {
   const visitExpression = jest.fn();
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
-      position: BlockPosition,
+      position: BrickPosition,
       expression: Expression<unknown>
     ) {
       visitExpression(position, expression);

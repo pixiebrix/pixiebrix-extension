@@ -20,6 +20,7 @@ import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
   type DocumentElement,
+  isButtonElement,
   isListElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
@@ -89,6 +90,12 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   // Render the item template and the Item Type Selector for the list element
   const isList = isListElement(previewElement);
 
+  // Have to apply to the wrapper PreviewComponent, because otherwise the button itself will expand to just the
+  // size of the wrapper which would not be full width.
+  // In the future, we could consider also inspecting className for `w-` and `btn-block` utility classes
+  const isFullWidth =
+    isButtonElement(previewElement) && previewElement.config.fullWidth;
+
   const { Component: PreviewComponent, props } = useMemo(
     () => getPreviewComponentDefinition(previewElement),
     [previewElement]
@@ -101,6 +108,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       className={cx(styles.root, {
         [styles.active]: isActive,
         [styles.hovered]: isHovered,
+        "btn-block": isFullWidth,
       })}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}

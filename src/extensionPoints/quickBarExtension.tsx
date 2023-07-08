@@ -42,7 +42,7 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
@@ -54,11 +54,11 @@ import { guessSelectedElement } from "@/utils/selectionController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type IconConfig } from "@/types/iconTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
@@ -74,14 +74,14 @@ export type QuickBarConfig = {
    */
   icon?: IconConfig;
 
-  action: BlockConfig | BlockPipeline;
+  action: BrickConfig | BrickPipeline;
 };
 
 export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConfig> {
   static isQuickBarExtensionPoint(
-    extensionPoint: IExtensionPoint
+    extensionPoint: StarterBrick
   ): extensionPoint is QuickBarExtensionPoint {
-    // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (IExtensionPoint)
+    // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (StarterBrick)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (extensionPoint as any)?._definition?.type === "quickBar";
   }
@@ -117,7 +117,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
   async getBlocks(
     extension: ResolvedExtension<QuickBarConfig>
-  ): Promise<IBlock[]> {
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
 
@@ -351,7 +351,7 @@ export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<QuickBarDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBar") {
     throw new Error(`Expected type=quickBar, got ${type}`);

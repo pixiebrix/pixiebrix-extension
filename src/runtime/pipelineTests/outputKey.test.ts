@@ -18,31 +18,31 @@
 import { type ApiVersion } from "@/types/runtimeTypes";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
   test("pass data via output key", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         outputKey: validateOutputKey("foo"),
         config: { message: "{{inputArg}}" },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "hello, {{@foo.message}}" },
       },
     ];
@@ -58,7 +58,7 @@ describe("apiVersion: v1", () => {
     const initialContext = { inputArg: "bar" };
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         // Is only block in pipeline and how an outputKey, so the original input value is returned
         outputKey: validateOutputKey("foo"),
         config: { message: "inputArg" },
@@ -80,14 +80,14 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("block outputKey takes precedence over @input", async () => {
       const pipeline = [
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           outputKey: validateOutputKey("input"),
           config: {
             message: "First block",
           },
         },
         {
-          id: contextBlock.id,
+          id: contextBrick.id,
           config: {},
         },
       ];

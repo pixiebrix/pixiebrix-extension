@@ -27,7 +27,7 @@ export const PIXIEBRIX_SERVICE_ID: RegistryId =
 export const AUTOMATION_ANYWHERE_PARTNER_KEY = "automation-anywhere";
 
 // Automation Anywhere partner service definition constants
-export const CONTROL_ROOM_SERVICE_ID: RegistryId = validateRegistryId(
+export const CONTROL_ROOM_TOKEN_SERVICE_ID: RegistryId = validateRegistryId(
   "automation-anywhere/control-room"
 );
 export const CONTROL_ROOM_OAUTH_SERVICE_ID: RegistryId = validateRegistryId(

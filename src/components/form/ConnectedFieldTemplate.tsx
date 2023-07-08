@@ -23,15 +23,14 @@ import FieldTemplate, {
 import { type FormikContextType } from "formik/dist/types";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- https://github.com/typescript-eslint/typescript-eslint/issues/5407
 type ConnectedFieldProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;
 };
 
-const FormikFieldTemplate = <Values,>({
+function FormikFieldTemplate<Values>({
   formik,
   ...fieldProps
-}: ConnectedFieldProps<Values>) => {
+}: ConnectedFieldProps<Values>) {
   const annotations = useFieldAnnotations(fieldProps.name);
   const touched = getIn(formik.touched, fieldProps.name);
   const value = getIn(formik.values, fieldProps.name);
@@ -46,6 +45,6 @@ const FormikFieldTemplate = <Values,>({
       {...fieldProps}
     />
   );
-};
+}
 
 export default connect<FieldProps>(FormikFieldTemplate);

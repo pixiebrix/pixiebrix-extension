@@ -18,7 +18,7 @@
 import styles from "./SchemaTree.module.scss";
 
 import React, { useMemo } from "react";
-import { type Schema } from "@/types/schemaTypes";
+import { DESCRIPTION_ALLOWED_TAGS, type Schema } from "@/types/schemaTypes";
 import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { useTable, useExpanded, type Row, type Cell } from "react-table";
@@ -30,6 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { isServiceField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import MarkdownInlineLazy from "@/components/MarkdownInlineLazy";
 
 type SchemaTreeRow = {
   name: string;
@@ -70,6 +71,19 @@ const TypeCell: React.FunctionComponent<{
 }> = ({ row }) => (
   <span className={cx(styles.codeCell)}>{row.values.type}</span>
 );
+
+const DescriptionCell: React.FunctionComponent<{
+  row: Row & { values: SchemaTreeRow };
+}> = ({ row }) =>
+  row.values.description ? (
+    <MarkdownInlineLazy
+      markdown={row.values.description}
+      sanitizeConfig={DESCRIPTION_ALLOWED_TAGS}
+      as="span"
+    />
+  ) : (
+    <span></span>
+  );
 
 const RequiredCell: React.FunctionComponent<{
   row: Row & { values: SchemaTreeRow };
@@ -152,6 +166,30 @@ const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
     }) as SchemaTreeRow[];
 };
 
+const columns = [
+  {
+    id: "expander",
+    Header: "Name",
+    accessor: "name",
+    Cell: ExpandableCell,
+  },
+  {
+    Header: "Required",
+    accessor: "required",
+    Cell: RequiredCell,
+  },
+  {
+    Header: "Type",
+    accessor: "type",
+    Cell: TypeCell,
+  },
+  {
+    Header: "Description",
+    accessor: "description",
+    Cell: DescriptionCell,
+  },
+];
+
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
@@ -162,32 +200,6 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
 
     return getFormattedData(schema);
   }, [schema]);
-
-  const columns = useMemo(
-    () => [
-      {
-        id: "expander",
-        Header: "Name",
-        accessor: "name",
-        Cell: ExpandableCell,
-      },
-      {
-        Header: "Required",
-        accessor: "required",
-        Cell: RequiredCell,
-      },
-      {
-        Header: "Type",
-        accessor: "type",
-        Cell: TypeCell,
-      },
-      {
-        Header: "Description",
-        accessor: "description",
-      },
-    ],
-    []
-  );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data }, useExpanded);

@@ -26,7 +26,10 @@ import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { UNSET_UUID, uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
-import { type DocumentElementType } from "./documentBuilderTypes";
+import {
+  type DocumentElement,
+  type DocumentElementType,
+} from "./documentBuilderTypes";
 import DocumentContext, {
   initialValue,
 } from "@/components/documentBuilder/render/DocumentContext";
@@ -43,11 +46,15 @@ describe("When rendered in panel", () => {
     blockRegistry.register([markdownBlock]);
   });
 
-  const renderDocument = (config: any) => {
-    const { Component, props } = buildDocumentBranch(config, {
+  const renderDocument = (config: DocumentElement) => {
+    const branch = buildDocumentBranch(config, {
       staticId: "body",
       branches: [],
     });
+
+    const { Component, props } = branch ?? {};
+    const children = Component ? <Component {...props} /> : null;
+
     return render(
       <DocumentContext.Provider
         value={{
@@ -58,7 +65,7 @@ describe("When rendered in panel", () => {
           },
         }}
       >
-        <Component {...props} />
+        {children}
       </DocumentContext.Provider>
     );
   };
@@ -88,8 +95,23 @@ describe("When rendered in panel", () => {
     }
   );
 
+  test.each([1, 2, 3, 4, 5, 6])("renders tag for h%d", (headerLevel) => {
+    const { container } = renderDocument({
+      type: "header",
+      config: {
+        title: "Test Header",
+        heading: `h${headerLevel}`,
+      },
+    });
+
+    const element = container.querySelector(`h${headerLevel}`);
+
+    expect(element).not.toBeNull();
+    expect(element).toHaveTextContent("Test Header");
+  });
+
   test("renders paragraph text", () => {
-    const config = {
+    const config: DocumentElement = {
       type: "text",
       config: {
         text: "Test Paragraph",
@@ -105,8 +127,22 @@ describe("When rendered in panel", () => {
     expect(element).toHaveTextContent("Test Paragraph");
   });
 
+  test("does not render hidden element at root", () => {
+    const config: DocumentElement = {
+      type: "text",
+      config: {
+        text: "Test Paragraph",
+        className: "test-class",
+        hidden: true,
+      },
+    };
+    const { container } = renderDocument(config);
+    const element = container.querySelector("p");
+    expect(element).toBeNull();
+  });
+
   test("renders markdown", () => {
-    const config = {
+    const config: DocumentElement = {
       type: "text",
       config: {
         text: "Test ~~Paragraph~~",
@@ -119,7 +155,8 @@ describe("When rendered in panel", () => {
   });
 
   test("renders unknown type", () => {
-    const config = {
+    const config: DocumentElement = {
+      // @ts-expect-error testing with invalid type
       type: "TheTypeForWhichAComponentIsNotDefined",
       className: "test-class",
     };
@@ -190,7 +227,7 @@ describe("When rendered in panel", () => {
           ],
         },
       ],
-    };
+    } as DocumentElement;
 
     const { container } = renderDocument(config);
 
@@ -216,7 +253,7 @@ describe("When rendered in panel", () => {
 
   describe("button", () => {
     test("renders button", () => {
-      const config = {
+      const config: DocumentElement = {
         type: "button",
         config: {
           title: "Button under test",
@@ -228,12 +265,31 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
       expect(element).toHaveTextContent("Button under test");
+      expect(element).not.toBeDisabled();
+    });
+
+    test("renders full width button", () => {
+      const config: DocumentElement = {
+        type: "button",
+        config: {
+          title: "Button under test",
+          fullWidth: true,
+          onClick: {
+            __type__: "pipeline",
+            __value__: jest.fn(),
+          },
+        },
+      };
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
+
+      expect(element).toHaveClass("btn-block");
     });
 
     test.each`
@@ -241,28 +297,53 @@ describe("When rendered in panel", () => {
       ${"primary"}   | ${"btn-primary"}
       ${"secondary"} | ${"btn-secondary"}
       ${"link"}      | ${"btn-link"}
-    `("applies button variant: $variant", ({ variant, className }) => {
-      const config = {
+    `(
+      "applies button variant: $variant",
+      ({ variant, className }: { variant: string; className: string }) => {
+        const config: DocumentElement = {
+          type: "button",
+          config: {
+            title: "Button under test",
+            variant,
+            onClick: {
+              __type__: "pipeline",
+              __value__: jest.fn(),
+            },
+          },
+        };
+        const wrapper = renderDocument(config);
+        const element = wrapper.getByRole("button");
+
+        expect(element).toHaveClass(className);
+      }
+    );
+
+    test.each([true, "y"])("renders disabled button for %s", (disabled) => {
+      const config: DocumentElement = {
         type: "button",
         config: {
           title: "Button under test",
-          variant,
+          className: "test-class",
+          disabled,
           onClick: {
             __type__: "pipeline",
             __value__: jest.fn(),
           },
         },
       };
-      const { container } = renderDocument(config);
-      const element = container.querySelector("button");
 
-      expect(element).toHaveClass(className);
+      const wrapper = renderDocument(config);
+      const element = wrapper.getByRole("button");
+
+      expect(element).not.toBeNull();
+      expect(element).toHaveClass("test-class");
+      expect(element).toBeDisabled();
     });
   });
 
   describe("card", () => {
     test("renders card", () => {
-      const config = {
+      const config: DocumentElement = {
         type: "card",
         config: {
           className: "test-class",
@@ -282,7 +363,7 @@ describe("When rendered in panel", () => {
       expect(cardBody).not.toBeNull();
     });
     test("renders card children", () => {
-      const config = {
+      const config: DocumentElement = {
         type: "card",
         config: {
           className: "test-class",
@@ -326,7 +407,7 @@ config:
       config:
         markdown: ${markdown}`;
 
-    const config = loadBrickYaml(yamlConfig);
+    const config = loadBrickYaml(yamlConfig) as DocumentElement;
     const { container } = renderDocument(config);
 
     // Wait for useAsyncState inside the PipelineComponent

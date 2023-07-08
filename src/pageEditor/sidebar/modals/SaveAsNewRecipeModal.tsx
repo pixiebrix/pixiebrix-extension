@@ -23,7 +23,7 @@ import {
   selectActiveRecipeId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/recipes/recipesHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
   const { isSaveAsNewRecipeModalVisible: show } = useSelector(
@@ -31,7 +31,7 @@ const SaveAsNewRecipeModal: React.FC = () => {
   );
 
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isFetching } = useRecipe(recipeId);
+  const { data: recipe, isFetching } = useOptionalRecipe(recipeId);
   const recipeName = recipe?.metadata?.name ?? "this mod";
 
   const dispatch = useDispatch();

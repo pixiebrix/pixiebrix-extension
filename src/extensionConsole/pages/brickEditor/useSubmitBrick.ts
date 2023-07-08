@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import useReinstall from "@/extensionConsole/pages/blueprints/utils/useReinstall";
+import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import {
@@ -38,7 +38,7 @@ import {
 } from "@/services/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
-import { type UnsavedRecipeDefinition } from "@/types/recipeTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { type Definition } from "@/types/registryTypes";
 
 type SubmitOptions = {
@@ -49,7 +49,7 @@ type SubmitCallbacks = {
   validate: (values: EditorValues) => Promise<BrickValidationResult>;
   remove: (id: UUID) => Promise<void>;
   submit: (
-    values: EditorValues,
+    values: EditorValues & { id: UUID },
     helpers: { setErrors: (errors: unknown) => void }
   ) => Promise<void>;
 };
@@ -87,12 +87,12 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   );
 
   const submit = useCallback(
-    async (values, { setErrors, resetForm }) => {
+    async (values: EditorValues & { id: UUID }, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
-      const unsavedBrickJson = loadBrickYaml(config) as
+      const unsavedBrickJson = loadBrickYaml(String(config)) as
         | Definition
-        | UnsavedRecipeDefinition;
+        | UnsavedModDefinition;
       const { kind, metadata } = unsavedBrickJson;
 
       try {
@@ -108,7 +108,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
               // TypeScript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
               // Definition
               const unsavedRecipeDefinition =
-                unsavedBrickJson as UnsavedRecipeDefinition;
+                unsavedBrickJson as UnsavedModDefinition;
               await reinstall({
                 ...unsavedRecipeDefinition,
                 sharing: pick(data, ["organizations", "public"]),

@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type BlockArgs,
-  type BlockOptions,
+  type BrickArgs,
+  type BrickOptions,
   type OutputKey,
 } from "@/types/runtimeTypes";
 
@@ -74,19 +74,19 @@ class ForEach extends Transformer {
       elements,
       body: bodyPipeline,
       elementKey = validateOutputKey("element"),
-    }: BlockArgs<{
+    }: BrickArgs<{
       elements: unknown[];
       body: PipelineExpression;
       elementKey: OutputKey;
     }>,
-    options: BlockOptions
+    options: BrickOptions
   ): Promise<unknown> {
     let last: unknown;
 
     for (const [index, element] of elements.entries()) {
       // eslint-disable-next-line no-await-in-loop -- synchronous for-loop brick
       last = await options.runPipeline(
-        bodyPipeline.__value__,
+        bodyPipeline,
         { key: "body", counter: index },
         {
           [`@${elementKey}`]: element,

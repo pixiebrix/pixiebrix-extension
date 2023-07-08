@@ -16,15 +16,12 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import {
-  type EditablePackage,
-  type Kind,
-  type RegistryId,
-} from "@/types/registryTypes";
+import { type Kind, type RegistryId } from "@/types/registryTypes";
 import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import {
+  type EditablePackage,
   type CloudExtension,
   type Database,
   type Group,
@@ -37,6 +34,7 @@ import {
   type PackageUpsertResponse,
   type PackageVersion,
   type PendingInvitation,
+  type RecipeResponse,
   type SanitizedAuth,
   UserRole,
 } from "@/types/contract";
@@ -47,9 +45,9 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type ServiceDefinition } from "@/types/serviceTypes";
 import {
-  type RecipeDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 
 type QueryArgs = {
   /**
@@ -77,6 +75,11 @@ type QueryArgs = {
    * Optional additional metadata to pass through to the result.
    */
   meta?: unknown;
+
+  /**
+   * Optional URL parameters to be sent with the request
+   */
+  params?: AxiosRequestConfig["params"];
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
@@ -86,12 +89,13 @@ const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
   data,
   requireLinked = true,
   meta,
+  params,
 }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
       : getApiClient());
-    const result = await client({ url, method, data });
+    const result = await client({ url, method, data, params });
 
     return { data: result.data, meta };
   } catch (error) {
@@ -131,6 +135,7 @@ export const appApi = createApi({
     "Package",
     "PackageVersion",
     "StarterBlueprints",
+    "ZapierKey",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -148,7 +153,7 @@ export const appApi = createApi({
     }),
     createDatabase: builder.mutation<
       Database,
-      { name: string; organizationId: string }
+      { name: string; organizationId?: string | undefined }
     >({
       query: ({ name, organizationId }) => ({
         url: organizationId
@@ -182,7 +187,11 @@ export const appApi = createApi({
       providesTags: ["Services"],
     }),
     getServiceAuths: builder.query<SanitizedAuth[], void>({
-      query: () => ({ url: "/api/services/shared/?meta=1", method: "get" }),
+      query: () => ({
+        url: "/api/services/shared/",
+        method: "get",
+        params: { meta: 1 },
+      }),
       providesTags: ["ServiceAuths"],
     }),
     getOrganizations: builder.query<Organization[], void>({
@@ -253,14 +262,23 @@ export const appApi = createApi({
       query: () => ({ url: "/api/marketplace/tags/", method: "get" }),
       providesTags: ["MarketplaceTags"],
     }),
-    // ToDo use this query in places where "/api/bricks/" is called
     getEditablePackages: builder.query<EditablePackage[], void>({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getCloudExtensions: builder.query<CloudExtension[], void>({
+    getAllCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
+    }),
+    getCloudExtension: builder.query<CloudExtension, { extensionId: UUID }>({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "get",
+      }),
+      providesTags: (result, error, { extensionId }) => [
+        { type: "CloudExtensions", extensionId },
+        "CloudExtensions",
+      ],
     }),
     deleteCloudExtension: builder.mutation<
       CloudExtension,
@@ -272,10 +290,36 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["CloudExtensions"],
     }),
+    getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
+      query: ({ recipeId }) => ({
+        url: `/api/recipes/${encodeURIComponent(recipeId)}/`,
+        method: "get",
+      }),
+      transformResponse(baseQueryReturnValue: RecipeResponse): ModDefinition {
+        // Pull out sharing and updated_at from response and merge into the base
+        // response to create a RecipeDefinition
+        const {
+          sharing,
+          updated_at,
+          config: unsavedRecipeDefinition,
+        } = baseQueryReturnValue;
+        return {
+          ...unsavedRecipeDefinition,
+          sharing,
+          updated_at,
+        };
+      },
+      // Reminder, RTK Query caching is per-endpoint, not across endpoints. So we want to list the tags here for which
+      // we want to watch for invalidation.
+      providesTags: (result, error, { recipeId }) => [
+        { type: "Package", id: recipeId },
+        "EditablePackages",
+      ],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
-        recipe: UnsavedRecipeDefinition;
+        recipe: UnsavedModDefinition;
         organizations: UUID[];
         public: boolean;
         shareDependencies?: boolean;
@@ -285,7 +329,7 @@ export const appApi = createApi({
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
-          url: "api/bricks/",
+          url: "/api/bricks/",
           method: "post",
           data: {
             config: recipeConfig,
@@ -300,7 +344,7 @@ export const appApi = createApi({
     }),
     updateRecipe: builder.mutation<
       PackageUpsertResponse,
-      { packageId: UUID; recipe: UnsavedRecipeDefinition }
+      { packageId: UUID; recipe: UnsavedModDefinition }
     >({
       query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
@@ -313,9 +357,9 @@ export const appApi = createApi({
             name: recipe.metadata.id,
             config: recipeConfig,
             kind: "recipe" as Kind,
-            public: Boolean((recipe as RecipeDefinition).sharing?.public),
+            public: Boolean((recipe as ModDefinition).sharing?.public),
             organizations:
-              (recipe as RecipeDefinition).sharing?.organizations ?? [],
+              (recipe as ModDefinition).sharing?.organizations ?? [],
           },
         };
       },
@@ -331,6 +375,10 @@ export const appApi = createApi({
     getInvitations: builder.query<PendingInvitation[], void>({
       query: () => ({ url: "/api/invitations/me/", method: "get" }),
       providesTags: ["Invitations"],
+    }),
+    getZapierKey: builder.query<{ api_key: string }, void>({
+      query: () => ({ url: "/api/webhooks/key/", method: "get" }),
+      providesTags: ["ZapierKey"],
     }),
     getPackage: builder.query<Package, { id: UUID }>({
       query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
@@ -395,7 +443,7 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
-    getStarterBlueprints: builder.query<RecipeDefinition[], void>({
+    getStarterBlueprints: builder.query<ModDefinition[], void>({
       query: () => ({
         url: "/api/onboarding/starter-blueprints/",
         method: "get",
@@ -429,9 +477,12 @@ export const {
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
-  useGetCloudExtensionsQuery,
+  useGetZapierKeyQuery,
+  useGetCloudExtensionQuery,
+  useGetAllCloudExtensionsQuery,
   useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
+  useGetRecipeQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
   useGetInvitationsQuery,

@@ -15,18 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
-import { type BlockArgs, type BlockOptions } from "@/types/runtimeTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { readJQuery, type SelectorMap } from "@/blocks/readers/jquery";
-import { type BlockConfig } from "@/blocks/types";
+import { readJQuery, type SelectorConfigMap } from "@/blocks/readers/jquery";
+import { type BrickConfig } from "@/blocks/types";
 import { mapValues } from "lodash";
 import { isExpression } from "@/runtime/mapArgs";
+import { validateRegistryId } from "@/types/helpers";
 
 export class JQueryReader extends Transformer {
+  public static BRICK_ID = validateRegistryId("@pixiebrix/jquery-reader");
+
   constructor() {
     super(
-      "@pixiebrix/jquery-reader",
+      JQueryReader.BRICK_ID,
       "Extract from Page",
       "Get data from the page using jQuery selectors"
     );
@@ -91,8 +94,8 @@ export class JQueryReader extends Transformer {
     additionalProperties: true,
   };
 
-  override getOutputSchema(config: BlockConfig): Schema | undefined {
-    const selectors = config.config.selectors as SelectorMap;
+  override getOutputSchema(config: BrickConfig): Schema | undefined {
+    const selectors = config.config.selectors as SelectorConfigMap;
 
     if (isExpression(selectors)) {
       return this.outputSchema;
@@ -123,8 +126,8 @@ export class JQueryReader extends Transformer {
   }
 
   async transform(
-    { selectors }: BlockArgs<{ selectors: SelectorMap }>,
-    { root }: BlockOptions
+    { selectors }: BrickArgs<{ selectors: SelectorConfigMap }>,
+    { root }: BrickOptions
   ): Promise<unknown> {
     return readJQuery({ type: "jquery", selectors }, root);
   }

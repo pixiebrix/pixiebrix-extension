@@ -17,7 +17,6 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { useAsyncState } from "@/hooks/common";
 import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
@@ -30,6 +29,7 @@ import { useLocation } from "react-router";
 import { clearServiceCache } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import { syncRemotePackages } from "@/baseRegistry";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const Layout: React.FunctionComponent = ({ children }) => (
   <Row className="w-100 mx-0">
@@ -46,7 +46,9 @@ const Layout: React.FunctionComponent = ({ children }) => (
  */
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
+  // Must use useLocation because we're checking the path in the hash route.
   const location = useLocation();
+  const isStartUrl = location.pathname.startsWith("/start");
 
   // Local override for authentication method
   const { authMethod } = useSelector(selectSettings);
@@ -57,9 +59,9 @@ const SetupPage: React.FunctionComponent = () => {
     hasConfiguredIntegration,
   } = useRequiredPartnerAuth();
 
-  // Fetch service definitions which are required for partner JWT login.
+  // Fetch service definitions which are required for partner JWT login in parallel with useRequiredPartnerAuth
   // useAsyncState with ignored output to track loading state
-  const [_, serviceDefinitionsLoading] = useAsyncState(async () => {
+  const { data: baseURL, isLoading } = useAsyncState(async () => {
     try {
       await syncRemotePackages();
       // Must happen after the call to fetch service definitions
@@ -72,11 +74,11 @@ const SetupPage: React.FunctionComponent = () => {
         reportError: true,
       });
     }
+
+    return getBaseURL();
   }, []);
 
-  const [baseURL, baseURLPending] = useAsyncState(getBaseURL, []);
-
-  if (baseURLPending || isPartnerLoading || serviceDefinitionsLoading) {
+  if (isLoading || isPartnerLoading) {
     return (
       <Layout>
         <Loader />
@@ -84,13 +86,12 @@ const SetupPage: React.FunctionComponent = () => {
     );
   }
 
-  const isStartUrl = location.pathname.startsWith("/start");
-
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
   if (authMethod === "pixiebrix-token") {
-    // NOP -- user has overridden to use PixieBrix token even though they might be connected to an organization
-    // that uses a Control Room
+    // User has overridden settings to use PixieBrix token even though they might be connected to an organization
+    // that has a linked Control Room
+    setupCard = <DefaultSetupCard installURL={baseURL} />;
   } else if (
     isStartUrl ||
     (hasPartner && !hasConfiguredIntegration) ||

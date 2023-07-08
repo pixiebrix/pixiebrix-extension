@@ -45,8 +45,6 @@ async function getOptionsState(): Promise<PersistedOptionsState> {
  * Read extension options from local storage (without going through redux-persistor).
  */
 export async function loadOptions(): Promise<ExtensionOptionsState> {
-  console.debug("Loading raw options from storage");
-
   const base = await getOptionsState();
   // The redux persist layer persists the extensions value as JSON-string.
   // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.

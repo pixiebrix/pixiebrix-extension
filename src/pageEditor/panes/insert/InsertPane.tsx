@@ -19,17 +19,19 @@ import React, { useCallback } from "react";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
-import GenericInsertPane from "@/pageEditor/panes/insert/GenericInsertPane";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { useDispatch } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
+import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 
 const InsertPane: React.FC<{ inserting: ExtensionPointType }> = ({
   inserting,
 }) => {
+  // Auto-insert if the ExtensionPointType supports it
+  useAutoInsert(inserting);
+
   const dispatch = useDispatch();
 
   const cancelInsert = useCallback(async () => {
@@ -50,12 +52,7 @@ const InsertPane: React.FC<{ inserting: ExtensionPointType }> = ({
     }
 
     default: {
-      return (
-        <GenericInsertPane
-          cancel={cancelInsert}
-          config={ADAPTERS.get(inserting)}
-        />
-      );
+      return null;
     }
   }
 };

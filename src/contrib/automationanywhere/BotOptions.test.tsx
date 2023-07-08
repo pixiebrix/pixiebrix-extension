@@ -16,12 +16,11 @@
  */
 
 import React from "react";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_TOKEN_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import useDependency from "@/services/useDependency";
@@ -30,13 +29,9 @@ import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IService } from "@/types/serviceTypes";
-
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
+import { useAuthOptions } from "@/hooks/auth";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({
@@ -48,11 +43,7 @@ jest.mock("@/services/useDependency", () =>
   })
 );
 jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn().mockReturnValue({
-    authOptions: [],
-    refresh: jest.fn(),
-    isLoading: false,
-  }),
+  useAuthOptions: jest.fn(),
 }));
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
@@ -61,7 +52,7 @@ function makeBaseState() {
   const baseFormState = menuItemFormStateFactory();
   baseFormState.services = [
     {
-      id: CONTROL_ROOM_SERVICE_ID,
+      id: CONTROL_ROOM_TOKEN_SERVICE_ID,
       outputKey: "automationAnywhere" as OutputKey,
     },
   ];
@@ -88,6 +79,7 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
+  jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
 });
 
 describe("BotOptions", () => {

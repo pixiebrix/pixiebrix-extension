@@ -21,16 +21,22 @@
   "content_security_policy": "script-src 'self' https://apis.google.com 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src 'self' https: https://*.googleapis.com https://docs.google.com",
   "content_scripts": [
     {
-      "matches": ["https://*.pixiebrix.com/*"],
+      "matches": ["https://*/*"],
       "js": ["contentScript.js"],
       "css": ["contentScript.css"],
+      "all_frames": true,
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://*/*"],
+      "js": ["loadActivationEnhancements.js"],
+      "run_at": "document_end"
     }
   ],
   "sandbox": {
     "pages": ["sandbox.html"]
   },
-  "optional_permissions": ["clipboardWrite", "*://*/*", "<all_urls>"],
+  "optional_permissions": ["clipboardWrite"],
   "permissions": [
     "activeTab",
     "storage",
@@ -38,7 +44,8 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "https://*.pixiebrix.com/*"
+    "*://*/*",
+    "<all_urls>"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {

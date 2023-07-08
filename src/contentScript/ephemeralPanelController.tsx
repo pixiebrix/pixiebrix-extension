@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TemporaryPanelEntry } from "@/sidebar/types";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { expectContext } from "@/utils/expectContext";
 import panelInThisTab from "@/blocks/transformers/temporaryInfo/messenger/api";
 import { type UUID } from "@/types/stringTypes";

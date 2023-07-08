@@ -29,6 +29,11 @@ type FetchOptions = {
   requireLinked?: true;
 };
 
+/**
+ * A `fetch` method that automatically authenticates calls to the app API. Prefer RTK Query in React code.
+ * @see getLinkedApiClient
+ * @see getApiClient
+ */
 export async function fetch<TData = unknown>(
   relativeOrAbsoluteUrl: string,
   options: FetchOptions = {}

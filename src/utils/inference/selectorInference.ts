@@ -15,18 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, identity, intersection, sortBy, uniq } from "lodash";
-import { getCssSelector } from "css-selector-generator";
 import {
-  type CssSelectorType,
-  type CssSelectorMatch,
-} from "css-selector-generator/types/types";
+  compact,
+  identity,
+  intersection,
+  mapValues,
+  sortBy,
+  uniq,
+} from "lodash";
+import { getCssSelector } from "css-selector-generator";
+import { type CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
 import { matchesAnyPattern } from "@/utils";
 import { escapeSingleQuotes } from "@/utils/escape";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import {
+  getSiteSelectorHint,
+  SELECTOR_HINTS,
+  type SelectorTemplate,
+  type SiteSelectorHint,
+} from "@/utils/inference/siteSelectorHints";
+import { type ElementInfo } from "@/pageScript/frameworks";
+import { type Framework } from "@/pageScript/messenger/constants";
+import * as pageScript from "@/pageScript/messenger/api";
+import { renderString } from "nunjucks";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -38,54 +52,10 @@ export const BUTTON_TAGS: string[] = [
 ];
 const MENU_TAGS = ["ul", "tbody"];
 
-type SiteSelectorHint = {
-  /**
-   * Name for the rule hint-set.
-   */
-  siteName: string;
-  /**
-   * Return true if the these hints apply to the current site.
-   */
-  siteValidator: (element?: HTMLElement) => boolean;
-  badPatterns: CssSelectorMatch[];
-  uniqueAttributes: string[];
-  stableAnchors: CssSelectorMatch[];
-};
-
-const SELECTOR_HINTS: SiteSelectorHint[] = [
-  {
-    // Matches all sites using Salesforce's Lightning framework
-    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
-    siteName: "Salesforce",
-    siteValidator: (element) =>
-      $(element).closest("[data-aura-rendered-by]").length > 0,
-    badPatterns: [
-      getAttributeSelectorRegex(
-        // Salesforce Aura component tracking
-        "data-aura-rendered-by"
-      ),
-
-      /#\\+\d+ \d+\\+:0/,
-      /#\w+[_-]\d+/,
-      /.*\.hover.*/,
-      /.*\.not-selected.*/,
-      /^\[name='leftsidebar'] */,
-    ],
-    uniqueAttributes: ["data-component-id"],
-    stableAnchors: [
-      ".consoleRelatedRecord",
-      /\.consoleRelatedRecord\d+/,
-      ".navexWorkspaceManager",
-      ".active",
-      ".oneConsoleTab",
-      ".tabContent",
-    ],
-  },
-];
-
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
+  "role",
 
   // Data attributes people use in automated tests are unlikely to change frequently
   "data-cy", // Cypress
@@ -123,23 +93,6 @@ const UNSTABLE_SELECTORS = [
   ),
 ];
 
-function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
-  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator(element)
-  );
-  if (!siteSelectorHint) {
-    siteSelectorHint = {
-      siteName: "",
-      siteValidator: () => false,
-      badPatterns: [],
-      uniqueAttributes: [],
-      stableAnchors: [],
-    };
-  }
-
-  return siteSelectorHint;
-}
-
 function getUniqueAttributeSelectors(
   element: HTMLElement,
   siteSelectorHint: SiteSelectorHint
@@ -165,7 +118,9 @@ function getSelectorFromClass(className: string): string {
   return "." + [...classHelper.classList].join(".");
 }
 
-/** ID selectors and certain other attributes can uniquely identify items */
+/**
+ * Return true if a selector is likely to uniquely identify an element.
+ */
 function isSelectorUsuallyUnique(selector: string): boolean {
   return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
@@ -173,7 +128,7 @@ function isSelectorUsuallyUnique(selector: string): boolean {
 /**
  * Return selectors sorted by quality
  * - getSelectorPreference
- * - length (lower is better)
+ * - textual length (lower is better)
  * @param selectors an array of selectors, or items with selector properties to sort
  * @param iteratee a method to select the selector field for an item
  *
@@ -206,7 +161,7 @@ export function sortBySelector<Item = string>(
  * -3  "[data-cy='b4da55']"
  * -2  '.iAmAUniqueGreatClassSelector' // it's rare case but happens when classname is unique
  * -1  '#parentId a' // tag name followed by parent unique Selector
- * -1  '[data-test-id='b4da55'] input' // tag name followed by parent unique Selector
+ * -1  '[data-test-id='b4da55'] input' // tag name preceded by parent unique Selector
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
@@ -338,7 +293,7 @@ export function safeCssSelector(
 }
 
 /**
- * Returns true if selectors match any of the same elements
+ * Returns true if selectors match any of the same elements.
  */
 function selectorsOverlap(
   lhs: string,
@@ -395,6 +350,7 @@ export function expandedCssSelector(
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
+    ...siteSelectorHint.requiredSelectors,
   ];
 
   // Find ancestors of each user-selected element. Unlike single-element select, includes both
@@ -482,6 +438,118 @@ function findAncestorsWithIdLikeSelectors(
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
 }
 
+function getElementAttributes(element: HTMLElement) {
+  const attributes: Record<string, string> = {};
+
+  $.each(element.attributes, function () {
+    attributes[this.name] = this.value;
+  });
+
+  return attributes;
+}
+
+function maybeInstantiateSelectorTemplate(
+  ancestorElement: HTMLElement,
+  template: SelectorTemplate
+): string | null {
+  if (!ancestorElement.matches(template.selector)) {
+    return null;
+  }
+
+  const extractedValues = mapValues(template.extract, (extractRule: string) => {
+    const element = $safeFind(extractRule, ancestorElement);
+
+    if (!element) {
+      return null;
+    }
+
+    return {
+      ...getElementAttributes(element[0]),
+      text: element.text(),
+    };
+  });
+
+  // All extraction rules must match, otherwise return no match
+  if (Object.values(extractedValues).some((value) => value == null)) {
+    return null;
+  }
+
+  return renderString(template.template, extractedValues);
+}
+
+/**
+ * Return a selector matching one of the provided templates, or null if none of the templates match
+ * @param ancestorElement an ancestor of the element to generate the selector for
+ * @param templates the selector templates/stencils to try
+ * @param root the root element to generate selectors relative to. Used to ensure the generated selector is unique
+ */
+function getAncestorSelectorTemplate({
+  ancestorElement,
+  root,
+  templates,
+}: {
+  ancestorElement: HTMLElement;
+  templates: SelectorTemplate[];
+  root?: HTMLElement | Document | JQuery<HTMLElement | Document>;
+}): string | null {
+  // Find first template that matches and uniquely selects the ancestor
+  return templates
+    .map((template) =>
+      maybeInstantiateSelectorTemplate(ancestorElement, template)
+    )
+    .find(
+      (selector) => selector != null && doesSelectOneElement(selector, root)
+    );
+}
+
+function getMatchingRequiredSelectors(
+  element: HTMLElement,
+  requiredSelectors: string[]
+) {
+  return requiredSelectors.find((selector) => element.matches(selector));
+}
+
+/**
+ * Return selectors for ancestors of the element based on the matching selector hint, if any hint matches.
+ * @param element The element to generate selectors for
+ * @param root the root to generate selectors against, either a DOM element or the document
+ */
+function mapSelectorOverrideToAncestors(
+  element: HTMLElement,
+  root: HTMLElement | Document
+): Array<{ element: HTMLElement; selectorOverride: string }> {
+  const { requiredSelectors, selectorTemplates } = getSiteSelectorHint(element);
+
+  const ancestors =
+    root === document
+      ? $(element).parents().get()
+      : $(element)
+          .parentsUntil(root as HTMLElement)
+          .get();
+
+  // Ancestors from root to element
+  ancestors.reverse();
+
+  let currentRoot = root;
+  const result = [];
+
+  for (const ancestor of ancestors) {
+    const selectorOverride =
+      getAncestorSelectorTemplate({
+        ancestorElement: ancestor,
+        root: currentRoot,
+        templates: selectorTemplates,
+      }) ?? getMatchingRequiredSelectors(ancestor, requiredSelectors);
+
+    if (selectorOverride) {
+      currentRoot = ancestor;
+      result.push({ element: ancestor, selectorOverride });
+    }
+  }
+
+  return result;
+}
+
 export function inferSelectorsIncludingStableAncestors(
   element: HTMLElement,
   root?: Element,
@@ -551,11 +619,169 @@ export function inferSelectors(
   );
 }
 
+type InferSelectorArgs = {
+  /**
+   * The root to generate the selector with respect to. Provide null to use the document.
+   */
+  root: HTMLElement | null;
+  /**
+   * True to exclude class names that appear to be randomly generated.
+   */
+  excludeRandomClasses: boolean;
+};
+
 /**
- * Returns true if selector uniquely identifies an element on the page
+ * @deprecated framework-based (e.g., React/Vue/etc.) traversal is deprecated
  */
-function doesSelectOneElement(selector: string): boolean {
-  return $safeFind(selector).length === 1;
+type FrameworkSelectorArgs = {
+  /**
+   * The front-end framework to assume for component traversal.
+   */
+  framework?: Framework;
+  /**
+   * Number of non-DOM components to traverse up.
+   */
+  traverseUp: number;
+};
+
+/**
+ * Infers valids selectors for a single element.
+ * @see inferMultiElementSelector
+ */
+export async function inferSingleElementSelector({
+  element,
+  root,
+  excludeRandomClasses,
+  framework,
+  traverseUp,
+}: InferSelectorArgs &
+  FrameworkSelectorArgs & {
+    element: HTMLElement;
+  }): Promise<ElementInfo> {
+  if (framework) {
+    // We're using pageScript getElementInfo only when specific framework is used.
+    // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
+    // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
+    // In any case, the pageScript is not necessary if framework is not specified, because selectElement
+    // only needs to return the selector alternatives.
+    const selector = safeCssSelector([element], {
+      excludeRandomClasses,
+    });
+
+    // XXX: pageScript.getElementInfo doesn't support `root` because we can't pass an element across the pageScript
+    // boundary.
+    return pageScript.getElementInfo({
+      selector,
+      framework,
+      traverseUp,
+    });
+  }
+
+  // Ancestors in order from root to element
+  const ancestorSelectorOverrides = mapSelectorOverrideToAncestors(
+    element,
+    root
+  );
+
+  const ancestorSelectors = ancestorSelectorOverrides.map(
+    ({ selectorOverride }) => selectorOverride
+  );
+
+  const rootOverride =
+    // Scope the element generation to the innermost ancestor with a selector override
+    ancestorSelectorOverrides.length > 0
+      ? ancestorSelectorOverrides.at(-1).element
+      : root;
+
+  const selectorWithRootOverride = safeCssSelector([element], {
+    root: rootOverride,
+    excludeRandomClasses,
+  });
+
+  // Prepend all the selectors with the required selectors
+  const inferredSelectors = uniq(
+    [
+      selectorWithRootOverride,
+      ...inferSelectorsIncludingStableAncestors(element, rootOverride),
+    ].map((selector) => [...ancestorSelectors, selector].join(" "))
+  );
+
+  // Filter out any malformed selectors and/or selectors that don't exactly match the element
+  const validatedSelectors = inferredSelectors.filter((selector) => {
+    try {
+      const match = $safeFind(selector, root);
+      return match.length === 1 && match.get(0) === element;
+    } catch {
+      console.warn("Invalid selector", selector);
+      // Catch invalid selectors
+      return false;
+    }
+  });
+
+  if (validatedSelectors.length === 0) {
+    throw new Error("Automatic selector generation failed");
+  }
+
+  return {
+    selectors: validatedSelectors,
+    framework: null,
+    hasData: false,
+    tagName: element.tagName,
+    parent: null,
+  };
+}
+
+/**
+ * Infer a selector that matches multiple elements.
+ * @param elements the example elements
+ * @param root the root element, or null to generate with respect to the document
+ * @param excludeRandomClasses true to attempt to exclude random classes, e.g. CSS module hashes
+ * @param shouldSelectSimilar true to expand the selector to match similar elements
+ * @see inferSingleElementSelector
+ */
+export function inferMultiElementSelector({
+  elements,
+  root,
+  excludeRandomClasses,
+  shouldSelectSimilar,
+}: InferSelectorArgs & {
+  elements: HTMLElement[];
+  shouldSelectSimilar?: boolean;
+}): ElementInfo {
+  const selector = shouldSelectSimilar
+    ? expandedCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      })
+    : safeCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      });
+
+  const inferredSelectors = uniq([
+    selector,
+    // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
+    // ...inferSelectorsIncludingStableAncestors(elements[0]),
+  ]);
+
+  return {
+    selectors: inferredSelectors,
+    framework: null,
+    hasData: false,
+    tagName: elements[0].tagName, // Will first element tag be enough/same for all elements?
+    parent: null,
+    isMulti: true,
+  };
+}
+
+/**
+ * Returns true if selector uniquely identifies a single element on the page.
+ */
+function doesSelectOneElement(
+  selector: string,
+  parent?: HTMLElement | Document | JQuery<HTMLElement | Document>
+): boolean {
+  return $safeFind(selector, parent).length === 1;
 }
 
 export function getCommonAncestor(...args: HTMLElement[]): HTMLElement {
@@ -695,9 +921,9 @@ function getElementSelectors(target: Element): string[] {
   );
 
   return compact([
+    target.tagName.toLowerCase(),
     ...attributeSelectors,
     ...classSelectors,
-    target.tagName.toLowerCase(),
   ]);
 }
 

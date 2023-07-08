@@ -1,5 +1,5 @@
 import React from "react";
-import { type IBlock } from "@/types/blockTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
@@ -9,7 +9,7 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
 const BlockDetail: React.FunctionComponent<{
-  block: IBlock;
+  block: Brick;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;

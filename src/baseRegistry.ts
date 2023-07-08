@@ -21,8 +21,15 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils";
 import { type RegistryId } from "@/types/registryTypes";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
-type Source = "remote" | "builtin";
+type Source =
+  // From the remote brick registry
+  | "remote"
+  // From a JS-defined brick
+  | "builtin"
+  // From an internal definition
+  | "internal";
 
 export interface RegistryItem<T extends RegistryId = RegistryId> {
   id: T;
@@ -89,6 +96,13 @@ export class Registry<
    * @private
    */
   private readonly _builtins = new Map<RegistryId, Item>();
+
+  /**
+   * Registered internal definitions. Used to keep track across cache clears. They don't need to be cleared because
+   * they are stored by content hash.
+   * @private
+   */
+  private readonly _internal = new Map<RegistryId, Item>();
 
   /**
    * Cache of items in the registry. Contains both built-ins and remote items.
@@ -167,10 +181,15 @@ export class Registry<
       return cached;
     }
 
-    const builtin = this._builtins.get(id);
+    const localItem = this._builtins.get(id) ?? this._internal.get(id);
 
-    if (builtin) {
-      return builtin;
+    if (localItem) {
+      return localItem;
+    }
+
+    if (isInnerDefinitionRegistryId(id)) {
+      // Avoid the IDB lookup for internal definitions, because we know they are not there
+      throw new DoesNotExistError(id);
     }
 
     // Look up in IDB
@@ -204,7 +223,7 @@ export class Registry<
   }
 
   /**
-   * Return built-in JS bricks registered
+   * Return built-in JS bricks registered. Used for header generation.
    */
   get builtins(): Item[] {
     return [...this._builtins.values()];
@@ -249,6 +268,10 @@ export class Registry<
       source: "builtin",
       notify: false,
     });
+    this.register([...this._internal.values()], {
+      source: "internal",
+      notify: false,
+    });
     this.notifyAll();
 
     this._cacheInitialized = true;
@@ -279,6 +302,8 @@ export class Registry<
 
       if (source === "builtin") {
         this._builtins.set(item.id, item);
+      } else if (source === "internal") {
+        this._internal.set(item.id, item);
       }
 
       this._cache.set(item.id, item);
@@ -321,6 +346,7 @@ export class Registry<
     this._cacheInitialized = false;
     this.clear();
     this._builtins.clear();
+    this._internal.clear();
   }
 }
 

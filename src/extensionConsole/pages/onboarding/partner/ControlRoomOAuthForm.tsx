@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { uuidv4 } from "@/types/helpers";
-import { persistor } from "@/store/optionsStore";
 import { launchAuthIntegration } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
@@ -33,11 +32,12 @@ import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { serviceOriginPermissions } from "@/permissions";
-import { requestPermissions } from "@/utils/permissions";
 import { isEmpty } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
+import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -71,6 +71,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const history = useHistory();
   const location = useLocation();
   const configuredServices = useSelector(selectConfiguredServices);
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   const searchParams = new URLSearchParams(location.search);
   const env = searchParams.get("env");
@@ -119,18 +120,18 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           );
 
           // Ensure the service is available to background page (where launchAuthIntegration runs)
-          await persistor.flush();
+          await flushReduxPersistence();
         }
 
         // Ensure PixieBrix can call the Control Room and OAuth2 endpoints
-        const requiredPermissions = await serviceOriginPermissions({
+        const requiredPermissions = await collectServiceOriginPermissions({
           id: CONTROL_ROOM_OAUTH_SERVICE_ID,
           config: configurationId,
         });
 
         console.debug("Required permissions", requiredPermissions);
 
-        await requestPermissions(requiredPermissions);
+        await ensurePermissionsFromUserGesture(requiredPermissions);
 
         await launchAuthIntegration({ serviceId: authServiceId });
 
@@ -145,7 +146,13 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         helpers.setStatus(getErrorMessage(error));
       }
     },
-    [dispatch, history, configuredServices, authServiceId]
+    [
+      configuredServices,
+      authServiceId,
+      history,
+      dispatch,
+      flushReduxPersistence,
+    ]
   );
 
   const renderBody: RenderBody = () => (

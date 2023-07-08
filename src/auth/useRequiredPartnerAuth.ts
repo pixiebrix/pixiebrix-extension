@@ -30,7 +30,7 @@ import { useEffect } from "react";
 import {
   AUTOMATION_ANYWHERE_PARTNER_KEY,
   CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
+  CONTROL_ROOM_TOKEN_SERVICE_ID,
 } from "@/services/constants";
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settingsTypes";
@@ -43,7 +43,7 @@ import { type RegistryId } from "@/types/registryTypes";
 const PARTNER_MAP = new Map<string, Set<RegistryId>>([
   [
     AUTOMATION_ANYWHERE_PARTNER_KEY,
-    new Set([CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID]),
+    new Set([CONTROL_ROOM_TOKEN_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID]),
   ],
 ]);
 
@@ -102,7 +102,7 @@ function decidePartnerServiceIds({
   }
 
   if (authMethodOverride === "partner-token") {
-    return new Set<RegistryId>([CONTROL_ROOM_SERVICE_ID]);
+    return new Set<RegistryId>([CONTROL_ROOM_TOKEN_SERVICE_ID]);
   }
 
   return PARTNER_MAP.get(partnerId) ?? new Set();

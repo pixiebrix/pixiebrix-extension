@@ -17,11 +17,12 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import { WaitElementEffect } from "@/blocks/effects/wait";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 beforeAll(() => {
   requestIdleCallback.mock();
@@ -60,7 +61,7 @@ describe("WaitElementEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BlockOptions
+        { root: document, logger } as BrickOptions
       );
     }
   );
@@ -71,7 +72,7 @@ describe("WaitElementEffect", () => {
       {
         root: document.querySelector("#hasButton"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
   });
 
@@ -85,7 +86,7 @@ describe("WaitElementEffect", () => {
       {
         root: document.querySelector("#noButton"),
         logger,
-      } as unknown as BlockOptions
+      } as unknown as BrickOptions
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -94,7 +95,7 @@ describe("WaitElementEffect", () => {
   test("array of selectors", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: ["#hasButton", "button"] }),
-      { root: document, logger } as unknown as BlockOptions
+      { root: document, logger } as unknown as BrickOptions
     );
   });
 });

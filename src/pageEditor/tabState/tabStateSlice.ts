@@ -31,7 +31,7 @@ import {
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { canAccessTab } from "@/utils/permissions";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -47,6 +47,18 @@ const initialTabState: TabState = {
   frameState: defaultFrameState,
   error: null,
 };
+
+/**
+ * This thunk is long-running. It waits for the page's chrome runtime context
+ * to be invalidated, and then resolves with an error.
+ */
+const awaitContextInvalidated = createAsyncThunk<
+  void,
+  void,
+  { state: TabStateRootState }
+>("tabState/awaitContextInvalidated", async () => {
+  await onContextInvalidated();
+});
 
 const connectToContentScript = createAsyncThunk<
   FrameConnectionState,
@@ -88,18 +100,6 @@ const connectToContentScript = createAsyncThunk<
     hasPermissions: true,
     meta: { frameworks },
   };
-});
-
-/**
- * This thunk is long-running. It waits for the page's chrome runtime context
- * to be invalidated, and then resolves with an error.
- */
-const awaitContextInvalidated = createAsyncThunk<
-  void,
-  void,
-  { state: TabStateRootState }
->("tabState/awaitContextInvalidated", async () => {
-  await onContextInvalidated();
 });
 
 export const tabStateSlice = createSlice({

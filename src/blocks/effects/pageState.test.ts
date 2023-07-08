@@ -18,7 +18,7 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
 beforeEach(() => {
   // Isolate extension state between test
@@ -34,7 +34,7 @@ describe("@pixiebrix/state/get", () => {
       extensionId: uuidv4(),
       blueprintId: validateRegistryId("test/123"),
     });
-    await brick.transform(unsafeAssumeValidArg({}), { logger } as BlockOptions);
+    await brick.transform(unsafeAssumeValidArg({}), { logger } as BrickOptions);
   });
 });
 
@@ -49,14 +49,16 @@ describe("@pixiebrix/state/set", () => {
     });
 
     let result = await brick.transform(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 42, bar: 42 } } as any,
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
     result = await brick.transform(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 1 }, mergeStrategy: "shallow" } as any,
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
   });
@@ -78,12 +80,14 @@ describe("@pixiebrix/state/set", () => {
     };
 
     let result = await brick.transform(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: original } as any,
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual(original);
 
     result = await brick.transform(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       {
         data: {
           primitiveArray: [1],
@@ -93,7 +97,7 @@ describe("@pixiebrix/state/set", () => {
         },
         mergeStrategy: "deep",
       } as any,
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
 
     // NOTE: lodash's `merge` behavior is different from deepmerge from Python. Lodash will zip the list items together
@@ -121,24 +125,25 @@ describe("set and get", () => {
     });
 
     await setState.transform(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 42 } } as any,
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     let result = await getState.transform(unsafeAssumeValidArg({}), {
       logger,
-    } as BlockOptions);
+    } as BrickOptions);
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "extension" }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "shared" }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual({});
   });
@@ -155,24 +160,25 @@ describe("set and get", () => {
     });
 
     await setState.transform(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 42 } } as any,
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     let result = await getState.transform(unsafeAssumeValidArg({}), {
       logger,
-    } as BlockOptions);
+    } as BrickOptions);
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "extension" }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "shared" }),
-      { logger } as BlockOptions
+      { logger } as BrickOptions
     );
     expect(result).toStrictEqual({ foo: 42 });
   });

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Brick } from "@/types/contract";
+import { type EditablePackage } from "@/types/contract";
 import { startCase } from "lodash";
 
-const kindDisplayNameMap = new Map<Brick["kind"], string>([
+const kindDisplayNameMap = new Map<EditablePackage["kind"], string>([
   ["block", "Brick"],
   ["reader", "Brick"],
   ["blueprint", "Mod"],
@@ -32,10 +32,10 @@ const kindDisplayNameMap = new Map<Brick["kind"], string>([
  * Returns the display name for a brick kind.
  * @since 1.7.20
  */
-export function getKindDisplayName(kind: Brick["kind"]): string {
+export function getKindDisplayName(kind: EditablePackage["kind"]): string {
   // Be defensive and lowercase for the match, some callers may not have the correct casing
   return (
-    kindDisplayNameMap.get(kind.toLowerCase() as Brick["kind"]) ??
+    kindDisplayNameMap.get(kind.toLowerCase() as EditablePackage["kind"]) ??
     startCase(kind)
   );
 }

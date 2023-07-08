@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/blocks/transformerTypes";
+import { Transformer } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { captureTab } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";

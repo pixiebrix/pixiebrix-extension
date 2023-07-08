@@ -19,12 +19,12 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { extensionFactory } from "@/testUtils/factories";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
+import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 
 function optionsStore(initialState?: {
   extensions: PersistedExtension[];

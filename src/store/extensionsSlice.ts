@@ -21,7 +21,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, partition, pick } from "lodash";
+import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -35,12 +35,13 @@ import { revertAll } from "@/store/commonActions";
 import {
   type IExtension,
   type PersistedExtension,
+  selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type RecipeDefinition,
+  type ModDefinition,
   type ExtensionDefinition,
-} from "@/types/recipeTypes";
+} from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
 
@@ -108,11 +109,26 @@ const extensionsSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        recipe: RecipeDefinition;
+        recipe: ModDefinition;
         services?: Record<RegistryId, UUID>;
         extensionPoints: ExtensionDefinition[];
         optionsArgs?: OptionsArgs;
         deployment?: Deployment;
+        /**
+         * The screen or source of the installation. Used for telemetry.
+         * @since 1.7.33
+         */
+        screen:
+          | "marketplace"
+          | "extensionConsole"
+          | "pageEditor"
+          | "background"
+          | "starterMod";
+        /**
+         * True if this is reinstalling an already active mod. Used for telemetry.
+         * @since 1.7.33
+         */
+        isReinstall: boolean;
       }>
     ) {
       requireLatestState(state);
@@ -123,6 +139,8 @@ const extensionsSlice = createSlice({
         optionsArgs,
         extensionPoints,
         deployment,
+        screen,
+        isReinstall,
       } = payload;
 
       for (const {
@@ -161,11 +179,7 @@ const extensionsSlice = createSlice({
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
           _deployment: selectDeploymentContext(deployment),
-          _recipe: {
-            ...pick(recipe.metadata, ["id", "version", "name", "description"]),
-            sharing: recipe.sharing,
-            updated_at: recipe.updated_at,
-          },
+          _recipe: selectSourceRecipeMetadata(recipe),
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
           definitions: recipe.definitions ?? {},
@@ -200,6 +214,7 @@ const extensionsSlice = createSlice({
 
         assertExtensionNotResolved(extension);
 
+        // Display name is 'StarterBrickActivate' in telemetry
         reportEvent("ExtensionActivate", selectEventData(extension));
 
         // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
@@ -209,6 +224,15 @@ const extensionsSlice = createSlice({
 
         void contextMenus.preload([extension]);
       }
+
+      // Display name is 'ModActivate' in telemetry
+      reportEvent("InstallBlueprint", {
+        blueprintId: recipe.metadata.id,
+        blueprintVersion: recipe.metadata.version,
+        deploymentId: deployment?.id,
+        screen,
+        reinstall: isReinstall,
+      });
     },
     // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
     saveExtension(

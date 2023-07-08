@@ -27,12 +27,12 @@ type PipelineOptionsProps = {
 const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => (
   <>
     <Row>
-      <Col>Use the Nodes Tree on the left to edit the nested pipeline.</Col>
+      <Col>Use the Brick Actions Panel on the left to add and edit bricks.</Col>
     </Row>
     <ConnectedFieldTemplate
       name={joinPathParts(elementName, "config", "label")}
       label="Pipeline name"
-      description="The pipeline label displayed in the Nodes Tree"
+      description="The pipeline label displayed in the Brick Actions Panel"
     />
   </>
 );

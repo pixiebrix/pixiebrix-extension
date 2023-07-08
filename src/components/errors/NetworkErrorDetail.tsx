@@ -16,7 +16,6 @@
  */
 
 import React, { useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -29,6 +28,9 @@ import {
   type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
+import useAsyncState from "@/hooks/useAsyncState";
+import { containsPermissions } from "@/background/messenger/api";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -46,20 +48,12 @@ function tryParse(value: unknown): unknown {
 const NetworkErrorDetail: React.FunctionComponent<{
   error: SerializableAxiosError;
 }> = ({ error }) => {
-  const absoluteUrl = useMemo(
-    () => selectAbsoluteUrl(error.config),
-    [error.config]
-  );
+  const absoluteUrl = selectAbsoluteUrl(error.config);
 
-  const [hasPermissions, permissionsPending, permissionsError] = useAsyncState<
-    boolean | undefined
-  >(async () => {
-    if (browser.permissions?.contains) {
-      return browser.permissions.contains({
-        origins: [absoluteUrl],
-      });
-    }
-  }, [absoluteUrl]);
+  const permissionsState = useAsyncState<boolean | undefined>(
+    async () => containsPermissions({ origins: [absoluteUrl] }),
+    [absoluteUrl]
+  );
 
   const cleanConfig = useMemo(() => {
     const { data, ...rest } = error.config;
@@ -81,25 +75,32 @@ const NetworkErrorDetail: React.FunctionComponent<{
   }, [error.response]);
 
   const status = error.response?.status;
-  const permissionsReady = !permissionsError && !permissionsPending;
 
   return (
     <div className={styles.root}>
       <div className={styles.column}>
         <h5>Response</h5>
-        {permissionsReady && !hasPermissions && (
-          <div className="text-warning">
-            <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
-            have permission to access {absoluteUrl}. Specify an Integration to
-            access the API, or add an Extra Permissions rule to the mod.
-          </div>
-        )}
-        {permissionsReady && hasPermissions && (
-          <div className="text-info">
-            <FontAwesomeIcon icon={faCheck} /> PixieBrix has permission to
-            access {absoluteUrl}
-          </div>
-        )}
+        <AsyncStateGate
+          state={permissionsState}
+          renderLoader={() => null}
+          renderError={() => null}
+        >
+          {({ data: hasPermissions }) =>
+            hasPermissions ? (
+              <div className="text-info">
+                <FontAwesomeIcon icon={faCheck} /> PixieBrix has permission to
+                access {absoluteUrl}
+              </div>
+            ) : (
+              <div className="text-warning">
+                <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does
+                not have permission to access {absoluteUrl}. Specify an
+                Integration to access the API, or add an Extra Permissions rule
+                to the mod.
+              </div>
+            )
+          }
+        </AsyncStateGate>
         {status && (
           <div>
             Status: {status} &mdash; {safeGuessStatusText(status)}

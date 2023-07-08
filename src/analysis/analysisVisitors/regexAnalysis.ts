@@ -16,23 +16,20 @@
  */
 
 import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { joinPathParts } from "@/utils";
 import { AnnotationType } from "@/types/annotationTypes";
-
-function containsTemplateExpression(literalOrTemplate: string): boolean {
-  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
-}
+import { containsTemplateExpression } from "@/utils/templateUtils";
 
 /**
  * Returns the regex literal pattern, or null if the regex is a variable or template expression
  * @param blockConfig
  */
-export function extractRegexLiteral(blockConfig: BlockConfig): string | null {
+export function extractRegexLiteral(blockConfig: BrickConfig): string | null {
   const { regex: rawRegex = "" } = blockConfig.config;
   if (typeof rawRegex === "string") {
     return rawRegex;
@@ -56,8 +53,8 @@ class RegexAnalysis extends AnalysisVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
     super.visitBlock(position, blockConfig, extra);
@@ -82,9 +79,6 @@ class RegexAnalysis extends AnalysisVisitor {
       compileError = error;
     }
 
-    // Create new regex on each analysis call to avoid state issues with test
-    const namedCapturedGroupRegex = /\(\?<\S+>.*?\)/g;
-
     if (compileError) {
       this.annotations.push({
         position: {
@@ -93,16 +87,6 @@ class RegexAnalysis extends AnalysisVisitor {
         message: getErrorMessage(compileError),
         analysisId: this.id,
         type: AnnotationType.Error,
-      });
-    } else if (!namedCapturedGroupRegex.test(pattern)) {
-      this.annotations.push({
-        position: {
-          path: joinPathParts(position.path, "config", "regex"),
-        },
-        message:
-          "Expected regular expression to contain at least one named capture group: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Groups_and_Backreferences",
-        analysisId: this.id,
-        type: AnnotationType.Warning,
       });
     }
   }

@@ -19,7 +19,7 @@ import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type BlockOptions } from "@/types/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 import {
   cancelAllTours,
   markTourStart,
@@ -39,16 +39,6 @@ beforeEach(() => {
 });
 
 Element.prototype.scrollIntoView = jest.fn();
-browser.runtime.getURL = jest
-  .fn()
-  .mockImplementation((path) => `chrome-extension://abc/${path}`);
-
-jest.mock("@/utils/injectStylesheet", () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue({
-    remove: jest.fn(),
-  }),
-}));
 
 jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
   showModal: jest.fn().mockResolvedValue(undefined),
@@ -91,7 +81,7 @@ function startTour() {
 function makeOptions({
   root = document,
   signal = undefined,
-}: { root?: HTMLElement | Document; signal?: AbortSignal } = {}): BlockOptions {
+}: { root?: HTMLElement | Document; signal?: AbortSignal } = {}): BrickOptions {
   return {
     logger,
     root,

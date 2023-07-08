@@ -24,7 +24,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { uuidSequence } from "@/testUtils/factories";
 import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/blocks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
@@ -33,16 +32,28 @@ import {
   RootReader,
   tick,
 } from "@/extensionPoints/extensionPointTestUtils";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/runtime/reducePipeline", () => ({
   reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),
 }));
 
 const reduceExtensionPipelineMock = reduceExtensionPipeline as jest.Mock;
+
+globalThis.requestIdleCallback = jest.fn((callback) => {
+  (callback as any)();
+  return 0;
+});
+
+globalThis.requestAnimationFrame = jest.fn((callback) => {
+  (callback as any)();
+  return 0;
+});
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -77,7 +88,7 @@ const extensionFactory = define<ResolvedExtension>({
   label: "Test Extension",
   config: define<MenuItemExtensionConfig>({
     caption: "Hello World",
-    action: () => [] as BlockPipeline,
+    action: () => [] as BrickPipeline,
     synchronous: false,
   }),
 });
@@ -327,6 +338,80 @@ describe("menuItemExtension", () => {
 
     console.debug(document.body.innerHTML);
 
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    extensionPoint.uninstall();
+  });
+
+  it("watch attach mode attaches new menu items", async () => {
+    document.body.innerHTML = getDocument(
+      "<div><div class='menu'></div></div>"
+    ).body.innerHTML;
+    const extensionPointConfig = extensionPointFactory()();
+    extensionPointConfig.definition.containerSelector = ".menu";
+    extensionPointConfig.definition.attachMode = "watch";
+
+    const extensionPoint = fromJS(extensionPointConfig);
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    $("div:first").append("<div class='menu'></div>");
+
+    // Not sure why 2 ticks are necessary. There are likely 2 set intervals at various times
+    await tick();
+    await tick();
+    expect(document.querySelectorAll("button")).toHaveLength(2);
+
+    extensionPoint.uninstall();
+  });
+
+  it("once does not attach for new items", async () => {
+    // Test the quirky behavior of "once" mode when there are multiple elements on the page and the original menu
+    // is removed from the page
+    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+    const extensionPointConfig = extensionPointFactory()();
+    extensionPointConfig.definition.containerSelector = ".menu";
+    extensionPointConfig.definition.attachMode = "once";
+
+    const extensionPoint = fromJS(extensionPointConfig);
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    const installPromise = extensionPoint.install();
+
+    expect(document.querySelectorAll("button")).toHaveLength(0);
+
+    $("div:first").append("<div class='menu'></div>");
+    await tick();
+    await tick();
+    await installPromise;
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    // 2 ticks were necessary in the watch test
+    $("div:first").append("<div class='menu'></div>");
+    await tick();
+    await tick();
+    // Not added because the element was already on the page
+    expect(document.querySelectorAll("button")).toHaveLength(1);
+
+    // It attaches to the other one if the original container is removed
+    $("div div:first").remove();
+    expect(document.querySelectorAll("button")).toHaveLength(0);
+    await tick();
+    await tick();
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     extensionPoint.uninstall();

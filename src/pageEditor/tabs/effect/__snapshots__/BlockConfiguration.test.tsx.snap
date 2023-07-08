@@ -54,10 +54,12 @@ exports[`renders 1`] = `
       </div>
     </div>
     <div
-      class="root accordion"
+      class="root"
     >
       <div
         class="header"
+        role="button"
+        tabindex="0"
       >
         <svg
           aria-hidden="true"
@@ -77,17 +79,13 @@ exports[`renders 1`] = `
         Advanced Options
       </div>
       <div
-        class="collapse"
+        class="body collapse"
       >
-        <div
-          class="body"
+        <small
+          class="text-muted font-italic"
         >
-          <small
-            class="text-muted font-italic"
-          >
-            No options to show
-          </small>
-        </div>
+          No options to show
+        </small>
       </div>
     </div>
     <button

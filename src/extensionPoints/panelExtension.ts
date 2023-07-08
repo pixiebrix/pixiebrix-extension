@@ -28,6 +28,7 @@ import { boolean } from "@/utils";
 import {
   acquireElement,
   awaitElementOnce,
+  onNodeRemoved,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { type Metadata } from "@/types/registryTypes";
@@ -43,7 +44,7 @@ import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";
@@ -55,15 +56,15 @@ import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type IBlock } from "@/types/blockTypes";
-import { type IReader } from "@/types/blocks/readerTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type IReader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type PanelConfig = {
   heading?: string;
-  body: BlockConfig | BlockPipeline;
+  body: BrickConfig | BrickPipeline;
   icon?: IconConfig;
   collapsible?: boolean;
   shadowDOM?: boolean;
@@ -156,9 +157,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     return "panel";
   }
 
-  async getBlocks(
-    extension: ResolvedExtension<PanelConfig>
-  ): Promise<IBlock[]> {
+  async getBlocks(extension: ResolvedExtension<PanelConfig>): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
@@ -238,24 +237,24 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       return false;
     }
 
-    const cancelWatchRemote = acquireElement(
-      this.$container.get(0),
-      this.id,
-      () => {
-        console.debug(
-          `Container removed from DOM for ${this.id}: ${JSON.stringify(
-            selector
-          )}`
-        );
-        this.$container = undefined;
-      }
-    );
+    const container = this.$container.get(0);
 
-    if (cancelWatchRemote) {
-      this.cancelPending.add(cancelWatchRemote);
+    const acquired = acquireElement(container, this.id);
+
+    if (acquired) {
+      this.cancelPending.add(
+        onNodeRemoved(container, () => {
+          console.debug(
+            `Container removed from DOM for ${this.id}: ${JSON.stringify(
+              selector
+            )}`
+          );
+          this.$container = undefined;
+        })
+      );
     }
 
-    return Boolean(cancelWatchRemote);
+    return acquired;
   }
 
   addPanel($panel: JQuery): void {
@@ -571,7 +570,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
 
 export function fromJS(
   config: ExtensionPointConfig<PanelDefinition>
-): IExtensionPoint {
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "panel") {
     throw new Error(`Expected type=panel, got ${type}`);

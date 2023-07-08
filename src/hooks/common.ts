@@ -75,6 +75,9 @@ const slice = createSlice({
   },
 });
 
+/**
+ * @deprecated use useAsyncState.ts instead
+ */
 export function useAsyncState<T>(
   promiseOrGenerator: StateFactory<T>,
   dependencies: unknown[] = [],
@@ -117,11 +120,13 @@ export function useAsyncState<T>(
 
 export function useIsMounted(): () => boolean {
   const isMountedRef = useRef(true);
+
   useEffect(
     () => () => {
       isMountedRef.current = false;
     },
     []
   );
+
   return () => isMountedRef.current;
 }

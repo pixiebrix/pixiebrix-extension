@@ -27,15 +27,14 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import {
-  sanitizedServiceConfigurationFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { services, sheets } from "@/background/messenger/api";
 import {
   isGoogleInitialized,
-  isGoogleSupported,
+  isGAPISupported,
 } from "@/contrib/google/initGoogle";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -46,16 +45,12 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGoogleSupported: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
-const isGoogleSupportedMock = isGoogleSupported as jest.MockedFunction<
-  typeof isGoogleSupported
->;
-const isGoogleInitializedMock = isGoogleInitialized as jest.MockedFunction<
-  typeof isGoogleInitialized
->;
+const isGAPISupportedMock = jest.mocked(isGAPISupported);
+const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
   ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
@@ -82,7 +77,7 @@ const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
 
 beforeEach(() => {
   isGoogleInitializedMock.mockReturnValue(true);
-  isGoogleSupportedMock.mockReturnValue(true);
+  isGAPISupportedMock.mockReturnValue(true);
 });
 
 beforeAll(() => {
@@ -333,7 +328,7 @@ describe("LookupSpreadsheetOptions", () => {
 
   it("should require GAPI support", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
-    isGoogleSupportedMock.mockReturnValue(false);
+    isGAPISupportedMock.mockReturnValue(false);
 
     const rendered = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
@@ -349,7 +344,7 @@ describe("LookupSpreadsheetOptions", () => {
 
   it("should require GAPI loaded", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
-    isGoogleSupportedMock.mockReturnValue(true);
+    isGAPISupportedMock.mockReturnValue(true);
 
     const rendered = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,

@@ -34,6 +34,7 @@ import {
   SCRIPT_LOADED,
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
+  CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
@@ -58,6 +59,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { initialize, type SerializableResponse } from "./messenger/pigeon";
 import { TimeoutError } from "p-timeout";
+import { setCKEditorData } from "@/contrib/ckeditor";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -104,7 +106,7 @@ function readPathSpec(
     );
   }
 
-  const values: Record<string, unknown> = {};
+  const values: UnknownObject = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
@@ -116,7 +118,7 @@ function readPathSpec(
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+      values[key] = getPropByPath(obj as UnknownObject, pathOrObj, {
         proxy,
         maxDepth: MAX_READ_DEPTH,
       });
@@ -126,16 +128,25 @@ function readPathSpec(
   return values;
 }
 
-attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
-  const factory = () => {
-    const values = readPathSpec(window, pathSpec);
-    return Object.values(values).every((value) => isEmpty(value))
-      ? undefined
-      : values;
-  };
+attachListener(
+  READ_WINDOW,
+  async ({
+    pathSpec,
+    waitMillis,
+  }: {
+    pathSpec: PathSpec;
+    waitMillis: number;
+  }) => {
+    const factory = () => {
+      const values = readPathSpec(window, pathSpec);
+      return Object.values(values).every((value) => isEmpty(value))
+        ? undefined
+        : values;
+    };
 
-  return awaitValue(factory, { waitMillis }) as SerializableResponse;
-});
+    return awaitValue(factory, { waitMillis }) as SerializableResponse;
+  }
+);
 
 async function read<TComponent>(
   adapter: ReadableComponentAdapter<TComponent>,
@@ -189,6 +200,8 @@ async function read<TComponent>(
   const target = traverse(adapter.getParent, component, traverseUp);
   const rawData = adapter.getData(target);
   const readData = readPathSpec(
+    // TODO: Find a better solution than casting to any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
     rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
     adapter.proxy
@@ -268,6 +281,14 @@ attachListener(
     const info = await elementInfo(element, framework, [selector], traverseUp);
     console.debug("Element info", { element, selector, info });
     return info;
+  }
+);
+
+attachListener(
+  CKEDITOR_SET_VALUE,
+  async ({ selector, value }: { selector: string; value: string }) => {
+    const element = findSingleElement(selector);
+    setCKEditorData(element, value);
   }
 );
 

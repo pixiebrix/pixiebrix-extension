@@ -33,9 +33,9 @@ import {
   type Metadata,
 } from "@/types/registryTypes";
 import {
-  type RecipeDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/recipeTypes";
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { type PersistedExtension } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -163,12 +163,22 @@ export type Deployment = Except<
   > & {
     id: UUID;
     package_id: RegistryId;
-    config: RecipeDefinition;
+    config: ModDefinition;
   };
 };
 
-export type Brick = components["schemas"]["PackageMeta"] & {
+/**
+ * An editable package in the registry.
+ */
+export type EditablePackage = components["schemas"]["PackageMeta"] & {
+  id: UUID;
+
+  name: RegistryId;
+
   kind: Kind;
+
+  // Nominal typing to help distinguish from registry Metadata
+  _editableBrickBrand: never;
 };
 
 export type RegistryPackage = Pick<
@@ -193,12 +203,12 @@ export type CloudExtension<Config extends UnknownObject = JsonObject> = Except<
 };
 
 /**
- * `/api/recipes/${blueprintId}`
+ * `/api/recipes/${recipeId}`
  */
-export type BlueprintResponse = {
+export type RecipeResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
-  config: UnsavedRecipeDefinition;
-  sharing: RecipeDefinition["sharing"];
+  config: UnsavedModDefinition;
+  sharing: ModDefinition["sharing"];
   updated_at: Timestamp;
 };
 

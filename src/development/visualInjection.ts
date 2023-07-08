@@ -17,7 +17,10 @@
 
 import { MAX_Z_INDEX } from "@/common";
 
-if (process.env.ENVIRONMENT === "development") {
+/**
+ * Add a visual indicator to the top-left of the DOM.
+ */
+export function addContentScriptIndicator() {
   const indicator = document.createElement("div");
 
   // Hide on hover
@@ -36,5 +39,6 @@ if (process.env.ENVIRONMENT === "development") {
     borderLeft: "solid 5px white",
     borderRight: "solid 5px black",
   });
+
   document.body.prepend(indicator);
 }

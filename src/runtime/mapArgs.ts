@@ -30,7 +30,7 @@ import {
 } from "@/types/runtimeTypes";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 
 const templateTypes: TemplateEngine[] = [
@@ -64,12 +64,26 @@ export function isExpression(value: unknown): value is Expression<unknown> {
   return false;
 }
 
-export type PipelineExpression = Expression<BlockPipeline, "pipeline">;
+export type PipelineExpression = Expression<BrickPipeline, "pipeline">;
+
+/**
+ * A PipelineExpression with an attached lexical environment. Internal type used by the runtime
+ * @since 1.7.29
+ */
+export type PipelineClosureExpression = PipelineExpression & {
+  __env__: UnknownObject;
+};
 
 export function isPipelineExpression(
   value: unknown
 ): value is PipelineExpression {
   return isExpression(value) && value.__type__ === "pipeline";
+}
+
+export function isPipelineClosureExpression(
+  value: unknown
+): value is PipelineClosureExpression {
+  return isPipelineExpression(value) && "__env__" in value;
 }
 
 export type DeferExpression<TValue = UnknownObject> = Expression<
@@ -150,8 +164,11 @@ export async function renderExplicit(
   }
 
   if (isPlainObject(config)) {
-    const renderedEntries = await asyncMapValues(config, async (subConfig) =>
-      renderExplicit(subConfig as UnknownObject, ctxt, options)
+    const renderedEntries = await asyncMapValues(
+      // TODO: asyncMapValues takes generics. Find a better typing for the generics that works here.
+      config as Record<string, never>,
+      async (subConfig) =>
+        renderExplicit(subConfig as UnknownObject, ctxt, options)
     );
 
     return pickBy(renderedEntries, (x) => x != null);

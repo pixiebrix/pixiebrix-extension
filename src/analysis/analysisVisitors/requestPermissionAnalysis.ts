@@ -18,7 +18,7 @@
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { GetAPITransformer } from "@/blocks/transformers/httpGet";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
 import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
@@ -27,7 +27,7 @@ import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
-import { requestPermissions } from "@/utils/permissions";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -42,8 +42,8 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
   }
 
   override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     super.visitBlock(position, blockConfig, extra);
@@ -122,7 +122,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
                   path: "permissions.origins",
                   value: permissionsValue,
                   async extraCallback() {
-                    await requestPermissions({
+                    await ensurePermissionsFromUserGesture({
                       origins: [permissionsValue],
                     });
                   },

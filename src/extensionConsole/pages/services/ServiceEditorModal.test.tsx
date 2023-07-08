@@ -34,6 +34,7 @@ beforeAll(() => {
 
 describe("ServiceEditorModal", () => {
   test("Can render Pipedrive configuration modal without existing configuration", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const service = fromJS(pipedriveYaml as any);
 
     render(
@@ -59,6 +60,7 @@ describe("ServiceEditorModal", () => {
 
   // eslint-disable-next-line jest/no-disabled-tests -- FIXME: for some reason, userEvent.type (the alternative approach of using fireEvent) is not modifying the value of the textarea
   test.skip("displays user-friendly pattern validation message", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const service = fromJS(automationAnywhereYaml as any);
     const user = userEvent.setup();
 

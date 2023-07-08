@@ -22,13 +22,34 @@ import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
-import {
-  blockConfigFactory,
-  formStateFactory,
-  uuidSequence,
-} from "@/testUtils/factories";
 import { validateRegistryId } from "@/types/helpers";
 import { type OutputKey } from "@/types/runtimeTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import {
+  isGAPISupported,
+  isGoogleInitialized,
+} from "@/contrib/google/initGoogle";
+import userEvent from "@testing-library/user-event";
+import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
+import { act, screen } from "@testing-library/react";
+
+jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    showPicker: jest.fn(),
+    ensureSheetsTokenAction: jest.fn(),
+    hasRejectedPermissions: false,
+  })),
+}));
+
+jest.mock("@/contrib/google/initGoogle", () => ({
+  __esModule: true,
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn(() => () => {}),
+}));
 
 jest.mock("@/background/messenger/api", () => ({
   sheets: {
@@ -38,13 +59,20 @@ jest.mock("@/background/messenger/api", () => ({
   },
 }));
 
-const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
-  typeof sheets.getSheetProperties
->;
+const useGoogleSpreadsheetPickerMock = jest.mocked(useGoogleSpreadsheetPicker);
+const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
+const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
+const isGAPISupportedMock = jest.mocked(isGAPISupported);
 
 describe("SheetsFileWidget", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    isGoogleInitializedMock.mockReturnValue(true);
+    isGAPISupportedMock.mockReturnValue(true);
+  });
+
   it("smoke test", async () => {
-    const wrapper = render(
+    const rendered = render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: null },
@@ -53,7 +81,81 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("requires gapi", async () => {
+    isGoogleInitializedMock.mockReturnValue(false);
+
+    render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(
+      screen.getByText(
+        "The Google API is not initialized. Please click the button to initialize it."
+      )
+    ).toBeVisible();
+  });
+
+  it("requires gapi support", async () => {
+    isGAPISupportedMock.mockReturnValue(false);
+
+    render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    // Text provided by the requireGoogleHOC
+    expect(
+      screen.getByText(
+        "The Google API is not supported in this browser. Please use Google Chrome."
+      )
+    ).toBeVisible();
+  });
+
+  it("selects from file picker", async () => {
+    const showPickerMock = jest.fn().mockResolvedValue({
+      id: "abc123",
+      name: "Test Sheet",
+    });
+
+    getSheetPropertiesMock.mockResolvedValue({
+      title: "Test Sheet",
+    });
+
+    useGoogleSpreadsheetPickerMock.mockReturnValue({
+      showPicker: showPickerMock,
+      hasRejectedPermissions: false,
+      ensureSheetsTokenAction: jest.fn(),
+    });
+
+    const rendered = render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    await act(async () => {
+      await userEvent.click(screen.getByText("Select"));
+    });
+
+    // Verify the widget fetches the information for the selected sheet to re-verify access to the sheet via the API
+    expect(getSheetPropertiesMock).toHaveBeenCalledOnce();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   it("renders valid sheet on load", async () => {
@@ -61,7 +163,7 @@ describe("SheetsFileWidget", () => {
       title: "Test Sheet",
     });
 
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: "abc123" },
@@ -70,8 +172,8 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
-    expect(wrapper.container.querySelector("input")).toHaveValue("Test Sheet");
+    // Verify it's showing the sheet title and not the sheet unique id
+    expect(screen.getByRole("textbox")).toHaveDisplayValue("Test Sheet");
   });
 
   it("falls back to spreadsheet id if fetching properties fails", async () => {
@@ -79,7 +181,7 @@ describe("SheetsFileWidget", () => {
       new Error("Error fetching sheet properties")
     );
 
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: "abc123" },
@@ -88,12 +190,11 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
-    expect(wrapper.container.querySelector("input")).toHaveValue("abc123");
+    expect(screen.getByRole("textbox")).toHaveDisplayValue("abc123");
   });
 
   it("shows workshop fallback on expression", async () => {
-    const wrapper = render(
+    render(
       <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
       {
         initialValues: { spreadsheetId: makeVariableExpression("@sheet") },
@@ -102,12 +203,16 @@ describe("SheetsFileWidget", () => {
 
     await waitForEffect();
 
-    expect(wrapper.container.querySelector("input")).toHaveValue(
+    expect(screen.getByRole("textbox")).toHaveDisplayValue(
       "Use Workshop to edit"
     );
   });
 
   it("removes unused service on mount", async () => {
+    getSheetPropertiesMock.mockResolvedValue({
+      title: "Test Sheet",
+    });
+
     const initialValues = formStateFactory(
       {
         services: [
@@ -119,7 +224,7 @@ describe("SheetsFileWidget", () => {
         ],
       },
       [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             spreadsheetId: "abc123",
           },
@@ -152,7 +257,7 @@ describe("SheetsFileWidget", () => {
         services: [service],
       },
       [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             spreadsheetId: makeVariableExpression("@google"),
           },
@@ -174,5 +279,28 @@ describe("SheetsFileWidget", () => {
 
     expect(formState.services).toHaveLength(1);
     expect(formState.services[0]).toEqual(service);
+  });
+
+  it("displays rejected permissions message", async () => {
+    useGoogleSpreadsheetPickerMock.mockReturnValue({
+      showPicker: jest.fn(),
+      hasRejectedPermissions: true,
+      ensureSheetsTokenAction: jest.fn(),
+    });
+
+    render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(
+      screen.getByText("PixieBrix cannot access your Google Account.", {
+        exact: false,
+      })
+    ).toBeVisible();
   });
 });

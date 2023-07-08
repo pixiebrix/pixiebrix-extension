@@ -32,17 +32,17 @@ import {
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
-import { joinPathParts } from "@/utils";
+import { boolean, joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
+import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
+// Legacy header components, where each header type was a separate element
 const headerComponents = {
   header_1: "h1",
   header_2: "h2",
   header_3: "h3",
 } as const;
-
-const headingComponents = ["h1", "h2", "h3"];
 
 const gridComponents = {
   container: Container,
@@ -56,13 +56,48 @@ const UnknownType: React.FC<{ componentType: string }> = ({
   <div className="text-danger">Unknown component type: {componentType}</div>
 );
 
+export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
+  const { staticId, branches } = tracePath;
+
+  const { hidden: rawHidden } = root.config ?? {};
+  const hidden = boolean(rawHidden);
+
+  // We're excluding hidden elements from the DOM completely. HTML does have an attribute 'hidden' and Boostrap has
+  // a `d-none` class, but those still include the element in the DOM. By excluding the element completely, we can
+  // avoid brick and list computations.
+  if (hidden) {
+    return null;
+  }
+
+  const componentDefinition = getComponentDefinition(root, tracePath);
+
+  if (root.children?.length > 0) {
+    componentDefinition.props.children = root.children.map((child, index) => {
+      const branch = buildDocumentBranch(child, {
+        staticId: joinPathParts(staticId, root.type, "children"),
+        branches: [...branches, { staticId, index }],
+      });
+
+      if (branch == null) {
+        return null;
+      }
+
+      const { Component, props } = branch;
+      return <Component key={index} {...props} />;
+    });
+  }
+
+  return componentDefinition;
+};
+
 // eslint-disable-next-line complexity
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath
-): DocumentComponent {
+): DocumentComponent | null {
   const componentType = element.type;
-  const config = get(element, "config", {} as UnknownObject);
+  // Destructure hidden from config, so we don't spread it onto components
+  const { hidden, ...config } = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
     // Provide backwards compatibility for old elements
@@ -84,7 +119,7 @@ export function getComponentDefinition(
       props.children = title;
 
       return {
-        Component: headingComponents.includes(heading as string)
+        Component: VALID_HEADER_TAGS.includes(heading as string)
           ? (heading as ElementType)
           : "h1",
         props,
@@ -150,7 +185,7 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, variant, size, className } =
+      const { title, onClick, variant, size, fullWidth, className, disabled } =
         config as ButtonDocumentConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
@@ -165,8 +200,10 @@ export function getComponentDefinition(
         props: {
           children: title,
           onClick: onClick.__value__,
+          fullWidth,
           tracePath,
           variant,
+          disabled,
           size,
           className,
         },
@@ -196,19 +233,3 @@ export function getComponentDefinition(
     }
   }
 }
-
-export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
-  const { staticId, branches } = tracePath;
-  const componentDefinition = getComponentDefinition(root, tracePath);
-  if (root.children?.length > 0) {
-    componentDefinition.props.children = root.children.map((child, index) => {
-      const { Component, props } = buildDocumentBranch(child, {
-        staticId: joinPathParts(staticId, root.type, "children"),
-        branches: [...branches, { staticId, index }],
-      });
-      return <Component key={index} {...props} />;
-    });
-  }
-
-  return componentDefinition;
-};

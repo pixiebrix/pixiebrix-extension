@@ -19,19 +19,19 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
-import { pollUntilTruthy } from "@/utils";
+import { logPromiseDuration, pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, groupBy, intersection, once, uniq } from "lodash";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -40,8 +40,15 @@ import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 /**
  * True if handling the initial page load.
+ * @see loadPersistedExtensionsOnce
  */
 let _initialLoad = true;
+
+/**
+ * Promise to memoize fetching extension points and extensions from storage
+ * @see loadPersistedExtensionsOnce
+ */
+let pendingLoadPromise: Promise<StarterBrick[]> | null;
 
 /**
  * Map from persisted extension IDs to their extension points.
@@ -50,7 +57,7 @@ let _initialLoad = true;
  *
  * @see _editorExtensions
  */
-const _persistedExtensions = new Map<UUID, IExtensionPoint>();
+const _persistedExtensions = new Map<UUID, StarterBrick>();
 
 /**
  * Map from extension IDs currently being edited in the Page Editor to their extension points.
@@ -59,12 +66,12 @@ const _persistedExtensions = new Map<UUID, IExtensionPoint>();
  *
  * @see _persistedExtensions
  */
-const _editorExtensions = new Map<UUID, IExtensionPoint>();
+const _editorExtensions = new Map<UUID, StarterBrick>();
 
 /**
  * Extension points active/installed on the page.
  */
-const _activeExtensionPoints = new Set<IExtensionPoint>();
+const _activeExtensionPoints = new Set<StarterBrick>();
 
 /**
  * Mapping from frame ID to URL. Used to ignore navigation events that don't change the URL.
@@ -85,9 +92,11 @@ const WAIT_LOADED_INTERVAL_MS = 25;
 
 const injectPageScriptOnce = once(async (): Promise<void> => {
   console.debug("Injecting page script");
-  const script = await injectScriptTag(browser.runtime.getURL("pageScript.js"));
+  const script = await logPromiseDuration(
+    "injectPageScript",
+    injectScriptTag(browser.runtime.getURL("pageScript.js"))
+  );
   script.remove();
-  console.debug("Injected page script");
 });
 
 /**
@@ -98,7 +107,7 @@ const injectPageScriptOnce = once(async (): Promise<void> => {
  * @param abortSignal abort signal to cancel the install/run
  */
 async function runExtensionPoint(
-  extensionPoint: IExtensionPoint,
+  extensionPoint: StarterBrick,
   {
     reason,
     extensionIds,
@@ -171,6 +180,29 @@ async function runExtensionPoint(
 }
 
 /**
+ * Ensure all extension points are installed that have StarterBrick.syncInstall set to true.
+ *
+ * Currently, includes:
+ * - Sidebar Extension Points
+ * - Context Menu Extension Points
+ *
+ * Used to ensure all sidebar extension points have had a chance to reserve panels before showing the sidebar.
+ *
+ * @see StarterBrick.syncInstall
+ */
+export async function ensureInstalled(): Promise<void> {
+  const extensionPoints = await loadPersistedExtensionsOnce();
+  const sidebarExtensionPoints = extensionPoints.filter((x) => x.syncInstall);
+  // Log to help debug race conditions
+  console.debug("lifecycle:ensureInstalled", {
+    sidebarExtensionPoints,
+  });
+  await Promise.allSettled(
+    sidebarExtensionPoints.map(async (x) => x.install())
+  );
+}
+
+/**
  * Warn if any lifecycle state assumptions are violated.
  */
 function checkLifecycleInvariants(): void {
@@ -189,7 +221,7 @@ function checkLifecycleInvariants(): void {
  * Returns all the extension points currently running on the page. Includes both persisted extensions and extensions
  * being edited in the Page Editor.
  */
-export function getActiveExtensionPoints(): IExtensionPoint[] {
+export function getActiveExtensionPoints(): StarterBrick[] {
   return [..._activeExtensionPoints];
 }
 
@@ -197,7 +229,7 @@ export function getActiveExtensionPoints(): IExtensionPoint[] {
  * Test helper to get internal persisted extension state
  * @constructor
  */
-export function TEST_getPersistedExtensions(): Map<UUID, IExtensionPoint> {
+export function TEST_getPersistedExtensions(): Map<UUID, StarterBrick> {
   return _persistedExtensions;
 }
 
@@ -205,7 +237,7 @@ export function TEST_getPersistedExtensions(): Map<UUID, IExtensionPoint> {
  * Test helper to get internal editor extension state
  * @constructor
  */
-export function TEST_getEditorExtensions(): Map<UUID, IExtensionPoint> {
+export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
   return _editorExtensions;
 }
 
@@ -312,7 +344,7 @@ function notifyNavigationListeners(): void {
  */
 export async function runEditorExtension(
   extensionId: UUID,
-  extensionPoint: IExtensionPoint
+  extensionPoint: StarterBrick
 ): Promise<void> {
   // Uninstall the installed extension point instance in favor of the dynamic extensionPoint
   if (_persistedExtensions.has(extensionId)) {
@@ -341,13 +373,45 @@ export async function runEditorExtension(
 }
 
 /**
+ * Uninstall any extension points for mods that are no longer active.
+ *
+ * When mods are updated in the background script (i.e. via the Deployment updater), we don't remove
+ * extension points from the current tab in order to not interrupt the user's workflow. This function can be
+ * used to do that clean up at a more appropriate time, e.g. upon navigation.
+ */
+function cleanUpDeactivatedExtensionPoints(
+  activeExtensionMap: Record<RegistryId, ResolvedExtension[]>
+): void {
+  for (const extensionPoint of _activeExtensionPoints) {
+    const hasActiveExtensions = Object.hasOwn(
+      activeExtensionMap,
+      extensionPoint.id
+    );
+
+    if (hasActiveExtensions) {
+      continue;
+    }
+
+    try {
+      extensionPoint.uninstall({ global: true });
+      _activeExtensionPoints.delete(extensionPoint);
+    } catch (error) {
+      reportError(error);
+    }
+  }
+}
+
+/**
  * Add extensions to their respective extension points.
  *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
  */
-async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
+async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   console.debug("lifecycle:loadPersistedExtensions");
-  const options = await loadOptions();
+  const options = await logPromiseDuration(
+    "loadPersistedExtensions:loadOptions",
+    loadOptions()
+  );
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
@@ -357,17 +421,25 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
       isDeploymentActive(extension) && !_editorExtensions.has(extension.id)
   );
 
-  const resolvedExtensions = await Promise.all(
-    activeExtensions.map(async (x) => resolveDefinitions(x))
+  const resolvedActiveExtensions = await logPromiseDuration(
+    "loadPersistedExtensions:resolveDefinitions",
+    Promise.all(
+      activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
+    )
   );
 
-  const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
+  const activeExtensionMap = groupBy(
+    resolvedActiveExtensions,
+    (extension) => extension.extensionPointId
+  );
+
+  cleanUpDeactivatedExtensionPoints(activeExtensionMap);
 
   _persistedExtensions.clear();
 
   const added = compact(
     await Promise.all(
-      Object.entries(extensionMap).map(
+      Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
           ResolvedExtension[]
@@ -376,7 +448,6 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
             const extensionPoint = await extensionPointRegistry.lookup(
               extensionPointId
             );
-
             extensionPoint.syncExtensions(extensions);
 
             // Mark the extensions as installed
@@ -401,20 +472,40 @@ async function loadPersistedExtensions(): Promise<IExtensionPoint[]> {
 }
 
 /**
- * Add the extensions to their respective extension points, and return the extension points with extensions.
+ * Add the extensions to their respective extension points, and return the extension points with any extensions.
+ *
+ * Syncs the extensions, but does not call StarterBrick.install or StarterBrick.run.
+ *
+ * @see runExtensionPoint
  */
-async function loadPersistedExtensionsOnce(): Promise<IExtensionPoint[]> {
+async function loadPersistedExtensionsOnce(): Promise<StarterBrick[]> {
+  // Enforce fresh view for _reloadOnNextNavigate
   if (_initialLoad || _reloadOnNextNavigate) {
     _initialLoad = false;
     _reloadOnNextNavigate = false;
     // XXX: could also include _editorExtensions to handle case where user activates a mod while the page editor
     // is open. However, that would require handling corner case where the user reactivating a mod that has dirty
     // changes. It's not worth the complexity of handling the corner case.
-    return loadPersistedExtensions();
+
+    pendingLoadPromise = logPromiseDuration(
+      "loadPersistedExtensionsOnce:loadPersistedExtensions",
+      loadPersistedExtensions()
+    );
+
+    try {
+      return await pendingLoadPromise;
+    } finally {
+      // MemoizedUntilSettled behavior
+      pendingLoadPromise = null;
+    }
+  }
+
+  if (pendingLoadPromise != null) {
+    return pendingLoadPromise;
   }
 
   // NOTE: don't want _activeExtensionPoints, because we also want extension points that weren't active for the
-  // previous page/navigation.
+  // previous page/navigation. (Because they may now be active)
   return uniq([
     ..._persistedExtensions.values(),
     ..._editorExtensions.values(),
@@ -491,32 +582,43 @@ export async function handleNavigate({
   updateNavigationId();
   notifyNavigationListeners();
 
-  const extensionPoints = await loadPersistedExtensionsOnce();
+  const [extensionPoints] = await Promise.all([
+    loadPersistedExtensionsOnce(),
+    // Must always inject Page Script, so it's available to the Page Editor. Alternatively, we would inject it on
+    // demand when the Page Editor loads.
+    injectPageScriptOnce(),
+  ]);
 
   const abortSignal = createNavigationAbortSignal();
 
-  // Page script is needed for inserting elements into the page
-  await Promise.all([injectPageScriptOnce(), waitDocumentLoad(abortSignal)]);
-
   if (extensionPoints.length > 0) {
-    // Safe to use Promise.all because the inner method can't throw
-    await Promise.all(
-      extensionPoints.map(async (extensionPoint) => {
-        // Don't await each extension point since the extension point may never appear. For example, an
-        // extension point that runs on the contact information modal on LinkedIn
-        const runPromise = runExtensionPoint(extensionPoint, {
-          reason: runReason,
-          abortSignal,
-        }).catch((error) => {
-          console.error("Error installing/running: %s", extensionPoint.id, {
-            error,
-          });
-        });
+    // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
+    await logPromiseDuration(
+      "handleNavigate:waitDocumentLoad",
+      waitDocumentLoad(abortSignal)
+    );
 
-        if (extensionPoint.syncInstall) {
-          await runPromise;
-        }
-      })
+    // Safe to use Promise.all because the inner method can't throw
+    await logPromiseDuration(
+      "handleNavigate:runExtensionPoints",
+      Promise.all(
+        extensionPoints.map(async (extensionPoint) => {
+          // Don't await each extension point since the extension point may never appear. For example, an
+          // extension point that runs on the contact information modal on LinkedIn
+          const runPromise = runExtensionPoint(extensionPoint, {
+            reason: runReason,
+            abortSignal,
+          }).catch((error) => {
+            console.error("Error installing/running: %s", extensionPoint.id, {
+              error,
+            });
+          });
+
+          if (extensionPoint.syncInstall) {
+            await runPromise;
+          }
+        })
+      )
     );
   }
 }

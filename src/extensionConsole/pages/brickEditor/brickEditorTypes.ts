@@ -1,5 +1,5 @@
-import { type IBlock } from "@/types/blockTypes";
-import { type IExtensionPoint } from "@/types/extensionPointTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type IService } from "@/types/serviceTypes";
 
-export type ReferenceEntry = IBlock | IExtensionPoint | IService;
+export type ReferenceEntry = Brick | StarterBrick | IService;

@@ -44,7 +44,6 @@ import {
   type QuickBarProviderDefinition,
   QuickBarProviderExtensionPoint,
 } from "@/extensionPoints/quickBarProviderExtension";
-import { InsertModeHelpText } from "@/pageEditor/extensionPoints/quickBar";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 
 function fromNativeElement(
@@ -175,7 +174,6 @@ const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  InsertModeHelpText,
 };
 
 export default config;

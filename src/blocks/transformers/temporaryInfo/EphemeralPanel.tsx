@@ -32,7 +32,7 @@ import PanelBody from "@/sidebar/PanelBody";
 import useTemporaryPanelDefinition from "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition";
 import { type UUID } from "@/types/stringTypes";
 import { startCase } from "lodash";
-import { type PanelButton } from "@/sidebar/types";
+import { type PanelButton } from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/blocks/errors";
 import styles from "./EphemeralPanel.module.scss";
 

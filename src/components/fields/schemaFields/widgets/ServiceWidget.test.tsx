@@ -28,22 +28,23 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 // eslint-disable-next-line no-restricted-imports -- test
 import { Formik } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
-import { noop } from "lodash";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import {
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
 }));
+
+const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
 jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
   ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
   // Mock so we don't have to have full Page Editor state in tests
   produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
 }));
-
-const useAuthOptionsMock = useAuthOptions as jest.MockedFunction<
-  typeof useAuthOptions
->;
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -81,11 +82,32 @@ const renderServiceWidget = (
   );
 
 describe("ServiceWidget", () => {
-  it("should not default if there are multiple auth options", async () => {
+  it("show no options while loading", async () => {
     const serviceId = validateRegistryId("jest/api");
 
     useAuthOptionsMock.mockReturnValue({
-      authOptions: [
+      ...loadingAsyncStateFactory(),
+      refetch: jest.fn(),
+    });
+
+    const schema = {
+      $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
+    };
+
+    const wrapper = renderServiceWidget(schema, {
+      services: [],
+    });
+
+    await waitForEffect();
+
+    expect(wrapper.queryByText("Select...")).toBeVisible();
+  });
+
+  it("should not default if there are multiple auth options", async () => {
+    const serviceId = validateRegistryId("jest/api");
+
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([
         {
           serviceId,
           label: "Test 1",
@@ -100,10 +122,8 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ],
-      refresh: noop,
-      isLoading: false,
-    });
+      ])
+    );
 
     const schema = {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
@@ -121,8 +141,8 @@ describe("ServiceWidget", () => {
   it("should default to only configuration", async () => {
     const serviceId = validateRegistryId("jest/api");
 
-    useAuthOptionsMock.mockReturnValue({
-      authOptions: [
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([
         {
           serviceId,
           label: "Test 1",
@@ -130,10 +150,8 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ],
-      refresh: noop,
-      isLoading: false,
-    });
+      ])
+    );
 
     const schema = {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- Formik just needed as wrapper
@@ -26,6 +25,7 @@ import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import TourStep from "@/blocks/transformers/tourStep/tourStep";
 import TourStepOptions from "@/blocks/transformers/tourStep/TourStepOptions";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 function makeBaseState() {
   // Extension type doesn't really matter here...

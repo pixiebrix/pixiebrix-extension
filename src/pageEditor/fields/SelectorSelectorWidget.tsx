@@ -43,6 +43,12 @@ import { type SettingsState } from "@/store/settingsTypes";
 import { sortBySelector } from "@/utils/inference/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
+import { type Expression } from "@/types/runtimeTypes";
+import {
+  castTextLiteralOrThrow,
+  isTextLiteralOrNull,
+} from "@/utils/templateUtils";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -50,15 +56,52 @@ interface ElementSuggestion extends SuggestionTypeBase {
 }
 
 export type SelectorSelectorProps = {
+  /**
+   * The name of the field.
+   */
   name: string;
+  /**
+   * True to disable the widget.
+   */
   disabled?: boolean;
+  /**
+   * The initial value for the widget.
+   */
   initialElement?: ElementInfo;
+  /**
+   * The framework to extract JS data from the associated React/Vue/AngularJS component.
+   * @deprecated
+   */
   framework?: Framework;
+  /**
+   * True to default to selecting multiple elements.
+   * @since 1.7.33
+   */
+  isMulti?: boolean;
+  /**
+   * Mode to select a single element or a container (for placing a button/panel inline on the page).
+   */
   selectMode?: SelectMode;
+  /**
+   * The number of levels in the React/Vue/AngularJS component hierarchy to traverse up from the selected DOM element.
+   * @deprecated
+   */
   traverseUp?: number;
+  /**
+   * True to enable clearing the selector.
+   */
   isClearable?: boolean;
+  /**
+   * True to automatically sort the inferred selectors by length.
+   */
   sort?: boolean;
+  /**
+   * Root selector to infer selectors from. If not provided, document will be used as a root
+   */
   root?: string;
+  /**
+   * Placeholder for the text input
+   */
   placeholder?: string;
 };
 
@@ -109,17 +152,19 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   initialElement,
   framework,
   selectMode = "element",
+  isMulti = false,
   traverseUp = 0,
   isClearable = false,
   root,
   disabled = false,
   placeholder = "Select an element",
-
   // By default, sort by preference in `element` selection mode. Don't sort in `container` mode because
   // the order is based on structure (because selectors for multiple elements are returned).
   sort = selectMode === "element",
 }) => {
-  const [{ value }, , { setValue }] = useField<string>(name);
+  const [{ value: valueOrExpression }, , { setValue }] = useField<
+    string | Expression
+  >(name);
 
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
@@ -170,7 +215,16 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     [disableSelector, enableSelector, setValue]
   );
 
-  const select = useCallback(async () => {
+  useEffect(
+    () => () => {
+      if (isSelecting) {
+        void cancelSelect(thisTab);
+      }
+    },
+    [isSelecting]
+  );
+
+  const select = async () => {
     setSelecting(true);
     try {
       const selected = await selectElement(thisTab, {
@@ -179,6 +233,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         traverseUp,
         root,
         excludeRandomClasses,
+        isMulti,
         enableSelectionTools,
       });
 
@@ -210,25 +265,11 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     } finally {
       setSelecting(false);
     }
-  }, [
-    sort,
-    framework,
-    setSelecting,
-    traverseUp,
-    selectMode,
-    setElement,
-    setValue,
-    root,
-  ]);
+  };
 
-  useEffect(
-    () => () => {
-      if (isSelecting) {
-        void cancelSelect(thisTab);
-      }
-    },
-    [isSelecting]
-  );
+  if (!isTextLiteralOrNull(valueOrExpression)) {
+    return <WorkshopMessageWidget />;
+  }
 
   return (
     // Do not replace this with `InputGroup` because that requires too many style overrides #2658 #2835
@@ -245,7 +286,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         isClearable={isClearable}
         isDisabled={isSelecting || disabled}
         suggestions={suggestions}
-        inputValue={value}
+        inputValue={castTextLiteralOrThrow(valueOrExpression)}
         inputPlaceholder={placeholder}
         renderSuggestion={renderSuggestion}
         onSuggestionHighlighted={onHighlighted}

@@ -40,6 +40,7 @@ export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
     dataPanel: {
       activeTabKey: null,
     },
+    expandedFieldSections: {},
   };
 
   for (const tab of Object.values(DataPanelTabKey)) {

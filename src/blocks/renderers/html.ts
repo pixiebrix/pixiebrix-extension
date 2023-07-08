@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/blocks/rendererTypes";
+import { Renderer } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
-import { type BlockArgs } from "@/types/runtimeTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 
 export class HtmlRenderer extends Renderer {
@@ -37,7 +37,7 @@ export class HtmlRenderer extends Renderer {
     },
   });
 
-  async render({ html }: BlockArgs): Promise<SafeHTML> {
+  async render({ html }: BrickArgs<{ html: string }>): Promise<SafeHTML> {
     return sanitize(html);
   }
 }

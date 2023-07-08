@@ -16,28 +16,14 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
 import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
-import { type MarketplaceListing } from "@/types/contract";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type RegistryId } from "@/types/registryTypes";
+import { render } from "@/extensionConsole/testHelpers";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
-jest.mock("@/services/api", () => ({
-  appApi: {
-    endpoints: {
-      getMarketplaceListings: {
-        useQueryState: jest.fn().mockReturnValue({
-          data: {} as Record<RegistryId, MarketplaceListing>,
-        }),
-      },
-    },
-  },
-  useGetMarketplaceListingsQuery: () => ({
-    data: {} as Record<RegistryId, MarketplaceListing>,
-  }),
-}));
+mockAllApiEndpoints();
 
 test.each([
   ["empty", {}],

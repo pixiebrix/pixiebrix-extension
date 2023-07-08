@@ -24,7 +24,7 @@ import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/blocks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type FormState } from "./extensionPoints/formStateTypes";
@@ -33,7 +33,7 @@ import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
-import { type OptionsDefinition } from "@/types/recipeTypes";
+import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -66,6 +66,11 @@ export enum ModalKey {
   CREATE_RECIPE,
   ADD_BLOCK,
 }
+
+export type RecipeMetadataFormState = Pick<
+  Metadata,
+  "id" | "name" | "version" | "description"
+>;
 
 export interface EditorState {
   /**
@@ -130,7 +135,7 @@ export interface EditorState {
   /**
    * A clipboard-style-copy of a block ready to paste into an extension
    */
-  copiedBlock?: BlockConfig;
+  copiedBlock?: BrickConfig;
 
   /**
    * Are we currently showing the info message to users about upgrading from v2 to v3 of
@@ -208,6 +213,16 @@ export interface EditorState {
    * How many dynamic elements are not available on the current tab?
    */
   unavailableDynamicCount: number;
+
+  /**
+   * Is data panel expanded or collapsed
+   */
+  isDataPanelExpanded: boolean;
+
+  /**
+   * Is mod list expanded or collapsed
+   */
+  isModListExpanded: boolean;
 }
 
 export type EditorRootState = {
@@ -227,8 +242,3 @@ export type RootState = AuthRootState &
   SessionChangesRootState & {
     savingExtension: SavingExtensionState;
   };
-
-export type RecipeMetadataFormState = Pick<
-  Metadata,
-  "id" | "name" | "version" | "description"
->;
