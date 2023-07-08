@@ -24,7 +24,7 @@ import {
 import { isEmpty, merge } from "lodash";
 import { type JsonObject } from "type-fest";
 import { type UnknownRecord } from "type-fest/source/internal";
-import { excludeServices } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import { excludeIntegrationVariables } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 
 /**
  * Convert every node in the existence tree which IS_ARRAY to an array
@@ -65,7 +65,7 @@ function getMenuOptions(
 
   // Skip setting context values if there are none
   if (isEmpty(contextValues)) {
-    return excludeServices(varMapEntries);
+    return excludeIntegrationVariables(varMapEntries);
   }
 
   const visitedOutputs = new Set<string>();
@@ -87,7 +87,7 @@ function getMenuOptions(
     }
   }
 
-  return excludeServices(varMapEntries);
+  return excludeIntegrationVariables(varMapEntries);
 }
 
 export default getMenuOptions;

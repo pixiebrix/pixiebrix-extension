@@ -30,7 +30,7 @@ import { useField } from "formik";
 import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import { trim, trimEnd } from "lodash";
+import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
@@ -42,6 +42,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { type Schema } from "@/types/schemaTypes";
 import { type TemplateEngine } from "@/types/runtimeTypes";
+import { trimEndOnce } from "@/utils/stringUtils";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -89,11 +90,10 @@ export function isVarLike(value: string): boolean {
     // User-just started typing a variable
     value === "@" ||
     // User is accessing a sub property.
-    // Technically, this should only trim at most one period
-    isVarValue(trimEnd(value, ".")) ||
+    isVarValue(trimEndOnce(value, ".")) ||
     // User is accessing an array index, or property with whitespace.
     // Technically, this should only trim at most one bracket
-    isVarValue(trimEnd(value, "["))
+    isVarValue(trimEndOnce(value, "["))
   ) {
     return true;
   }

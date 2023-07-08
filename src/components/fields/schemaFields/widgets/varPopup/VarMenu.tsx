@@ -35,6 +35,7 @@ import {
   filterOptionsByVariable,
   filterVarMapByVariable,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import cx from "classnames";
 
 type VarMenuProps = {
   /**
@@ -84,11 +85,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   }, [onClose]);
 
   useAsyncEffect(async () => {
-    if (
-      !inputElementRef.current ||
-      !rootElementRef.current ||
-      knownVars == null
-    ) {
+    if (!inputElementRef.current || !rootElementRef.current) {
       return;
     }
 
@@ -115,15 +112,18 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       }
     );
 
-    if (rootElementRef.current == null) {
-      return;
-    }
-
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
   }, [knownVars]);
 
+  // Return early to avoid having to deal with null knownVars in option generation
   if (knownVars == null) {
-    return null;
+    return (
+      <div className={styles.menu} ref={rootElementRef}>
+        <div className={cx(styles.sourceItem, "text-info")}>
+          Available variables have not been computed yet.
+        </div>
+      </div>
+    );
   }
 
   const extensionPointLabel = activeElement?.type
@@ -137,9 +137,27 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   return (
     <div className={styles.menu} ref={rootElementRef}>
       {filteredOptions.length === 0 && (
-        <div className={styles.sourceItem}>
-          No variables found for <span>{likelyVariable}</span>
-        </div>
+        <>
+          <div className={cx(styles.sourceItem, "text-info")}>
+            No variables found for <span>{likelyVariable}</span>
+          </div>
+          {allOptions.map(([source, vars]) => (
+            // Show all top-level sources if no vars match
+            <div className={styles.sourceItem} key={source}>
+              <SourceLabel
+                source={source}
+                extensionPointLabel={extensionPointLabel}
+                blocksInfo={blocksInfo}
+                allBlocks={allBlocks}
+              />
+              <VariablesTree
+                vars={vars}
+                onVarSelect={onVarSelect}
+                likelyVariable={likelyVariable}
+              />
+            </div>
+          ))}
+        </>
       )}
       {filteredOptions.map(([source, vars]) => (
         <div className={styles.sourceItem} key={source}>

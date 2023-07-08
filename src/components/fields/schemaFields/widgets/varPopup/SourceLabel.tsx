@@ -26,7 +26,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
   ) {
     switch (kind) {
       case KnownSources.INPUT: {
-        label = extensionPointLabel;
+        label = `Starter Brick: ${extensionPointLabel}`;
         break;
       }
 

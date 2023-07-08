@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Renders the tree expanded with correct sorting 1`] = `
+exports[`Renders the tree 1`] = `
 <DocumentFragment>
   <ul
     style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"

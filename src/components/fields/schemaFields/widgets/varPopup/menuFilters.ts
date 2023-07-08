@@ -28,11 +28,11 @@ import { type ShouldExpandNodeInitially } from "react-json-tree";
 type MenuOptions = Array<[string, UnknownRecord]>;
 
 /**
- * Filter top-level variables by source type. Currently, excludes service variables because they're managed
+ * Filter top-level variables by source type. Currently, excludes integration variables because they're managed
  * automatically by the Page Editor.
  * @param options variable popover options
  */
-export function excludeServices(options: MenuOptions): MenuOptions {
+export function excludeIntegrationVariables(options: MenuOptions): MenuOptions {
   return options.filter(([source]) => {
     const [kind] = source.split(":");
     return kind !== KnownSources.SERVICE;
@@ -101,11 +101,11 @@ function filterVarMapByPath(
 
 /**
  * Recursively filter a varMap based on the variable the user is currently editing.
- * @param vars
- * @param likelyVariable
+ * @param varMap the varMap
+ * @param likelyVariable the variable the user is editing
  */
 export function filterVarMapByVariable(
-  vars: UnknownRecord,
+  varMap: UnknownRecord,
   likelyVariable: string
 ): UnknownRecord {
   if (
@@ -113,14 +113,19 @@ export function filterVarMapByVariable(
     likelyVariable === "@" ||
     !likelyVariable.startsWith("@")
   ) {
-    return vars;
+    return varMap;
   }
 
-  return filterVarMapByPath(vars, toPath(likelyVariable));
+  return filterVarMapByPath(varMap, toPath(likelyVariable));
 }
 
+/**
+ * Expand the variable map to the current level the user is editing. Only expands if the prefix matches.
+ * @param varMap the variable map
+ * @param likelyVariable the variable the user is editing
+ */
 export function expandCurrentVariableLevel(
-  vars: UnknownRecord,
+  varMap: UnknownRecord,
   likelyVariable: string
 ): ShouldExpandNodeInitially {
   if (
@@ -134,5 +139,18 @@ export function expandCurrentVariableLevel(
   // If likelyVariable ends with ".", there's a part for the empty string at the end of the path. So can just use
   // as normal without logic for trailing "."
   const parts = toPath(likelyVariable);
-  return (keyPath, data, level) => level < parts.length;
+  return (keyPath, data, level) => {
+    // Key path from JSONTree is in reverse order
+    const reverseKeyPath = [...keyPath].reverse();
+
+    // Ensure the likelyVariable matches up to the requested depth
+    for (let index = 0; index < level; index++) {
+      // eslint-disable-next-line security/detect-object-injection -- numeric index
+      if (parts[index] !== reverseKeyPath[index]) {
+        return false;
+      }
+    }
+
+    return level < parts.length;
+  };
 }

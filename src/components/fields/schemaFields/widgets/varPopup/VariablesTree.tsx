@@ -28,6 +28,10 @@ import {
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import useTreeRow from "@/components/fields/schemaFields/widgets/varPopup/useTreeRow";
 
+/**
+ * Returns true if a varMap entry corresponds to an object or array.
+ * @param value the varMap entry
+ */
 function isObjectLike(value: unknown): boolean {
   if (typeof value !== "object" || value == null) {
     return false;
@@ -35,15 +39,14 @@ function isObjectLike(value: unknown): boolean {
 
   const varMapEntry = value as UnknownRecord;
 
-  // eslint-disable-next-line security/detect-object-injection -- Symbols
+  // eslint-disable-next-line security/detect-object-injection -- constant symbols
   if (varMapEntry[IS_ARRAY] || varMapEntry[ALLOW_ANY_CHILD]) {
     return true;
   }
 
-  // XXX: this might mis=categorize empty objects in the trace :shrug:
-  if (Object.keys(value).length === 0) {
-    return false;
-  }
+  // We're assuming empty objects observed in the trace will have ALLOW_ANY_CHILD set. Otherwise, this check will
+  // mis-categorize them as primitives
+  return Object.keys(value).length > 0;
 }
 
 function compareObjectKeys(
@@ -51,14 +54,14 @@ function compareObjectKeys(
   rhsKey: string,
   obj: UnknownObject
 ): number {
-  // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries
+  // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries in caller
   const lhsValue = obj[lhsKey];
-  // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries
+  // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries in caller
   const rhsValue = obj[rhsKey];
 
   if (isObjectLike(lhsValue)) {
     if (isObjectLike(rhsValue)) {
-      // Alphabetize object
+      // Alphabetize object keys
       return lhsKey.localeCompare(rhsKey);
     }
 
@@ -79,7 +82,7 @@ function compareObjectKeys(
  * Arrays and Objects.
  */
 function sortObjectKeys(value: unknown): unknown {
-  if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+  if (typeof value === "object" && value != null && !Array.isArray(value)) {
     return Object.fromEntries(
       Object.entries(value).sort(([lhsKey], [rhsKey]) =>
         compareObjectKeys(lhsKey, rhsKey, value as UnknownObject)
@@ -113,6 +116,7 @@ const NodeLabel: React.FunctionComponent<{
   const buttonRef = useRef<HTMLElement>(null);
 
   const select = () => {
+    // JSONTree tracks key path in reverse order
     onSelect(path.map(String).reverse());
   };
 

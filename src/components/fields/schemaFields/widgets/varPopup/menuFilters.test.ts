@@ -21,7 +21,10 @@ import VarMap, {
   SELF_EXISTENCE,
   VarExistence,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
-import { filterVarMapByVariable } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import {
+  expandCurrentVariableLevel,
+  filterVarMapByVariable,
+} from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 
 describe("filterVarMapByVariable", () => {
   it("filters top-level", () => {
@@ -138,5 +141,101 @@ describe("filterVarMapByVariable", () => {
         }),
       })
     );
+  });
+});
+
+describe("expandCurrentVariableLevel", () => {
+  test("don't expand if just '@'", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: 42,
+        },
+      },
+    });
+
+    const { input: inputMap } = varMap.getMap();
+
+    const shouldExpand = expandCurrentVariableLevel(inputMap, "@");
+    expect(shouldExpand(["@input"], null, 0)).toBe(false);
+    expect(shouldExpand(["@input"], null, 1)).toBe(false);
+  });
+
+  test("don't expand if prefix doesn't match", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: 42,
+        },
+      },
+    });
+
+    const { input: inputMap } = varMap.getMap();
+
+    const shouldExpand = expandCurrentVariableLevel(inputMap, "@foo");
+    expect(shouldExpand(["@input"], null, 0)).toBe(true);
+    // JSONTree builds keypath in reverse order
+    expect(shouldExpand(["foo", "@input"], null, 1)).toBe(false);
+  });
+
+  test("should not expand if no trailing dot", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: 42,
+        },
+      },
+    });
+
+    const { input: inputMap } = varMap.getMap();
+
+    const shouldExpand = expandCurrentVariableLevel(inputMap, "@input");
+    expect(shouldExpand(["@input"], null, 0)).toBe(true);
+    expect(shouldExpand(["foo", "@input"], null, 1)).toBe(false);
+  });
+
+  test("should expand if trailing dot", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: 42,
+        },
+      },
+    });
+
+    const { input: inputMap } = varMap.getMap();
+
+    const shouldExpand = expandCurrentVariableLevel(inputMap, "@input.");
+    expect(shouldExpand(["@input"], null, 0)).toBe(true);
+    expect(shouldExpand(["foo", "@input"], null, 1)).toBe(true);
+  });
+
+  test("should expand nested if trailing dot", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: {
+            bar: 42,
+          },
+        },
+      },
+    });
+
+    const { input: inputMap } = varMap.getMap();
+
+    const shouldExpand = expandCurrentVariableLevel(inputMap, "@input.foo.");
+    expect(shouldExpand(["@input"], null, 0)).toBe(true);
+    expect(shouldExpand(["foo", "@input"], null, 1)).toBe(true);
+    expect(shouldExpand(["bar", "foo", "@input"], null, 2)).toBe(true);
   });
 });
