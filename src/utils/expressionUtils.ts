@@ -16,7 +16,7 @@
  */
 
 import {
-  DeferExpression,
+  type DeferExpression,
   type Expression,
   type ExpressionType,
   type PipelineExpression,
