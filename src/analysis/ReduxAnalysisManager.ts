@@ -65,7 +65,7 @@ type AnalysisFactory<
   TAnalysis extends Analysis,
   TAction = AnyAction,
   TState = unknown
-> = (action: TAction, state: TState) => TAnalysis | null;
+> = (action: TAction, state: TState) => TAnalysis | null | Promise<TAnalysis>;
 
 class ReduxAnalysisManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -83,6 +83,7 @@ class ReduxAnalysisManager {
     let abortController: AbortController;
 
     const effect: AnalysisEffect = async (action, listenerApi) => {
+      // Abort the previous analysis run, if running
       if (abortController) {
         abortController.abort();
       }
@@ -103,7 +104,7 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const analysis = analysisFactory(action, state);
+        const analysis = await analysisFactory(action, state);
         if (!analysis) {
           return;
         }

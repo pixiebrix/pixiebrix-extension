@@ -16,7 +16,7 @@
  */
 
 import { type BrickPipeline } from "@/blocks/types";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 
 export function makeTemplateExpression(

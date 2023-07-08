@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitorWithResolvedBricks } from "./baseAnalysisVisitors";
+import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { makeIsBlockAllowedForPipeline } from "@/blocks/blockFilterHelpers";
@@ -23,17 +23,17 @@ import { AnnotationType } from "@/types/annotationTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { TourEffect } from "@/blocks/effects/tourEffect";
 
-class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBricks {
+class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   get id() {
     return "blockType";
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     const typedBlock = this.allBlocks.get(blockConfig.id);
     if (typedBlock == null) {
@@ -77,4 +77,4 @@ class BlockTypeAnalysis extends AnalysisVisitorWithResolvedBricks {
   }
 }
 
-export default BlockTypeAnalysis;
+export default BrickTypeAnalysis;

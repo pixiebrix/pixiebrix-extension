@@ -52,6 +52,10 @@ export type AnalysisAnnotation = BaseAnnotation & {
   actions?: AnalysisAnnotationAction[];
 };
 
+/**
+ * An analysis to run against the FormState for a single IExtensions.
+ * @see FormState
+ */
 export interface Analysis {
   /**
    * Unique identifier for this analysis
@@ -70,6 +74,28 @@ export interface Analysis {
   run(extension: FormState): void | Promise<void>;
 }
 
+/**
+ * An analysis to run against the FormState for a single IExtensions.
+ * @see FormState
+ */
+export interface ModAnalysis {
+  /**
+   * Unique identifier for this analysis
+   */
+  readonly id: string;
+
+  /**
+   * Return the produced annotations
+   */
+  getAnnotations(): AnalysisAnnotation[];
+
+  /**
+   * Run the analysis on the given extensions
+   * @param extensions The extensions to analyze
+   */
+  run(extensions: FormState[]): void | Promise<void>;
+}
+
 export type AnalysisState = {
   /**
    * Annotations stored by extension ID
@@ -77,11 +103,20 @@ export type AnalysisState = {
   extensionAnnotations: Record<UUID, AnalysisAnnotation[]>;
 
   /**
-   * Known variables
-   * stored for each block by block path (string key of the Map)
-   * withing an extension (the UUID key of the Record)
+   * Known variables as map: IExtension Id -> block path -> VarMap
+   * - Stored for each block by block path (string key of the Map)
+   * - Within an extension (the UUID key of the Record)
    */
   knownVars: Record<UUID, Map<string, VarMap>>;
+
+  /**
+   * Known custom event names emitted by the `@pixiebrix/event` brick.
+   *
+   * Currently, all mod components are aware of the same event names.
+   *
+   * @since 1.7.34
+   */
+  knownEventNames: Record<UUID, string[]>;
 };
 
 export type AnalysisRootState = {

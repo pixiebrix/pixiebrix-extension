@@ -16,7 +16,7 @@
  */
 
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,

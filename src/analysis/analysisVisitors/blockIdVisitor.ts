@@ -25,7 +25,7 @@ import { castArray } from "lodash";
 /**
  * A visitor that recursively collects all block IDs used in a pipeline.
  *
- * Typically should be called as BlockIdVisitor.collectBlockIds
+ * Typically, should be called as BlockIdVisitor.collectBlockIds
  *
  * @see BlockIdVisitor.collectBlockIds
  */
@@ -36,12 +36,12 @@ class BlockIdVisitor extends PipelineVisitor {
     return new Set(this._blockIds);
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
     this._blockIds.add(blockConfig.id);
   }
 

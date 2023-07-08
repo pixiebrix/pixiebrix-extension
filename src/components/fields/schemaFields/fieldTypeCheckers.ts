@@ -28,7 +28,8 @@ import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
-import { isVarExpression } from "@/runtime/mapArgs";
+
+import { isVarExpression } from "@/utils/expressionUtils";
 
 export const isAppServiceField = createTypePredicate(
   (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`

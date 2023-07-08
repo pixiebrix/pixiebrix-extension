@@ -35,3 +35,7 @@ export function selectExtensionAnnotations(
 export function selectKnownVars(state: AnalysisRootState) {
   return state.analysis.knownVars;
 }
+
+export function selectKnownEventNames(state: AnalysisRootState) {
+  return state.analysis.knownEventNames;
+}

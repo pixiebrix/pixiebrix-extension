@@ -31,7 +31,6 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { joinName } from "@/utils";
@@ -39,6 +38,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import { isExpression } from "@/utils/expressionUtils";
 
 function useHooks(): {
   hooks: Webhook[];

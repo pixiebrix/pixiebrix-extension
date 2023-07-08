@@ -32,11 +32,11 @@ import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
-import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { isExpression } from "@/utils/expressionUtils";
 
 async function fetchRobots(
   config: SanitizedServiceConfiguration

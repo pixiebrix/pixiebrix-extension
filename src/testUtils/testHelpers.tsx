@@ -40,7 +40,7 @@ import { type Middleware } from "redux";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import {
   renderHook,

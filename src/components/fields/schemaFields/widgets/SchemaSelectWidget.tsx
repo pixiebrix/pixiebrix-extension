@@ -21,20 +21,17 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { isEmpty, sortBy, uniq } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";
-import { isExpression } from "@/runtime/mapArgs";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
+import { isExpression } from "@/utils/expressionUtils";
 
 type StringOption = {
   value: string;
 };
 type StringOptionsType = Options<StringOption>;
 
-const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
-  name,
-  schema,
-  isRequired,
-  focusInput,
-}) => {
+const SchemaSelectWidget: React.VFC<
+  SchemaFieldProps & { placeholder?: string }
+> = ({ name, schema, isRequired, focusInput, placeholder }) => {
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
@@ -87,6 +84,7 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
       value={selectedValue}
       onChange={selectOnChange}
       ref={elementRef}
+      placeholder={placeholder}
       openMenuOnFocus={true}
     />
   ) : (

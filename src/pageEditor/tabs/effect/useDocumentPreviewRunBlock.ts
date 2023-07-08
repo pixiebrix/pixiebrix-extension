@@ -34,9 +34,9 @@ import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
-import { isExpression } from "@/runtime/mapArgs";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
+import { isExpression } from "@/utils/expressionUtils";
 
 type Location = "modal" | "panel";
 

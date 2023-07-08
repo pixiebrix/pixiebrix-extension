@@ -23,7 +23,8 @@ import {
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
-import { isExpression } from "@/runtime/mapArgs";
+
+import { isExpression } from "@/utils/expressionUtils";
 
 type ListProps = PreviewComponentProps & {
   element: DocumentElement;

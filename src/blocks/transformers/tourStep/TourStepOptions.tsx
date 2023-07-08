@@ -26,11 +26,7 @@ import {
   TourStepTransformer,
 } from "@/blocks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
-import {
-  isPipelineExpression,
-  type PipelineExpression,
-} from "@/runtime/mapArgs";
-import { type Expression } from "@/types/runtimeTypes";
+import { type Expression, PipelineExpression } from "@/types/runtimeTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import SwitchButtonWidget, {
@@ -41,6 +37,7 @@ import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 
 import styles from "./TourStepOptions.module.scss";
+import { isPipelineExpression } from "@/utils/expressionUtils";
 
 const Section: React.FunctionComponent<{ title: string }> = ({
   title,

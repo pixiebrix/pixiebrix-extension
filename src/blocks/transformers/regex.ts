@@ -23,7 +23,8 @@ import { isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/blocks/types";
 import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
-import { isNunjucksExpression } from "@/runtime/mapArgs";
+
+import { isNunjucksExpression } from "@/utils/expressionUtils";
 
 export function extractNamedCaptureGroups(pattern: string): string[] {
   // Create new regex on each analysis call to avoid state issues with test

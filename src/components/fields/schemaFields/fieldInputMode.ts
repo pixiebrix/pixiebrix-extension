@@ -16,7 +16,6 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { type Schema } from "@/types/schemaTypes";
 import { compact, isEmpty, uniq } from "lodash";
 import {
@@ -27,6 +26,7 @@ import {
   isSimpleServiceField,
   isServiceValueFormat,
 } from "./fieldTypeCheckers";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 
 export type FieldInputMode =
   | "string"

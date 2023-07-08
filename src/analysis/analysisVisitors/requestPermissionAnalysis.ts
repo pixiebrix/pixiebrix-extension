@@ -21,18 +21,18 @@ import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
-import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
  */
-class RequestPermissionAnalysis extends AnalysisVisitor {
+class RequestPermissionAnalysis extends AnalysisVisitorABC {
   // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
   // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
   private readonly permissionCheckPromises: Array<Promise<void>> = [];
@@ -41,12 +41,12 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
     return "requestPermission";
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     // Analyze the known blocks that make external HTTP request
     if (

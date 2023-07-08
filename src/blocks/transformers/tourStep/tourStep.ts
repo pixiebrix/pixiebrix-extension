@@ -24,7 +24,7 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";

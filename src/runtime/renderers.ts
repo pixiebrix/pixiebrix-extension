@@ -25,7 +25,7 @@ import {
   renderNunjucksTemplate,
 } from "@/sandbox/messenger/executor";
 import { type UnknownObject } from "@/types/objectTypes";
-import { containsTemplateExpression } from "@/utils/templateUtils";
+import { containsTemplateExpression } from "@/utils/expressionUtils";
 
 export type AsyncTemplateRenderer = (
   template: string,

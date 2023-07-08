@@ -47,7 +47,7 @@ import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { type EditablePackage } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
