@@ -17,7 +17,7 @@
 
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { type Expression } from "@/types/runtimeTypes";
-import { LabelledEnumSchema, type Schema } from "@/types/schemaTypes";
+import { type LabelledEnumSchema, type Schema } from "@/types/schemaTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import {
   SERVICE_BASE_SCHEMA,
