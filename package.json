@@ -63,7 +63,7 @@
     "dompurify": "^3.0.4",
     "downloadjs": "^1.4.7",
     "eslint-plugin-unicorn": "^47.0.0",
-    "exifreader": "^4.12.1",
+    "exifreader": "^4.13.0",
     "export-to-csv": "^0.2.1",
     "filenamify": "^6.0.0",
     "fit-textarea": "^3.0.0",
