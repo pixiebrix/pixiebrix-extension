@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
@@ -36,6 +36,11 @@ import {
   filterVarMapByVariable,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import cx from "classnames";
+import VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+
+const emptyVarMap = new VarMap();
 
 type VarMenuProps = {
   /**
@@ -62,6 +67,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   onVarSelect,
   likelyVariable,
 }) => {
+  const dispatch = useDispatch();
   const rootElementRef = useRef<HTMLDivElement>(null);
   const activeElement = useSelector(selectActiveElement);
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
@@ -83,6 +89,16 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       document.removeEventListener("click", handleClick);
     };
   }, [onClose]);
+
+  useEffect(() => {
+    console.debug("showVariablePopover");
+    dispatch(editorActions.showVariablePopover(null));
+
+    return () => {
+      console.debug("hideVariablePopover");
+      dispatch(editorActions.hideVariablePopover(null));
+    };
+  }, [dispatch]);
 
   useAsyncEffect(async () => {
     if (!inputElementRef.current || !rootElementRef.current) {
@@ -113,9 +129,35 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     );
 
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
-  }, [knownVars]);
+  }, [knownVars, dispatch]);
 
-  // Return early to avoid having to deal with null knownVars in option generation
+  const extensionPointLabel = activeElement?.type
+    ? ADAPTERS.get(activeElement.type).label
+    : "";
+
+  const { allOptions, filteredOptions } = useMemo(() => {
+    const allOptions = getMenuOptions(
+      knownVars ?? emptyVarMap,
+      trace?.templateContext
+    );
+    return {
+      allOptions,
+      filteredOptions: filterOptionsByVariable(allOptions, likelyVariable),
+    };
+  }, [knownVars, trace?.templateContext, likelyVariable]);
+
+  const blocksInfo = Object.values(pipelineMap);
+
+  const { activeKeyPath } = useKeyboardNavigation({
+    inputElementRef,
+    isVisible: Boolean(rootElementRef.current),
+    likelyVariable,
+    menuOptions: filteredOptions,
+    onSelect: onVarSelect,
+  });
+
+  console.debug("activeKeyPath", activeKeyPath);
+
   if (knownVars == null) {
     return (
       <div className={styles.menu} ref={rootElementRef}>
@@ -125,14 +167,6 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       </div>
     );
   }
-
-  const extensionPointLabel = activeElement?.type
-    ? ADAPTERS.get(activeElement.type).label
-    : "";
-
-  const allOptions = getMenuOptions(knownVars, trace?.templateContext);
-  const filteredOptions = filterOptionsByVariable(allOptions, likelyVariable);
-  const blocksInfo = Object.values(pipelineMap);
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
@@ -154,6 +188,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
                 vars={vars}
                 onVarSelect={onVarSelect}
                 likelyVariable={likelyVariable}
+                activeKeyPath={activeKeyPath}
               />
             </div>
           ))}
@@ -171,6 +206,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             vars={filterVarMapByVariable(vars, likelyVariable)}
             onVarSelect={onVarSelect}
             likelyVariable={likelyVariable}
+            activeKeyPath={activeKeyPath}
           />
         </div>
       ))}

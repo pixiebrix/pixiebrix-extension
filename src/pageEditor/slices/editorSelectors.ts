@@ -367,6 +367,9 @@ const annotationsForPathSelector = createSelector(
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
 
+export const selectVariablePopoverVisible = ({ editor }: EditorRootState) =>
+  editor.isVariablePopoverVisible;
+
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>
   editor.copiedBlock;
 

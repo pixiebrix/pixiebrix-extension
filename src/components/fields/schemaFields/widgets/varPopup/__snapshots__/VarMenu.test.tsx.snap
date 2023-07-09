@@ -25,6 +25,7 @@ exports[`VarMenu shows view for match 1`] = `
             style="padding: 0px; margin: 0px; list-style: none;"
           >
             <li
+              class="active"
               style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px; display: flex; align-items: center; flex-wrap: wrap;"
             >
               <div

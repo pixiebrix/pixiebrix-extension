@@ -17,81 +17,15 @@
 
 import React, { useRef } from "react";
 import { type GetItemString, JSONTree, type KeyPath } from "react-json-tree";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 import { type UnknownRecord } from "type-fest/source/internal";
 import { popoverTheme } from "@/components/fields/schemaFields/widgets/varPopup/popoverTheme";
-import { expandCurrentVariableLevel } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import {
-  ALLOW_ANY_CHILD,
-  IS_ARRAY,
-} from "@/analysis/analysisVisitors/varAnalysis/varMap";
+  expandCurrentVariableLevel,
+  sortVarMapKeys,
+} from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import useTreeRow from "@/components/fields/schemaFields/widgets/varPopup/useTreeRow";
-
-/**
- * Returns true if a varMap entry corresponds to an object or array.
- * @param value the varMap entry
- */
-function isObjectLike(value: unknown): boolean {
-  if (typeof value !== "object" || value == null) {
-    return false;
-  }
-
-  const varMapEntry = value as UnknownRecord;
-
-  // eslint-disable-next-line security/detect-object-injection -- constant symbols
-  if (varMapEntry[IS_ARRAY] || varMapEntry[ALLOW_ANY_CHILD]) {
-    return true;
-  }
-
-  // We're assuming empty objects observed in the trace will have ALLOW_ANY_CHILD set. Otherwise, this check will
-  // mis-categorize them as primitives
-  return Object.keys(value).length > 0;
-}
-
-function compareObjectKeys(
-  lhsKey: string,
-  rhsKey: string,
-  obj: UnknownObject
-): number {
-  // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries in caller
-  const lhsValue = obj[lhsKey];
-  // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries in caller
-  const rhsValue = obj[rhsKey];
-
-  if (isObjectLike(lhsValue)) {
-    if (isObjectLike(rhsValue)) {
-      // Alphabetize object keys
-      return lhsKey.localeCompare(rhsKey);
-    }
-
-    // Primitive rhsValue should appear before object/array lhsValue
-    return 1;
-  }
-
-  // Primitive lhsValue should appear before object/array rhsValue
-  if (isObjectLike(rhsValue)) {
-    return -1;
-  }
-
-  return lhsKey.localeCompare(rhsKey);
-}
-
-/**
- * Sorts object keys in an alphabetic order, primitive values (string, boolean) should come before nested
- * Arrays and Objects.
- */
-function sortObjectKeys(value: unknown): unknown {
-  if (typeof value === "object" && value != null && !Array.isArray(value)) {
-    return Object.fromEntries(
-      Object.entries(value).sort(([lhsKey], [rhsKey]) =>
-        compareObjectKeys(lhsKey, rhsKey, value as UnknownObject)
-      )
-    );
-  }
-
-  return value;
-}
+import deepEquals from "fast-deep-equal";
 
 // JSONTree defaultItemString
 const defaultItemString: GetItemString = (type, data, itemType, itemString) => (
@@ -110,9 +44,20 @@ const getItemString: GetItemString = (type, data, itemType, itemString) => {
 };
 
 const NodeLabel: React.FunctionComponent<{
+  /**
+   * True if the node is the currently active node in the tree.
+   */
+  isActive: boolean;
+  /**
+   * The path to the node in the tree.
+   */
   path: KeyPath;
+  /**
+   * Selection callback.
+   * @param path the path in the varMap in order, e.g., ["@input", "foo"]
+   */
   onSelect: (path: string[]) => void;
-}> = ({ path, onSelect }) => {
+}> = ({ isActive, path, onSelect }) => {
   const buttonRef = useRef<HTMLElement>(null);
 
   const select = () => {
@@ -121,7 +66,7 @@ const NodeLabel: React.FunctionComponent<{
   };
 
   // Provide highlighting/click handler to the node's row
-  useTreeRow(buttonRef, select);
+  useTreeRow({ buttonRef, onSelect: select, isActive });
 
   const onClick = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -149,17 +94,22 @@ const VariablesTree: React.FunctionComponent<{
   vars: UnknownRecord;
   onVarSelect: (selectedPath: string[]) => void;
   likelyVariable: string;
-}> = ({ vars, onVarSelect, likelyVariable }) => (
+  activeKeyPath?: KeyPath;
+}> = ({ vars, onVarSelect, likelyVariable, activeKeyPath }) => (
   <JSONTree
     key={likelyVariable}
     data={vars}
     theme={popoverTheme}
-    postprocessValue={sortObjectKeys}
+    postprocessValue={sortVarMapKeys}
     shouldExpandNodeInitially={expandCurrentVariableLevel(vars, likelyVariable)}
     invertTheme
     hideRoot
     labelRenderer={(relativePath) => (
-      <NodeLabel path={relativePath} onSelect={onVarSelect} />
+      <NodeLabel
+        path={relativePath}
+        onSelect={onVarSelect}
+        isActive={deepEquals(activeKeyPath, relativePath)}
+      />
     )}
     getItemString={getItemString}
   />

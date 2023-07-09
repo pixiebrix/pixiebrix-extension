@@ -49,13 +49,20 @@ function notifyMouseExit(element: HTMLElement): void {
  * A hack to make JSON Tree rows clickable/highlightable.
  * @param buttonRef ref for the label in the row
  * @param onSelect callback to call when the row is clicked
+ * @param isActive whether the row is currently active
  */
-function useTreeRow(
-  buttonRef: MutableRefObject<HTMLElement>,
-  onSelect: () => void
-) {
+function useTreeRow({
+  buttonRef,
+  onSelect,
+  isActive,
+}: {
+  buttonRef: MutableRefObject<HTMLElement>;
+  onSelect: () => void;
+  isActive: boolean;
+}) {
   useEffect(() => {
     if (buttonRef.current) {
+      // Find the containing row in the JSONTree
       const $row = $(buttonRef.current).closest("li");
       const row = $row.get(0);
 
@@ -87,21 +94,16 @@ function useTreeRow(
       const listener: HoverListener = {
         onMouseEnter(element) {
           if (element === row) {
-            $row.css("background-color", "#e8f3fc");
-            $row.css("cursor", "pointer");
-            // Mark sub-children as white
-            $row.find("ul").css("background-color", "white");
+            $row.addClass("hover");
           } else {
-            $row.css("background-color", "");
-            $row.find("ul").css("background-color", "");
-            $row.css("cursor", "");
+            // Handle the case where user moves mouse over the nested properties. It's still over the parent, so
+            // we wouldn't have seen a mousexit event yet
+            $row.removeClass("hover");
           }
         },
         onMouseExit(element) {
           if (element === row) {
-            $row.css("background-color", "");
-            $row.find("ul").css("background-color", "");
-            $row.css("cursor", "");
+            $row.removeClass("hover");
           }
         },
       };
@@ -114,7 +116,24 @@ function useTreeRow(
         $row.off("mouseenter");
       };
     }
-  });
+  }, [buttonRef, onSelect]);
+
+  useEffect(() => {
+    if (buttonRef.current) {
+      // Find the containing row in the JSONTree
+      const $row = $(buttonRef.current).closest("li");
+
+      if (isActive) {
+        $row.addClass("active");
+
+        // https://caniuse.com/scrollintoviewifneeded
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- supported by Chromium
+        ($row.get(0) as any).scrollIntoViewIfNeeded?.({ behavior: "smooth" });
+      } else {
+        $row.removeClass("active");
+      }
+    }
+  }, [buttonRef, isActive]);
 }
 
 export default useTreeRow;

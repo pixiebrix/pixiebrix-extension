@@ -22,9 +22,13 @@ import VarMap, {
   VarExistence,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import {
+  defaultMenuOption,
   expandCurrentVariableLevel,
+  filterOptionsByVariable,
   filterVarMapByVariable,
+  moveMenuOption,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import getMenuOptions from "@/components/fields/schemaFields/widgets/varPopup/getMenuOptions";
 
 describe("filterVarMapByVariable", () => {
   it("filters top-level", () => {
@@ -237,5 +241,197 @@ describe("expandCurrentVariableLevel", () => {
     expect(shouldExpand(["@input"], null, 0)).toBe(true);
     expect(shouldExpand(["foo", "@input"], null, 1)).toBe(true);
     expect(shouldExpand(["bar", "foo", "@input"], null, 2)).toBe(true);
+  });
+});
+
+describe("defaultMenuOption", () => {
+  test("it defaults to exact nested variable", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: {
+            bar: 42,
+          },
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.foo");
+
+    expect(defaultMenuOption(filteredOptions, "@input.foo")).toEqual([
+      "foo",
+      "@input",
+    ]);
+  });
+
+  test("it defaults to first partial match", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+          foz: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.f");
+
+    expect(defaultMenuOption(filteredOptions, "@input.f")).toEqual([
+      "foo",
+      "@input",
+    ]);
+  });
+
+  test("it default for '@'", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: {
+            bar: 42,
+          },
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@");
+
+    expect(defaultMenuOption(filteredOptions, "@")).toEqual(["@input"]);
+  });
+
+  test("it default to last source", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+        },
+      },
+    });
+
+    varMap.setExistenceFromValues({
+      source: "other",
+      values: {
+        "@india": {
+          foo: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@in");
+
+    expect(defaultMenuOption(filteredOptions, "@in")).toEqual(["@india"]);
+  });
+});
+
+describe("moveMenuOption", () => {
+  test("it moves to next matching nested option", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+          foz: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.f");
+
+    expect(
+      moveMenuOption({
+        options: filteredOptions,
+        likelyVariable: "@input.f",
+        keyPath: ["foo", "@input"],
+        offset: 1,
+      })
+    ).toEqual(["foz", "@input"]);
+  });
+
+  test("it wraps around forward within nested vars", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+          foz: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.f");
+
+    expect(
+      moveMenuOption({
+        options: filteredOptions,
+        likelyVariable: "@input.f",
+        keyPath: ["foz", "@input"],
+        offset: 1,
+      })
+    ).toEqual(["foo", "@input"]);
+  });
+
+  test("it wraps backward within nested var", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+          foz: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.f");
+
+    expect(
+      moveMenuOption({
+        options: filteredOptions,
+        likelyVariable: "@input.f",
+        keyPath: ["foo", "@input"],
+        offset: -1,
+      })
+    ).toEqual(["foz", "@input"]);
+  });
+
+  test("it moves to previous nested option", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: "42",
+          foz: "42",
+        },
+      },
+    });
+
+    const options = getMenuOptions(varMap, {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.f");
+
+    expect(
+      moveMenuOption({
+        options: filteredOptions,
+        likelyVariable: "@input.f",
+        keyPath: ["foz", "@input"],
+        offset: -1,
+      })
+    ).toEqual(["foo", "@input"]);
   });
 });

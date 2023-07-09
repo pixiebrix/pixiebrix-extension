@@ -123,6 +123,9 @@ export const initialState: EditorState = {
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
   isDataPanelExpanded: true,
+
+  // Not persisted
+  isVariablePopoverVisible: false,
 };
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
@@ -879,6 +882,18 @@ export const editorSlice = createSlice({
     ) {
       state.isModListExpanded = payload.isExpanded;
     },
+    /**
+     * Mark that the variable popover is showing.
+     */
+    showVariablePopover(state) {
+      state.isVariablePopoverVisible = true;
+    },
+    /**
+     * Mark that the variable popover is not showing.
+     */
+    hideVariablePopover(state) {
+      state.isVariablePopoverVisible = false;
+    },
   },
   extraReducers(builder) {
     builder
@@ -957,4 +972,5 @@ export const persistEditorConfig = {
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
   version: 1,
+  blacklist: ["isVarPopoverVisible"],
 };
