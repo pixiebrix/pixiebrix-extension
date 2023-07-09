@@ -15,6 +15,8 @@ import {
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
+import createModVariableProxy from "@/runtime/createModVariableProxy";
+import { type RegistryId } from "@/types/registryTypes";
 
 type RunMetadata = {
   /**
@@ -154,12 +156,18 @@ export async function runMapArgs({
   config,
   context,
   options,
+  blueprintId,
 }: {
   config: Args;
   context: UnknownObject;
   options: Except<MapOptions, "implicitRender">;
+  blueprintId: RegistryId | null;
 }): Promise<unknown> {
   expectContext("contentScript");
 
-  return mapArgs(config, context, { ...options, implicitRender: null });
+  const extendedContext = createModVariableProxy(context, {
+    blueprintId,
+  });
+
+  return mapArgs(config, extendedContext, { ...options, implicitRender: null });
 }

@@ -69,6 +69,7 @@ import {
   type OptionsArgs,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import createModVariableProxy from "@/runtime/createModVariableProxy";
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -928,7 +929,9 @@ export async function reducePipeline(
       index,
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
-      context,
+      context: createModVariableProxy(context, {
+        blueprintId: pipelineLogger.context.blueprintId,
+      }),
     };
 
     let nextValues: BlockOutput;
@@ -993,7 +996,9 @@ export async function reducePipelineExpression(
       isLastBlock: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: context as BrickArgsContext,
+      context: createModVariableProxy(context as BrickArgsContext, {
+        blueprintId: pipelineLogger.context.blueprintId,
+      }),
     };
 
     let nextValues: BlockOutput;

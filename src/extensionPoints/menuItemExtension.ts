@@ -85,6 +85,7 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IReader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
+import createModVariableProxy from "@/runtime/createModVariableProxy";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -655,10 +656,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
+
+      // Integrations take precedence the other context
       const extensionContext = { ...ctxt, ...serviceContext };
 
+      const extendedContext = createModVariableProxy(extensionContext, {
+        blueprintId: extension._recipe?.id,
+      });
+
       html = (await renderMustache(this.getTemplate(), {
-        caption: (await mapArgs(caption, extensionContext, {
+        caption: (await mapArgs(caption, extendedContext, {
           implicitRender,
           autoescape: versionOptions.autoescape,
         })) as string,

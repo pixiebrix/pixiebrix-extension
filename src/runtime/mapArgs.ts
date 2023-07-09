@@ -32,6 +32,7 @@ import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
 import { type BrickPipeline } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
+import { isModVariableContext } from "@/runtime/createModVariableProxy";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",
@@ -139,6 +140,10 @@ export async function renderExplicit(
   ctxt: UnknownObject,
   options: RendererOptions
 ): Promise<unknown> {
+  if (!isModVariableContext(ctxt)) {
+    console.warn("Expected context to be extended with mod variable proxy");
+  }
+
   if (isTemplateExpression(config)) {
     // This check is added to prevent exceptions when rendering a faulty template
     // see https://github.com/pixiebrix/pixiebrix-extension/issues/2413
