@@ -36,10 +36,10 @@ const MOD_PROXY_SYMBOL = Symbol("ProxySymbol");
  * @param ctxt the context
  */
 export function isModVariableContext(ctxt: unknown): ctxt is UnknownObject {
-  // eslint-disable-next-line security/detect-object-injection -- symbol
   return (
     typeof ctxt === "object" &&
     Boolean(
+      // eslint-disable-next-line security/detect-object-injection -- symbol
       (ctxt as Record<typeof MOD_PROXY_SYMBOL, unknown>)[MOD_PROXY_SYMBOL]
     )
   );
