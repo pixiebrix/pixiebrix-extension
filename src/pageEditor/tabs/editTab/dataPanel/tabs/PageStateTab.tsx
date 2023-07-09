@@ -29,8 +29,12 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import useAsyncState from "@/hooks/useAsyncState";
+import { type ShouldExpandNodeInitially } from "react-json-tree";
 
-const alwaysExpandNode = () => true;
+// We used to expand nodes initially. But makes state hard to read when using async state with long values, e.g.,
+// ChatGPT responses
+const expandTopLevelNodes: ShouldExpandNodeInitially = (keyPath, data, level) =>
+  level <= 1;
 
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
@@ -105,7 +109,7 @@ const PageStateTab: React.VFC = () => {
         <JsonTree
           data={state.data}
           copyable={false}
-          shouldExpandNodeInitially={alwaysExpandNode}
+          shouldExpandNodeInitially={expandTopLevelNodes}
         />
       )}
     </DataTab>

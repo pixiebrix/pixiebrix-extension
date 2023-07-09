@@ -36,6 +36,12 @@ describe("@pixiebrix/state/get", () => {
     });
     await brick.transform(unsafeAssumeValidArg({}), { logger } as BrickOptions);
   });
+
+  test("is page state aware", async () => {
+    const { GetPageState } = await import("@/blocks/effects/pageState");
+    const brick = new GetPageState();
+    await expect(brick.isPageStateAware()).resolves.toBe(true);
+  });
 });
 
 describe("@pixiebrix/state/set", () => {
@@ -181,5 +187,11 @@ describe("set and get", () => {
       { logger } as BrickOptions
     );
     expect(result).toStrictEqual({ foo: 42 });
+  });
+
+  test("is page state aware", async () => {
+    const { SetPageState } = await import("@/blocks/effects/pageState");
+    const brick = new SetPageState();
+    await expect(brick.isPageStateAware()).resolves.toBe(true);
   });
 });

@@ -61,19 +61,18 @@ function usePruneUnusedServiceDependencies() {
   }, [formState, setFormState]);
 }
 
-const storageTypes = ["localStorage", "state", "database"];
-const DEFAULT_STORAGE_TYPE = "state";
-
 type StringOption = {
   label: string;
   value: string;
 };
-const storageTypeOptions: Options<StringOption> = storageTypes.map(
-  (storageType) => ({
-    label: storageType,
-    value: storageType,
-  })
-);
+
+const storageTypeOptions: Options<StringOption> = [
+  { value: "state", label: "Page State" },
+  { value: "database", label: "Database" },
+  { value: "localStorage", label: "Local Storage (Deprecated)" },
+];
+
+const DEFAULT_STORAGE_TYPE = "state";
 
 const FormRendererOptions: React.FC<{
   name: string;
@@ -127,7 +126,7 @@ const FormRendererOptions: React.FC<{
     <div>
       <FieldTemplate
         name={makeName("storage", "type")}
-        label="Type"
+        label="Storage Location"
         description="The location to submit/store the form data"
         as={Select}
         options={storageTypeOptions}

@@ -26,6 +26,18 @@ import { validateRegistryId } from "@/types/helpers";
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
 
+/**
+ * Namespace options for use in oneOf.
+ */
+export const namespaceOptions = [
+  { const: "blueprint", title: "Mod (formerly called blueprint)" },
+  {
+    const: "extension",
+    title: "Private (formerly called extension)",
+  },
+  { const: "shared", title: "Public (formerly called shared)" },
+] as Schema[];
+
 export class SetPageState extends Transformer {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/state/set");
 
@@ -39,6 +51,10 @@ export class SetPageState extends Transformer {
 
   override async isPure(): Promise<boolean> {
     return false;
+  }
+
+  override async isPageStateAware(): Promise<boolean> {
+    return true;
   }
 
   defaultOutputKey = "state";
@@ -56,14 +72,7 @@ export class SetPageState extends Transformer {
         type: "string",
         description:
           "Where to set the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public.",
-        oneOf: [
-          { const: "blueprint", title: "Mod (formerly called blueprint)" },
-          {
-            const: "extension",
-            title: "Private (formerly called extension)",
-          },
-          { const: "shared", title: "Public" },
-        ],
+        oneOf: namespaceOptions,
         default: "blueprint",
       },
       mergeStrategy: {
@@ -132,14 +141,7 @@ export class GetPageState extends Transformer {
         type: "string",
         description:
           "Where to retrieve the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public",
-        oneOf: [
-          { const: "blueprint", title: "Mod (formerly called blueprint)" },
-          {
-            const: "extension",
-            title: "Private (formerly called extension)",
-          },
-          { const: "shared", title: "Public" },
-        ],
+        oneOf: namespaceOptions,
         default: "blueprint",
       },
     },
@@ -149,6 +151,10 @@ export class GetPageState extends Transformer {
   override async isPure(): Promise<boolean> {
     // Doesn't have a side effect, but may return a different result each time
     return false;
+  }
+
+  override async isPageStateAware(): Promise<boolean> {
+    return true;
   }
 
   async transform(

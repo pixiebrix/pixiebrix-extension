@@ -54,6 +54,8 @@ import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
 import { joinPathParts } from "@/utils";
+import useAsyncState from "@/hooks/useAsyncState";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -71,8 +73,6 @@ const contextFilter = (value: unknown, key: string) => {
   return true;
 };
 
-const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
-
 const DataPanel: React.FC = () => {
   const activeNodeId = useSelector(selectActiveNodeId);
   const { flagOn } = useFlags();
@@ -89,7 +89,8 @@ const DataPanel: React.FC = () => {
   } = useSelector(selectActiveNodeInfo);
 
   const { allBlocks } = useAllBlocks();
-  const blockType = allBlocks.get(blockId)?.type;
+  const block = allBlocks.get(blockId);
+  const blockType = block?.type;
 
   const traces = useSelector(selectActiveElementTraces);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
@@ -128,6 +129,11 @@ const DataPanel: React.FC = () => {
     [record?.templateContext]
   );
 
+  const { data: showPageState } = fallbackValue(
+    useAsyncState(async () => block?.block.isPageStateAware(), [block]),
+    true
+  );
+
   const documentBodyName = joinPathParts(blockPath, "config.body");
 
   const outputObj: JsonObject =
@@ -144,7 +150,6 @@ const DataPanel: React.FC = () => {
     blockId === FormTransformer.BLOCK_ID;
   const showDocumentPreview = blockId === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
-  const showPageState = pageStateBlockIds.includes(blockId);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
