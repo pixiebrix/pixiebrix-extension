@@ -245,6 +245,12 @@ describe("expandCurrentVariableLevel", () => {
 });
 
 describe("defaultMenuOption", () => {
+  test("it handles empty var map", () => {
+    const options = getMenuOptions(new VarMap(), {});
+    const filteredOptions = filterOptionsByVariable(options, "@input.foo");
+    expect(defaultMenuOption(filteredOptions, "@input.foo")).toEqual(null);
+  });
+
   test("it defaults to exact nested variable", () => {
     const varMap = new VarMap();
     varMap.setExistenceFromValues({

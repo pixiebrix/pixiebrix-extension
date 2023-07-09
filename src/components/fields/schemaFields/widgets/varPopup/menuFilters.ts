@@ -238,6 +238,10 @@ export function defaultMenuOption(
 ): KeyPath | null {
   const reversedOptions = reverse([...options]);
 
+  if (reversedOptions.length === 0) {
+    return null;
+  }
+
   if (
     likelyVariable == null ||
     likelyVariable === "@" ||
