@@ -68,8 +68,9 @@ export function createNunjucksContext<
     return modifiedContext;
   }
 
-  // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-explicit-any -- constant name
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection -- type guard
   (modifiedContext as any)[MOD_VARIABLE_REFERENCE] =
+    // eslint-disable-next-line security/detect-object-injection -- constant name
     originalProxy[MOD_VARIABLE_REFERENCE];
 
   return modifiedContext;
