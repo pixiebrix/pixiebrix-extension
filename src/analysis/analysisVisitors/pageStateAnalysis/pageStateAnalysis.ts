@@ -21,6 +21,16 @@ import { AnalysisVisitorWithResolvedBricks } from "@/analysis/analysisVisitors/b
 import { GetPageState, SetPageState } from "@/blocks/effects/pageState";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
+import {
+  CustomFormRenderer,
+  type StateStorage,
+  type Storage,
+} from "@/blocks/renderers/customForm";
+
+const fallbackMessage =
+  "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.";
+const publicMessage =
+  "The Public namespace is for advanced use cases. Other Mods are able to read and overwrite Public state.";
 
 /**
  * A visitor that checks for standard uses of page state.
@@ -46,16 +56,36 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricks {
       if (blockConfig.config.namespace === "blueprint" && !this.isInMod) {
         this.annotations.push({
           position: nestedPosition(position, "config", "namespace"),
-          message:
-            "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.",
+          message: fallbackMessage,
           analysisId: this.id,
           type: AnnotationType.Warning,
         });
       } else if (blockConfig.config.namespace === "shared") {
         this.annotations.push({
           position: nestedPosition(position, "config", "namespace"),
-          message:
-            "The Public namespace is for advanced use cases. Other Mods are able to read and overwrite Public state.",
+          message: publicMessage,
+          analysisId: this.id,
+          type: AnnotationType.Info,
+        });
+      }
+    }
+
+    if (
+      blockConfig.id === CustomFormRenderer.BLOCK_ID &&
+      (blockConfig.config.storage as Storage)?.type === "state"
+    ) {
+      const storage = blockConfig.config.storage as StateStorage;
+      if (storage.namespace === "blueprint" && !this.isInMod) {
+        this.annotations.push({
+          position: nestedPosition(position, "config", "storage", "namespace"),
+          message: fallbackMessage,
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+      } else if (storage.namespace === "shared") {
+        this.annotations.push({
+          position: nestedPosition(position, "config", "storage", "namespace"),
+          message: publicMessage,
           analysisId: this.id,
           type: AnnotationType.Info,
         });

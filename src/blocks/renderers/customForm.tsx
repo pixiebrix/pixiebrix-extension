@@ -63,6 +63,11 @@ interface DatabaseResult {
   data: unknown;
 }
 
+export type StateStorage = {
+  type: "state";
+  namespace?: "extension" | "blueprint" | "shared";
+};
+
 export type Storage =
   | { type: "localStorage" }
   | {
@@ -70,7 +75,7 @@ export type Storage =
       databaseId: UUID;
       service: SanitizedServiceConfiguration;
     }
-  | { type: "state"; namespace?: "extension" | "blueprint" | "shared" };
+  | StateStorage;
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;

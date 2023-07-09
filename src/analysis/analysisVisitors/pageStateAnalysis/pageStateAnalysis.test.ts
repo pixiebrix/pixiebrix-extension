@@ -21,6 +21,7 @@ import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pag
 import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type BaseFormState } from "@/pageEditor/extensionPoints/elementConfig";
+import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
@@ -45,6 +46,52 @@ describe("PageStateAnalysis", () => {
       ]);
     }
   );
+
+  it("shows info on shared page state for custom form", async () => {
+    const state = formStateFactory({}, [
+      {
+        id: CustomFormRenderer.BLOCK_ID,
+        config: {
+          storage: {
+            type: "state",
+            namespace: "shared",
+          },
+        },
+      },
+    ]);
+
+    const analysis = new PageStateAnalysis();
+    await analysis.run(state);
+
+    expect(analysis.getAnnotations()).toEqual([
+      expect.objectContaining({
+        type: AnnotationType.Info,
+      }),
+    ]);
+  });
+
+  it("shows warning on mod page state for custom form if not mod", async () => {
+    const state = formStateFactory({}, [
+      {
+        id: CustomFormRenderer.BLOCK_ID,
+        config: {
+          storage: {
+            type: "state",
+            namespace: "blueprint",
+          },
+        },
+      },
+    ]);
+
+    const analysis = new PageStateAnalysis();
+    await analysis.run(state);
+
+    expect(analysis.getAnnotations()).toEqual([
+      expect.objectContaining({
+        type: AnnotationType.Warning,
+      }),
+    ]);
+  });
 
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
     "shows warning on blueprint if not in mod %s",
