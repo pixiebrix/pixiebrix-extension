@@ -34,6 +34,7 @@ import { selectActiveElementTraces } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
+import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -95,6 +96,13 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new PageStateAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),

@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SchemaField labelled enum field schema defaults to selection widget 1`] = `
+<DocumentFragment>
+  <div
+    class="formGroup form-group row"
+  >
+    <label
+      class="label form-label col-form-label col-xl-2 col-lg-3"
+      for="testField"
+    >
+      Test Field
+    </label>
+    <div
+      class="col-xl-10 col-lg-9"
+    >
+      <div
+        class="root"
+      >
+        <div
+          class="field"
+        >
+          <textarea
+            class="form-control"
+            id="testField"
+            name="testField"
+            rows="1"
+          >
+            foo
+          </textarea>
+        </div>
+        <div
+          class="dropdown show dropdown"
+          data-test-selected="Text"
+          data-testid="toggle-testField"
+        >
+          <button
+            aria-expanded="true"
+            aria-haspopup="true"
+            class="dropdown-toggle btn btn-link"
+            type="button"
+          >
+            <span
+              class="symbol"
+            >
+              <test-file-stub
+                classname="root"
+              />
+            </span>
+          </button>
+          <div
+            aria-labelledby=""
+            class="dropdown-menu show dropdown-menu-right"
+            data-popper-escaped="true"
+            data-popper-placement="bottom-end"
+            data-popper-reference-hidden="true"
+            style="position: absolute; top: 0px; left: 0px; margin: 0px; transform: translate(0px, 0px);"
+            x-placement="bottom-end"
+          >
+            <a
+              class="dropdown-item"
+              data-testid="select"
+              href="#"
+              role="button"
+            >
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
+              </span>
+               Select...
+            </a>
+            <a
+              class="dropdown-item"
+              data-testid="string"
+              href="#"
+              role="button"
+            >
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
+              </span>
+               Text
+            </a>
+            <a
+              class="dropdown-item"
+              data-testid="var"
+              href="#"
+              role="button"
+            >
+              <span
+                class="symbol"
+              >
+                <test-file-stub
+                  classname="root"
+                />
+              </span>
+               Variable
+            </a>
+          </div>
+        </div>
+      </div>
+      <small
+        class="text-muted form-text"
+      >
+        <span>
+          A test field
+        </span>
+      </small>
+    </div>
+  </div>
+</DocumentFragment>
+`;

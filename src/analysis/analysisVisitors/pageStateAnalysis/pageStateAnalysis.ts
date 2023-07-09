@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { AnalysisVisitorWithResolvedBricks } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
+import { GetPageState, SetPageState } from "@/blocks/effects/pageState";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+
+/**
+ * A visitor that checks for standard uses of page state.
+ */
+class PageStateVisitor extends AnalysisVisitorWithResolvedBricks {
+  private isInMod = false;
+
+  get id(): string {
+    return "pageState";
+  }
+
+  override visitBlock(
+    position: BrickPosition,
+    blockConfig: BrickConfig,
+    extra: VisitBlockExtra
+  ): void {
+    super.visitBlock(position, blockConfig, extra);
+
+    if (
+      blockConfig.id === SetPageState.BRICK_ID ||
+      blockConfig.id === GetPageState.BRICK_ID
+    ) {
+      if (blockConfig.config.namespace === "blueprint" && !this.isInMod) {
+        this.annotations.push({
+          position: nestedPosition(position, "config", "namespace"),
+          message:
+            "This brick is not in a Mod. It will fall back to the Shared page state, which other Mods can read and overwrite.",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+      } else if (blockConfig.config.namespace === "shared") {
+        this.annotations.push({
+          position: nestedPosition(position, "config", "namespace"),
+          message:
+            "The Shared namespace is for advanced use cases. Other Mods are able to read and overwrite Shared state.",
+          analysisId: this.id,
+          type: AnnotationType.Info,
+        });
+      }
+    }
+  }
+
+  override async run(extension: FormState): Promise<void> {
+    this.isInMod = Boolean(extension.recipe);
+    await super.run(extension);
+  }
+}
+
+export default PageStateVisitor;

@@ -26,6 +26,8 @@ import {
   isIconField,
   isSimpleServiceField,
   isServiceValueFormat,
+  isLabelledEnumField,
+  isSelectField,
 } from "./fieldTypeCheckers";
 
 export type FieldInputMode =
@@ -69,11 +71,15 @@ export function inferInputMode(
   const value = fieldConfig[fieldName];
 
   // We need to check sub-schemas first so things like services don't end up as var
-  const subSchemas = uniq([
-    ...(fieldSchema.anyOf ?? []),
-    ...(fieldSchema.oneOf ?? []),
-    ...(fieldSchema.allOf ?? []),
-  ]);
+  // Labelled enum fields (using oneOf and const) are handled by isSelectField check
+  const subSchemas = isLabelledEnumField(fieldSchema)
+    ? []
+    : uniq([
+        ...(fieldSchema.anyOf ?? []),
+        ...(fieldSchema.oneOf ?? []),
+        ...(fieldSchema.allOf ?? []),
+      ]);
+
   if (!isEmpty(subSchemas)) {
     const inputModes = compact(
       subSchemas
@@ -105,10 +111,8 @@ export function inferInputMode(
     return "string";
   }
 
-  const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
-
   if (value == null) {
-    return hasEnum ? "select" : "string";
+    return isSelectField(fieldSchema) ? "select" : "string";
   }
 
   if (isTemplateExpression(value)) {
@@ -126,7 +130,7 @@ export function inferInputMode(
 
   const typeOf: string = typeof value;
   if (typeOf === "string") {
-    return hasEnum ? "select" : "string";
+    return isSelectField(fieldSchema) ? "select" : "string";
   }
 
   // TODO: Should handle number the same way as string when implementing https://github.com/pixiebrix/pixiebrix-extension/issues/2341

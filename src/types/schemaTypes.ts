@@ -23,9 +23,16 @@ import {
 } from "json-schema";
 import { type UiSchema as StandardUiSchema } from "@rjsf/core";
 import type DOMPurify from "dompurify";
+import { type Except } from "type-fest";
 
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
+
+export type LabelledEnumSchema = Except<Schema, "oneOf"> & {
+  oneOf: Array<{ const: string; title?: string }>;
+  anyOf: never;
+  allOf: never;
+};
 
 export const KEYS_OF_UI_SCHEMA = [
   "ui:order",

@@ -17,7 +17,7 @@
 
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { type Expression } from "@/types/runtimeTypes";
-import { type Schema } from "@/types/schemaTypes";
+import { LabelledEnumSchema, type Schema } from "@/types/schemaTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import {
   SERVICE_BASE_SCHEMA,
@@ -48,9 +48,33 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
+/**
+ * Returns true if the schema uses oneOf and "const" keyword to label enum options.
+ * Read more at: https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-247861695
+ * @param schema
+ */
+export function isLabelledEnumField(
+  schema: Schema
+): schema is LabelledEnumSchema {
+  return (
+    schema.type === "string" &&
+    schema.oneOf != null &&
+    schema.oneOf.length > 0 &&
+    schema.oneOf.every((x) => typeof x === "object" && "const" in x)
+  );
+}
+
+/**
+ * Returns true if schema is a field that should be rendered as a select or a creatable select field.
+ * @param schema the field schema
+ */
 export function isSelectField(schema: Schema): boolean {
-  const values = schema.examples ?? schema.enum;
-  return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
+  const primitiveValues = schema.examples ?? schema.enum;
+  const isPrimitiveSelect =
+    schema.type === "string" &&
+    Array.isArray(primitiveValues) &&
+    !isEmpty(primitiveValues);
+  return isPrimitiveSelect || isLabelledEnumField(schema);
 }
 
 export function isKeyStringField(schema: Schema): boolean {

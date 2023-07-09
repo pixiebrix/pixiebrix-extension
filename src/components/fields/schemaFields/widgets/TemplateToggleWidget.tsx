@@ -102,6 +102,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     focusInput,
     inputRef,
   };
+
   if (inputMode === "omit") {
     const optionValues = new Set(
       inputModeOptions.map((option) => option.value)

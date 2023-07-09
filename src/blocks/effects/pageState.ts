@@ -21,14 +21,17 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 import { Transformer } from "@/types/bricks/transformerTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
 
 export class SetPageState extends Transformer {
+  static readonly BRICK_ID = validateRegistryId("@pixiebrix/state/set");
+
   constructor() {
     super(
-      "@pixiebrix/state/set",
+      SetPageState.BRICK_ID,
       "Set shared page state",
       "Set shared page state values and returns the updated state"
     );
@@ -43,25 +46,47 @@ export class SetPageState extends Transformer {
   inputSchema: Schema = propertiesToSchema(
     {
       data: {
+        title: "Data",
         type: "object",
-        description: "The data to set",
+        description: "The properties to set on the state.",
         additionalProperties: true,
       },
       namespace: {
+        title: "Namespace",
         type: "string",
         description:
-          "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
-        enum: ["blueprint", "extension", "shared"],
+          "Where to set the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Shared.",
+        oneOf: [
+          { const: "blueprint", title: "This Mod (formerly called blueprint)" },
+          {
+            const: "extension",
+            title: "This Starter Brick (formerly called extension)",
+          },
+          { const: "shared", title: "Shared" },
+        ],
         default: "blueprint",
       },
       mergeStrategy: {
+        title: "Merge Strategy",
         type: "string",
-        enum: ["shallow", "replace", "deep"],
+        oneOf: [
+          { const: "shallow", title: "Shallow: replace existing properties" },
+          { const: "replace", title: "Replace: replace the entire state" },
+          {
+            const: "deep",
+            title: "Deep: recursively merge data with the existing state",
+          },
+        ],
+        description: "Strategy for merging the data with the existing state.",
         default: "shallow",
       },
     },
     ["data"]
   );
+
+  uiSchema = {
+    "ui:order": ["namespace", "mergeStrategy", "data"],
+  };
 
   async transform(
     {
@@ -88,9 +113,11 @@ export class SetPageState extends Transformer {
 }
 
 export class GetPageState extends Transformer {
+  static readonly BRICK_ID = validateRegistryId("@pixiebrix/state/get");
+
   constructor() {
     super(
-      "@pixiebrix/state/get",
+      GetPageState.BRICK_ID,
       "Get shared page state",
       "Get shared page state values"
     );
@@ -101,10 +128,18 @@ export class GetPageState extends Transformer {
   inputSchema: Schema = propertiesToSchema(
     {
       namespace: {
+        title: "Namespace",
         type: "string",
         description:
-          "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
-        enum: ["blueprint", "extension", "shared"],
+          "Where to retrieve the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Shared",
+        oneOf: [
+          { const: "blueprint", title: "This Mod (formerly called blueprint)" },
+          {
+            const: "extension",
+            title: "This Starter Brick (formerly called extension)",
+          },
+          { const: "shared", title: "Shared" },
+        ],
         default: "blueprint",
       },
     },

@@ -18,16 +18,69 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import Select, { type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isEmpty, sortBy, uniq } from "lodash";
+import { compact, isEmpty, uniq, uniqBy } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";
 import { isExpression } from "@/runtime/mapArgs";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
+import { type Schema } from "@/types/schemaTypes";
+import { isLabelledEnumField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 type StringOption = {
   value: string;
 };
+
 type StringOptionsType = Options<StringOption>;
+
+/**
+ * Return the options for a SelectWidget based on the schema and user input.
+ * @param schema the JSONSchema for the field
+ * @param value the current value of the field, to ensure an option exists for it
+ * @param created the values the user has created
+ */
+export function mapSchemaToOptions({
+  schema,
+  value,
+  created,
+}: {
+  schema: Pick<Schema, "examples" | "enum" | "type" | "oneOf">;
+  value: string;
+  created: string[];
+}): {
+  creatable: boolean;
+  options: StringOptionsType;
+} {
+  if (schema.type !== "string") {
+    // Should never hit this, because SchemaSelectWidget should only be rendered for string fields
+    return {
+      creatable: false,
+      options: [],
+    };
+  }
+
+  const primitiveValues = schema.examples ?? schema.enum;
+
+  const schemaOptions = isLabelledEnumField(schema)
+    ? schema.oneOf.map((x) => ({ value: x.const, label: x.title ?? x.const }))
+    : Array.isArray(primitiveValues)
+    ? primitiveValues.map((value: string) => ({ value, label: value }))
+    : [];
+
+  const userOptions = compact([value, ...created])
+    .filter(
+      (value) =>
+        !schemaOptions.some((schemaOption) => value === schemaOption.value)
+    )
+    .map((value) => ({
+      value,
+      label: value,
+    }));
+
+  return {
+    creatable: Boolean(schema.examples),
+    options: uniqBy([...userOptions, ...schemaOptions], "value"),
+  };
+}
 
 const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
   name,
@@ -46,19 +99,15 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({
   // from the new value.
   const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
 
-  const [creatable, options]: [boolean, StringOptionsType] = useMemo(() => {
-    const values = schema.examples ?? schema.enum;
-    const options =
-      schema.type === "string" && Array.isArray(values)
-        ? sortBy(
-            uniq([...created, ...values, value].filter((x) => x != null))
-          ).map((value) => ({
-            value,
-            label: value,
-          }))
-        : [];
-    return [schema?.enum == null, options];
-  }, [schema.examples, schema.enum, created, value, schema.type]);
+  const { creatable, options } = useMemo(
+    () =>
+      mapSchemaToOptions({
+        schema,
+        created,
+        value,
+      }),
+    [schema, created, value]
+  );
 
   const selectedValue = options.find((x) => x.value === value) ?? {
     value: null,
