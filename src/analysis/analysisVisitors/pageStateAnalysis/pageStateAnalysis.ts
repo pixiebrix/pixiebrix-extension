@@ -47,7 +47,7 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricks {
         this.annotations.push({
           position: nestedPosition(position, "config", "namespace"),
           message:
-            "This brick is not in a Mod. It will fall back to the Shared page state, which other Mods can read and overwrite.",
+            "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.",
           analysisId: this.id,
           type: AnnotationType.Warning,
         });
@@ -55,7 +55,7 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricks {
         this.annotations.push({
           position: nestedPosition(position, "config", "namespace"),
           message:
-            "The Shared namespace is for advanced use cases. Other Mods are able to read and overwrite Shared state.",
+            "The Public namespace is for advanced use cases. Other Mods are able to read and overwrite Public state.",
           analysisId: this.id,
           type: AnnotationType.Info,
         });

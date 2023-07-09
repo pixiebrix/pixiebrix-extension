@@ -28,10 +28,19 @@ import { type Except } from "type-fest";
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 
+/**
+ * Field Schema for labelled enums.
+ *
+ * Discussion at: https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-247861695
+ * RJSF 4/5 support a non-standard enumNames field, but those might be dropped in the future because it's non-standard.
+ * @see isLabelledEnumField
+ */
 export type LabelledEnumSchema = Except<Schema, "oneOf"> & {
   oneOf: Array<{ const: string; title?: string }>;
   anyOf: never;
   allOf: never;
+  enum: never;
+  examples: never;
 };
 
 export const KEYS_OF_UI_SCHEMA = [

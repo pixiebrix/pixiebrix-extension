@@ -90,7 +90,7 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                 style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  extension:
+                  Private:
                 </span>
               </label>
               <span
@@ -149,13 +149,13 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                 style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
               >
                 <span>
-                  blueprint:
+                  Mod:
                 </span>
               </label>
               <span
                 style="color: rgb(64, 175, 108);"
               >
-                "Starter brick is not in a mod"
+                "Starter Brick is not in a mod"
               </span>
             </li>
             <li
@@ -174,7 +174,7 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                 style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  shared:
+                  Public:
                 </span>
               </label>
               <span
@@ -324,7 +324,7 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                 style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  extension:
+                  Private:
                 </span>
               </label>
               <span
@@ -392,7 +392,7 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                 style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  blueprint:
+                  Mod:
                 </span>
               </label>
               <span
@@ -460,7 +460,7 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                 style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  shared:
+                  Public:
                 </span>
               </label>
               <span

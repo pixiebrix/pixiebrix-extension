@@ -19,7 +19,6 @@ import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useAsyncState } from "@/hooks/common";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
@@ -29,16 +28,17 @@ import { useSelector } from "react-redux";
 import { type UnknownObject } from "@/types/objectTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const alwaysExpandNode = () => true;
 
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
 
-  const [state, isLoading, error, refresh] = useAsyncState<{
-    extension: UnknownObject | string;
-    blueprint: UnknownObject | string;
-    shared: UnknownObject | string;
+  const state = useAsyncState<{
+    Private: UnknownObject | string;
+    Mod: UnknownObject | string;
+    Public: UnknownObject | string;
   }>(
     async () => {
       const context = {
@@ -46,25 +46,27 @@ const PageStateTab: React.VFC = () => {
         blueprintId: activeElement.recipe?.id,
       };
 
-      const [shared, blueprint, extension] = await Promise.all([
+      const [shared, mod, local] = await Promise.all([
         getPageState(thisTab, { namespace: "shared", ...context }),
         activeElement.recipe
           ? getPageState(thisTab, { namespace: "blueprint", ...context })
-          : Promise.resolve("Starter brick is not in a mod"),
+          : Promise.resolve("Starter Brick is not in a mod"),
         getPageState(thisTab, { namespace: "extension", ...context }),
       ]);
 
       return {
-        extension,
-        blueprint,
-        shared,
+        Private: local,
+        Mod: mod,
+        Public: shared,
       };
     },
     [],
     {
-      extension: "Loading...",
-      blueprint: "Loading...",
-      shared: "Loading...",
+      initialValue: {
+        Private: "Loading...",
+        Mod: "Loading...",
+        Public: "Loading...",
+      },
     }
   );
 
@@ -75,8 +77,8 @@ const PageStateTab: React.VFC = () => {
           <Button
             variant="info"
             size="sm"
-            disabled={isLoading}
-            onClick={refresh}
+            disabled={state.isFetching}
+            onClick={state.refetch}
           >
             <FontAwesomeIcon icon={faSync} /> Refresh
           </Button>
@@ -94,14 +96,14 @@ const PageStateTab: React.VFC = () => {
           </a>
         </div>
       </div>
-      {error ? (
+      {state.isError ? (
         <div>
           <div className="text-danger">Error</div>
-          <p>{getErrorMessage(error)}</p>
+          <p>{getErrorMessage(state.error)}</p>
         </div>
       ) : (
         <JsonTree
-          data={state}
+          data={state.data}
           copyable={false}
           shouldExpandNodeInitially={alwaysExpandNode}
         />

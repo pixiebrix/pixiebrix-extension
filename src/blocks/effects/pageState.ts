@@ -55,14 +55,14 @@ export class SetPageState extends Transformer {
         title: "Namespace",
         type: "string",
         description:
-          "Where to set the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Shared.",
+          "Where to set the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public.",
         oneOf: [
-          { const: "blueprint", title: "This Mod (formerly called blueprint)" },
+          { const: "blueprint", title: "Mod (formerly called blueprint)" },
           {
             const: "extension",
-            title: "This Starter Brick (formerly called extension)",
+            title: "Private (formerly called extension)",
           },
-          { const: "shared", title: "Shared" },
+          { const: "shared", title: "Public" },
         ],
         default: "blueprint",
       },
@@ -74,10 +74,10 @@ export class SetPageState extends Transformer {
           { const: "replace", title: "Replace: replace the entire state" },
           {
             const: "deep",
-            title: "Deep: recursively merge data with the existing state",
+            title: "Deep: recursively merge data with existing state",
           },
         ],
-        description: "Strategy for merging the data with the existing state.",
+        description: "Strategy for merging the data with existing state.",
         default: "shallow",
       },
     },
@@ -131,14 +131,14 @@ export class GetPageState extends Transformer {
         title: "Namespace",
         type: "string",
         description:
-          "Where to retrieve the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Shared",
+          "Where to retrieve the data. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public",
         oneOf: [
-          { const: "blueprint", title: "This Mod (formerly called blueprint)" },
+          { const: "blueprint", title: "Mod (formerly called blueprint)" },
           {
             const: "extension",
-            title: "This Starter Brick (formerly called extension)",
+            title: "Private (formerly called extension)",
           },
-          { const: "shared", title: "Shared" },
+          { const: "shared", title: "Public" },
         ],
         default: "blueprint",
       },
