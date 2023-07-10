@@ -31,6 +31,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/blocks/transformers/controlFlow/Run";
 import { GetPageState } from "@/blocks/effects/pageState";
+import { cloneDeep } from "lodash";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -66,12 +67,27 @@ test("block includes version", async () => {
   expect(block.version).toBe("0.0.1");
 });
 
-test("reject invalid fixture fixture", async () => {
+test("reject invalid fixture", async () => {
   try {
     fromJS({ foo: "bar" });
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidDefinitionError);
   }
+});
+
+describe("defaultOutputKey", () => {
+  test("no output key", () => {
+    const block = fromJS(nytimes);
+    expect(block.defaultOutputKey).toBeNull();
+  });
+
+  test("output key", () => {
+    const config = cloneDeep(nytimes);
+    config.defaultOutputKey = "articles";
+
+    const block = fromJS(config);
+    expect(block.defaultOutputKey).toBe("articles");
+  });
 });
 
 describe("isUserDefinedBrick", () => {

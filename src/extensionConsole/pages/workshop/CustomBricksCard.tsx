@@ -19,7 +19,6 @@ import React, { useMemo } from "react";
 import {
   faBars,
   faBolt,
-  faBookOpen,
   faCloud,
   faColumns,
   faCube,
@@ -27,7 +26,6 @@ import {
   faStoreAlt,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { type Kind } from "@/registry/localRegistry";
 import styles from "./CustomBricksCard.module.scss";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Column } from "react-table";
@@ -35,24 +33,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import AsyncCard from "@/components/asyncCard/AsyncCard";
-import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
+import {
+  type KindFilterValue,
+  mapKindToKindUiValue,
+} from "@/extensionConsole/pages/workshop/workshopUtils";
 
 type TableColumn = Column<EnrichedBrick>;
-function inferIcon(kind: Kind, verboseName: string): IconProp {
-  switch (kind.toLocaleLowerCase()) {
-    case "service": {
+function inferIcon(kind: KindFilterValue, verboseName: string): IconProp {
+  switch (kind) {
+    case "Integration": {
       return faCloud;
     }
 
-    case "reader": {
-      return faBookOpen;
-    }
-
-    case "blueprint": {
+    case "Mod": {
       return faStoreAlt;
     }
 
-    case "foundation": {
+    case "Starter": {
       // HACK: inferring from the brick naming convention instead of the type since the API doesn't return it yet
       const normalized = verboseName.toLowerCase();
       if (normalized.includes("trigger")) {
@@ -90,7 +87,12 @@ function inferIcon(kind: Kind, verboseName: string): IconProp {
 
 const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
   brick: { kind, verbose_name },
-}) => <FontAwesomeIcon icon={inferIcon(kind, verbose_name)} fixedWidth />;
+}) => (
+  <FontAwesomeIcon
+    icon={inferIcon(mapKindToKindUiValue(kind), verbose_name)}
+    fixedWidth
+  />
+);
 
 const columnFactory = (): TableColumn[] => [
   {
@@ -119,7 +121,7 @@ const columnFactory = (): TableColumn[] => [
   },
   {
     Header: "Type",
-    accessor: ({ kind }) => getKindDisplayName(kind),
+    accessor: ({ kind }) => mapKindToKindUiValue(kind),
   },
   {
     Header: "Version",

@@ -21,7 +21,7 @@ import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import {
-  type EditablePackage,
+  type EditablePackageMetadata,
   type CloudExtension,
   type Database,
   type Group,
@@ -262,7 +262,7 @@ export const appApi = createApi({
       query: () => ({ url: "/api/marketplace/tags/", method: "get" }),
       providesTags: ["MarketplaceTags"],
     }),
-    getEditablePackages: builder.query<EditablePackage[], void>({
+    getEditablePackages: builder.query<EditablePackageMetadata[], void>({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
