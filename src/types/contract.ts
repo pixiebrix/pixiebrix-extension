@@ -175,7 +175,7 @@ export type EditablePackage = components["schemas"]["PackageMeta"] & {
 
   name: RegistryId;
 
-  kind: Kind;
+  kind: "Blueprint" | "Recipe" | "Service" | "Block" | "Reader" | "Foundation";
 
   // Nominal typing to help distinguish from registry Metadata
   _editableBrickBrand: never;

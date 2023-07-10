@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { type EditablePackage } from "@/types/contract";
 
 describe("getKindDisplayName", () => {
   it.each(["block", "Block", "reader"])(
     "maps %s to Brick",
     (kind: EditablePackage["kind"]) => {
-      expect(getKindDisplayName(kind)).toEqual("Brick");
+      expect(mapKindToKindUiValue(kind)).toEqual("Brick");
     }
   );
 
   it.each(["recipe", "Recipe", "blueprint"])(
     "maps %s to Mod",
     (kind: EditablePackage["kind"]) => {
-      expect(getKindDisplayName(kind)).toEqual("Mod");
+      expect(mapKindToKindUiValue(kind)).toEqual("Mod");
     }
   );
 });

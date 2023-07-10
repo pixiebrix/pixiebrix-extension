@@ -16,26 +16,44 @@
  */
 
 import { type EditablePackage } from "@/types/contract";
-import { startCase } from "lodash";
-
-const kindDisplayNameMap = new Map<EditablePackage["kind"], string>([
-  ["block", "Brick"],
-  ["reader", "Brick"],
-  ["blueprint", "Mod"],
-  ["recipe", "Mod"],
-  ["service", "Integration"],
-  // Full name is "starter brick", but user shorter name
-  ["foundation", "Starter"],
-]);
 
 /**
- * Returns the display name for a brick kind.
+ * A valid kind value.
+ *
+ * Excludes "reader" because it has the same display name as "block".
+ *
+ * @since 1.7.34
+ */
+export type KindFilterValue = "Brick" | "Mod" | "Integration" | "Starter";
+
+/**
+ * Returns the kind for the Workshop table/filter.
  * @since 1.7.20
  */
-export function getKindDisplayName(kind: EditablePackage["kind"]): string {
-  // Be defensive and lowercase for the match, some callers may not have the correct casing
-  return (
-    kindDisplayNameMap.get(kind.toLowerCase() as EditablePackage["kind"]) ??
-    startCase(kind)
-  );
+export function mapKindToKindUiValue(
+  kind: EditablePackage["kind"]
+): KindFilterValue {
+  switch (kind.toLowerCase()) {
+    case "brick":
+    case "reader": {
+      return "Brick";
+    }
+
+    case "recipe":
+    case "blueprint": {
+      return "Mod";
+    }
+
+    case "service": {
+      return "Integration";
+    }
+
+    case "foundation": {
+      return "Starter";
+    }
+
+    default: {
+      return "Brick";
+    }
+  }
 }

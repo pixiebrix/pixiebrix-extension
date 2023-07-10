@@ -30,7 +30,7 @@ import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
-import { getKindDisplayName } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { useGetEditablePackagesQuery } from "@/services/api";
 import { type EditablePackage } from "@/types/contract";
@@ -45,7 +45,7 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-function useEnrichBricks(bricks: EditablePackage[]): EnrichedBrick[] {
+export function useEnrichBricks(bricks: EditablePackage[]): EnrichedBrick[] {
   const recent = useSelector(selectRecent);
 
   return useMemo(() => {
@@ -68,7 +68,7 @@ function useEnrichBricks(bricks: EditablePackage[]): EnrichedBrick[] {
   }, [recent, bricks]);
 }
 
-function useSearchOptions(bricks: EnrichedBrick[]) {
+export function useSearchOptions(bricks: EnrichedBrick[]) {
   const scopeOptions = useMemo(
     () =>
       sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
@@ -89,9 +89,11 @@ function useSearchOptions(bricks: EnrichedBrick[]) {
 
   const kindOptions = useMemo(
     () =>
-      sortBy(compact(uniq((bricks ?? []).map((x) => x.kind)))).map((value) => ({
+      sortBy(
+        compact(uniq((bricks ?? []).map((x) => mapKindToKindUiValue(x.kind))))
+      ).map((value) => ({
         value,
-        label: getKindDisplayName(value),
+        label: value,
       })),
     [bricks]
   );
@@ -113,7 +115,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
     isLoading,
     error,
   } = useGetEditablePackagesQuery(undefined, {
-    // Make sure user always see the latest bricks available
+    // Make sure user always see the latest bricks available (e.g., because they just saved a mod in the page editor)
     refetchOnMountOrArgChange: true,
   });
   const {
@@ -142,7 +144,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
       (x) =>
         (scopes.length === 0 || scopes.includes(x.scope)) &&
         (collections.length === 0 || collections.includes(x.collection)) &&
-        (kinds.length === 0 || kinds.includes(x.kind))
+        (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind)))
     );
   }, [fuse, query, scopes, collections, kinds, bricks]);
 
