@@ -37,6 +37,6 @@ export const editablePackageFactory = define<EditablePackage>({
   version: "1.0.0",
   kind: "Blueprint",
   updated_at: timestampFactory(),
-  sharing: sharingDefinitionFactory(),
+  sharing: sharingDefinitionFactory,
   _editableBrickBrand: undefined,
 });
