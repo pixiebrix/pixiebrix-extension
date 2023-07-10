@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
 import { reloadSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
+import reportError from "@/telemetry/reportError";
 
 interface State {
   hasError: boolean;
@@ -38,6 +39,7 @@ class ErrorBoundary extends Component<UnknownObject, State> {
   }
 
   static getDerivedStateFromError(error: Error) {
+    reportError(error);
     // Update state so the next render will show the fallback UI.
     return {
       hasError: true,

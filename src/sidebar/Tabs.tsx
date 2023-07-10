@@ -26,7 +26,6 @@ import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
@@ -46,6 +45,7 @@ import {
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
+import ErrorBoundary from "@/sidebar/ErrorBoundary";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
