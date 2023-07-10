@@ -40,14 +40,6 @@ import { type PersistedExtension } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
-type Kind =
-  | "block"
-  | "foundation"
-  | "service"
-  | "blueprint"
-  | "reader"
-  | "recipe";
-
 type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
@@ -189,7 +181,11 @@ export type RegistryPackage = Pick<
 > & {
   // XXX: update serializer to include proper child serializer
   metadata: Metadata;
-  kind: Kind;
+
+  // A valid `kind:` in the YAML definition
+  // Validated here: https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
+  // Note that EditablePackageMetadata uses the backend's display name for this field
+  kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
 };
 
 /**
