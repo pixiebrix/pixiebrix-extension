@@ -16,19 +16,19 @@
  */
 
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
-import { type EditablePackage } from "@/types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 
 describe("getKindDisplayName", () => {
   it.each(["block", "Block", "reader"])(
     "maps %s to Brick",
-    (kind: EditablePackage["kind"]) => {
+    (kind: EditablePackageMetadata["kind"]) => {
       expect(mapKindToKindUiValue(kind)).toEqual("Brick");
     }
   );
 
-  it.each(["recipe", "Recipe", "blueprint"])(
+  it.each(["blueprint", "Blueprint"])(
     "maps %s to Mod",
-    (kind: EditablePackage["kind"]) => {
+    (kind: EditablePackageMetadata["kind"]) => {
       expect(mapKindToKindUiValue(kind)).toEqual("Mod");
     }
   );

@@ -18,7 +18,7 @@
 import { define } from "cooky-cutter";
 import { type Sharing } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type EditablePackage } from "@/types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 import {
   autoUUIDSequence,
   registryIdFactory,
@@ -30,7 +30,7 @@ export const sharingDefinitionFactory = define<Sharing>({
   organizations: () => [] as UUID[],
 });
 
-export const editablePackageFactory = define<EditablePackage>({
+export const editablePackageFactory = define<EditablePackageMetadata>({
   id: autoUUIDSequence(),
   name: registryIdFactory(),
   verbose_name: (n: number) => `Editable Package ${n}`,

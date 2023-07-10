@@ -168,14 +168,16 @@ export type Deployment = Except<
 };
 
 /**
- * An editable package in the registry.
+ * Metadata for an editable package in the registry. See PackageMetaSerializer.
  */
-export type EditablePackage = components["schemas"]["PackageMeta"] & {
+export type EditablePackageMetadata = components["schemas"]["PackageMeta"] & {
   id: UUID;
 
   name: RegistryId;
 
-  kind: "Blueprint" | "Recipe" | "Service" | "Block" | "Reader" | "Foundation";
+  // Display names from Package.kind.
+  // https://github.com/pixiebrix/pixiebrix-app/blob/be1c486eba393e3c8e2f99401f78af5958b4060b/api/models/registry.py#L210-L210
+  kind: "Blueprint" | "Service" | "Block" | "Reader" | "Foundation";
 
   // Nominal typing to help distinguish from registry Metadata
   _editableBrickBrand: never;

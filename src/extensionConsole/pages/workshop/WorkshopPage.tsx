@@ -33,7 +33,7 @@ import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { useGetEditablePackagesQuery } from "@/services/api";
-import { type EditablePackage } from "@/types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 
 const { actions } = workshopSlice;
 
@@ -45,7 +45,9 @@ function selectFilters(state: { workshop: WorkshopState }) {
   return state.workshop.filters;
 }
 
-export function useEnrichBricks(bricks: EditablePackage[]): EnrichedBrick[] {
+export function useEnrichBricks(
+  bricks: EditablePackageMetadata[]
+): EnrichedBrick[] {
   const recent = useSelector(selectRecent);
 
   return useMemo(() => {
