@@ -147,6 +147,20 @@ export function getExampleBlockConfig(
     };
   }
 
+  if (blockId === "@pixiebrix/state/set") {
+    return {
+      namespace: "blueprint",
+      mergeStrategy: "shallow",
+      data: {},
+    };
+  }
+
+  if (blockId === "@pixiebrix/state/get") {
+    return {
+      namespace: "blueprint",
+    };
+  }
+
   if (blockId === DisplayTemporaryInfo.BLOCK_ID) {
     return {
       title: "Example Info",

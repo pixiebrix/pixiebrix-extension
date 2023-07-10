@@ -491,4 +491,34 @@ describe("SchemaField", () => {
       await expectToggleOptions(container, []);
     }
   );
+
+  test("labelled enum field schema defaults to selection widget", async () => {
+    const { container } = render(
+      <Formik
+        onSubmit={() => {}}
+        initialValues={{ apiVersion: "v3", testField: "foo" }}
+      >
+        <SchemaField
+          name="testField"
+          isRequired
+          schema={{
+            type: "string",
+            title: "Test Field",
+            description: "A test field",
+            oneOf: [
+              { const: "foo", title: "Foo" },
+              { const: "bar", title: "Bar" },
+            ],
+          }}
+        />
+      </Formik>
+    );
+
+    await expectToggleOptions(container, ["select", "string", "var"]);
+
+    screen.debug();
+
+    expect(container.querySelector("textarea")).toBeNull();
+    expect(screen.getByText("Foo")).toBeInTheDocument();
+  });
 });
