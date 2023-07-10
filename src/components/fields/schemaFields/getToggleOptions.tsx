@@ -15,6 +15,7 @@ import {
   isGoogleSheetIdField,
   isIconField,
   isKeyStringField,
+  isLabelledEnumField,
   isSelectField,
   isSimpleServiceField,
 } from "./fieldTypeCheckers";
@@ -221,11 +222,14 @@ export function getToggleOptions({
     return options;
   }
 
-  const multiSchemas = [
-    ...(fieldSchema.anyOf ?? []),
-    ...(fieldSchema.oneOf ?? []),
-    ...(fieldSchema.allOf ?? []),
-  ];
+  // Labelled enum fields are handled by isSelectFieldCheck
+  const multiSchemas = isLabelledEnumField(fieldSchema)
+    ? []
+    : [
+        ...(fieldSchema.anyOf ?? []),
+        ...(fieldSchema.oneOf ?? []),
+        ...(fieldSchema.allOf ?? []),
+      ];
 
   const anyType = isEmpty(multiSchemas) && !fieldSchema.type;
 

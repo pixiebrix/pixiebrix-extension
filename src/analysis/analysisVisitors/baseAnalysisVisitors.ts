@@ -18,7 +18,6 @@
 import {
   type Analysis,
   type AnalysisAnnotation,
-  type ModAnalysis,
 } from "@/analysis/analysisTypes";
 import PipelineVisitor from "@/blocks/PipelineVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -66,32 +65,5 @@ export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisit
     this.allBlocks = await blockRegistry.allTyped();
 
     super.run(extension);
-  }
-}
-
-/**
- * A Mod analysis that runs by running an FormState analysis on each extension.
- */
-export class SimpleModAnalysis implements ModAnalysis {
-  private readonly annotations: AnalysisAnnotation[] = [];
-
-  constructor(readonly analysisFactory: () => Analysis) {}
-
-  get id(): string {
-    return `mod:${this.analysisFactory().id}`;
-  }
-
-  getAnnotations(): AnalysisAnnotation[] {
-    return this.annotations;
-  }
-
-  async run(extensions: FormState[]) {
-    await Promise.all(
-      extensions.map(async (extension) => {
-        const analysis = this.analysisFactory();
-        await analysis.run(extension);
-        this.annotations.push(...analysis.getAnnotations());
-      })
-    );
   }
 }

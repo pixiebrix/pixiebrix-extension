@@ -22,14 +22,14 @@ import {
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import { flatten, isEmpty, uniq } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
-import CollectEventNamesAnalysis, {
+import CollectNamesVisitor, {
   type EventNameAnalysisResult,
-} from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesAnalysis";
+} from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 import { DOM_EVENTS } from "@/types/browserTypes";
 
 /**
  * Analysis visitor to collect all events fired by a single IExtension.
- * @see CollectEventNamesAnalysis
+ * @see CollectNamesVisitor
  */
 class CheckEventNamesAnalysis extends AnalysisVisitorABC {
   private collectedEvents: EventNameAnalysisResult;
@@ -94,12 +94,8 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
   }
 
   override async run(extension: FormState) {
-    const results = await Promise.all(
-      this.formStates.map(async (modFormState) => {
-        const collectAnalysis = new CollectEventNamesAnalysis();
-        collectAnalysis.run(modFormState);
-        return collectAnalysis.result;
-      })
+    const results = this.formStates.map((x) =>
+      CollectNamesVisitor.collectNames(x)
     );
 
     this.collectedEvents = {

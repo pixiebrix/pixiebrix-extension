@@ -17,7 +17,7 @@
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import CustomEventEffect from "@/blocks/effects/customEvent";
-import CollectEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesAnalysis";
+import CollectNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 describe("collectEventNamesAnalysis", () => {
@@ -30,11 +30,9 @@ describe("collectEventNamesAnalysis", () => {
       },
     };
 
-    const analysis = new CollectEventNamesAnalysis();
-    analysis.run(formState);
+    const result = CollectNamesVisitor.collectNames(formState);
 
-    expect(analysis.getAnnotations()).toEqual([]);
-    expect(analysis.result).toEqual({
+    expect(result).toEqual({
       knownNames: ["foo"],
       hasDynamicEventName: false,
     });
@@ -49,11 +47,9 @@ describe("collectEventNamesAnalysis", () => {
       },
     };
 
-    const analysis = new CollectEventNamesAnalysis();
-    analysis.run(formState);
+    const result = CollectNamesVisitor.collectNames(formState);
 
-    expect(analysis.getAnnotations()).toEqual([]);
-    expect(analysis.result).toEqual({
+    expect(result).toEqual({
       knownNames: ["foo"],
       hasDynamicEventName: false,
     });
@@ -68,11 +64,9 @@ describe("collectEventNamesAnalysis", () => {
       },
     };
 
-    const analysis = new CollectEventNamesAnalysis();
-    analysis.run(formState);
+    const result = CollectNamesVisitor.collectNames(formState);
 
-    expect(analysis.getAnnotations()).toEqual([]);
-    expect(analysis.result).toEqual({
+    expect(result).toEqual({
       knownNames: [],
       hasDynamicEventName: true,
     });

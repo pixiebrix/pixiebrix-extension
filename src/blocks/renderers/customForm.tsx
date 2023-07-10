@@ -48,6 +48,7 @@ import { Renderer } from "@/types/bricks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 import cx from "classnames";
+import { namespaceOptions } from "@/blocks/effects/pageState";
 
 const fields = {
   DescriptionField,
@@ -62,6 +63,11 @@ interface DatabaseResult {
   data: unknown;
 }
 
+export type StateStorage = {
+  type: "state";
+  namespace?: "extension" | "blueprint" | "shared";
+};
+
 export type Storage =
   | { type: "localStorage" }
   | {
@@ -69,7 +75,7 @@ export type Storage =
       databaseId: UUID;
       service: SanitizedServiceConfiguration;
     }
-  | { type: "state"; namespace?: "extension" | "blueprint" | "shared" };
+  | StateStorage;
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -147,6 +153,7 @@ export const customFormRendererSchema = {
             type: {
               type: "string",
               const: "database",
+              title: "Database",
             },
             databaseId: {
               type: "string",
@@ -164,12 +171,13 @@ export const customFormRendererSchema = {
             type: {
               type: "string",
               const: "state",
+              title: "Page State",
             },
             namespace: {
               type: "string",
               description:
-                "The namespace for the storage, to avoid conflicts. If set to blueprint and the extension is not part of a blueprint, defaults to shared",
-              enum: ["blueprint", "extension", "shared"],
+                "The namespace for the state. If set to Mod and this Starter Brick is not part of a Mod, behaves as Public.",
+              oneOf: namespaceOptions,
               default: "blueprint",
             },
           },
@@ -181,6 +189,8 @@ export const customFormRendererSchema = {
             type: {
               type: "string",
               const: "localStorage",
+              // Deprecated because custom form is the only way to access the information
+              title: "Local Storage (Deprecated)",
             },
           },
           required: ["type"],
@@ -237,6 +247,10 @@ export class CustomFormRenderer extends Renderer {
   }
 
   inputSchema: Schema = customFormRendererSchema as Schema;
+
+  override async isPageStateAware(): Promise<boolean> {
+    return true;
+  }
 
   async render(
     {

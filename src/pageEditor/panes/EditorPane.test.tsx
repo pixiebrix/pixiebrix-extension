@@ -49,7 +49,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
-import { type EditablePackage } from "@/types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
@@ -127,7 +127,7 @@ beforeAll(async () => {
       ({
         id: uuidSequence(index),
         name: listing.id,
-      } as EditablePackage)
+      } as EditablePackageMetadata)
   );
 
   appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);

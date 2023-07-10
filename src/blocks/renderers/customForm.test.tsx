@@ -233,4 +233,9 @@ describe("CustomFormRenderer", () => {
     expect(rendered.queryByText("Submit")).toBeNull();
     expect(rendered.container.querySelector("#root_name")).not.toBeNull();
   });
+
+  test("is page state aware", async () => {
+    const brick = new CustomFormRenderer();
+    await expect(brick.isPageStateAware()).resolves.toBe(true);
+  });
 });

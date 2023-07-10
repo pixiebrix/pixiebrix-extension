@@ -29,7 +29,7 @@ import blockRegistry from "@/blocks/registry";
 import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
-import { type BrickType } from "@/runtime/runtimeTypes";
+import { type BrickType, validateOutputKey } from "@/runtime/runtimeTypes";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import {
   type ApiVersion,
@@ -62,7 +62,14 @@ type BrickDefinition = {
    * @since 1.7.16
    */
   uiSchema?: UiSchema;
+
   outputSchema?: Schema;
+
+  /**
+   * The default output key to use for the brick
+   * @since 1.7.34
+   */
+  defaultOutputKey?: string;
 
   // Mapping from `key` -> `serviceId`
   services?: Record<string, RegistryId>;
@@ -112,6 +119,19 @@ class ExternalBlock extends BrickABC {
     this.version = version;
   }
 
+  get defaultOutputKey(): string | null {
+    if (!this.component.defaultOutputKey) {
+      return null;
+    }
+
+    try {
+      // Already validated in the JSON Schema, but be defensive
+      return validateOutputKey(this.component.defaultOutputKey);
+    } catch {
+      return null;
+    }
+  }
+
   override async isPure(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
@@ -122,6 +142,7 @@ class ExternalBlock extends BrickABC {
       })
     );
 
+    // All must be pure for the brick to be pure.
     return purity.every(Boolean);
   }
 
@@ -132,6 +153,19 @@ class ExternalBlock extends BrickABC {
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
         return resolvedBlock.isRootAware();
+      })
+    );
+
+    return awareness.some(Boolean);
+  }
+
+  override async isPageStateAware(): Promise<boolean> {
+    const pipeline = castArray(this.component.pipeline);
+
+    const awareness = await Promise.all(
+      pipeline.map(async (blockConfig) => {
+        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        return resolvedBlock.isPageStateAware();
       })
     );
 

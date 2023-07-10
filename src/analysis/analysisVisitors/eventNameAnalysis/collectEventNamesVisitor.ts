@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitorABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import PipelineVisitor, {
+  type VisitBlockExtra,
+} from "@/blocks/PipelineVisitor";
 import CustomEventEffect from "@/blocks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export type EventNameAnalysisResult = {
   /**
@@ -33,16 +35,12 @@ export type EventNameAnalysisResult = {
 };
 
 /**
- * Analysis visitor to collect all events fired by a single FormState.
+ * Visitor to collect all events fired by a single FormState.
  * @since 1.7.34
  */
-class CollectEventNamesAnalysis extends AnalysisVisitorABC {
+class CollectNamesVisitor extends PipelineVisitor {
   readonly _eventNames = new Set<string>();
   private _hasDynamicEventName = false;
-
-  get id() {
-    return "eventNamesCollector";
-  }
 
   public get result(): EventNameAnalysisResult {
     return {
@@ -70,6 +68,14 @@ class CollectEventNamesAnalysis extends AnalysisVisitorABC {
       }
     }
   }
+
+  static collectNames(formState: FormState): EventNameAnalysisResult {
+    const visitor = new CollectNamesVisitor();
+
+    visitor.visitRootPipeline(formState.extension.blockPipeline);
+
+    return visitor.result;
+  }
 }
 
-export default CollectEventNamesAnalysis;
+export default CollectNamesVisitor;

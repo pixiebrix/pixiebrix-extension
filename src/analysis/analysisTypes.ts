@@ -74,28 +74,6 @@ export interface Analysis {
   run(extension: FormState): void | Promise<void>;
 }
 
-/**
- * An analysis to run against the FormState for a single IExtensions.
- * @see FormState
- */
-export interface ModAnalysis {
-  /**
-   * Unique identifier for this analysis
-   */
-  readonly id: string;
-
-  /**
-   * Return the produced annotations
-   */
-  getAnnotations(): AnalysisAnnotation[];
-
-  /**
-   * Run the analysis on the given extensions
-   * @param extensions The extensions to analyze
-   */
-  run(extensions: FormState[]): void | Promise<void>;
-}
-
 export type AnalysisState = {
   /**
    * Annotations stored by extension ID
