@@ -35,6 +35,12 @@
     "outputSchema": {
       "$ref": "http://json-schema.org/draft-07/schema#"
     },
+    "defaultOutputKey": {
+      "type": "string",
+      "description": "The default key to use for the output when added to a mod",
+      "examples": ["output"],
+      "pattern": "[A-Z_a-z]\\w{0,30}"
+    },
     "services": {
       "type": "object",
       "description": "Optionally declare services to inject into the component",
