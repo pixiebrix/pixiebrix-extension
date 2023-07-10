@@ -78,7 +78,7 @@ class PipelineMapVisitor extends PipelineVisitor {
     return this.map;
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
@@ -93,7 +93,7 @@ class PipelineMapVisitor extends PipelineVisitor {
       parentNodeId: extra.parentNodeId,
     };
 
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
   }
 }
 

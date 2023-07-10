@@ -26,12 +26,6 @@ import {
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
-import {
-  isDeferExpression,
-  isExpression,
-  isNunjucksExpression,
-  isVarExpression,
-} from "@/runtime/mapArgs";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
 import {
@@ -50,6 +44,12 @@ import { fromJS } from "@/extensionPoints/factory";
 import { type Schema } from "@/types/schemaTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
+import {
+  isDeferExpression,
+  isExpression,
+  isNunjucksExpression,
+  isVarExpression,
+} from "@/utils/expressionUtils";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -411,7 +411,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.contextStack.at(-1).vars ?? new VarMap();
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
@@ -447,7 +447,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     });
 
     // Analyze the block
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     this.contextStack.pop();
 

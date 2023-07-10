@@ -20,10 +20,6 @@ import IfElse from "@/blocks/transformers/controlFlow/IfElse";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
 import { type BrickConfig } from "@/blocks/types";
 import {
-  isPipelineExpression,
-  type PipelineExpression,
-} from "@/runtime/mapArgs";
-import {
   echoBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -35,6 +31,8 @@ import {
 import blockRegistry from "@/blocks/registry";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { isPipelineExpression } from "@/utils/expressionUtils";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 
 describe("normalizePipeline", () => {
   let echoBlockConfig: BrickConfig;

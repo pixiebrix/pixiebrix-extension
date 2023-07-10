@@ -44,7 +44,8 @@ import {
 } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { inputProperties } from "@/helpers";
-import { isPipelineExpression } from "@/runtime/mapArgs";
+
+import { isPipelineExpression } from "@/utils/expressionUtils";
 
 type BrickDefinition = {
   apiVersion?: ApiVersion;

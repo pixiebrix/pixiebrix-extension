@@ -18,13 +18,13 @@
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
-import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import PipelineVisitor, {
   nestedPosition,
   type VisitBlockExtra,
 } from "./PipelineVisitor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 
 export type VisitDocumentElementArgs = {
   /**
@@ -49,12 +49,12 @@ export type VisitDocumentElementArgs = {
  * A base class for traversing a block pipeline.
  */
 abstract class PipelineExpressionVisitor extends PipelineVisitor {
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     if (isExpression(blockConfig.if)) {
       this.visitExpression(nestedPosition(position, "if"), blockConfig.if);

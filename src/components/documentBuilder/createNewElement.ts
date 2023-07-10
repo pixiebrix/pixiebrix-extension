@@ -19,11 +19,11 @@ import {
   type DocumentElement,
   type DocumentElementType,
 } from "./documentBuilderTypes";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type DeferExpression,
   type PipelineExpression,
-} from "@/runtime/mapArgs";
-import { validateRegistryId } from "@/types/helpers";
+} from "@/types/runtimeTypes";
 
 const elementExtras: Record<"form", DocumentElementType> = {
   form: "pipeline",

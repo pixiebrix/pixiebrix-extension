@@ -16,12 +16,16 @@
  */
 
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import {
+  type BrickArgs,
+  type BrickOptions,
+  type PipelineExpression,
+} from "@/types/runtimeTypes";
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
-  hideTemporarySidebarPanel,
   HIDE_SIDEBAR_EVENT_NAME,
+  hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
 } from "@/contentScript/sidebarController";
@@ -53,7 +57,6 @@ import { type Except, type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { Transformer } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Location } from "@/types/extensionPointTypes";
 
 // Match naming of the sidebar panel extension point triggers

@@ -16,18 +16,18 @@
  */
 
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import {
-  isDeferExpression,
-  isExpression,
-  isPipelineExpression,
-  isVarExpression,
-} from "@/runtime/mapArgs";
 import { produce } from "immer";
 import {
   type Expression,
   type OutputKey,
   type ServiceVarRef,
 } from "@/types/runtimeTypes";
+import {
+  isDeferExpression,
+  isExpression,
+  isPipelineExpression,
+  isVarExpression,
+} from "@/utils/expressionUtils";
 
 export type ServiceSlice = Pick<FormState, "services" | "extension">;
 

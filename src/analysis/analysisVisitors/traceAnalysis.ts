@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import {
   isTraceError,
@@ -37,7 +37,7 @@ const requiredFieldRegex =
 
 const rootPropertyRegex = /^#\/(?<property>.+)$/;
 
-class TraceAnalysis extends AnalysisVisitor {
+class TraceAnalysis extends AnalysisVisitorABC {
   get id() {
     return "trace";
   }
@@ -115,12 +115,12 @@ class TraceAnalysis extends AnalysisVisitor {
     return annotations;
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     const errorRecord = this.traceErrorMap.get(blockConfig.instanceId)?.at(0);
     if (errorRecord == null) {

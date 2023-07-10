@@ -19,7 +19,6 @@ import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { joinPathParts } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import { type TypedBlock } from "@/blocks/registry";
-import { isPipelineExpression } from "@/runtime/mapArgs";
 import { DocumentRenderer } from "@/blocks/renderers/document";
 import { getDocumentPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
@@ -30,6 +29,7 @@ import {
 import { type ExtensionPointType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { isPipelineExpression } from "@/utils/expressionUtils";
 
 export const ROOT_POSITION = Object.freeze({
   path: PIPELINE_BLOCKS_FIELD_NAME,
@@ -88,7 +88,7 @@ class PipelineVisitor {
    * @param position the position in the extension
    * @param blockConfig the block configuration
    */
-  public visitBlock(
+  public visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
@@ -159,7 +159,7 @@ class PipelineVisitor {
     { flavor, parentNode }: VisitPipelineExtra
   ): void {
     for (const [index, blockConfig] of pipeline.entries()) {
-      this.visitBlock(nestedPosition(position, String(index)), blockConfig, {
+      this.visitBrick(nestedPosition(position, String(index)), blockConfig, {
         index,
         parentNodeId: parentNode?.instanceId,
         pipeline,

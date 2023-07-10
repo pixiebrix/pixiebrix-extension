@@ -17,7 +17,7 @@
 
 import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { AnalysisVisitorWithResolvedBricks } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
+import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import { GetPageState, SetPageState } from "@/blocks/effects/pageState";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -35,19 +35,19 @@ const publicMessage =
 /**
  * A visitor that checks for standard uses of page state.
  */
-class PageStateVisitor extends AnalysisVisitorWithResolvedBricks {
+class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
   private isInMod = false;
 
   get id(): string {
     return "pageState";
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     if (
       blockConfig.id === SetPageState.BRICK_ID ||

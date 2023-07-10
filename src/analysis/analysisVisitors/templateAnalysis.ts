@@ -20,13 +20,16 @@ import {
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import { type BrickPosition } from "@/blocks/types";
-import { isNunjucksExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
+import {
+  isNunjucksExpression,
+  isTemplateExpression,
+} from "@/utils/expressionUtils";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";

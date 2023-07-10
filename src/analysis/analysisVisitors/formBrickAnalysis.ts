@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
 import { AnnotationType } from "@/types/annotationTypes";
 
-class FormBrickAnalysis extends AnalysisVisitor {
+class FormBrickAnalysis extends AnalysisVisitorABC {
   get id() {
     return "form";
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     // In the future, we'll want to use the isPure property to generalize the rule. However, the isPure property
     // conflates two things: 1) bricks that read state or have implicit state, so may return a different result, and

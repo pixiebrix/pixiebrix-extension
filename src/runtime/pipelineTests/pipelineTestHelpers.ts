@@ -2,11 +2,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { propertiesToSchema } from "@/validators/generic";
 import { type InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import {
-  isDeferExpression,
-  mapArgs,
-  type PipelineExpression,
-} from "@/runtime/mapArgs";
+import { mapArgs } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
 import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import {
@@ -14,10 +10,12 @@ import {
   type BrickArgs,
   type BrickOptions,
   type OptionsArgs,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { isDeferExpression } from "@/utils/expressionUtils";
 
 const logger = new ConsoleLogger();
 

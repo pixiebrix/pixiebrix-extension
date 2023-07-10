@@ -31,6 +31,9 @@ import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type DebounceOptions } from "@/extensionPoints/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { type Trigger } from "@/extensionPoints/triggerExtensionTypes";
+import { useSelector } from "react-redux";
+import { selectExtensionKnownEventNames } from "@/pageEditor/slices/editorSelectors";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange", "statechange"].includes(
@@ -55,6 +58,8 @@ const TriggerConfiguration: React.FC<{
   );
 
   const { setFieldValue } = useFormikContext<TriggerFormState>();
+
+  const knownEventNames = useSelector(selectExtensionKnownEventNames);
 
   const onTriggerChange = ({
     currentTarget,
@@ -128,9 +133,14 @@ const TriggerConfiguration: React.FC<{
       {trigger === "custom" && (
         <ConnectedFieldTemplate
           title="Custom Event"
+          description="The custom event name. Select an event from this Mod, or type a new event name"
           name={fieldName("customEvent", "eventName")}
-          description="The custom event name"
           {...makeLockableFieldProps("Custom Event", isLocked)}
+          as={SchemaSelectWidget}
+          schema={{
+            type: "string",
+            examples: knownEventNames,
+          }}
         />
       )}
 

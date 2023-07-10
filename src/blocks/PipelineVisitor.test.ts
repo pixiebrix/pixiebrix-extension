@@ -20,7 +20,7 @@ import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import { type BrickPosition, type BrickConfig } from "@/blocks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/testUtils/testHelpers";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
 import {
@@ -32,12 +32,12 @@ test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();
   const visitBlock = jest.fn();
   class Visitor extends PipelineVisitor {
-    override visitBlock(
+    override visitBrick(
       position: BrickPosition,
       blockConfig: BrickConfig,
       extra: VisitBlockExtra
     ) {
-      super.visitBlock(position, blockConfig, extra);
+      super.visitBrick(position, blockConfig, extra);
 
       visitBlock(position, blockConfig, extra);
     }
@@ -89,12 +89,12 @@ test("should invoke the callback for the sub pipeline bricks", () => {
   const visitBlock = jest.fn();
 
   class Visitor extends PipelineVisitor {
-    override visitBlock(
+    override visitBrick(
       position: BrickPosition,
       blockConfig: BrickConfig,
       extra: VisitBlockExtra
     ) {
-      super.visitBlock(position, blockConfig, extra);
+      super.visitBrick(position, blockConfig, extra);
 
       visitBlock(position, blockConfig, extra);
     }
@@ -169,12 +169,12 @@ test("should invoke the callback for the Document button pipeline", () => {
   const visitBlock = jest.fn();
 
   class Visitor extends PipelineVisitor {
-    override visitBlock(
+    override visitBrick(
       position: BrickPosition,
       blockConfig: BrickConfig,
       extra: VisitBlockExtra
     ) {
-      super.visitBlock(position, blockConfig, extra);
+      super.visitBrick(position, blockConfig, extra);
 
       visitBlock(position, blockConfig, extra);
     }
