@@ -48,7 +48,7 @@ import {
 } from "@/types/extensionTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
-import { type EditablePackage } from "@/types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -66,7 +66,7 @@ export function generateScopeBrickId(
 }
 
 export function isRecipeEditable(
-  editablePackages: EditablePackage[],
+  editablePackages: EditablePackageMetadata[],
   recipe: ModDefinition
 ): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)

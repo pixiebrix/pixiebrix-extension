@@ -40,14 +40,6 @@ import { type PersistedExtension } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
-type Kind =
-  | "block"
-  | "foundation"
-  | "service"
-  | "blueprint"
-  | "reader"
-  | "recipe";
-
 type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
   id: UUID;
 };
@@ -168,14 +160,18 @@ export type Deployment = Except<
 };
 
 /**
- * An editable package in the registry.
+ * Metadata for an editable package in the registry. See PackageMetaSerializer.
  */
-export type EditablePackage = components["schemas"]["PackageMeta"] & {
+export type EditablePackageMetadata = components["schemas"]["PackageMeta"] & {
   id: UUID;
 
   name: RegistryId;
 
-  kind: Kind;
+  /**
+   * Backend display name for the Package.kind.
+   * @see https://github.com/pixiebrix/pixiebrix-app/blob/be1c486eba393e3c8e2f99401f78af5958b4060b/api/models/registry.py#L210-L210
+   */
+  kind: "Blueprint" | "Service" | "Block" | "Reader" | "Foundation";
 
   // Nominal typing to help distinguish from registry Metadata
   _editableBrickBrand: never;
@@ -187,7 +183,13 @@ export type RegistryPackage = Pick<
 > & {
   // XXX: update serializer to include proper child serializer
   metadata: Metadata;
-  kind: Kind;
+
+  /**
+   * Valid `kind` value in the YAML definition.
+   * Note that EditablePackageMetadata uses the backend's display name for this field
+   * @see https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
+   */
+  kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
 };
 
 /**

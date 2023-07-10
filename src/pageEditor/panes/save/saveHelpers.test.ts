@@ -51,7 +51,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
-import { type EditablePackage } from "@/types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import {
   extensionPointConfigFactory,
@@ -567,7 +567,7 @@ describe("blueprint options", () => {
 describe("isRecipeEditable", () => {
   test("returns true if recipe is in editable packages", () => {
     const recipe = recipeFactory();
-    const editablePackages: EditablePackage[] = [
+    const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
         name: validateRegistryId("test/recipe"),
@@ -576,30 +576,30 @@ describe("isRecipeEditable", () => {
         id: null,
         name: recipe.metadata.id,
       },
-    ] as EditablePackage[];
+    ] as EditablePackageMetadata[];
 
     expect(isRecipeEditable(editablePackages, recipe)).toBe(true);
   });
 
   test("returns false if recipe is not in editable packages", () => {
     const recipe = recipeFactory();
-    const editablePackages: EditablePackage[] = [
+    const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
         name: validateRegistryId("test/recipe"),
       },
-    ] as EditablePackage[];
+    ] as EditablePackageMetadata[];
 
     expect(isRecipeEditable(editablePackages, recipe)).toBe(false);
   });
 
   test("returns false if recipe is null", () => {
-    const editablePackages: EditablePackage[] = [
+    const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
         name: validateRegistryId("test/recipe"),
       },
-    ] as EditablePackage[];
+    ] as EditablePackageMetadata[];
 
     expect(isRecipeEditable(editablePackages, null)).toBe(false);
   });
