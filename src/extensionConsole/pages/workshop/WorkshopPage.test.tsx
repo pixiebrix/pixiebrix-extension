@@ -20,7 +20,7 @@ import WorkshopPage, {
   useSearchOptions,
 } from "@/extensionConsole/pages/workshop/WorkshopPage";
 import { render, renderHook } from "@/extensionConsole/testHelpers";
-import { editablePackageFactory } from "@/testUtils/factories/registryFactories";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 import React from "react";
 import { screen } from "@testing-library/react";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
@@ -32,8 +32,8 @@ import { MemoryRouter } from "react-router";
 describe("useSearchOptions", () => {
   it("consolidates reader and block options", () => {
     const packages = [
-      editablePackageFactory({ kind: "Reader" }),
-      editablePackageFactory({ kind: "Block" }),
+      editablePackageMetadataFactory({ kind: "Reader" }),
+      editablePackageMetadataFactory({ kind: "Block" }),
     ];
 
     const wrapper = renderHook(() => {

@@ -30,7 +30,7 @@ export const sharingDefinitionFactory = define<Sharing>({
   organizations: () => [] as UUID[],
 });
 
-export const editablePackageFactory = define<EditablePackageMetadata>({
+export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
   id: autoUUIDSequence(),
   name: registryIdFactory(),
   verbose_name: (n: number) => `Editable Package ${n}`,
