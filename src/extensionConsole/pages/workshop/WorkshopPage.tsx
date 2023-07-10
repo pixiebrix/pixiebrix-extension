@@ -21,7 +21,7 @@ import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
+import { isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -91,12 +91,12 @@ export function useSearchOptions(bricks: EnrichedBrick[]) {
 
   const kindOptions = useMemo(
     () =>
-      sortBy(
-        compact(uniq((bricks ?? []).map((x) => mapKindToKindUiValue(x.kind))))
-      ).map((value) => ({
-        value,
-        label: value,
-      })),
+      sortBy(uniq((bricks ?? []).map((x) => mapKindToKindUiValue(x.kind)))).map(
+        (value) => ({
+          value,
+          label: value,
+        })
+      ),
     [bricks]
   );
 
