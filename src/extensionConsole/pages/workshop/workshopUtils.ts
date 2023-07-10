@@ -18,9 +18,9 @@
 import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
- * A valid kind value.
+ * Valid values for the Workshop table/filters.
  *
- * Excludes "reader" because it has the same display name as "block".
+ * Excludes and entry for readers because they're deprecated.
  *
  * @since 1.7.34
  */
