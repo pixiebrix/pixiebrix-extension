@@ -18,7 +18,7 @@
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type Args, isDeferExpression } from "@/runtime/mapArgs";
+import { type Args } from "@/runtime/mapArgs";
 import Loader from "@/components/Loader";
 import {
   type BuildDocumentBranch,
@@ -34,6 +34,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";
+import { isDeferExpression } from "@/utils/expressionUtils";
 
 type DocumentListProps = {
   array: UnknownObject[];

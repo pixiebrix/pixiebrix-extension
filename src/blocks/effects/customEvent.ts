@@ -19,11 +19,14 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 import { Effect } from "@/types/bricks/effectTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 class CustomEventEffect extends Effect {
+  public static BRICK_ID = validateRegistryId("@pixiebrix/event");
+
   constructor() {
     super(
-      "@pixiebrix/event",
+      CustomEventEffect.BRICK_ID,
       "Emit a Custom Event",
       "Emit a custom event with custom data"
     );

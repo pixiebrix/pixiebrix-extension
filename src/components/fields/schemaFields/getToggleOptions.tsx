@@ -6,7 +6,6 @@ import {
   type OmitOption,
   type StringOption,
 } from "./widgets/templateToggleWidgetTypes";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import { type UnknownObject } from "@/types/objectTypes";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
@@ -16,6 +15,7 @@ import {
   isGoogleSheetIdField,
   isIconField,
   isKeyStringField,
+  isLabelledEnumField,
   isSelectField,
   isSimpleServiceField,
 } from "./fieldTypeCheckers";
@@ -26,6 +26,7 @@ import { ServiceFieldDescription } from "@/components/fields/schemaFields/Servic
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 import { type Schema } from "@/types/schemaTypes";
 import { type ExpressionType } from "@/types/runtimeTypes";
+import { isTemplateExpression } from "@/utils/expressionUtils";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -221,11 +222,14 @@ export function getToggleOptions({
     return options;
   }
 
-  const multiSchemas = [
-    ...(fieldSchema.anyOf ?? []),
-    ...(fieldSchema.oneOf ?? []),
-    ...(fieldSchema.allOf ?? []),
-  ];
+  // Labelled enum fields are handled by isSelectFieldCheck
+  const multiSchemas = isLabelledEnumField(fieldSchema)
+    ? []
+    : [
+        ...(fieldSchema.anyOf ?? []),
+        ...(fieldSchema.oneOf ?? []),
+        ...(fieldSchema.allOf ?? []),
+      ];
 
   const anyType = isEmpty(multiSchemas) && !fieldSchema.type;
 

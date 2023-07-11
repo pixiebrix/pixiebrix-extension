@@ -30,11 +30,7 @@ import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import {
-  isPipelineClosureExpression,
-  mapArgs,
-  type PipelineExpression,
-} from "@/runtime/mapArgs";
+import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -67,8 +63,10 @@ import {
   type RenderedArgs,
   type ServiceContext,
   type OptionsArgs,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import createModVariableProxy from "@/runtime/createModVariableProxy";
 
 /**

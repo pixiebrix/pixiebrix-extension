@@ -28,7 +28,6 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
 import { isEmpty, isEqual } from "lodash";
-import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
@@ -37,6 +36,7 @@ import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 
 const HeaderField: React.FunctionComponent<{
   name: string;

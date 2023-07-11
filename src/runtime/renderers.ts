@@ -25,8 +25,7 @@ import {
   renderNunjucksTemplate,
 } from "@/sandbox/messenger/executor";
 import { type UnknownObject } from "@/types/objectTypes";
-import { containsTemplateExpression } from "@/utils/templateUtils";
-import { createNunjucksContext } from "@/runtime/createModVariableProxy";
+import { containsTemplateExpression } from "@/utils/expressionUtils";
 
 export type AsyncTemplateRenderer = (
   template: string,
@@ -70,17 +69,14 @@ export function engineRenderer(
           return template;
         }
 
-        // DEPRECATED: convert top level data from kebab case to snake case in order to be valid identifiers
+        // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
           key.replaceAll("-", "_")
         );
 
         return renderNunjucksTemplate({
           template,
-          context: createNunjucksContext({
-            originalProxy: ctxt,
-            modifiedContext: snakeCased as JsonObject,
-          }),
+          context: snakeCased as JsonObject,
           autoescape: options.autoescape,
         });
       };

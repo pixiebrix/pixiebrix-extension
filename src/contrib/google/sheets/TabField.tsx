@@ -23,11 +23,11 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 
 const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
   name,

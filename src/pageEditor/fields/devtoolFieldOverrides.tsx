@@ -20,9 +20,9 @@ import SelectorSelectorWidget, {
   type SelectorSelectorProps,
 } from "@/pageEditor/fields/SelectorSelectorWidget";
 import { type Schema } from "@/types/schemaTypes";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
+import { isTemplateExpression } from "@/utils/expressionUtils";
 
 const ClearableSelectorWidget: React.FunctionComponent<
   SelectorSelectorProps

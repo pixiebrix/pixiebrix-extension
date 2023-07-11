@@ -22,34 +22,7 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
   $safeFindElementsWithRootMode,
 } from "@/blocks/rootModeHelpers";
-
-// https://developer.mozilla.org/en-US/docs/Web/Events
-const DOM_EVENTS = [
-  "auxclick",
-  "click",
-  "contextmenu",
-  "dblclick",
-  "mousedown",
-  "mouseenter",
-  "mouseleave",
-  "mousemove",
-  "mouseover",
-  "mouseout",
-  "mouseup",
-  "pointer-lockchange",
-  "pointerlockerror",
-  "select",
-  "wheel",
-  "error",
-  "abort",
-  "load",
-  "beforeunload",
-  "unload",
-  "focus",
-  "blur",
-  "focusin",
-  "focusout",
-];
+import { DOM_EVENTS } from "@/types/browserTypes";
 
 export class ElementEvent extends Effect {
   constructor() {

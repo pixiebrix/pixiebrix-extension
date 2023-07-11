@@ -33,8 +33,8 @@ import {
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
 import { type BrickConfig } from "@/blocks/types";
-import { isExpression } from "@/runtime/mapArgs";
 import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { isExpression } from "@/utils/expressionUtils";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form

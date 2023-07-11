@@ -27,7 +27,6 @@ import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
 import { type Expression } from "@/types/runtimeTypes";
-import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isFormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -39,6 +38,7 @@ import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
 import useAsyncState from "@/hooks/useAsyncState";
 import reportError from "@/telemetry/reportError";
+import { isExpression } from "@/utils/expressionUtils";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState, setValues: setFormState } = useFormikContext();

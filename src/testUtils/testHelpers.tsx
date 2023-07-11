@@ -40,16 +40,19 @@ import { type Middleware } from "redux";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import {
+  type Expression,
+  type ExpressionType,
+  type PipelineExpression,
+} from "@/types/runtimeTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import {
-  renderHook,
   act as actHook,
+  renderHook,
   type RenderHookOptions,
   type RenderHookResult,
   type WrapperComponent,
 } from "@testing-library/react-hooks";
-import { type Expression, type ExpressionType } from "@/types/runtimeTypes";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });

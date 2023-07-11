@@ -68,7 +68,7 @@ export type CustomEventOptions = {
   /**
    * The name of the event.
    */
-  eventName: "string";
+  eventName: string;
 };
 
 export interface ExtensionPointDefinition {

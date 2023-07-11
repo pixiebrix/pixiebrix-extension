@@ -27,7 +27,7 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
+import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { joinPathParts } from "@/utils";
 import { type BrickConfig } from "@/blocks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
@@ -49,7 +49,7 @@ type AddBlock = {
 
 function makeBlockLevelAnalyses(): Analysis[] {
   return [
-    new BlockTypeAnalysis(),
+    new BrickTypeAnalysis(),
     new FormBrickAnalysis(),
     new RenderersAnalysis(),
   ];

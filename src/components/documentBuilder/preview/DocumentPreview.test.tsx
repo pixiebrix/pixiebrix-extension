@@ -35,7 +35,7 @@ import {
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import blockRegistry from "@/blocks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";

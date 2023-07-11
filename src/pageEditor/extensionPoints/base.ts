@@ -49,7 +49,6 @@ import {
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
-import { isExpression } from "@/runtime/mapArgs";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   getMinimalSchema,
@@ -62,6 +61,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
+import { isExpression } from "@/utils/expressionUtils";
 
 export interface WizardStep {
   step: string;

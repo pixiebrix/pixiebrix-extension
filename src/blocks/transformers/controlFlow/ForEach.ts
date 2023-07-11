@@ -18,14 +18,14 @@
 import { Transformer } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { type PipelineExpression } from "@/runtime/mapArgs";
-import { validateRegistryId } from "@/types/helpers";
-import { type Schema } from "@/types/schemaTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type OutputKey,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
 
 class ForEach extends Transformer {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");

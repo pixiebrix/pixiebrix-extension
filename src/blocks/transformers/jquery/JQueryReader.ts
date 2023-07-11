@@ -21,8 +21,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { readJQuery, type SelectorConfigMap } from "@/blocks/readers/jquery";
 import { type BrickConfig } from "@/blocks/types";
 import { mapValues } from "lodash";
-import { isExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
+import { isExpression } from "@/utils/expressionUtils";
 
 export class JQueryReader extends Transformer {
   public static BRICK_ID = validateRegistryId("@pixiebrix/jquery-reader");
