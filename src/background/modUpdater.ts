@@ -20,8 +20,8 @@ import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { loadOptions } from "@/store/extensionsStorage";
 import type { IExtension } from "@/types/extensionTypes";
-import { RegistryId, SemVerString } from "@/types/registryTypes";
-import { ModDefinition } from "@/types/modDefinitionTypes";
+import type { RegistryId, SemVerString } from "@/types/registryTypes";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 
 //const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
@@ -57,8 +57,12 @@ function collectModVersions(
 
   for (const { id, version } of mods) {
     // eslint-disable-next-line security/detect-object-injection -- id is a registry id
-    if (modVersions[id] !== version) {
-      reportError(new Error(`Found activated mod version mismatch for ${id}`));
+    if (![undefined, version].includes(modVersions[id])) {
+      reportError(
+        new Error(
+          `Found two different mod versions activated for the same mod: ${id} (${modVersions[id]}, ${version}).`
+        )
+      );
     }
 
     // eslint-disable-next-line security/detect-object-injection -- id is a registry id
@@ -103,8 +107,6 @@ export async function fetchModUpdates(
         }
       >;
     }>("/api/registry/updates/", {
-      // TODO: question - is it possible to have two different "extensions" from the same mod
-      //  be at different versions?
       versions: collectModVersions(activatedMods),
     });
 
