@@ -15,7 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { flushEvents, recordEvent } from "@/background/telemetry";
+import {
+  flushEvents,
+  recordBrickRun,
+  recordEvent,
+} from "@/background/telemetry";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+
+beforeEach(() => {
+  appApiMock.reset();
+  appApiMock.onPost("/api/events/").reply(201, {});
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 describe("recordEvent", () => {
   test("runs", async () => {
@@ -33,5 +49,36 @@ describe("recordEvent", () => {
 
     const events = await flushEvents();
     expect(events.length).toEqual(100);
+  });
+
+  test("record and flush brick run", async () => {
+    const promise = recordBrickRun({
+      blockId: registryIdFactory(),
+      blueprintId: registryIdFactory(),
+    });
+
+    await jest.advanceTimersByTimeAsync(15_000);
+    await promise;
+
+    // FIXME: this runs before debounced call
+    expect(appApiMock.history.post).toHaveLength(1);
+  });
+
+  test("split brick runs by blueprint id", async () => {
+    const promise1 = recordBrickRun({
+      blockId: registryIdFactory(),
+      blueprintId: registryIdFactory(),
+    });
+
+    const promise2 = recordBrickRun({
+      blockId: registryIdFactory(),
+      blueprintId: null,
+    });
+
+    await jest.runAllTimersAsync();
+    await Promise.all([promise1, promise2]);
+
+    // FIXME: this runs before debounced call
+    expect(appApiMock.history.post).toHaveLength(2);
   });
 });
