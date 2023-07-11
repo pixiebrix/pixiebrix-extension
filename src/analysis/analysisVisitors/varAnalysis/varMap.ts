@@ -16,7 +16,7 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export enum VarExistence {
   MAYBE = "MAYBE",

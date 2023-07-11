@@ -30,7 +30,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 beforeEach(() => {
   blockRegistry.clear();
