@@ -18,8 +18,11 @@
 import type { Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
+import { loadOptions } from "@/store/extensionsStorage";
+import { PersistedExtension } from "@/types/extensionTypes";
 
-const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+//const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+const UPDATE_INTERVAL_MS = 60 * 1000;
 
 // TODO: we should consider start extracting this request pattern into an api of some
 //  kind that the background script can use
@@ -45,17 +48,38 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   }
 }
 
+export async function getActivatedMarketplaceMods(): Promise<
+  PersistedExtension[]
+> {
+  // Get currently activated mods
+  const { extensions: activatedMods } = await loadOptions();
+  console.log("*** activatedMods", activatedMods);
+
+  // Filter this list by public mods w/o deployments
+  return activatedMods.filter(
+    (mod) => mod._recipe?.sharing.public && !mod._deployment
+  );
+}
+
 async function checkForModUpdates() {
   console.log("*** checking for mod updates");
 
-  if (await autoModUpdatesEnabled()) {
-    console.log("*** automatic mod updates enabled :)");
+  if (!(await autoModUpdatesEnabled())) {
+    console.log("*** automatic mod updates disabled");
     return;
   }
 
-  console.log("*** automatic mod updates not enabled");
+  console.log("*** automatic mod updates enabled :)");
+
+  const activatedMarketplaceMods = getActivatedMarketplaceMods();
+
+  console.log("*** activatedMarketplaceMods", activatedMarketplaceMods);
+  // Send this list to the registry/updates endpoint & get back the list of updates
+
+  // Use the list to update the mods
 }
 
 export async function initModUpdater(): Promise<void> {
   setInterval(checkForModUpdates, UPDATE_INTERVAL_MS);
+  void checkForModUpdates();
 }

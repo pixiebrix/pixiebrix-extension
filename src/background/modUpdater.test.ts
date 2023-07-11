@@ -17,11 +17,23 @@
 
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { autoModUpdatesEnabled } from "@/background/modUpdater";
+import {
+  autoModUpdatesEnabled,
+  getActivatedMarketplaceMods,
+} from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
+import { loadOptions } from "@/store/extensionsStorage";
+import { persistedExtensionFactory } from "@/testUtils/factories/extensionFactories";
+import { Sharing } from "@/types/registryTypes";
+import { ModDefinition } from "@/types/modDefinitionTypes";
+import { IExtension, PersistedExtension } from "@/types/extensionTypes";
+import { Deployment } from "@/types/contract";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
+jest.mock("@/store/extensionsStorage", () => ({
+  loadOptions: jest.fn(),
+}));
 
 describe("autoModUpdatesEnabled function", () => {
   it("should return false if flag absent", async () => {
@@ -51,5 +63,71 @@ describe("autoModUpdatesEnabled function", () => {
 
     expect(result).toBe(false);
     expect(reportError).toHaveBeenCalled();
+  });
+});
+
+describe("getActivatedMarketplaceMods function", () => {
+  let publicActivatedMod: PersistedExtension;
+  let privateActivatedMod: PersistedExtension;
+  let publicActivatedDeployment: PersistedExtension;
+  let privateActivatedDeployment: PersistedExtension;
+
+  beforeEach(() => {
+    (loadOptions as jest.Mock).mockReturnValue({
+      extensions: [],
+    });
+
+    publicActivatedMod = persistedExtensionFactory({
+      _recipe: {
+        sharing: {
+          public: true,
+        } as Sharing,
+      } as IExtension["_recipe"],
+    });
+
+    privateActivatedMod = persistedExtensionFactory({
+      _recipe: {
+        sharing: {
+          public: false,
+        } as Sharing,
+      } as IExtension["_recipe"],
+    });
+
+    publicActivatedDeployment = persistedExtensionFactory({
+      _recipe: {
+        sharing: {
+          public: true,
+        } as Sharing,
+      } as IExtension["_recipe"],
+      _deployment: {} as IExtension["_deployment"],
+    });
+
+    privateActivatedDeployment = persistedExtensionFactory({
+      _recipe: {
+        sharing: {
+          public: false,
+        } as Sharing,
+      } as IExtension["_recipe"],
+      _deployment: {} as IExtension["_deployment"],
+    });
+  });
+
+  it("should return empty list if no activated mods", async () => {
+    const result = await getActivatedMarketplaceMods();
+    expect(result).toEqual([]);
+  });
+
+  it("should only return public mods without deployments", async () => {
+    (loadOptions as jest.Mock).mockReturnValue({
+      extensions: [
+        publicActivatedMod,
+        privateActivatedMod,
+        publicActivatedDeployment,
+        privateActivatedDeployment,
+      ],
+    });
+
+    const result = await getActivatedMarketplaceMods();
+    expect(result).toEqual([publicActivatedMod]);
   });
 });
