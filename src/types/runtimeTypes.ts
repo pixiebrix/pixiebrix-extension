@@ -298,8 +298,7 @@ export type BrickOptions<
       key: string;
       counter: number;
     },
-    // Should be UnknownObject, but can't use to introduce a circular dependency
-    extraContext?: Record<string, unknown>,
+    extraContext?: UnknownObject,
     root?: SelectorRoot
   ) => Promise<unknown>; // Should be PanelPayload
 

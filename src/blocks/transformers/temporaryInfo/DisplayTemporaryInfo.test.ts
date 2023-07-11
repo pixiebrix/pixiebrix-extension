@@ -18,6 +18,9 @@
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import blockRegistry from "@/blocks/registry";
 import {
+  ContextBrick,
+  contextBrick,
+  echoBrick,
   simpleInput,
   teapotBrick,
   testOptions,
@@ -50,6 +53,9 @@ import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import pDefer from "p-defer";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
+import { setPageState } from "@/contentScript/pageState";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
+import { unary } from "lodash";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`
@@ -93,7 +99,9 @@ describe("DisplayTemporaryInfo", () => {
   beforeEach(() => {
     blockRegistry.clear();
     blockRegistry.register([
+      echoBrick,
       teapotBrick,
+      contextBrick,
       throwBrick,
       renderer,
       displayTemporaryInfoBlock,
@@ -324,6 +332,68 @@ describe("DisplayTemporaryInfo", () => {
 
     await tick();
 
+    expect(updateTemporarySidebarPanelMock).toHaveBeenCalled();
+
+    deferredPromise.resolve();
+  });
+
+  test("body receives updated mod variable on re-render", async () => {
+    document.body.innerHTML = '<div><div id="target"></div></div>';
+
+    const deferredPromise = pDefer<any>();
+    waitForTemporaryPanelMock.mockImplementation(
+      async () => deferredPromise.promise
+    );
+
+    const config = getExampleBlockConfig(renderer.id);
+
+    const pipeline = {
+      id: displayTemporaryInfoBlock.id,
+      config: {
+        title: "Test Temp Panel",
+        body: makePipelineExpression([
+          { id: ContextBrick.BLOCK_ID, config: {} },
+          { id: renderer.id, config },
+        ]),
+        location: "panel",
+        refreshTrigger: "statechange",
+      },
+    };
+
+    const extensionId = uuidv4();
+
+    const options = {
+      ...testOptions("v3"),
+      logger: new ConsoleLogger({
+        extensionId,
+      }),
+    };
+
+    void reducePipeline(pipeline, simpleInput({}), options);
+
+    await tick();
+
+    expect(
+      ContextBrick.contexts.map(unary(contextAsPlainObject))
+    ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
+    expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
+
+    setPageState({
+      namespace: "blueprint",
+      data: { foo: 42 },
+      mergeStrategy: "replace",
+      extensionId,
+      blueprintId: null,
+    });
+
+    await tick();
+
+    expect(
+      ContextBrick.contexts.map(unary(contextAsPlainObject))
+    ).toStrictEqual([
+      { "@input": {}, "@mod": {}, "@options": {} },
+      { "@input": {}, "@mod": { foo: 42 }, "@options": {} },
+    ]);
     expect(updateTemporarySidebarPanelMock).toHaveBeenCalled();
 
     deferredPromise.resolve();

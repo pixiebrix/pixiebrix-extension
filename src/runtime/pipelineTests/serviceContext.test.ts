@@ -35,6 +35,7 @@ import {
   type SanitizedServiceConfiguration,
   type ServiceDependency,
 } from "@/types/serviceTypes";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -64,12 +65,14 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         },
         testOptions(apiVersion)
       );
+
       expect(result).toStrictEqual({
         "@input": {},
         "@pixiebrix": {
           __service: await pixieServiceFactory(),
         },
         "@options": {},
+        ...extraEmptyModStateContext(apiVersion),
       });
     });
   }

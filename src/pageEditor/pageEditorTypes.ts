@@ -223,6 +223,12 @@ export interface EditorState {
    * Is mod list expanded or collapsed
    */
   isModListExpanded: boolean;
+
+  /**
+   * Is the variable popover visible?
+   * @since 1.7.34
+   */
+  isVariablePopoverVisible: boolean;
 }
 
 export type EditorRootState = {

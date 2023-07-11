@@ -28,3 +28,17 @@ export function splitStartingEmoji(value: string) {
     rest: match[2],
   };
 }
+
+/**
+ * A version of lodash's `trimEnd` that only trims once.
+ * @param value the original string
+ * @param chars the characters to trim
+ * @see trimEnd
+ */
+export function trimEndOnce(value: string, chars: string): string {
+  if (value?.endsWith(chars)) {
+    return value.slice(0, -chars.length);
+  }
+
+  return value;
+}
