@@ -29,6 +29,7 @@ import { recipesSlice } from "@/recipes/recipesSlice";
 import { appApi } from "@/services/api";
 import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
 import servicesSlice from "@/store/servicesSlice";
+import workshopSlice from "@/store/workshopSlice";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -40,6 +41,7 @@ const configureStoreForTests = () =>
       modsPage: modsPageSlice.reducer,
       recipes: recipesSlice.reducer,
       services: servicesSlice.reducer,
+      workshop: workshopSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

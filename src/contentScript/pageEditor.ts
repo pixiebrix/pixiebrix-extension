@@ -45,6 +45,7 @@ import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/tempo
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
 
 export type RunBlockArgs = {
   /**
@@ -71,12 +72,15 @@ export type RunBlockArgs = {
  * Run a single block (e.g., for generating output previews)
  * @see BlockPreview
  */
-export async function runBlock({
+export async function runBlockPreview({
   blockConfig,
   context,
   apiVersion,
+  blueprintId,
   rootSelector,
-}: RunBlockArgs): Promise<unknown> {
+}: RunBlockArgs & {
+  blueprintId: RegistryId | null;
+}): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
 
   if (!versionOptions.explicitDataFlow) {
@@ -86,7 +90,11 @@ export async function runBlock({
   }
 
   const state: IntermediateState = {
-    context,
+    context: extendModVariableContext(context, {
+      blueprintId,
+      update: true,
+      options: versionOptions,
+    }),
     // Can pick any index. It's only used for adding context to log messages, and we're disabling value logging
     // below with `logValues: false`
     index: 0,
@@ -167,7 +175,7 @@ export async function runRendererBlock({
 
   let payload: PanelPayload;
   try {
-    await runBlock(args);
+    await runBlockPreview({ ...args, blueprintId });
     // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
     // noinspection ExceptionCaughtLocallyJS
     throw new NoRendererError();

@@ -18,8 +18,25 @@
 import { define } from "cooky-cutter";
 import { type Sharing } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type EditablePackageMetadata } from "@/types/contract";
+import {
+  autoUUIDSequence,
+  registryIdFactory,
+  timestampFactory,
+} from "@/testUtils/factories/stringFactories";
 
 export const sharingDefinitionFactory = define<Sharing>({
   public: false,
   organizations: () => [] as UUID[],
+});
+
+export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
+  id: autoUUIDSequence(),
+  name: registryIdFactory(),
+  verbose_name: (n: number) => `Editable Package ${n}`,
+  version: "1.0.0",
+  kind: "Blueprint",
+  updated_at: timestampFactory(),
+  sharing: sharingDefinitionFactory,
+  _editableBrickBrand: undefined,
 });

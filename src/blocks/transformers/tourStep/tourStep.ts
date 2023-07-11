@@ -16,7 +16,11 @@
  */
 
 import { Transformer } from "@/types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import {
+  type BrickArgs,
+  type BrickOptions,
+  type PipelineExpression,
+} from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -24,7 +28,6 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
-import { type PipelineExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
 import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/blocks/effects/wait";

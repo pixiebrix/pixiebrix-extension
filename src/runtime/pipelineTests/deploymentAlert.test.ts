@@ -30,6 +30,7 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors/genericErrors";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -85,6 +86,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const contextError = await pipeline.catch((error) => error);
 
       expect(sendDeploymentAlert).toHaveBeenCalledTimes(1);
+
       expect(sendDeploymentAlert).toHaveBeenCalledWith({
         deploymentId,
         data: {
@@ -94,6 +96,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
               inputArg: "hello",
             },
             "@options": {},
+            ...extraEmptyModStateContext(apiVersion),
           },
           error: serializeError((contextError as ContextError).cause),
         },

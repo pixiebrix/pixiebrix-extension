@@ -52,7 +52,7 @@ import {
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions } from "@/pageScript/messenger/api";
 import {
-  runBlock,
+  runBlockPreview,
   resetTab,
   runRendererBlock,
 } from "@/contentScript/pageEditor";
@@ -113,7 +113,7 @@ declare global {
 
     DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
-    RUN_SINGLE_BLOCK: typeof runBlock;
+    RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
@@ -177,7 +177,7 @@ export default function registerMessenger(): void {
 
     DETECT_FRAMEWORKS: withDetectFrameworkVersions,
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
-    RUN_SINGLE_BLOCK: runBlock,
+    RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
 
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,

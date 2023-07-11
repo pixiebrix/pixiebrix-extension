@@ -28,7 +28,8 @@ import {
   type TemplateToggleWidgetProps,
 } from "./templateToggleWidgetTypes";
 import VarPopup from "./varPopup/VarPopup";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+
+import { isTemplateExpression } from "@/utils/expressionUtils";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
@@ -102,6 +103,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     focusInput,
     inputRef,
   };
+
   if (inputMode === "omit") {
     const optionValues = new Set(
       inputModeOptions.map((option) => option.value)

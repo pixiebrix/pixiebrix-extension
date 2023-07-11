@@ -45,3 +45,31 @@ export type StorageEstimate = {
     other: number;
   };
 };
+
+// https://developer.mozilla.org/en-US/docs/Web/Events
+export const DOM_EVENTS = [
+  "auxclick",
+  "click",
+  "contextmenu",
+  "dblclick",
+  "mousedown",
+  "mouseenter",
+  "mouseleave",
+  "mousemove",
+  "mouseover",
+  "mouseout",
+  "mouseup",
+  "pointer-lockchange",
+  "pointerlockerror",
+  "select",
+  "wheel",
+  "error",
+  "abort",
+  "load",
+  "beforeunload",
+  "unload",
+  "focus",
+  "blur",
+  "focusin",
+  "focusout",
+];

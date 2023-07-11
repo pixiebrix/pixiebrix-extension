@@ -19,7 +19,6 @@ import React, { useContext, useMemo, useState } from "react";
 import { useField } from "formik";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
-import { isExpression } from "@/runtime/mapArgs";
 import SelectWidget, {
   type Option,
   type SelectLike,
@@ -32,6 +31,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
 import { isUUID } from "@/types/helpers";
+import { isExpression } from "@/utils/expressionUtils";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,

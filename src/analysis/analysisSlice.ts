@@ -28,6 +28,7 @@ import { type UUID } from "@/types/stringTypes";
 const initialState: AnalysisState = {
   extensionAnnotations: {},
   knownVars: {},
+  knownEventNames: {},
 };
 
 const analysisSlice = createSlice({
@@ -85,6 +86,16 @@ const analysisSlice = createSlice({
     ) {
       const { extensionId, vars } = action.payload;
       state.knownVars[extensionId] = vars;
+    },
+    setKnownEventNames(
+      state,
+      action: PayloadAction<{
+        extensionId: UUID;
+        eventNames: string[];
+      }>
+    ) {
+      const { extensionId, eventNames } = action.payload;
+      state.knownEventNames[extensionId] = eventNames;
     },
   },
 });

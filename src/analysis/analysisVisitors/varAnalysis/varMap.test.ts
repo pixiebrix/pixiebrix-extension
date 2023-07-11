@@ -344,6 +344,26 @@ describe("setExistenceFromValues", () => {
     expect(varMap.isVariableDefined("bar.baz.qux")).toBeTrue();
   });
 
+  test("set existence for an array", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "brick1",
+      values: {
+        myArray: [1],
+      },
+    });
+
+    expect(varMap.isVariableDefined("myArray")).toBeTrue();
+
+    expect(varMap.getMap().brick1).toEqual(
+      expect.objectContaining({
+        myArray: expect.objectContaining({
+          [IS_ARRAY]: true,
+        }),
+      })
+    );
+  });
+
   test("one source does not override another one (traces do not hide schema vars)", () => {
     const varMap = new VarMap();
     varMap.setExistence({

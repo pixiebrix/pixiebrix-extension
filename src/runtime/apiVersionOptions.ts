@@ -46,6 +46,12 @@ export type ApiVersionOptions = {
   explicitRender?: boolean;
 
   /**
+   * True to automatically include a "@mod" variable in the context for the brick.
+   * @since 1.7.34
+   */
+  extendModVariable: boolean;
+
+  /**
    * `true` to throw an error if JSON Schema validation fails against the inputSchema for a brick. Logs a warning
    * if the errors don't match the outputSchema (if an outputSchema is provided)
    *
@@ -85,6 +91,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitRender: true,
         validateInput: true,
         autoescape: false,
+        extendModVariable: true,
       };
     }
 
@@ -95,6 +102,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitRender: false,
         validateInput: true,
         autoescape: true,
+        extendModVariable: false,
       };
     }
 
@@ -106,6 +114,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitRender: false,
         validateInput: true,
         autoescape: true,
+        extendModVariable: false,
       };
     }
   }

@@ -26,7 +26,7 @@ import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 /**
  * A base class for creating analysis visitors.
  */
-export abstract class AnalysisVisitor
+export abstract class AnalysisVisitorABC
   extends PipelineVisitor
   implements Analysis
 {
@@ -39,8 +39,18 @@ export abstract class AnalysisVisitor
     return this.annotations;
   }
 
+  /**
+   * Visit the extension point definition.
+   * @param extensionPoint
+   */
+  visitExtensionPoint(extensionPoint: FormState["extensionPoint"]): void {
+    // NOP
+  }
+
   run(extension: FormState): void {
     this.extension = extension;
+
+    this.visitExtensionPoint(extension.extensionPoint);
 
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
@@ -48,7 +58,7 @@ export abstract class AnalysisVisitor
   }
 }
 
-export abstract class AnalysisVisitorWithResolvedBricks extends AnalysisVisitor {
+export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisitorABC {
   protected allBlocks: TypedBlockMap;
 
   override async run(extension: FormState): Promise<void> {

@@ -93,6 +93,12 @@ export interface Brick extends Metadata {
   isRootAware?: () => Promise<boolean>;
 
   /**
+   * Returns `true` if the brick may read from or write to the page state.
+   * @since 1.7.34
+   */
+  isPageStateAware?: () => Promise<boolean>;
+
+  /**
    * (Optional) default root output key to use when this brick is added in the page editor.
    *
    * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
@@ -137,6 +143,14 @@ export abstract class BrickABC implements Brick {
   async isRootAware(): Promise<boolean> {
     // Safe default
     return true;
+  }
+
+  async isPageStateAware(): Promise<boolean> {
+    // Not a safe default, but it's not important currently if we miss any bricks because we're just using this
+    // to determine whether to show Page State information in the Page Editor
+    // - There's only a few bricks that directly read/write Page State
+    // - We only care about the exact brick, not any pipelines that are passed to the brick (e.g., control flow)
+    return false;
   }
 
   getOutputSchema(_config: BrickConfig): Schema | undefined {

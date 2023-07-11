@@ -37,6 +37,24 @@
   position: absolute;
   top: 0;
   bottom: 0;
+
+  :global(.active:not(.hover)) {
+    background-color: #c7e0ff;
+
+    ul {
+      background-color: white;
+    }
+  }
+
+  :global(.hover) {
+    background-color: #a9d2ff !important;
+    cursor: pointer;
+
+    ul {
+      background-color: white;
+      cursor: none;
+    }
+  }
 }
 
 .sourceItem {

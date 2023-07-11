@@ -24,7 +24,8 @@ import { useField } from "formik";
 import { partial } from "lodash";
 import React, { type MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
-import { isExpression } from "@/runtime/mapArgs";
+
+import { isExpression } from "@/utils/expressionUtils";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
 export const DEFAULT_WINDOW_VALUE: BrickWindow = "self";

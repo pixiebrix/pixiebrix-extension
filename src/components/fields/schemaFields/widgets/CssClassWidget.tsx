@@ -41,13 +41,13 @@ import {
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
-import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import { compact, partition, uniq } from "lodash";
 import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
 import { UnstyledButton } from "@/components/UnstyledButton";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 
 /**
  * An independent class name

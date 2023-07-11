@@ -19,6 +19,7 @@ import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
 import {
   clearExtensionDebugLogs,
+  recordBrickRun,
   requestRun,
   sendDeploymentAlert,
   traces,
@@ -30,11 +31,7 @@ import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import {
-  isPipelineClosureExpression,
-  mapArgs,
-  type PipelineExpression,
-} from "@/runtime/mapArgs";
+import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -67,8 +64,11 @@ import {
   type RenderedArgs,
   type ServiceContext,
   type OptionsArgs,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { isPipelineClosureExpression } from "@/utils/expressionUtils";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -576,6 +576,15 @@ export async function runBlock(
     );
   }
 
+  if (!trace) {
+    // We're currently not recording runs while using the Page Editor to develop a mod
+    // Uses messenger notifier, so won't slow down execution
+    recordBrickRun({
+      blockId: block.id,
+      blueprintId: logger.context.blueprintId,
+    });
+  }
+
   try {
     // Inputs validated in throwIfInvalidInput
     const validatedProps = props as unknown as BlockProps<BrickArgs>;
@@ -609,8 +618,9 @@ async function applyReduceDefaults({
     explicitArg: false,
     explicitRender: false,
     autoescape: true,
-    // Default to the `apiVersion: v1` data flow behavior
+    // Default to the `apiVersion: v1` data flow behavior and mod variable behavior
     explicitDataFlow: false,
+    extendModVariable: false,
     // If logValues not provided explicitly, default to the global setting
     logValues: logValues ?? globalLoggingConfig.logValues ?? false,
     // For stylistic consistency, default here instead of destructured parameters
@@ -910,7 +920,7 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
-  let context: BrickArgsContext = {
+  let localVariableContext: BrickArgsContext = {
     // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
@@ -928,7 +938,12 @@ export async function reducePipeline(
       index,
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
-      context,
+      context: extendModVariableContext(localVariableContext, {
+        blueprintId: pipelineLogger.context.blueprintId,
+        options,
+        // Mod variable is updated when each block is run
+        update: true,
+      }),
     };
 
     let nextValues: BlockOutput;
@@ -957,7 +972,7 @@ export async function reducePipeline(
     }
 
     output = nextValues.output;
-    context = nextValues.context;
+    localVariableContext = nextValues.context;
   }
 
   return output;
@@ -993,7 +1008,12 @@ export async function reducePipelineExpression(
       isLastBlock: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: context as BrickArgsContext,
+      context: extendModVariableContext(context as BrickArgsContext, {
+        blueprintId: pipelineLogger.context.blueprintId,
+        options,
+        // Update mod variable when each block is run
+        update: true,
+      }),
     };
 
     let nextValues: BlockOutput;

@@ -655,6 +655,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
+
+      // Integrations take precedence over the other context
+      // XXX: don't support adding "@mod" variable for now. Dynamic Captions are not available in the Page Editor
       const extensionContext = { ...ctxt, ...serviceContext };
 
       html = (await renderMustache(this.getTemplate(), {

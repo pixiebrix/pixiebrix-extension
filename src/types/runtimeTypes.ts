@@ -21,7 +21,7 @@ import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type BrickPipeline } from "@/blocks/types";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -127,6 +127,13 @@ export type Expression<
   __type__: TTypeTag;
   __value__: TTemplateOrPipeline;
 };
+
+export type PipelineExpression = Expression<BrickPipeline, "pipeline">;
+
+export type DeferExpression<TValue = UnknownObject> = Expression<
+  TValue,
+  "defer"
+>;
 
 /**
  * The extension run reason.
@@ -291,8 +298,7 @@ export type BrickOptions<
       key: string;
       counter: number;
     },
-    // Should be UnknownObject, but can't use to introduce a circular dependency
-    extraContext?: Record<string, unknown>,
+    extraContext?: UnknownObject,
     root?: SelectorRoot
   ) => Promise<unknown>; // Should be PanelPayload
 

@@ -35,6 +35,7 @@ import { type IExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
+import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -367,6 +368,9 @@ const annotationsForPathSelector = createSelector(
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
 
+export const selectVariablePopoverVisible = ({ editor }: EditorRootState) =>
+  editor.isVariablePopoverVisible;
+
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>
   editor.copiedBlock;
 
@@ -387,3 +391,11 @@ export const selectExtensionAvailability = ({
   unavailableDynamicCount,
   isPendingDynamicExtensions,
 });
+
+export const selectExtensionKnownEventNames = createSelector(
+  selectActiveElementId,
+  selectKnownEventNames,
+  (activeElementId, knownEventNameMap) =>
+    // eslint-disable-next-line security/detect-object-injection -- is a UUID
+    knownEventNameMap[activeElementId] ?? []
+);
