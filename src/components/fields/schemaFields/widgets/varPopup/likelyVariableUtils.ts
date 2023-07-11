@@ -76,6 +76,7 @@ export function replaceLikelyVariable(
   // See likelyVariableUtils.test.ts for more examples
   let shouldInsertBracesBefore = true;
   for (let i = templatePartBefore.length - 1; i > 0; i--) {
+    // eslint-disable-next-line security/detect-object-injection -- is a number
     const char = templatePartBefore[i];
     if (
       char === "}" &&
@@ -95,6 +96,7 @@ export function replaceLikelyVariable(
   // See likelyVariableUtils.test.ts for more examples
   let shouldInsertBracesAfter = true;
   for (let i = 0; i < templatePartAfter.length - 1; i++) {
+    // eslint-disable-next-line security/detect-object-injection -- is a number
     const char = templatePartAfter[i];
     if (
       char === "{" &&

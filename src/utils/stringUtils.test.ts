@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { splitStartingEmoji } from "@/utils/stringUtils";
+import { splitStartingEmoji, trimEndOnce } from "@/utils/stringUtils";
 
 describe("string utilities", () => {
   test("splitStartingEmoji", () => {
@@ -78,5 +78,19 @@ describe("string utilities", () => {
       startingEmoji: "😊",
       rest: "",
     });
+  });
+});
+
+describe("trimEndOnce", () => {
+  test("it allows null", () => {
+    expect(trimEndOnce(null, " ")).toBeNull();
+  });
+
+  test("it trims only once", () => {
+    expect(trimEndOnce("aa", "a")).toBe("a");
+  });
+
+  test("it trims only if match", () => {
+    expect(trimEndOnce("ab", "a")).toBe("ab");
   });
 });

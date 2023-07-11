@@ -208,6 +208,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
     matcher: isAnyOf(
+      editorActions.showVariablePopover,
       editorActions.editElement,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions

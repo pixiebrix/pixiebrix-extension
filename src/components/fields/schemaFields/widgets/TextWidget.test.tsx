@@ -20,6 +20,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type Schema } from "@/types/schemaTypes";
 import { render, screen } from "@/pageEditor/testHelpers";
 import TextWidget, {
+  isVarLike,
   isVarValue,
 } from "@/components/fields/schemaFields/widgets/TextWidget";
 import userEvent from "@testing-library/user-event";
@@ -92,5 +93,14 @@ describe("TextWidget", () => {
     expect(isVarValue("@property extra text")).toBe(false);
     expect(isVarValue("@123")).toBe(false);
     expect(isVarValue("@")).toBe(false);
+  });
+
+  test("isVarLike", () => {
+    expect(isVarLike("@object[0 ")).toBe(false);
+    expect(isVarLike("@object")).toBe(true);
+    expect(isVarLike("@object[")).toBe(true);
+    expect(isVarLike("@object[0")).toBe(true);
+    expect(isVarLike("@object.")).toBe(true);
+    expect(isVarLike("@obj ect.")).toBe(false);
   });
 });
