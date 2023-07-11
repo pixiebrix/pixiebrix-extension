@@ -17,7 +17,6 @@
 
 import extendModVariableContext, {
   contextAsPlainObject,
-  EMPTY_MOD_STATE,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
 import { setPageState } from "@/contentScript/pageState";

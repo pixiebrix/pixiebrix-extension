@@ -40,6 +40,8 @@ import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
+import { getPageState } from "@/contentScript/messenger/api";
+import { thisTab } from "@/pageEditor/utils";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -161,13 +163,21 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
 
-const varAnalysisFactory = (
+async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState
-) => {
+) {
   const records = selectActiveElementTraces(state);
-  return new VarAnalysis(records);
-};
+  const extension = selectActiveElement(state);
+
+  const modState = await getPageState(thisTab, {
+    namespace: "blueprint",
+    extensionId: extension.uuid,
+    blueprintId: extension.recipe?.id,
+  });
+
+  return new VarAnalysis(records, modState);
+}
 
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end
 pageEditorAnalysisManager.registerAnalysisEffect(

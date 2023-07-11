@@ -28,7 +28,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 /**
  * Variable for accessing the mod Page State.
  */
-const MOD_VARIABLE_REFERENCE = "@mod";
+export const MOD_VARIABLE_REFERENCE = "@mod";
 
 /**
  * A tag to detect if the context slice is bound to the mod variable.

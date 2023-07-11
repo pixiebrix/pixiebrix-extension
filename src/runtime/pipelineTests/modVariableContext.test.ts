@@ -30,6 +30,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
+import { UnknownObject } from "@/types/objectTypes";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -109,7 +110,7 @@ describe("modVariableContext", () => {
       { ...simpleInput({}), optionsArgs: {} },
       testOptions("v3")
     );
-    expect(contextAsPlainObject(result)).toStrictEqual({
+    expect(contextAsPlainObject(result as UnknownObject)).toStrictEqual({
       "@input": {},
       "@options": {},
       "@mod": { name: "Bob" },
