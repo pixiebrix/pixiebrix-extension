@@ -128,8 +128,10 @@ describe("recordEvent", () => {
     await Promise.all([promise1, promise2]);
 
     expect(appApiMock.history.post).toHaveLength(1);
-    expect(JSON.parse(appApiMock.history.post[0].data)).toStrictEqual({
-      events: expect.toBeArrayOfSize(2),
-    });
+    expect(JSON.parse(appApiMock.history.post[0].data as string)).toStrictEqual(
+      {
+        events: expect.toBeArrayOfSize(2),
+      }
+    );
   });
 });
