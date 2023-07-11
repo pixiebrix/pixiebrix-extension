@@ -21,7 +21,7 @@ import reportError from "@/telemetry/reportError";
 
 // TODO: we should start extracting this request pattern into an api of some
 //  kind that the background script can use
-async function autoModUpdatesEnabled(): Promise<boolean> {
+export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
