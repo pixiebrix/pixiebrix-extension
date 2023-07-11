@@ -29,7 +29,6 @@ import { useField } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
@@ -42,6 +41,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { type Schema } from "@/types/schemaTypes";
 import { type TemplateEngine } from "@/types/runtimeTypes";
+import { isTemplateExpression } from "@/utils/expressionUtils";
 import { trimEndOnce } from "@/utils/stringUtils";
 
 function schemaSupportsTemplates(schema: Schema): boolean {

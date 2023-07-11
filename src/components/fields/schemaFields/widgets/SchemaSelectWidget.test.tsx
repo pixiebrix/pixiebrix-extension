@@ -18,7 +18,9 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type Schema } from "@/types/schemaTypes";
-import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import SchemaSelectWidget, {
+  mapSchemaToOptions,
+} from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { render } from "@/pageEditor/testHelpers";
 
 const fieldName = "testField";
@@ -75,5 +77,46 @@ describe("SchemaSelectWidget", () => {
         }
       ).asFragment()
     ).toMatchSnapshot();
+  });
+});
+
+describe("mapSchemaToOptions", () => {
+  it("includes current value in options", () => {
+    expect(
+      mapSchemaToOptions({
+        schema: { type: "string", enum: [] },
+        value: "foo",
+        created: [],
+      })
+    ).toEqual({
+      creatable: false,
+      options: [{ value: "foo", label: "foo" }],
+    });
+  });
+
+  it("returns creatable for examples", () => {
+    expect(
+      mapSchemaToOptions({
+        schema: { type: "string", examples: [] },
+        value: "foo",
+        created: [],
+      })
+    ).toEqual({
+      creatable: true,
+      options: [{ value: "foo", label: "foo" }],
+    });
+  });
+
+  it("extracts labelled enum values", () => {
+    expect(
+      mapSchemaToOptions({
+        schema: { type: "string", oneOf: [{ const: "foo", title: "Foo" }] },
+        value: "foo",
+        created: [],
+      })
+    ).toEqual({
+      creatable: false,
+      options: [{ value: "foo", label: "Foo" }],
+    });
   });
 });

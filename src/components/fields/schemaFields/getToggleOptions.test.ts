@@ -68,3 +68,25 @@ describe("Database field", () => {
     expect(options[2].label).toBe("Exclude");
   });
 });
+
+describe("select field", () => {
+  it("handles labelled enum field", () => {
+    const options = getToggleOptions({
+      fieldSchema: {
+        type: "string",
+        oneOf: [{ const: "foo", title: "Foo" }],
+      },
+      isRequired: false,
+      allowExpressions: true,
+      customToggleModes: [],
+      isObjectProperty: false,
+      isArrayItem: false,
+    });
+
+    expect(options).toHaveLength(4);
+    expect(options[0].label).toBe("Select...");
+    expect(options[1].label).toBe("Text");
+    expect(options[2].label).toBe("Variable");
+    expect(options[3].label).toBe("Exclude");
+  });
+});

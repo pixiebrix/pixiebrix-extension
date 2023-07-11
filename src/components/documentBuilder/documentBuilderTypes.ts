@@ -16,11 +16,11 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import { type Expression } from "@/types/runtimeTypes";
 import {
   type DeferExpression,
+  type Expression,
   type PipelineExpression,
-} from "@/runtime/mapArgs";
+} from "@/types/runtimeTypes";
 import { type ElementType, type MouseEventHandler } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [

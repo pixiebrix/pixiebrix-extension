@@ -36,7 +36,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import styles from "./JQueryReaderOptions.module.scss";
@@ -52,6 +51,7 @@ import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection
 import cx from "classnames";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 
 /**
  * Version of SelectorConfig where fields may be expressions.

@@ -17,118 +17,23 @@
 
 import {
   type AsyncTemplateRenderer,
-  type TemplateRenderer,
   engineRenderer,
   type RendererOptions,
+  type TemplateRenderer,
 } from "@/runtime/renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
-import {
-  type Expression,
-  type ExpressionType,
-  type TemplateEngine,
-} from "@/types/runtimeTypes";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
-import { type BrickPipeline } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
-
-const templateTypes: TemplateEngine[] = [
-  "mustache",
-  "nunjucks",
-  "handlebars",
-  "var",
-];
-
-const expressionTypes: ExpressionType[] = [
-  ...templateTypes,
-  "pipeline",
-  "defer",
-];
+import {
+  isDeferExpression,
+  isPipelineExpression,
+  isTemplateExpression,
+  isVarExpression,
+} from "@/utils/expressionUtils";
 
 export type Args = string | UnknownObject | UnknownObject[];
-
-/**
- * Returns true if value represents an explicit expression
- * @see isTemplateExpression
- */
-export function isExpression(value: unknown): value is Expression<unknown> {
-  if (
-    isPlainObject(value) &&
-    typeof value === "object" &&
-    "__type__" in value
-  ) {
-    return expressionTypes.includes((value as Expression).__type__);
-  }
-
-  return false;
-}
-
-export type PipelineExpression = Expression<BrickPipeline, "pipeline">;
-
-/**
- * A PipelineExpression with an attached lexical environment. Internal type used by the runtime
- * @since 1.7.29
- */
-export type PipelineClosureExpression = PipelineExpression & {
-  __env__: UnknownObject;
-};
-
-export function isPipelineExpression(
-  value: unknown
-): value is PipelineExpression {
-  return isExpression(value) && value.__type__ === "pipeline";
-}
-
-export function isPipelineClosureExpression(
-  value: unknown
-): value is PipelineClosureExpression {
-  return isPipelineExpression(value) && "__env__" in value;
-}
-
-export type DeferExpression<TValue = UnknownObject> = Expression<
-  TValue,
-  "defer"
->;
-
-export function isDeferExpression<TValue = UnknownObject>(
-  value: unknown
-): value is DeferExpression<TValue> {
-  return isExpression(value) && value.__type__ === "defer";
-}
-
-/**
- * Returns true if value represents an explicit template engine expression
- * @see isExpression
- */
-export function isTemplateExpression(
-  value: unknown
-): value is Expression<string, TemplateEngine> {
-  return (
-    isExpression(value) &&
-    templateTypes.includes((value as Expression).__type__ as TemplateEngine)
-  );
-}
-
-/**
- * Returns true if value represents a variable expression
- * @see isExpression
- */
-export function isVarExpression(
-  value: unknown
-): value is Expression<string, "var"> {
-  return isExpression(value) && (value as Expression).__type__ === "var";
-}
-
-/**
- * Returns true if value represents a nunjucks expression
- * @see isExpression
- */
-export function isNunjucksExpression(
-  value: unknown
-): value is Expression<string, "nunjucks"> {
-  return isExpression(value) && (value as Expression).__type__ === "nunjucks";
-}
 
 /**
  * Recursively render values

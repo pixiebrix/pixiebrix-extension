@@ -21,7 +21,6 @@ import {
   type BrickPipeline,
   type BrickPosition,
 } from "@/blocks/types";
-import { isPipelineExpression } from "@/runtime/mapArgs";
 import { produce } from "immer";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import PipelineVisitor, {
@@ -31,13 +30,14 @@ import PipelineVisitor, {
 import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import { isPipelineExpression } from "@/utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
   constructor(private readonly blockMap: TypedBlockMap) {
     super();
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitResolvedBlockExtra
@@ -73,7 +73,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
       }
     }
 
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
   }
 }
 
@@ -97,7 +97,7 @@ export async function normalizePipelineForEditor(
 }
 
 class OmitEditorMetadataVisitor extends PipelineVisitor {
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitResolvedBlockExtra
@@ -105,7 +105,7 @@ class OmitEditorMetadataVisitor extends PipelineVisitor {
     // Remove up instanceIds
     delete blockConfig.instanceId;
 
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
   }
 }
 

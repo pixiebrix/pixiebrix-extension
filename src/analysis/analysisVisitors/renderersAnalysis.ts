@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitorWithResolvedBricks } from "./baseAnalysisVisitors";
+import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import {
   nestedPosition,
@@ -29,7 +29,7 @@ export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
 const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
   "A renderer must be the last brick.";
 
-class RenderersAnalysis extends AnalysisVisitorWithResolvedBricks {
+class RenderersAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   get id() {
     return "renderers";
   }

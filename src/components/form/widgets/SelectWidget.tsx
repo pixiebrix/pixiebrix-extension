@@ -22,6 +22,7 @@ import Select, {
   type SelectComponentsConfig,
   type StylesConfig,
 } from "react-select";
+import Creatable from "react-select/creatable";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 // Type of the Select options
@@ -57,6 +58,10 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
     className?: string;
     styles?: StylesConfig;
+    /**
+     * True if the user can create new options. Default is false.
+     */
+    createable?: boolean;
   };
 
 export const makeStringOptions = (...items: string[]): Option[] =>
@@ -78,6 +83,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   components,
   className,
   styles,
+  createable = false,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -98,8 +104,10 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   const selectedOption =
     options?.find((option: TOption) => value === option.value) ?? null;
 
+  const Component = createable ? Creatable : Select;
+
   return (
-    <Select
+    <Component
       className={className}
       menuPlacement="auto"
       inputId={id}

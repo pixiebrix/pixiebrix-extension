@@ -27,7 +27,7 @@ const position: BrickPosition = {
 describe("RegexAnalysis", () => {
   test("ignore expression", () => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),
@@ -46,7 +46,7 @@ describe("RegexAnalysis", () => {
 
   test("validate string literal", () => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),
@@ -62,7 +62,7 @@ describe("RegexAnalysis", () => {
 
   test("error on invalid regex", () => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),
@@ -89,7 +89,7 @@ describe("RegexAnalysis", () => {
     ["before-group(?<foo>bar)"],
   ])("accept value pattern: %s", (pattern) => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),

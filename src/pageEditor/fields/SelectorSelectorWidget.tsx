@@ -47,7 +47,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import {
   castTextLiteralOrThrow,
   isTextLiteralOrNull,
-} from "@/utils/templateUtils";
+} from "@/utils/expressionUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 interface ElementSuggestion extends SuggestionTypeBase {

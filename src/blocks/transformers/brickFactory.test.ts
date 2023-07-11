@@ -30,10 +30,12 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/blocks/transformers/controlFlow/Run";
+import { GetPageState } from "@/blocks/effects/pageState";
+import { cloneDeep } from "lodash";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([contextBrick]);
+  blockRegistry.register([contextBrick, new GetPageState()]);
   ContextBrick.clearContexts();
 });
 
@@ -65,12 +67,27 @@ test("block includes version", async () => {
   expect(block.version).toBe("0.0.1");
 });
 
-test("reject invalid fixture fixture", async () => {
+test("reject invalid fixture", async () => {
   try {
     fromJS({ foo: "bar" });
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidDefinitionError);
   }
+});
+
+describe("defaultOutputKey", () => {
+  test("no output key", () => {
+    const block = fromJS(nytimes);
+    expect(block.defaultOutputKey).toBeNull();
+  });
+
+  test("output key", () => {
+    const config = cloneDeep(nytimes);
+    config.defaultOutputKey = "articles";
+
+    const block = fromJS(config);
+    expect(block.defaultOutputKey).toBe("articles");
+  });
 });
 
 describe("isUserDefinedBrick", () => {
@@ -160,5 +177,67 @@ test("inner pipelines receive correct context", async () => {
       customInput: "Closure Environment",
     },
     "@options": {},
+  });
+});
+
+describe("isPageStateAware", () => {
+  it("detects any page state aware blocks", async () => {
+    const json = {
+      apiVersion: "v3",
+      kind: "component",
+      metadata: {
+        id: "test/pipeline-echo",
+        name: "State Brick",
+      },
+      inputSchema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {},
+      },
+      pipeline: [
+        {
+          id: "@pixiebrix/state/get",
+          label: "Get State",
+          config: {},
+          outputKey: "ignore",
+        },
+        {
+          id: "test/context",
+          label: "Pipeline Echo Brick Context",
+          config: {},
+          outputKey: "ignore",
+        },
+      ],
+    };
+
+    const brick = fromJS(json);
+    await expect(brick.isPageStateAware()).resolves.toBe(true);
+  });
+
+  it("requires at least one page state brick", async () => {
+    const json = {
+      apiVersion: "v3",
+      kind: "component",
+      metadata: {
+        id: "test/pipeline-echo",
+        name: "State Brick",
+      },
+      inputSchema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {},
+      },
+      pipeline: [
+        {
+          id: "test/context",
+          label: "Pipeline Echo Brick Context",
+          config: {},
+          outputKey: "ignore",
+        },
+      ],
+    };
+
+    const brick = fromJS(json);
+    await expect(brick.isPageStateAware()).resolves.toBe(false);
   });
 });

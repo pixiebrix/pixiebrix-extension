@@ -118,6 +118,7 @@ describe("useFieldAnnotations", () => {
           [element.uuid]: [analysisAnnotation],
         },
         knownVars: {},
+        knownEventNames: {},
       },
     };
 

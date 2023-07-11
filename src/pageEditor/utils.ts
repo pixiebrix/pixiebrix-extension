@@ -31,7 +31,6 @@ import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
 import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
-import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
@@ -42,6 +41,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { inputProperties } from "@/helpers";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -232,7 +232,8 @@ export function getBlockAnnotations(
   const relatedAnnotations = annotations.filter((annotation) =>
     annotation.position.path.startsWith(blockPath)
   );
-  const ownAnnotations = relatedAnnotations.filter((annotation) => {
+
+  return relatedAnnotations.filter((annotation) => {
     const restPath = annotation.position.path.slice(pathLength);
     // XXX: this may be not a reliable way to determine if the annotation
     // is owned by the block or its sub pipeline.
@@ -240,6 +241,4 @@ export function getBlockAnnotations(
     // and a pipeline field always has this pattern in its path.
     return !restPath.includes(".__value__.");
   });
-
-  return ownAnnotations;
 }

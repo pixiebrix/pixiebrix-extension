@@ -58,4 +58,16 @@ describe("test input mode", () => {
       })
     ).toBe("select");
   });
+
+  test("labelled enum", () => {
+    expect(
+      inferInputMode({ field: "apple" }, "field", {
+        type: "string",
+        oneOf: [
+          { const: "apple", title: "Apple" },
+          { const: "banana", title: "Banana" },
+        ],
+      })
+    ).toBe("select");
+  });
 });

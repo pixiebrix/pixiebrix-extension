@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import {
+  isSelectField,
+  isServiceValueFormat,
+} from "@/components/fields/schemaFields/fieldTypeCheckers";
 import {
   makeTemplateExpression,
   makeVariableExpression,
@@ -38,5 +41,28 @@ describe("isServiceValue", () => {
 
   it("var is a service value", () => {
     expect(isServiceValueFormat(makeVariableExpression("@foo"))).toBe(true);
+  });
+});
+
+describe("isSelectField", () => {
+  it("supports examples", () => {
+    expect(isSelectField({ type: "string", examples: ["foo", "bar"] })).toBe(
+      true
+    );
+  });
+
+  it("supports enum", () => {
+    expect(isSelectField({ type: "string", enum: ["foo", "bar"] })).toBe(true);
+  });
+
+  it("support oneOf const", () => {
+    expect(
+      isSelectField({ type: "string", oneOf: [{ const: "foo", title: "Foo" }] })
+    ).toBe(true);
+  });
+
+  it("requires string type", () => {
+    // Our select widget only supports strings currently
+    expect(isSelectField({ type: "number", examples: [1, 2] })).toBe(false);
   });
 });

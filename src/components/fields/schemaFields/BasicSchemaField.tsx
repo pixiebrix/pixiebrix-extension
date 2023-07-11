@@ -33,9 +33,9 @@ import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeCo
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/hooks/useToggleFormField";
-import { isExpression } from "@/runtime/mapArgs";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
+import { isExpression } from "@/utils/expressionUtils";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,

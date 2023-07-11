@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { joinPathParts } from "@/utils";
 import { AnnotationType } from "@/types/annotationTypes";
-import { containsTemplateExpression } from "@/utils/templateUtils";
+import {
+  containsTemplateExpression,
+  isTemplateExpression,
+} from "@/utils/expressionUtils";
 
 /**
  * Returns the regex literal pattern, or null if the regex is a variable or template expression
@@ -47,17 +49,17 @@ export function extractRegexLiteral(blockConfig: BrickConfig): string | null {
   return null;
 }
 
-class RegexAnalysis extends AnalysisVisitor {
+class RegexAnalysis extends AnalysisVisitorABC {
   get id() {
     return "regex";
   }
 
-  override visitBlock(
+  override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     if (blockConfig.id !== validateRegistryId("@pixiebrix/regex")) {
       return;

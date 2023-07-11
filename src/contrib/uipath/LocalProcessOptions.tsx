@@ -31,11 +31,11 @@ import { thisTab } from "@/pageEditor/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 import { isDevToolsPage } from "webext-detect-page";
 import { useField } from "formik";
-import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { isExpression } from "@/utils/expressionUtils";
 
 function useLocalRobot() {
   expectContext(
