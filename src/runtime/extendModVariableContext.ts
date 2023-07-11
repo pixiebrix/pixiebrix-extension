@@ -34,7 +34,7 @@ const MOD_VARIABLE_REFERENCE = "@mod";
  * A tag to detect if the context slice is bound to the mod variable.
  */
 // Can't use a Proxy/Symbol because we need to be able to serialize the context for the messenger
-const MOD_VARIABLE_MARKER = "__mod";
+const MOD_VARIABLE_MARKER = "__modState";
 
 // Mod variable reference optional because it's not added if runtime version does not support it
 type ExtendedContext<T extends UnknownObject = UnknownObject> = T & {
