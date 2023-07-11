@@ -126,6 +126,6 @@ describe("getActivatedMarketplaceMods function", () => {
     });
 
     const result = await getActivatedMarketplaceMods();
-    expect(result).toEqual([publicActivatedMod]);
+    expect(result).toEqual([publicActivatedMod._recipe]);
   });
 });

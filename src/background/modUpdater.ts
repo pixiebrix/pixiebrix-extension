@@ -19,7 +19,7 @@ import type { Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { loadOptions } from "@/store/extensionsStorage";
-import { PersistedExtension } from "@/types/extensionTypes";
+import type { IExtension } from "@/types/extensionTypes";
 
 //const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
@@ -49,16 +49,48 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
 }
 
 export async function getActivatedMarketplaceMods(): Promise<
-  PersistedExtension[]
+  Array<IExtension["_recipe"]>
 > {
-  // Get currently activated mods
   const { extensions: activatedMods } = await loadOptions();
-  console.log("*** activatedMods", activatedMods);
 
-  // Filter this list by public mods w/o deployments
-  return activatedMods.filter(
-    (mod) => mod._recipe?.sharing.public && !mod._deployment
-  );
+  // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
+  // the deployment updater will handle the updates.
+  return activatedMods
+    .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
+    .map((mod) => mod._recipe);
+}
+
+async function fetchModUpdates(activatedMods: Array<IExtension["_recipe"]>) {
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping automatic mod updates because the extension is not linked to the PixieBrix service"
+    );
+    return false;
+  }
+
+  try {
+    const { data: updates } = await client.post<{
+      updates: {
+        backwards_compatible: unknown[];
+        backwards_incompatible: boolean;
+      };
+    }>("/api/registry/updates/", {
+      // TODO: question - is it possible to have two different "extensions" from the same mod
+      //  be at different versions?
+      versions: Object.fromEntries(
+        activatedMods.map(({ id, version }) => [id, version])
+      ),
+    });
+
+    console.log("*** modUpdates", updates);
+  } catch (error) {
+    console.debug(
+      "Skipping automatic mod updates because /registry/updates/ request failed"
+    );
+    reportError(error);
+    return false;
+  }
 }
 
 async function checkForModUpdates() {
@@ -71,10 +103,14 @@ async function checkForModUpdates() {
 
   console.log("*** automatic mod updates enabled :)");
 
-  const activatedMarketplaceMods = getActivatedMarketplaceMods();
+  const activatedMarketplaceMods = await getActivatedMarketplaceMods();
 
   console.log("*** activatedMarketplaceMods", activatedMarketplaceMods);
+
   // Send this list to the registry/updates endpoint & get back the list of updates
+  const modUpdates = await fetchModUpdates(activatedMarketplaceMods);
+
+  console.log("*** modUpdates", modUpdates);
 
   // Use the list to update the mods
 }
