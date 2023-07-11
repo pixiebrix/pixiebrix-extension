@@ -19,18 +19,24 @@ import {
   flushEvents,
   recordBrickRun,
   recordEvent,
+  TEST_flush,
 } from "@/background/telemetry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { syncFlagOn } from "@/store/syncFlags";
 
-beforeEach(() => {
+jest.mock("@/store/syncFlags", () => ({
+  syncFlagOn: jest.fn().mockResolvedValue(true),
+}));
+
+const syncFlagOnMock = jest.mocked(syncFlagOn);
+
+beforeEach(async () => {
   appApiMock.reset();
   appApiMock.onPost("/api/events/").reply(201, {});
-  jest.useFakeTimers();
-});
 
-afterEach(() => {
-  jest.useRealTimers();
+  // eslint-disable-next-line new-cap -- test file
+  await TEST_flush();
 });
 
 describe("recordEvent", () => {
@@ -51,20 +57,61 @@ describe("recordEvent", () => {
     expect(events.length).toEqual(100);
   });
 
-  test("record and flush brick run", async () => {
+  test("skip if feature flag off", async () => {
+    syncFlagOnMock.mockReturnValue(false);
+
     const promise = recordBrickRun({
       blockId: registryIdFactory(),
       blueprintId: registryIdFactory(),
     });
 
-    await jest.advanceTimersByTimeAsync(15_000);
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_flush();
+
     await promise;
 
-    // FIXME: this runs before debounced call
+    expect(appApiMock.history.post).toHaveLength(0);
+  });
+
+  test("skip if enterprise restricted user", async () => {
+    syncFlagOnMock.mockReturnValue(true);
+
+    const promise = recordBrickRun({
+      blockId: registryIdFactory(),
+      blueprintId: registryIdFactory(),
+    });
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_flush();
+
+    await promise;
+
+    expect(appApiMock.history.post).toHaveLength(0);
+  });
+
+  test("record and flush brick run", async () => {
+    syncFlagOnMock.mockImplementation(
+      (flag: string) => flag === "telemetry-bricks"
+    );
+
+    const promise = recordBrickRun({
+      blockId: registryIdFactory(),
+      blueprintId: registryIdFactory(),
+    });
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_flush();
+
+    await promise;
+
     expect(appApiMock.history.post).toHaveLength(1);
   });
 
   test("split brick runs by blueprint id", async () => {
+    syncFlagOnMock.mockImplementation(
+      (flag: string) => flag === "telemetry-bricks"
+    );
+
     const promise1 = recordBrickRun({
       blockId: registryIdFactory(),
       blueprintId: registryIdFactory(),
@@ -75,10 +122,14 @@ describe("recordEvent", () => {
       blueprintId: null,
     });
 
-    await jest.runAllTimersAsync();
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_flush();
+
     await Promise.all([promise1, promise2]);
 
-    // FIXME: this runs before debounced call
-    expect(appApiMock.history.post).toHaveLength(2);
+    expect(appApiMock.history.post).toHaveLength(1);
+    expect(JSON.parse(appApiMock.history.post[0].data)).toStrictEqual({
+      events: expect.toBeArrayOfSize(2),
+    });
   });
 });

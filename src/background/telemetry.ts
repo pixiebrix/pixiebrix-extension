@@ -184,9 +184,14 @@ async function flush(): Promise<void> {
   if (client) {
     const runEvents = flushRunCountBuffer();
     const productEvents = await flushEvents();
-    await client.post("/api/events/", {
-      events: [...runEvents, ...productEvents],
-    });
+
+    const events = [...runEvents, ...productEvents];
+
+    if (events.length > 0) {
+      await client.post("/api/events/", {
+        events,
+      });
+    }
   }
 }
 
@@ -195,6 +200,10 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   leading: false,
   maxWait: EVENT_BUFFER_MAX_MS,
 });
+
+export async function TEST_flush(): Promise<void> {
+  return debouncedFlush.flush();
+}
 
 async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();
@@ -259,8 +268,11 @@ export async function recordBrickRun({
   blockId: RegistryId;
   blueprintId: RegistryId | null;
 }) {
-  // Don't record runs for restricted enterprise users to reduce event volume
-  if (syncFlagOn("restricted-marketplace")) {
+  if (
+    !syncFlagOn("telemetry-bricks") ||
+    // Don't record runs for restricted enterprise users to reduce event volume
+    syncFlagOn("restricted-marketplace")
+  ) {
     return;
   }
 
