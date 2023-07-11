@@ -19,6 +19,8 @@ import type { Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 
+const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+
 // TODO: we should consider start extracting this request pattern into an api of some
 //  kind that the background script can use
 export async function autoModUpdatesEnabled(): Promise<boolean> {
@@ -43,11 +45,17 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   }
 }
 
-export async function initModUpdater(): Promise<void> {
+async function checkForModUpdates() {
+  console.log("*** checking for mod updates");
+
   if (await autoModUpdatesEnabled()) {
     console.log("*** automatic mod updates enabled :)");
     return;
   }
 
   console.log("*** automatic mod updates not enabled");
+}
+
+export async function initModUpdater(): Promise<void> {
+  setInterval(checkForModUpdates, UPDATE_INTERVAL_MS);
 }
