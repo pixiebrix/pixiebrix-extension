@@ -82,7 +82,7 @@ export function isVarValue(value: string): boolean {
 }
 
 /**
- * Returns true if the value is a valid variable expression or var-like expression while the use is typing
+ * Returns true if the value is a valid variable expression or var-like expression while the user is typing
  */
 export function isVarLike(value: string): boolean {
   if (

@@ -22,7 +22,7 @@ import VariablesTree from "./VariablesTree";
 import VarMap, {
   ALLOW_ANY_CHILD,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 testItRenders({
   testName: "Renders the tree",
@@ -64,7 +64,7 @@ describe("VariablesTree", () => {
 
     (inputMap as any)["@input"].foo[ALLOW_ANY_CHILD] = true;
 
-    const wrapper = render(
+    render(
       <VariablesTree
         vars={inputMap}
         onVarSelect={noop}
@@ -72,7 +72,7 @@ describe("VariablesTree", () => {
       />
     );
 
-    const elements = wrapper.getAllByRole("button");
+    const elements = screen.getAllByRole("button");
     expect(elements[0]).toHaveTextContent("@input");
     expect(elements[1]).toHaveTextContent("foo");
     expect(elements[2]).toHaveTextContent("alpha");

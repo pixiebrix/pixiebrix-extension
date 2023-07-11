@@ -91,12 +91,10 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   }, [onClose]);
 
   useEffect(() => {
-    console.debug("showVariablePopover");
-    dispatch(editorActions.showVariablePopover(null));
+    dispatch(editorActions.showVariablePopover());
 
     return () => {
-      console.debug("hideVariablePopover");
-      dispatch(editorActions.hideVariablePopover(null));
+      dispatch(editorActions.hideVariablePopover());
     };
   }, [dispatch]);
 

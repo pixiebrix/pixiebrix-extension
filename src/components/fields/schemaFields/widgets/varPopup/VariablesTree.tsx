@@ -36,7 +36,7 @@ const defaultItemString: GetItemString = (type, data, itemType, itemString) => (
 
 const getItemString: GetItemString = (type, data, itemType, itemString) => {
   if (type === "Object" && isEmpty(data)) {
-    // Corresponds to entries where not trace value exists
+    // Corresponds to entries where the trace value does not exist
     return null;
   }
 
