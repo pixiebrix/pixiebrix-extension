@@ -19,6 +19,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {
   autoModUpdatesEnabled,
+  fetchModUpdates,
   getActivatedMarketplaceMods,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
@@ -26,6 +27,7 @@ import { loadOptions } from "@/store/extensionsStorage";
 import { persistedExtensionFactory } from "@/testUtils/factories/extensionFactories";
 import type { Sharing } from "@/types/registryTypes";
 import type { IExtension, PersistedExtension } from "@/types/extensionTypes";
+import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
@@ -127,5 +129,42 @@ describe("getActivatedMarketplaceMods function", () => {
 
     const result = await getActivatedMarketplaceMods();
     expect(result).toEqual([publicActivatedMod._recipe]);
+  });
+});
+
+describe("fetchModUpdates function", () => {
+  it("calls the registry/updates/ endpoint with the right payload", async () => {
+    const activatedMods = [
+      recipeMetadataFactory() as IExtension["_recipe"],
+      recipeMetadataFactory() as IExtension["_recipe"],
+    ];
+
+    axiosMock.onPost().reply(200, {});
+
+    await fetchModUpdates(activatedMods);
+
+    expect(axiosMock.history.post.length).toBe(1);
+    const payload = JSON.parse(String(axiosMock.history.post[0].data));
+
+    expect(payload).toEqual({
+      versions: {
+        [activatedMods[0].id]: activatedMods[0].version,
+        [activatedMods[1].id]: activatedMods[1].version,
+      },
+    });
+  });
+
+  it("reports error and returns empty object on failure", async () => {
+    const activatedMods = [
+      recipeMetadataFactory() as IExtension["_recipe"],
+      recipeMetadataFactory() as IExtension["_recipe"],
+    ];
+
+    axiosMock.onPost().reply(400, {});
+
+    const result = await fetchModUpdates(activatedMods);
+
+    expect(result).toEqual({});
+    expect(reportError).toHaveBeenCalled();
   });
 });

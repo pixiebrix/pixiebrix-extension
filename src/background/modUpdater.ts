@@ -20,6 +20,8 @@ import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { loadOptions } from "@/store/extensionsStorage";
 import type { IExtension } from "@/types/extensionTypes";
+import { RegistryId, SemVerString } from "@/types/registryTypes";
+import { ModDefinition } from "@/types/modDefinitionTypes";
 
 //const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
@@ -48,6 +50,24 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   }
 }
 
+function collectModVersions(
+  mods: Array<IExtension["_recipe"]>
+): Record<RegistryId, SemVerString> {
+  const modVersions: Record<RegistryId, SemVerString> = {};
+
+  for (const { id, version } of mods) {
+    // eslint-disable-next-line security/detect-object-injection -- id is a registry id
+    if (modVersions[id] !== version) {
+      reportError(new Error(`Found activated mod version mismatch for ${id}`));
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- id is a registry id
+    modVersions[id] = version;
+  }
+
+  return modVersions;
+}
+
 export async function getActivatedMarketplaceMods(): Promise<
   Array<IExtension["_recipe"]>
 > {
@@ -60,36 +80,40 @@ export async function getActivatedMarketplaceMods(): Promise<
     .map((mod) => mod._recipe);
 }
 
-async function fetchModUpdates(activatedMods: Array<IExtension["_recipe"]>) {
+export async function fetchModUpdates(
+  activatedMods: Array<IExtension["_recipe"]>
+) {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
       "Skipping automatic mod updates because the extension is not linked to the PixieBrix service"
     );
-    return false;
+    return {};
   }
 
   try {
-    const { data: updates } = await client.post<{
-      updates: {
-        backwards_compatible: unknown[];
-        backwards_incompatible: boolean;
-      };
+    const {
+      data: { updates },
+    } = await client.post<{
+      updates: Record<
+        RegistryId,
+        {
+          backwards_compatible: ModDefinition[];
+          backwards_incompatible: boolean;
+        }
+      >;
     }>("/api/registry/updates/", {
       // TODO: question - is it possible to have two different "extensions" from the same mod
       //  be at different versions?
-      versions: Object.fromEntries(
-        activatedMods.map(({ id, version }) => [id, version])
-      ),
+      versions: collectModVersions(activatedMods),
     });
 
-    console.log("*** modUpdates", updates);
+    console.log("*** updates", updates);
+
+    return updates;
   } catch (error) {
-    console.debug(
-      "Skipping automatic mod updates because /registry/updates/ request failed"
-    );
     reportError(error);
-    return false;
+    return {};
   }
 }
 
