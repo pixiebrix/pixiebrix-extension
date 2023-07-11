@@ -34,7 +34,7 @@ const MOD_VARIABLE_REFERENCE = "@mod";
  * A tag to detect if the context slice is bound to the mod variable.
  */
 // Can't use a Proxy/Symbol because we need to be able to serialize the context for the messenger
-const MOD_VARIABLE_MARKER = "__modState";
+const MOD_VARIABLE_TAG = "__modState";
 
 // Mod variable reference optional because it's not added if runtime version does not support it
 type ExtendedContext<T extends UnknownObject = UnknownObject> = T & {
@@ -49,7 +49,7 @@ export function extraEmptyModStateContext(version: ApiVersion): UnknownObject {
   if (apiVersionOptions(version).extendModVariable) {
     return {
       [MOD_VARIABLE_REFERENCE]: {
-        [MOD_VARIABLE_MARKER]: true,
+        [MOD_VARIABLE_TAG]: true,
       },
     };
   }
@@ -74,22 +74,22 @@ export function isModVariableContext<T extends UnknownObject = UnknownObject>(
     return false;
   }
 
-  return Object.hasOwn(modVariable, MOD_VARIABLE_MARKER);
+  return Object.hasOwn(modVariable, MOD_VARIABLE_TAG);
 }
 
 /**
- * Context with tags excluded. Primary use is for testing.
- * @param extended the extended context.
+ * Context with tags excluded
+ * @param context the context
  */
 export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
-  extended: T
+  context: T
 ): T {
   return {
-    ...extended,
-    // eslint-disable-next-line security/detect-object-injection -- constant
+    ...context,
     [MOD_VARIABLE_REFERENCE]: pickBy(
-      (extended as ExtendedContext)[MOD_VARIABLE_REFERENCE] ?? {},
-      (value, key) => key !== MOD_VARIABLE_MARKER
+      // eslint-disable-next-line security/detect-object-injection -- constant
+      (context as ExtendedContext)[MOD_VARIABLE_REFERENCE] ?? {},
+      (value, key) => key !== MOD_VARIABLE_TAG
     ),
   };
 }
@@ -149,7 +149,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     ...originalContext,
     [MOD_VARIABLE_REFERENCE]: {
       ...modState,
-      [MOD_VARIABLE_MARKER]: true,
+      [MOD_VARIABLE_TAG]: true,
     },
   };
 }
