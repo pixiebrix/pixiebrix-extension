@@ -30,6 +30,7 @@ import {
 } from "./pipelineTestHelpers";
 import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -140,7 +141,9 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     );
 
     expect(result).toStrictEqual({
+      ...extraEmptyModStateContext(apiVersion),
       "@input": { inputArg: "hello" },
+
       "@options": {},
       "@first": { message: "First block" },
     });
@@ -219,7 +222,9 @@ describe("pass non-objects direct to next component", () => {
           simpleInput({}),
           testOptions(apiVersion)
         );
+
         expect(result).toStrictEqual({
+          ...extraEmptyModStateContext(apiVersion),
           "@input": {},
           "@options": {},
           "@array": [{ value: "foo" }, { value: "bar" }],

@@ -206,7 +206,11 @@ class VarMap {
   }
 
   /**
-   * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
+   * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence.
+   *
+   * Use this method for:
+   * - Converting trace output to an existence map
+   * - Converting current mod variables to an existence map
    */
   public setExistenceFromValues({
     source,

@@ -15,6 +15,8 @@ import {
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { type RegistryId } from "@/types/registryTypes";
 
 type RunMetadata = {
   /**
@@ -154,12 +156,28 @@ export async function runMapArgs({
   config,
   context,
   options,
+  blueprintId,
 }: {
   config: Args;
   context: UnknownObject;
-  options: Except<MapOptions, "implicitRender">;
+  options: Except<MapOptions, "implicitRender"> & {
+    /**
+     * True to extend the context with the mod variable.
+     * @since 1.7.34
+     */
+    extendModVariable: boolean;
+  };
+  blueprintId: RegistryId | null;
 }): Promise<unknown> {
   expectContext("contentScript");
 
-  return mapArgs(config, context, { ...options, implicitRender: null });
+  const extendedContext = extendModVariableContext(context, {
+    blueprintId,
+    options,
+    // The mod variable is only update when running a brick in a pipeline. It's not updated for `defer` expressions,
+    // e.g., when rendering items for a ListElement in the Document Builder.
+    update: false,
+  });
+
+  return mapArgs(config, extendedContext, { ...options, implicitRender: null });
 }
