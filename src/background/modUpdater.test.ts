@@ -24,10 +24,8 @@ import {
 import reportError from "@/telemetry/reportError";
 import { loadOptions } from "@/store/extensionsStorage";
 import { persistedExtensionFactory } from "@/testUtils/factories/extensionFactories";
-import { Sharing } from "@/types/registryTypes";
-import { ModDefinition } from "@/types/modDefinitionTypes";
-import { IExtension, PersistedExtension } from "@/types/extensionTypes";
-import { Deployment } from "@/types/contract";
+import type { Sharing } from "@/types/registryTypes";
+import type { IExtension, PersistedExtension } from "@/types/extensionTypes";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
