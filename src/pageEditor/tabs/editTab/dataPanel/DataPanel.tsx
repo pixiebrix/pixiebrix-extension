@@ -131,7 +131,7 @@ const DataPanel: React.FC = () => {
   );
 
   const { data: showPageState } = fallbackValue(
-    useAsyncState(async () => block?.block.isPageStateAware(), [block]),
+    useAsyncState(async () => block?.block.isPageStateAware() ?? true, [block]),
     true
   );
 
