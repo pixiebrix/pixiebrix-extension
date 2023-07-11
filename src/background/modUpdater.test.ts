@@ -21,8 +21,8 @@ import { autoModUpdatesEnabled } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
 
 const axiosMock = new MockAdapter(axios);
-
 jest.mock("@/telemetry/reportError", () => jest.fn());
+
 describe("autoModUpdatesEnabled function", () => {
   it("should return false if flag absent", async () => {
     axiosMock.onGet().reply(200, {
@@ -45,7 +45,7 @@ describe("autoModUpdatesEnabled function", () => {
   });
 
   it("should return false on error", async () => {
-    axiosMock.onGet().reply(500, {});
+    axiosMock.onGet().reply(400, {});
 
     const result = await autoModUpdatesEnabled();
 

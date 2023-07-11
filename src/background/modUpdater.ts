@@ -19,7 +19,7 @@ import type { Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 
-// TODO: we should start extracting this request pattern into an api of some
+// TODO: we should consider start extracting this request pattern into an api of some
 //  kind that the background script can use
 export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
@@ -33,22 +33,21 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   try {
     const { data: profile } = await client.get<Me>("/api/me/");
 
-    //  TODO: check if status code of >= 400 is caught by the try/catch
-
     return profile.flags.includes("automatic-mod-updates");
   } catch (error) {
+    console.debug(
+      "Skipping automatic mod updates because /api/me/ request failed"
+    );
     reportError(error);
     return false;
   }
 }
 
 export async function initModUpdater(): Promise<void> {
-  // Check for automatic-mod-updates flag
   if (await autoModUpdatesEnabled()) {
     console.log("*** automatic mod updates enabled :)");
     return;
   }
 
-  // if not present, return
   console.log("*** automatic mod updates not enabled");
 }
