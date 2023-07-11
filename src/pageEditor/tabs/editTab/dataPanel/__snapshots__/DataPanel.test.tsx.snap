@@ -31,6 +31,19 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
           <a
             aria-selected="false"
             class="nav-link"
+            data-rb-event-key="pageState"
+            href="#"
+            role="tab"
+          >
+            Page State
+          </a>
+        </div>
+        <div
+          class="tabNav nav-item"
+        >
+          <a
+            aria-selected="false"
+            class="nav-link"
             data-rb-event-key="rendered"
             href="#"
             role="tab"
