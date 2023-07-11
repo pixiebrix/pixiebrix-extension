@@ -33,6 +33,10 @@ jest.mock("@/auth/token", () => ({
   getUserData: jest.fn().mockResolvedValue(null),
 }));
 
+jest.mock("@/store/syncFlags", () => ({
+  syncFlagOn: jest.fn().mockResolvedValue(false),
+}));
+
 jest.mock("@/background/locator", () => ({
   locator: {
     locateAllForService: jest.fn().mockResolvedValue([]),
