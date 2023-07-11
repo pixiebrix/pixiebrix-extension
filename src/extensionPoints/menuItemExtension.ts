@@ -85,7 +85,6 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IReader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
-import createModVariableProxy from "@/runtime/createModVariableProxy";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -657,15 +656,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
-      // Integrations take precedence the other context
+      // Integrations take precedence over the other context
+      // XXX: don't support adding "@mod" variable for now. Dynamic Captions are not available in the Page Editor
       const extensionContext = { ...ctxt, ...serviceContext };
 
-      const extendedContext = createModVariableProxy(extensionContext, {
-        blueprintId: extension._recipe?.id,
-      });
-
       html = (await renderMustache(this.getTemplate(), {
-        caption: (await mapArgs(caption, extendedContext, {
+        caption: (await mapArgs(caption, extensionContext, {
           implicitRender,
           autoescape: versionOptions.autoescape,
         })) as string,

@@ -67,7 +67,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
-import createModVariableProxy from "@/runtime/createModVariableProxy";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -608,8 +608,9 @@ async function applyReduceDefaults({
     explicitArg: false,
     explicitRender: false,
     autoescape: true,
-    // Default to the `apiVersion: v1` data flow behavior
+    // Default to the `apiVersion: v1` data flow behavior and mod variable behavior
     explicitDataFlow: false,
+    extendModVariable: false,
     // If logValues not provided explicitly, default to the global setting
     logValues: logValues ?? globalLoggingConfig.logValues ?? false,
     // For stylistic consistency, default here instead of destructured parameters
@@ -909,7 +910,7 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
-  let context: BrickArgsContext = {
+  let localVariableContext: BrickArgsContext = {
     // Put serviceContext first to prevent overriding the input/options
     ...serviceContext,
     "@input": input,
@@ -927,8 +928,11 @@ export async function reducePipeline(
       index,
       isLastBlock: index === pipelineArray.length - 1,
       previousOutput: output,
-      context: createModVariableProxy(context, {
+      context: extendModVariableContext(localVariableContext, {
         blueprintId: pipelineLogger.context.blueprintId,
+        options,
+        // Mod variable is updated when each block is run
+        update: true,
       }),
     };
 
@@ -958,7 +962,7 @@ export async function reducePipeline(
     }
 
     output = nextValues.output;
-    context = nextValues.context;
+    localVariableContext = nextValues.context;
   }
 
   return output;
@@ -994,8 +998,11 @@ export async function reducePipelineExpression(
       isLastBlock: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: createModVariableProxy(context as BrickArgsContext, {
+      context: extendModVariableContext(context as BrickArgsContext, {
         blueprintId: pipelineLogger.context.blueprintId,
+        options,
+        // Update mod variable when each block is run
+        update: true,
       }),
     };
 

@@ -35,7 +35,7 @@ import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
@@ -47,6 +47,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type ServiceDependency } from "@/types/serviceTypes";
+import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -146,6 +147,7 @@ const BlockPreview: React.FunctionComponent<{
     outputKey: blockConfig.outputKey,
   });
 
+  const { values } = useFormikContext<FormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<ServiceDependency[]>("services");
 
@@ -168,6 +170,7 @@ const BlockPreview: React.FunctionComponent<{
           },
           context: { ...context, ...(await makeServiceContext(services)) },
           rootSelector: undefined,
+          blueprintId: values.recipe?.id,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {

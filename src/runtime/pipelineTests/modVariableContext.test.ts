@@ -29,6 +29,7 @@ import {
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { reducePipeline } from "@/runtime/reducePipeline";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -88,7 +89,7 @@ describe("modVariableContext", () => {
     expect(result).toStrictEqual({ message: "Ran block" });
   });
 
-  test("mod variable does not appear in context", async () => {
+  test("mod variable appears in context", async () => {
     setPageState({
       namespace: "blueprint",
       data: { name: "Bob" },
@@ -108,7 +109,11 @@ describe("modVariableContext", () => {
       { ...simpleInput({}), optionsArgs: {} },
       testOptions("v3")
     );
-    expect(result).toStrictEqual({ "@input": {}, "@options": {} });
+    expect(contextAsPlainObject(result)).toStrictEqual({
+      "@input": {},
+      "@options": {},
+      "@mod": { name: "Bob" },
+    });
   });
 
   test("use mod variable in nunjucks body", async () => {
