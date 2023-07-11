@@ -19,7 +19,7 @@ import {
   flushEvents,
   recordBrickRun,
   recordEvent,
-  TEST_flush,
+  TEST_flushAll,
 } from "@/background/telemetry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -36,7 +36,7 @@ beforeEach(async () => {
   appApiMock.onPost("/api/events/").reply(201, {});
 
   // eslint-disable-next-line new-cap -- test file
-  await TEST_flush();
+  await TEST_flushAll();
 });
 
 describe("recordEvent", () => {
@@ -66,7 +66,7 @@ describe("recordEvent", () => {
     });
 
     // eslint-disable-next-line new-cap -- test method
-    await TEST_flush();
+    await TEST_flushAll();
 
     await promise;
 
@@ -82,7 +82,7 @@ describe("recordEvent", () => {
     });
 
     // eslint-disable-next-line new-cap -- test method
-    await TEST_flush();
+    await TEST_flushAll();
 
     await promise;
 
@@ -100,7 +100,7 @@ describe("recordEvent", () => {
     });
 
     // eslint-disable-next-line new-cap -- test method
-    await TEST_flush();
+    await TEST_flushAll();
 
     await promise;
 
@@ -123,7 +123,7 @@ describe("recordEvent", () => {
     });
 
     // eslint-disable-next-line new-cap -- test method
-    await TEST_flush();
+    await TEST_flushAll();
 
     await Promise.all([promise1, promise2]);
 
