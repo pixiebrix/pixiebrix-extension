@@ -41,6 +41,7 @@ import initPartnerTheme from "@/background/partnerTheme";
 import initStarterBlueprints from "@/background/starterBlueprints";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
+import { initModUpdater } from "@/background/modUpdater";
 
 void initLocator();
 registerMessenger();
@@ -58,6 +59,7 @@ activateBrowserActionIcon();
 initPartnerTheme();
 initStarterBlueprints();
 initPartnerTokenRefresh();
+initModUpdater();
 
 if (isGAPISupported()) {
   // Optimistically initialize Google API, if Google API is supported. But do not prompt for permissions
