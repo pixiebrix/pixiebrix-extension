@@ -33,6 +33,9 @@ import Run from "@/blocks/transformers/controlFlow/Run";
 import { GetPageState } from "@/blocks/effects/pageState";
 import { cloneDeep } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { setContext } from "@/testUtils/detectPageMock";
+
+setContext("contentScript");
 
 beforeEach(() => {
   blockRegistry.clear();

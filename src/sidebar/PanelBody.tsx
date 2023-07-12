@@ -160,8 +160,7 @@ const PanelBody: React.FunctionComponent<{
         console.debug("Running panel body for panel payload", payload);
 
         const block = await blockRegistry.lookup(blockId);
-        // In the future, the renderer brick should run in the contentScript, not the panel frame
-        // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
+
         const body = await block.run(unsafeAssumeValidArg(args), {
           ctxt,
           root: null,
