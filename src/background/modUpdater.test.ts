@@ -19,13 +19,14 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {
   autoModUpdatesEnabled,
+  collectModVersions,
   fetchModUpdates,
   getActivatedMarketplaceMods,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
 import { loadOptions } from "@/store/extensionsStorage";
 import { persistedExtensionFactory } from "@/testUtils/factories/extensionFactories";
-import type { Sharing } from "@/types/registryTypes";
+import type { RegistryId, SemVerString, Sharing } from "@/types/registryTypes";
 import type { IExtension, PersistedExtension } from "@/types/extensionTypes";
 import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
 
@@ -165,6 +166,43 @@ describe("fetchModUpdates function", () => {
     const result = await fetchModUpdates(activatedMods);
 
     expect(result).toEqual({});
+    expect(reportError).toHaveBeenCalled();
+  });
+});
+
+describe("collectModVersions function", () => {
+  it("returns empty object if no activated mods", () => {
+    const result = collectModVersions([]);
+    expect(result).toEqual({});
+  });
+
+  it("returns expected object with registry id keys and version number values", () => {
+    const activatedMods = [
+      recipeMetadataFactory() as IExtension["_recipe"],
+      recipeMetadataFactory() as IExtension["_recipe"],
+    ];
+
+    const result = collectModVersions(activatedMods);
+    expect(result).toEqual({
+      [activatedMods[0].id]: activatedMods[0].version,
+      [activatedMods[1].id]: activatedMods[1].version,
+    });
+  });
+
+  it("reports error and returns object if same mod has multiple versions", async () => {
+    const activatedMods = [
+      recipeMetadataFactory({
+        id: "@test/same-mod" as RegistryId,
+        version: "1.0.0" as SemVerString,
+      }) as IExtension["_recipe"],
+      recipeMetadataFactory({
+        id: "@test/same-mod" as RegistryId,
+        version: "2.0.0" as SemVerString,
+      }) as IExtension["_recipe"],
+    ];
+
+    const result = collectModVersions(activatedMods);
+    expect(result).toEqual({ "@test/same-mod": "2.0.0" });
     expect(reportError).toHaveBeenCalled();
   });
 });

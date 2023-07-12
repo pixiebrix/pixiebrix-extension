@@ -50,14 +50,14 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   }
 }
 
-function collectModVersions(
+export function collectModVersions(
   mods: Array<IExtension["_recipe"]>
 ): Record<RegistryId, SemVerString> {
   const modVersions: Record<RegistryId, SemVerString> = {};
 
   for (const { id, version } of mods) {
     // eslint-disable-next-line security/detect-object-injection -- id is a registry id
-    if (![undefined, version].includes(modVersions[id])) {
+    if (modVersions[id] && modVersions[id] !== version) {
       reportError(
         new Error(
           `Found two different mod versions activated for the same mod: ${id} (${modVersions[id]}, ${version}).`
@@ -119,6 +119,18 @@ export async function fetchModUpdates(
   }
 }
 
+function updateActivatedMods(
+  modUpdates: Record<
+    RegistryId,
+    { backwards_compatible: ModDefinition[]; backwards_incompatible: false }
+  >
+) {
+  console.log("*** activating mods");
+  for (const modUpdate in modUpdates) {
+    // Probably uninstall & call installRecipe from extensionsSlice?
+  }
+}
+
 async function checkForModUpdates() {
   console.log("*** checking for mod updates");
 
@@ -136,9 +148,8 @@ async function checkForModUpdates() {
   // Send this list to the registry/updates endpoint & get back the list of updates
   const modUpdates = await fetchModUpdates(activatedMarketplaceMods);
 
-  console.log("*** modUpdates", modUpdates);
-
   // Use the list to update the mods
+  updateActivatedMods(modUpdates);
 }
 
 export async function initModUpdater(): Promise<void> {
