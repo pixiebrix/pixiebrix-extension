@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BrickABC, type Brick } from "@/types/brickTypes";
+import { type Brick, BrickABC } from "@/types/brickTypes";
 import { readerFactory } from "@/blocks/readers/factory";
 import {
   type Schema as ValidatorSchema,
@@ -35,25 +35,47 @@ import {
   type ApiVersion,
   type BrickArgs,
   type BrickOptions,
+  validateBrickArgsContext,
 } from "@/types/runtimeTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import {
-  type Metadata,
-  type RegistryId,
-  type SemVerString,
-} from "@/types/registryTypes";
+import { type Metadata, type SemVerString } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { inputProperties } from "@/helpers";
-
 import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isContentScript } from "webext-detect-page";
+import { getTopLevelFrame } from "webext-messenger";
+import { uuidv4 } from "@/types/helpers";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { HeadlessModeError } from "@/blocks/errors";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 
 type BrickDefinition = {
+  /**
+   * The runtime version to use when running the Brick.
+   */
   apiVersion?: ApiVersion;
+
+  /**
+   * User-defined brick kind.
+   */
   kind: "component";
+
+  /**
+   * Registry package metadata.
+   */
   metadata: Metadata;
-  defaultOptions: Record<string, string>;
+
+  /**
+   * The wrapped bricks.
+   */
   pipeline: BrickConfig | BrickPipeline;
+
+  /**
+   * JSON Schema for brick inputs.
+   */
   inputSchema: Schema;
+
   /**
    * An optional RJSF uiSchema for inputs.
    *
@@ -63,6 +85,9 @@ type BrickDefinition = {
    */
   uiSchema?: UiSchema;
 
+  /**
+   * An optional JSON Output Schema for the brick.
+   */
   outputSchema?: Schema;
 
   /**
@@ -70,11 +95,11 @@ type BrickDefinition = {
    * @since 1.7.34
    */
   defaultOutputKey?: string;
-
-  // Mapping from `key` -> `serviceId`
-  services?: Record<string, RegistryId>;
 };
 
+/**
+ * Throw an error if the brick definition is invalid with respect to the brick meta-schema.
+ */
 function validateBrickDefinition(
   component: unknown
 ): asserts component is BrickDefinition {
@@ -97,9 +122,7 @@ function validateBrickDefinition(
 /**
  * A non-native (i.e., non-JS) Brick. Typically defined in YAML/JSON.
  */
-class ExternalBlock extends BrickABC {
-  public readonly component: BrickDefinition;
-
+class UserDefinedBrick extends BrickABC {
   readonly apiVersion: ApiVersion;
 
   readonly inputSchema: Schema;
@@ -108,9 +131,10 @@ class ExternalBlock extends BrickABC {
 
   readonly version: SemVerString;
 
-  constructor(component: BrickDefinition) {
+  constructor(public readonly component: BrickDefinition) {
     const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
+    // Fall back to v1 for backward compatability
     this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
     this.inputSchema = this.component.inputSchema;
@@ -240,21 +264,62 @@ class ExternalBlock extends BrickABC {
     // Blocks only have inputs, they can't pick up free variables from the environment
     const initialValues: InitialValues = {
       input: argsWithClosures,
-      // OptionsArgs are set at the blueprint level. For composite bricks, the options should be passed in
-      // as part of the brick inputs
+      // OptionsArgs are set at the blueprint level. For user-defined bricks, are passed via brick inputs
       optionsArgs: undefined,
       // Services are passed as inputs to the brick
       serviceContext: undefined,
       root: options.root,
     };
 
-    return reducePipeline(this.component.pipeline, initialValues, {
-      logger: options.logger,
-      headless: options.headless,
-      // The component uses its declared version of the runtime API, regardless of what version of the runtime
-      // is used to call the component
-      ...apiVersionOptions(this.component.apiVersion),
-    });
+    if (isContentScript()) {
+      // Already in the contentScript, run the pipeline directly.
+      return reducePipeline(this.component.pipeline, initialValues, {
+        logger: options.logger,
+        headless: options.headless,
+        // The component uses its declared version of the runtime API, regardless of what version of the runtime
+        // is used to call the component
+        ...apiVersionOptions(this.component.apiVersion),
+      });
+    }
+
+    // The brick is being run as a renderer from a modal or a sidebar. Run the logic in the contentScript and return the
+    // renderer. The caller can't run the whole brick in the contentScript because renderers can return React
+    // Components which can't be serialized across messenger boundaries.
+
+    // TODO: call top-level contentScript directly after https://github.com/pixiebrix/webext-messenger/issues/72
+    const topLevelFrame = await getTopLevelFrame();
+
+    try {
+      return await runHeadlessPipeline(topLevelFrame, {
+        nonce: uuidv4(),
+        // OptionsArgs are set at the blueprint level. For user-defined bricks, are passed via brick inputs
+        context: validateBrickArgsContext({
+          "@input": argsWithClosures,
+          "@options": {},
+        }),
+        pipeline: castArray(this.component.pipeline),
+        options: apiVersionOptions(this.apiVersion),
+        messageContext: options.logger.context,
+        meta: {
+          // Don't trace within user-defined bricks
+          extensionId: options.logger.context.extensionId,
+          branches: [],
+          runId: null,
+        },
+      });
+    } catch (error) {
+      if (isSpecificError(error, HeadlessModeError)) {
+        const continuation = error;
+        const renderer = await blockRegistry.lookup(continuation.blockId);
+        return renderer.run(continuation.args, {
+          ...options,
+          ctxt: continuation.ctxt,
+          logger: new BackgroundLogger(continuation.loggerContext),
+        });
+      }
+
+      throw error;
+    }
   }
 }
 
@@ -271,5 +336,5 @@ export function fromJS(component: UnknownObject): Brick {
   }
 
   validateBrickDefinition(component);
-  return new ExternalBlock(component);
+  return new UserDefinedBrick(component);
 }

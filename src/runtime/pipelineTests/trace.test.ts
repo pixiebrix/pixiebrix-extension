@@ -25,7 +25,7 @@ import {
   throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
-import { traces } from "@/background/messenger/api";
+import { recordBrickRun, traces } from "@/background/messenger/api";
 import {
   type TraceEntryData,
   type TraceExitData,
@@ -38,18 +38,16 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
 
-const addEntryMock = traces.addEntry as jest.MockedFunction<
-  typeof traces.addEntry
->;
-const addExitMock = traces.addExit as jest.MockedFunction<
-  typeof traces.addExit
->;
+const addEntryMock = jest.mocked(traces.addEntry);
+const addExitMock = jest.mocked(traces.addExit);
+const recordBrickRunMock = jest.mocked(recordBrickRun);
 
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([echoBrick, contextBrick, throwBrick]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
+  recordBrickRunMock.mockReset();
 });
 
 describe("Trace normal exit", () => {
@@ -85,6 +83,9 @@ describe("Trace normal exit", () => {
         skippedRun: false,
       })
     );
+
+    // Should not record brick run when tracing is enabled
+    expect(recordBrickRunMock).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -369,6 +370,23 @@ describe("Trace normal execution", () => {
 });
 
 describe("Tracing disabled", () => {
+  it("Records brick runs to telemetry if tracing disabled", async () => {
+    const result = await reducePipeline(
+      {
+        id: echoBrick.id,
+        config: {
+          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+        },
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({ message: "hello" });
+
+    expect(recordBrickRunMock).toHaveBeenCalledTimes(1);
+  });
+
   it("Does not call addEntry or addExit if tracing is disabled", async () => {
     const result = await reducePipeline(
       {

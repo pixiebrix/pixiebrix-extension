@@ -64,7 +64,7 @@ import {
   selectElement,
 } from "@/contentScript/pageEditor/elementPicker";
 import {
-  runEffectPipeline,
+  runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
@@ -130,7 +130,7 @@ declare global {
     SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
-    RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
+    RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
     RUN_MAP_ARGS: typeof runMapArgs;
 
     NOTIFY_INFO: typeof notify.info;
@@ -195,7 +195,7 @@ export default function registerMessenger(): void {
     SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
-    RUN_EFFECT_PIPELINE: runEffectPipeline,
+    RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
     RUN_MAP_ARGS: runMapArgs,
 
     NOTIFY_INFO: notify.info,

@@ -44,7 +44,10 @@ import {
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type ResolvedBrickConfig } from "@/runtime/runtimeTypes";
+import {
+  type ResolvedBrickConfig,
+  unsafeAssumeValidArg,
+} from "@/runtime/runtimeTypes";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
@@ -570,13 +573,14 @@ export async function runBlock(
 
     throw new HeadlessModeError(
       block.id,
-      props.args,
+      // Call to throwIfInvalidInput above ensures args are valid for the brick
+      unsafeAssumeValidArg(props.args),
       props.context,
       logger.context
     );
   }
 
-  if (!trace) {
+  if (!selectTraceEnabled(trace)) {
     // We're currently not recording runs while using the Page Editor to develop a mod
     // Uses messenger notifier, so won't slow down execution
     recordBrickRun({
