@@ -26,7 +26,7 @@ import {
   type DebounceOptions,
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
@@ -783,7 +783,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
 type TriggerDefinitionOptions = Record<string, string>;
 
-export interface TriggerDefinition extends ExtensionPointDefinition {
+export interface TriggerDefinition extends StarterBrickDefinition {
   defaultOptions?: TriggerDefinitionOptions;
 
   /**

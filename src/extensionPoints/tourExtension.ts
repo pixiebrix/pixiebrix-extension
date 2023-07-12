@@ -19,7 +19,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import {
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
 import {
@@ -71,7 +71,7 @@ export type TourConfig = {
 
 type TourDefinitionOptions = UnknownObject;
 
-export interface TourDefinition extends ExtensionPointDefinition {
+export interface TourDefinition extends StarterBrickDefinition {
   defaultOptions?: TourDefinitionOptions;
 
   /**

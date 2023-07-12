@@ -24,7 +24,7 @@ import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
 import { registry } from "@/background/messenger/api";
@@ -259,7 +259,7 @@ export function cleanIsAvailable({
 }
 
 export async function lookupExtensionPoint<
-  TDefinition extends ExtensionPointDefinition,
+  TDefinition extends StarterBrickDefinition,
   TConfig extends UnknownObject,
   TType extends string
 >(
@@ -330,7 +330,7 @@ export function baseSelectExtensionPoint(
 
 export function extensionWithInnerDefinitions(
   extension: IExtension,
-  extensionPointDefinition: ExtensionPointDefinition
+  extensionPointDefinition: StarterBrickDefinition
 ): IExtension {
   if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(

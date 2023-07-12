@@ -25,7 +25,7 @@ import {
   type DebounceOptions,
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
@@ -433,7 +433,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   }
 }
 
-export interface PanelDefinition extends ExtensionPointDefinition {
+export interface PanelDefinition extends StarterBrickDefinition {
   /**
    * The trigger to refresh the panel
    *

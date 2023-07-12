@@ -36,7 +36,7 @@ import { type Logger } from "@/types/loggerTypes";
 import {
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
@@ -488,7 +488,7 @@ type PanelPosition =
       sibling: string | null;
     };
 
-export interface PanelDefinition extends ExtensionPointDefinition {
+export interface PanelDefinition extends StarterBrickDefinition {
   template: string;
   position?: PanelPosition;
   containerSelector: string;

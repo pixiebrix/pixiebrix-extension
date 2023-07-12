@@ -25,7 +25,7 @@ import {
 import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {
-  ExtensionPointDefinition,
+  StarterBrickDefinition,
   ExtensionPointType,
 } from "@/extensionPoints/types";
 import extensionPointRegistry from "@/extensionPoints/registry";
@@ -67,9 +67,9 @@ const getExtensionPointType = async (
 ): Promise<ExtensionPointType | null> => {
   // Look up the extension point in recipe inner definitions first
   if (recipe.definitions?.[extensionPoint.id]) {
-    const definition: ExtensionPointDefinition = recipe.definitions[
+    const definition: StarterBrickDefinition = recipe.definitions[
       extensionPoint.id
-    ].definition as ExtensionPointDefinition;
+    ].definition as StarterBrickDefinition;
     const extensionPointType = definition?.type;
 
     if (extensionPointType) {

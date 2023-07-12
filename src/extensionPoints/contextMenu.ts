@@ -29,7 +29,7 @@ import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
@@ -379,7 +379,7 @@ export interface MenuDefaultOptions {
   [key: string]: string | string[];
 }
 
-export interface MenuDefinition extends ExtensionPointDefinition {
+export interface MenuDefinition extends StarterBrickDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   contexts: Menus.ContextType[];
   targetMode: ContextMenuTargetMode;

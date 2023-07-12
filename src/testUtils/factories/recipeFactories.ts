@@ -39,7 +39,7 @@ import {
 } from "@/types/helpers";
 import {
   type StarterBrickConfig as ExtensionPointDefinition,
-  type ExtensionPointDefinition as ExtensionPointConfigDefinition,
+  type StarterBrickDefinition as ExtensionPointConfigDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
 import { freshIdentifier } from "@/utils";

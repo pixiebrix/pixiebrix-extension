@@ -33,7 +33,7 @@ import {
 import {
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
@@ -949,7 +949,7 @@ export type MenuPosition =
  * @since 1.7.16
  */
 
-export interface MenuDefinition extends ExtensionPointDefinition {
+export interface MenuDefinition extends StarterBrickDefinition {
   type: "menuItem";
   /**
    * The HTML template to render the button/menu item.

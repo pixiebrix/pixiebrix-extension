@@ -29,7 +29,7 @@ import {
 import {
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
@@ -282,7 +282,7 @@ export type QuickBarDefaultOptions = {
   [key: string]: string | string[];
 };
 
-export interface QuickBarDefinition extends ExtensionPointDefinition {
+export interface QuickBarDefinition extends StarterBrickDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   contexts: Menus.ContextType[];
   targetMode: QuickBarTargetMode;

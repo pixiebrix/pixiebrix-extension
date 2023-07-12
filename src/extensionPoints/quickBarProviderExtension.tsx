@@ -25,7 +25,7 @@ import {
 import {
   ExtensionPoint,
   type StarterBrickConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
@@ -317,7 +317,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
 export type QuickBarProviderDefaultOptions = Record<string, string | string[]>;
 
-export interface QuickBarProviderDefinition extends ExtensionPointDefinition {
+export interface QuickBarProviderDefinition extends StarterBrickDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   defaultOptions?: QuickBarProviderDefaultOptions;
 }

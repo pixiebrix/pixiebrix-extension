@@ -71,14 +71,14 @@ export type CustomEventOptions = {
   eventName: string;
 };
 
-export interface ExtensionPointDefinition {
+export interface StarterBrickDefinition {
   type: ExtensionPointType;
   isAvailable: Availability;
   reader: ReaderConfig;
 }
 
 export interface StarterBrickConfig<
-  T extends ExtensionPointDefinition = ExtensionPointDefinition
+  T extends StarterBrickDefinition = StarterBrickDefinition
 > {
   apiVersion?: ApiVersion;
   metadata: Metadata;
@@ -110,7 +110,7 @@ export function assertExtensionPointConfig(
     throw new TypeError("Expected object for definition in StarterBrickConfig");
   }
 
-  const definition = config.definition as ExtensionPointDefinition;
+  const definition = config.definition as StarterBrickDefinition;
 
   if (typeof definition.isAvailable !== "object") {
     console.warn("Expected object for definition.isAvailable", errorContext);
