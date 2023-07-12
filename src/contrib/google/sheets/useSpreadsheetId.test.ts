@@ -35,7 +35,7 @@ describe("useSpreadsheetId", () => {
   beforeAll(() => {
     servicesLocateMock.mockResolvedValue(
       sanitizedServiceConfigurationFactory({
-        serviceId: GOOGLE_SHEET_SERVICE_ID,
+        integrationId: GOOGLE_SHEET_SERVICE_ID,
         // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,

@@ -136,11 +136,11 @@ async function authenticate(
 
   if (config.proxy) {
     throw new Error(
-      `Integration configuration for service ${config.serviceId} is not a local configuration: ${config.id}`
+      `Integration configuration for service ${config.integrationId} is not a local configuration: ${config.id}`
     );
   }
 
-  const service = await serviceRegistry.lookup(config.serviceId);
+  const service = await serviceRegistry.lookup(config.integrationId);
 
   // The PixieBrix API doesn't use integration configurations
   if (service.id === PIXIEBRIX_SERVICE_ID) {
@@ -206,7 +206,7 @@ async function proxyRequest<T>(
       data: {
         ...requestConfig,
         auth_id: service.id,
-        service_id: service.serviceId,
+        service_id: service.integrationId,
       },
     }
   );
@@ -277,7 +277,7 @@ async function performConfiguredRequest(
     const axiosError = selectAxiosError(error);
 
     if (axiosError && isAuthenticationError(axiosError)) {
-      const service = await serviceRegistry.lookup(serviceConfig.serviceId);
+      const service = await serviceRegistry.lookup(serviceConfig.integrationId);
       if (service.isOAuth2 || service.isToken) {
         await deleteCachedAuthData(serviceConfig.id);
         return serializableAxiosRequest(
@@ -305,13 +305,13 @@ async function getServiceMessageContext(
   // Try resolving the service to get metadata to include with the error
   let resolvedService: Integration;
   try {
-    resolvedService = await serviceRegistry.lookup(config.serviceId);
+    resolvedService = await serviceRegistry.lookup(config.integrationId);
   } catch {
     // NOP
   }
 
   return {
-    serviceId: config.serviceId,
+    serviceId: config.integrationId,
     serviceVersion: resolvedService?.version,
     authId: config.id,
   };

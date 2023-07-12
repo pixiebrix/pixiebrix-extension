@@ -259,7 +259,7 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedServiceConfigurationFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      integrationId: CONTROL_ROOM_OAUTH_SERVICE_ID,
     });
 
     const locator = async () => [auth];
@@ -289,7 +289,7 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedServiceConfigurationFactory({
-      serviceId: registryId,
+      integrationId: registryId,
     });
 
     const locator = async () => [auth];
@@ -314,7 +314,7 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedServiceConfigurationFactory({
-      serviceId: PIXIEBRIX_SERVICE_ID,
+      integrationId: PIXIEBRIX_SERVICE_ID,
     });
 
     const locator = async () => [auth];
@@ -345,7 +345,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedServiceConfigurationFactory({
-      serviceId: registryId,
+      integrationId: registryId,
     });
 
     const locator = async () => [auth];
@@ -372,7 +372,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedServiceConfigurationFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      integrationId: CONTROL_ROOM_OAUTH_SERVICE_ID,
     });
 
     const locator = async () => [auth];
@@ -399,7 +399,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedServiceConfigurationFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      integrationId: CONTROL_ROOM_OAUTH_SERVICE_ID,
       proxy: true,
     });
 
@@ -426,11 +426,11 @@ describe("mergeDeploymentServiceConfigurations", () => {
 
     const locator = async () => [
       sanitizedServiceConfigurationFactory({
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        integrationId: CONTROL_ROOM_OAUTH_SERVICE_ID,
         proxy: false,
       }),
       sanitizedServiceConfigurationFactory({
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        integrationId: CONTROL_ROOM_OAUTH_SERVICE_ID,
         proxy: false,
       }),
     ];

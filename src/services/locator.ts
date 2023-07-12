@@ -72,7 +72,7 @@ function excludeSecrets(
 export async function pixieServiceFactory(): Promise<SanitizedIntegrationConfig> {
   return {
     id: undefined,
-    serviceId: PIXIEBRIX_SERVICE_ID,
+    integrationId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
@@ -301,7 +301,7 @@ class LazyLocatorFactory {
     return {
       _sanitizedIntegrationConfigBrand: undefined,
       id: authId,
-      serviceId,
+      integrationId: serviceId,
       proxy,
       config: excludeSecrets(service, match.config),
     };

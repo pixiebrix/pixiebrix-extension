@@ -75,7 +75,7 @@ function mapConfigurationsToOptions(
       value: serviceConfiguration.id,
       label: `${defaultLabel(serviceConfiguration.label)} — Private`,
       local: true,
-      serviceId: serviceConfiguration.serviceId,
+      serviceId: serviceConfiguration.integrationId,
       sharingType: "private" as AuthSharing,
     })),
     (x) => x.label
