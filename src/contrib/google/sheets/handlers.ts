@@ -136,7 +136,7 @@ async function batchUpdateSpreadsheet(
 ): Promise<BatchUpdateSpreadsheetResponse> {
   const token = await ensureSheetsReady({ interactive: false });
 
-  const requestConfig: AxiosRequestConfig = {
+  const requestConfig: AxiosRequestConfig<BatchUpdateSpreadsheetRequest> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
     method: "post",
     data: request,
