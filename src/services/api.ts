@@ -22,7 +22,7 @@ import { type AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import {
   type EditablePackageMetadata,
-  type CloudExtension,
+  type StandaloneModDefinition,
   type Database,
   type Group,
   type MarketplaceListing,
@@ -266,11 +266,14 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getAllCloudExtensions: builder.query<CloudExtension[], void>({
+    getAllCloudExtensions: builder.query<StandaloneModDefinition[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
     }),
-    getCloudExtension: builder.query<CloudExtension, { extensionId: UUID }>({
+    getCloudExtension: builder.query<
+      StandaloneModDefinition,
+      { extensionId: UUID }
+    >({
       query: ({ extensionId }) => ({
         url: `/api/extensions/${extensionId}/`,
         method: "get",
@@ -281,7 +284,7 @@ export const appApi = createApi({
       ],
     }),
     deleteCloudExtension: builder.mutation<
-      CloudExtension,
+      StandaloneModDefinition,
       { extensionId: UUID }
     >({
       query: ({ extensionId }) => ({

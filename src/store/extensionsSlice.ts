@@ -16,7 +16,10 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type CloudExtension, type Deployment } from "@/types/contract";
+import {
+  type StandaloneModDefinition,
+  type Deployment,
+} from "@/types/contract";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
@@ -65,8 +68,8 @@ const extensionsSlice = createSlice({
   name: "extensions",
   initialState: initialExtensionsState,
   reducers: {
-    // Helper method to directly update extensions in tests. Can't use installCloudExtension because CloudExtension
-    // doesn't have the _recipe field
+    // Helper method to directly update extensions in tests. Can't use installCloudExtension because
+    // StandaloneModDefinition doesn't have the _recipe field
     UNSAFE_setExtensions(
       state,
       { payload }: PayloadAction<PersistedExtension[]>
@@ -76,7 +79,7 @@ const extensionsSlice = createSlice({
 
     installCloudExtension(
       state,
-      { payload }: PayloadAction<{ extension: CloudExtension }>
+      { payload }: PayloadAction<{ extension: StandaloneModDefinition }>
     ) {
       const { extension } = payload;
 

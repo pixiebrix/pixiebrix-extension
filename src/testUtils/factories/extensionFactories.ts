@@ -33,7 +33,7 @@ import {
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
-import { type CloudExtension } from "@/types/contract";
+import { type StandaloneModDefinition } from "@/types/contract";
 
 export const installedRecipeMetadataFactory = define<IExtension["_recipe"]>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -93,15 +93,15 @@ export const persistedExtensionFactory = extend<IExtension, PersistedExtension>(
   }
 );
 
-// CloudExtension is a type in contract.ts. But it's really defined based on the IExtension type not the backend API.
+// StandaloneModDefinition is a type in contract.ts. But it's really defined based on the IExtension type not the backend API.
 export const cloudExtensionFactory = (
-  override?: Partial<Config<CloudExtension>>
+  override?: Partial<Config<StandaloneModDefinition>>
 ) => {
   const extension = extensionFactory(
     override as Config<IExtension>
-  ) as CloudExtension;
+  ) as StandaloneModDefinition;
 
-  // @ts-expect-error -- removing the IExtension property that is not in the CloudExtension type
+  // @ts-expect-error -- removing the IExtension property that is not in the StandaloneModDefinition type
   delete extension.active;
 
   const timestamp = timestampFactory();

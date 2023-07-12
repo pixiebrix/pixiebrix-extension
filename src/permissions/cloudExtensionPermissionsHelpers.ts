@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type CloudExtension } from "@/types/contract";
+import { type StandaloneModDefinition } from "@/types/contract";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
@@ -25,12 +25,12 @@ import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 // Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with recipePermissionsHelpers.ts
 
 /**
- * Return permissions status for a CloudExtension and the user's selected dependencies
- * @param extension the CloudExtension
+ * Return permissions status for a StandaloneModDefinition and the user's selected dependencies
+ * @param extension the StandaloneModDefinition
  * @param services the selected integration configurations
  */
 export async function checkCloudExtensionPermissions(
-  extension: CloudExtension,
+  extension: StandaloneModDefinition,
   services: ServiceDependency[]
 ): Promise<PermissionsStatus> {
   const resolved = await resolveExtensionInnerDefinitions({

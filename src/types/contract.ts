@@ -193,16 +193,15 @@ export type RegistryPackage = Pick<
 };
 
 /**
+ * @deprecated because ModDefinition will be used for singluar mods
  * A personal user extension synced/saved to the cloud.
  */
-export type CloudExtension<Config extends UnknownObject = JsonObject> = Except<
-  PersistedExtension<Config>,
-  "active"
-> & {
-  _remoteUserExtensionBrand: never;
-  _deployment: undefined;
-  _recipe: undefined;
-};
+export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
+  Except<PersistedExtension<Config>, "active"> & {
+    _remoteUserExtensionBrand: never;
+    _deployment: undefined;
+    _recipe: undefined;
+  };
 
 /**
  * `/api/recipes/${recipeId}`
