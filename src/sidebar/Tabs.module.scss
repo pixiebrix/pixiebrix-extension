@@ -15,23 +15,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "@/themes/colors.scss";
+
 // Overrides for Bootstraps opinionated styling of tab content
 .paneOverrides {
   text-align: initial;
 }
 
-.tabHeader {
+.tabContainer {
   display: flex;
-  padding: 0 !important; // Reset Bootstrap padding to align and widen the close button
+  flex-wrap: nowrap;
+}
+
+.tabHeader {
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+  border: none !important;
+  // Only show first 8 items
+  display: none;
+  &:nth-child(-n + 8) {
+    display: flex;
+  }
+
+  background: $S2 !important;
+  &:hover {
+    background: $S3 !important;
+  }
   &.active {
     // Disable cursor:pointer because there's no action
     // This also makes it easier to see when you're hovering the close button
     cursor: default;
+
+    background: $S0 !important;
+    &:hover {
+      background: $S0 !important;
+    }
   }
 
+  padding: 0.5rem 0.75rem !important;
+  // Add padding between each item without adding to the overall width
+  & > * {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  & > *:first-child {
+    padding-left: 0;
+  }
+  & > *:last-child {
+    padding-right: 0;
+  }
+
+  overflow: hidden;
+
   :global .close {
-    // Visually center the icon
-    padding: 0 0.6rem 0.2rem 0.7rem;
+    // The close icon is the actual letter "X" so this thins the icon
+    font-weight: 400;
     &:hover {
       background: rgba(0, 0, 0, 10%);
     }
@@ -43,6 +80,5 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0.75rem 1rem;
   min-width: 0; // Avoid stretching the flex parent
 }

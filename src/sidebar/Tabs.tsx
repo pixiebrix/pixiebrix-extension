@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   type PanelEntry,
+  type SidebarEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
@@ -121,6 +122,8 @@ const Tabs: React.FC = () => {
     dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
   };
 
+  const [testPanel, setTestPanel] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
+
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
@@ -132,18 +135,29 @@ const Tabs: React.FC = () => {
     []
   );
 
+  const isPanelActive = (key: SidebarEntry) =>
+    eventKeyForEntry(key) === activeKey;
+
   return (
     <Tab.Container
       id="panel-container"
       defaultActiveKey={activeKey}
       activeKey={activeKey}
     >
-      <div className="full-height bg-white">
-        <Nav fill variant="tabs" onSelect={onSelect}>
+      <div className="full-height">
+        <Nav
+          fill
+          variant="tabs"
+          className={styles.tabContainer}
+          onSelect={onSelect}
+        >
           {staticPanels.map((staticPanel) => (
             <Nav.Link
               key={staticPanel.key}
-              className={styles.tabHeader}
+              className={cx(
+                styles.tabHeader,
+                isPanelActive(staticPanel) && styles.active
+              )}
               eventKey={eventKeyForEntry(staticPanel)}
             >
               <span className={styles.tabTitle}>{staticPanel.heading}</span>
@@ -153,7 +167,10 @@ const Tabs: React.FC = () => {
             <Nav.Link
               key={panel.extensionId}
               eventKey={eventKeyForEntry(panel)}
-              className={styles.tabHeader}
+              className={cx(
+                styles.tabHeader,
+                isPanelActive(panel) && styles.active
+              )}
             >
               <span className={styles.tabTitle}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
@@ -164,18 +181,25 @@ const Tabs: React.FC = () => {
             <Nav.Link
               key={form.extensionId}
               eventKey={eventKeyForEntry(form)}
-              className={styles.tabHeader}
+              className={cx(
+                styles.tabHeader,
+                isPanelActive(form) && styles.active
+              )}
             >
               <span className={styles.tabTitle}>
                 {form.form.schema.title ?? "Form"}
               </span>
             </Nav.Link>
           ))}
+
           {temporaryPanels.map((panel) => (
             <Nav.Link
               key={panel.nonce}
               eventKey={eventKeyForEntry(panel)}
-              className={styles.tabHeader}
+              className={cx(
+                styles.tabHeader,
+                isPanelActive(panel) && styles.active
+              )}
             >
               <span className={styles.tabTitle}>{panel.heading}</span>
               <CloseButton
@@ -189,15 +213,29 @@ const Tabs: React.FC = () => {
             <Nav.Link
               key={recipeToActivate.recipeId}
               eventKey={eventKeyForEntry(recipeToActivate)}
-              className={styles.tabHeader}
+              className={cx(
+                styles.tabHeader,
+                isPanelActive(recipeToActivate) && styles.active
+              )}
             >
               <span className={styles.tabTitle}>
                 {recipeToActivate.heading}
               </span>
             </Nav.Link>
           )}
+
+          {testPanel.map((i) => (
+            <Nav.Link key={i} className={cx(styles.tabHeader)} eventKey={i}>
+              <span className={styles.tabTitle}>Test item {i}</span>
+              <CloseButton
+                onClick={() => {
+                  setTestPanel(testPanel.filter((item) => item !== i));
+                }}
+              />
+            </Nav.Link>
+          ))}
         </Nav>
-        <Tab.Content className="p-0 border-0 full-height">
+        <Tab.Content className="p-0 border-0 full-height bg-white">
           {staticPanels.map((staticPanel) => (
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
