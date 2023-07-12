@@ -18,7 +18,7 @@
 /* eslint-disable new-cap -- test methods */
 import useModViewItems from "@/mods/useModViewItems";
 import {
-  type PersistedExtension,
+  type ActivatedModComponent,
   type ResolvedExtension,
   selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
@@ -48,7 +48,7 @@ describe("useModViewItems", () => {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.UNSAFE_setExtensions([
-            extension as unknown as PersistedExtension,
+            extension as unknown as ActivatedModComponent,
           ])
         );
       },

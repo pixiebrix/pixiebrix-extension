@@ -18,7 +18,7 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   fromJS,
   type TriggerConfig,
@@ -26,7 +26,7 @@ import {
 } from "@/extensionPoints/triggerExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type PersistedExtension } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/extensionTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
@@ -41,7 +41,7 @@ let lifecycleModule: any;
 const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<ExtensionPointConfig<TriggerDefinition>>({
+  define<StarterBrickConfig<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -60,7 +60,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<PersistedExtension<TriggerConfig>>({
+const extensionFactory = define<ActivatedModComponent<TriggerConfig>>({
   apiVersion: "v3",
   id: uuidSequence,
   extensionPointId: (n: number) =>

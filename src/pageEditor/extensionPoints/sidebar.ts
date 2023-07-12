@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   type PanelDefinition,
   type SidebarConfig,
@@ -81,7 +81,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 
 function selectExtensionPointConfig(
   formState: SidebarFormState
-): ExtensionPointConfig {
+): StarterBrickConfig {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },

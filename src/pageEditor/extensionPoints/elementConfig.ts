@@ -20,8 +20,8 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
-  type ExtensionPointConfig,
-  type ExtensionPointType,
+  type StarterBrickConfig,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import {
   type BrickPipeline,
@@ -48,7 +48,7 @@ export type SingleLayerReaderConfig =
 export type BaseExtensionPointState = {
   metadata: Metadata;
   definition: {
-    type: ExtensionPointType;
+    type: StarterBrickType;
     // We're currently not allowing users to modify readers in the page editor
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
@@ -77,7 +77,7 @@ export interface BaseFormState<
   /**
    * The type of the extensionPoint
    */
-  readonly type: ExtensionPointType;
+  readonly type: StarterBrickType;
 
   /**
    * True if the extensionPoint exists in in the registry
@@ -123,7 +123,7 @@ export interface BaseFormState<
   /**
    * Information about the recipe (i.e., blueprint) options,
    * or `undefined` if the extension is not part of a recipe.
-   * @see RecipeDefinition.options
+   * @see ModDefinition.options
    */
   optionsDefinition?: OptionsDefinition;
 }
@@ -138,11 +138,11 @@ export interface ElementConfig<
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: ExtensionPointType;
+  readonly elementType: StarterBrickType;
 
   /**
-   * The ExtensionPointConfig class corresponding to the extension point
-   * @see ExtensionPointConfig
+   * The StarterBrickConfig class corresponding to the extension point
+   * @see StarterBrickConfig
    */
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
   readonly baseClass: Function;
@@ -209,9 +209,7 @@ export interface ElementConfig<
   /**
    * Returns the extension point configuration corresponding to the FormState.
    */
-  readonly selectExtensionPointConfig: (
-    element: TState
-  ) => ExtensionPointConfig;
+  readonly selectExtensionPointConfig: (element: TState) => StarterBrickConfig;
 
   /**
    * Returns the extension configuration corresponding to the FormState.

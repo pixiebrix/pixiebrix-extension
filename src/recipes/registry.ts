@@ -35,11 +35,11 @@ type UnnormalizedOptionsDefinition = {
   uiSchema?: UiSchema;
 };
 
-type UnnormalizedRecipeDefinition = Exclude<ModDefinition, "options"> & {
+type UnnormalizedModDefinition = Exclude<ModDefinition, "options"> & {
   options?: UnnormalizedOptionsDefinition;
 };
 
-type RegistryRecipeDefinition = ModDefinition & {
+type RegistryModDefinition = ModDefinition & {
   id: RegistryId;
 };
 
@@ -71,14 +71,14 @@ function normalizeRecipeOptions(
   return { schema, uiSchema };
 }
 
-function fromJS(rawRecipe: UnnormalizedRecipeDefinition) {
+function fromJS(rawRecipe: UnnormalizedModDefinition) {
   return produce(rawRecipe, (draft) => {
     draft.options = normalizeRecipeOptions(rawRecipe.options);
-    (draft as RegistryRecipeDefinition).id = rawRecipe.metadata.id;
-  }) as RegistryRecipeDefinition;
+    (draft as RegistryModDefinition).id = rawRecipe.metadata.id;
+  }) as RegistryModDefinition;
 }
 
-const registry = new BaseRegistry<RegistryId, RegistryRecipeDefinition>(
+const registry = new BaseRegistry<RegistryId, RegistryModDefinition>(
   ["recipe"],
   fromJS
 );

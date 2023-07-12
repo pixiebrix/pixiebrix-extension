@@ -32,8 +32,8 @@ import {
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPoint,
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
@@ -949,7 +949,7 @@ export type MenuPosition =
  * @since 1.7.16
  */
 
-export interface MenuDefinition extends ExtensionPointDefinition {
+export interface MenuDefinition extends StarterBrickDefinition {
   type: "menuItem";
   /**
    * The HTML template to render the button/menu item.
@@ -996,7 +996,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
+  public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
 
   public override get defaultOptions(): {
     caption: string;
@@ -1009,7 +1009,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     };
   }
 
-  constructor(config: ExtensionPointConfig<MenuDefinition>) {
+  constructor(config: StarterBrickConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -1167,7 +1167,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<MenuDefinition>
+  config: StarterBrickConfig<MenuDefinition>
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "menuItem") {

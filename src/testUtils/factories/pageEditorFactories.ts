@@ -32,9 +32,9 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import {
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
-  type ExtensionPointType,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import {
   extensionPointDefinitionFactory,
@@ -60,7 +60,7 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
 });
 const internalFormStateFactory = define<
   FormState & {
-    extensionPoint: DerivedFunction<FormState, ExtensionPointConfig>;
+    extensionPoint: DerivedFunction<FormState, StarterBrickConfig>;
   }
 >({
   apiVersion: "v3" as ApiVersion,
@@ -71,11 +71,11 @@ const internalFormStateFactory = define<
     return [];
   },
   recipe: null,
-  type: "panel" as ExtensionPointType,
+  type: "panel" as StarterBrickType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<FormState, ExtensionPointDefinition>(({ type }) => {
+  extensionPoint: derive<FormState, StarterBrickDefinition>(({ type }) => {
     const extensionPoint = extensionPointDefinitionFactory();
     extensionPoint.definition.type = type;
     return extensionPoint;

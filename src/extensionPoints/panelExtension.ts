@@ -35,8 +35,8 @@ import { type Metadata } from "@/types/registryTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
   ExtensionPoint,
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
@@ -488,7 +488,7 @@ type PanelPosition =
       sibling: string | null;
     };
 
-export interface PanelDefinition extends ExtensionPointDefinition {
+export interface PanelDefinition extends StarterBrickDefinition {
   template: string;
   position?: PanelPosition;
   containerSelector: string;
@@ -500,9 +500,9 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
+  public readonly rawConfig: StarterBrickConfig<PanelDefinition>;
 
-  constructor(config: ExtensionPointConfig<PanelDefinition>) {
+  constructor(config: StarterBrickConfig<PanelDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -569,7 +569,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<PanelDefinition>
+  config: StarterBrickConfig<PanelDefinition>
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "panel") {

@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   type PanelConfig,
   type PanelDefinition,
@@ -84,7 +84,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: PanelFormState
-): ExtensionPointConfig<PanelDefinition> {
+): StarterBrickConfig<PanelDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, position, template, reader, containerSelector },

@@ -19,14 +19,14 @@ import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import {
-  type ExtensionDefinition,
+  type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {
-  ExtensionPointDefinition,
-  ExtensionPointType,
+  StarterBrickDefinition,
+  StarterBrickType,
 } from "@/extensionPoints/types";
 import extensionPointRegistry from "@/extensionPoints/registry";
 
@@ -62,14 +62,14 @@ export const getRequiredServiceIds = (recipe: ModDefinition): RegistryId[] =>
   );
 
 const getExtensionPointType = async (
-  extensionPoint: ExtensionDefinition,
+  extensionPoint: ModComponentDefinition,
   recipe: ModDefinition
-): Promise<ExtensionPointType | null> => {
+): Promise<StarterBrickType | null> => {
   // Look up the extension point in recipe inner definitions first
   if (recipe.definitions?.[extensionPoint.id]) {
-    const definition: ExtensionPointDefinition = recipe.definitions[
+    const definition: StarterBrickDefinition = recipe.definitions[
       extensionPoint.id
-    ].definition as ExtensionPointDefinition;
+    ].definition as StarterBrickDefinition;
     const extensionPointType = definition?.type;
 
     if (extensionPointType) {
@@ -82,12 +82,12 @@ const getExtensionPointType = async (
     extensionPoint.id as RegistryId
   );
 
-  return (extensionPointFromRegistry?.kind as ExtensionPointType) ?? null;
+  return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
 };
 
 export const getContainedExtensionPointTypes = async (
   recipe: ModDefinition
-): Promise<ExtensionPointType[]> => {
+): Promise<StarterBrickType[]> => {
   const extensionPointTypes = await Promise.all(
     recipe.extensionPoints.map(async (extensionPoint) =>
       getExtensionPointType(extensionPoint, recipe)
