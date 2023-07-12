@@ -30,7 +30,7 @@ import {
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/baseRegistry";
 import {
-  type IService,
+  type Integration,
   type ServiceConfig,
   type RawServiceConfiguration,
   type SanitizedConfig,
@@ -54,7 +54,7 @@ enum ServiceLevel {
 
 /** Return config excluding any secrets/keys. */
 function excludeSecrets(
-  service: IService,
+  service: Integration,
   config: ServiceConfig
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;

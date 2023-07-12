@@ -29,7 +29,7 @@ import { memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
   type AuthData,
-  type IService,
+  type Integration,
   type OAuth2Context,
   type RawServiceConfiguration,
 } from "@/types/serviceTypes";
@@ -110,7 +110,7 @@ export const getToken = memoizeUntilSettled(_getToken, {
 });
 
 async function _getToken(
-  service: IService,
+  service: Integration,
   auth: RawServiceConfiguration
 ): Promise<AuthData> {
   expectContext("background");
@@ -352,7 +352,7 @@ async function codeGrantFlow(
 }
 
 export async function launchOAuth2Flow(
-  service: IService,
+  service: Integration,
   auth: RawServiceConfiguration
 ): Promise<AuthData> {
   // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js

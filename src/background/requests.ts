@@ -56,7 +56,7 @@ import {
 import safeJsonStringify from "json-stringify-safe";
 import { deserializeError, serializeError } from "serialize-error";
 import {
-  type IService,
+  type Integration,
   type SanitizedServiceConfiguration,
   type SecretsConfig,
 } from "@/types/serviceTypes";
@@ -303,7 +303,7 @@ async function getServiceMessageContext(
   config: SanitizedServiceConfiguration
 ): Promise<MessageContext> {
   // Try resolving the service to get metadata to include with the error
-  let resolvedService: IService;
+  let resolvedService: Integration;
   try {
     resolvedService = await serviceRegistry.lookup(config.serviceId);
   } catch {

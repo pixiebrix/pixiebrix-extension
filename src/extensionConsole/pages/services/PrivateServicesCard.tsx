@@ -30,22 +30,22 @@ import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
 import {
-  type IService,
+  type Integration,
   type RawServiceConfiguration,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type TableData = {
-  service: IService;
+  service: Integration;
 } & RawServiceConfiguration;
 type TableColumn = Column<TableData>;
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
 type OwnProps = {
-  services: IService[];
+  services: Integration[];
   navigate: (url: string) => void;
-  initialService?: IService;
+  initialService?: Integration;
 };
 
 const Actions: React.VoidFunctionComponent<{
@@ -162,7 +162,7 @@ const dataFactory = ({
   services,
 }: {
   configuredServices: RawServiceConfiguration[];
-  services: IService[];
+  services: Integration[];
 }): TableData[] => [
   {
     label: "Zapier - use to connect to PixieBrix from Zapier",
@@ -213,7 +213,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   const initialRecord: (x: unknown) => boolean = useMemo(
-    () => (initialService ? (x: IService) => x.id === initialService.id : null),
+    () =>
+      initialService ? (x: Integration) => x.id === initialService.id : null,
     [initialService]
   );
 

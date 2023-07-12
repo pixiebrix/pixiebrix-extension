@@ -223,7 +223,7 @@ export type OAuth2Context = {
  *
  * The input/output schema is the same since it's directly user configured.
  */
-export interface IService<
+export interface Integration<
   TConfig extends ServiceConfig = ServiceConfig,
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
   TSecret = TConfig & { _serviceConfigBrand: null },
@@ -268,7 +268,7 @@ export interface IService<
 export abstract class Service<
   TConfig extends ServiceConfig = ServiceConfig,
   TOAuth extends AuthData = AuthData
-> implements IService<TConfig>
+> implements Integration<TConfig>
 {
   abstract schema: Schema;
 

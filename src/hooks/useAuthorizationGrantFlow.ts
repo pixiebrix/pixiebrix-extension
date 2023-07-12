@@ -18,7 +18,7 @@
 import { getBaseURL } from "@/services/baseService";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { type IService, type ServiceDefinition } from "@/types/serviceTypes";
+import { type Integration, type ServiceDefinition } from "@/types/serviceTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type FlowOptions = {
@@ -43,7 +43,7 @@ function useAuthorizationGrantFlow() {
   const modals = useModals();
 
   return useCallback(
-    async (service: IService | ServiceDefinition, options: FlowOptions) => {
+    async (service: Integration | ServiceDefinition, options: FlowOptions) => {
       const name = "name" in service ? service.name : service.metadata.name;
       const serviceId = "id" in service ? service.id : service.metadata.id;
 

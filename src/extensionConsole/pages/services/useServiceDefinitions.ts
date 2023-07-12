@@ -25,15 +25,15 @@ import { useAsyncState } from "@/hooks/common";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import {
-  type IService,
+  type Integration,
   type RawServiceConfiguration,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 
 interface ServiceDefinitions {
-  serviceDefinitions: IService[];
+  serviceDefinitions: Integration[];
   activeConfiguration: RawServiceConfiguration | null;
-  activeService: IService | null;
+  activeService: Integration | null;
   isPending: boolean;
   showZapier: boolean;
 }

@@ -38,7 +38,7 @@ import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import { reportEvent } from "@/telemetry/events";
 import {
-  type IService,
+  type Integration,
   type RawServiceConfiguration,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -59,9 +59,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 }) => {
   const { id: configurationId } = useParams<{ id: UUID }>();
   // Newly created integration (to ensure it's visible in the table)
-  const [newIntegration, setNewIntegration] = useState<IService | null>(null);
+  const [newIntegration, setNewIntegration] = useState<Integration | null>(
+    null
+  );
   const [newConfigurationService, setNewConfigurationService] =
-    useState<IService>(null);
+    useState<Integration>(null);
   const [newConfiguration, setNewConfiguration] =
     useState<RawServiceConfiguration>(null);
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
@@ -92,7 +94,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       setNewConfiguration(null);
       setNewConfigurationService(null);
-      setNewIntegration(config as IService);
+      setNewIntegration(config as Integration);
       await flushReduxPersistence();
 
       try {
@@ -119,7 +121,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
 
   const handleCreate = useCallback(
-    async (service: IService) => {
+    async (service: Integration) => {
       reportEvent("ServiceAdd", {
         serviceId: service.id,
       });

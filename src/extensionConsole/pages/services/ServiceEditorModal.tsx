@@ -42,7 +42,7 @@ import Form, {
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
 import {
-  type IService,
+  type Integration,
   type RawServiceConfiguration,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -50,7 +50,7 @@ import { type Schema } from "@/types/schemaTypes";
 
 type OwnProps = {
   configuration: RawServiceConfiguration;
-  service: IService;
+  service: Integration;
   onClose: () => void;
   onDelete?: (id: UUID) => void;
   onSave: (config: RawServiceConfiguration) => Promise<void>;

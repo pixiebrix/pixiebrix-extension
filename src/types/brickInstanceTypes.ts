@@ -16,10 +16,10 @@
  */
 
 import { type Brick } from "@/types/brickTypes";
-import { type IService } from "@/types/serviceTypes";
+import { type Integration } from "@/types/serviceTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 /**
  * Represents a registry item that has been instantiated.
  */
-export type IBrick = Brick | IService | StarterBrick;
+export type IBrick = Brick | Integration | StarterBrick;
