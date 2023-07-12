@@ -274,6 +274,7 @@ const Tabs: React.FC = () => {
               <ErrorBoundary
                 onError={() => {
                   reportEvent("ViewError", {
+                    panelType: "activate",
                     recipeToActivate: recipeToActivate.recipeId,
                   });
                 }}
