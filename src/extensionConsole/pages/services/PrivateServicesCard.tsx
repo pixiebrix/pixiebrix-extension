@@ -163,18 +163,16 @@ const dataFactory = ({
 }): TableData[] => [
   {
     label: "Zapier - use to connect to PixieBrix from Zapier",
-    integrationId: null,
+    serviceId: null,
     _rawIntegrationConfigBrand: null,
     id: null,
     config: null,
     service: null,
   },
   ...configuredServices.map((configuredService) => {
-    const service = services.find(
-      (x) => x.id === configuredService.integrationId
-    );
+    const service = services.find((x) => x.id === configuredService.serviceId);
     if (!service) {
-      throw new Error(`Unknown service ${configuredService.integrationId}`);
+      throw new Error(`Unknown service ${configuredService.serviceId}`);
     }
 
     return {

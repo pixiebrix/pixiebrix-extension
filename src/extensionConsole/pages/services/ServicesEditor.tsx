@@ -135,7 +135,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       const config = {
         id: uuidv4(),
         label: undefined,
-        integrationId: service.id,
+        serviceId: service.id,
         config: {},
       } as IntegrationConfig;
 

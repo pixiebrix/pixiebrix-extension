@@ -93,17 +93,17 @@ export type IntegrationConfig = {
   _rawIntegrationConfigBrand: null;
 
   /**
-   * UUID of the service configuration
+   * UUID of the integration configuration
    */
   id: UUID | undefined;
 
   /**
    * Registry identifier for the integration, e.g., `@pixiebrix/api`.
    */
-  integrationId: RegistryId;
+  serviceId: RegistryId;
 
   /**
-   * Human-readable label for the configuration to distinguish it from other configurations for the same service in the
+   * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the
    * interface.
    */
   label: string | undefined;
@@ -119,12 +119,12 @@ export interface SanitizedIntegrationConfig {
   _sanitizedIntegrationConfigBrand: null;
 
   /**
-   * UUID of the service configuration.
+   * UUID of the integration configuration.
    */
   id?: UUID;
 
   /**
-   * Registry identifier for the service, e.g., @pixiebrix/api
+   * Registry identifier for the integration, e.g., @pixiebrix/api
    */
   serviceId: RegistryId;
 
@@ -134,7 +134,7 @@ export interface SanitizedIntegrationConfig {
   config: SanitizedConfig;
 
   /**
-   * True if the service must be proxied for remote configs, e.g., because it has a secret it needs
+   * True if the integration must be proxied for remote configs, e.g., because it has a secret it needs
    * to use to authenticate.
    */
   proxy: boolean;
@@ -219,7 +219,7 @@ export type OAuth2Context = {
 };
 
 /**
- * A service that can be dependency injected and used to authenticate external requests.
+ * A integration that can be dependency injected and used to authenticate external requests.
  *
  * The input/output schema is the same since it's directly user configured.
  */
@@ -232,7 +232,7 @@ export interface Integration<
   schema: Schema;
 
   /**
-   * A uiSchema for the service configuration.
+   * A uiSchema for the integration configuration.
    * @since 1.7.16
    */
   uiSchema?: UiSchema;
@@ -244,7 +244,7 @@ export interface Integration<
   isToken: boolean;
 
   /**
-   * True if service uses basic access authentication to authenticate
+   * True if integration uses basic access authentication to authenticate
    * https://en.wikipedia.org/wiki/Basic_access_authentication
    */
   isBasicHttpAuth: boolean;
@@ -263,7 +263,7 @@ export interface Integration<
 }
 
 /**
- * Abstract base class for services.
+ * Abstract base class for integrations.
  */
 export abstract class IntegrationABC<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,

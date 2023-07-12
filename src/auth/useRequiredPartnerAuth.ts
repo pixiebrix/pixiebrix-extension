@@ -159,7 +159,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   });
 
   const partnerConfiguration = configuredServices.find((service) =>
-    partnerServiceIds.has(service.integrationId)
+    partnerServiceIds.has(service.serviceId)
   );
 
   // WARNING: the logic in this method must match the logic in usePartnerLoginMode

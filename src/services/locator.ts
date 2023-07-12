@@ -236,7 +236,7 @@ class LazyLocatorFactory {
     return this.options
       .filter((x) => x.serviceId === serviceId)
       .map((match) => ({
-        _sanitizedServiceConfigurationBrand: undefined,
+        _sanitizedIntegrationConfigBrand: undefined,
         id: match.id,
         serviceId,
         proxy: service.hasAuth && !match.local,
