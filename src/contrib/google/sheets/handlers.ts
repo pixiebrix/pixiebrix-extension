@@ -27,7 +27,7 @@ import initGoogle, {
   isGoogleInitialized,
   markGoogleInvalidated,
 } from "@/contrib/google/initGoogle";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type AxiosRequestConfig } from "axios";
 import { proxyService } from "@/background/messenger/api";
 import {
@@ -44,7 +44,7 @@ const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
 
 export type SpreadsheetTarget = {
-  googleAccount: SanitizedServiceConfiguration | null;
+  googleAccount: SanitizedIntegrationConfig | null;
   spreadsheetId: string;
   tabName?: string;
 };
@@ -106,7 +106,7 @@ export async function ensureSheetsReady({
 }
 
 export async function getAllSpreadsheets(
-  googleAccount: SanitizedServiceConfiguration | null
+  googleAccount: SanitizedIntegrationConfig | null
 ): Promise<FileList> {
   const token = await ensureSheetsReady({ interactive: false });
 
